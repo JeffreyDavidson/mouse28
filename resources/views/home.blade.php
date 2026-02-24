@@ -96,54 +96,175 @@
             display: block;
             filter: none;
         }
+        /* Hero floating card animations */
+        @keyframes float1 {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-12px) rotate(-1deg); }
+        }
+        @keyframes float2 {
+            0%, 100% { transform: translateY(0) rotate(3deg); }
+            50% { transform: translateY(-8px) rotate(2deg); }
+        }
+        @keyframes float3 {
+            0%, 100% { transform: translateY(0) rotate(1deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+        .hero-float-card {
+            will-change: transform;
+            cursor: pointer;
+        }
     </style>
 
     {{-- Hero Section --}}
     <section class="relative hero-animated-bg overflow-hidden">
+        {{-- Stars / sparkles scattered across hero --}}
         <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
-            <span class="sparkle absolute top-[15%] left-[10%] text-gold/40 text-xs">✦</span>
-            <span class="sparkle-delay absolute top-[25%] right-[15%] text-gold/30 text-sm">✧</span>
-            <span class="sparkle-delay-2 absolute top-[60%] left-[20%] text-gold/20 text-xs">✦</span>
-            <span class="sparkle absolute top-[40%] right-[8%] text-gold/25 text-lg">✧</span>
-            <span class="sparkle-delay absolute bottom-[20%] left-[40%] text-gold/30 text-xs">✦</span>
+            <span class="sparkle absolute top-[8%] left-[5%] text-gold/40 text-[10px]">✦</span>
+            <span class="sparkle-delay absolute top-[12%] left-[25%] text-gold/25 text-lg">✧</span>
+            <span class="sparkle absolute top-[6%] left-[52%] text-gold/30 text-xs">⭐</span>
+            <span class="sparkle-delay-2 absolute top-[18%] right-[12%] text-gold/20 text-sm">✦</span>
+            <span class="sparkle absolute top-[30%] left-[8%] text-gold/15 text-base">✧</span>
+            <span class="sparkle-delay absolute top-[22%] left-[42%] text-gold/35 text-[10px]">✦</span>
+            <span class="sparkle-delay-2 absolute top-[35%] right-[25%] text-gold/20 text-xs">⭐</span>
+            <span class="sparkle absolute top-[50%] left-[15%] text-gold/25 text-sm">✧</span>
+            <span class="sparkle-delay absolute top-[45%] right-[8%] text-gold/30 text-[10px]">✦</span>
+            <span class="sparkle-delay-2 absolute top-[55%] left-[35%] text-gold/15 text-lg">✧</span>
+            <span class="sparkle absolute top-[65%] right-[18%] text-gold/20 text-xs">✦</span>
+            <span class="sparkle-delay absolute top-[70%] left-[60%] text-gold/25 text-[10px]">⭐</span>
+            <span class="sparkle-delay-2 absolute top-[75%] left-[10%] text-gold/20 text-sm">✦</span>
+            <span class="sparkle absolute top-[80%] right-[35%] text-gold/15 text-xs">✧</span>
+            <span class="sparkle-delay-2 absolute top-[40%] left-[70%] text-gold/30 text-[8px]">✦</span>
         </div>
 
-        <div class="hero-content max-w-5xl mx-auto px-4 sm:px-6 py-24 md:py-36 text-center relative z-10">
-            <span class="inline-block text-gold/80 text-sm font-semibold tracking-[0.15em] uppercase mb-6 font-body">Autism Family · Disney Every Week</span>
-            <h1 class="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.1] mb-6">
-                Disney Parks Through<br>
-                <span class="text-gold">Different Eyes</span>
-            </h1>
-            <p class="text-white/65 text-lg md:text-xl max-w-2xl mx-auto mb-8 leading-[1.7] font-body">
-                Accessibility tips, sensory guides, and real stories from a family who visits Disney every week with our autistic daughter.
-            </p>
-            @if($guidesCount > 0 || $storiesCount > 0)
-                <div class="flex items-center justify-center gap-6 mb-10 text-white/40 text-sm font-body">
-                    @if($guidesCount > 0)
-                        <span>📖 {{ $guidesCount }} {{ Str::plural('guide', $guidesCount) }} published</span>
-                    @endif
-                    @if($storiesCount > 0)
-                        <span>💜 {{ $storiesCount }} {{ Str::plural('family', $storiesCount) }} sharing stories</span>
+        {{-- Warm glow behind cards area --}}
+        <div class="absolute top-1/2 right-[15%] -translate-y-1/2 w-[500px] h-[500px] rounded-full pointer-events-none hidden lg:block" style="background: radial-gradient(circle, rgba(212,168,67,0.07) 0%, transparent 70%);" aria-hidden="true"></div>
+
+        <div class="hero-content max-w-7xl mx-auto px-4 sm:px-6 py-20 md:py-28 lg:py-36 relative z-10">
+            <div class="flex flex-col lg:flex-row items-center lg:items-start gap-12 lg:gap-16">
+
+                {{-- Left side: Text content (55-60%) --}}
+                <div class="lg:w-[58%] lg:pt-8">
+                    <span class="inline-block text-gold/80 text-xs font-semibold tracking-[0.2em] uppercase mb-5 font-body">Autism Family · Disney Every Week</span>
+                    <h1 class="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.08] mb-6">
+                        Disney Parks Through<br>
+                        <span class="text-gold">Different Eyes</span>
+                    </h1>
+                    <p class="text-white/60 text-lg md:text-xl max-w-xl mb-8 leading-[1.7] font-body">
+                        Sensory guides, accessibility tips, and real stories from a family who visits Disney every single week with our autistic daughter.
+                    </p>
+                    <div class="flex flex-wrap items-center gap-4 mb-8">
+                        <a href="/guides" class="cta-primary bg-gold hover:bg-gold-light text-navy font-semibold px-8 py-4 min-h-[48px] rounded-full shadow-lg shadow-gold/20 hover:shadow-gold/50 hover:scale-105 transition-all duration-300 hover:-translate-y-1 text-base font-body inline-flex items-center">
+                            Explore Our Guides
+                        </a>
+                        @if($featuredPost)
+                            <a href="/blog/{{ $featuredPost->slug }}" class="text-white/55 hover:text-gold text-sm font-medium font-body transition-colors duration-200">
+                                or read the latest post →
+                            </a>
+                        @endif
+                    </div>
+                    @if($guidesCount > 0 || $storiesCount > 0)
+                        <div class="flex items-center gap-5 text-white/35 text-sm font-body">
+                            @if($guidesCount > 0)
+                                <span>📖 {{ $guidesCount }} {{ Str::plural('guide', $guidesCount) }}</span>
+                            @endif
+                            @if($storiesCount > 0)
+                                <span>💜 {{ $storiesCount }} {{ Str::plural('family', $storiesCount) }}</span>
+                            @endif
+                        </div>
                     @endif
                 </div>
-            @endif
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="/blog" class="cta-primary bg-gold hover:bg-gold-light text-navy font-semibold px-8 py-4 min-h-[48px] rounded-full shadow-lg shadow-gold/20 hover:shadow-gold/50 hover:scale-105 transition-all duration-300 hover:-translate-y-1 text-base font-body inline-flex items-center">
-                    Read the Blog
-                </a>
-                @if($latestEpisodes->count())
-                    <a href="/episodes/{{ $latestEpisodes->first()->slug }}" class="bg-white/10 backdrop-blur-sm text-white/90 hover:text-white hover:bg-white/20 font-semibold px-8 py-4 min-h-[48px] rounded-full border border-white/20 hover:border-gold/40 transition-all duration-300 hover:-translate-y-1 hover:scale-105 text-base font-body inline-flex items-center">
-                        🎧 Latest Episode
-                    </a>
-                @endif
+
+                {{-- Right side: Floating card composition (40-45%) --}}
+                <div class="lg:w-[42%] relative w-full max-w-md lg:max-w-none mx-auto lg:mx-0">
+                    <div class="relative h-[380px] sm:h-[420px] lg:h-[460px]">
+
+                        {{-- Card 1: Featured blog post (largest) --}}
+                        @if($featuredPost)
+                            <a href="/blog/{{ $featuredPost->slug }}" class="hero-float-card absolute top-[10%] left-[5%] sm:left-[2%] w-[260px] sm:w-[280px] bg-white rounded-2xl shadow-xl shadow-navy/20 hover:shadow-2xl hover:shadow-navy/30 hover:-translate-y-2 transition-all duration-300 overflow-hidden z-20 group" style="animation: float1 5s ease-in-out infinite;">
+                                <div class="p-5">
+                                    @if($featuredPost->category)
+                                        <span class="inline-block bg-purple/10 text-purple text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider font-body mb-3">{{ $featuredPost->category_label }}</span>
+                                    @endif
+                                    <h3 class="font-heading text-base font-bold text-navy leading-snug mb-2 line-clamp-2 group-hover:text-purple transition-colors">{{ Str::limit($featuredPost->title, 60) }}</h3>
+                                    @if($featuredPost->excerpt)
+                                        <p class="text-navy/50 text-xs leading-relaxed line-clamp-2 font-body mb-3">{{ Str::limit($featuredPost->excerpt, 80) }}</p>
+                                    @endif
+                                    <span class="text-gold font-semibold text-xs font-body inline-flex items-center gap-1 group-hover:gap-2 transition-all">
+                                        Read →
+                                    </span>
+                                </div>
+                            </a>
+                        @endif
+
+                        {{-- Card 2: Guide card (medium) --}}
+                        <div class="hero-float-card absolute top-[0%] right-[0%] sm:right-[5%] w-[180px] sm:w-[200px] bg-cream rounded-xl shadow-lg shadow-navy/15 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 z-30" style="animation: float2 4.5s ease-in-out 0.5s infinite;">
+                            <div class="p-4">
+                                <span class="text-2xl block mb-2">🏰</span>
+                                <h4 class="font-heading text-sm font-bold text-navy leading-snug mb-1">Magic Kingdom Quiet Spots</h4>
+                                <span class="text-navy/40 text-[11px] font-body">8 min read</span>
+                            </div>
+                        </div>
+
+                        {{-- Card 3: Podcast episode (small) --}}
+                        <div class="hero-float-card absolute bottom-[12%] left-[0%] sm:left-[-2%] w-[190px] sm:w-[210px] bg-purple/90 backdrop-blur-sm rounded-xl shadow-lg shadow-purple/20 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 z-20" style="animation: float3 5.5s ease-in-out 1s infinite;">
+                            <div class="p-4">
+                                @if($latestEpisodes->count())
+                                    <span class="text-white/60 text-[10px] font-bold uppercase tracking-wider font-body">🎧 EP {{ $latestEpisodes->first()->episode_number }}</span>
+                                    <h4 class="font-heading text-sm font-semibold text-white leading-snug mt-1 line-clamp-2">{{ Str::limit($latestEpisodes->first()->title, 45) }}</h4>
+                                @else
+                                    <span class="text-white/60 text-[10px] font-bold uppercase tracking-wider font-body">🎧 EP 4</span>
+                                    <h4 class="font-heading text-sm font-semibold text-white leading-snug mt-1">Sensory Tips for Fireworks Night</h4>
+                                @endif
+                            </div>
+                        </div>
+
+                        {{-- Card 4: Community quote (small) --}}
+                        <div class="hero-float-card absolute bottom-[5%] right-[2%] sm:right-[8%] w-[185px] sm:w-[195px] bg-white/95 backdrop-blur-sm rounded-xl shadow-lg shadow-navy/10 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 border-l-4 border-gold z-10" style="animation: float1 6s ease-in-out 1.5s infinite;">
+                            <div class="p-4">
+                                <p class="text-navy/70 text-xs italic leading-relaxed font-body line-clamp-3">
+                                    @if(isset($communityStories) && $communityStories->count())
+                                        "{{ Str::limit($communityStories->first()->story, 90) }}"
+                                    @else
+                                        "Your guide helped us enjoy our first fireworks without a meltdown. Thank you! 💜"
+                                    @endif
+                                </p>
+                                <span class="text-navy/40 text-[10px] font-body mt-2 block">— A Mouse28 family</span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
             </div>
-            <p class="mt-8 text-white/40 text-sm font-body">Also a podcast — <a href="/episodes" class="text-white/65 hover:text-gold underline underline-offset-2 transition-colors">listen to the show →</a></p>
         </div>
 
-        {{-- Wave divider --}}
-        <div class="wave-divider absolute bottom-0 left-0 right-0" aria-hidden="true">
-            <svg viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto block" preserveAspectRatio="none">
-                <path d="M0 60V30Q360 0 720 25Q1080 50 1440 20V60H0Z" fill="#1a1040"/>
+        {{-- Castle silhouette divider --}}
+        <div class="absolute bottom-0 left-0 right-0 z-10" aria-hidden="true">
+            <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto block" preserveAspectRatio="none">
+                {{-- Background base --}}
+                <rect y="100" width="1440" height="20" fill="#1a1040"/>
+                {{-- Castle silhouette --}}
+                <path d="
+                    M0 120 L0 105 Q100 100 200 102 L250 100 L260 85 L265 100 L290 98 L295 80 L300 98
+                    L350 95 L380 90 L385 70 L388 55 L390 45 L392 55 L395 70 L400 90 L430 95
+                    L460 98 L470 85 L475 75 L478 65 L480 55 L482 45 L484 35 L486 28 L488 22 L490 18
+                    L492 22 L494 28 L496 35 L498 45 L500 55 L502 65 L505 75 L510 85 L520 98
+                    L560 95 L590 90 L600 75 L610 65 L615 58 L618 50 L620 42 L622 36 L624 30
+                    L626 26 L628 22 L630 20 L632 18 L634 15 L636 12 L638 10 L640 8
+                    L641 5 L642 3 L643 2 L644 1 L645 0 L646 0 L647 0 L648 0
+                    L649 1 L650 2 L651 3 L652 5 L654 8 L656 10 L658 12 L660 15
+                    L662 18 L664 20 L666 22 L668 26 L670 30 L672 36 L674 42 L676 50
+                    L678 58 L680 65 L690 75 L700 90 L720 95
+                    L740 90 L750 82 L755 72 L758 65 L760 58 L762 50 L764 42 L766 36
+                    L768 32 L770 28 L772 32 L774 36 L776 42 L778 50 L780 58 L782 65
+                    L785 72 L790 82 L800 90 L820 95
+                    L860 98 L880 92 L885 82 L888 72 L890 65 L892 58 L894 52 L896 48
+                    L898 52 L900 58 L902 65 L905 72 L910 82 L915 92 L940 98
+                    L980 100 L1000 95 L1010 85 L1015 95 L1040 98 L1060 95 L1070 80 L1075 95
+                    L1100 98 L1120 100 L1160 102 L1200 100 L1230 98 L1240 88 L1245 98
+                    L1280 100 L1320 102 Q1380 105 1440 108 L1440 120 Z
+                " fill="rgba(45,27,105,0.3)"/>
+                {{-- Solid base strip --}}
+                <path d="M0 110 Q360 100 720 108 Q1080 116 1440 108 L1440 120 L0 120 Z" fill="#1a1040"/>
             </svg>
         </div>
     </section>
