@@ -25,9 +25,9 @@
     <section class="bg-white border-b border-navy/10 sticky top-16 z-40">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 py-5">
             {{-- Park Cards --}}
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:flex md:items-center gap-2 md:gap-3">
+            <div class="flex items-center gap-2 md:gap-3 overflow-x-auto scrollbar-hide pb-1 -mb-1">
                 <a href="/guides{{ $activeCategory ? '?category='.$activeCategory : '' }}"
-                   class="flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-medium transition-all border-2 {{ !$activePark ? 'bg-navy text-white border-navy shadow-md' : 'bg-cream/50 text-navy/60 border-transparent hover:bg-cream hover:text-navy hover:border-navy/10' }}">
+                   class="flex-shrink-0 flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-medium transition-all border-2 {{ !$activePark ? 'bg-navy text-white border-navy shadow-md' : 'bg-cream/50 text-navy/60 border-transparent hover:bg-cream hover:text-navy hover:border-navy/10' }}">
                     <span class="text-lg">🌟</span>
                     <span>All Parks</span>
                 </a>
@@ -44,10 +44,9 @@
                 @endphp
                 @foreach($parks as $slug => $label)
                     <a href="/guides?park={{ $slug }}{{ $activeCategory ? '&category='.$activeCategory : '' }}"
-                       class="flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-medium transition-all border-2 {{ $activePark === $slug ? 'bg-navy text-white border-navy shadow-md' : 'bg-cream/50 text-navy/60 border-transparent hover:bg-cream hover:text-navy hover:border-navy/10' }}">
+                       class="flex-shrink-0 flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-medium transition-all border-2 whitespace-nowrap {{ $activePark === $slug ? 'bg-navy text-white border-navy shadow-md' : 'bg-cream/50 text-navy/60 border-transparent hover:bg-cream hover:text-navy hover:border-navy/10' }}">
                         <span class="text-lg">{{ $parkEmojis[$slug] ?? '🎡' }}</span>
-                        <span class="hidden sm:inline">{{ $label }}</span>
-                        <span class="sm:hidden text-xs">{{ Str::limit($label, 12) }}</span>
+                        <span>{{ $label }}</span>
                     </a>
                 @endforeach
             </div>
@@ -96,7 +95,7 @@
 
                         <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             @foreach($parkGuides as $guide)
-                                <a href="/guides/{{ $guide->slug }}" class="group bg-white rounded-2xl p-6 shadow-sm border-2 border-navy/5 hover:border-purple/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                                <a href="/guides/{{ $guide->slug }}" class="group bg-white rounded-2xl p-6 shadow-sm border-2 border-navy/5 hover:border-purple/30 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col min-h-[260px]">
                                     {{-- Icon prominently displayed --}}
                                     @if($guide->icon)
                                         <div class="w-14 h-14 bg-gradient-to-br from-purple/10 to-gold/10 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
@@ -107,12 +106,14 @@
                                     <h3 class="font-heading text-lg font-bold text-navy group-hover:text-purple transition-colors mb-2">{{ $guide->title }}</h3>
 
                                     @if($guide->excerpt)
-                                        <p class="text-navy/50 text-sm leading-relaxed line-clamp-3 mb-4">{{ $guide->excerpt }}</p>
+                                        <p class="text-navy/50 text-sm leading-relaxed line-clamp-3 mb-4 flex-1">{{ $guide->excerpt }}</p>
+                                    @else
+                                        <div class="flex-1"></div>
                                     @endif
 
-                                    <div class="flex flex-wrap gap-2 mt-auto">
-                                        <span class="text-xs font-semibold px-3 py-1 rounded-full bg-purple/10 text-purple">{{ $guide->park_label }}</span>
-                                        <span class="text-xs font-medium px-3 py-1 rounded-full bg-gold/15 text-gold-dark">{{ $guide->category_label }}</span>
+                                    <div class="flex flex-wrap gap-2">
+                                        <span class="text-xs font-semibold px-3 py-1 rounded-lg bg-purple/10 text-purple">{{ $guide->park_label }}</span>
+                                        <span class="text-xs font-medium px-3 py-1 rounded-full bg-gold/15 text-gold-dark border border-gold/20">{{ $guide->category_label }}</span>
                                     </div>
 
                                     <div class="flex items-center gap-1 mt-4 text-purple text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">

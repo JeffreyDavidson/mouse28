@@ -20,12 +20,12 @@
     <section class="bg-gradient-to-br from-navy to-navy-light py-16 md:py-20 no-print">
         <div class="max-w-6xl mx-auto px-4 sm:px-6">
             {{-- Breadcrumbs --}}
-            <nav class="flex items-center gap-2 text-sm mb-6" aria-label="Breadcrumb">
-                <a href="/guides" class="text-white/40 hover:text-gold transition-colors">Guides</a>
-                <svg class="w-3 h-3 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                <a href="/guides?park={{ $guide->park }}" class="text-white/40 hover:text-gold transition-colors">{{ $guide->park_label }}</a>
-                <svg class="w-3 h-3 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                <span class="text-white/60">{{ Str::limit($guide->title, 40) }}</span>
+            <nav class="flex items-center gap-2 text-sm mb-6 overflow-x-auto scrollbar-hide" aria-label="Breadcrumb">
+                <a href="/guides" class="text-white/40 hover:text-gold transition-colors flex-shrink-0">Guides</a>
+                <svg class="w-3 h-3 text-white/20 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                <a href="/guides?park={{ $guide->park }}" class="text-white/40 hover:text-gold transition-colors flex-shrink-0">{{ $guide->park_label }}</a>
+                <svg class="w-3 h-3 text-white/20 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                <span class="text-white/60 truncate">{{ Str::limit($guide->title, 40) }}</span>
             </nav>
 
             <div class="max-w-3xl">
@@ -73,19 +73,27 @@
                     </article>
 
                     {{-- Was this helpful? --}}
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-navy/5 mt-6 no-print">
-                        <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-navy/5 mt-6 no-print" x-data="{ vote: null }">
+                        <div x-show="!vote" class="flex flex-col sm:flex-row items-center justify-between gap-4">
                             <p class="font-heading text-lg font-bold text-navy">Was this guide helpful?</p>
                             <div class="flex items-center gap-3">
-                                <button onclick="this.classList.add('ring-2','ring-green-300');this.nextElementSibling.classList.remove('ring-2','ring-red-300')" class="inline-flex items-center gap-2 bg-green-50 hover:bg-green-100 text-green-700 px-5 py-2.5 rounded-xl text-sm font-medium transition-all border border-green-200">
+                                <button @click="vote = 'yes'" class="inline-flex items-center gap-2 bg-green-50 hover:bg-green-100 text-green-700 px-5 py-2.5 rounded-xl text-sm font-medium transition-all border border-green-200">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/></svg>
                                     Yes, helpful!
                                 </button>
-                                <button onclick="this.classList.add('ring-2','ring-red-300');this.previousElementSibling.classList.remove('ring-2','ring-green-300')" class="inline-flex items-center gap-2 bg-red-50 hover:bg-red-100 text-red-700 px-5 py-2.5 rounded-xl text-sm font-medium transition-all border border-red-200">
+                                <button @click="vote = 'no'" class="inline-flex items-center gap-2 bg-red-50 hover:bg-red-100 text-red-700 px-5 py-2.5 rounded-xl text-sm font-medium transition-all border border-red-200">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"/></svg>
                                     Needs work
                                 </button>
                             </div>
+                        </div>
+                        <div x-show="vote === 'yes'" x-cloak class="text-center py-2">
+                            <p class="text-green-700 font-heading text-lg font-semibold">💚 Glad it helped!</p>
+                            <p class="text-navy/40 text-sm mt-1">Thanks for the feedback — it means a lot.</p>
+                        </div>
+                        <div x-show="vote === 'no'" x-cloak class="text-center py-2">
+                            <p class="text-navy font-heading text-lg font-semibold">Thanks for letting us know</p>
+                            <p class="text-navy/40 text-sm mt-1">We're always improving — <a href="/contact" class="text-purple hover:underline">send us suggestions</a>!</p>
                         </div>
                     </div>
                 </div>
