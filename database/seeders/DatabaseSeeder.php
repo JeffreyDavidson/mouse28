@@ -26,7 +26,6 @@ class DatabaseSeeder extends Seeder
             'youtube_url' => null,
             'instagram_url' => null,
             'tiktok_url' => null,
-            'facebook_url' => null,
         ]);
 
         // Episodes
