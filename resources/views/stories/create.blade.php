@@ -122,15 +122,15 @@
                                         @error('title') <p class="text-red-500 text-xs mt-1.5 flex items-center gap-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg> {{ $message }}</p> @enderror
                                     </div>
 
-                                    <div>
+                                    <div x-data="{ charCount: {{ Str::length(old('story', '')) }} }">
                                         <div class="flex items-center justify-between mb-1.5">
                                             <label for="story" class="block text-sm font-semibold text-navy">Your Story <span class="text-red-400">*</span></label>
-                                            <span id="char-count" class="text-xs text-navy/30">0 characters</span>
+                                            <span class="text-xs" :class="charCount < 50 ? 'text-red-400' : 'text-green-600'" x-text="charCount + ' characters' + (charCount < 50 ? ' (min 50)' : ' ✓')"></span>
                                         </div>
                                         <textarea id="story" name="story" required rows="8"
                                             class="w-full px-4 py-3 rounded-xl border border-navy/10 bg-cream/50 text-navy placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-purple/30 focus:border-purple transition-all resize-y @error('story') border-red-300 ring-2 ring-red-100 @enderror"
                                             placeholder="Share your family's Disney experience — the magical moments, the challenges, whatever feels right..."
-                                            oninput="document.getElementById('char-count').textContent=this.value.length+' characters'+(this.value.length<50?' (min 50)':'')">{{ old('story') }}</textarea>
+                                            x-on:input="charCount = $event.target.value.length">{{ old('story') }}</textarea>
                                         <p class="text-navy/30 text-xs mt-1">Minimum 50 characters</p>
                                         @error('story') <p class="text-red-500 text-xs mt-1.5 flex items-center gap-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg> {{ $message }}</p> @enderror
                                     </div>
