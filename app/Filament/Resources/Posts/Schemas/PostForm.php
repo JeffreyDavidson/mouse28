@@ -41,6 +41,10 @@ class PostForm
                         Select::make('category')
                             ->options(\App\Models\Post::CATEGORIES)
                             ->required(),
+                        Select::make('author')
+                            ->options(\App\Models\Post::AUTHORS)
+                            ->required()
+                            ->default('both'),
                     ]),
 
                 Section::make('Content')

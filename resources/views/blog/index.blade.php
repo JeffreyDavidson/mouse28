@@ -64,7 +64,7 @@
                                 <h2 class="font-heading text-lg font-bold text-navy group-hover:text-purple transition-colors mb-2 line-clamp-2">{{ $post->title }}</h2>
                                 <p class="text-navy/55 text-sm leading-relaxed line-clamp-2 mb-4">{{ Str::limit($post->excerpt, 120) }}</p>
                                 <div class="flex items-center justify-between text-xs text-navy/40 pt-3 border-t border-navy/5">
-                                    <span>{{ $post->published_at->format('M j, Y') }}</span>
+                                    <span>{{ $post->author_name }} · {{ $post->published_at->format('M j, Y') }}</span>
                                     <span>{{ $post->reading_time }} min read</span>
                                 </div>
                             </div>
