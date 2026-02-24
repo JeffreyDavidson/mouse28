@@ -3,8 +3,44 @@
 @section('title', 'Mouse28 — Disney Parks Through Different Eyes')
 
 @section('content')
+    <style>
+        @keyframes heroGradient {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        .hero-animated-bg {
+            background: linear-gradient(270deg, #1a1040, #2d1b69, #1a1040, #3a2370);
+            background-size: 400% 400%;
+            animation: heroGradient 12s ease infinite;
+        }
+        .card-shimmer::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(105deg, transparent 40%, rgba(212,168,67,0.08) 50%, transparent 60%);
+            transform: translateX(-100%);
+            transition: none;
+        }
+        .group:hover .card-shimmer::after {
+            animation: shimmer 0.8s ease forwards;
+        }
+        [data-animate] {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        [data-animate].is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+
     {{-- Hero Section --}}
-    <section class="relative bg-gradient-to-br from-navy via-navy-light to-navy overflow-hidden">
+    <section class="relative hero-animated-bg overflow-hidden">
         <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
             <span class="sparkle absolute top-[15%] left-[10%] text-gold/40 text-xs">✦</span>
             <span class="sparkle-delay absolute top-[25%] right-[15%] text-gold/30 text-sm">✧</span>
@@ -37,11 +73,18 @@
             </div>
             <p class="mt-8 text-white/35 text-sm font-body">Also a podcast — <a href="/episodes" class="text-white/50 hover:text-gold/70 underline underline-offset-2 transition-colors">listen to the show →</a></p>
         </div>
+
+        {{-- Wave divider --}}
+        <div class="absolute bottom-0 left-0 right-0" aria-hidden="true">
+            <svg viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto block">
+                <path d="M0 60V20C240 45 480 0 720 20C960 40 1200 5 1440 25V60H0Z" fill="#1a1040"/>
+            </svg>
+        </div>
     </section>
 
     {{-- Featured Post --}}
     @if($featuredPost)
-        <section class="bg-navy">
+        <section class="bg-navy" data-animate>
             <a href="/blog/{{ $featuredPost->slug }}" class="group block relative overflow-hidden">
                 <div class="max-w-7xl mx-auto">
                     <div class="relative min-h-[400px] md:min-h-[500px] flex items-end">
@@ -51,13 +94,14 @@
                         @else
                             <div class="absolute inset-0 bg-gradient-to-br from-navy-light via-purple/30 to-navy"></div>
                         @endif
-                        <div class="relative z-10 p-8 md:p-14 max-w-3xl">
-                            <div class="flex items-center gap-3 mb-4">
+                        <div class="relative z-10 p-8 md:p-14 max-w-3xl border-l-4 border-gold ml-4 md:ml-10">
+                            <div class="flex items-center gap-3 mb-4 flex-wrap">
                                 <span class="bg-gold/90 text-navy text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider font-body">Featured</span>
                                 @if($featuredPost->category)
-                                    <span class="bg-white/15 backdrop-blur-sm text-white/80 text-xs font-semibold px-3 py-1 rounded-full font-body">{{ str_replace('-', ' ', $featuredPost->category) }}</span>
+                                    <span class="bg-white/15 backdrop-blur-sm text-white/80 text-xs font-semibold px-3 py-1 rounded-full font-body">{{ $featuredPost->category_label }}</span>
                                 @endif
                                 <span class="text-white/50 text-sm font-body">{{ $featuredPost->published_at->format('M j, Y') }}</span>
+                                <span class="bg-white/10 backdrop-blur-sm text-white/70 text-xs font-semibold px-3 py-1 rounded-full font-body">{{ $featuredPost->reading_time }} min read</span>
                             </div>
                             <h2 class="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4 group-hover:text-gold transition-colors duration-300">
                                 {{ $featuredPost->title }}
@@ -76,10 +120,17 @@
         </section>
     @endif
 
+    {{-- Wave: Navy → Cream --}}
+    <div class="bg-cream" aria-hidden="true">
+        <svg viewBox="0 0 1440 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto block -mt-px">
+            <path d="M0 0V28C360 0 720 48 1080 24C1260 12 1380 4 1440 0V0H0Z" fill="#1a1040"/>
+        </svg>
+    </div>
+
     {{-- Latest Posts Grid --}}
     <section class="py-16 md:py-24 bg-cream">
         <div class="max-w-6xl mx-auto px-4 sm:px-6">
-            <div class="flex items-end justify-between mb-12">
+            <div class="flex items-end justify-between mb-12" data-animate>
                 <div>
                     <span class="text-gold text-sm font-semibold tracking-[0.15em] uppercase font-body">Latest Stories</span>
                     <h2 class="font-heading text-3xl md:text-4xl font-bold text-navy mt-2">Tips, Guides &amp; Disney Life</h2>
@@ -91,10 +142,10 @@
             </div>
 
             @if($latestPosts->count())
-                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-7">
+                <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     @foreach($latestPosts as $post)
-                        <a href="/blog/{{ $post->slug }}" class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-navy/5">
-                            <div class="relative overflow-hidden">
+                        <a href="/blog/{{ $post->slug }}" class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 border border-navy/5 relative" data-animate>
+                            <div class="relative overflow-hidden card-shimmer">
                                 @if($post->cover_image)
                                     <img src="{{ $post->cover_image }}" alt="{{ $post->title }}" class="w-full h-52 object-cover transition-transform duration-500 group-hover:scale-105">
                                 @else
@@ -103,15 +154,24 @@
                                     </div>
                                 @endif
                                 @if($post->category)
-                                    <span class="absolute top-3 left-3 bg-navy/80 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider font-body">{{ str_replace('-', ' ', $post->category) }}</span>
+                                    <span class="absolute top-3 left-3 bg-navy/80 backdrop-blur-sm text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider font-body">{{ $post->category_label }}</span>
                                 @endif
                             </div>
                             <div class="p-6">
-                                <span class="text-navy/40 text-xs font-body">{{ $post->published_at->format('M j, Y') }}</span>
-                                <h3 class="font-heading text-lg font-semibold text-navy group-hover:text-purple transition-colors duration-200 mt-1.5 mb-2 leading-snug">{{ $post->title }}</h3>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-navy/40 text-xs font-body">{{ $post->published_at->format('M j, Y') }}</span>
+                                    <span class="text-navy/35 text-xs font-body">{{ $post->reading_time }} min read</span>
+                                </div>
+                                <h3 class="font-heading text-lg font-semibold text-navy group-hover:text-purple transition-colors duration-200 mb-2 leading-snug">{{ $post->title }}</h3>
                                 @if($post->excerpt)
-                                    <p class="text-navy/55 text-sm leading-relaxed line-clamp-2 font-body">{{ Str::limit($post->excerpt, 130) }}</p>
+                                    <p class="text-navy/55 text-sm leading-relaxed line-clamp-2 font-body mb-4">{{ Str::limit($post->excerpt, 130) }}</p>
                                 @endif
+                                <div class="flex items-center gap-2 pt-3 border-t border-navy/5">
+                                    <div class="w-7 h-7 rounded-full bg-purple/10 flex items-center justify-center text-purple text-[10px] font-bold flex-shrink-0">
+                                        {{ collect(explode(' ', $post->author_name))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('') }}
+                                    </div>
+                                    <span class="text-navy/50 text-xs font-medium font-body">{{ $post->author_name }}</span>
+                                </div>
                             </div>
                         </a>
                     @endforeach
@@ -129,10 +189,17 @@
         </div>
     </section>
 
-    {{-- Podcast Section (Secondary) --}}
-    <section class="py-14 md:py-20 bg-white">
+    {{-- Wave: Cream → White --}}
+    <div class="bg-white" aria-hidden="true">
+        <svg viewBox="0 0 1440 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto block -mt-px">
+            <path d="M0 0C480 40 960 0 1440 30V40H0V0Z" fill="#fef9ef"/>
+        </svg>
+    </div>
+
+    {{-- Podcast Section --}}
+    <section class="py-14 md:py-20 bg-white relative">
         <div class="max-w-4xl mx-auto px-4 sm:px-6">
-            <div class="flex items-end justify-between mb-10">
+            <div class="flex items-end justify-between mb-10" data-animate>
                 <div>
                     <span class="text-purple/60 text-sm font-semibold tracking-[0.15em] uppercase font-body">🎙️ Also Listen</span>
                     <h2 class="font-heading text-2xl md:text-3xl font-bold text-navy mt-1">From the Podcast</h2>
@@ -143,12 +210,22 @@
                 </a>
             </div>
 
+            {{-- Waveform decoration --}}
+            <div class="absolute top-8 right-8 opacity-[0.04] pointer-events-none hidden lg:block" aria-hidden="true">
+                <svg width="200" height="80" viewBox="0 0 200 80" fill="currentColor" class="text-purple">
+                    @for($i = 0; $i < 20; $i++)
+                        <rect x="{{ $i * 10 }}" y="{{ 40 - rand(5, 35) }}" width="4" height="{{ rand(10, 70) }}" rx="2"/>
+                    @endfor
+                </svg>
+            </div>
+
             @if($latestEpisodes->count())
                 <div class="divide-y divide-navy/8">
                     @foreach($latestEpisodes as $episode)
-                        <a href="/episodes/{{ $episode->slug }}" class="group flex items-center gap-5 py-5 hover:bg-cream/50 -mx-4 px-4 rounded-xl transition-colors duration-200">
-                            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple/10 flex items-center justify-center group-hover:bg-purple/20 transition-colors">
-                                <span class="text-purple font-bold text-sm font-body">{{ $episode->episode_number }}</span>
+                        <a href="/episodes/{{ $episode->slug }}" class="group flex items-center gap-5 py-5 hover:bg-cream/50 -mx-4 px-4 rounded-xl transition-colors duration-200" data-animate>
+                            <div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple/10 flex items-center justify-center group-hover:bg-purple/20 transition-colors relative">
+                                <span class="text-purple font-bold text-sm font-body group-hover:opacity-0 transition-opacity">{{ $episode->episode_number }}</span>
+                                <svg class="w-5 h-5 text-purple absolute opacity-0 group-hover:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h3 class="font-heading text-base font-semibold text-navy group-hover:text-purple transition-colors truncate">{{ $episode->title }}</h3>
@@ -175,18 +252,32 @@
         </div>
     </section>
 
-    {{-- About the Hosts (Compact) --}}
+    {{-- Wave: White → Cream --}}
+    <div class="bg-cream" aria-hidden="true">
+        <svg viewBox="0 0 1440 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto block -mt-px">
+            <path d="M0 0C360 35 720 5 1080 30C1260 42 1380 15 1440 20V40H0V0Z" fill="white"/>
+        </svg>
+    </div>
+
+    {{-- About the Hosts --}}
     <section class="py-14 md:py-20 bg-cream">
         <div class="max-w-5xl mx-auto px-4 sm:px-6">
-            <div class="flex flex-col md:flex-row gap-10 items-center">
+            <div class="flex flex-col md:flex-row gap-10 items-center" data-animate>
                 <div class="flex-shrink-0">
                     <img src="/images/logo.jpg" alt="Jeffrey & Cassie Davidson" class="w-36 h-36 md:w-44 md:h-44 rounded-2xl shadow-lg object-cover">
                 </div>
                 <div>
                     <span class="text-gold text-sm font-semibold tracking-[0.15em] uppercase font-body">Meet the Family</span>
                     <h2 class="font-heading text-2xl md:text-3xl font-bold text-navy mt-1 mb-4">Jeffrey &amp; Cassie Davidson</h2>
+                    <div class="relative pl-8 mb-4">
+                        <span class="absolute left-0 top-0 font-heading text-5xl text-gold/25 leading-none select-none" aria-hidden="true">"</span>
+                        <p class="text-navy/75 text-lg italic leading-relaxed font-body">
+                            She's taught us to see magic in ways we never imagined.
+                        </p>
+                        <span class="absolute -bottom-2 right-0 font-heading text-5xl text-gold/25 leading-none select-none" aria-hidden="true">"</span>
+                    </div>
                     <p class="text-navy/65 leading-relaxed font-body max-w-xl">
-                        We're a Central Florida family who visits Disney every week. Our daughter Viola has autism and experiences the parks differently — she's taught us to see magic in ways we never imagined. Mouse'28 is where we share what we've learned: DAS tips, sensory-friendly spots, and the joy that makes it all worth it.
+                        We're a Central Florida family who visits Disney every week. Our daughter Viola has autism and experiences the parks differently. Mouse'28 is where we share what we've learned: DAS tips, sensory-friendly spots, and the joy that makes it all worth it.
                     </p>
                     <a href="/about" class="inline-flex items-center gap-1 mt-4 text-purple hover:text-navy font-semibold text-sm transition-colors font-body">
                         Our full story
@@ -197,6 +288,13 @@
         </div>
     </section>
 
+    {{-- Wave: Cream → Navy --}}
+    <div class="bg-gradient-to-br from-navy via-navy-light to-navy" aria-hidden="true">
+        <svg viewBox="0 0 1440 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto block -mt-px">
+            <path d="M0 0C480 48 960 0 1440 36V48H0V0Z" fill="#fef9ef"/>
+        </svg>
+    </div>
+
     {{-- Newsletter CTA --}}
     <section class="py-16 md:py-24 bg-gradient-to-br from-navy via-navy-light to-navy relative overflow-hidden">
         <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
@@ -205,7 +303,7 @@
             <span class="sparkle-delay-2 absolute top-[50%] left-[70%] text-gold/15 text-xs">✦</span>
         </div>
 
-        <div class="max-w-2xl mx-auto px-4 sm:px-6 text-center relative z-10">
+        <div class="max-w-2xl mx-auto px-4 sm:px-6 text-center relative z-10" data-animate>
             <h2 class="font-heading text-3xl md:text-4xl font-bold text-white mb-4">Get Disney Tips in Your Inbox</h2>
             <p class="text-white/55 text-lg mb-8 font-body">Weekly park tips, accessibility guides, and family stories. No spam, just pixie dust.</p>
             <form action="#" method="POST" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
@@ -223,4 +321,14 @@
             </div>
         </div>
     </section>
+
+    {{-- Scroll animation observer --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const obs = new IntersectionObserver((entries) => {
+                entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-visible'); obs.unobserve(e.target); } });
+            }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+            document.querySelectorAll('[data-animate]').forEach(el => obs.observe(el));
+        });
+    </script>
 @endsection
