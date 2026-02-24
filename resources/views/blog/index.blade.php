@@ -20,7 +20,7 @@
                             @if($post->cover_image)
                                 <img src="{{ $post->cover_image }}" alt="{{ $post->title }}" class="w-full h-48 object-cover">
                             @else
-                                <div class="w-full h-48 bg-gradient-to-br from-disney-blue/10 to-gold/10 flex items-center justify-center">
+                                <div class="w-full h-48 bg-gradient-to-br from-purple/10 to-gold/10 flex items-center justify-center">
                                     <span class="text-3xl">✨</span>
                                 </div>
                             @endif
@@ -31,7 +31,7 @@
                                     @endif
                                     <span class="text-navy/30 text-xs">{{ $post->published_at->format('M j, Y') }}</span>
                                 </div>
-                                <h2 class="font-heading text-lg font-semibold text-navy group-hover:text-disney-blue transition-colors mb-2">{{ $post->title }}</h2>
+                                <h2 class="font-heading text-lg font-semibold text-navy group-hover:text-purple transition-colors mb-2">{{ $post->title }}</h2>
                                 <p class="text-navy/60 text-sm leading-relaxed line-clamp-3">{{ Str::limit($post->excerpt, 140) }}</p>
                             </div>
                         </a>
