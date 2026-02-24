@@ -64,6 +64,7 @@
                     <a href="/blog" class="{{ request()->is('blog*') ? 'text-gold' : 'text-white/80' }} hover:text-gold transition-colors text-sm font-medium">Blog</a>
                     <a href="/episodes" class="{{ request()->is('episodes*') ? 'text-gold' : 'text-white/80' }} hover:text-gold transition-colors text-sm font-medium">Episodes</a>
                     <a href="/about" class="{{ request()->is('about') ? 'text-gold' : 'text-white/80' }} hover:text-gold transition-colors text-sm font-medium">About</a>
+                    <a href="/contact" class="{{ request()->is('contact') ? 'text-gold' : 'text-white/80' }} hover:text-gold transition-colors text-sm font-medium">Contact</a>
                     <a href="#subscribe" class="bg-gold hover:bg-gold-light text-navy font-semibold text-sm px-5 py-2 rounded-full transition-all hover:shadow-lg hover:shadow-gold/25 hover:-translate-y-0.5">Subscribe</a>
                 </div>
 
@@ -81,6 +82,7 @@
                     <a href="/blog" class="text-white/80 hover:text-gold transition-colors text-sm font-medium px-2 py-1">Blog</a>
                     <a href="/episodes" class="text-white/80 hover:text-gold transition-colors text-sm font-medium px-2 py-1">Episodes</a>
                     <a href="/about" class="text-white/80 hover:text-gold transition-colors text-sm font-medium px-2 py-1">About</a>
+                    <a href="/contact" class="text-white/80 hover:text-gold transition-colors text-sm font-medium px-2 py-1">Contact</a>
                     <a href="#subscribe" class="bg-gold hover:bg-gold-light text-navy font-semibold text-sm px-5 py-2 rounded-full transition-all text-center mt-2">Subscribe</a>
                 </div>
             </div>
