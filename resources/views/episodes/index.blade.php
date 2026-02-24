@@ -19,7 +19,7 @@
                         <a href="/episodes/{{ $episode->slug }}" class="group block bg-white rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all hover:-translate-y-0.5 border border-navy/5">
                             <div class="flex flex-col sm:flex-row sm:items-start gap-4">
                                 <div class="flex-shrink-0">
-                                    <span class="inline-flex items-center justify-center w-14 h-14 bg-disney-blue/10 text-disney-blue font-heading font-bold text-lg rounded-xl">{{ $episode->episode_number }}</span>
+                                    <span class="inline-flex items-center justify-center w-14 h-14 bg-purple/10 text-purple font-heading font-bold text-lg rounded-xl">{{ $episode->episode_number }}</span>
                                 </div>
                                 <div class="flex-1 min-w-0">
                                     <div class="flex items-center gap-3 mb-2">
@@ -29,16 +29,16 @@
                                             <span class="text-navy/40 text-xs">{{ $episode->formatted_duration }}</span>
                                         @endif
                                     </div>
-                                    <h2 class="font-heading text-xl font-semibold text-navy group-hover:text-disney-blue transition-colors mb-2">{{ $episode->title }}</h2>
+                                    <h2 class="font-heading text-xl font-semibold text-navy group-hover:text-purple transition-colors mb-2">{{ $episode->title }}</h2>
                                     <p class="text-navy/60 text-sm leading-relaxed line-clamp-2">{{ Str::limit($episode->description, 200) }}</p>
                                     <div class="flex items-center gap-4 mt-4">
                                         @if($episode->apple_url)
-                                            <span class="text-xs text-navy/40 hover:text-disney-blue transition-colors">🎧 Apple</span>
+                                            <span class="text-xs text-navy/40 hover:text-purple transition-colors">🎧 Apple</span>
                                         @endif
                                         @if($episode->spotify_url)
-                                            <span class="text-xs text-navy/40 hover:text-disney-blue transition-colors">💚 Spotify</span>
+                                            <span class="text-xs text-navy/40 hover:text-purple transition-colors">💚 Spotify</span>
                                         @endif
-                                        <span class="text-disney-blue text-sm font-medium flex items-center gap-1 ml-auto">
+                                        <span class="text-purple text-sm font-medium flex items-center gap-1 ml-auto">
                                             Show notes
                                             <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                                         </span>

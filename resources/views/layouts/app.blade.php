@@ -16,13 +16,16 @@
             theme: {
                 extend: {
                     colors: {
-                        navy: '#1a1a2e',
-                        'navy-light': '#2a2a4e',
-                        'disney-blue': '#0071c2',
-                        'disney-blue-dark': '#005a9e',
-                        gold: '#f5a623',
-                        'gold-light': '#f7b84e',
+                        navy: '#1a1040',
+                        'navy-light': '#2d1b69',
+                        purple: '#5b3e9e',
+                        'purple-light': '#7b5eb5',
+                        'purple-dark': '#3a2370',
+                        gold: '#d4a843',
+                        'gold-light': '#f0c75e',
+                        'gold-dark': '#b8922e',
                         cream: '#fef9ef',
+                        'cream-dark': '#f5efe0',
                     },
                     fontFamily: {
                         heading: ['"Playfair Display"', 'serif'],
@@ -52,8 +55,8 @@
             <div class="flex items-center justify-between h-16">
                 {{-- Logo --}}
                 <a href="/" class="flex items-center gap-2 group">
-                    <span class="text-gold text-2xl">✦</span>
-                    <span class="font-heading text-xl font-bold text-white group-hover:text-gold transition-colors">Mouse<span class="text-gold">'28</span></span>
+                    <img src="/images/logo.jpg" alt="Mouse 28" class="h-10 w-10 rounded-full object-cover">
+                    <span class="font-heading text-xl font-bold text-white group-hover:text-gold transition-colors">Mouse <span class="text-gold">28</span></span>
                 </a>
 
                 {{-- Desktop Nav --}}
@@ -61,7 +64,7 @@
                     <a href="/episodes" class="text-white/80 hover:text-gold transition-colors text-sm font-medium">Episodes</a>
                     <a href="/blog" class="text-white/80 hover:text-gold transition-colors text-sm font-medium">Blog</a>
                     <a href="/about" class="text-white/80 hover:text-gold transition-colors text-sm font-medium">About</a>
-                    <a href="#subscribe" class="bg-gold hover:bg-gold-light text-navy font-semibold text-sm px-5 py-2 rounded-full transition-all hover:shadow-lg hover:shadow-gold/25">Subscribe</a>
+                    <a href="#subscribe" class="bg-gold hover:bg-gold-light text-navy font-semibold text-sm px-5 py-2 rounded-full transition-all hover:shadow-lg hover:shadow-gold/25 hover:-translate-y-0.5">Subscribe</a>
                 </div>
 
                 {{-- Mobile menu button --}}
@@ -96,8 +99,8 @@
                 {{-- Brand --}}
                 <div>
                     <a href="/" class="flex items-center gap-2 mb-4">
-                        <span class="text-gold text-xl">✦</span>
-                        <span class="font-heading text-lg font-bold text-white">Mouse<span class="text-gold">'28</span></span>
+                        <img src="/images/logo.jpg" alt="Mouse 28" class="h-8 w-8 rounded-full object-cover">
+                        <span class="font-heading text-lg font-bold text-white">Mouse <span class="text-gold">28</span></span>
                     </a>
                     <p class="text-sm leading-relaxed">Disney parks through the eyes of a family raising a daughter with autism. New episodes weekly.</p>
                 </div>
