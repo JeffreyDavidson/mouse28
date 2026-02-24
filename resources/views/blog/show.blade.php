@@ -8,6 +8,31 @@
 @if($post->cover_image) @section('og_image', $post->cover_image) @endif
 
 @section('content')
+    <style>
+        #reading-progress {
+            position: fixed; top: 0; left: 0; height: 3px; z-index: 100;
+            background: linear-gradient(90deg, #d4a843, #f0c75e);
+            width: 0%; transition: width 0.1s linear;
+            box-shadow: 0 0 8px rgba(212,168,67,0.4);
+        }
+        .article-content > p:first-of-type::first-letter {
+            float: left; font-family: 'Playfair Display', serif;
+            font-size: 3.5em; line-height: 0.8; font-weight: 700;
+            color: #d4a843; margin-right: 0.08em; margin-top: 0.05em;
+        }
+        .share-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 2.25rem; height: 2.25rem; border-radius: 9999px;
+            transition: all 0.2s ease; color: rgba(26,16,64,0.4);
+            border: 1px solid rgba(26,16,64,0.1); background: white;
+        }
+        .share-btn:hover { color: #5b3e9e; border-color: #5b3e9e; transform: translateY(-1px); }
+        .waveform-decoration { display: flex; align-items: end; gap: 2px; height: 24px; opacity: 0.15; }
+        .waveform-decoration span { width: 3px; border-radius: 2px; background: #d4a843; }
+    </style>
+
+    <div id="reading-progress"></div>
+
     {{-- Header --}}
     <section class="bg-gradient-to-br from-navy to-navy-light py-16 md:py-20">
         <div class="max-w-6xl mx-auto px-4 sm:px-6">
@@ -22,14 +47,27 @@
                     @endif
                     <span class="text-white/40 text-sm">{{ $post->published_at->format('F j, Y') }}</span>
                     <span class="text-white/30">·</span>
-                    <span class="text-white/40 text-sm">{{ $post->reading_time }} min read</span>
+                    <span class="text-white/40 text-sm" id="reading-indicator">{{ $post->reading_time }} min read</span>
                 </div>
                 <h1 class="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-white">{{ $post->title }}</h1>
-                <div class="flex items-center gap-3 mt-4">
-                    <div class="w-8 h-8 rounded-full bg-gold/20 flex items-center justify-center text-gold text-xs font-bold">
-                        {{ collect(explode(' ', $post->author_name))->map(fn($w) => strtoupper(substr($w, 0, 1)))->join('') }}
+                <div class="flex items-center gap-4 mt-5">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-full bg-gold/20 flex items-center justify-center text-gold text-xs font-bold">
+                            {{ collect(explode(' ', $post->author_name))->map(fn($w) => strtoupper(substr($w, 0, 1)))->join('') }}
+                        </div>
+                        <span class="text-white/60 text-sm font-medium">{{ $post->author_name }}</span>
                     </div>
-                    <span class="text-white/60 text-sm font-medium">{{ $post->author_name }}</span>
+                    <div class="flex items-center gap-1.5 ml-auto">
+                        <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($post->title) }}" target="_blank" rel="noopener" class="share-btn !bg-white/10 !border-white/20 !text-white/50 hover:!text-gold hover:!border-gold/50" title="Share on X">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" rel="noopener" class="share-btn !bg-white/10 !border-white/20 !text-white/50 hover:!text-gold hover:!border-gold/50" title="Share on Facebook">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </a>
+                        <button onclick="navigator.clipboard.writeText(window.location.href);this.title='Copied!';setTimeout(()=>this.title='Copy link',2000)" class="share-btn !bg-white/10 !border-white/20 !text-white/50 hover:!text-gold hover:!border-gold/50" title="Copy link">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                        </button>
+                    </div>
                 </div>
                 @if($post->excerpt)
                     <p class="text-white/60 text-lg mt-4 leading-relaxed">{{ $post->excerpt }}</p>
@@ -47,11 +85,29 @@
                         <img src="{{ $post->cover_image }}" alt="{{ $post->title }}" class="w-full h-64 md:h-96 object-cover rounded-2xl mb-10 shadow-sm">
                     @endif
 
-                    <article class="bg-white rounded-2xl p-8 md:p-12 shadow-sm border border-navy/5">
-                        <div class="prose prose-lg prose-navy max-w-none text-navy/80 leading-relaxed">
+                    <article id="article-body" class="bg-white rounded-2xl p-8 md:p-12 shadow-sm border border-navy/5">
+                        <div class="prose prose-lg prose-navy max-w-none text-navy/80 leading-relaxed article-content">
                             {!! $post->body !!}
                         </div>
                     </article>
+
+                    {{-- Author Card --}}
+                    <div class="mt-8 bg-white rounded-2xl p-8 shadow-sm border border-navy/5">
+                        <div class="flex items-start gap-5">
+                            <div class="w-16 h-16 rounded-full bg-gradient-to-br from-gold/30 to-purple/20 flex items-center justify-center text-gold text-lg font-bold font-heading flex-shrink-0">
+                                {{ collect(explode(' ', $post->author_name))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('') }}
+                            </div>
+                            <div>
+                                <span class="text-navy/40 text-xs font-semibold uppercase tracking-wider">Written by</span>
+                                <h3 class="font-heading text-xl font-bold text-navy mt-0.5">{{ $post->author_name }}</h3>
+                                <p class="text-navy/60 text-sm leading-relaxed mt-1">Co-host of Mouse28. Disney park explorer, accessibility advocate, and parent.</p>
+                                <a href="/blog?author={{ Str::slug($post->author_name) }}" class="inline-flex items-center gap-1 mt-3 text-purple hover:text-navy font-semibold text-sm transition-colors">
+                                    More from {{ explode(' ', $post->author_name)[0] }}
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
 
                     {{-- Related Episode --}}
                     @if($post->episode)
@@ -68,14 +124,38 @@
                             </a>
                         </div>
                     @endif
+
+                    {{-- Read Next --}}
+                    @if($recentPosts->count())
+                        <div class="mt-10">
+                            <h3 class="font-heading text-xl font-bold text-navy mb-5">Read Next</h3>
+                            <div class="grid sm:grid-cols-2 gap-5">
+                                @foreach($recentPosts->take(2) as $next)
+                                    <a href="/blog/{{ $next->slug }}" class="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-navy/5">
+                                        @if($next->cover_image)
+                                            <img src="{{ $next->cover_image }}" alt="" class="w-full h-36 object-cover group-hover:scale-105 transition-transform duration-500">
+                                        @else
+                                            <div class="w-full h-36 bg-gradient-to-br from-purple/10 to-gold/10 flex items-center justify-center">
+                                                <span class="text-2xl">✨</span>
+                                            </div>
+                                        @endif
+                                        <div class="p-5">
+                                            <h4 class="font-heading text-base font-semibold text-navy group-hover:text-purple transition-colors line-clamp-2 leading-snug">{{ $next->title }}</h4>
+                                            <span class="text-navy/40 text-xs mt-2 block">{{ $next->reading_time }} min read</span>
+                                        </div>
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
                 {{-- Sidebar --}}
-                <aside class="lg:w-[32%] space-y-8">
+                <aside class="lg:w-[32%] space-y-6">
                     {{-- Recent Posts --}}
                     @if($recentPosts->count())
                         <div class="bg-white rounded-2xl p-6 shadow-sm border border-navy/5">
-                            <h3 class="font-heading text-lg font-bold text-navy mb-4">Recent Posts</h3>
+                            <h3 class="font-heading text-lg font-bold text-navy mb-5">Recent Posts</h3>
                             <div class="space-y-4">
                                 @foreach($recentPosts as $recent)
                                     <a href="/blog/{{ $recent->slug }}" class="group flex gap-3 items-start">
@@ -98,14 +178,14 @@
 
                     {{-- Categories --}}
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-navy/5">
-                        <h3 class="font-heading text-lg font-bold text-navy mb-4">Categories</h3>
-                        <div class="space-y-2">
+                        <h3 class="font-heading text-lg font-bold text-navy mb-5">Categories</h3>
+                        <div class="space-y-1">
                             @foreach(\App\Models\Post::CATEGORIES as $slug => $label)
                                 @php $count = $categoryCounts[$slug] ?? 0; @endphp
                                 @if($count > 0)
-                                    <a href="/blog?category={{ $slug }}" class="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-cream transition-colors group">
-                                        <span class="text-sm text-navy/70 group-hover:text-navy transition-colors">{{ $label }}</span>
-                                        <span class="text-xs text-navy/30 bg-navy/5 px-2 py-0.5 rounded-full">{{ $count }}</span>
+                                    <a href="/blog?category={{ $slug }}" class="flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-cream transition-colors group">
+                                        <span class="text-sm text-navy/70 group-hover:text-navy transition-colors font-medium">{{ $label }}</span>
+                                        <span class="text-xs text-navy/30 bg-navy/5 px-2.5 py-0.5 rounded-full font-semibold">{{ $count }}</span>
                                     </a>
                                 @endif
                             @endforeach
@@ -113,11 +193,22 @@
                     </div>
 
                     {{-- Podcast CTA --}}
-                    <div class="bg-gradient-to-br from-navy to-navy-light rounded-2xl p-6 text-center">
-                        <span class="text-3xl block mb-3">🎧</span>
-                        <h3 class="font-heading text-lg font-bold text-white mb-2">Listen to the Podcast</h3>
-                        <p class="text-white/50 text-sm mb-4">Catch our latest episodes about Disney, accessibility, and family life.</p>
-                        <a href="/episodes" class="inline-block bg-gold hover:bg-gold/90 text-white font-semibold text-sm px-6 py-2.5 rounded-full transition-colors">
+                    <div class="bg-gradient-to-br from-navy to-navy-light rounded-2xl p-6 text-center relative overflow-hidden">
+                        {{-- Waveform decoration --}}
+                        <div class="absolute bottom-3 left-4 waveform-decoration" aria-hidden="true">
+                            <span style="height: 40%"></span><span style="height: 70%"></span><span style="height: 50%"></span>
+                            <span style="height: 90%"></span><span style="height: 30%"></span><span style="height: 60%"></span>
+                            <span style="height: 80%"></span><span style="height: 45%"></span><span style="height: 65%"></span>
+                        </div>
+                        <div class="absolute bottom-3 right-4 waveform-decoration" aria-hidden="true">
+                            <span style="height: 55%"></span><span style="height: 85%"></span><span style="height: 40%"></span>
+                            <span style="height: 70%"></span><span style="height: 50%"></span><span style="height: 90%"></span>
+                            <span style="height: 35%"></span><span style="height: 60%"></span><span style="height: 75%"></span>
+                        </div>
+                        <span class="text-3xl block mb-3 relative">🎧</span>
+                        <h3 class="font-heading text-lg font-bold text-white mb-2 relative">Listen to the Podcast</h3>
+                        <p class="text-white/50 text-sm mb-4 relative">Catch our latest episodes about Disney, accessibility, and family life.</p>
+                        <a href="/episodes" class="inline-block bg-gold hover:bg-gold-light text-white font-semibold text-sm px-6 py-2.5 rounded-full transition-all relative hover:-translate-y-0.5">
                             Browse Episodes
                         </a>
                     </div>
@@ -125,4 +216,31 @@
             </div>
         </div>
     </section>
+
+    <script>
+        // Reading progress bar
+        const bar = document.getElementById('reading-progress');
+        const article = document.getElementById('article-body');
+        const indicator = document.getElementById('reading-indicator');
+        const totalMin = {{ $post->reading_time }};
+
+        function updateProgress() {
+            if (!article) return;
+            const rect = article.getBoundingClientRect();
+            const articleTop = window.scrollY + rect.top;
+            const articleHeight = rect.height;
+            const scrolled = window.scrollY - articleTop;
+            const pct = Math.max(0, Math.min(100, (scrolled / (articleHeight - window.innerHeight * 0.5)) * 100));
+            bar.style.width = pct + '%';
+
+            // Update reading position indicator
+            if (indicator && totalMin > 0) {
+                const currentMin = Math.max(1, Math.ceil((pct / 100) * totalMin));
+                indicator.textContent = currentMin + ' of ' + totalMin + ' min read';
+            }
+        }
+
+        window.addEventListener('scroll', updateProgress, { passive: true });
+        updateProgress();
+    </script>
 @endsection
