@@ -10,7 +10,7 @@
 @section('content')
     <style>
         #reading-progress {
-            position: fixed; top: 0; left: 0; height: 3px; z-index: 100;
+            position: fixed; top: 64px; left: 0; height: 3px; z-index: 40;
             background: linear-gradient(90deg, #d4a843, #f0c75e);
             width: 0%; transition: width 0.1s linear;
             box-shadow: 0 0 8px rgba(212,168,67,0.4);
@@ -64,8 +64,9 @@
                         <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" rel="noopener" class="share-btn !bg-white/10 !border-white/20 !text-white/50 hover:!text-gold hover:!border-gold/50" title="Share on Facebook">
                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                         </a>
-                        <button onclick="navigator.clipboard.writeText(window.location.href);this.title='Copied!';setTimeout(()=>this.title='Copy link',2000)" class="share-btn !bg-white/10 !border-white/20 !text-white/50 hover:!text-gold hover:!border-gold/50" title="Copy link">
+                        <button onclick="navigator.clipboard.writeText(window.location.href).then(()=>{const t=this.querySelector('.copy-feedback');t.classList.remove('hidden');setTimeout(()=>t.classList.add('hidden'),1500)})" class="share-btn !bg-white/10 !border-white/20 !text-white/50 hover:!text-gold hover:!border-gold/50 relative" title="Copy link">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                            <span class="copy-feedback hidden absolute -bottom-8 left-1/2 -translate-x-1/2 text-[10px] bg-gold text-white px-2 py-0.5 rounded-full whitespace-nowrap shadow-lg">Copied!</span>
                         </button>
                     </div>
                 </div>
@@ -100,7 +101,15 @@
                             <div>
                                 <span class="text-navy/40 text-xs font-semibold uppercase tracking-wider">Written by</span>
                                 <h3 class="font-heading text-xl font-bold text-navy mt-0.5">{{ $post->author_name }}</h3>
-                                <p class="text-navy/60 text-sm leading-relaxed mt-1">Co-host of Mouse28. Disney park explorer, accessibility advocate, and parent.</p>
+                                <p class="text-navy/60 text-sm leading-relaxed mt-1">
+                                    @if(Str::contains($post->author_name, 'Cassie'))
+                                        Co-host of Mouse28. Disney magic-maker, accessibility champion, and the planner behind every park day.
+                                    @elseif(Str::contains($post->author_name, 'Jeffrey'))
+                                        Co-host of Mouse28. Theme park nerd, tech enthusiast, and the voice keeping it real about Disney life.
+                                    @else
+                                        Co-host of Mouse28. Disney park explorer, accessibility advocate, and parent.
+                                    @endif
+                                </p>
                                 <a href="/blog?author={{ Str::slug($post->author_name) }}" class="inline-flex items-center gap-1 mt-3 text-purple hover:text-navy font-semibold text-sm transition-colors">
                                     More from {{ explode(' ', $post->author_name)[0] }}
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
@@ -230,11 +239,12 @@
             const articleTop = window.scrollY + rect.top;
             const articleHeight = rect.height;
             const scrolled = window.scrollY - articleTop;
-            const pct = Math.max(0, Math.min(100, (scrolled / (articleHeight - window.innerHeight * 0.5)) * 100));
+            const denom = articleHeight - window.innerHeight * 0.5;
+            const pct = denom > 0 ? Math.max(0, Math.min(100, (scrolled / denom) * 100)) : 0;
             bar.style.width = pct + '%';
 
             // Update reading position indicator
-            if (indicator && totalMin > 0) {
+            if (indicator && totalMin > 0 && !isNaN(pct)) {
                 const currentMin = Math.max(1, Math.ceil((pct / 100) * totalMin));
                 indicator.textContent = currentMin + ' of ' + totalMin + ' min read';
             }
