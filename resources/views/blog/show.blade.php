@@ -25,6 +25,12 @@
                     <span class="text-white/40 text-sm">{{ $post->reading_time }} min read</span>
                 </div>
                 <h1 class="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-white">{{ $post->title }}</h1>
+                <div class="flex items-center gap-3 mt-4">
+                    <div class="w-8 h-8 rounded-full bg-gold/20 flex items-center justify-center text-gold text-xs font-bold">
+                        {{ collect(explode(' ', $post->author_name))->map(fn($w) => strtoupper(substr($w, 0, 1)))->join('') }}
+                    </div>
+                    <span class="text-white/60 text-sm font-medium">{{ $post->author_name }}</span>
+                </div>
                 @if($post->excerpt)
                     <p class="text-white/60 text-lg mt-4 leading-relaxed">{{ $post->excerpt }}</p>
                 @endif
