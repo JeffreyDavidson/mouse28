@@ -225,15 +225,18 @@
             </div>
 
             {{-- Newsletter Signup --}}
-            <div class="mt-12 pt-8 border-t border-white/10">
+            <div class="mt-12 pt-8 border-t border-white/10" x-data="{ submitted: false, error: false }">
                 <div class="max-w-md">
                     <h4 class="font-heading text-white font-semibold mb-2">Stay in the Loop ✨</h4>
                     <p class="text-sm text-white/50 mb-4">Get new posts, guides, and episode alerts delivered to your inbox.</p>
-                    <form action="#subscribe" method="POST" class="flex gap-2">
+                    <form @submit.prevent="submitted = true; error = false" class="flex gap-2" x-show="!submitted">
                         @csrf
                         <input type="email" name="email" placeholder="your@email.com" required class="flex-1 bg-white/10 border border-white/10 rounded-full px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/30 transition-colors">
                         <button type="submit" class="bg-gold hover:bg-gold-light text-navy font-semibold text-sm px-6 py-2.5 rounded-full transition-all hover:shadow-lg hover:shadow-gold/25 whitespace-nowrap">Subscribe</button>
                     </form>
+                    <div x-show="submitted" x-transition class="bg-gold/10 border border-gold/30 rounded-full px-5 py-2.5 text-sm text-gold font-medium">
+                        ✨ You're in! We'll keep you posted.
+                    </div>
                 </div>
             </div>
 

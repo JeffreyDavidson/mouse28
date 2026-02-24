@@ -28,20 +28,20 @@
         <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
                 <div>
-                    <div class="text-3xl md:text-4xl font-heading font-bold text-gold">150+</div>
-                    <div class="text-white/50 text-sm mt-1">Weekly Visits</div>
+                    <div class="text-4xl md:text-5xl font-heading font-bold text-gold">150+</div>
+                    <div class="text-white/50 text-sm mt-1.5">Weekly Visits</div>
                 </div>
                 <div>
-                    <div class="text-3xl md:text-4xl font-heading font-bold text-gold">4</div>
-                    <div class="text-white/50 text-sm mt-1">Parks</div>
+                    <div class="text-4xl md:text-5xl font-heading font-bold text-gold">4</div>
+                    <div class="text-white/50 text-sm mt-1.5">Parks</div>
                 </div>
                 <div>
-                    <div class="text-3xl md:text-4xl font-heading font-bold text-gold">1</div>
-                    <div class="text-white/50 text-sm mt-1">Amazing Daughter</div>
+                    <div class="text-4xl md:text-5xl font-heading font-bold text-gold">1</div>
+                    <div class="text-white/50 text-sm mt-1.5">Amazing Daughter</div>
                 </div>
                 <div>
-                    <div class="text-3xl md:text-4xl font-heading font-bold text-gold">∞</div>
-                    <div class="text-white/50 text-sm mt-1">Memories</div>
+                    <div class="text-4xl md:text-5xl font-heading font-bold text-gold">∞</div>
+                    <div class="text-white/50 text-sm mt-1.5">Memories</div>
                 </div>
             </div>
         </div>
@@ -74,7 +74,7 @@
             </div>
 
             {{-- Pull Quote --}}
-            <div class="border-l-4 border-gold bg-white rounded-r-2xl p-6 md:p-8 mb-16 ml-8 md:ml-12 shadow-sm">
+            <div class="border-l-[5px] border-gold bg-cream-dark rounded-r-2xl p-6 md:p-8 mb-16 ml-8 md:ml-12">
                 <p class="text-lg md:text-xl text-navy/80 italic font-heading leading-relaxed">"Viola experiences the parks in ways we never would have noticed on our own. She's taught us that slowing down and paying attention is where the real magic lives."</p>
             </div>
 
@@ -104,14 +104,14 @@
             </div>
 
             {{-- Pull Quote --}}
-            <div class="border-l-4 border-gold bg-white rounded-r-2xl p-6 md:p-8 mb-16 ml-8 md:ml-12 shadow-sm">
+            <div class="border-l-[5px] border-gold bg-cream-dark rounded-r-2xl p-6 md:p-8 mb-16 ml-8 md:ml-12">
                 <p class="text-lg md:text-xl text-navy/80 italic font-heading leading-relaxed">"We realized we had years of hard-won knowledge about navigating Disney parks with a child who experiences the world differently."</p>
             </div>
         </div>
     </section>
 
     {{-- What We Cover --}}
-    <section class="py-16 bg-cream-dark">
+    <section class="py-16 md:py-24 bg-cream-dark">
         <div class="max-w-5xl mx-auto px-4 sm:px-6">
             <div class="text-center mb-12">
                 <span class="text-gold text-sm font-semibold tracking-widest uppercase">What We Cover</span>
@@ -166,18 +166,18 @@
             </div>
             <div class="grid md:grid-cols-2 gap-8">
                 {{-- Jeffrey --}}
-                <div class="bg-white rounded-2xl p-8 shadow-sm border border-navy/5 text-center">
-                    <div class="w-24 h-24 rounded-full bg-gradient-to-br from-purple/20 to-gold/20 mx-auto mb-5 flex items-center justify-center">
-                        <span class="text-4xl">👨</span>
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-navy/5 text-center hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+                    <div class="w-28 h-28 rounded-full bg-gradient-to-br from-purple/20 to-gold/20 mx-auto mb-5 flex items-center justify-center">
+                        <span class="text-5xl">👨</span>
                     </div>
                     <h3 class="font-heading text-xl font-bold text-navy">Jeffrey Davidson</h3>
                     <p class="text-gold text-sm font-medium mt-1 mb-4">Co-Host & Dad Extraordinaire</p>
                     <p class="text-navy/60 text-sm leading-relaxed">The planner, the podcast editor, and the guy who knows every shortcut in Magic Kingdom. Jeffrey brings the strategy and the dad jokes.</p>
                 </div>
                 {{-- Cassie --}}
-                <div class="bg-white rounded-2xl p-8 shadow-sm border border-navy/5 text-center">
-                    <div class="w-24 h-24 rounded-full bg-gradient-to-br from-purple/20 to-gold/20 mx-auto mb-5 flex items-center justify-center">
-                        <span class="text-4xl">👩</span>
+                <div class="bg-white rounded-2xl p-8 shadow-sm border border-navy/5 text-center hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
+                    <div class="w-28 h-28 rounded-full bg-gradient-to-br from-purple/20 to-gold/20 mx-auto mb-5 flex items-center justify-center">
+                        <span class="text-5xl">👩</span>
                     </div>
                     <h3 class="font-heading text-xl font-bold text-navy">Cassie Davidson</h3>
                     <p class="text-gold text-sm font-medium mt-1 mb-4">Co-Host & Accessibility Advocate</p>

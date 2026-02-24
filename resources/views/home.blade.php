@@ -29,11 +29,15 @@
             animation: shimmer 0.8s ease forwards;
         }
         [data-animate] {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .js-animate [data-animate] {
             opacity: 0;
             transform: translateY(24px);
             transition: opacity 0.7s ease, transform 0.7s ease;
         }
-        [data-animate].is-visible {
+        .js-animate [data-animate].is-visible {
             opacity: 1;
             transform: translateY(0);
         }
@@ -47,9 +51,6 @@
             <span class="sparkle-delay-2 absolute top-[60%] left-[20%] text-gold/20 text-xs">✦</span>
             <span class="sparkle absolute top-[40%] right-[8%] text-gold/25 text-lg">✧</span>
             <span class="sparkle-delay absolute bottom-[20%] left-[40%] text-gold/30 text-xs">✦</span>
-            <span class="sparkle-delay-2 absolute top-[10%] left-[60%] text-gold/20 text-sm">✧</span>
-            <span class="sparkle absolute top-[70%] right-[25%] text-gold/15 text-xs">✦</span>
-            <span class="sparkle-delay-2 absolute top-[5%] left-[35%] text-gold/25 text-sm">✧</span>
         </div>
 
         <div class="max-w-5xl mx-auto px-4 sm:px-6 py-24 md:py-36 text-center relative z-10">
@@ -90,7 +91,7 @@
                     <div class="relative min-h-[400px] md:min-h-[500px] flex items-end">
                         @if($featuredPost->cover_image)
                             <img src="{{ $featuredPost->cover_image }}" alt="{{ $featuredPost->title }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
-                            <div class="absolute inset-0 bg-gradient-to-t from-navy via-navy/60 to-transparent"></div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-navy via-navy/70 to-navy/20"></div>
                         @else
                             <div class="absolute inset-0 bg-gradient-to-br from-navy-light via-purple/30 to-navy"></div>
                         @endif
@@ -210,15 +211,6 @@
                 </a>
             </div>
 
-            {{-- Waveform decoration --}}
-            <div class="absolute top-8 right-8 opacity-[0.04] pointer-events-none hidden lg:block" aria-hidden="true">
-                <svg width="200" height="80" viewBox="0 0 200 80" fill="currentColor" class="text-purple">
-                    @for($i = 0; $i < 20; $i++)
-                        <rect x="{{ $i * 10 }}" y="{{ 40 - rand(5, 35) }}" width="4" height="{{ rand(10, 70) }}" rx="2"/>
-                    @endfor
-                </svg>
-            </div>
-
             @if($latestEpisodes->count())
                 <div class="divide-y divide-navy/8">
                     @foreach($latestEpisodes as $episode)
@@ -325,6 +317,7 @@
     {{-- Scroll animation observer --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            document.documentElement.classList.add('js-animate');
             const obs = new IntersectionObserver((entries) => {
                 entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-visible'); obs.unobserve(e.target); } });
             }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
