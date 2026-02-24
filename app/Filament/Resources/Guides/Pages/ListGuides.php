@@ -1,0 +1,11 @@
+<?php
+
+namespace App\Filament\Resources\Guides\Pages;
+
+use App\Filament\Resources\Guides\GuideResource;
+use Filament\Resources\Pages\ListRecords;
+
+class ListGuides extends ListRecords
+{
+    protected static string $resource = GuideResource::class;
+}

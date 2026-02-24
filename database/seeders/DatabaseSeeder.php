@@ -163,5 +163,8 @@ class DatabaseSeeder extends Seeder
         foreach ($posts as $post) {
             Post::create($post);
         }
+
+        $this->call(GuideSeeder::class);
+        $this->call(CommunityStorySeeder::class);
     }
 }
