@@ -108,7 +108,7 @@
             <span class="sparkle-delay absolute bottom-[20%] left-[40%] text-gold/30 text-xs">✦</span>
         </div>
 
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 py-24 md:py-36 text-center relative z-10">
+        <div class="hero-content max-w-5xl mx-auto px-4 sm:px-6 py-24 md:py-36 text-center relative z-10">
             <span class="inline-block text-gold/80 text-sm font-semibold tracking-[0.15em] uppercase mb-6 font-body">Autism Family · Disney Every Week</span>
             <h1 class="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.1] mb-6">
                 Disney Parks Through<br>
@@ -210,7 +210,7 @@
             @if($latestPosts->count())
                 <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     @foreach($latestPosts as $post)
-                        <a href="/blog/{{ $post->slug }}" class="post-card group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-2 border border-navy/5 relative" data-animate data-stagger="{{ $loop->index }}"
+                        <a href="/blog/{{ $post->slug }}" class="post-card group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-2 border border-navy/5 relative" data-animate data-stagger="{{ $loop->index }}">
                             <div class="relative overflow-hidden card-shimmer">
                                 @if($post->cover_image)
                                     <img src="{{ $post->cover_image }}" alt="{{ $post->title }}" class="card-img w-full h-52 object-cover">
@@ -478,17 +478,17 @@
             }, { threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
             document.querySelectorAll('[data-animate]').forEach(el => obs.observe(el));
 
-            // Subtle hero parallax on scroll
-            const hero = document.querySelector('.hero-animated-bg');
-            if (hero) {
+            // Subtle hero parallax on scroll (content only, not the background)
+            const heroContent = document.querySelector('.hero-content');
+            if (heroContent) {
                 let ticking = false;
                 window.addEventListener('scroll', function() {
                     if (!ticking) {
                         requestAnimationFrame(function() {
                             const scroll = window.scrollY;
-                            if (scroll < 800) {
-                                hero.style.transform = 'translateY(' + (scroll * 0.15) + 'px)';
-                                hero.style.opacity = Math.max(0.3, 1 - scroll / 900);
+                            if (scroll < 600) {
+                                heroContent.style.transform = 'translateY(' + (scroll * 0.1) + 'px)';
+                                heroContent.style.opacity = Math.max(0.4, 1 - scroll / 800);
                             }
                             ticking = false;
                         });
