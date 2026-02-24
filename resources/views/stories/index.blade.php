@@ -89,7 +89,7 @@
                         <div class="bg-white rounded-2xl shadow-sm border border-cream-dark p-6 hover:shadow-md hover:border-purple/20 transition-all duration-300 group flex flex-col" x-data="{ expanded: false }">
                             <h3 class="font-heading text-lg font-bold text-navy mb-2 group-hover:text-purple transition-colors">{{ $story->title }}</h3>
 
-                            <div class="text-navy/70 text-sm leading-relaxed mb-4">
+                            <div class="text-navy/70 text-sm leading-relaxed mb-4 flex-1">
                                 <p x-show="!expanded">{{ Str::limit($story->story, 150) }}</p>
                                 <p x-show="expanded" x-cloak>{{ $story->story }}</p>
                                 @if(strlen($story->story) > 150)
@@ -119,7 +119,7 @@
                                     </div>
                                 </div>
                                 @if($story->favorite_park)
-                                    <span class="inline-block mt-2 text-xs bg-purple/10 text-purple px-2.5 py-1 rounded-full font-medium">🏰 {{ $story->favorite_park }}</span>
+                                    <span class="inline-block mt-2 text-xs text-navy/30 font-medium">🏰 {{ $story->favorite_park }}</span>
                                 @endif
                             </div>
                         </div>
