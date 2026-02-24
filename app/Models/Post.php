@@ -20,6 +20,11 @@ class Post extends Model
         'episode-recap' => 'Episode Recap',
         'family-life' => 'Family Life',
         'autism-awareness' => 'Autism Awareness',
+        'disney-news' => 'Disney News',
+        'food-reviews' => 'Food Reviews',
+        'resort-reviews' => 'Resort Reviews',
+        'disney-plus' => 'Disney+',
+        'merchandise' => 'Merchandise',
     ];
 
     public function episode(): BelongsTo
@@ -51,6 +56,11 @@ class Post extends Model
             'episode-recap' => 'bg-emerald-500/20 text-emerald-600',
             'family-life' => 'bg-blue-500/20 text-blue-600',
             'autism-awareness' => 'bg-pink-500/20 text-pink-600',
+            'disney-news' => 'bg-orange-500/20 text-orange-600',
+            'food-reviews' => 'bg-amber-500/20 text-amber-600',
+            'resort-reviews' => 'bg-teal-500/20 text-teal-600',
+            'disney-plus' => 'bg-indigo-500/20 text-indigo-600',
+            'merchandise' => 'bg-rose-500/20 text-rose-600',
             default => 'bg-navy/10 text-navy',
         };
     }

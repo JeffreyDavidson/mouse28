@@ -11,8 +11,15 @@ class PostController extends Controller
     {
         $category = $request->query('category');
 
+        $search = $request->query('q');
+
         $posts = Post::published()
             ->when($category, fn($q) => $q->where('category', $category))
+            ->when($search, fn($q) => $q->where(fn($q) =>
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('excerpt', 'like', "%{$search}%")
+                  ->orWhere('body', 'like', "%{$search}%")
+            ))
             ->latest('published_at')
             ->paginate(12);
 

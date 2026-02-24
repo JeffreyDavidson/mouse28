@@ -2,6 +2,10 @@
 
 @section('title', $post->title . ' — Mouse28')
 @section('meta_description', Str::limit($post->excerpt, 160))
+@section('og_title', $post->title)
+@section('og_description', Str::limit($post->excerpt, 200))
+@section('og_type', 'article')
+@if($post->cover_image) @section('og_image', $post->cover_image) @endif
 
 @section('content')
     {{-- Header --}}
