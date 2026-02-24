@@ -59,12 +59,12 @@
         h1, h2, h3, h4, h5, h6 { font-family: 'Playfair Display', serif; }
 
         /* Sparkle animations */
-        .sparkle { animation: sparkle 2s ease-in-out infinite; }
-        .sparkle-delay { animation: sparkle 2s ease-in-out 0.5s infinite; }
-        .sparkle-delay-2 { animation: sparkle 2s ease-in-out 1s infinite; }
+        .sparkle { animation: sparkle 3s ease-in-out infinite; }
+        .sparkle-delay { animation: sparkle 3s ease-in-out 0.8s infinite; }
+        .sparkle-delay-2 { animation: sparkle 3s ease-in-out 1.6s infinite; }
         @keyframes sparkle {
-            0%, 100% { opacity: 0.3; transform: scale(0.8); }
-            50% { opacity: 1; transform: scale(1.2); }
+            0%, 100% { opacity: 0.2; transform: scale(0.8) rotate(0deg); }
+            50% { opacity: 0.9; transform: scale(1.15) rotate(15deg); }
         }
 
         /* Smooth page transitions */
