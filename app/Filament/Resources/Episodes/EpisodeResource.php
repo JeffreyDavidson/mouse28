@@ -18,7 +18,11 @@ class EpisodeResource extends Resource
 {
     protected static ?string $model = Episode::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMicrophone;
+
+    protected static ?string $navigationGroup = 'Content';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Schema $schema): Schema
     {
@@ -32,9 +36,7 @@ class EpisodeResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
