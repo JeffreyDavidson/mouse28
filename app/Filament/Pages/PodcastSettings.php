@@ -20,7 +20,7 @@ class PodcastSettings extends Page
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
-    protected static ?string $navigationGroup = 'Settings';
+    protected static string|\UnitEnum|null $navigationGroup = 'Settings';
 
     protected static ?string $navigationLabel = 'Podcast Settings';
 
