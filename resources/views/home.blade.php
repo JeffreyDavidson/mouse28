@@ -113,6 +113,33 @@
             will-change: transform;
             cursor: pointer;
         }
+        /* Magical scene animations */
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 1; }
+        }
+        @keyframes twinkle-alt {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.15; }
+        }
+        @keyframes firework-burst {
+            0% { transform: scale(0); opacity: 1; }
+            60% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+        @keyframes pixie-rise {
+            0% { transform: translateY(0) scale(1); opacity: 0.9; }
+            100% { transform: translateY(-70px) scale(0.2); opacity: 0; }
+        }
+        @keyframes castle-glow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+        .star-twinkle { animation: twinkle var(--tw-dur, 3s) ease-in-out infinite; animation-delay: var(--tw-delay, 0s); }
+        .star-twinkle-alt { animation: twinkle-alt var(--tw-dur, 4s) ease-in-out infinite; animation-delay: var(--tw-delay, 0s); }
+        .firework { transform-origin: center; animation: firework-burst var(--fw-dur, 4s) ease-out infinite; animation-delay: var(--fw-delay, 0s); }
+        .pixie { animation: pixie-rise var(--px-dur, 3s) ease-out infinite; animation-delay: var(--px-delay, 0s); }
+        .glow-pulse { animation: castle-glow 3s ease-in-out infinite; }
     </style>
 
     {{-- Hero Section --}}
@@ -174,64 +201,228 @@
                     @endif
                 </div>
 
-                {{-- Right side: Floating card composition (40-45%) --}}
+                {{-- Right side: Magical illustrated scene --}}
                 <div class="lg:w-[42%] relative w-full max-w-md lg:max-w-none mx-auto lg:mx-0">
-                    <div class="relative h-[380px] sm:h-[420px] lg:h-[460px]">
+                    <div class="relative h-[280px] sm:h-[350px] lg:h-[480px]">
+                        <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" class="w-full h-full" preserveAspectRatio="xMidYMid meet">
+                            <defs>
+                                {{-- Sky gradient --}}
+                                <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#0d0a24"/>
+                                    <stop offset="40%" stop-color="#1a1040"/>
+                                    <stop offset="100%" stop-color="#2d1b69"/>
+                                </linearGradient>
+                                {{-- Castle entrance glow --}}
+                                <radialGradient id="entranceGlow" cx="50%" cy="50%" r="50%">
+                                    <stop offset="0%" stop-color="#d4a843" stop-opacity="0.6"/>
+                                    <stop offset="100%" stop-color="#d4a843" stop-opacity="0"/>
+                                </radialGradient>
+                                {{-- Ground gradient --}}
+                                <linearGradient id="groundGrad" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#1a1040" stop-opacity="0"/>
+                                    <stop offset="100%" stop-color="#0d0a24"/>
+                                </linearGradient>
+                                {{-- Sparkle shape --}}
+                                <g id="sparkle4">
+                                    <line x1="0" y1="-4" x2="0" y2="4" stroke="#f0c75e" stroke-width="1" stroke-linecap="round"/>
+                                    <line x1="-4" y1="0" x2="4" y2="0" stroke="#f0c75e" stroke-width="1" stroke-linecap="round"/>
+                                    <line x1="-2.5" y1="-2.5" x2="2.5" y2="2.5" stroke="#f0c75e" stroke-width="0.6" stroke-linecap="round"/>
+                                    <line x1="2.5" y1="-2.5" x2="-2.5" y2="2.5" stroke="#f0c75e" stroke-width="0.6" stroke-linecap="round"/>
+                                </g>
+                            </defs>
 
-                        {{-- Card 1: Featured blog post (largest) --}}
-                        @if($featuredPost)
-                            <a href="/blog/{{ $featuredPost->slug }}" class="hero-float-card absolute top-[10%] left-[5%] sm:left-[2%] w-[260px] sm:w-[280px] bg-white rounded-2xl shadow-xl shadow-navy/20 hover:shadow-2xl hover:shadow-navy/30 hover:-translate-y-2 transition-all duration-300 overflow-hidden z-20 group" style="animation: float1 5s ease-in-out infinite;">
-                                <div class="p-5">
-                                    @if($featuredPost->category)
-                                        <span class="inline-block bg-purple/10 text-purple text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider font-body mb-3">{{ $featuredPost->category_label }}</span>
-                                    @endif
-                                    <h3 class="font-heading text-base font-bold text-navy leading-snug mb-2 line-clamp-2 group-hover:text-purple transition-colors">{{ Str::limit($featuredPost->title, 60) }}</h3>
-                                    @if($featuredPost->excerpt)
-                                        <p class="text-navy/50 text-xs leading-relaxed line-clamp-2 font-body mb-3">{{ Str::limit($featuredPost->excerpt, 80) }}</p>
-                                    @endif
-                                    <span class="text-gold font-semibold text-xs font-body inline-flex items-center gap-1 group-hover:gap-2 transition-all">
-                                        Read →
-                                    </span>
-                                </div>
-                            </a>
-                        @endif
+                            {{-- Sky background --}}
+                            <rect width="500" height="500" fill="url(#skyGrad)"/>
 
-                        {{-- Card 2: Guide card (medium) --}}
-                        <div class="hero-float-card absolute top-[0%] right-[0%] sm:right-[5%] w-[180px] sm:w-[200px] bg-cream rounded-xl shadow-lg shadow-navy/15 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 z-30" style="animation: float2 4.5s ease-in-out 0.5s infinite;">
-                            <div class="p-4">
-                                <span class="text-2xl block mb-2">🏰</span>
-                                <h4 class="font-heading text-sm font-bold text-navy leading-snug mb-1">Magic Kingdom Quiet Spots</h4>
-                                <span class="text-navy/40 text-[11px] font-body">8 min read</span>
-                            </div>
-                        </div>
+                            {{-- Stars layer --}}
+                            <circle cx="45" cy="35" r="1.2" fill="white" class="star-twinkle" style="--tw-dur:2.8s;--tw-delay:0s"/>
+                            <circle cx="120" cy="22" r="0.8" fill="white" class="star-twinkle" style="--tw-dur:4s;--tw-delay:1.2s"/>
+                            <circle cx="190" cy="50" r="1.5" fill="white" class="star-twinkle-alt" style="--tw-dur:3.5s;--tw-delay:0.5s"/>
+                            <circle cx="280" cy="18" r="1" fill="white" class="star-twinkle" style="--tw-dur:3s;--tw-delay:2s"/>
+                            <circle cx="350" cy="40" r="1.3" fill="white" class="star-twinkle-alt" style="--tw-dur:4.2s;--tw-delay:0.8s"/>
+                            <circle cx="420" cy="25" r="0.9" fill="white" class="star-twinkle" style="--tw-dur:2.5s;--tw-delay:1.5s"/>
+                            <circle cx="470" cy="55" r="1.1" fill="white" class="star-twinkle-alt" style="--tw-dur:3.8s;--tw-delay:0.3s"/>
+                            <circle cx="75" cy="80" r="0.7" fill="white" class="star-twinkle" style="--tw-dur:3.2s;--tw-delay:2.5s"/>
+                            <circle cx="160" cy="95" r="1" fill="white" class="star-twinkle-alt" style="--tw-dur:4.5s;--tw-delay:1s"/>
+                            <circle cx="310" cy="75" r="1.4" fill="white" class="star-twinkle" style="--tw-dur:2.6s;--tw-delay:0.7s"/>
+                            <circle cx="400" cy="90" r="0.8" fill="white" class="star-twinkle-alt" style="--tw-dur:3.9s;--tw-delay:1.8s"/>
+                            <circle cx="55" cy="130" r="1" fill="white" class="star-twinkle" style="--tw-dur:3.4s;--tw-delay:0.2s"/>
+                            <circle cx="440" cy="120" r="1.2" fill="white" class="star-twinkle" style="--tw-dur:2.9s;--tw-delay:2.2s"/>
+                            <circle cx="230" cy="65" r="0.6" fill="white" class="star-twinkle-alt" style="--tw-dur:5s;--tw-delay:0.6s"/>
+                            <circle cx="480" cy="160" r="0.9" fill="white" class="star-twinkle" style="--tw-dur:3.7s;--tw-delay:1.3s"/>
+                            <circle cx="25" cy="170" r="1.1" fill="white" class="star-twinkle-alt" style="--tw-dur:4.1s;--tw-delay:0.9s"/>
+                            {{-- Sparkle stars --}}
+                            <use href="#sparkle4" x="95" y="45" class="star-twinkle" style="--tw-dur:3s;--tw-delay:1s" opacity="0.5"/>
+                            <use href="#sparkle4" x="380" y="60" class="star-twinkle-alt" style="--tw-dur:4s;--tw-delay:2s" opacity="0.4"/>
+                            <use href="#sparkle4" x="460" y="95" class="star-twinkle" style="--tw-dur:3.5s;--tw-delay:0.4s" opacity="0.35"/>
 
-                        {{-- Card 3: Podcast episode (small) --}}
-                        <div class="hero-float-card absolute bottom-[12%] left-[0%] sm:left-[-2%] w-[190px] sm:w-[210px] bg-purple/90 backdrop-blur-sm rounded-xl shadow-lg shadow-purple/20 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 z-20" style="animation: float3 5.5s ease-in-out 1s infinite;">
-                            <div class="p-4">
-                                @if($latestEpisodes->count())
-                                    <span class="text-white/60 text-[10px] font-bold uppercase tracking-wider font-body">🎧 EP {{ $latestEpisodes->first()->episode_number }}</span>
-                                    <h4 class="font-heading text-sm font-semibold text-white leading-snug mt-1 line-clamp-2">{{ Str::limit($latestEpisodes->first()->title, 45) }}</h4>
-                                @else
-                                    <span class="text-white/60 text-[10px] font-bold uppercase tracking-wider font-body">🎧 EP 4</span>
-                                    <h4 class="font-heading text-sm font-semibold text-white leading-snug mt-1">Sensory Tips for Fireworks Night</h4>
-                                @endif
-                            </div>
-                        </div>
+                            {{-- Firework 1 — gold, upper left --}}
+                            <g class="firework" style="--fw-dur:4.5s;--fw-delay:0s">
+                                <circle cx="150" cy="80" r="2" fill="#f0c75e"/>
+                                <line x1="150" y1="80" x2="150" y2="58" stroke="#f0c75e" stroke-width="1.2" stroke-linecap="round" opacity="0.9"/>
+                                <line x1="150" y1="80" x2="150" y2="102" stroke="#f0c75e" stroke-width="1.2" stroke-linecap="round" opacity="0.9"/>
+                                <line x1="150" y1="80" x2="128" y2="80" stroke="#f0c75e" stroke-width="1.2" stroke-linecap="round" opacity="0.9"/>
+                                <line x1="150" y1="80" x2="172" y2="80" stroke="#f0c75e" stroke-width="1.2" stroke-linecap="round" opacity="0.9"/>
+                                <line x1="150" y1="80" x2="135" y2="65" stroke="#d4a843" stroke-width="0.8" stroke-linecap="round" opacity="0.7"/>
+                                <line x1="150" y1="80" x2="165" y2="65" stroke="#d4a843" stroke-width="0.8" stroke-linecap="round" opacity="0.7"/>
+                                <line x1="150" y1="80" x2="135" y2="95" stroke="#d4a843" stroke-width="0.8" stroke-linecap="round" opacity="0.7"/>
+                                <line x1="150" y1="80" x2="165" y2="95" stroke="#d4a843" stroke-width="0.8" stroke-linecap="round" opacity="0.7"/>
+                                <circle cx="150" cy="58" r="1.5" fill="#f0c75e" opacity="0.8"/>
+                                <circle cx="172" cy="80" r="1.5" fill="#f0c75e" opacity="0.8"/>
+                                <circle cx="135" cy="65" r="1" fill="#d4a843" opacity="0.6"/>
+                                <circle cx="165" cy="95" r="1" fill="#d4a843" opacity="0.6"/>
+                            </g>
 
-                        {{-- Card 4: Community quote (small) --}}
-                        <div class="hero-float-card absolute bottom-[5%] right-[2%] sm:right-[8%] w-[185px] sm:w-[195px] bg-white/95 backdrop-blur-sm rounded-xl shadow-lg shadow-navy/10 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 border-l-4 border-gold z-10" style="animation: float1 6s ease-in-out 1.5s infinite;">
-                            <div class="p-4">
-                                <p class="text-navy/70 text-xs italic leading-relaxed font-body line-clamp-3">
-                                    @if(isset($communityStories) && $communityStories->count())
-                                        "{{ Str::limit($communityStories->first()->story, 90) }}"
-                                    @else
-                                        "Your guide helped us enjoy our first fireworks without a meltdown. Thank you! 💜"
-                                    @endif
-                                </p>
-                                <span class="text-navy/40 text-[10px] font-body mt-2 block">— A Mouse28 family</span>
-                            </div>
-                        </div>
+                            {{-- Firework 2 — purple-light, upper center --}}
+                            <g class="firework" style="--fw-dur:5s;--fw-delay:1.8s">
+                                <circle cx="270" cy="55" r="2" fill="#7b5eb5"/>
+                                <line x1="270" y1="55" x2="270" y2="30" stroke="#7b5eb5" stroke-width="1.2" stroke-linecap="round" opacity="0.9"/>
+                                <line x1="270" y1="55" x2="270" y2="80" stroke="#7b5eb5" stroke-width="1.2" stroke-linecap="round" opacity="0.9"/>
+                                <line x1="270" y1="55" x2="245" y2="55" stroke="#7b5eb5" stroke-width="1.2" stroke-linecap="round" opacity="0.9"/>
+                                <line x1="270" y1="55" x2="295" y2="55" stroke="#7b5eb5" stroke-width="1.2" stroke-linecap="round" opacity="0.9"/>
+                                <line x1="270" y1="55" x2="253" y2="38" stroke="white" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
+                                <line x1="270" y1="55" x2="287" y2="38" stroke="white" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
+                                <line x1="270" y1="55" x2="253" y2="72" stroke="white" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
+                                <line x1="270" y1="55" x2="287" y2="72" stroke="white" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
+                                <circle cx="270" cy="30" r="1.5" fill="#7b5eb5" opacity="0.8"/>
+                                <circle cx="295" cy="55" r="1.5" fill="#7b5eb5" opacity="0.8"/>
+                                <circle cx="253" cy="38" r="1" fill="white" opacity="0.5"/>
+                                <circle cx="287" cy="72" r="1" fill="white" opacity="0.5"/>
+                            </g>
 
+                            {{-- Firework 3 — white/gold, upper right --}}
+                            <g class="firework" style="--fw-dur:4s;--fw-delay:3.2s">
+                                <circle cx="370" cy="70" r="1.5" fill="white"/>
+                                <line x1="370" y1="70" x2="370" y2="50" stroke="white" stroke-width="1" stroke-linecap="round" opacity="0.9"/>
+                                <line x1="370" y1="70" x2="370" y2="90" stroke="white" stroke-width="1" stroke-linecap="round" opacity="0.9"/>
+                                <line x1="370" y1="70" x2="350" y2="70" stroke="white" stroke-width="1" stroke-linecap="round" opacity="0.9"/>
+                                <line x1="370" y1="70" x2="390" y2="70" stroke="white" stroke-width="1" stroke-linecap="round" opacity="0.9"/>
+                                <line x1="370" y1="70" x2="356" y2="56" stroke="#f0c75e" stroke-width="0.7" stroke-linecap="round" opacity="0.6"/>
+                                <line x1="370" y1="70" x2="384" y2="56" stroke="#f0c75e" stroke-width="0.7" stroke-linecap="round" opacity="0.6"/>
+                                <line x1="370" y1="70" x2="356" y2="84" stroke="#f0c75e" stroke-width="0.7" stroke-linecap="round" opacity="0.6"/>
+                                <line x1="370" y1="70" x2="384" y2="84" stroke="#f0c75e" stroke-width="0.7" stroke-linecap="round" opacity="0.6"/>
+                                <circle cx="370" cy="50" r="1.2" fill="white" opacity="0.7"/>
+                                <circle cx="356" cy="56" r="0.8" fill="#f0c75e" opacity="0.5"/>
+                            </g>
+
+                            {{-- Castle silhouette --}}
+                            <g fill="#2d1b69">
+                                {{-- Central tall spire --}}
+                                <polygon points="250,120 248,135 245,160 243,185 240,210 237,240 236,260 264,260 263,240 260,210 257,185 255,160 252,135"/>
+                                {{-- Spire tip --}}
+                                <polygon points="250,100 247,120 253,120"/>
+                                {{-- Spire flag --}}
+                                <line x1="250" y1="100" x2="250" y2="92" stroke="#2d1b69" stroke-width="1.5"/>
+                                <polygon points="250,92 260,96 250,100" fill="#5b3e9e" opacity="0.7"/>
+                                {{-- Central tower body --}}
+                                <rect x="230" y="260" width="40" height="50" rx="2"/>
+                                {{-- Castle entrance arch --}}
+                                <rect x="238" y="290" width="24" height="20" rx="12" fill="#1a1040"/>
+                                {{-- Left main tower --}}
+                                <rect x="195" y="230" width="35" height="80" rx="2"/>
+                                <polygon points="212,195 198,230 227,230"/>
+                                <polygon points="212,185 209,195 215,195"/>
+                                {{-- Right main tower --}}
+                                <rect x="270" y="230" width="35" height="80" rx="2"/>
+                                <polygon points="287,195 273,230 302,230"/>
+                                <polygon points="287,185 284,195 290,195"/>
+                                {{-- Far left small tower --}}
+                                <rect x="170" y="270" width="25" height="40" rx="2"/>
+                                <polygon points="182,250 172,270 193,270"/>
+                                <polygon points="182,242 179,250 185,250"/>
+                                {{-- Far right small tower --}}
+                                <rect x="305" y="270" width="25" height="40" rx="2"/>
+                                <polygon points="317,250 307,270 328,270"/>
+                                <polygon points="317,242 314,250 320,250"/>
+                                {{-- Connecting walls --}}
+                                <rect x="170" y="295" width="160" height="15" rx="1"/>
+                                {{-- Battlements on walls --}}
+                                <rect x="175" y="290" width="6" height="8" fill="#2d1b69"/>
+                                <rect x="186" y="290" width="6" height="8" fill="#2d1b69"/>
+                                <rect x="270" y="290" width="6" height="8" fill="#2d1b69"/>
+                                <rect x="281" y="290" width="6" height="8" fill="#2d1b69"/>
+                                <rect x="308" y="290" width="6" height="8" fill="#2d1b69"/>
+                                <rect x="319" y="290" width="6" height="8" fill="#2d1b69"/>
+                                {{-- Tower windows --}}
+                                <ellipse cx="212" cy="255" rx="4" ry="6" fill="#1a1040" opacity="0.6"/>
+                                <ellipse cx="287" cy="255" rx="4" ry="6" fill="#1a1040" opacity="0.6"/>
+                                <ellipse cx="250" cy="275" rx="3" ry="5" fill="#1a1040" opacity="0.6"/>
+                                {{-- Small accent spires --}}
+                                <polygon points="200,230 198,222 202,222" fill="#3a2370"/>
+                                <polygon points="224,230 222,222 226,222" fill="#3a2370"/>
+                                <polygon points="276,230 274,222 278,222" fill="#3a2370"/>
+                                <polygon points="300,230 298,222 302,222" fill="#3a2370"/>
+                            </g>
+
+                            {{-- Castle entrance glow --}}
+                            <ellipse cx="250" cy="300" rx="20" ry="18" fill="url(#entranceGlow)" class="glow-pulse"/>
+
+                            {{-- Window warm glow dots --}}
+                            <circle cx="212" cy="255" r="2" fill="#d4a843" opacity="0.25" class="glow-pulse"/>
+                            <circle cx="287" cy="255" r="2" fill="#d4a843" opacity="0.25" class="glow-pulse"/>
+                            <circle cx="250" cy="275" r="1.5" fill="#d4a843" opacity="0.2" class="glow-pulse"/>
+
+                            {{-- Ground/path area --}}
+                            <rect x="0" y="390" width="500" height="110" fill="url(#groundGrad)"/>
+                            <ellipse cx="250" cy="400" rx="250" ry="30" fill="#0f0b22" opacity="0.5"/>
+
+                            {{-- Walkway path --}}
+                            <path d="M250,310 Q248,340 240,370 Q230,400 200,440 Q180,465 140,490" stroke="#2d1b69" stroke-width="28" fill="none" stroke-linecap="round" opacity="0.3"/>
+                            <path d="M250,310 Q252,340 260,370 Q270,400 300,440 Q320,465 360,490" stroke="#2d1b69" stroke-width="28" fill="none" stroke-linecap="round" opacity="0.3"/>
+                            {{-- Path lanterns --}}
+                            <circle cx="228" cy="380" r="1.5" fill="#d4a843" opacity="0.5" class="star-twinkle" style="--tw-dur:2s;--tw-delay:0s"/>
+                            <circle cx="215" cy="410" r="1.5" fill="#d4a843" opacity="0.5" class="star-twinkle" style="--tw-dur:2s;--tw-delay:0.4s"/>
+                            <circle cx="195" cy="440" r="1.5" fill="#d4a843" opacity="0.5" class="star-twinkle" style="--tw-dur:2s;--tw-delay:0.8s"/>
+                            <circle cx="272" cy="380" r="1.5" fill="#d4a843" opacity="0.5" class="star-twinkle" style="--tw-dur:2s;--tw-delay:0.2s"/>
+                            <circle cx="285" cy="410" r="1.5" fill="#d4a843" opacity="0.5" class="star-twinkle" style="--tw-dur:2s;--tw-delay:0.6s"/>
+                            <circle cx="305" cy="440" r="1.5" fill="#d4a843" opacity="0.5" class="star-twinkle" style="--tw-dur:2s;--tw-delay:1s"/>
+
+                            {{-- Family silhouette --}}
+                            <g fill="#0e0a1f">
+                                {{-- Taller parent (Jeffrey) — left --}}
+                                <ellipse cx="225" cy="378" rx="6" ry="6.5"/>{{-- head --}}
+                                <path d="M225,384 Q222,395 220,410 Q218,420 217,435 L220,435 Q221,425 223,415 L225,415 Q227,425 228,435 L231,435 Q230,420 228,410 Q226,395 225,384Z"/>
+                                {{-- Left arm reaching down to child --}}
+                                <path d="M222,392 Q220,398 222,404 Q224,408 228,410" stroke="#0e0a1f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                                {{-- Right arm --}}
+                                <path d="M228,392 Q232,400 230,408" stroke="#0e0a1f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+
+                                {{-- Child (Viola) — center, reaching up --}}
+                                <ellipse cx="240" cy="400" rx="5" ry="5.5"/>{{-- head --}}
+                                <path d="M240,405 Q238,413 237,425 Q236,432 235,440 L238,440 Q238.5,433 239,427 L241,427 Q241.5,433 242,440 L245,440 Q244,432 243,425 Q242,413 240,405Z"/>
+                                {{-- Left arm reaching UP to parent --}}
+                                <path d="M237,410 Q234,405 231,400 Q229,397 228,394" stroke="#0e0a1f" stroke-width="2" fill="none" stroke-linecap="round"/>
+                                {{-- Right arm --}}
+                                <path d="M243,412 Q246,416 248,414" stroke="#0e0a1f" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+                                {{-- Shorter parent (Cassie) — right --}}
+                                <ellipse cx="260" cy="383" rx="5.5" ry="6"/>{{-- head --}}
+                                <path d="M260,389 Q258,398 256,412 Q255,422 254,435 L257,435 Q257.5,425 259,417 L261,417 Q262.5,425 263,435 L266,435 Q265,422 263,412 Q261,398 260,389Z"/>
+                                {{-- Left arm --}}
+                                <path d="M256,396 Q253,402 254,410" stroke="#0e0a1f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                                {{-- Right arm --}}
+                                <path d="M264,396 Q267,404 265,410" stroke="#0e0a1f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                                {{-- Cassie's hair hint (slightly longer) --}}
+                                <path d="M255,383 Q254,388 255,392" stroke="#0e0a1f" stroke-width="2" fill="none" stroke-linecap="round"/>
+                                <path d="M265,383 Q266,388 265,392" stroke="#0e0a1f" stroke-width="2" fill="none" stroke-linecap="round"/>
+                            </g>
+
+                            {{-- Pixie dust / magical particles --}}
+                            <circle cx="235" cy="375" r="1.5" fill="#f0c75e" class="pixie" style="--px-dur:3s;--px-delay:0s" opacity="0.8"/>
+                            <circle cx="248" cy="395" r="1" fill="#f0c75e" class="pixie" style="--px-dur:3.5s;--px-delay:0.5s" opacity="0.7"/>
+                            <circle cx="255" cy="380" r="1.2" fill="#d4a843" class="pixie" style="--px-dur:2.8s;--px-delay:1s" opacity="0.8"/>
+                            <circle cx="222" cy="390" r="0.8" fill="#f0c75e" class="pixie" style="--px-dur:3.2s;--px-delay:1.5s" opacity="0.6"/>
+                            <circle cx="265" cy="370" r="1.3" fill="#f0c75e" class="pixie" style="--px-dur:4s;--px-delay:0.3s" opacity="0.7"/>
+                            <circle cx="240" cy="360" r="1" fill="#d4a843" class="pixie" style="--px-dur:2.5s;--px-delay:2s" opacity="0.9"/>
+                            <circle cx="260" cy="350" r="0.9" fill="#f0c75e" class="pixie" style="--px-dur:3.8s;--px-delay:0.8s" opacity="0.6"/>
+                            <circle cx="230" cy="345" r="1.1" fill="#f0c75e" class="pixie" style="--px-dur:3s;--px-delay:1.2s" opacity="0.7"/>
+                            <circle cx="250" cy="330" r="0.7" fill="#d4a843" class="pixie" style="--px-dur:3.5s;--px-delay:2.5s" opacity="0.5"/>
+                            <circle cx="245" cy="310" r="1" fill="#f0c75e" class="pixie" style="--px-dur:4s;--px-delay:0.6s" opacity="0.6"/>
+                            {{-- Extra pixie dust near castle --}}
+                            <circle cx="210" cy="300" r="0.8" fill="#f0c75e" class="pixie" style="--px-dur:3.3s;--px-delay:1.8s" opacity="0.5"/>
+                            <circle cx="290" cy="295" r="0.9" fill="#d4a843" class="pixie" style="--px-dur:2.7s;--px-delay:0.9s" opacity="0.5"/>
+                            <circle cx="270" cy="315" r="1" fill="#f0c75e" class="pixie" style="--px-dur:3.6s;--px-delay:2.2s" opacity="0.6"/>
+                        </svg>
                     </div>
                 </div>
             </div>
