@@ -39,13 +39,7 @@ class PostForm
                             ->maxLength(255)
                             ->unique(ignoreRecord: true),
                         Select::make('category')
-                            ->options([
-                                'disney-tips' => 'Disney Tips',
-                                'park-accessibility' => 'Park Accessibility',
-                                'episode-recap' => 'Episode Recap',
-                                'family-life' => 'Family Life',
-                                'autism-awareness' => 'Autism Awareness',
-                            ])
+                            ->options(\App\Models\Post::CATEGORIES)
                             ->required(),
                     ]),
 
