@@ -67,7 +67,7 @@
         }
         /* Featured post overlay */
         .featured-link .featured-overlay {
-            background: linear-gradient(to t, rgba(26,16,64,0.95), rgba(26,16,64,0.7), rgba(26,16,64,0.2));
+            background: linear-gradient(to top, rgba(26,16,64,0.95), rgba(26,16,64,0.7), rgba(26,16,64,0.2));
             transition: background 0.5s ease;
         }
         .featured-link:hover .featured-overlay {
@@ -323,7 +323,7 @@
             @if($latestEpisodes->count())
                 <div class="divide-y divide-navy/8">
                     @foreach($latestEpisodes as $episode)
-                        <a href="/episodes/{{ $episode->slug }}" class="group flex items-center gap-5 py-5 hover:bg-cream/50 -mx-4 px-4 rounded-xl transition-colors duration-200" data-animate>
+                        <a href="/episodes/{{ $episode->slug }}" class="group flex items-center gap-5 py-5 min-h-[56px] hover:bg-cream/50 -mx-4 px-4 rounded-xl transition-all duration-250 hover:translate-x-1" data-animate data-stagger="{{ $loop->index }}">
                             <div class="flex-shrink-0 w-12 h-12 rounded-full bg-purple/10 flex items-center justify-center group-hover:bg-purple/20 transition-colors relative">
                                 <span class="text-purple font-bold text-sm font-body group-hover:opacity-0 transition-opacity">{{ $episode->episode_number }}</span>
                                 <svg class="w-5 h-5 text-purple absolute opacity-0 group-hover:opacity-100 transition-opacity" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
