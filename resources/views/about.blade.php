@@ -14,7 +14,7 @@
     <section class="py-16 bg-cream">
         <div class="max-w-4xl mx-auto px-4 sm:px-6">
             {{-- Family Photo --}}
-            <div class="bg-gradient-to-br from-disney-blue/10 to-gold/10 rounded-2xl aspect-video flex items-center justify-center mb-12">
+            <div class="bg-gradient-to-br from-purple/10 to-gold/10 rounded-2xl aspect-video flex items-center justify-center mb-12">
                 <div class="text-center">
                     <span class="text-7xl block mb-3">👨‍👩‍👧</span>
                     <span class="text-navy/30 text-sm">The Davidson Family — photo coming soon</span>
@@ -84,7 +84,7 @@
             <div class="text-center mt-12">
                 <p class="text-navy/60 mb-4">Ready to join our Disney family?</p>
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <a href="/episodes" class="bg-disney-blue hover:bg-disney-blue-dark text-white font-semibold px-6 py-3 rounded-full transition-all">🎙️ Listen to Episodes</a>
+                    <a href="/episodes" class="bg-purple hover:bg-purple-dark text-white font-semibold px-6 py-3 rounded-full transition-all">🎙️ Listen to Episodes</a>
                     <a href="#subscribe" class="bg-gold hover:bg-gold-light text-navy font-semibold px-6 py-3 rounded-full transition-all">✨ Subscribe</a>
                 </div>
             </div>

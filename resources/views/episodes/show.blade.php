@@ -69,12 +69,12 @@
                                 @if($post->cover_image)
                                     <img src="{{ $post->cover_image }}" alt="{{ $post->title }}" class="w-full h-40 object-cover">
                                 @else
-                                    <div class="w-full h-40 bg-gradient-to-br from-disney-blue/10 to-gold/10 flex items-center justify-center">
+                                    <div class="w-full h-40 bg-gradient-to-br from-purple/10 to-gold/10 flex items-center justify-center">
                                         <span class="text-2xl">✨</span>
                                     </div>
                                 @endif
                                 <div class="p-5">
-                                    <h4 class="font-heading text-lg font-semibold text-navy group-hover:text-disney-blue transition-colors">{{ $post->title }}</h4>
+                                    <h4 class="font-heading text-lg font-semibold text-navy group-hover:text-purple transition-colors">{{ $post->title }}</h4>
                                     <p class="text-navy/60 text-sm mt-2 line-clamp-2">{{ Str::limit($post->excerpt, 100) }}</p>
                                 </div>
                             </a>

@@ -46,9 +46,9 @@
                     <span class="text-gold text-xs font-semibold uppercase tracking-wider">Related Episode</span>
                     <a href="/episodes/{{ $post->episode->slug }}" class="group block mt-3">
                         <div class="flex items-center gap-4">
-                            <span class="flex-shrink-0 inline-flex items-center justify-center w-12 h-12 bg-disney-blue/10 text-disney-blue font-heading font-bold rounded-xl">{{ $post->episode->episode_number }}</span>
+                            <span class="flex-shrink-0 inline-flex items-center justify-center w-12 h-12 bg-purple/10 text-purple font-heading font-bold rounded-xl">{{ $post->episode->episode_number }}</span>
                             <div>
-                                <h3 class="font-heading text-lg font-semibold text-navy group-hover:text-disney-blue transition-colors">{{ $post->episode->title }}</h3>
+                                <h3 class="font-heading text-lg font-semibold text-navy group-hover:text-purple transition-colors">{{ $post->episode->title }}</h3>
                                 <p class="text-navy/50 text-sm mt-1">Listen to the full episode →</p>
                             </div>
                         </div>
