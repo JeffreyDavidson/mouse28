@@ -14,6 +14,12 @@ class Post extends Model
         'published_at' => 'datetime',
     ];
 
+    public const AUTHORS = [
+        'jeffrey' => 'Jeffrey Davidson',
+        'cassie' => 'Cassie Davidson',
+        'both' => 'Jeffrey & Cassie',
+    ];
+
     public const CATEGORIES = [
         'disney-tips' => 'Disney Tips',
         'park-accessibility' => 'Park Accessibility',
@@ -35,6 +41,11 @@ class Post extends Model
     public function scopePublished($query)
     {
         return $query->where('is_published', true)->whereNotNull('published_at')->where('published_at', '<=', now());
+    }
+
+    public function getAuthorNameAttribute(): string
+    {
+        return self::AUTHORS[$this->author] ?? 'Mouse28 Team';
     }
 
     public function getReadingTimeAttribute(): int

@@ -19,6 +19,10 @@ class PostsTable
                 TextColumn::make('title')
                     ->searchable()
                     ->limit(50),
+                TextColumn::make('author')
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => \App\Models\Post::AUTHORS[$state] ?? 'Team')
+                    ->color('info'),
                 TextColumn::make('category')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
