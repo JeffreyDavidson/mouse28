@@ -345,7 +345,7 @@
 
                 {{-- Right side: Magical illustrated scene --}}
                 <div class="lg:w-[42%] relative w-full max-w-md lg:max-w-none mx-auto lg:mx-0">
-                    <div class="scene-container relative h-[280px] sm:h-[350px] lg:h-[480px]" id="magicalScene">
+                    <div class="scene-container relative h-[280px] sm:h-[350px] lg:h-[480px]" id="magicalScene" style="mask-image: radial-gradient(ellipse 85% 80% at 50% 55%, black 40%, transparent 100%); -webkit-mask-image: radial-gradient(ellipse 85% 80% at 50% 55%, black 40%, transparent 100%);"
                         {{-- Blend mode overlays --}}
                         <div class="moonlight-overlay" aria-hidden="true"></div>
                         <div class="warm-glow-overlay" aria-hidden="true"></div>
@@ -423,8 +423,7 @@
                                 </mask>
                             </defs>
 
-                            {{-- Sky background --}}
-                            <rect width="500" height="500" fill="url(#skyGrad)"/>
+                            {{-- Sky background (transparent — blends with hero) --}}
 
                             {{-- LAYER 1: Background stars (most parallax) --}}
                             <g class="scene-parallax-layer reveal-stars" data-parallax-layer="1">
