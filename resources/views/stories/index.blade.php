@@ -42,12 +42,12 @@
                 </h2>
                 <div class="grid md:grid-cols-3 gap-6">
                     @foreach($featured as $story)
-                        <div class="bg-white rounded-2xl shadow-sm border border-cream-dark p-8 relative group hover:shadow-lg transition-all hover:-translate-y-1 duration-300">
+                        <div class="bg-white rounded-2xl shadow-sm border border-cream-dark p-8 relative group hover:shadow-lg transition-all hover:-translate-y-1 duration-300 flex flex-col">
                             {{-- Large decorative quotation mark --}}
-                            <div class="absolute top-4 right-6 font-heading text-7xl text-purple/10 leading-none select-none">"</div>
+                            <div class="absolute top-3 right-5 font-heading text-8xl text-purple/[0.06] leading-none select-none pointer-events-none" aria-hidden="true">"</div>
 
-                            <div class="relative z-10">
-                                <h3 class="font-heading text-xl font-bold text-navy mb-3 pr-8">{{ $story->title }}</h3>
+                            <div class="relative z-10 flex-1">
+                                <h3 class="font-heading text-xl font-bold text-navy mb-3">{{ $story->title }}</h3>
                                 <p class="text-navy/70 text-sm leading-relaxed mb-6 line-clamp-4">{{ Str::limit($story->story, 250) }}</p>
                             </div>
 
@@ -86,7 +86,7 @@
                 <h2 class="font-heading text-2xl font-bold text-navy mb-8">All Stories</h2>
                 <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($stories as $story)
-                        <div class="bg-white rounded-2xl shadow-sm border border-cream-dark p-6 hover:shadow-md hover:border-purple/20 transition-all duration-300 group" x-data="{ expanded: false }">
+                        <div class="bg-white rounded-2xl shadow-sm border border-cream-dark p-6 hover:shadow-md hover:border-purple/20 transition-all duration-300 group flex flex-col" x-data="{ expanded: false }">
                             <h3 class="font-heading text-lg font-bold text-navy mb-2 group-hover:text-purple transition-colors">{{ $story->title }}</h3>
 
                             <div class="text-navy/70 text-sm leading-relaxed mb-4">

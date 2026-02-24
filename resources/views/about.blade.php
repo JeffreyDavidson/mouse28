@@ -60,7 +60,7 @@
     </section>
 
     {{-- Timeline Story --}}
-    <section class="py-16 bg-cream">
+    <section class="py-16 md:py-24 bg-cream">
         <div class="max-w-4xl mx-auto px-4 sm:px-6">
             {{-- Section: Meet the Davidsons --}}
             <div class="relative pl-8 md:pl-12 border-l-2 border-gold/30 pb-16">
@@ -158,7 +158,7 @@
     </section>
 
     {{-- Your Hosts --}}
-    <section class="py-16 bg-cream">
+    <section class="py-16 md:py-24 bg-cream">
         <div class="max-w-4xl mx-auto px-4 sm:px-6">
             <div class="text-center mb-12">
                 <span class="text-gold text-sm font-semibold tracking-widest uppercase">Your Hosts</span>
@@ -188,7 +188,7 @@
     </section>
 
     {{-- CTA --}}
-    <section class="bg-gradient-to-br from-navy via-navy-light to-navy relative overflow-hidden py-20">
+    <section class="bg-gradient-to-br from-navy via-navy-light to-navy relative overflow-hidden py-16 md:py-24">
         {{-- Sparkles --}}
         <div class="absolute inset-0 pointer-events-none">
             <div class="sparkle absolute top-8 left-[12%] text-gold/50 text-lg">✦</div>
