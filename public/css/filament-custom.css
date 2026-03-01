@@ -1,0 +1,300 @@
+/* Mouse28 Admin — Navy/Purple/Gold Theme */
+
+/* ===== FONTS ===== */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* ===== LOGIN PAGE ===== */
+.fi-simple-layout {
+    background: linear-gradient(135deg, #1a1040 0%, #2d1b69 40%, #3a2370 70%, #1a1040 100%) !important;
+    min-height: 100vh;
+    position: relative;
+}
+
+.fi-simple-layout::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at 20% 50%, rgba(91, 62, 158, 0.3) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(212, 168, 67, 0.15) 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 80%, rgba(45, 27, 105, 0.4) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+/* Sparkle dots on login */
+.fi-simple-layout::after {
+    content: '✦';
+    position: absolute;
+    top: 15%;
+    right: 20%;
+    font-size: 1.5rem;
+    color: rgba(240, 199, 94, 0.4);
+    animation: sparkle 3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes sparkle {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* Login card */
+.fi-simple-main-ctn {
+    position: relative;
+    z-index: 10;
+}
+
+.fi-simple-main {
+    background: rgba(26, 16, 64, 0.85) !important;
+    backdrop-filter: blur(20px) !important;
+    border: 1px solid rgba(212, 168, 67, 0.3) !important;
+    border-radius: 1.5rem !important;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(91, 62, 158, 0.15) !important;
+}
+
+/* Login heading */
+.fi-simple-header-heading {
+    font-family: 'Playfair Display', serif !important;
+    color: #f0c75e !important;
+    font-size: 1.75rem !important;
+    font-weight: 700 !important;
+}
+
+.fi-simple-header-subheading {
+    color: rgba(254, 249, 239, 0.7) !important;
+}
+
+/* Login form labels */
+.fi-simple-main .fi-fo-field-wrp-label label {
+    color: #fef9ef !important;
+}
+
+/* Login form inputs */
+.fi-simple-main .fi-input {
+    background: rgba(45, 27, 105, 0.5) !important;
+    border-color: rgba(212, 168, 67, 0.3) !important;
+    color: #fef9ef !important;
+}
+
+.fi-simple-main .fi-input:focus {
+    border-color: #d4a843 !important;
+    box-shadow: 0 0 0 2px rgba(212, 168, 67, 0.2) !important;
+}
+
+.fi-simple-main .fi-input::placeholder {
+    color: rgba(254, 249, 239, 0.4) !important;
+}
+
+/* Login button */
+.fi-simple-main .fi-btn-primary {
+    background: linear-gradient(135deg, #d4a843, #b8922e) !important;
+    color: #1a1040 !important;
+    font-weight: 600 !important;
+    border: none !important;
+    transition: all 0.3s ease !important;
+}
+
+.fi-simple-main .fi-btn-primary:hover {
+    background: linear-gradient(135deg, #f0c75e, #d4a843) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 15px rgba(212, 168, 67, 0.4) !important;
+}
+
+/* Login links */
+.fi-simple-main .fi-link {
+    color: #d4a843 !important;
+}
+
+.fi-simple-main .fi-link:hover {
+    color: #f0c75e !important;
+}
+
+/* Brand name on login */
+.fi-simple-header .fi-logo {
+    font-family: 'Playfair Display', serif !important;
+}
+
+/* ===== SIDEBAR ===== */
+.fi-sidebar {
+    background: linear-gradient(180deg, #1a1040 0%, #2d1b69 100%) !important;
+    border-right: 1px solid rgba(212, 168, 67, 0.15) !important;
+}
+
+/* Sidebar brand */
+.fi-sidebar-header {
+    border-bottom: 1px solid rgba(212, 168, 67, 0.15) !important;
+}
+
+.fi-sidebar .fi-logo span,
+.fi-sidebar .fi-logo {
+    font-family: 'Playfair Display', serif !important;
+    color: #f0c75e !important;
+    font-weight: 700 !important;
+}
+
+/* Sidebar nav items */
+.fi-sidebar-item-label {
+    color: rgba(254, 249, 239, 0.8) !important;
+    font-family: 'Poppins', sans-serif !important;
+}
+
+.fi-sidebar-item:hover .fi-sidebar-item-label,
+.fi-sidebar-item.fi-active .fi-sidebar-item-label {
+    color: #f0c75e !important;
+}
+
+.fi-sidebar-item-icon {
+    color: rgba(212, 168, 67, 0.6) !important;
+}
+
+.fi-sidebar-item:hover .fi-sidebar-item-icon,
+.fi-sidebar-item.fi-active .fi-sidebar-item-icon {
+    color: #f0c75e !important;
+}
+
+/* Active nav item background */
+.fi-sidebar-item.fi-active {
+    background: rgba(91, 62, 158, 0.3) !important;
+    border-radius: 0.75rem !important;
+}
+
+.fi-sidebar-item:hover {
+    background: rgba(91, 62, 158, 0.15) !important;
+    border-radius: 0.75rem !important;
+}
+
+/* Sidebar group labels */
+.fi-sidebar-group-label {
+    color: rgba(212, 168, 67, 0.5) !important;
+    font-family: 'Poppins', sans-serif !important;
+    text-transform: uppercase !important;
+    font-size: 0.65rem !important;
+    letter-spacing: 0.1em !important;
+}
+
+/* ===== TOP BAR ===== */
+.fi-topbar {
+    background: #1a1040 !important;
+    border-bottom: 1px solid rgba(212, 168, 67, 0.15) !important;
+}
+
+/* ===== DASHBOARD ===== */
+.fi-page-heading {
+    font-family: 'Playfair Display', serif !important;
+    color: #1a1040 !important;
+}
+
+.fi-page-sub-heading {
+    color: #5b3e9e !important;
+}
+
+/* Stat cards */
+.fi-wi-stats-overview-stat {
+    border: 1px solid rgba(91, 62, 158, 0.15) !important;
+    border-radius: 1rem !important;
+    transition: all 0.3s ease !important;
+}
+
+.fi-wi-stats-overview-stat:hover {
+    border-color: rgba(212, 168, 67, 0.3) !important;
+    box-shadow: 0 4px 15px rgba(91, 62, 158, 0.1) !important;
+    transform: translateY(-2px) !important;
+}
+
+.fi-wi-stats-overview-stat-label {
+    font-family: 'Poppins', sans-serif !important;
+    color: #5b3e9e !important;
+}
+
+.fi-wi-stats-overview-stat-value {
+    font-family: 'Playfair Display', serif !important;
+    color: #1a1040 !important;
+    font-weight: 700 !important;
+}
+
+.fi-wi-stats-overview-stat-description {
+    color: #7b5eb5 !important;
+}
+
+/* ===== TABLES ===== */
+.fi-ta-header {
+    background: linear-gradient(135deg, #1a1040, #2d1b69) !important;
+    border-radius: 1rem 1rem 0 0 !important;
+    padding: 1rem 1.5rem !important;
+}
+
+.fi-ta-header-heading {
+    color: #fef9ef !important;
+    font-family: 'Playfair Display', serif !important;
+}
+
+.fi-ta-header-description {
+    color: rgba(254, 249, 239, 0.7) !important;
+}
+
+/* Search in table header */
+.fi-ta-header .fi-input {
+    background: rgba(254, 249, 239, 0.1) !important;
+    border-color: rgba(212, 168, 67, 0.3) !important;
+    color: #fef9ef !important;
+}
+
+.fi-ta-header .fi-input::placeholder {
+    color: rgba(254, 249, 239, 0.4) !important;
+}
+
+/* Table rows */
+.fi-ta-row:hover td {
+    background: rgba(91, 62, 158, 0.05) !important;
+}
+
+/* ===== SECTION HEADINGS ===== */
+.fi-section-header-heading {
+    font-family: 'Playfair Display', serif !important;
+    color: #1a1040 !important;
+}
+
+.fi-section-header-description {
+    color: #7b5eb5 !important;
+}
+
+/* ===== BUTTONS ===== */
+.fi-btn-primary {
+    background: linear-gradient(135deg, #5b3e9e, #3a2370) !important;
+    border: none !important;
+    transition: all 0.3s ease !important;
+}
+
+.fi-btn-primary:hover {
+    background: linear-gradient(135deg, #7b5eb5, #5b3e9e) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(91, 62, 158, 0.3) !important;
+}
+
+/* ===== BREADCRUMBS ===== */
+.fi-breadcrumbs li {
+    color: #7b5eb5 !important;
+}
+
+.fi-breadcrumbs a {
+    color: #5b3e9e !important;
+}
+
+.fi-breadcrumbs a:hover {
+    color: #d4a843 !important;
+}
+
+/* ===== GLOBAL ===== */
+.fi-body {
+    font-family: 'Poppins', sans-serif !important;
+}
+
+/* User menu */
+.fi-user-menu-trigger {
+    color: rgba(254, 249, 239, 0.8) !important;
+}
+
+/* Notifications */
+.fi-notification {
+    border-left: 4px solid #d4a843 !important;
+}

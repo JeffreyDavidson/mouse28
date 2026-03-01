@@ -2,7 +2,9 @@
 
 namespace App\Filament\Widgets;
 
+use App\Models\CommunityStory;
 use App\Models\Episode;
+use App\Models\Guide;
 use App\Models\Post;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -11,14 +13,30 @@ class StatsOverview extends StatsOverviewWidget
 {
     protected function getStats(): array
     {
-        $latestEpisode = Episode::latest('episode_number')->first();
+        $publishedPosts = Post::where('is_published', true)->count();
+        $draftPosts = Post::where('is_published', false)->count();
+        $publishedEpisodes = Episode::where('is_published', true)->count();
 
         return [
-            Stat::make('Total Episodes', Episode::count()),
-            Stat::make('Published Episodes', Episode::where('is_published', true)->count()),
-            Stat::make('Total Posts', Post::count()),
-            Stat::make('Latest Episode', $latestEpisode?->title ?? 'None')
-                ->description($latestEpisode ? "Ep. {$latestEpisode->episode_number}" : null),
+            Stat::make('Blog Posts', $publishedPosts)
+                ->icon('heroicon-o-document-text')
+                ->description($draftPosts > 0 ? "{$draftPosts} drafts" : 'All published')
+                ->color('primary'),
+
+            Stat::make('Episodes', $publishedEpisodes)
+                ->icon('heroicon-o-microphone')
+                ->description('Published')
+                ->color('success'),
+
+            Stat::make('Guides', Guide::where('is_published', true)->count())
+                ->icon('heroicon-o-book-open')
+                ->description('Published')
+                ->color('info'),
+
+            Stat::make('Community Stories', CommunityStory::where('is_approved', true)->count())
+                ->icon('heroicon-o-heart')
+                ->description(($pending = CommunityStory::where('is_approved', false)->count()) > 0 ? "{$pending} pending review" : 'None pending')
+                ->color('warning'),
         ];
     }
 }
