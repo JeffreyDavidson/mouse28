@@ -83,6 +83,11 @@
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4), 0 0 40px rgba(91, 62, 158, 0.15) !important;
 }
 
+/* Login logo spacing */
+.fi-simple-header .fi-logo {
+    margin-bottom: 1.5rem !important;
+}
+
 /* Login heading */
 .fi-simple-header-heading {
     font-family: 'Playfair Display', serif !important;
