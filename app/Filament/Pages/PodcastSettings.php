@@ -10,6 +10,9 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Actions;
+use Filament\Schemas\Components\EmbeddedSchema;
+use Filament\Schemas\Components\Form;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -32,6 +35,15 @@ class PodcastSettings extends Page
     {
         $podcast = Podcast::info();
         $this->form->fill($podcast->toArray());
+    }
+
+    public function content(Schema $schema): Schema
+    {
+        return $schema->components([
+            Form::make([
+                EmbeddedSchema::make('form'),
+            ]),
+        ]);
     }
 
     public function form(Schema $form): Schema
@@ -65,6 +77,13 @@ class PodcastSettings extends Page
                         TextInput::make('instagram_url')->url()->label('Instagram'),
                         TextInput::make('tiktok_url')->url()->label('TikTok'),
                     ]),
+
+                Actions::make([
+                    Action::make('save')
+                        ->label('Save Settings')
+                        ->icon('heroicon-o-check')
+                        ->action(fn () => $this->save()),
+                ])->alignEnd(),
             ])
             ->statePath('data');
     }
@@ -79,14 +98,5 @@ class PodcastSettings extends Page
             ->title('Settings saved')
             ->success()
             ->send();
-    }
-
-    protected function getFormActions(): array
-    {
-        return [
-            Action::make('save')
-                ->label('Save Settings')
-                ->submit('save'),
-        ];
     }
 }
