@@ -38,6 +38,37 @@
     50% { opacity: 1; transform: scale(1.2); }
 }
 
+/* Floating stars */
+.fi-simple-layout .star {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: #f0c75e;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: twinkle var(--duration, 3s) ease-in-out var(--delay, 0s) infinite;
+}
+
+@keyframes twinkle {
+    0%, 100% { opacity: 0.1; transform: scale(0.8); }
+    50% { opacity: 0.9; transform: scale(1.3); }
+}
+
+/* Castle silhouette at bottom */
+.fi-simple-layout .castle-silhouette {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 120px;
+    pointer-events: none;
+    opacity: 0.08;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath d='M0,120 L0,80 L30,80 L30,60 L40,60 L40,45 L50,45 L50,60 L60,60 L60,80 L100,80 L100,70 L110,70 L110,55 L120,55 L120,70 L130,70 L130,80 L200,80 L200,50 L210,50 L210,30 L215,20 L220,30 L220,50 L230,50 L230,80 L280,80 L280,65 L290,65 L290,50 L300,50 L300,65 L310,65 L310,80 L400,80 L400,40 L410,40 L410,20 L420,20 L420,10 L430,10 L430,5 L435,0 L440,5 L440,10 L450,10 L450,20 L460,20 L460,40 L470,40 L470,80 L520,80 L520,55 L530,55 L530,40 L540,40 L540,55 L550,55 L550,80 L600,80 L600,35 L610,35 L610,15 L615,5 L620,15 L620,35 L630,35 L630,80 L700,80 L700,60 L710,60 L710,45 L720,45 L720,60 L730,60 L730,80 L800,80 L800,50 L810,50 L810,30 L815,20 L820,30 L820,50 L830,50 L830,80 L900,80 L900,65 L910,65 L910,50 L920,50 L920,65 L930,65 L930,80 L980,80 L980,70 L990,70 L990,55 L1000,55 L1000,70 L1010,70 L1010,80 L1060,80 L1060,60 L1070,60 L1070,45 L1080,45 L1080,60 L1090,60 L1090,80 L1150,80 L1150,70 L1160,70 L1160,80 L1200,80 L1200,120 Z' fill='%23f0c75e'/%3E%3C/svg%3E");
+    background-repeat: repeat-x;
+    background-position: bottom center;
+    background-size: 1200px 120px;
+}
+
 /* Login card */
 .fi-simple-main-ctn {
     position: relative;

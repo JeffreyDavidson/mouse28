@@ -29,7 +29,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->brandName('Mouse28')
-            ->login()
+            ->login(\App\Filament\Pages\Auth\Login::class)
             ->spa()
             ->colors([
                 'primary' => [
@@ -56,8 +56,9 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
-                AccountWidget::class,
+                \App\Filament\Widgets\WelcomeBanner::class,
                 StatsOverview::class,
+                \App\Filament\Widgets\RecentActivity::class,
             ])
             ->middleware([
                 EncryptCookies::class,

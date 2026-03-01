@@ -1,0 +1,69 @@
+<?php
+
+namespace App\Filament\Widgets;
+
+use App\Models\CommunityStory;
+use App\Models\Episode;
+use App\Models\Guide;
+use App\Models\Post;
+use Filament\Widgets\Widget;
+
+class RecentActivity extends Widget
+{
+    protected static ?int $sort = 3;
+
+    protected int|string|array $columnSpan = 'full';
+
+    protected string $view = 'filament.widgets.recent-activity';
+
+    public function getActivity(): array
+    {
+        $items = collect();
+
+        Post::latest('updated_at')->limit(5)->get()->each(function ($post) use ($items) {
+            $items->push([
+                'icon' => 'document-text',
+                'color' => '#5b3e9e',
+                'label' => $post->title,
+                'type' => $post->is_published ? 'Published post' : 'Draft post',
+                'time' => $post->updated_at,
+                'url' => route('filament.admin.resources.posts.edit', $post),
+            ]);
+        });
+
+        Episode::latest('updated_at')->limit(5)->get()->each(function ($episode) use ($items) {
+            $items->push([
+                'icon' => 'microphone',
+                'color' => '#d4a843',
+                'label' => $episode->title,
+                'type' => $episode->is_published ? 'Published episode' : 'Draft episode',
+                'time' => $episode->updated_at,
+                'url' => route('filament.admin.resources.episodes.edit', $episode),
+            ]);
+        });
+
+        Guide::latest('updated_at')->limit(3)->get()->each(function ($guide) use ($items) {
+            $items->push([
+                'icon' => 'book-open',
+                'color' => '#3a2370',
+                'label' => $guide->title,
+                'type' => $guide->is_published ? 'Published guide' : 'Draft guide',
+                'time' => $guide->updated_at,
+                'url' => route('filament.admin.resources.guides.edit', $guide),
+            ]);
+        });
+
+        CommunityStory::latest('updated_at')->limit(3)->get()->each(function ($story) use ($items) {
+            $items->push([
+                'icon' => 'heart',
+                'color' => '#b8922e',
+                'label' => $story->title,
+                'type' => $story->is_approved ? 'Approved story' : 'Pending review',
+                'time' => $story->updated_at,
+                'url' => route('filament.admin.resources.community-stories.edit', $story),
+            ]);
+        });
+
+        return $items->sortByDesc('time')->take(8)->values()->toArray();
+    }
+}
