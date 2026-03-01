@@ -29,6 +29,8 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->brandName('Mouse28')
+            ->brandLogo(view('filament.brand-logo'))
+            ->darkModeBrandLogo(view('filament.brand-logo'))
             ->login(\App\Filament\Pages\Auth\Login::class)
             ->spa()
             ->colors([
