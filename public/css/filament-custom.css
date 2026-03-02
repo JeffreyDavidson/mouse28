@@ -161,6 +161,7 @@
 /* Sidebar brand */
 .fi-sidebar-header {
     border-bottom: 1px solid rgba(212, 168, 67, 0.15) !important;
+    padding: 1.5rem 1rem !important;
 }
 
 .fi-sidebar .fi-logo span,
