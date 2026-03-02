@@ -4,6 +4,7 @@ use App\Http\Controllers\CommunityStoryController;
 use App\Http\Controllers\RssController;
 use App\Http\Controllers\SitemapController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\EpisodeController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PostController;
@@ -20,6 +21,8 @@ Route::post('/stories', [CommunityStoryController::class, 'store']);
 Route::get('/about', fn () => view('about'));
 Route::get('/contact', [ContactController::class, 'show']);
 Route::post('/contact', [ContactController::class, 'store']);
+
+Route::post('/newsletter', [NewsletterController::class, 'store']);
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 Route::get('/robots.txt', [SitemapController::class, 'robots']);
