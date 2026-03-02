@@ -830,21 +830,20 @@
         </svg>
     </div>
 
-    {{-- Latest Posts Grid --}}
-    <section class="py-16 md:py-24 bg-cream">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6">
-            <div class="flex items-end justify-between mb-12" data-animate>
-                <div>
-                    <span class="text-gold text-sm font-semibold tracking-[0.15em] uppercase font-body">Latest Stories</span>
-                    <h2 class="font-heading text-3xl md:text-4xl font-bold text-navy mt-2">Tips &amp; Disney Life</h2>
+    {{-- Latest Posts / Coming Soon --}}
+    @if($latestPosts->count())
+        <section class="py-16 md:py-24 bg-cream">
+            <div class="max-w-6xl mx-auto px-4 sm:px-6">
+                <div class="flex items-end justify-between mb-12" data-animate>
+                    <div>
+                        <span class="text-gold text-sm font-semibold tracking-[0.15em] uppercase font-body">Latest Stories</span>
+                        <h2 class="font-heading text-3xl md:text-4xl font-bold text-navy mt-2">From the Blog</h2>
+                    </div>
+                    <a href="/blog" class="hidden sm:inline-flex items-center gap-1 text-purple hover:text-navy font-semibold text-sm transition-colors font-body">
+                        View all
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    </a>
                 </div>
-                <a href="/blog" class="hidden sm:inline-flex items-center gap-1 text-purple hover:text-navy font-semibold text-sm transition-colors font-body">
-                    View all
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                </a>
-            </div>
-
-            @if($latestPosts->count())
                 <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     @foreach($latestPosts as $post)
                         <a href="/blog/{{ $post->slug }}" class="post-card group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-2 border border-navy/5 relative" data-animate data-stagger="{{ $loop->index }}">
@@ -883,17 +882,47 @@
                 <div class="text-center mt-10 sm:hidden">
                     <a href="/blog" class="text-purple hover:text-navy font-semibold text-sm transition-colors font-body">View all posts →</a>
                 </div>
-            @else
-                <div class="text-center py-16 bg-white rounded-2xl border border-navy/5">
-                    <span class="text-4xl mb-4 block">📝</span>
-                    <p class="text-navy/65 text-lg font-body">Blog posts are on the way!</p>
-                    <p class="text-navy/40 text-sm mt-2 font-body">We're writing up our best Disney tips and stories.</p>
-                </div>
-            @endif
-        </div>
-    </section>
+            </div>
+        </section>
+    @else
+        <section class="py-20 md:py-28 bg-gradient-to-b from-cream to-white relative overflow-hidden">
+            {{-- Decorative sparkles --}}
+            <div class="absolute top-12 left-[15%] text-gold/20 text-2xl" style="animation: sparkle 3s ease-in-out infinite;">✦</div>
+            <div class="absolute top-24 right-[20%] text-purple/15 text-lg" style="animation: sparkle 3s ease-in-out 1s infinite;">✦</div>
+            <div class="absolute bottom-16 left-[25%] text-gold/15 text-sm" style="animation: sparkle 3s ease-in-out 2s infinite;">✦</div>
 
-    </div>
+            <div class="max-w-2xl mx-auto px-4 sm:px-6 text-center relative">
+                <span class="text-gold text-sm font-semibold tracking-[0.15em] uppercase font-body">Coming Soon</span>
+                <h2 class="font-heading text-3xl md:text-4xl font-bold text-navy mt-3 mb-5">Something Magical Is Brewing</h2>
+                <p class="text-navy/55 text-lg leading-relaxed font-body mb-8">
+                    We're working on our first stories — park tips, accessibility insights, and behind-the-scenes moments from a family that visits Disney every single week.
+                </p>
+
+                <div class="grid grid-cols-3 gap-6 max-w-md mx-auto mb-10">
+                    <div class="text-center">
+                        <div class="w-14 h-14 mx-auto rounded-2xl bg-purple/8 flex items-center justify-center mb-2">
+                            <span class="text-2xl">🏰</span>
+                        </div>
+                        <span class="text-navy/40 text-xs font-body font-medium">Park Tips</span>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-14 h-14 mx-auto rounded-2xl bg-gold/10 flex items-center justify-center mb-2">
+                            <span class="text-2xl">♿</span>
+                        </div>
+                        <span class="text-navy/40 text-xs font-body font-medium">Accessibility</span>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-14 h-14 mx-auto rounded-2xl bg-purple/8 flex items-center justify-center mb-2">
+                            <span class="text-2xl">💜</span>
+                        </div>
+                        <span class="text-navy/40 text-xs font-body font-medium">Family Stories</span>
+                    </div>
+                </div>
+
+                <p class="text-navy/35 text-sm font-body">Follow along — first posts dropping soon.</p>
+            </div>
+        </section>
+    @endif
 
     {{-- Podcast Section --}}
     <section class="py-16 md:py-24 bg-white relative">
