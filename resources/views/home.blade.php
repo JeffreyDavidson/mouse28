@@ -322,17 +322,18 @@
                         Accessibility tips, sensory-friendly recommendations, and real stories from a family who visits Disney every single week with our autistic daughter.
                     </p>
                     <div class="flex flex-wrap items-center gap-4 mb-8">
-                        <a href="/guides" class="cta-primary bg-gold hover:bg-gold-light text-navy font-semibold px-8 py-4 min-h-[48px] rounded-full shadow-lg shadow-gold/20 hover:shadow-gold/50 hover:scale-105 transition-all duration-300 hover:-translate-y-1 text-base font-body inline-flex items-center">
+                        <a href="/blog" class="cta-primary bg-gold hover:bg-gold-light text-navy font-semibold px-8 py-4 min-h-[48px] rounded-full shadow-lg shadow-gold/20 hover:shadow-gold/50 hover:scale-105 transition-all duration-300 hover:-translate-y-1 text-base font-body inline-flex items-center">
+                            Read Our Blog
+                        </a>
+                        @if($featuredPost)
                             <a href="/blog/{{ $featuredPost->slug }}" class="text-white/55 hover:text-gold text-sm font-medium font-body transition-colors duration-200">
                                 or read the latest post →
                             </a>
                         @endif
                     </div>
+                    @if($storiesCount > 0)
                         <div class="flex items-center gap-5 text-white/35 text-sm font-body">
-                            @endif
-                            @if($storiesCount > 0)
-                                <span>💜 {{ $storiesCount }} {{ Str::plural('family', $storiesCount) }}</span>
-                            @endif
+                            <span>💜 {{ $storiesCount }} {{ Str::plural('family', $storiesCount) }}</span>
                         </div>
                     @endif
                 </div>
