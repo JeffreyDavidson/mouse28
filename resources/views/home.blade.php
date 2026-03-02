@@ -645,7 +645,7 @@
     </div>
 
     {{-- Newsletter CTA --}}
-    <section class="py-16 md:py-24 bg-gradient-to-br from-navy via-navy-light to-navy relative overflow-hidden">
+    <section id="newsletter" class="py-16 md:py-24 bg-gradient-to-br from-navy via-navy-light to-navy relative overflow-hidden">
         <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
             <span class="sparkle absolute top-[20%] left-[15%] text-gold/30 text-sm">✦</span>
             <span class="sparkle-delay absolute bottom-[25%] right-[20%] text-gold/20 text-lg">✧</span>
