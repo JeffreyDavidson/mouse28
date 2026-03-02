@@ -885,41 +885,78 @@
             </div>
         </section>
     @else
-        <section class="py-20 md:py-28 bg-gradient-to-b from-cream to-white relative overflow-hidden">
-            {{-- Decorative sparkles --}}
-            <div class="absolute top-12 left-[15%] text-gold/20 text-2xl" style="animation: sparkle 3s ease-in-out infinite;">✦</div>
-            <div class="absolute top-24 right-[20%] text-purple/15 text-lg" style="animation: sparkle 3s ease-in-out 1s infinite;">✦</div>
-            <div class="absolute bottom-16 left-[25%] text-gold/15 text-sm" style="animation: sparkle 3s ease-in-out 2s infinite;">✦</div>
+        <section class="relative overflow-hidden" style="background: linear-gradient(135deg, #1a1040 0%, #2d1b69 40%, #1a1040 100%); padding: 6rem 0;">
+            {{-- Ambient glow --}}
+            <div style="position: absolute; top: -20%; right: -10%; width: 600px; height: 600px; background: radial-gradient(circle, rgba(212, 168, 67, 0.08) 0%, transparent 60%); pointer-events: none;"></div>
+            <div style="position: absolute; bottom: -20%; left: -10%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(91, 62, 158, 0.15) 0%, transparent 60%); pointer-events: none;"></div>
 
-            <div class="max-w-2xl mx-auto px-4 sm:px-6 text-center relative">
-                <span class="text-gold text-sm font-semibold tracking-[0.15em] uppercase font-body">Coming Soon</span>
-                <h2 class="font-heading text-3xl md:text-4xl font-bold text-navy mt-3 mb-5">Something Magical Is Brewing</h2>
-                <p class="text-navy/55 text-lg leading-relaxed font-body mb-8">
-                    We're working on our first stories — park tips, accessibility insights, and behind-the-scenes moments from a family that visits Disney every single week.
-                </p>
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 relative">
+                <div class="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+                    {{-- Left: Content --}}
+                    <div>
+                        <div style="display: inline-block; border: 1px solid rgba(212, 168, 67, 0.3); border-radius: 9999px; padding: 0.35rem 1rem; margin-bottom: 1.5rem;">
+                            <span style="font-family: 'Poppins', sans-serif; font-size: 0.7rem; color: #d4a843; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;">Coming Soon</span>
+                        </div>
+                        <h2 style="font-family: 'Playfair Display', serif; font-size: clamp(2rem, 4vw, 2.75rem); font-weight: 700; color: #fef9ef; line-height: 1.15; margin-bottom: 1.25rem;">
+                            Stories from inside<br>the parks
+                        </h2>
+                        <p style="font-family: 'Poppins', sans-serif; color: rgba(254, 249, 239, 0.55); font-size: 1.05rem; line-height: 1.8; margin-bottom: 2rem;">
+                            We visit Disney every week with our autistic daughter. We're turning those experiences into honest, useful content — accessibility insights, sensory tips, food reviews, and the real moments that make it all worth it.
+                        </p>
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div style="width: 8px; height: 8px; border-radius: 50%; background: #d4a843; flex-shrink: 0;"></div>
+                                <span style="font-family: 'Poppins', sans-serif; color: rgba(254, 249, 239, 0.7); font-size: 0.9rem;">Park accessibility &amp; DAS pass tips</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div style="width: 8px; height: 8px; border-radius: 50%; background: #d4a843; flex-shrink: 0;"></div>
+                                <span style="font-family: 'Poppins', sans-serif; color: rgba(254, 249, 239, 0.7); font-size: 0.9rem;">Sensory-friendly ride &amp; dining guides</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div style="width: 8px; height: 8px; border-radius: 50%; background: #d4a843; flex-shrink: 0;"></div>
+                                <span style="font-family: 'Poppins', sans-serif; color: rgba(254, 249, 239, 0.7); font-size: 0.9rem;">Honest food &amp; resort reviews</span>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div style="width: 8px; height: 8px; border-radius: 50%; background: #d4a843; flex-shrink: 0;"></div>
+                                <span style="font-family: 'Poppins', sans-serif; color: rgba(254, 249, 239, 0.7); font-size: 0.9rem;">Real family stories from the parks</span>
+                            </div>
+                        </div>
+                    </div>
 
-                <div class="grid grid-cols-3 gap-6 max-w-md mx-auto mb-10">
-                    <div class="text-center">
-                        <div class="w-14 h-14 mx-auto rounded-2xl bg-purple/8 flex items-center justify-center mb-2">
-                            <span class="text-2xl">🏰</span>
+                    {{-- Right: Visual --}}
+                    <div style="position: relative;">
+                        <div style="
+                            background: rgba(45, 27, 105, 0.4);
+                            border: 1px solid rgba(212, 168, 67, 0.15);
+                            border-radius: 1.5rem;
+                            padding: 2.5rem;
+                            backdrop-filter: blur(10px);
+                        ">
+                            {{-- Faux article preview --}}
+                            <div style="margin-bottom: 2rem;">
+                                <div style="height: 10px; width: 40%; background: rgba(212, 168, 67, 0.25); border-radius: 99px; margin-bottom: 0.75rem;"></div>
+                                <div style="height: 16px; width: 90%; background: rgba(254, 249, 239, 0.15); border-radius: 99px; margin-bottom: 0.5rem;"></div>
+                                <div style="height: 16px; width: 75%; background: rgba(254, 249, 239, 0.1); border-radius: 99px; margin-bottom: 1.25rem;"></div>
+                                <div style="height: 8px; width: 100%; background: rgba(254, 249, 239, 0.05); border-radius: 99px; margin-bottom: 0.4rem;"></div>
+                                <div style="height: 8px; width: 95%; background: rgba(254, 249, 239, 0.05); border-radius: 99px; margin-bottom: 0.4rem;"></div>
+                                <div style="height: 8px; width: 60%; background: rgba(254, 249, 239, 0.05); border-radius: 99px;"></div>
+                            </div>
+
+                            <div style="border-top: 1px solid rgba(212, 168, 67, 0.1); padding-top: 1.5rem;">
+                                <div style="height: 10px; width: 35%; background: rgba(212, 168, 67, 0.2); border-radius: 99px; margin-bottom: 0.75rem;"></div>
+                                <div style="height: 14px; width: 85%; background: rgba(254, 249, 239, 0.12); border-radius: 99px; margin-bottom: 0.5rem;"></div>
+                                <div style="height: 14px; width: 65%; background: rgba(254, 249, 239, 0.08); border-radius: 99px; margin-bottom: 1rem;"></div>
+                                <div style="height: 8px; width: 100%; background: rgba(254, 249, 239, 0.04); border-radius: 99px; margin-bottom: 0.4rem;"></div>
+                                <div style="height: 8px; width: 80%; background: rgba(254, 249, 239, 0.04); border-radius: 99px;"></div>
+                            </div>
                         </div>
-                        <span class="text-navy/40 text-xs font-body font-medium">Park Tips</span>
-                    </div>
-                    <div class="text-center">
-                        <div class="w-14 h-14 mx-auto rounded-2xl bg-gold/10 flex items-center justify-center mb-2">
-                            <span class="text-2xl">♿</span>
+
+                        {{-- Floating accent --}}
+                        <div style="position: absolute; top: -12px; right: -12px; width: 60px; height: 60px; background: linear-gradient(135deg, #d4a843, #b8922e); border-radius: 1rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 25px rgba(212, 168, 67, 0.3);">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a1040" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
                         </div>
-                        <span class="text-navy/40 text-xs font-body font-medium">Accessibility</span>
-                    </div>
-                    <div class="text-center">
-                        <div class="w-14 h-14 mx-auto rounded-2xl bg-purple/8 flex items-center justify-center mb-2">
-                            <span class="text-2xl">💜</span>
-                        </div>
-                        <span class="text-navy/40 text-xs font-body font-medium">Family Stories</span>
                     </div>
                 </div>
-
-                <p class="text-navy/35 text-sm font-body">Follow along — first posts dropping soon.</p>
             </div>
         </section>
     @endif
