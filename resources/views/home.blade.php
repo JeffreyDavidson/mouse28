@@ -1000,9 +1000,40 @@
                     <a href="/episodes" class="text-purple hover:text-navy font-semibold text-sm transition-colors font-body">All episodes →</a>
                 </div>
             @else
-                <div class="text-center py-10 bg-cream/50 rounded-2xl">
-                    <span class="text-3xl mb-3 block">🎙️</span>
-                    <p class="text-navy/65 font-body">Our first episode is coming soon!</p>
+                <div style="
+                    background: linear-gradient(135deg, #1a1040, #2d1b69);
+                    border-radius: 1.5rem;
+                    padding: 3rem 2.5rem;
+                    position: relative;
+                    overflow: hidden;
+                    border: 1px solid rgba(212, 168, 67, 0.12);
+                ">
+                    {{-- Ambient glow --}}
+                    <div style="position: absolute; top: -40%; right: -20%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(212, 168, 67, 0.1) 0%, transparent 60%); pointer-events: none;"></div>
+
+                    <div style="display: flex; align-items: center; gap: 2.5rem; flex-wrap: wrap; position: relative;">
+                        {{-- Waveform visual --}}
+                        <div style="flex-shrink: 0;">
+                            <div style="width: 100px; height: 100px; border-radius: 1.25rem; background: linear-gradient(135deg, #d4a843, #b8922e); display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(212, 168, 67, 0.25);">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1a1040" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                            </div>
+                        </div>
+
+                        <div style="flex: 1; min-width: 240px;">
+                            <h3 style="font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: #fef9ef; margin-bottom: 0.5rem;">
+                                Episode One Is Coming
+                            </h3>
+                            <p style="font-family: 'Poppins', sans-serif; color: rgba(254, 249, 239, 0.5); font-size: 0.95rem; line-height: 1.7; margin-bottom: 1.25rem;">
+                                Jeffrey &amp; Cassie are recording their first episode — an intro to who they are, why they started Mouse28, and what to expect from the show.
+                            </p>
+                            {{-- Faux waveform bars --}}
+                            <div style="display: flex; align-items: end; gap: 3px; height: 28px; opacity: 0.3;">
+                                @for($i = 0; $i < 40; $i++)
+                                    <div style="width: 3px; background: #d4a843; border-radius: 2px; height: {{ rand(15, 100) }}%;"></div>
+                                @endfor
+                            </div>
+                        </div>
+                    </div>
                 </div>
             @endif
         </div>
