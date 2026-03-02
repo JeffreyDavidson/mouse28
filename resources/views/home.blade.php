@@ -655,14 +655,32 @@
         <div class="max-w-2xl mx-auto px-4 sm:px-6 text-center relative z-10" data-animate>
             <h2 class="font-heading text-3xl md:text-4xl font-bold text-white mb-4">Get Disney Tips in Your Inbox</h2>
             <p class="text-white/55 text-lg mb-8 leading-[1.7] font-body">Weekly park tips, accessibility guides, and family stories. No spam, just pixie dust.</p>
-            <form action="#" method="POST" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                @csrf
-                <input type="email" name="email" placeholder="your@email.com" required
-                    class="newsletter-input flex-1 px-5 py-3.5 min-h-[48px] rounded-full bg-white/10 border border-white/20 text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-gold/60 focus:border-gold/40 text-sm font-body transition-all duration-300">
-                <button type="submit" class="bg-gold hover:bg-gold-light text-navy font-semibold px-7 py-3.5 min-h-[48px] rounded-full transition-all duration-300 text-sm font-body hover:shadow-lg hover:shadow-gold/30 hover:-translate-y-0.5 hover:scale-105 active:scale-95">
-                    Subscribe
-                </button>
-            </form>
+            @if(session('newsletter_success'))
+                <div class="bg-green-500/20 border border-green-400/30 rounded-xl px-6 py-4 max-w-md mx-auto">
+                    <p class="text-green-300 font-body text-sm">✨ You're subscribed! We'll send you the good stuff.</p>
+                </div>
+            @elseif(session('newsletter_error'))
+                <div class="bg-red-500/20 border border-red-400/30 rounded-xl px-6 py-4 max-w-md mx-auto mb-4">
+                    <p class="text-red-300 font-body text-sm">{{ session('newsletter_error') }}</p>
+                </div>
+                <form action="/newsletter" method="POST" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                    @csrf
+                    <input type="email" name="email" placeholder="your@email.com" required
+                        class="newsletter-input flex-1 px-5 py-3.5 min-h-[48px] rounded-full bg-white/10 border border-white/20 text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-gold/60 focus:border-gold/40 text-sm font-body transition-all duration-300">
+                    <button type="submit" class="bg-gold hover:bg-gold-light text-navy font-semibold px-7 py-3.5 min-h-[48px] rounded-full transition-all duration-300 text-sm font-body hover:shadow-lg hover:shadow-gold/30 hover:-translate-y-0.5 hover:scale-105 active:scale-95">
+                        Subscribe
+                    </button>
+                </form>
+            @else
+                <form action="/newsletter" method="POST" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+                    @csrf
+                    <input type="email" name="email" placeholder="your@email.com" required
+                        class="newsletter-input flex-1 px-5 py-3.5 min-h-[48px] rounded-full bg-white/10 border border-white/20 text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-gold/60 focus:border-gold/40 text-sm font-body transition-all duration-300">
+                    <button type="submit" class="bg-gold hover:bg-gold-light text-navy font-semibold px-7 py-3.5 min-h-[48px] rounded-full transition-all duration-300 text-sm font-body hover:shadow-lg hover:shadow-gold/30 hover:-translate-y-0.5 hover:scale-105 active:scale-95">
+                        Subscribe
+                    </button>
+                </form>
+            @endif
             <div class="flex items-center justify-center gap-6 mt-10 pt-8 border-t border-white/10">
                 <a href="#" class="text-white/40 hover:text-white/65 text-sm font-body transition-colors">🎧 Apple Podcasts</a>
                 <a href="#" class="text-white/40 hover:text-white/65 text-sm font-body transition-colors">💚 Spotify</a>
