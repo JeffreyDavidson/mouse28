@@ -123,6 +123,8 @@
             50% { opacity: 0.15; }
         }
 
+    </style>
+
     {{-- Hero Section --}}
     <section class="relative hero-animated-bg overflow-hidden">
         {{-- Stars / sparkles scattered across hero --}}
