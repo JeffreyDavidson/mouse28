@@ -319,22 +319,16 @@
                         <span class="text-gold">Different Eyes</span>
                     </h1>
                     <p class="text-white/60 text-lg md:text-xl max-w-xl mb-8 leading-[1.7] font-body">
-                        Sensory guides, accessibility tips, and real stories from a family who visits Disney every single week with our autistic daughter.
+                        Accessibility tips, sensory-friendly recommendations, and real stories from a family who visits Disney every single week with our autistic daughter.
                     </p>
                     <div class="flex flex-wrap items-center gap-4 mb-8">
                         <a href="/guides" class="cta-primary bg-gold hover:bg-gold-light text-navy font-semibold px-8 py-4 min-h-[48px] rounded-full shadow-lg shadow-gold/20 hover:shadow-gold/50 hover:scale-105 transition-all duration-300 hover:-translate-y-1 text-base font-body inline-flex items-center">
-                            Explore Our Guides
-                        </a>
-                        @if($featuredPost)
                             <a href="/blog/{{ $featuredPost->slug }}" class="text-white/55 hover:text-gold text-sm font-medium font-body transition-colors duration-200">
                                 or read the latest post →
                             </a>
                         @endif
                     </div>
-                    @if($guidesCount > 0 || $storiesCount > 0)
                         <div class="flex items-center gap-5 text-white/35 text-sm font-body">
-                            @if($guidesCount > 0)
-                                <span>📖 {{ $guidesCount }} {{ Str::plural('guide', $guidesCount) }}</span>
                             @endif
                             @if($storiesCount > 0)
                                 <span>💜 {{ $storiesCount }} {{ Str::plural('family', $storiesCount) }}</span>
@@ -841,7 +835,7 @@
             <div class="flex items-end justify-between mb-12" data-animate>
                 <div>
                     <span class="text-gold text-sm font-semibold tracking-[0.15em] uppercase font-body">Latest Stories</span>
-                    <h2 class="font-heading text-3xl md:text-4xl font-bold text-navy mt-2">Tips, Guides &amp; Disney Life</h2>
+                    <h2 class="font-heading text-3xl md:text-4xl font-bold text-navy mt-2">Tips &amp; Disney Life</h2>
                 </div>
                 <a href="/blog" class="hidden sm:inline-flex items-center gap-1 text-purple hover:text-navy font-semibold text-sm transition-colors font-body">
                     View all
@@ -898,54 +892,6 @@
         </div>
     </section>
 
-    {{-- Guides Teaser --}}
-    @if($popularGuides->count())
-        <section class="py-14 md:py-20 bg-cream">
-            <div class="max-w-6xl mx-auto px-4 sm:px-6">
-                <div class="flex items-end justify-between mb-10" data-animate>
-                    <div>
-                        <span class="text-gold text-sm font-semibold tracking-[0.15em] uppercase font-body">📖 Essential Reading</span>
-                        <h2 class="font-heading text-2xl md:text-3xl font-bold text-navy mt-1">Park Guides</h2>
-                    </div>
-                    <a href="/guides" class="hidden sm:inline-flex items-center gap-1 text-purple hover:text-navy font-semibold text-sm transition-colors font-body">
-                        All guides
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                    </a>
-                </div>
-                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                    @foreach($popularGuides as $guide)
-                        <a href="/guides/{{ $guide->slug }}" class="group bg-white rounded-xl p-5 border border-navy/5 hover:border-gold/30 hover:shadow-lg transition-all duration-300 hover:-translate-y-1" data-animate>
-                            <div class="flex items-start gap-3 mb-3">
-                                @if($guide->icon)
-                                    <span class="text-2xl flex-shrink-0">{{ $guide->icon }}</span>
-                                @else
-                                    <span class="text-2xl flex-shrink-0">📋</span>
-                                @endif
-                                <div class="min-w-0">
-                                    @if($guide->park)
-                                        <span class="text-purple/60 text-xs font-semibold uppercase tracking-wider font-body">{{ $guide->park }}</span>
-                                    @endif
-                                    <h3 class="font-heading text-base font-semibold text-navy group-hover:text-purple transition-colors leading-snug">{{ $guide->title }}</h3>
-                                </div>
-                            </div>
-                            @if($guide->excerpt)
-                                <p class="text-navy/50 text-sm leading-relaxed line-clamp-2 font-body">{{ Str::limit($guide->excerpt, 100) }}</p>
-                            @endif
-                        </a>
-                    @endforeach
-                </div>
-                <div class="text-center mt-8 sm:hidden">
-                    <a href="/guides" class="text-purple hover:text-navy font-semibold text-sm transition-colors font-body">All guides →</a>
-                </div>
-            </div>
-        </section>
-    @endif
-
-    {{-- Wave: Cream → White --}}
-    <div class="bg-white" aria-hidden="true">
-        <svg viewBox="0 0 1440 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto block -mt-px">
-            <path d="M0 0C480 40 960 0 1440 30V40H0V0Z" fill="#fef9ef"/>
-        </svg>
     </div>
 
     {{-- Podcast Section --}}

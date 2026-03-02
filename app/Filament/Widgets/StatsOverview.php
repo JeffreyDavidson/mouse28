@@ -4,7 +4,6 @@ namespace App\Filament\Widgets;
 
 use App\Models\CommunityStory;
 use App\Models\Episode;
-use App\Models\Guide;
 use App\Models\Post;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -27,11 +26,6 @@ class StatsOverview extends StatsOverviewWidget
                 ->icon('heroicon-o-microphone')
                 ->description('Published')
                 ->color('success'),
-
-            Stat::make('Guides', Guide::where('is_published', true)->count())
-                ->icon('heroicon-o-book-open')
-                ->description('Published')
-                ->color('info'),
 
             Stat::make('Community Stories', CommunityStory::where('is_approved', true)->count())
                 ->icon('heroicon-o-heart')

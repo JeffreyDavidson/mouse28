@@ -17,7 +17,7 @@ class SitemapController extends Controller
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
         // Static pages
-        foreach (['/', '/blog', '/episodes', '/about', '/contact', '/guides', '/stories'] as $path) {
+        foreach (['/', '/blog', '/episodes', '/about', '/contact', '/stories'] as $path) {
             $xml .= '<url><loc>' . url($path) . '</loc><changefreq>weekly</changefreq><priority>' . ($path === '/' ? '1.0' : '0.8') . '</priority></url>';
         }
 

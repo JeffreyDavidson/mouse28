@@ -171,7 +171,6 @@ class DatabaseSeeder extends Seeder
             Post::create($post);
         }
 
-        $this->call(GuideSeeder::class);
         $this->call(CommunityStorySeeder::class);
     }
 }
