@@ -122,167 +122,6 @@
             0%, 100% { opacity: 0.5; }
             50% { opacity: 0.15; }
         }
-        @keyframes firework-burst {
-            0% { transform: scale(0); opacity: 1; }
-            60% { transform: scale(1); opacity: 0.8; }
-            100% { transform: scale(1.3); opacity: 0; }
-        }
-        @keyframes pixie-rise {
-            0% { transform: translateY(0) scale(1); opacity: 0.9; }
-            100% { transform: translateY(-70px) scale(0.2); opacity: 0; }
-        }
-        @keyframes castle-glow {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.7; }
-        }
-        .star-twinkle { animation: twinkle var(--tw-dur, 3s) ease-in-out infinite; animation-delay: var(--tw-delay, 0s); }
-        .star-twinkle-alt { animation: twinkle-alt var(--tw-dur, 4s) ease-in-out infinite; animation-delay: var(--tw-delay, 0s); }
-        .firework { transform-origin: center; animation: firework-burst var(--fw-dur, 4s) ease-out infinite; animation-delay: var(--fw-delay, 0s); }
-        .pixie { animation: pixie-rise var(--px-dur, 3s) ease-out infinite; animation-delay: var(--px-delay, 0s); }
-        .glow-pulse { animation: castle-glow 3s ease-in-out infinite; }
-
-        /* === Cinematic Reveal Animations === */
-        @keyframes revealFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes revealRiseUp {
-            from { opacity: 0; transform: translateY(40px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes revealWalkIn {
-            from { opacity: 0; transform: translateX(-30px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes fogDrift {
-            0%, 100% { transform: translateX(-15px); }
-            50% { transform: translateX(15px); }
-        }
-        @keyframes fogDrift2 {
-            0%, 100% { transform: translateX(10px); }
-            50% { transform: translateX(-20px); }
-        }
-        @keyframes lightRaysRotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        @keyframes shootingStar {
-            0% { transform: translate(0, 0) scale(1); opacity: 0; }
-            5% { opacity: 1; }
-            15% { opacity: 1; }
-            20% { transform: translate(-120px, 60px) scale(0.3); opacity: 0; }
-            100% { opacity: 0; }
-        }
-        @keyframes shootingTrail {
-            0% { stroke-dashoffset: 150; opacity: 0; }
-            5% { opacity: 0.8; }
-            15% { opacity: 0.6; }
-            20% { stroke-dashoffset: 0; opacity: 0; }
-            100% { opacity: 0; }
-        }
-        @keyframes lanternReveal {
-            from { opacity: 0; transform: scale(0); }
-            to { opacity: 0.5; transform: scale(1); }
-        }
-        @keyframes pixieDustFloat {
-            0% { transform: translateY(0) scale(1); opacity: 0.8; }
-            100% { transform: translateY(-50px) scale(0.2); opacity: 0; }
-        }
-        @keyframes mobileFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-6px); }
-        }
-
-        /* Parallax layers */
-        .scene-parallax-layer { will-change: transform; transition: transform 0.1s linear; }
-
-        /* Cinematic reveal: hidden by default, revealed by .scene-loaded */
-        .scene-container .reveal-stars { opacity: 0; }
-        .scene-container .reveal-moonlight { opacity: 0; }
-        .scene-container .reveal-castle { opacity: 0; transform: translateY(40px); }
-        .scene-container .reveal-lightrays { opacity: 0; }
-        .scene-container .reveal-family { opacity: 0; transform: translateX(-30px); }
-        .scene-container .reveal-lanterns circle { opacity: 0; transform: scale(0); transform-origin: center; }
-        .scene-container .reveal-fireworks { opacity: 0; }
-        .scene-container .reveal-pixiedust { opacity: 0; }
-        .scene-container .reveal-fog { opacity: 0; }
-
-        .scene-loaded .reveal-stars {
-            animation: revealFadeIn 0.8s ease-out 0.3s forwards;
-        }
-        .scene-loaded .reveal-moonlight {
-            animation: revealFadeIn 1s ease-out 0.6s forwards;
-        }
-        .scene-loaded .reveal-castle {
-            animation: revealRiseUp 1s ease-out 1s forwards;
-        }
-        .scene-loaded .reveal-lightrays {
-            animation: revealFadeIn 0.8s ease-out 1.5s forwards;
-        }
-        .scene-loaded .reveal-family {
-            animation: revealWalkIn 0.8s ease-out 1.8s forwards;
-        }
-        .scene-loaded .reveal-lanterns circle:nth-child(1) { animation: lanternReveal 0.3s ease-out 2.0s forwards; }
-        .scene-loaded .reveal-lanterns circle:nth-child(2) { animation: lanternReveal 0.3s ease-out 2.1s forwards; }
-        .scene-loaded .reveal-lanterns circle:nth-child(3) { animation: lanternReveal 0.3s ease-out 2.2s forwards; }
-        .scene-loaded .reveal-lanterns circle:nth-child(4) { animation: lanternReveal 0.3s ease-out 2.15s forwards; }
-        .scene-loaded .reveal-lanterns circle:nth-child(5) { animation: lanternReveal 0.3s ease-out 2.25s forwards; }
-        .scene-loaded .reveal-lanterns circle:nth-child(6) { animation: lanternReveal 0.3s ease-out 2.35s forwards; }
-        .scene-loaded .reveal-fireworks {
-            animation: revealFadeIn 0.6s ease-out 2.3s forwards;
-        }
-        .scene-loaded .reveal-pixiedust {
-            animation: revealFadeIn 0.8s ease-out 2.5s forwards;
-        }
-        .scene-loaded .reveal-fog {
-            animation: revealFadeIn 1.2s ease-out 3.0s forwards;
-        }
-
-        /* Fog drift after reveal */
-        .scene-loaded .fog-element-1 { animation: revealFadeIn 1.2s ease-out 3.0s forwards, fogDrift 13s ease-in-out 4.2s infinite; }
-        .scene-loaded .fog-element-2 { animation: revealFadeIn 1.2s ease-out 3.2s forwards, fogDrift2 15s ease-in-out 4.4s infinite; }
-        .scene-loaded .fog-element-3 { animation: revealFadeIn 1.2s ease-out 3.4s forwards, fogDrift 12s ease-in-out 4.6s infinite; }
-
-        /* Light rays rotation after reveal */
-        .scene-loaded .lightrays-rotate {
-            animation: revealFadeIn 0.8s ease-out 1.5s forwards, lightRaysRotate 30s linear 2.3s infinite;
-        }
-
-        /* Shooting star */
-        .shooting-star-head { animation: shootingStar 9s ease-in infinite; animation-delay: 3s; }
-        .shooting-star-trail { stroke-dasharray: 150; animation: shootingTrail 9s ease-in infinite; animation-delay: 3s; }
-        .shooting-star-2-head { animation: shootingStar 11s ease-in infinite; animation-delay: 7s; }
-        .shooting-star-2-trail { stroke-dasharray: 150; animation: shootingTrail 11s ease-in infinite; animation-delay: 7s; }
-
-        /* Pixie dust cursor particle */
-        .pixie-cursor-particle {
-            position: absolute;
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            pointer-events: none;
-            animation: pixieDustFloat var(--pd-dur, 1s) ease-out forwards;
-        }
-
-        /* Blend mode overlays */
-        .moonlight-overlay {
-            position: absolute; inset: 0; pointer-events: none; z-index: 2;
-            background: radial-gradient(ellipse at 50% 20%, rgba(200,210,255,0.15) 0%, transparent 60%);
-            mix-blend-mode: soft-light;
-        }
-        .warm-glow-overlay {
-            position: absolute; pointer-events: none; z-index: 2;
-            width: 80px; height: 60px;
-            left: 46%; top: 56%;
-            background: radial-gradient(ellipse, rgba(212,168,67,0.2) 0%, transparent 70%);
-            mix-blend-mode: screen;
-        }
-
-        /* Mobile fallback — gentle float */
-        @media (hover: none) {
-            .scene-parallax-layer { animation: mobileFloat 6s ease-in-out infinite; }
-        }
-    </style>
 
     {{-- Hero Section --}}
     <section class="relative hero-animated-bg overflow-hidden">
@@ -338,420 +177,104 @@
                     @endif
                 </div>
 
-                {{-- Right side: Magical illustrated scene --}}
-                <div class="lg:w-[42%] relative w-full max-w-md lg:max-w-none mx-auto lg:mx-0" style="-webkit-mask-image: radial-gradient(ellipse 85% 80% at center, black 40%, transparent 100%); mask-image: radial-gradient(ellipse 85% 80% at center, black 40%, transparent 100%);">
-                    <div class="scene-container relative h-[280px] sm:h-[350px] lg:h-[480px]" id="magicalScene">
-                        {{-- Blend mode overlays --}}
-                        <div class="moonlight-overlay" aria-hidden="true"></div>
-                        <div class="warm-glow-overlay" aria-hidden="true"></div>
-
+                {{-- Right side: Castle silhouette with stars --}}
+                <div class="lg:w-[42%] relative w-full max-w-md lg:max-w-none mx-auto lg:mx-0">
+                    <div class="relative h-[280px] sm:h-[350px] lg:h-[480px]" style="-webkit-mask-image: radial-gradient(ellipse 90% 85% at center 55%, black 50%, transparent 100%); mask-image: radial-gradient(ellipse 90% 85% at center 55%, black 50%, transparent 100%);">
                         <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" class="w-full h-full" preserveAspectRatio="xMidYMid meet">
                             <defs>
-                                {{-- Sky gradient --}}
                                 <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
                                     <stop offset="0%" stop-color="#0d0a24"/>
-                                    <stop offset="40%" stop-color="#1a1040"/>
+                                    <stop offset="50%" stop-color="#1a1040"/>
                                     <stop offset="100%" stop-color="#2d1b69"/>
                                 </linearGradient>
-                                {{-- Castle entrance glow --}}
-                                <radialGradient id="entranceGlow" cx="50%" cy="50%" r="50%">
-                                    <stop offset="0%" stop-color="#d4a843" stop-opacity="0.6"/>
-                                    <stop offset="100%" stop-color="#d4a843" stop-opacity="0"/>
-                                </radialGradient>
-                                {{-- Ground gradient --}}
-                                <linearGradient id="groundGrad" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#1a1040" stop-opacity="0"/>
-                                    <stop offset="100%" stop-color="#0d0a24"/>
-                                </linearGradient>
-                                {{-- Moonlight glow --}}
-                                <radialGradient id="moonGlow" cx="50%" cy="25%" r="45%">
-                                    <stop offset="0%" stop-color="#dde4ff" stop-opacity="0.12"/>
-                                    <stop offset="50%" stop-color="#b8c4ff" stop-opacity="0.05"/>
+                                <radialGradient id="moonGlow" cx="70%" cy="15%" r="25%">
+                                    <stop offset="0%" stop-color="#fef9ef" stop-opacity="0.12"/>
                                     <stop offset="100%" stop-color="#1a1040" stop-opacity="0"/>
                                 </radialGradient>
-                                {{-- Light rays gradient --}}
-                                <radialGradient id="lightRays" cx="50%" cy="50%" r="50%">
-                                    <stop offset="0%" stop-color="#f0c75e" stop-opacity="0.12"/>
-                                    <stop offset="40%" stop-color="#d4a843" stop-opacity="0.05"/>
+                                <radialGradient id="castleGlow" cx="50%" cy="85%" r="30%">
+                                    <stop offset="0%" stop-color="#d4a843" stop-opacity="0.15"/>
                                     <stop offset="100%" stop-color="#1a1040" stop-opacity="0"/>
                                 </radialGradient>
-                                {{-- Fog blur filter --}}
-                                <filter id="fogBlur">
-                                    <feGaussianBlur stdDeviation="8"/>
-                                </filter>
-                                {{-- Water reflection blur --}}
-                                <filter id="waterBlur">
-                                    <feGaussianBlur stdDeviation="3"/>
-                                    <feComponentTransfer>
-                                        <feFuncA type="linear" slope="0.15"/>
-                                    </feComponentTransfer>
-                                </filter>
-                                {{-- Shooting star trail gradient --}}
-                                <linearGradient id="trailGrad" x1="0" y1="0" x2="1" y2="0">
-                                    <stop offset="0%" stop-color="white" stop-opacity="0"/>
-                                    <stop offset="80%" stop-color="white" stop-opacity="0.6"/>
-                                    <stop offset="100%" stop-color="white" stop-opacity="1"/>
-                                </linearGradient>
-                                {{-- Rim lighting filter --}}
-                                <filter id="rimLight">
-                                    <feGaussianBlur stdDeviation="1.5"/>
-                                    <feComponentTransfer>
-                                        <feFuncA type="linear" slope="0.3"/>
-                                    </feComponentTransfer>
-                                </filter>
-                                {{-- Sparkle shape --}}
-                                <g id="sparkle4">
-                                    <line x1="0" y1="-4" x2="0" y2="4" stroke="#f0c75e" stroke-width="1" stroke-linecap="round"/>
-                                    <line x1="-4" y1="0" x2="4" y2="0" stroke="#f0c75e" stroke-width="1" stroke-linecap="round"/>
-                                    <line x1="-2.5" y1="-2.5" x2="2.5" y2="2.5" stroke="#f0c75e" stroke-width="0.6" stroke-linecap="round"/>
-                                    <line x1="2.5" y1="-2.5" x2="-2.5" y2="2.5" stroke="#f0c75e" stroke-width="0.6" stroke-linecap="round"/>
-                                </g>
-                                {{-- Water reflection mask --}}
-                                <linearGradient id="waterMask" x1="0" y1="0" x2="1" y2="0">
-                                    <stop offset="0%" stop-color="white" stop-opacity="0"/>
-                                    <stop offset="30%" stop-color="white" stop-opacity="1"/>
-                                    <stop offset="70%" stop-color="white" stop-opacity="1"/>
-                                    <stop offset="100%" stop-color="white" stop-opacity="0"/>
-                                </linearGradient>
-                                <mask id="reflectionMask">
-                                    <rect x="140" y="310" width="220" height="80" fill="url(#waterMask)"/>
-                                </mask>
                             </defs>
 
-                            {{-- Sky background --}}
+                            {{-- Sky --}}
                             <rect width="500" height="500" fill="url(#skyGrad)"/>
+                            <rect width="500" height="500" fill="url(#moonGlow)"/>
 
-                            {{-- LAYER 1: Background stars (most parallax) --}}
-                            <g class="scene-parallax-layer reveal-stars" data-parallax-layer="1">
-                                <circle cx="45" cy="35" r="1.2" fill="white" class="star-twinkle" style="--tw-dur:2.8s;--tw-delay:0s"/>
-                                <circle cx="120" cy="22" r="0.8" fill="white" class="star-twinkle" style="--tw-dur:4s;--tw-delay:1.2s"/>
-                                <circle cx="190" cy="50" r="1.5" fill="white" class="star-twinkle-alt" style="--tw-dur:3.5s;--tw-delay:0.5s"/>
-                                <circle cx="280" cy="18" r="1" fill="white" class="star-twinkle" style="--tw-dur:3s;--tw-delay:2s"/>
-                                <circle cx="350" cy="40" r="1.3" fill="white" class="star-twinkle-alt" style="--tw-dur:4.2s;--tw-delay:0.8s"/>
-                                <circle cx="420" cy="25" r="0.9" fill="white" class="star-twinkle" style="--tw-dur:2.5s;--tw-delay:1.5s"/>
-                                <circle cx="470" cy="55" r="1.1" fill="white" class="star-twinkle-alt" style="--tw-dur:3.8s;--tw-delay:0.3s"/>
-                                <circle cx="75" cy="80" r="0.7" fill="white" class="star-twinkle" style="--tw-dur:3.2s;--tw-delay:2.5s"/>
-                                <circle cx="160" cy="95" r="1" fill="white" class="star-twinkle-alt" style="--tw-dur:4.5s;--tw-delay:1s"/>
-                                <circle cx="310" cy="75" r="1.4" fill="white" class="star-twinkle" style="--tw-dur:2.6s;--tw-delay:0.7s"/>
-                                <circle cx="400" cy="90" r="0.8" fill="white" class="star-twinkle-alt" style="--tw-dur:3.9s;--tw-delay:1.8s"/>
-                                <circle cx="55" cy="130" r="1" fill="white" class="star-twinkle" style="--tw-dur:3.4s;--tw-delay:0.2s"/>
-                                <circle cx="440" cy="120" r="1.2" fill="white" class="star-twinkle" style="--tw-dur:2.9s;--tw-delay:2.2s"/>
-                                <circle cx="230" cy="65" r="0.6" fill="white" class="star-twinkle-alt" style="--tw-dur:5s;--tw-delay:0.6s"/>
-                                <circle cx="480" cy="160" r="0.9" fill="white" class="star-twinkle" style="--tw-dur:3.7s;--tw-delay:1.3s"/>
-                                <circle cx="25" cy="170" r="1.1" fill="white" class="star-twinkle-alt" style="--tw-dur:4.1s;--tw-delay:0.9s"/>
-                                {{-- Sparkle stars --}}
-                                <use href="#sparkle4" x="95" y="45" class="star-twinkle" style="--tw-dur:3s;--tw-delay:1s" opacity="0.5"/>
-                                <use href="#sparkle4" x="380" y="60" class="star-twinkle-alt" style="--tw-dur:4s;--tw-delay:2s" opacity="0.4"/>
-                                <use href="#sparkle4" x="460" y="95" class="star-twinkle" style="--tw-dur:3.5s;--tw-delay:0.4s" opacity="0.35"/>
+                            {{-- Stars --}}
+                            @for($i = 0; $i < 60; $i++)
+                                <circle
+                                    cx="{{ rand(10, 490) }}"
+                                    cy="{{ rand(10, 280) }}"
+                                    r="{{ rand(3, 8) / 10 }}"
+                                    fill="#fef9ef"
+                                    opacity="{{ rand(2, 8) / 10 }}"
+                                >
+                                    <animate attributeName="opacity"
+                                        values="{{ rand(2, 4) / 10 }};{{ rand(7, 10) / 10 }};{{ rand(2, 4) / 10 }}"
+                                        dur="{{ rand(20, 50) / 10 }}s"
+                                        begin="{{ rand(0, 30) / 10 }}s"
+                                        repeatCount="indefinite"/>
+                                </circle>
+                            @endfor
 
-                                {{-- Moonlight glow --}}
-                                <g class="reveal-moonlight">
-                                    <circle cx="250" cy="100" r="180" fill="url(#moonGlow)"/>
-                                </g>
+                            {{-- Distant trees/treeline --}}
+                            <path d="M0 380 Q50 360 80 370 Q100 350 130 365 Q160 345 190 360 Q210 340 240 355 Q270 335 300 350 Q330 340 350 355 Q370 338 400 350 Q430 340 460 355 Q480 345 500 360 L500 500 L0 500 Z" fill="#0d0a24" opacity="0.5"/>
 
-                                {{-- Shooting stars --}}
-                                <g>
-                                    <circle cx="420" cy="30" r="2" fill="white" class="shooting-star-head"/>
-                                    <line x1="420" y1="30" x2="540" y2="-30" stroke="url(#trailGrad)" stroke-width="1.5" stroke-linecap="round" class="shooting-star-trail"/>
-                                </g>
-                                <g>
-                                    <circle cx="380" cy="50" r="1.5" fill="white" class="shooting-star-2-head"/>
-                                    <line x1="380" y1="50" x2="480" y2="0" stroke="url(#trailGrad)" stroke-width="1" stroke-linecap="round" class="shooting-star-2-trail"/>
-                                </g>
+                            {{-- Castle silhouette --}}
+                            <g transform="translate(250, 350)" style="filter: drop-shadow(0 0 20px rgba(212, 168, 67, 0.1));">
+                                {{-- Main structure --}}
+                                <rect x="-80" y="-80" width="160" height="80" fill="#0a0620" rx="2"/>
+                                {{-- Center tower --}}
+                                <rect x="-15" y="-170" width="30" height="90" fill="#0a0620"/>
+                                <polygon points="-20,-170 0,-200 20,-170" fill="#0a0620"/>
+                                {{-- Spire --}}
+                                <line x1="0" y1="-200" x2="0" y2="-215" stroke="#d4a843" stroke-width="1.5" opacity="0.6"/>
+                                {{-- Left tower --}}
+                                <rect x="-75" y="-130" width="25" height="50" fill="#0a0620"/>
+                                <polygon points="-78,-130 -62,-155 -47,-130" fill="#0a0620"/>
+                                <line x1="-62" y1="-155" x2="-62" y2="-165" stroke="#d4a843" stroke-width="1" opacity="0.5"/>
+                                {{-- Right tower --}}
+                                <rect x="50" y="-130" width="25" height="50" fill="#0a0620"/>
+                                <polygon points="47,-130 62,-155 78,-130" fill="#0a0620"/>
+                                <line x1="62" y1="-155" x2="62" y2="-165" stroke="#d4a843" stroke-width="1" opacity="0.5"/>
+                                {{-- Far left turret --}}
+                                <rect x="-95" y="-110" width="18" height="30" fill="#0a0620"/>
+                                <polygon points="-97,-110 -86,-128 -75,-110" fill="#0a0620"/>
+                                {{-- Far right turret --}}
+                                <rect x="77" y="-110" width="18" height="30" fill="#0a0620"/>
+                                <polygon points="75,-110 86,-128 97,-110" fill="#0a0620"/>
+                                {{-- Windows (warm glow) --}}
+                                <rect x="-8" y="-100" width="6" height="10" rx="3" fill="#d4a843" opacity="0.4"/>
+                                <rect x="2" y="-100" width="6" height="10" rx="3" fill="#d4a843" opacity="0.35"/>
+                                <rect x="-50" y="-65" width="5" height="8" rx="2" fill="#d4a843" opacity="0.25"/>
+                                <rect x="-35" y="-65" width="5" height="8" rx="2" fill="#d4a843" opacity="0.3"/>
+                                <rect x="30" y="-65" width="5" height="8" rx="2" fill="#d4a843" opacity="0.25"/>
+                                <rect x="45" y="-65" width="5" height="8" rx="2" fill="#d4a843" opacity="0.3"/>
+                                {{-- Entrance arch --}}
+                                <path d="M-12,-10 L-12,-35 Q0,-48 12,-35 L12,-10" fill="#0a0620" stroke="#d4a843" stroke-width="0.5" stroke-opacity="0.3"/>
+                                <rect x="-10" y="-28" width="20" height="28" fill="#d4a843" opacity="0.08"/>
                             </g>
 
-                            {{-- LAYER 2: Fireworks --}}
-                            <g class="scene-parallax-layer reveal-fireworks" data-parallax-layer="2">
-                                {{-- Firework 1 — gold, upper left --}}
-                                <g class="firework" style="--fw-dur:4.5s;--fw-delay:0s">
-                                    <circle cx="150" cy="80" r="2" fill="#f0c75e"/>
-                                    <line x1="150" y1="80" x2="150" y2="58" stroke="#f0c75e" stroke-width="1.2" stroke-linecap="round" opacity="0.9"/>
-                                    <line x1="150" y1="80" x2="150" y2="102" stroke="#f0c75e" stroke-width="1.2" stroke-linecap="round" opacity="0.9"/>
-                                    <line x1="150" y1="80" x2="128" y2="80" stroke="#f0c75e" stroke-width="1.2" stroke-linecap="round" opacity="0.9"/>
-                                    <line x1="150" y1="80" x2="172" y2="80" stroke="#f0c75e" stroke-width="1.2" stroke-linecap="round" opacity="0.9"/>
-                                    <line x1="150" y1="80" x2="135" y2="65" stroke="#d4a843" stroke-width="0.8" stroke-linecap="round" opacity="0.7"/>
-                                    <line x1="150" y1="80" x2="165" y2="65" stroke="#d4a843" stroke-width="0.8" stroke-linecap="round" opacity="0.7"/>
-                                    <line x1="150" y1="80" x2="135" y2="95" stroke="#d4a843" stroke-width="0.8" stroke-linecap="round" opacity="0.7"/>
-                                    <line x1="150" y1="80" x2="165" y2="95" stroke="#d4a843" stroke-width="0.8" stroke-linecap="round" opacity="0.7"/>
-                                    <circle cx="150" cy="58" r="1.5" fill="#f0c75e" opacity="0.8"/>
-                                    <circle cx="172" cy="80" r="1.5" fill="#f0c75e" opacity="0.8"/>
-                                    <circle cx="135" cy="65" r="1" fill="#d4a843" opacity="0.6"/>
-                                    <circle cx="165" cy="95" r="1" fill="#d4a843" opacity="0.6"/>
-                                </g>
+                            {{-- Castle base glow --}}
+                            <rect x="0" y="340" width="500" height="160" fill="url(#castleGlow)"/>
 
-                                {{-- Firework 2 — purple-light, upper center --}}
-                                <g class="firework" style="--fw-dur:5s;--fw-delay:1.8s">
-                                    <circle cx="270" cy="55" r="2" fill="#7b5eb5"/>
-                                    <line x1="270" y1="55" x2="270" y2="30" stroke="#7b5eb5" stroke-width="1.2" stroke-linecap="round" opacity="0.9"/>
-                                    <line x1="270" y1="55" x2="270" y2="80" stroke="#7b5eb5" stroke-width="1.2" stroke-linecap="round" opacity="0.9"/>
-                                    <line x1="270" y1="55" x2="245" y2="55" stroke="#7b5eb5" stroke-width="1.2" stroke-linecap="round" opacity="0.9"/>
-                                    <line x1="270" y1="55" x2="295" y2="55" stroke="#7b5eb5" stroke-width="1.2" stroke-linecap="round" opacity="0.9"/>
-                                    <line x1="270" y1="55" x2="253" y2="38" stroke="white" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
-                                    <line x1="270" y1="55" x2="287" y2="38" stroke="white" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
-                                    <line x1="270" y1="55" x2="253" y2="72" stroke="white" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
-                                    <line x1="270" y1="55" x2="287" y2="72" stroke="white" stroke-width="0.8" stroke-linecap="round" opacity="0.6"/>
-                                    <circle cx="270" cy="30" r="1.5" fill="#7b5eb5" opacity="0.8"/>
-                                    <circle cx="295" cy="55" r="1.5" fill="#7b5eb5" opacity="0.8"/>
-                                    <circle cx="253" cy="38" r="1" fill="white" opacity="0.5"/>
-                                    <circle cx="287" cy="72" r="1" fill="white" opacity="0.5"/>
-                                </g>
+                            {{-- Ground --}}
+                            <path d="M0 400 Q125 385 250 390 Q375 395 500 388 L500 500 L0 500 Z" fill="#0d0a24"/>
 
-                                {{-- Firework 3 — white/gold, upper right --}}
-                                <g class="firework" style="--fw-dur:4s;--fw-delay:3.2s">
-                                    <circle cx="370" cy="70" r="1.5" fill="white"/>
-                                    <line x1="370" y1="70" x2="370" y2="50" stroke="white" stroke-width="1" stroke-linecap="round" opacity="0.9"/>
-                                    <line x1="370" y1="70" x2="370" y2="90" stroke="white" stroke-width="1" stroke-linecap="round" opacity="0.9"/>
-                                    <line x1="370" y1="70" x2="350" y2="70" stroke="white" stroke-width="1" stroke-linecap="round" opacity="0.9"/>
-                                    <line x1="370" y1="70" x2="390" y2="70" stroke="white" stroke-width="1" stroke-linecap="round" opacity="0.9"/>
-                                    <line x1="370" y1="70" x2="356" y2="56" stroke="#f0c75e" stroke-width="0.7" stroke-linecap="round" opacity="0.6"/>
-                                    <line x1="370" y1="70" x2="384" y2="56" stroke="#f0c75e" stroke-width="0.7" stroke-linecap="round" opacity="0.6"/>
-                                    <line x1="370" y1="70" x2="356" y2="84" stroke="#f0c75e" stroke-width="0.7" stroke-linecap="round" opacity="0.6"/>
-                                    <line x1="370" y1="70" x2="384" y2="84" stroke="#f0c75e" stroke-width="0.7" stroke-linecap="round" opacity="0.6"/>
-                                    <circle cx="370" cy="50" r="1.2" fill="white" opacity="0.7"/>
-                                    <circle cx="356" cy="56" r="0.8" fill="#f0c75e" opacity="0.5"/>
-                                </g>
-                            </g>
-
-                            {{-- LAYER 3: Castle + atmosphere --}}
-                            <g class="scene-parallax-layer" data-parallax-layer="3">
-                                {{-- Light rays behind castle --}}
-                                <g class="reveal-lightrays lightrays-rotate" style="transform-origin: 250px 180px;">
-                                    <ellipse cx="250" cy="180" rx="120" ry="120" fill="url(#lightRays)" opacity="0.13"/>
-                                    {{-- Radial ray lines for conic effect --}}
-                                    <line x1="250" y1="180" x2="250" y2="60" stroke="#f0c75e" stroke-width="0.5" opacity="0.06"/>
-                                    <line x1="250" y1="180" x2="340" y2="90" stroke="#f0c75e" stroke-width="0.5" opacity="0.05"/>
-                                    <line x1="250" y1="180" x2="370" y2="180" stroke="#f0c75e" stroke-width="0.5" opacity="0.06"/>
-                                    <line x1="250" y1="180" x2="160" y2="90" stroke="#f0c75e" stroke-width="0.5" opacity="0.05"/>
-                                    <line x1="250" y1="180" x2="130" y2="180" stroke="#f0c75e" stroke-width="0.5" opacity="0.06"/>
-                                    <line x1="250" y1="180" x2="300" y2="70" stroke="white" stroke-width="0.3" opacity="0.04"/>
-                                    <line x1="250" y1="180" x2="200" y2="70" stroke="white" stroke-width="0.3" opacity="0.04"/>
-                                </g>
-
-                                {{-- Castle silhouette --}}
-                                <g fill="#2d1b69" class="reveal-castle">
-                                    {{-- Central tall spire --}}
-                                    <polygon points="250,120 248,135 245,160 243,185 240,210 237,240 236,260 264,260 263,240 260,210 257,185 255,160 252,135"/>
-                                    {{-- Spire tip --}}
-                                    <polygon points="250,100 247,120 253,120"/>
-                                    {{-- Spire flag --}}
-                                    <line x1="250" y1="100" x2="250" y2="92" stroke="#2d1b69" stroke-width="1.5"/>
-                                    <polygon points="250,92 260,96 250,100" fill="#5b3e9e" opacity="0.7"/>
-                                    {{-- Central tower body --}}
-                                    <rect x="230" y="260" width="40" height="50" rx="2"/>
-                                    {{-- Castle entrance arch --}}
-                                    <rect x="238" y="290" width="24" height="20" rx="12" fill="#1a1040"/>
-                                    {{-- Left main tower --}}
-                                    <rect x="195" y="230" width="35" height="80" rx="2"/>
-                                    <polygon points="212,195 198,230 227,230"/>
-                                    <polygon points="212,185 209,195 215,195"/>
-                                    {{-- Right main tower --}}
-                                    <rect x="270" y="230" width="35" height="80" rx="2"/>
-                                    <polygon points="287,195 273,230 302,230"/>
-                                    <polygon points="287,185 284,195 290,195"/>
-                                    {{-- Far left small tower --}}
-                                    <rect x="170" y="270" width="25" height="40" rx="2"/>
-                                    <polygon points="182,250 172,270 193,270"/>
-                                    <polygon points="182,242 179,250 185,250"/>
-                                    {{-- Far right small tower --}}
-                                    <rect x="305" y="270" width="25" height="40" rx="2"/>
-                                    <polygon points="317,250 307,270 328,270"/>
-                                    <polygon points="317,242 314,250 320,250"/>
-                                    {{-- Connecting walls --}}
-                                    <rect x="170" y="295" width="160" height="15" rx="1"/>
-                                    {{-- Battlements on walls --}}
-                                    <rect x="175" y="290" width="6" height="8" fill="#2d1b69"/>
-                                    <rect x="186" y="290" width="6" height="8" fill="#2d1b69"/>
-                                    <rect x="270" y="290" width="6" height="8" fill="#2d1b69"/>
-                                    <rect x="281" y="290" width="6" height="8" fill="#2d1b69"/>
-                                    <rect x="308" y="290" width="6" height="8" fill="#2d1b69"/>
-                                    <rect x="319" y="290" width="6" height="8" fill="#2d1b69"/>
-                                    {{-- Tower windows --}}
-                                    <ellipse cx="212" cy="255" rx="4" ry="6" fill="#1a1040" opacity="0.6"/>
-                                    <ellipse cx="287" cy="255" rx="4" ry="6" fill="#1a1040" opacity="0.6"/>
-                                    <ellipse cx="250" cy="275" rx="3" ry="5" fill="#1a1040" opacity="0.6"/>
-                                    {{-- Small accent spires --}}
-                                    <polygon points="200,230 198,222 202,222" fill="#3a2370"/>
-                                    <polygon points="224,230 222,222 226,222" fill="#3a2370"/>
-                                    <polygon points="276,230 274,222 278,222" fill="#3a2370"/>
-                                    <polygon points="300,230 298,222 302,222" fill="#3a2370"/>
-                                </g>
-
-                                {{-- Castle entrance glow --}}
-                                <ellipse cx="250" cy="300" rx="20" ry="18" fill="url(#entranceGlow)" class="glow-pulse reveal-castle"/>
-
-                                {{-- Window warm glow dots --}}
-                                <circle cx="212" cy="255" r="2" fill="#d4a843" opacity="0.25" class="glow-pulse reveal-castle"/>
-                                <circle cx="287" cy="255" r="2" fill="#d4a843" opacity="0.25" class="glow-pulse reveal-castle"/>
-                                <circle cx="250" cy="275" r="1.5" fill="#d4a843" opacity="0.2" class="glow-pulse reveal-castle"/>
-
-                                {{-- Water reflection below castle --}}
-                                <g mask="url(#reflectionMask)" class="reveal-castle" opacity="0.15">
-                                    <g filter="url(#waterBlur)" transform="translate(0, 620) scale(1, -1)">
-                                        <polygon points="250,120 248,135 245,160 243,185 240,210 237,240 236,260 264,260 263,240 260,210 257,185 255,160 252,135" fill="#3a2a7a"/>
-                                        <polygon points="250,100 247,120 253,120" fill="#3a2a7a"/>
-                                        <rect x="230" y="260" width="40" height="50" rx="2" fill="#3a2a7a"/>
-                                        <rect x="195" y="230" width="35" height="80" rx="2" fill="#3a2a7a"/>
-                                        <polygon points="212,195 198,230 227,230" fill="#3a2a7a"/>
-                                        <rect x="270" y="230" width="35" height="80" rx="2" fill="#3a2a7a"/>
-                                        <polygon points="287,195 273,230 302,230" fill="#3a2a7a"/>
-                                        <rect x="170" y="270" width="25" height="40" rx="2" fill="#3a2a7a"/>
-                                        <rect x="305" y="270" width="25" height="40" rx="2" fill="#3a2a7a"/>
-                                        <rect x="170" y="295" width="160" height="15" rx="1" fill="#3a2a7a"/>
-                                    </g>
-                                </g>
-
-                                {{-- Fog / mist at castle base --}}
-                                <g class="reveal-fog">
-                                    <ellipse cx="220" cy="310" rx="60" ry="12" fill="rgba(180,170,220,0.2)" filter="url(#fogBlur)" class="fog-element-1" opacity="0"/>
-                                    <ellipse cx="280" cy="315" rx="55" ry="10" fill="rgba(255,255,255,0.15)" filter="url(#fogBlur)" class="fog-element-2" opacity="0"/>
-                                    <ellipse cx="250" cy="320" rx="70" ry="8" fill="rgba(200,190,240,0.18)" filter="url(#fogBlur)" class="fog-element-3" opacity="0"/>
-                                </g>
-                            </g>
-
-                            {{-- LAYER 4: Family + foreground (least parallax) --}}
-                            <g class="scene-parallax-layer" data-parallax-layer="4">
-                                {{-- Ground/path area --}}
-                                <rect x="0" y="390" width="500" height="110" fill="url(#groundGrad)"/>
-                                <ellipse cx="250" cy="400" rx="250" ry="30" fill="#0f0b22" opacity="0.5"/>
-
-                                {{-- Walkway path --}}
-                                <path d="M250,310 Q248,340 240,370 Q230,400 200,440 Q180,465 140,490" stroke="#2d1b69" stroke-width="28" fill="none" stroke-linecap="round" opacity="0.3"/>
-                                <path d="M250,310 Q252,340 260,370 Q270,400 300,440 Q320,465 360,490" stroke="#2d1b69" stroke-width="28" fill="none" stroke-linecap="round" opacity="0.3"/>
-
-                                {{-- Path lanterns --}}
-                                <g class="reveal-lanterns">
-                                    <circle cx="228" cy="380" r="1.5" fill="#d4a843" class="star-twinkle" style="--tw-dur:2s;--tw-delay:0s"/>
-                                    <circle cx="215" cy="410" r="1.5" fill="#d4a843" class="star-twinkle" style="--tw-dur:2s;--tw-delay:0.4s"/>
-                                    <circle cx="195" cy="440" r="1.5" fill="#d4a843" class="star-twinkle" style="--tw-dur:2s;--tw-delay:0.8s"/>
-                                    <circle cx="272" cy="380" r="1.5" fill="#d4a843" class="star-twinkle" style="--tw-dur:2s;--tw-delay:0.2s"/>
-                                    <circle cx="285" cy="410" r="1.5" fill="#d4a843" class="star-twinkle" style="--tw-dur:2s;--tw-delay:0.6s"/>
-                                    <circle cx="305" cy="440" r="1.5" fill="#d4a843" class="star-twinkle" style="--tw-dur:2s;--tw-delay:1s"/>
-                                </g>
-
-                                {{-- Lantern glow halos --}}
-                                <g class="reveal-lanterns" opacity="0.15">
-                                    <circle cx="228" cy="380" r="6" fill="#d4a843" filter="url(#fogBlur)"/>
-                                    <circle cx="272" cy="380" r="6" fill="#d4a843" filter="url(#fogBlur)"/>
-                                    <circle cx="215" cy="410" r="5" fill="#d4a843" filter="url(#fogBlur)"/>
-                                    <circle cx="285" cy="410" r="5" fill="#d4a843" filter="url(#fogBlur)"/>
-                                </g>
-
-                                {{-- Family silhouette --}}
-                                <g fill="#0e0a1f" class="reveal-family">
-                                    {{-- Rim lighting (duplicate offset + blur) --}}
-                                    <g filter="url(#rimLight)" opacity="0.25" fill="none" stroke="#7b5eb5" stroke-width="1.5">
-                                        <ellipse cx="225" cy="378" rx="7" ry="7.5"/>
-                                        <ellipse cx="240" cy="400" rx="6" ry="6.5"/>
-                                        <ellipse cx="260" cy="383" rx="6.5" ry="7"/>
-                                    </g>
-
-                                    {{-- Taller parent (Jeffrey) — left --}}
-                                    <ellipse cx="225" cy="378" rx="6" ry="6.5"/>
-                                    <path d="M225,384 Q222,395 220,410 Q218,420 217,435 L220,435 Q221,425 223,415 L225,415 Q227,425 228,435 L231,435 Q230,420 228,410 Q226,395 225,384Z"/>
-                                    <path d="M222,392 Q220,398 222,404 Q224,408 228,410" stroke="#0e0a1f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                                    <path d="M228,392 Q232,400 230,408" stroke="#0e0a1f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-
-                                    {{-- Child (Viola) — center, reaching up --}}
-                                    <ellipse cx="240" cy="400" rx="5" ry="5.5"/>
-                                    <path d="M240,405 Q238,413 237,425 Q236,432 235,440 L238,440 Q238.5,433 239,427 L241,427 Q241.5,433 242,440 L245,440 Q244,432 243,425 Q242,413 240,405Z"/>
-                                    <path d="M237,410 Q234,405 231,400 Q229,397 228,394" stroke="#0e0a1f" stroke-width="2" fill="none" stroke-linecap="round"/>
-                                    <path d="M243,412 Q246,416 248,414" stroke="#0e0a1f" stroke-width="2" fill="none" stroke-linecap="round"/>
-
-                                    {{-- Shorter parent (Cassie) — right --}}
-                                    <ellipse cx="260" cy="383" rx="5.5" ry="6"/>
-                                    <path d="M260,389 Q258,398 256,412 Q255,422 254,435 L257,435 Q257.5,425 259,417 L261,417 Q262.5,425 263,435 L266,435 Q265,422 263,412 Q261,398 260,389Z"/>
-                                    <path d="M256,396 Q253,402 254,410" stroke="#0e0a1f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                                    <path d="M264,396 Q267,404 265,410" stroke="#0e0a1f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                                    <path d="M255,383 Q254,388 255,392" stroke="#0e0a1f" stroke-width="2" fill="none" stroke-linecap="round"/>
-                                    <path d="M265,383 Q266,388 265,392" stroke="#0e0a1f" stroke-width="2" fill="none" stroke-linecap="round"/>
-                                </g>
-
-                                {{-- Pixie dust / magical particles --}}
-                                <g class="reveal-pixiedust">
-                                    <circle cx="235" cy="375" r="1.5" fill="#f0c75e" class="pixie" style="--px-dur:3s;--px-delay:0s" opacity="0.8"/>
-                                    <circle cx="248" cy="395" r="1" fill="#f0c75e" class="pixie" style="--px-dur:3.5s;--px-delay:0.5s" opacity="0.7"/>
-                                    <circle cx="255" cy="380" r="1.2" fill="#d4a843" class="pixie" style="--px-dur:2.8s;--px-delay:1s" opacity="0.8"/>
-                                    <circle cx="222" cy="390" r="0.8" fill="#f0c75e" class="pixie" style="--px-dur:3.2s;--px-delay:1.5s" opacity="0.6"/>
-                                    <circle cx="265" cy="370" r="1.3" fill="#f0c75e" class="pixie" style="--px-dur:4s;--px-delay:0.3s" opacity="0.7"/>
-                                    <circle cx="240" cy="360" r="1" fill="#d4a843" class="pixie" style="--px-dur:2.5s;--px-delay:2s" opacity="0.9"/>
-                                    <circle cx="260" cy="350" r="0.9" fill="#f0c75e" class="pixie" style="--px-dur:3.8s;--px-delay:0.8s" opacity="0.6"/>
-                                    <circle cx="230" cy="345" r="1.1" fill="#f0c75e" class="pixie" style="--px-dur:3s;--px-delay:1.2s" opacity="0.7"/>
-                                    <circle cx="250" cy="330" r="0.7" fill="#d4a843" class="pixie" style="--px-dur:3.5s;--px-delay:2.5s" opacity="0.5"/>
-                                    <circle cx="245" cy="310" r="1" fill="#f0c75e" class="pixie" style="--px-dur:4s;--px-delay:0.6s" opacity="0.6"/>
-                                    <circle cx="210" cy="300" r="0.8" fill="#f0c75e" class="pixie" style="--px-dur:3.3s;--px-delay:1.8s" opacity="0.5"/>
-                                    <circle cx="290" cy="295" r="0.9" fill="#d4a843" class="pixie" style="--px-dur:2.7s;--px-delay:0.9s" opacity="0.5"/>
-                                    <circle cx="270" cy="315" r="1" fill="#f0c75e" class="pixie" style="--px-dur:3.6s;--px-delay:2.2s" opacity="0.6"/>
-                                </g>
-                            </g>
+                            {{-- Shooting star --}}
+                            <line x1="0" y1="0" x2="30" y2="15" stroke="white" stroke-width="1" opacity="0">
+                                <animate attributeName="x1" values="400;100" dur="3s" begin="4s" repeatCount="indefinite"/>
+                                <animate attributeName="y1" values="50;150" dur="3s" begin="4s" repeatCount="indefinite"/>
+                                <animate attributeName="x2" values="430;130" dur="3s" begin="4s" repeatCount="indefinite"/>
+                                <animate attributeName="y2" values="65;165" dur="3s" begin="4s" repeatCount="indefinite"/>
+                                <animate attributeName="opacity" values="0;0;0.8;0" dur="3s" begin="4s" repeatCount="indefinite"/>
+                            </line>
                         </svg>
                     </div>
-                </div>
             </div>
         </div>
 
-        {{-- Hero scene interactivity --}}
-        <script>
-        (function() {
-            const scene = document.getElementById('magicalScene');
-            if (!scene) return;
-
-            // Cinematic reveal
-            setTimeout(function() { scene.classList.add('scene-loaded'); }, 100);
-
-            const hasHover = window.matchMedia('(hover: hover)').matches;
-            const layers = scene.querySelectorAll('[data-parallax-layer]');
-            const depths = { '1': 18, '2': 11, '3': 6, '4': 2.5 };
-
-            // Mouse-tracking parallax
-            if (hasHover && layers.length) {
-                let mx = 0, my = 0, cx = 0, cy = 0, rafId = null;
-                scene.addEventListener('mousemove', function(e) {
-                    const r = scene.getBoundingClientRect();
-                    mx = ((e.clientX - r.left) / r.width - 0.5) * 2;
-                    my = ((e.clientY - r.top) / r.height - 0.5) * 2;
-                    if (!rafId) rafId = requestAnimationFrame(animateParallax);
-                });
-                scene.addEventListener('mouseleave', function() {
-                    mx = 0; my = 0;
-                    if (!rafId) rafId = requestAnimationFrame(animateParallax);
-                });
-                function animateParallax() {
-                    cx += (mx - cx) * 0.08;
-                    cy += (my - cy) * 0.08;
-                    layers.forEach(function(l) {
-                        var d = depths[l.dataset.parallaxLayer] || 5;
-                        l.style.transform = 'translate(' + (-cx * d) + 'px,' + (-cy * d) + 'px)';
-                    });
-                    if (Math.abs(mx - cx) > 0.001 || Math.abs(my - cy) > 0.001) {
-                        rafId = requestAnimationFrame(animateParallax);
-                    } else { rafId = null; }
-                }
-            }
-
-            // Interactive pixie dust cursor trail
-            if (hasHover) {
-                var particles = 0, lastSpawn = 0;
-                scene.style.position = 'relative';
-                scene.addEventListener('mousemove', function(e) {
-                    var now = Date.now();
-                    if (now - lastSpawn < 50 || particles >= 20) return;
-                    lastSpawn = now;
-                    var r = scene.getBoundingClientRect();
-                    var x = e.clientX - r.left + (Math.random() - 0.5) * 20;
-                    var y = e.clientY - r.top + (Math.random() - 0.5) * 20;
-                    var dur = 0.8 + Math.random() * 0.4;
-                    var size = 4 + Math.random() * 2;
-                    var hue = 40 + Math.random() * 15;
-                    var p = document.createElement('div');
-                    p.className = 'pixie-cursor-particle';
-                    p.style.cssText = 'left:' + x + 'px;top:' + y + 'px;width:' + size + 'px;height:' + size + 'px;background:hsl(' + hue + ',70%,60%);--pd-dur:' + dur + 's;z-index:10;';
-                    scene.appendChild(p);
-                    particles++;
-                    p.addEventListener('animationend', function() { p.remove(); particles--; });
-                });
-            }
-        })();
-        </script>
 
         {{-- Castle silhouette divider --}}
         <div class="absolute bottom-0 left-0 right-0 z-10" aria-hidden="true">
