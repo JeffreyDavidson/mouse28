@@ -216,42 +216,77 @@
     border-bottom: 1px solid rgba(212, 168, 67, 0.15) !important;
 }
 
+/* ===== MAIN CONTENT AREA ===== */
+.fi-main {
+    background: #120b2e !important;
+}
+
+.fi-main-ctn {
+    background: #120b2e !important;
+}
+
 /* ===== DASHBOARD ===== */
+
+/* Hide redundant "Dashboard" heading when welcome banner is present */
 .fi-page-heading {
     font-family: 'Playfair Display', serif !important;
-    color: #1a1040 !important;
+    color: #fef9ef !important;
 }
 
 .fi-page-sub-heading {
-    color: #5b3e9e !important;
+    color: #7b5eb5 !important;
 }
 
-/* Stat cards */
+/* Hide Dashboard title — welcome banner replaces it */
+.fi-page[class*="dashboard"] .fi-page-heading,
+.fi-header-heading {
+    display: none !important;
+}
+
+/* Stat cards — dark themed */
 .fi-wi-stats-overview-stat {
-    border: 1px solid rgba(91, 62, 158, 0.15) !important;
+    background: rgba(45, 27, 105, 0.4) !important;
+    border: 1px solid rgba(212, 168, 67, 0.15) !important;
     border-radius: 1rem !important;
     transition: all 0.3s ease !important;
 }
 
 .fi-wi-stats-overview-stat:hover {
-    border-color: rgba(212, 168, 67, 0.3) !important;
-    box-shadow: 0 4px 15px rgba(91, 62, 158, 0.1) !important;
+    border-color: rgba(212, 168, 67, 0.4) !important;
+    box-shadow: 0 4px 20px rgba(91, 62, 158, 0.2) !important;
     transform: translateY(-2px) !important;
+    background: rgba(45, 27, 105, 0.6) !important;
 }
 
 .fi-wi-stats-overview-stat-label {
     font-family: 'Poppins', sans-serif !important;
-    color: #5b3e9e !important;
+    color: #d4a843 !important;
 }
 
 .fi-wi-stats-overview-stat-value {
     font-family: 'Playfair Display', serif !important;
-    color: #1a1040 !important;
+    color: #fef9ef !important;
     font-weight: 700 !important;
+    font-size: 2rem !important;
 }
 
 .fi-wi-stats-overview-stat-description {
-    color: #7b5eb5 !important;
+    color: rgba(254, 249, 239, 0.6) !important;
+}
+
+.fi-wi-stats-overview-stat-icon {
+    color: rgba(212, 168, 67, 0.5) !important;
+}
+
+/* ===== CARDS & SECTIONS ===== */
+.fi-section {
+    background: rgba(45, 27, 105, 0.3) !important;
+    border: 1px solid rgba(212, 168, 67, 0.12) !important;
+    border-radius: 1rem !important;
+}
+
+.fi-section-content {
+    background: transparent !important;
 }
 
 /* ===== TABLES ===== */
@@ -335,4 +370,113 @@
 /* Notifications */
 .fi-notification {
     border-left: 4px solid #d4a843 !important;
+}
+
+/* ===== DARK CONTENT AREA OVERRIDES ===== */
+
+/* Table container */
+.fi-ta-ctn {
+    background: rgba(45, 27, 105, 0.3) !important;
+    border: 1px solid rgba(212, 168, 67, 0.12) !important;
+    border-radius: 1rem !important;
+    overflow: visible !important;
+}
+
+.fi-ta-content {
+    background: transparent !important;
+}
+
+.fi-ta-row {
+    border-color: rgba(212, 168, 67, 0.08) !important;
+}
+
+.fi-ta-cell {
+    color: #fef9ef !important;
+}
+
+/* Form inputs in dark context */
+.fi-main .fi-input {
+    background: rgba(26, 16, 64, 0.5) !important;
+    border-color: rgba(212, 168, 67, 0.2) !important;
+    color: #fef9ef !important;
+}
+
+.fi-main .fi-input:focus {
+    border-color: #d4a843 !important;
+    box-shadow: 0 0 0 2px rgba(212, 168, 67, 0.15) !important;
+}
+
+.fi-main .fi-fo-field-wrp-label label {
+    color: #fef9ef !important;
+}
+
+.fi-main .fi-fo-field-wrp-hint {
+    color: rgba(254, 249, 239, 0.5) !important;
+}
+
+/* Select inputs */
+.fi-main .fi-select-input {
+    background: rgba(26, 16, 64, 0.5) !important;
+    color: #fef9ef !important;
+}
+
+/* Toggle */
+.fi-main .fi-fo-field-wrp-label + div {
+    color: rgba(254, 249, 239, 0.7) !important;
+}
+
+/* Textarea */
+.fi-main textarea {
+    background: rgba(26, 16, 64, 0.5) !important;
+    border-color: rgba(212, 168, 67, 0.2) !important;
+    color: #fef9ef !important;
+}
+
+/* Empty states */
+.fi-ta-empty-state-heading {
+    color: #fef9ef !important;
+}
+
+.fi-ta-empty-state-description {
+    color: rgba(254, 249, 239, 0.5) !important;
+}
+
+.fi-ta-empty-state-icon {
+    color: rgba(212, 168, 67, 0.3) !important;
+}
+
+/* Pagination */
+.fi-ta-pagination {
+    border-color: rgba(212, 168, 67, 0.08) !important;
+}
+
+/* Column toggle, filters */
+.fi-ta-header-toolbar-btn {
+    color: rgba(254, 249, 239, 0.7) !important;
+}
+
+.fi-ta-header-toolbar-btn:hover {
+    color: #f0c75e !important;
+}
+
+/* Breadcrumbs on dark bg */
+.fi-breadcrumbs li {
+    color: rgba(254, 249, 239, 0.5) !important;
+}
+
+.fi-breadcrumbs a {
+    color: rgba(254, 249, 239, 0.7) !important;
+}
+
+.fi-breadcrumbs a:hover {
+    color: #d4a843 !important;
+}
+
+/* Section headings on dark bg */
+.fi-section-header-heading {
+    color: #f0c75e !important;
+}
+
+.fi-section-header-description {
+    color: rgba(254, 249, 239, 0.5) !important;
 }
