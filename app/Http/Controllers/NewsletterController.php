@@ -21,7 +21,7 @@ class NewsletterController extends Controller
                 ]);
 
             if ($response->successful()) {
-                return back()->with('newsletter_success', true);
+                return redirect(url()->previous() . '#newsletter')->with('newsletter_success', true);
             }
 
             Log::warning('Resend newsletter signup failed', [
@@ -29,11 +29,11 @@ class NewsletterController extends Controller
                 'body' => $response->body(),
             ]);
 
-            return back()->with('newsletter_error', 'Something went wrong. Please try again.');
+            return redirect(url()->previous() . '#newsletter')->with('newsletter_error', 'Something went wrong. Please try again.');
         } catch (\Exception $e) {
             Log::error('Newsletter signup error', ['message' => $e->getMessage()]);
 
-            return back()->with('newsletter_error', 'Something went wrong. Please try again.');
+            return redirect(url()->previous() . '#newsletter')->with('newsletter_error', 'Something went wrong. Please try again.');
         }
     }
 }
