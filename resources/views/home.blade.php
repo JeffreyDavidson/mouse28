@@ -339,7 +339,7 @@
                 </div>
 
                 {{-- Right side: Magical illustrated scene --}}
-                <div class="lg:w-[42%] relative w-full max-w-md lg:max-w-none mx-auto lg:mx-0">
+                <div class="lg:w-[42%] relative w-full max-w-md lg:max-w-none mx-auto lg:mx-0" style="-webkit-mask-image: radial-gradient(ellipse 85% 80% at center, black 40%, transparent 100%); mask-image: radial-gradient(ellipse 85% 80% at center, black 40%, transparent 100%);">
                     <div class="scene-container relative h-[280px] sm:h-[350px] lg:h-[480px]" id="magicalScene">
                         {{-- Blend mode overlays --}}
                         <div class="moonlight-overlay" aria-hidden="true"></div>
