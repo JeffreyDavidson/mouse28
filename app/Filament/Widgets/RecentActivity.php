@@ -4,7 +4,6 @@ namespace App\Filament\Widgets;
 
 use App\Models\CommunityStory;
 use App\Models\Episode;
-use App\Models\Guide;
 use App\Models\Post;
 use Filament\Widgets\Widget;
 
@@ -39,17 +38,6 @@ class RecentActivity extends Widget
                 'type' => $episode->is_published ? 'Published episode' : 'Draft episode',
                 'time' => $episode->updated_at,
                 'url' => route('filament.admin.resources.episodes.edit', $episode),
-            ]);
-        });
-
-        Guide::latest('updated_at')->limit(3)->get()->each(function ($guide) use ($items) {
-            $items->push([
-                'icon' => 'book-open',
-                'color' => '#3a2370',
-                'label' => $guide->title,
-                'type' => $guide->is_published ? 'Published guide' : 'Draft guide',
-                'time' => $guide->updated_at,
-                'url' => route('filament.admin.resources.guides.edit', $guide),
             ]);
         });
 

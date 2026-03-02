@@ -125,7 +125,6 @@
                 {{-- Desktop Nav --}}
                 <div class="hidden md:flex items-center gap-10">
                     <a href="/blog" class="{{ request()->is('blog*') ? 'text-gold nav-link-active' : 'text-white/80' }} hover:text-gold transition-colors text-sm font-medium tracking-wide">Blog</a>
-                    <a href="/guides" class="{{ request()->is('guides*') ? 'text-gold nav-link-active' : 'text-white/80' }} hover:text-gold transition-colors text-sm font-medium tracking-wide">Guides</a>
                     <a href="/episodes" class="{{ request()->is('episodes*') ? 'text-gold nav-link-active' : 'text-white/80' }} hover:text-gold transition-colors text-sm font-medium tracking-wide">Podcast</a>
                     <a href="/about" class="{{ request()->is('about') ? 'text-gold nav-link-active' : 'text-white/80' }} hover:text-gold transition-colors text-sm font-medium tracking-wide">About</a>
                 </div>
@@ -150,7 +149,6 @@
                  x-cloak>
                 <div class="flex flex-col gap-1">
                     <a href="/blog" class="{{ request()->is('blog*') ? 'text-gold bg-white/5' : 'text-white/80' }} hover:text-gold hover:bg-white/5 transition-all text-sm font-medium px-4 py-3 min-h-[44px] flex items-center rounded-lg">Blog</a>
-                    <a href="/guides" class="{{ request()->is('guides*') ? 'text-gold bg-white/5' : 'text-white/80' }} hover:text-gold hover:bg-white/5 transition-all text-sm font-medium px-4 py-3 min-h-[44px] flex items-center rounded-lg">Guides</a>
                     <a href="/episodes" class="{{ request()->is('episodes*') ? 'text-gold bg-white/5' : 'text-white/80' }} hover:text-gold hover:bg-white/5 transition-all text-sm font-medium px-4 py-3 min-h-[44px] flex items-center rounded-lg">Podcast</a>
                     <a href="/about" class="{{ request()->is('about') ? 'text-gold bg-white/5' : 'text-white/80' }} hover:text-gold hover:bg-white/5 transition-all text-sm font-medium px-4 py-3 min-h-[44px] flex items-center rounded-lg">About</a>
                 </div>
@@ -185,7 +183,6 @@
                     <h4 class="font-heading text-white font-semibold mb-4 text-sm tracking-wider uppercase">Explore</h4>
                     <div class="flex flex-col gap-2.5 text-sm">
                         <a href="/blog" class="hover:text-gold transition-colors">Blog</a>
-                        <a href="/guides" class="hover:text-gold transition-colors">Guides</a>
                         <a href="/episodes" class="hover:text-gold transition-colors">Podcast</a>
                         <a href="/about" class="hover:text-gold transition-colors">About Us</a>
                     </div>
@@ -195,7 +192,6 @@
                 <div>
                     <h4 class="font-heading text-white font-semibold mb-4 text-sm tracking-wider uppercase">Resources</h4>
                     <div class="flex flex-col gap-2.5 text-sm">
-                        <a href="/guides" class="hover:text-gold transition-colors">Accessibility Guides</a>
                         <a href="/stories" class="hover:text-gold transition-colors">Family Stories</a>
                         <a href="/contact" class="hover:text-gold transition-colors">Contact Us</a>
                         <a href="/rss/blog" class="hover:text-gold transition-colors">RSS Feed</a>
