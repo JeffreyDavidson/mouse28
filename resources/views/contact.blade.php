@@ -52,7 +52,7 @@
             <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center relative z-10">
                 <span class="text-gold text-sm font-semibold tracking-widest uppercase">Get in Touch</span>
                 <h1 class="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-white mt-4">We'd Love to Hear From You</h1>
-                <p class="text-white/60 mt-6 max-w-xl mx-auto text-lg leading-relaxed">Have a question, story to share, or want to collaborate? Drop us a line — we read every message.</p>
+                <p class="text-white/60 mt-6 max-w-xl mx-auto text-lg leading-relaxed">Have a question, story to share, or want to collaborate? Drop us a line. We read every message.</p>
             </div>
         </section>
 
@@ -129,7 +129,7 @@
                             <div class="absolute bottom-6 left-6 text-2xl opacity-10 sparkle-delay">⭐</div>
 
                             <h2 class="font-heading text-2xl font-bold mb-4">Get in Touch</h2>
-                            <p class="text-white/60 text-sm leading-relaxed mb-6">We're a real family sharing real tips. Whether you have a question about DAS, want to share your story, or just say hi — we're here.</p>
+                            <p class="text-white/60 text-sm leading-relaxed mb-6">We're a real family sharing real tips. Whether you have a question about DAS, want to share your story, or just say hi, we're here.</p>
 
                             {{-- Email --}}
                             <div class="flex items-center gap-3 mb-5">

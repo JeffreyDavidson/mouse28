@@ -426,7 +426,7 @@
                             Stories from inside<br>the parks
                         </h2>
                         <p style="font-family: 'Poppins', sans-serif; color: rgba(254, 249, 239, 0.55); font-size: 1.05rem; line-height: 1.8; margin-bottom: 2rem;">
-                            We visit Disney every week with our autistic daughter. We're turning those experiences into honest, useful content — accessibility insights, sensory tips, food reviews, and the real moments that make it all worth it.
+                            We visit Disney every week with our autistic daughter. We're turning those experiences into honest, useful content: accessibility insights, sensory tips, food reviews, and the real moments that make it all worth it.
                         </p>
                         <div style="display: flex; flex-direction: column; gap: 1rem;">
                             <div style="display: flex; align-items: center; gap: 0.75rem;">
@@ -549,7 +549,7 @@
                                 Episode One Is Coming
                             </h3>
                             <p style="font-family: 'Poppins', sans-serif; color: rgba(254, 249, 239, 0.5); font-size: 0.95rem; line-height: 1.7; margin-bottom: 1.25rem;">
-                                Jeffrey &amp; Cassie are recording their first episode — an intro to who they are, why they started Mouse28, and what to expect from the show.
+                                Jeffrey &amp; Cassie are recording their first episode, an intro to who they are, why they started Mouse28, and what to expect from the show.
                             </p>
                             {{-- Faux waveform bars --}}
                             <div style="display: flex; align-items: end; gap: 3px; height: 28px; opacity: 0.3;">
@@ -589,7 +589,7 @@
                         <span class="absolute -bottom-2 right-0 font-heading text-5xl text-gold/25 leading-none select-none" aria-hidden="true">"</span>
                     </div>
                     <p class="text-navy/65 leading-[1.7] font-body max-w-xl">
-                        We're a Central Florida family who visits Disney every week. Our daughter Viola has autism and experiences the parks differently. Mouse'28 is where we share what we've learned: DAS tips, sensory-friendly spots, and the joy that makes it all worth it.
+                        We're a Central Florida family who visits Disney every week. Our daughter Viola has autism and experiences the parks differently. Mouse28 is where we share what we've learned: DAS tips, sensory-friendly spots, and the joy that makes it all worth it.
                     </p>
                     <a href="/about" class="inline-flex items-center gap-1 mt-4 text-purple hover:text-navy font-semibold text-sm transition-colors font-body">
                         Our full story
@@ -653,8 +653,8 @@
         </div>
 
         <div class="max-w-2xl mx-auto px-4 sm:px-6 text-center relative z-10" data-animate>
-            <h2 class="font-heading text-3xl md:text-4xl font-bold text-white mb-4">Get Disney Tips in Your Inbox</h2>
-            <p class="text-white/55 text-lg mb-8 leading-[1.7] font-body">Weekly park tips, accessibility guides, and family stories. No spam, just pixie dust.</p>
+            <h2 class="font-heading text-3xl md:text-4xl font-bold text-white mb-4">Stay in the Loop</h2>
+            <p class="text-white/55 text-lg mb-8 leading-[1.7] font-body">New posts, podcast episodes, and park tips straight to your inbox. No spam, just pixie dust.</p>
             @if(session('newsletter_success'))
                 <div class="bg-green-500/20 border border-green-400/30 rounded-xl px-6 py-4 max-w-md mx-auto">
                     <p class="text-green-300 font-body text-sm">✨ You're subscribed! We'll send you the good stuff.</p>
