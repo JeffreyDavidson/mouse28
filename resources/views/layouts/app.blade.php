@@ -233,7 +233,7 @@
             {{-- Bottom bar --}}
             <div class="border-t border-white/10 mt-8 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
                 <p class="text-xs text-white/40">&copy; {{ date('Y') }} Mouse28. All rights reserved.</p>
-                <p class="text-xs text-white/40">Made with ✨ in Central Florida</p>
+                <p class="text-xs text-white/40">Made with ✨ from Infinity Digital</p>
             </div>
         </div>
     </footer>
