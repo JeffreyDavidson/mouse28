@@ -171,9 +171,9 @@
         <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-gold-dark via-gold-light to-gold-dark"></div>
 
         <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-8">
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
-                {{-- Newsletter --}}
-                <div class="sm:col-span-2 lg:col-span-1" x-data="{ submitted: false, error: false }">
+            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-10">
+                {{-- Newsletter (left side) --}}
+                <div class="lg:max-w-md flex-shrink-0" x-data="{ submitted: false, error: false }">
                     <h4 class="font-heading text-white font-semibold mb-2 text-sm tracking-wider uppercase">Stay in the Loop</h4>
                     <p class="text-sm text-white/50 mb-4">New posts, episodes, and park tips straight to your inbox.</p>
                     <form x-show="!submitted" @submit.prevent="
@@ -183,9 +183,9 @@
                             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
                             body: JSON.stringify({ email: $refs.footerEmail.value })
                         }).then(r => { if (r.ok || r.redirected) { submitted = true } else { error = true } }).catch(() => error = true)
-                    " class="flex flex-col gap-2">
-                        <input x-ref="footerEmail" type="email" name="email" placeholder="your@email.com" required class="w-full bg-white/10 border border-white/10 rounded-full px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/30 transition-colors">
-                        <button type="submit" class="w-full bg-gold hover:bg-gold-light text-navy font-semibold text-sm px-6 py-2.5 rounded-full transition-all hover:shadow-lg hover:shadow-gold/25">Subscribe</button>
+                    " class="flex gap-2">
+                        <input x-ref="footerEmail" type="email" name="email" placeholder="your@email.com" required class="flex-1 min-w-0 bg-white/10 border border-white/10 rounded-full px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/30 transition-colors">
+                        <button type="submit" class="bg-gold hover:bg-gold-light text-navy font-semibold text-sm px-6 py-2.5 rounded-full transition-all hover:shadow-lg hover:shadow-gold/25 whitespace-nowrap">Subscribe</button>
                     </form>
                     <div x-show="submitted" x-transition class="bg-gold/10 border border-gold/30 rounded-full px-5 py-2.5 text-sm text-gold font-medium text-center">
                         You're in! We'll keep you posted.
@@ -193,31 +193,34 @@
                     <div x-show="error" x-transition class="text-red-400 text-sm mt-2">Something went wrong. Please try again.</div>
                 </div>
 
-                {{-- Explore --}}
-                <div>
-                    <h4 class="font-heading text-white font-semibold mb-4 text-sm tracking-wider uppercase">Explore</h4>
-                    <div class="flex flex-col gap-2.5 text-sm">
-                        <a href="/blog" class="hover:text-gold transition-colors">Blog</a>
-                        <a href="/episodes" class="hover:text-gold transition-colors">Podcast</a>
-                        <a href="/about" class="hover:text-gold transition-colors">About Us</a>
+                {{-- Links (right side) --}}
+                <div class="flex gap-16">
+                    {{-- Explore --}}
+                    <div>
+                        <h4 class="font-heading text-white font-semibold mb-4 text-sm tracking-wider uppercase">Explore</h4>
+                        <div class="flex flex-col gap-2.5 text-sm">
+                            <a href="/blog" class="hover:text-gold transition-colors">Blog</a>
+                            <a href="/episodes" class="hover:text-gold transition-colors">Podcast</a>
+                            <a href="/about" class="hover:text-gold transition-colors">About Us</a>
+                        </div>
                     </div>
-                </div>
 
-                {{-- Resources --}}
-                <div>
-                    <h4 class="font-heading text-white font-semibold mb-4 text-sm tracking-wider uppercase">Resources</h4>
-                    <div class="flex flex-col gap-2.5 text-sm">
-                        <a href="/contact" class="hover:text-gold transition-colors">Contact Us</a>
-                        <a href="/rss/blog" class="hover:text-gold transition-colors">RSS Feed</a>
+                    {{-- Resources --}}
+                    <div>
+                        <h4 class="font-heading text-white font-semibold mb-4 text-sm tracking-wider uppercase">Resources</h4>
+                        <div class="flex flex-col gap-2.5 text-sm">
+                            <a href="/contact" class="hover:text-gold transition-colors">Contact Us</a>
+                            <a href="/rss/blog" class="hover:text-gold transition-colors">RSS Feed</a>
+                        </div>
                     </div>
-                </div>
 
-                {{-- Connect --}}
-                <div>
-                    <h4 class="font-heading text-white font-semibold mb-4 text-sm tracking-wider uppercase">Connect</h4>
-                    <div class="flex flex-col gap-2.5 text-sm">
-                        <a href="#" class="hover:text-gold transition-colors">Apple Podcasts</a>
-                        <a href="#" class="hover:text-gold transition-colors">Spotify</a>
+                    {{-- Connect --}}
+                    <div>
+                        <h4 class="font-heading text-white font-semibold mb-4 text-sm tracking-wider uppercase">Connect</h4>
+                        <div class="flex flex-col gap-2.5 text-sm">
+                            <a href="#" class="hover:text-gold transition-colors">Apple Podcasts</a>
+                            <a href="#" class="hover:text-gold transition-colors">Spotify</a>
+                        </div>
                     </div>
                 </div>
             </div>
