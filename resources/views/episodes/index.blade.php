@@ -144,26 +144,57 @@
                     {{ $episodes->links() }}
                 </div>
             @else
-                <div class="text-center py-20 bg-white rounded-3xl border border-navy/5 relative overflow-hidden">
-                    {{-- Decorative waveform --}}
-                    <div class="absolute inset-x-0 bottom-0 flex items-end justify-center gap-1 h-16 opacity-10 px-8">
-                        @for($i = 0; $i < 40; $i++)
-                            <div class="w-1 bg-purple rounded-full" style="height: {{ rand(8, 60) }}%"></div>
-                        @endfor
-                    </div>
-                    <div class="relative z-10">
-                        <div class="w-20 h-20 bg-gradient-to-br from-purple to-navy rounded-full flex items-center justify-center mx-auto mb-6">
-                            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
-                        </div>
-                        <h2 class="font-heading text-3xl font-bold text-navy mb-3">Tuning Up! 🎵</h2>
-                        <p class="text-navy/50 max-w-md mx-auto text-lg">Our first episode is almost ready. Subscribe so you don't miss the premiere!</p>
-                        <div class="flex items-center justify-center gap-3 mt-8">
-                            <a href="#" class="inline-flex items-center gap-2 bg-navy text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-purple transition-colors">
-                                🎧 Subscribe on Apple
-                            </a>
-                            <a href="#" class="inline-flex items-center gap-2 bg-[#1DB954] text-white text-sm font-semibold px-5 py-2.5 rounded-full hover:bg-[#1ed760] transition-colors">
-                                💚 Follow on Spotify
-                            </a>
+                <div class="relative overflow-hidden rounded-3xl" style="background: linear-gradient(135deg, #1a1040 0%, #2d1b69 40%, #1a1040 100%); padding: 4rem 2rem;">
+                    {{-- Ambient glow --}}
+                    <div style="position: absolute; top: -20%; right: -10%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(212, 168, 67, 0.08) 0%, transparent 60%); pointer-events: none;"></div>
+
+                    <div class="max-w-lg mx-auto relative z-10">
+                        <div class="grid md:grid-cols-5 gap-10 items-center">
+                            {{-- Left: Content --}}
+                            <div class="md:col-span-3 text-center md:text-left">
+                                <div style="display: inline-block; border: 1px solid rgba(212, 168, 67, 0.3); border-radius: 9999px; padding: 0.35rem 1rem; margin-bottom: 1.25rem;">
+                                    <span style="font-family: 'Poppins', sans-serif; font-size: 0.7rem; color: #d4a843; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;">Coming Soon</span>
+                                </div>
+                                <h2 class="font-heading text-3xl md:text-4xl font-bold text-cream mb-3" style="line-height: 1.15;">We're warming up the mics</h2>
+                                <p style="color: rgba(254, 249, 239, 0.55); font-size: 1rem; line-height: 1.8; margin-bottom: 1.5rem;">
+                                    Our first episode is in the works. Disney parks, accessibility, family stories, and a lot of heart. Subscribe so you're there from the start.
+                                </p>
+                                <div class="flex items-center justify-center md:justify-start gap-3">
+                                    <a href="#" class="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-full transition-all hover:-translate-y-0.5" style="background: rgba(254, 249, 239, 0.1); color: rgba(254, 249, 239, 0.8); border: 1px solid rgba(254, 249, 239, 0.15);">
+                                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.56 2.93 11.3 4.7 7.72C5.57 5.94 7.36 4.86 9.28 4.84C10.56 4.81 11.78 5.7 12.56 5.7C13.34 5.7 14.85 4.62 16.41 4.8C17.07 4.83 18.96 5.06 20.16 6.87C20.05 6.95 17.58 8.37 17.61 11.34C17.65 14.9 20.68 16.04 20.71 16.06C20.69 16.13 20.18 17.86 18.71 19.5Z"/></svg>
+                                        Apple Podcasts
+                                    </a>
+                                    <a href="#" class="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-full transition-all hover:-translate-y-0.5" style="background: rgba(254, 249, 239, 0.1); color: rgba(254, 249, 239, 0.8); border: 1px solid rgba(254, 249, 239, 0.15);">
+                                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02z"/></svg>
+                                        Spotify
+                                    </a>
+                                </div>
+                            </div>
+
+                            {{-- Right: Faux episode card --}}
+                            <div class="md:col-span-2 hidden md:block">
+                                <div style="background: rgba(45, 27, 105, 0.4); border: 1px solid rgba(212, 168, 67, 0.15); border-radius: 1.25rem; padding: 1.75rem; backdrop-filter: blur(10px);">
+                                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem;">
+                                        <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #5b3e9e, #1a1040); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                            <svg style="width: 20px; height: 20px; color: white;" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                        </div>
+                                        <div style="flex: 1;">
+                                            <div style="height: 10px; width: 80%; background: rgba(254, 249, 239, 0.15); border-radius: 99px; margin-bottom: 6px;"></div>
+                                            <div style="height: 7px; width: 50%; background: rgba(254, 249, 239, 0.08); border-radius: 99px;"></div>
+                                        </div>
+                                    </div>
+                                    {{-- Waveform bars --}}
+                                    <div style="display: flex; align-items: end; gap: 2px; height: 32px; margin-bottom: 1rem;">
+                                        @for($i = 0; $i < 24; $i++)
+                                            <div style="flex: 1; background: rgba(212, 168, 67, {{ $i < 10 ? '0.4' : '0.15' }}); border-radius: 99px; height: {{ rand(20, 100) }}%;"></div>
+                                        @endfor
+                                    </div>
+                                    <div style="display: flex; align-items: center; justify-content: space-between;">
+                                        <div style="height: 6px; width: 30%; background: rgba(254, 249, 239, 0.08); border-radius: 99px;"></div>
+                                        <div style="height: 6px; width: 20%; background: rgba(254, 249, 239, 0.06); border-radius: 99px;"></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
