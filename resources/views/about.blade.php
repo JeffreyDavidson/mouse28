@@ -391,10 +391,10 @@
                             <p class="text-navy/65 font-body leading-relaxed">When she's not at the parks, Cassie runs a cottage food bakery, wrangles two huskies, and somehow keeps everything running smoothly. She's the reason this whole thing works.</p>
                         </div>
                         {{-- Fun facts --}}
-                        <div class="mt-8 flex flex-wrap gap-3">
-                            <span class="text-xs px-4 py-2 rounded-full font-body font-medium" style="color: #1a1040; background: rgba(91,62,158,0.1); border: 1px solid rgba(91,62,158,0.15);">Favorite park: Magic Kingdom</span>
-                            <span class="text-xs px-4 py-2 rounded-full font-body font-medium" style="color: #1a1040; background: rgba(212,168,67,0.15); border: 1px solid rgba(212,168,67,0.2);">Cottage food baker</span>
-                            <span class="text-xs px-4 py-2 rounded-full font-body font-medium" style="color: #1a1040; background: rgba(91,62,158,0.1); border: 1px solid rgba(91,62,158,0.15);">Rock Chalk Jayhawk</span>
+                        <div class="mt-8 flex flex-nowrap gap-3">
+                            <span class="text-xs px-4 py-2 rounded-full font-body font-medium whitespace-nowrap" style="color: #1a1040; background: rgba(91,62,158,0.1); border: 1px solid rgba(91,62,158,0.15);">Favorite park: Magic Kingdom</span>
+                            <span class="text-xs px-4 py-2 rounded-full font-body font-medium whitespace-nowrap" style="color: #1a1040; background: rgba(212,168,67,0.15); border: 1px solid rgba(212,168,67,0.2);">Cottage food baker</span>
+                            <span class="text-xs px-4 py-2 rounded-full font-body font-medium whitespace-nowrap" style="color: #1a1040; background: rgba(91,62,158,0.1); border: 1px solid rgba(91,62,158,0.15);">Rock Chalk Jayhawk</span>
                         </div>
                     </div>
 
