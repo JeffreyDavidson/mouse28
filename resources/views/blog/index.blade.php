@@ -30,41 +30,70 @@
     </section>
 
     {{-- Search + Category Filters --}}
-    <section class="bg-cream border-b border-navy/5">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6">
-            <div class="pt-6 pb-2">
-                <form action="/blog" method="GET" class="relative max-w-xl mx-auto">
-                    @if($category)<input type="hidden" name="category" value="{{ $category }}">@endif
-                    <svg class="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-navy/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Search posts..."
-                        class="w-full pl-13 pr-5 py-3.5 rounded-full border border-navy/10 bg-white text-navy text-sm placeholder:text-navy/35 focus:outline-none focus:ring-2 focus:ring-purple/30 focus:border-purple transition-all shadow-sm" style="padding-left: 3rem;">
-                </form>
-            </div>
-            <div class="flex items-center gap-2 py-4 overflow-x-auto scrollbar-hide">
-                <a href="/blog"
-                   class="flex-shrink-0 px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 {{ !$category ? 'bg-gold text-white shadow-md' : 'bg-white text-navy/60 hover:text-navy hover:shadow-sm border border-navy/10' }}">
-                    All
-                </a>
+    <section style="background: linear-gradient(180deg, #1a1040 0%, #2d1b69 100%); padding: 0 0 1px 0; position: relative;">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6" style="padding-top: 2rem; padding-bottom: 1.75rem;">
+            {{-- Search --}}
+            <form action="/blog" method="GET" class="relative max-w-xl mx-auto" style="margin-bottom: 1.5rem;">
+                @if($category)<input type="hidden" name="category" value="{{ $category }}">@endif
+                <svg class="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4" style="color: rgba(254,249,239,0.3);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search posts..."
+                    style="width: 100%; padding: 0.75rem 1.25rem 0.75rem 2.75rem; border-radius: 0.75rem; border: 1px solid rgba(254,249,239,0.1); background: rgba(254,249,239,0.05); color: #fef9ef; font-size: 0.875rem; font-family: 'Poppins', sans-serif; outline: none; transition: all 0.2s;"
+                    onfocus="this.style.borderColor='rgba(212,168,67,0.4)';this.style.background='rgba(254,249,239,0.08)'"
+                    onblur="this.style.borderColor='rgba(254,249,239,0.1)';this.style.background='rgba(254,249,239,0.05)'"
+                >
+            </form>
+
+            {{-- Categories --}}
+            @php
+                $categoryIcons = [
+                    'park-tips' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>',
+                    'accessibility' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>',
+                    'food-dining' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0-6C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>',
+                    'family-stories' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>',
+                    'planning' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>',
+                    'reviews' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>',
+                ];
+                $categoryColors = [
+                    'park-tips' => '#d4a843',
+                    'accessibility' => '#7b5eb5',
+                    'food-dining' => '#f97316',
+                    'family-stories' => '#ec4899',
+                    'planning' => '#3b82f6',
+                    'reviews' => '#22c55e',
+                ];
+            @endphp
+            <div class="flex items-center justify-center gap-2 flex-wrap">
+                <a href="/blog" style="
+                    display: inline-flex; align-items: center; gap: 0.4rem;
+                    padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600;
+                    font-family: 'Poppins', sans-serif; transition: all 0.2s; text-decoration: none;
+                    {{ !$category
+                        ? 'background: rgba(212,168,67,0.15); color: #d4a843; border: 1px solid rgba(212,168,67,0.3);'
+                        : 'background: rgba(254,249,239,0.04); color: rgba(254,249,239,0.5); border: 1px solid rgba(254,249,239,0.08);'
+                    }}
+                ">All Posts</a>
+
                 @foreach(\App\Models\Post::CATEGORIES as $slug => $label)
-                    @php
-                        $dotColors = [
-                            'park-tips' => 'bg-gold',
-                            'accessibility' => 'bg-purple',
-                            'food-dining' => 'bg-orange-400',
-                            'family-stories' => 'bg-pink-400',
-                            'planning' => 'bg-blue-400',
-                            'reviews' => 'bg-green-400',
-                        ];
-                        $dot = $dotColors[$slug] ?? 'bg-purple';
-                    @endphp
-                    <a href="/blog?category={{ $slug }}"
-                       class="flex-shrink-0 px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 inline-flex items-center gap-2 {{ $category === $slug ? 'bg-gold text-white shadow-md' : 'bg-white text-navy/60 hover:text-navy hover:shadow-sm border border-navy/10' }}">
-                        <span class="category-dot {{ $category === $slug ? 'bg-white/70' : $dot }}"></span>
+                    @php $color = $categoryColors[$slug] ?? '#7b5eb5'; $icon = $categoryIcons[$slug] ?? ''; $isActive = $category === $slug; @endphp
+                    <a href="/blog?category={{ $slug }}" style="
+                        display: inline-flex; align-items: center; gap: 0.4rem;
+                        padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600;
+                        font-family: 'Poppins', sans-serif; transition: all 0.2s; text-decoration: none;
+                        {{ $isActive
+                            ? "background: " . $color . "20; color: " . $color . "; border: 1px solid " . $color . "40;"
+                            : "background: rgba(254,249,239,0.04); color: rgba(254,249,239,0.5); border: 1px solid rgba(254,249,239,0.08);"
+                        }}
+                    ">
+                        @if($icon)
+                            <svg style="width: 14px; height: 14px; {{ $isActive ? 'color: ' . $color : 'color: rgba(254,249,239,0.35)' }};" fill="none" stroke="currentColor" viewBox="0 0 24 24">{!! $icon !!}</svg>
+                        @endif
                         {{ $label }}
                     </a>
                 @endforeach
             </div>
         </div>
+        {{-- Bottom fade into cream --}}
+        <div style="height: 1px; background: linear-gradient(90deg, transparent, rgba(212,168,67,0.2), transparent);"></div>
     </section>
 
     {{-- Posts Grid --}}
