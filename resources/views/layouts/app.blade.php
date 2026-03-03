@@ -124,6 +124,7 @@
 
                 {{-- Desktop Nav --}}
                 <div class="hidden md:flex items-center gap-10">
+                    <a href="/" class="{{ request()->is('/') ? 'text-gold nav-link-active' : 'text-white/80' }} hover:text-gold transition-colors text-sm font-medium tracking-wide">Home</a>
                     <a href="/blog" class="{{ request()->is('blog*') ? 'text-gold nav-link-active' : 'text-white/80' }} hover:text-gold transition-colors text-sm font-medium tracking-wide">Blog</a>
                     <a href="/episodes" class="{{ request()->is('episodes*') ? 'text-gold nav-link-active' : 'text-white/80' }} hover:text-gold transition-colors text-sm font-medium tracking-wide">Podcast</a>
                     <a href="/about" class="{{ request()->is('about') ? 'text-gold nav-link-active' : 'text-white/80' }} hover:text-gold transition-colors text-sm font-medium tracking-wide">About</a>
@@ -149,6 +150,7 @@
                  class="md:hidden pb-5 border-t border-white/10 mt-2 pt-4"
                  x-cloak>
                 <div class="flex flex-col gap-1">
+                    <a href="/" class="{{ request()->is('/') ? 'text-gold bg-white/5' : 'text-white/80' }} hover:text-gold hover:bg-white/5 transition-all text-sm font-medium px-4 py-3 min-h-[44px] flex items-center rounded-lg">Home</a>
                     <a href="/blog" class="{{ request()->is('blog*') ? 'text-gold bg-white/5' : 'text-white/80' }} hover:text-gold hover:bg-white/5 transition-all text-sm font-medium px-4 py-3 min-h-[44px] flex items-center rounded-lg">Blog</a>
                     <a href="/episodes" class="{{ request()->is('episodes*') ? 'text-gold bg-white/5' : 'text-white/80' }} hover:text-gold hover:bg-white/5 transition-all text-sm font-medium px-4 py-3 min-h-[44px] flex items-center rounded-lg">Podcast</a>
                     <a href="/about" class="{{ request()->is('about') ? 'text-gold bg-white/5' : 'text-white/80' }} hover:text-gold hover:bg-white/5 transition-all text-sm font-medium px-4 py-3 min-h-[44px] flex items-center rounded-lg">About</a>

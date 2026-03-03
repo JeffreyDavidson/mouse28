@@ -644,7 +644,6 @@
             <div class="flex items-center justify-center gap-6 mt-10 pt-8 border-t border-white/10">
                 <a href="#" class="text-white/40 hover:text-white/65 text-sm font-body transition-colors">🎧 Apple Podcasts</a>
                 <a href="#" class="text-white/40 hover:text-white/65 text-sm font-body transition-colors">💚 Spotify</a>
-                <a href="#" class="text-white/40 hover:text-white/65 text-sm font-body transition-colors">▶️ YouTube</a>
             </div>
         </div>
     </section>
