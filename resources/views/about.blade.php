@@ -111,38 +111,61 @@
     </section>
 
     {{-- What We Cover --}}
-    <section class="py-16 md:py-24 bg-cream-dark">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6">
-            <div class="text-center mb-12">
+    <section class="py-16 md:py-24 bg-navy relative overflow-hidden">
+        {{-- Subtle background texture --}}
+        <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 relative z-10">
+            <div class="text-center mb-14">
                 <span class="text-gold text-sm font-semibold tracking-widest uppercase">What We Cover</span>
-                <h2 class="font-heading text-3xl md:text-4xl font-bold text-navy mt-2">Everything Disney, Through Our Lens</h2>
+                <h2 class="font-heading text-3xl md:text-4xl font-bold text-white mt-3">Everything Disney, Through Our Lens</h2>
+                <p class="text-white/40 mt-4 max-w-lg mx-auto text-sm leading-relaxed font-body">Real tips and honest experiences from a family that does Disney every single week.</p>
             </div>
-            <div class="grid sm:grid-cols-2 gap-6">
+
+            <div class="grid md:grid-cols-3 gap-8">
                 {{-- DAS Pass Tips --}}
-                <div class="bg-white rounded-2xl p-7 shadow-sm border border-navy/5 hover:shadow-md hover:border-gold/20 transition-all group">
-                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple/10 to-gold/10 flex items-center justify-center mb-4 group-hover:from-purple/20 group-hover:to-gold/20 transition-all">
-                        <svg class="w-6 h-6 text-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z" /></svg>
+                <div class="group relative">
+                    <div class="absolute inset-0 bg-gradient-to-b from-gold/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
+                    <div class="relative bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-8 hover:border-gold/20 transition-all duration-500 hover:-translate-y-1 h-full">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-gold/20 to-purple/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                            <svg class="w-7 h-7 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z" /></svg>
+                        </div>
+                        <h3 class="font-heading font-bold text-white text-xl mb-3">DAS Pass Tips</h3>
+                        <p class="text-white/50 text-sm leading-relaxed font-body">How to apply, what to expect, and making the most of disability accommodations at Disney parks.</p>
+                        <div class="mt-6 pt-5 border-t border-white/[0.06]">
+                            <span class="text-gold/70 text-xs font-semibold tracking-wider uppercase font-body group-hover:text-gold transition-colors">Accessibility</span>
+                        </div>
                     </div>
-                    <h3 class="font-heading font-semibold text-navy text-lg mb-2">DAS Pass Tips</h3>
-                    <p class="text-navy/60 text-sm leading-relaxed">How to apply, what to expect, and making the most of disability accommodations at Disney parks.</p>
                 </div>
 
                 {{-- Park Accessibility --}}
-                <div class="bg-white rounded-2xl p-7 shadow-sm border border-navy/5 hover:shadow-md hover:border-gold/20 transition-all group">
-                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple/10 to-gold/10 flex items-center justify-center mb-4 group-hover:from-purple/20 group-hover:to-gold/20 transition-all">
-                        <svg class="w-6 h-6 text-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" /></svg>
+                <div class="group relative">
+                    <div class="absolute inset-0 bg-gradient-to-b from-purple/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
+                    <div class="relative bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-8 hover:border-purple/30 transition-all duration-500 hover:-translate-y-1 h-full">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple/20 to-gold/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                            <svg class="w-7 h-7 text-purple-light" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" /></svg>
+                        </div>
+                        <h3 class="font-heading font-bold text-white text-xl mb-3">Park Experiences</h3>
+                        <p class="text-white/50 text-sm leading-relaxed font-body">Real-world tips on how accessible Disney parks actually are for diverse needs and abilities.</p>
+                        <div class="mt-6 pt-5 border-t border-white/[0.06]">
+                            <span class="text-purple-light/70 text-xs font-semibold tracking-wider uppercase font-body group-hover:text-purple-light transition-colors">Tips & Reviews</span>
+                        </div>
                     </div>
-                    <h3 class="font-heading font-semibold text-navy text-lg mb-2">Park Accessibility</h3>
-                    <p class="text-navy/60 text-sm leading-relaxed">Real-world reviews of how accessible Disney parks actually are for diverse needs and abilities.</p>
                 </div>
 
                 {{-- Family Disney Life --}}
-                <div class="bg-white rounded-2xl p-7 shadow-sm border border-navy/5 hover:shadow-md hover:border-gold/20 transition-all group">
-                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple/10 to-gold/10 flex items-center justify-center mb-4 group-hover:from-purple/20 group-hover:to-gold/20 transition-all">
-                        <svg class="w-6 h-6 text-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" /></svg>
+                <div class="group relative">
+                    <div class="absolute inset-0 bg-gradient-to-b from-gold/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
+                    <div class="relative bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-8 hover:border-gold/20 transition-all duration-500 hover:-translate-y-1 h-full">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-gold/20 to-purple/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                            <svg class="w-7 h-7 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" /></svg>
+                        </div>
+                        <h3 class="font-heading font-bold text-white text-xl mb-3">Family Disney Life</h3>
+                        <p class="text-white/50 text-sm leading-relaxed font-body">The funny, messy, magical reality of weekly Disney trips with our family.</p>
+                        <div class="mt-6 pt-5 border-t border-white/[0.06]">
+                            <span class="text-gold/70 text-xs font-semibold tracking-wider uppercase font-body group-hover:text-gold transition-colors">Our Story</span>
+                        </div>
                     </div>
-                    <h3 class="font-heading font-semibold text-navy text-lg mb-2">Family Disney Life</h3>
-                    <p class="text-navy/60 text-sm leading-relaxed">The funny, messy, magical reality of weekly Disney trips with our family.</p>
                 </div>
             </div>
         </div>
