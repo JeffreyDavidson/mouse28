@@ -4,14 +4,8 @@
 
 @section('content')
     @if(session('success'))
-        {{-- Full-page thank you with animated checkmark --}}
         <section class="min-h-[70vh] flex items-center justify-center bg-gradient-to-br from-cream via-white to-cream relative overflow-hidden">
-            <div class="absolute inset-0 opacity-5">
-                <div class="absolute top-1/4 left-1/4 text-6xl sparkle">✨</div>
-                <div class="absolute bottom-1/3 right-1/4 text-4xl sparkle-delay">⭐</div>
-            </div>
             <div class="text-center px-4 relative z-10">
-                {{-- Animated checkmark --}}
                 <div class="mx-auto mb-8 w-24 h-24 relative">
                     <svg class="w-24 h-24" viewBox="0 0 96 96">
                         <circle cx="48" cy="48" r="44" fill="none" stroke="#5b3e9e" stroke-width="3" opacity="0.15"/>
@@ -27,13 +21,9 @@
                 <h1 class="font-heading text-4xl md:text-5xl font-bold text-navy mb-4">Message Sent!</h1>
                 <p class="text-navy/60 text-lg max-w-md mx-auto mb-2">Thank you for reaching out. We'll get back to you within 48 hours.</p>
                 <p class="text-navy/40 text-sm mb-8">In the meantime, feel free to explore our blog and podcast.</p>
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <a href="/guides" class="inline-flex items-center gap-2 bg-purple hover:bg-purple-dark text-white font-semibold px-6 py-3 rounded-full transition-all hover:shadow-lg hover:-translate-y-0.5">
-                        📖 Browse Guides
-                    </a>
-                    <a href="/blog" class="inline-flex items-center gap-2 text-navy/60 hover:text-purple font-medium transition-colors">
-                        Read our blog →
-                    </a>
+                <div class="flex items-center justify-center gap-4">
+                    <a href="/blog" class="inline-flex items-center gap-2 bg-purple hover:bg-purple-dark text-white font-semibold px-6 py-3 rounded-full transition-all hover:shadow-lg hover:-translate-y-0.5">Read our blog</a>
+                    <a href="/episodes" class="inline-flex items-center gap-2 text-navy/60 hover:text-purple font-medium transition-colors">Listen to podcast →</a>
                 </div>
             </div>
         </section>
@@ -42,152 +32,150 @@
             @keyframes checkMark { to { stroke-dashoffset: 0; } }
         </style>
     @else
-        {{-- Hero --}}
-        <section class="bg-gradient-to-br from-navy via-navy-light to-purple py-16 md:py-24 relative overflow-hidden">
-            <div class="absolute inset-0 opacity-[0.03]" style="background-image: url('data:image/svg+xml,<svg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;><g fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;><g fill=&quot;white&quot; fill-opacity=&quot;1&quot;><path d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/></g></g></svg>');"></div>
-            <div class="absolute inset-0 opacity-10">
-                <div class="absolute top-10 right-16 text-4xl sparkle">✨</div>
-                <div class="absolute bottom-12 left-20 text-3xl sparkle-delay-2">⭐</div>
-            </div>
-            <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center relative z-10">
-                <span class="text-gold text-sm font-semibold tracking-widest uppercase">Get in Touch</span>
-                <h1 class="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-white mt-4">We'd Love to Hear From You</h1>
-                <p class="text-white/60 mt-6 max-w-xl mx-auto text-lg leading-relaxed">Have a question, story to share, or want to collaborate? Drop us a line. We read every message.</p>
-            </div>
-        </section>
+        {{-- Full-width dark hero with form embedded --}}
+        <section style="background: linear-gradient(135deg, #1a1040 0%, #2d1b69 50%, #1a1040 100%); position: relative; overflow: hidden;">
+            {{-- Ambient glows --}}
+            <div style="position: absolute; top: -20%; right: -5%; width: 700px; height: 700px; background: radial-gradient(circle, rgba(212, 168, 67, 0.05) 0%, transparent 60%); pointer-events: none;"></div>
+            <div style="position: absolute; bottom: -30%; left: -10%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(91, 62, 158, 0.15) 0%, transparent 60%); pointer-events: none;"></div>
 
-        {{-- Main Content --}}
-        <section class="py-16 md:py-24 relative overflow-hidden" style="background: linear-gradient(135deg, #fef9ef 0%, #fdf6e8 50%, #fef9ef 100%);">
-            {{-- Subtle decorative dots --}}
-            <div class="absolute top-0 right-0 w-64 h-64 bg-purple/[0.02] rounded-full -translate-y-1/2 translate-x-1/2"></div>
-            <div class="absolute bottom-0 left-0 w-48 h-48 bg-gold/[0.03] rounded-full translate-y-1/2 -translate-x-1/2"></div>
+            <div class="max-w-5xl mx-auto px-4 sm:px-6" style="padding: 5rem 1rem 6rem;">
+                {{-- Header --}}
+                <div class="text-center" style="margin-bottom: 3.5rem;">
+                    <div style="display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid rgba(212, 168, 67, 0.3); border-radius: 9999px; padding: 0.35rem 1rem; margin-bottom: 1.5rem;">
+                        <span style="width: 6px; height: 6px; border-radius: 50%; background: #d4a843;"></span>
+                        <span style="font-family: 'Poppins', sans-serif; font-size: 0.7rem; color: #d4a843; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;">Get in Touch</span>
+                    </div>
+                    <h1 class="font-heading font-bold" style="font-size: clamp(2rem, 5vw, 3rem); color: #fef9ef; line-height: 1.15; margin-bottom: 1rem;">We'd Love to Hear From You</h1>
+                    <p style="color: rgba(254, 249, 239, 0.45); font-size: 1.05rem; max-width: 32rem; margin: 0 auto; line-height: 1.7;">Have a question about DAS, want to share your story, or just say hi? We read every message.</p>
+                </div>
 
-            <div class="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
-                <div class="flex flex-col-reverse lg:flex-row gap-10 lg:gap-14">
-                    {{-- Form (60%) --}}
-                    <div class="lg:w-[58%]">
-                        <div class="bg-white rounded-2xl p-8 md:p-10 shadow-sm border border-navy/5">
-                            <h2 class="font-heading text-2xl font-bold text-navy mb-6">Send a Message</h2>
+                {{-- Two-column layout --}}
+                <div style="display: grid; grid-template-columns: 1fr; gap: 2.5rem;" class="lg:!grid-cols-[1fr_340px]">
+                    {{-- Form --}}
+                    <div style="background: rgba(254, 249, 239, 0.03); border: 1px solid rgba(254, 249, 239, 0.08); border-radius: 1.5rem; padding: 2.5rem; backdrop-filter: blur(10px);">
+                        <form action="/contact" method="POST" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                            @csrf
 
-                            <form action="/contact" method="POST" class="space-y-6">
-                                @csrf
-
-                                <div class="grid sm:grid-cols-2 gap-5">
-                                    <div>
-                                        <label for="name" class="block text-sm font-semibold text-navy mb-1.5">Name <span class="text-red-400">*</span></label>
-                                        <input type="text" id="name" name="name" required value="{{ old('name') }}"
-                                            class="w-full px-4 py-3 rounded-xl border border-navy/10 bg-cream/50 text-navy placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-purple/30 focus:border-purple transition-all @error('name') border-red-300 ring-2 ring-red-100 bg-red-50/50 @enderror"
-                                            placeholder="Your name">
-                                        @error('name') <p class="text-red-500 text-xs mt-1.5 flex items-center gap-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg> {{ $message }}</p> @enderror
-                                    </div>
-
-                                    <div>
-                                        <label for="email" class="block text-sm font-semibold text-navy mb-1.5">Email <span class="text-red-400">*</span></label>
-                                        <input type="email" id="email" name="email" required value="{{ old('email') }}"
-                                            class="w-full px-4 py-3 rounded-xl border border-navy/10 bg-cream/50 text-navy placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-purple/30 focus:border-purple transition-all @error('email') border-red-300 ring-2 ring-red-100 bg-red-50/50 @enderror"
-                                            placeholder="you@example.com">
-                                        @error('email') <p class="text-red-500 text-xs mt-1.5 flex items-center gap-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg> {{ $message }}</p> @enderror
-                                    </div>
-                                </div>
-
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
                                 <div>
-                                    <label for="subject" class="block text-sm font-semibold text-navy mb-1.5">Subject <span class="text-red-400">*</span></label>
-                                    <select id="subject" name="subject" required
-                                        class="w-full px-4 py-3 rounded-xl border border-navy/10 bg-cream/50 text-navy focus:outline-none focus:ring-2 focus:ring-purple/30 focus:border-purple transition-all @error('subject') border-red-300 ring-2 ring-red-100 @enderror">
-                                        <option value="">Choose a topic...</option>
-                                        <option value="general" {{ old('subject') == 'general' ? 'selected' : '' }}>General Question</option>
-                                        <option value="accessibility" {{ old('subject') == 'accessibility' ? 'selected' : '' }}>Park Accessibility Question</option>
-                                        <option value="collaboration" {{ old('subject') == 'collaboration' ? 'selected' : '' }}>Collaboration / Sponsorship</option>
-                                        <option value="guest" {{ old('subject') == 'guest' ? 'selected' : '' }}>Guest on the Podcast</option>
-                                        <option value="story" {{ old('subject') == 'story' ? 'selected' : '' }}>Share Your Story</option>
-                                        <option value="other" {{ old('subject') == 'other' ? 'selected' : '' }}>Other</option>
-                                    </select>
-                                    @error('subject') <p class="text-red-500 text-xs mt-1.5 flex items-center gap-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg> {{ $message }}</p> @enderror
+                                    <label for="name" style="display: block; font-size: 0.75rem; font-weight: 600; color: rgba(254,249,239,0.6); margin-bottom: 0.5rem; font-family: 'Poppins', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">Name</label>
+                                    <input type="text" id="name" name="name" required value="{{ old('name') }}" placeholder="Your name"
+                                        style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid rgba(254,249,239,0.1); background: rgba(254,249,239,0.04); color: #fef9ef; font-size: 0.9rem; font-family: 'Poppins', sans-serif; outline: none; transition: all 0.2s; box-sizing: border-box;"
+                                        onfocus="this.style.borderColor='rgba(212,168,67,0.4)';this.style.background='rgba(254,249,239,0.06)'"
+                                        onblur="this.style.borderColor='rgba(254,249,239,0.1)';this.style.background='rgba(254,249,239,0.04)'"
+                                    >
+                                    @error('name') <p style="color: #f87171; font-size: 0.75rem; margin-top: 0.4rem;">{{ $message }}</p> @enderror
                                 </div>
-
                                 <div>
-                                    <label for="message" class="block text-sm font-semibold text-navy mb-1.5">Message <span class="text-red-400">*</span></label>
-                                    <textarea id="message" name="message" required rows="6"
-                                        class="w-full px-4 py-3 rounded-xl border border-navy/10 bg-cream/50 text-navy placeholder:text-navy/30 focus:outline-none focus:ring-2 focus:ring-purple/30 focus:border-purple transition-all resize-y @error('message') border-red-300 ring-2 ring-red-100 bg-red-50/50 @enderror"
-                                        placeholder="What's on your mind?">{{ old('message') }}</textarea>
-                                    @error('message') <p class="text-red-500 text-xs mt-1.5 flex items-center gap-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg> {{ $message }}</p> @enderror
+                                    <label for="email" style="display: block; font-size: 0.75rem; font-weight: 600; color: rgba(254,249,239,0.6); margin-bottom: 0.5rem; font-family: 'Poppins', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">Email</label>
+                                    <input type="email" id="email" name="email" required value="{{ old('email') }}" placeholder="you@example.com"
+                                        style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid rgba(254,249,239,0.1); background: rgba(254,249,239,0.04); color: #fef9ef; font-size: 0.9rem; font-family: 'Poppins', sans-serif; outline: none; transition: all 0.2s; box-sizing: border-box;"
+                                        onfocus="this.style.borderColor='rgba(212,168,67,0.4)';this.style.background='rgba(254,249,239,0.06)'"
+                                        onblur="this.style.borderColor='rgba(254,249,239,0.1)';this.style.background='rgba(254,249,239,0.04)'"
+                                    >
+                                    @error('email') <p style="color: #f87171; font-size: 0.75rem; margin-top: 0.4rem;">{{ $message }}</p> @enderror
                                 </div>
+                            </div>
 
-                                <button type="submit"
-                                    class="w-full bg-purple hover:bg-purple-dark text-white font-semibold py-3.5 px-6 rounded-full transition-all hover:shadow-lg hover:shadow-purple/25 hover:-translate-y-0.5 text-lg">
-                                    Send Message ✨
-                                </button>
-                            </form>
-                        </div>
+                            <div>
+                                <label for="subject" style="display: block; font-size: 0.75rem; font-weight: 600; color: rgba(254,249,239,0.6); margin-bottom: 0.5rem; font-family: 'Poppins', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">Topic</label>
+                                <select id="subject" name="subject" required
+                                    style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid rgba(254,249,239,0.1); background: rgba(254,249,239,0.04); color: rgba(254,249,239,0.7); font-size: 0.9rem; font-family: 'Poppins', sans-serif; outline: none; transition: all 0.2s; box-sizing: border-box; -webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml,<svg width=&quot;12&quot; height=&quot;8&quot; viewBox=&quot;0 0 12 8&quot; fill=&quot;none&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;><path d=&quot;M1 1.5L6 6.5L11 1.5&quot; stroke=&quot;rgba(254,249,239,0.4)&quot; stroke-width=&quot;1.5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;/></svg>'); background-repeat: no-repeat; background-position: right 1rem center;"
+                                    onfocus="this.style.borderColor='rgba(212,168,67,0.4)'"
+                                    onblur="this.style.borderColor='rgba(254,249,239,0.1)'"
+                                >
+                                    <option value="" style="background: #1a1040;">Choose a topic...</option>
+                                    <option value="general" {{ old('subject') == 'general' ? 'selected' : '' }} style="background: #1a1040;">General Question</option>
+                                    <option value="accessibility" {{ old('subject') == 'accessibility' ? 'selected' : '' }} style="background: #1a1040;">Park Accessibility Question</option>
+                                    <option value="collaboration" {{ old('subject') == 'collaboration' ? 'selected' : '' }} style="background: #1a1040;">Collaboration / Sponsorship</option>
+                                    <option value="guest" {{ old('subject') == 'guest' ? 'selected' : '' }} style="background: #1a1040;">Guest on the Podcast</option>
+                                    <option value="story" {{ old('subject') == 'story' ? 'selected' : '' }} style="background: #1a1040;">Share Your Story</option>
+                                    <option value="other" {{ old('subject') == 'other' ? 'selected' : '' }} style="background: #1a1040;">Other</option>
+                                </select>
+                                @error('subject') <p style="color: #f87171; font-size: 0.75rem; margin-top: 0.4rem;">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div>
+                                <label for="message" style="display: block; font-size: 0.75rem; font-weight: 600; color: rgba(254,249,239,0.6); margin-bottom: 0.5rem; font-family: 'Poppins', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">Message</label>
+                                <textarea id="message" name="message" required rows="5" placeholder="What's on your mind?"
+                                    style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid rgba(254,249,239,0.1); background: rgba(254,249,239,0.04); color: #fef9ef; font-size: 0.9rem; font-family: 'Poppins', sans-serif; outline: none; transition: all 0.2s; resize: vertical; box-sizing: border-box; min-height: 140px;"
+                                    onfocus="this.style.borderColor='rgba(212,168,67,0.4)';this.style.background='rgba(254,249,239,0.06)'"
+                                    onblur="this.style.borderColor='rgba(254,249,239,0.1)';this.style.background='rgba(254,249,239,0.04)'"
+                                >{{ old('message') }}</textarea>
+                                @error('message') <p style="color: #f87171; font-size: 0.75rem; margin-top: 0.4rem;">{{ $message }}</p> @enderror
+                            </div>
+
+                            <button type="submit" style="
+                                width: 100%; padding: 0.85rem 1.5rem; border-radius: 0.75rem; border: none; cursor: pointer;
+                                background: linear-gradient(135deg, #d4a843, #b8922e); color: #1a1040;
+                                font-size: 0.9rem; font-weight: 700; font-family: 'Poppins', sans-serif;
+                                transition: all 0.2s; letter-spacing: 0.02em;
+                            " onmouseenter="this.style.transform='translateY(-1px)';this.style.boxShadow='0 8px 25px rgba(212,168,67,0.3)'" onmouseleave="this.style.transform='translateY(0)';this.style.boxShadow='none'">
+                                Send Message
+                            </button>
+                        </form>
                     </div>
 
-                    {{-- Info Panel (40%) --}}
-                    <div class="lg:w-[42%] space-y-6">
-                        {{-- Get in Touch card --}}
-                        <div class="bg-gradient-to-br from-navy to-navy-light rounded-2xl p-8 text-white relative overflow-hidden">
-                            <div class="absolute top-4 right-4 text-3xl opacity-10 sparkle">✨</div>
-                            <div class="absolute bottom-6 left-6 text-2xl opacity-10 sparkle-delay">⭐</div>
-
-                            <h2 class="font-heading text-2xl font-bold mb-4">Get in Touch</h2>
-                            <p class="text-white/60 text-sm leading-relaxed mb-6">We're a real family sharing real tips. Whether you have a question about DAS, want to share your story, or just say hi, we're here.</p>
-
-                            {{-- Email --}}
-                            <div class="flex items-center gap-3 mb-5">
-                                <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                                    <svg class="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    {{-- Sidebar --}}
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        {{-- Email card --}}
+                        <div style="background: rgba(254,249,239,0.04); border: 1px solid rgba(254,249,239,0.08); border-radius: 1rem; padding: 1.5rem;">
+                            <div style="display: flex; align-items: center; gap: 0.85rem; margin-bottom: 1.25rem;">
+                                <div style="width: 40px; height: 40px; border-radius: 0.6rem; background: rgba(212,168,67,0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <svg style="width: 18px; height: 18px; color: #d4a843;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                                 </div>
                                 <div>
-                                    <a href="mailto:hello@mouse28.com" class="text-white font-medium hover:text-gold transition-colors">hello@mouse28.com</a>
-                                    <p class="text-white/40 text-xs">We read every message</p>
+                                    <a href="mailto:hello@mouse28.com" style="color: #fef9ef; font-weight: 600; font-size: 0.9rem; font-family: 'Poppins', sans-serif; text-decoration: none;">hello@mouse28.com</a>
+                                    <p style="color: rgba(254,249,239,0.35); font-size: 0.75rem; font-family: 'Poppins', sans-serif;">We read every message</p>
                                 </div>
                             </div>
-
-                            {{-- Response time --}}
-                            <div class="flex items-center gap-2 bg-white/10 rounded-xl px-4 py-3 mb-6">
-                                <svg class="w-4 h-4 text-gold flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                <p class="text-white/70 text-sm">We typically respond within <strong class="text-white">48 hours</strong></p>
-                            </div>
-
-                            {{-- Social Links --}}
-                            <p class="text-white/40 text-xs font-semibold uppercase tracking-wider mb-3">Follow Along</p>
-                            <div class="flex items-center gap-3">
-                                <a href="#" class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-xl flex items-center justify-center transition-colors" aria-label="Instagram">
-                                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
-                                </a>
-                                <a href="#" class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-xl flex items-center justify-center transition-colors" aria-label="TikTok">
-                                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.73a8.19 8.19 0 004.76 1.52v-3.4a4.85 4.85 0 01-1-.16z"/></svg>
-                                </a>
-                                <a href="#" class="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-xl flex items-center justify-center transition-colors" aria-label="Facebook">
-                                    <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                                </a>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; background: rgba(254,249,239,0.04); border-radius: 0.6rem; padding: 0.65rem 0.85rem;">
+                                <svg style="width: 14px; height: 14px; color: #d4a843; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <p style="color: rgba(254,249,239,0.5); font-size: 0.8rem; font-family: 'Poppins', sans-serif;">Typically within <strong style="color: rgba(254,249,239,0.8);">48 hours</strong></p>
                             </div>
                         </div>
 
-                        {{-- Quick FAQ --}}
-                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-navy/5">
-                            <h3 class="font-heading font-bold text-navy mb-4">Looking for something specific?</h3>
-                            <div class="space-y-3">
-                                <a href="/guides" class="flex items-center gap-3 p-3 -mx-1 rounded-xl hover:bg-cream transition-colors group">
-                                    <span class="text-xl">📖</span>
-                                    <div>
-                                        <p class="text-sm font-semibold text-navy group-hover:text-purple transition-colors">DAS tips & accessibility guides</p>
-                                        <p class="text-xs text-navy/40">Browse our full guide collection</p>
+                        {{-- Topics we love --}}
+                        <div style="background: rgba(254,249,239,0.04); border: 1px solid rgba(254,249,239,0.08); border-radius: 1rem; padding: 1.5rem;">
+                            <h3 class="font-heading" style="font-size: 1rem; font-weight: 700; color: #fef9ef; margin-bottom: 1rem;">We Love Hearing About</h3>
+                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                @php
+                                    $topics = [
+                                        ['icon' => 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z', 'text' => 'Your park accessibility experiences'],
+                                        ['icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z', 'text' => 'Family Disney stories'],
+                                        ['icon' => 'M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z', 'text' => 'Podcast guest ideas'],
+                                        ['icon' => 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z', 'text' => 'Collaboration & partnerships'],
+                                    ];
+                                @endphp
+                                @foreach($topics as $topic)
+                                    <div style="display: flex; align-items: center; gap: 0.65rem;">
+                                        <svg style="width: 14px; height: 14px; color: rgba(212,168,67,0.6); flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="{{ $topic['icon'] }}"/></svg>
+                                        <span style="color: rgba(254,249,239,0.55); font-size: 0.8rem; font-family: 'Poppins', sans-serif;">{{ $topic['text'] }}</span>
                                     </div>
-                                    <svg class="w-4 h-4 text-navy/20 group-hover:text-purple ml-auto flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                </a>
-                                <a href="/episodes" class="flex items-center gap-3 p-3 -mx-1 rounded-xl hover:bg-cream transition-colors group">
-                                    <span class="text-xl">🎙️</span>
-                                    <div>
-                                        <p class="text-sm font-semibold text-navy group-hover:text-purple transition-colors">Listen to the podcast</p>
-                                        <p class="text-xs text-navy/40">New episodes weekly</p>
-                                    </div>
-                                    <svg class="w-4 h-4 text-navy/20 group-hover:text-purple ml-auto flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                </a>
+                                @endforeach
                             </div>
+                        </div>
+
+                        {{-- Quick links --}}
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <a href="/blog" style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1rem; border-radius: 0.75rem; background: rgba(254,249,239,0.03); border: 1px solid rgba(254,249,239,0.06); text-decoration: none; transition: all 0.2s;" onmouseenter="this.style.background='rgba(254,249,239,0.06)';this.style.borderColor='rgba(212,168,67,0.15)'" onmouseleave="this.style.background='rgba(254,249,239,0.03)';this.style.borderColor='rgba(254,249,239,0.06)'">
+                                <span style="color: rgba(254,249,239,0.6); font-size: 0.8rem; font-weight: 600; font-family: 'Poppins', sans-serif;">Read the Blog</span>
+                                <svg style="width: 14px; height: 14px; color: rgba(254,249,239,0.25);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                            <a href="/episodes" style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1rem; border-radius: 0.75rem; background: rgba(254,249,239,0.03); border: 1px solid rgba(254,249,239,0.06); text-decoration: none; transition: all 0.2s;" onmouseenter="this.style.background='rgba(254,249,239,0.06)';this.style.borderColor='rgba(212,168,67,0.15)'" onmouseleave="this.style.background='rgba(254,249,239,0.03)';this.style.borderColor='rgba(254,249,239,0.06)'">
+                                <span style="color: rgba(254,249,239,0.6); font-size: 0.8rem; font-weight: 600; font-family: 'Poppins', sans-serif;">Listen to the Podcast</span>
+                                <svg style="width: 14px; height: 14px; color: rgba(254,249,239,0.25);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </a>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
     @endif
+
+    <style>
+        @media (min-width: 1024px) {
+            .lg\:\!grid-cols-\[1fr_340px\] { grid-template-columns: 1fr 340px !important; }
+        }
+    </style>
 @endsection
