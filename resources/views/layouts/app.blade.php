@@ -192,7 +192,6 @@
                 <div>
                     <h4 class="font-heading text-white font-semibold mb-4 text-sm tracking-wider uppercase">Resources</h4>
                     <div class="flex flex-col gap-2.5 text-sm">
-                        <a href="/stories" class="hover:text-gold transition-colors">Family Stories</a>
                         <a href="/contact" class="hover:text-gold transition-colors">Contact Us</a>
                         <a href="/rss/blog" class="hover:text-gold transition-colors">RSS Feed</a>
                     </div>

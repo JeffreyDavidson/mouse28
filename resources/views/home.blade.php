@@ -172,11 +172,6 @@
                             </a>
                         @endif
                     </div>
-                    @if($storiesCount > 0)
-                        <div class="flex items-center gap-5 text-white/35 text-sm font-body">
-                            <span>💜 {{ $storiesCount }} {{ Str::plural('family', $storiesCount) }}</span>
-                        </div>
-                    @endif
                 </div>
 
                 {{-- Right side: Castle silhouette with stars --}}
@@ -600,42 +595,7 @@
         </div>
     </section>
 
-    {{-- Families Like Yours --}}
-    @if($communityStories->count())
-        <section class="py-14 md:py-20 bg-cream">
-            <div class="max-w-4xl mx-auto px-4 sm:px-6">
-                <div class="text-center mb-10" data-animate>
-                    <span class="text-purple/60 text-sm font-semibold tracking-[0.15em] uppercase font-body">💜 From Our Community</span>
-                    <h2 class="font-heading text-2xl md:text-3xl font-bold text-navy mt-1">Families Like Yours</h2>
-                </div>
-                <div class="grid sm:grid-cols-2 gap-6">
-                    @foreach($communityStories as $story)
-                        <div class="bg-white rounded-2xl p-6 border border-navy/5 relative" data-animate>
-                            <span class="absolute top-4 right-5 font-heading text-4xl text-gold/20 leading-none select-none" aria-hidden="true">"</span>
-                            <p class="text-navy/70 text-sm leading-relaxed font-body mb-4 line-clamp-3 italic">{{ Str::limit($story->story, 180) }}</p>
-                            <div class="flex items-center gap-3 pt-3 border-t border-navy/5">
-                                <div class="w-8 h-8 rounded-full bg-purple/10 flex items-center justify-center text-purple text-xs font-bold flex-shrink-0">
-                                    {{ strtoupper(substr($story->name, 0, 1)) }}
-                                </div>
-                                <div>
-                                    <span class="text-navy font-semibold text-sm font-body">{{ $story->name }}</span>
-                                    @if($story->child_name && $story->child_age)
-                                        <p class="text-navy/40 text-xs font-body">Parent of {{ $story->child_name }}, age {{ $story->child_age }}</p>
-                                    @endif
-                                </div>
-                                @if($story->favorite_park)
-                                    <span class="ml-auto text-navy/30 text-xs font-body">{{ $story->favorite_park }}</span>
-                                @endif
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-                <div class="text-center mt-8">
-                    <a href="/stories" class="text-purple hover:text-navy font-semibold text-sm transition-colors font-body">Read more stories →</a>
-                </div>
-            </div>
-        </section>
-    @endif
+    {{-- Community Stories section removed --}}
 
     {{-- Wave: Cream → Navy --}}
     <div class="bg-gradient-to-br from-navy via-navy-light to-navy" aria-hidden="true">
