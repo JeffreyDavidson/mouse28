@@ -127,15 +127,6 @@
                     <p class="text-navy/60 text-sm leading-relaxed">How to apply, what to expect, and making the most of disability accommodations at Disney parks.</p>
                 </div>
 
-                {{-- Sensory-Friendly Guide --}}
-                <div class="bg-white rounded-2xl p-7 shadow-sm border border-navy/5 hover:shadow-md hover:border-gold/20 transition-all group">
-                    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple/10 to-gold/10 flex items-center justify-center mb-4 group-hover:from-purple/20 group-hover:to-gold/20 transition-all">
-                        <svg class="w-6 h-6 text-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" /></svg>
-                    </div>
-                    <h3 class="font-heading font-semibold text-navy text-lg mb-2">Sensory-Friendly Guide</h3>
-                    <p class="text-navy/60 text-sm leading-relaxed">Quiet spaces, low-stimulation zones, and rides rated by sensory intensity for neurodiverse visitors.</p>
-                </div>
-
                 {{-- Park Accessibility --}}
                 <div class="bg-white rounded-2xl p-7 shadow-sm border border-navy/5 hover:shadow-md hover:border-gold/20 transition-all group">
                     <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-purple/10 to-gold/10 flex items-center justify-center mb-4 group-hover:from-purple/20 group-hover:to-gold/20 transition-all">
