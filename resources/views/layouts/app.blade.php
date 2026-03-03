@@ -174,8 +174,7 @@
                         <img src="/images/logo.jpg" alt="Mouse 28" class="h-10 w-10 rounded-full object-cover">
                         <span class="font-heading text-lg font-bold text-white">Mouse <span class="text-gold">28</span></span>
                     </a>
-                    <p class="text-gold/80 text-sm font-medium italic mb-3">Disney Parks Through Different Eyes</p>
-                    <p class="text-sm leading-relaxed text-white/50">A family sharing the magic — and the real talk — of Disney parks with a daughter on the autism spectrum.</p>
+                    <p class="text-sm leading-relaxed text-white/50 mt-2">A family sharing the magic (and the real talk) of Disney parks with a daughter on the autism spectrum.</p>
                 </div>
 
                 {{-- Explore --}}
@@ -224,21 +223,28 @@
             <div class="mt-12 pt-8 border-t border-white/10" x-data="{ submitted: false, error: false }">
                 <div class="max-w-md">
                     <h4 class="font-heading text-white font-semibold mb-2">Stay in the Loop ✨</h4>
-                    <p class="text-sm text-white/50 mb-4">Get new posts, guides, and episode alerts delivered to your inbox.</p>
-                    <form @submit.prevent="submitted = true; error = false" class="flex gap-2" x-show="!submitted">
-                        @csrf
-                        <input type="email" name="email" placeholder="your@email.com" required class="flex-1 bg-white/10 border border-white/10 rounded-full px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/30 transition-colors">
+                    <p class="text-sm text-white/50 mb-4">New posts, episodes, and park tips straight to your inbox.</p>
+                    <form x-show="!submitted" @submit.prevent="
+                        error = false;
+                        fetch('/newsletter', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                            body: JSON.stringify({ email: $refs.footerEmail.value })
+                        }).then(r => { if (r.ok || r.redirected) { submitted = true } else { error = true } }).catch(() => error = true)
+                    " class="flex gap-2">
+                        <input x-ref="footerEmail" type="email" name="email" placeholder="your@email.com" required class="flex-1 bg-white/10 border border-white/10 rounded-full px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/30 transition-colors">
                         <button type="submit" class="bg-gold hover:bg-gold-light text-navy font-semibold text-sm px-6 py-2.5 rounded-full transition-all hover:shadow-lg hover:shadow-gold/25 whitespace-nowrap">Subscribe</button>
                     </form>
                     <div x-show="submitted" x-transition class="bg-gold/10 border border-gold/30 rounded-full px-5 py-2.5 text-sm text-gold font-medium">
-                        ✨ You're in! We'll keep you posted.
+                        You're in! We'll keep you posted.
                     </div>
+                    <div x-show="error" x-transition class="text-red-400 text-sm mt-2">Something went wrong. Please try again.</div>
                 </div>
             </div>
 
             {{-- Bottom bar --}}
             <div class="border-t border-white/10 mt-8 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <p class="text-xs text-white/40">&copy; {{ date('Y') }} Mouse'28. All rights reserved.</p>
+                <p class="text-xs text-white/40">&copy; {{ date('Y') }} Mouse28. All rights reserved.</p>
                 <p class="text-xs text-white/40">Made with ✨ in Central Florida</p>
             </div>
         </div>

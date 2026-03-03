@@ -21,6 +21,9 @@ class NewsletterController extends Controller
                 ]);
 
             if ($response->successful()) {
+                if ($request->expectsJson()) {
+                    return response()->json(['success' => true]);
+                }
                 return redirect(url()->previous() . '#newsletter')->with('newsletter_success', true);
             }
 
@@ -29,10 +32,16 @@ class NewsletterController extends Controller
                 'body' => $response->body(),
             ]);
 
+            if ($request->expectsJson()) {
+                return response()->json(['error' => 'Something went wrong.'], 422);
+            }
             return redirect(url()->previous() . '#newsletter')->with('newsletter_error', 'Something went wrong. Please try again.');
         } catch (\Exception $e) {
             Log::error('Newsletter signup error', ['message' => $e->getMessage()]);
 
+            if ($request->expectsJson()) {
+                return response()->json(['error' => 'Something went wrong.'], 500);
+            }
             return redirect(url()->previous() . '#newsletter')->with('newsletter_error', 'Something went wrong. Please try again.');
         }
     }

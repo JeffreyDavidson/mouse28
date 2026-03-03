@@ -38,7 +38,7 @@
                 <span class="text-gold text-sm font-semibold tracking-widest uppercase">Podcast</span>
             </div>
             <h1 class="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-white mt-2">Listen Along</h1>
-            <p class="text-white/60 mt-4 max-w-xl mx-auto text-lg">Every week we bring you stories, tips, and magic from inside Disney parks — from our family to yours.</p>
+            <p class="text-white/60 mt-4 max-w-xl mx-auto text-lg">Every week we bring you stories, tips, and magic from inside Disney parks, from our family to yours.</p>
             {{-- Platform subscribe badges --}}
             <div class="flex items-center justify-center gap-3 mt-8">
                 <a href="#" target="_blank" rel="noopener" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white/70 hover:text-white text-xs font-semibold px-4 py-2.5 rounded-xl transition-all hover:-translate-y-0.5 backdrop-blur-sm border border-white/10">
