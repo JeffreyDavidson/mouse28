@@ -172,12 +172,25 @@
 
         <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-8">
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-8">
-                {{-- Brand / Tagline --}}
-                <div class="sm:col-span-2 lg:col-span-1">
-                    <a href="/" class="flex items-center gap-2 mb-3">
-                        <img src="/images/logo.jpg" alt="Mouse 28" class="h-10 w-10 rounded-full object-cover">
-                        <span class="font-heading text-lg font-bold text-white">Mouse <span class="text-gold">28</span></span>
-                    </a>
+                {{-- Newsletter --}}
+                <div class="sm:col-span-2 lg:col-span-1" x-data="{ submitted: false, error: false }">
+                    <h4 class="font-heading text-white font-semibold mb-2 text-sm tracking-wider uppercase">Stay in the Loop</h4>
+                    <p class="text-sm text-white/50 mb-4">New posts, episodes, and park tips straight to your inbox.</p>
+                    <form x-show="!submitted" @submit.prevent="
+                        error = false;
+                        fetch('/newsletter', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
+                            body: JSON.stringify({ email: $refs.footerEmail.value })
+                        }).then(r => { if (r.ok || r.redirected) { submitted = true } else { error = true } }).catch(() => error = true)
+                    " class="flex flex-col gap-2">
+                        <input x-ref="footerEmail" type="email" name="email" placeholder="your@email.com" required class="w-full bg-white/10 border border-white/10 rounded-full px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/30 transition-colors">
+                        <button type="submit" class="w-full bg-gold hover:bg-gold-light text-navy font-semibold text-sm px-6 py-2.5 rounded-full transition-all hover:shadow-lg hover:shadow-gold/25">Subscribe</button>
+                    </form>
+                    <div x-show="submitted" x-transition class="bg-gold/10 border border-gold/30 rounded-full px-5 py-2.5 text-sm text-gold font-medium text-center">
+                        You're in! We'll keep you posted.
+                    </div>
+                    <div x-show="error" x-transition class="text-red-400 text-sm mt-2">Something went wrong. Please try again.</div>
                 </div>
 
                 {{-- Explore --}}
@@ -206,29 +219,6 @@
                         <a href="#" class="hover:text-gold transition-colors">Apple Podcasts</a>
                         <a href="#" class="hover:text-gold transition-colors">Spotify</a>
                     </div>
-                </div>
-            </div>
-
-            {{-- Newsletter Signup --}}
-            <div class="mt-12 pt-8 border-t border-white/10" x-data="{ submitted: false, error: false }">
-                <div class="max-w-md">
-                    <h4 class="font-heading text-white font-semibold mb-2">Stay in the Loop ✨</h4>
-                    <p class="text-sm text-white/50 mb-4">New posts, episodes, and park tips straight to your inbox.</p>
-                    <form x-show="!submitted" @submit.prevent="
-                        error = false;
-                        fetch('/newsletter', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
-                            body: JSON.stringify({ email: $refs.footerEmail.value })
-                        }).then(r => { if (r.ok || r.redirected) { submitted = true } else { error = true } }).catch(() => error = true)
-                    " class="flex gap-2">
-                        <input x-ref="footerEmail" type="email" name="email" placeholder="your@email.com" required class="flex-1 bg-white/10 border border-white/10 rounded-full px-4 py-2.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-gold/50 focus:ring-1 focus:ring-gold/30 transition-colors">
-                        <button type="submit" class="bg-gold hover:bg-gold-light text-navy font-semibold text-sm px-6 py-2.5 rounded-full transition-all hover:shadow-lg hover:shadow-gold/25 whitespace-nowrap">Subscribe</button>
-                    </form>
-                    <div x-show="submitted" x-transition class="bg-gold/10 border border-gold/30 rounded-full px-5 py-2.5 text-sm text-gold font-medium">
-                        You're in! We'll keep you posted.
-                    </div>
-                    <div x-show="error" x-transition class="text-red-400 text-sm mt-2">Something went wrong. Please try again.</div>
                 </div>
             </div>
 
