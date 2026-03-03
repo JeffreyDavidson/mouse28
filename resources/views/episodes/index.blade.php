@@ -144,54 +144,93 @@
                     {{ $episodes->links() }}
                 </div>
             @else
-                <div class="relative overflow-hidden rounded-3xl" style="background: linear-gradient(135deg, #1a1040 0%, #2d1b69 40%, #1a1040 100%); padding: 4rem 2rem;">
-                    {{-- Ambient glow --}}
-                    <div style="position: absolute; top: -20%; right: -10%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(212, 168, 67, 0.08) 0%, transparent 60%); pointer-events: none;"></div>
+                <style>
+                    @keyframes waveformPulse {
+                        0%, 100% { transform: scaleY(1); }
+                        50% { transform: scaleY(0.6); }
+                    }
+                    .waveform-bar { animation: waveformPulse 1.5s ease-in-out infinite; transform-origin: bottom; }
+                </style>
+                <div class="relative overflow-hidden rounded-3xl" style="background: linear-gradient(135deg, #1a1040 0%, #2d1b69 50%, #3a2370 100%); padding: 5rem 3rem;">
+                    {{-- Ambient glows --}}
+                    <div style="position: absolute; top: -30%; right: -5%; width: 600px; height: 600px; background: radial-gradient(circle, rgba(212, 168, 67, 0.06) 0%, transparent 60%); pointer-events: none;"></div>
+                    <div style="position: absolute; bottom: -20%; left: -10%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(91, 62, 158, 0.2) 0%, transparent 60%); pointer-events: none;"></div>
 
-                    <div class="max-w-lg mx-auto relative z-10">
-                        <div class="grid md:grid-cols-5 gap-10 items-center">
+                    {{-- Background waveform decoration --}}
+                    <div style="position: absolute; bottom: 0; left: 0; right: 0; display: flex; align-items: flex-end; gap: 3px; height: 80px; opacity: 0.04; padding: 0 2rem; pointer-events: none;">
+                        @for($i = 0; $i < 60; $i++)
+                            <div style="flex: 1; background: white; border-radius: 99px; height: {{ rand(15, 100) }}%;"></div>
+                        @endfor
+                    </div>
+
+                    <div class="max-w-3xl mx-auto relative z-10">
+                        <div class="grid md:grid-cols-2 gap-12 items-center">
                             {{-- Left: Content --}}
-                            <div class="md:col-span-3 text-center md:text-left">
-                                <div style="display: inline-block; border: 1px solid rgba(212, 168, 67, 0.3); border-radius: 9999px; padding: 0.35rem 1rem; margin-bottom: 1.25rem;">
+                            <div class="text-center md:text-left">
+                                <div style="display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid rgba(212, 168, 67, 0.3); border-radius: 9999px; padding: 0.35rem 1rem; margin-bottom: 1.5rem;">
+                                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #d4a843;"></span>
                                     <span style="font-family: 'Poppins', sans-serif; font-size: 0.7rem; color: #d4a843; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;">Coming Soon</span>
                                 </div>
-                                <h2 class="font-heading text-3xl md:text-4xl font-bold text-cream mb-3" style="line-height: 1.15;">We're warming up the mics</h2>
-                                <p style="color: rgba(254, 249, 239, 0.55); font-size: 1rem; line-height: 1.8; margin-bottom: 1.5rem;">
-                                    Our first episode is in the works. Disney parks, accessibility, family stories, and a lot of heart. Subscribe so you're there from the start.
+                                <h2 class="font-heading font-bold text-cream" style="font-size: clamp(1.75rem, 3.5vw, 2.5rem); line-height: 1.15; margin-bottom: 1rem;">We're warming up the mics</h2>
+                                <p style="color: rgba(254, 249, 239, 0.5); font-size: 0.95rem; line-height: 1.8; margin-bottom: 2rem;">
+                                    Our first episode is in the works. Disney parks, accessibility, family stories, and a lot of heart. Subscribe so you're there from the very start.
                                 </p>
                                 <div class="flex items-center justify-center md:justify-start gap-3">
-                                    <a href="#" class="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-full transition-all hover:-translate-y-0.5" style="background: rgba(254, 249, 239, 0.1); color: rgba(254, 249, 239, 0.8); border: 1px solid rgba(254, 249, 239, 0.15);">
-                                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.56 2.93 11.3 4.7 7.72C5.57 5.94 7.36 4.86 9.28 4.84C10.56 4.81 11.78 5.7 12.56 5.7C13.34 5.7 14.85 4.62 16.41 4.8C17.07 4.83 18.96 5.06 20.16 6.87C20.05 6.95 17.58 8.37 17.61 11.34C17.65 14.9 20.68 16.04 20.71 16.06C20.69 16.13 20.18 17.86 18.71 19.5Z"/></svg>
+                                    <a href="#" class="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-lg transition-all hover:-translate-y-0.5" style="background: rgba(254, 249, 239, 0.08); color: rgba(254, 249, 239, 0.7); border: 1px solid rgba(254, 249, 239, 0.1);">
+                                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.56 2.93 11.3 4.7 7.72C5.57 5.94 7.36 4.86 9.28 4.84C10.56 4.81 11.78 5.7 12.56 5.7C13.34 5.7 14.85 4.62 16.41 4.8C17.07 4.83 18.96 5.06 20.16 6.87C20.05 6.95 17.58 8.37 17.61 11.34C17.65 14.9 20.68 16.04 20.71 16.06C20.69 16.13 20.18 17.86 18.71 19.5Z"/></svg>
                                         Apple Podcasts
                                     </a>
-                                    <a href="#" class="inline-flex items-center gap-2 text-sm font-semibold px-5 py-2.5 rounded-full transition-all hover:-translate-y-0.5" style="background: rgba(254, 249, 239, 0.1); color: rgba(254, 249, 239, 0.8); border: 1px solid rgba(254, 249, 239, 0.15);">
-                                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02z"/></svg>
+                                    <a href="#" class="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-lg transition-all hover:-translate-y-0.5" style="background: rgba(254, 249, 239, 0.08); color: rgba(254, 249, 239, 0.7); border: 1px solid rgba(254, 249, 239, 0.1);">
+                                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02z"/></svg>
                                         Spotify
                                     </a>
                                 </div>
                             </div>
 
-                            {{-- Right: Faux episode card --}}
-                            <div class="md:col-span-2 hidden md:block">
-                                <div style="background: rgba(45, 27, 105, 0.4); border: 1px solid rgba(212, 168, 67, 0.15); border-radius: 1.25rem; padding: 1.75rem; backdrop-filter: blur(10px);">
-                                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem;">
-                                        <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #5b3e9e, #1a1040); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                            <svg style="width: 20px; height: 20px; color: white;" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            {{-- Right: Faux player --}}
+                            <div class="hidden md:block">
+                                <div style="background: rgba(26, 16, 64, 0.6); border: 1px solid rgba(212, 168, 67, 0.12); border-radius: 1.5rem; padding: 2rem; backdrop-filter: blur(10px); box-shadow: 0 25px 50px rgba(0,0,0,0.3);">
+                                    {{-- Episode header --}}
+                                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                                        <div style="width: 56px; height: 56px; border-radius: 0.75rem; background: linear-gradient(135deg, #5b3e9e, #3a2370); display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 12px rgba(91, 62, 158, 0.4);">
+                                            <svg style="width: 22px; height: 22px; color: #d4a843;" fill="currentColor" viewBox="0 0 24 24"><path d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
                                         </div>
                                         <div style="flex: 1;">
-                                            <div style="height: 10px; width: 80%; background: rgba(254, 249, 239, 0.15); border-radius: 99px; margin-bottom: 6px;"></div>
-                                            <div style="height: 7px; width: 50%; background: rgba(254, 249, 239, 0.08); border-radius: 99px;"></div>
+                                            <div style="height: 9px; width: 45%; background: rgba(212, 168, 67, 0.3); border-radius: 99px; margin-bottom: 8px;"></div>
+                                            <div style="height: 12px; width: 85%; background: rgba(254, 249, 239, 0.15); border-radius: 99px; margin-bottom: 5px;"></div>
+                                            <div style="height: 12px; width: 60%; background: rgba(254, 249, 239, 0.1); border-radius: 99px;"></div>
                                         </div>
                                     </div>
-                                    {{-- Waveform bars --}}
-                                    <div style="display: flex; align-items: end; gap: 2px; height: 32px; margin-bottom: 1rem;">
-                                        @for($i = 0; $i < 24; $i++)
-                                            <div style="flex: 1; background: rgba(212, 168, 67, {{ $i < 10 ? '0.4' : '0.15' }}); border-radius: 99px; height: {{ rand(20, 100) }}%;"></div>
+
+                                    {{-- Waveform bars with animation --}}
+                                    <div style="display: flex; align-items: end; gap: 2px; height: 48px; margin-bottom: 0.75rem;">
+                                        @for($i = 0; $i < 32; $i++)
+                                            @php $h = rand(20, 100); $played = $i < 12; @endphp
+                                            <div class="waveform-bar" style="flex: 1; background: {{ $played ? 'rgba(212, 168, 67, 0.5)' : 'rgba(254, 249, 239, 0.1)' }}; border-radius: 99px; height: {{ $h }}%; animation-delay: {{ $i * 0.08 }}s;"></div>
                                         @endfor
                                     </div>
-                                    <div style="display: flex; align-items: center; justify-content: space-between;">
-                                        <div style="height: 6px; width: 30%; background: rgba(254, 249, 239, 0.08); border-radius: 99px;"></div>
-                                        <div style="height: 6px; width: 20%; background: rgba(254, 249, 239, 0.06); border-radius: 99px;"></div>
+
+                                    {{-- Progress bar --}}
+                                    <div style="height: 3px; background: rgba(254, 249, 239, 0.06); border-radius: 99px; margin-bottom: 0.5rem; position: relative;">
+                                        <div style="position: absolute; left: 0; top: 0; width: 38%; height: 100%; background: linear-gradient(90deg, #d4a843, #f0c75e); border-radius: 99px;"></div>
+                                        <div style="position: absolute; left: 38%; top: 50%; transform: translate(-50%, -50%); width: 9px; height: 9px; background: #f0c75e; border-radius: 50%; box-shadow: 0 0 8px rgba(212, 168, 67, 0.5);"></div>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span style="font-size: 0.65rem; color: rgba(254, 249, 239, 0.25); font-family: 'Poppins', sans-serif;">12:34</span>
+                                        <span style="font-size: 0.65rem; color: rgba(254, 249, 239, 0.25); font-family: 'Poppins', sans-serif;">32:18</span>
+                                    </div>
+
+                                    {{-- Playback controls --}}
+                                    <div style="display: flex; align-items: center; justify-content: center; gap: 1.5rem; margin-top: 1rem;">
+                                        <div style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
+                                            <svg style="width: 16px; height: 16px; color: rgba(254, 249, 239, 0.25);" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                                        </div>
+                                        <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #d4a843, #b8922e); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(212, 168, 67, 0.3);">
+                                            <svg style="width: 20px; height: 20px; color: #1a1040; margin-left: 2px;" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                        </div>
+                                        <div style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
+                                            <svg style="width: 16px; height: 16px; color: rgba(254, 249, 239, 0.25);" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
