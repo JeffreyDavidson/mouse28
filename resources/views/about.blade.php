@@ -331,7 +331,7 @@
 
             {{-- Jeffrey --}}
             <div class="relative mb-16 md:mb-24">
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 items-center">
                     {{-- Photo area --}}
                     <div class="md:col-span-5 relative">
                         <div class="relative rounded-2xl overflow-hidden" style="aspect-ratio: 3/4;">
@@ -381,7 +381,7 @@
 
             {{-- Cassie (reversed) --}}
             <div class="relative">
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 items-center">
                     {{-- Bio (left on desktop) --}}
                     <div class="md:col-span-7 order-2 md:order-1">
                         <h3 class="font-heading text-2xl md:text-3xl font-bold text-navy mb-2">Cassie Davidson</h3>
