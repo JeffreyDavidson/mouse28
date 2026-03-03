@@ -322,30 +322,106 @@
     </section>
 
     {{-- Your Hosts --}}
-    <section class="py-16 md:py-24 bg-cream">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6">
-            <div class="text-center mb-12">
-                <span class="text-gold text-sm font-semibold tracking-widest uppercase">Your Hosts</span>
-                <h2 class="font-heading text-3xl md:text-4xl font-bold text-navy mt-2">The Voices Behind Mouse28</h2>
+    <section class="py-20 md:py-28 bg-cream relative overflow-hidden">
+        {{-- Subtle background pattern --}}
+        <div class="absolute inset-0 opacity-[0.02]" style="background-image: radial-gradient(circle at 1px 1px, #1a1040 1px, transparent 0); background-size: 32px 32px;"></div>
+
+        <div class="max-w-5xl mx-auto px-6 md:px-12 relative z-10">
+            <div class="text-center mb-16">
+                <span class="inline-block tracking-widest uppercase text-xs font-semibold mb-4 px-6 py-2 rounded-full border font-body" style="color: #5b3e9e; border-color: rgba(91,62,158,0.2); background: rgba(91,62,158,0.05); letter-spacing: 0.25em;">Your Hosts</span>
+                <h2 class="font-heading text-3xl md:text-5xl font-bold text-navy mt-3">The Voices Behind<br><span class="text-gold italic">Mouse28</span></h2>
             </div>
-            <div class="grid md:grid-cols-2 gap-8">
-                {{-- Jeffrey --}}
-                <div class="bg-white rounded-2xl p-8 shadow-sm border border-navy/5 text-center hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-                    <div class="w-28 h-28 rounded-full bg-gradient-to-br from-purple/20 to-gold/20 mx-auto mb-5 flex items-center justify-center">
-                        <span class="text-5xl">👨</span>
+
+            {{-- Jeffrey --}}
+            <div class="relative mb-16 md:mb-24">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
+                    {{-- Photo area --}}
+                    <div class="md:col-span-5 relative">
+                        <div class="relative rounded-2xl overflow-hidden" style="aspect-ratio: 3/4;">
+                            <div class="absolute inset-0" style="background: linear-gradient(135deg, #1a1040, #5b3e9e);"></div>
+                            {{-- Placeholder until real photo --}}
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="text-center">
+                                    <div class="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center" style="background: rgba(212,168,67,0.15); border: 2px solid rgba(212,168,67,0.2);">
+                                        <svg class="w-12 h-12" style="color: rgba(212,168,67,0.4);" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+                                    </div>
+                                    <p class="text-white/20 text-xs font-body">Photo coming soon</p>
+                                </div>
+                            </div>
+                            {{-- Name overlay at bottom --}}
+                            <div class="absolute bottom-0 left-0 right-0 p-6" style="background: linear-gradient(to top, rgba(26,16,64,0.95), transparent);">
+                                <span class="uppercase tracking-widest text-xs font-semibold font-body" style="color: #d4a843; letter-spacing: 0.2em;">Co-Host</span>
+                            </div>
+                        </div>
+                        {{-- Offset accent --}}
+                        <div class="hidden md:block absolute -bottom-4 -right-4 w-full h-full rounded-2xl -z-10" style="border: 1px solid rgba(212,168,67,0.15);"></div>
                     </div>
-                    <h3 class="font-heading text-xl font-bold text-navy">Jeffrey Davidson</h3>
-                    <p class="text-gold text-sm font-medium mt-1 mb-4">Co-Host & Dad Extraordinaire</p>
-                    <p class="text-navy/60 text-sm leading-relaxed">The planner, the podcast editor, and the guy who knows every shortcut in Magic Kingdom. Jeffrey brings the strategy and the dad jokes.</p>
+
+                    {{-- Bio --}}
+                    <div class="md:col-span-7">
+                        <h3 class="font-heading text-2xl md:text-3xl font-bold text-navy mb-2">Jeffrey Davidson</h3>
+                        <p class="font-body text-sm font-semibold mb-6" style="color: #5b3e9e;">Dad, Web Developer, Disney Strategist</p>
+                        <div class="space-y-4">
+                            <p class="text-navy/65 font-body leading-relaxed">The planner. The podcast editor. The guy who knows every shortcut in Magic Kingdom and has strong opinions about which Dole Whip flavor is the best (it's pineapple, don't argue).</p>
+                            <p class="text-navy/65 font-body leading-relaxed">Jeffrey is a web developer by trade with over 15 years of experience building things on the internet. When he's not coding, he's mapping out the most efficient park route or convincing Cassie they need "just one more ride" before heading home.</p>
+                        </div>
+                        {{-- Fun facts --}}
+                        <div class="mt-8 flex flex-wrap gap-3">
+                            <span class="text-xs px-4 py-2 rounded-full font-body font-medium" style="color: #1a1040; background: rgba(212,168,67,0.15); border: 1px solid rgba(212,168,67,0.2);">Favorite park: Magic Kingdom</span>
+                            <span class="text-xs px-4 py-2 rounded-full font-body font-medium" style="color: #1a1040; background: rgba(91,62,158,0.1); border: 1px solid rgba(91,62,158,0.15);">Jayhawks fan</span>
+                            <span class="text-xs px-4 py-2 rounded-full font-body font-medium" style="color: #1a1040; background: rgba(212,168,67,0.15); border: 1px solid rgba(212,168,67,0.2);">Husky dad x2</span>
+                        </div>
+                    </div>
                 </div>
-                {{-- Cassie --}}
-                <div class="bg-white rounded-2xl p-8 shadow-sm border border-navy/5 text-center hover:-translate-y-1 hover:shadow-lg transition-all duration-300">
-                    <div class="w-28 h-28 rounded-full bg-gradient-to-br from-purple/20 to-gold/20 mx-auto mb-5 flex items-center justify-center">
-                        <span class="text-5xl">👩</span>
+            </div>
+
+            {{-- Divider --}}
+            <div class="flex items-center justify-center gap-4 mb-16 md:mb-24">
+                <div class="h-px flex-1 max-w-[100px]" style="background: linear-gradient(90deg, transparent, rgba(212,168,67,0.3));"></div>
+                <svg class="w-5 h-5" style="color: #d4a843; opacity: 0.4;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <div class="h-px flex-1 max-w-[100px]" style="background: linear-gradient(90deg, rgba(212,168,67,0.3), transparent);"></div>
+            </div>
+
+            {{-- Cassie (reversed) --}}
+            <div class="relative">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
+                    {{-- Bio (left on desktop) --}}
+                    <div class="md:col-span-7 order-2 md:order-1">
+                        <h3 class="font-heading text-2xl md:text-3xl font-bold text-navy mb-2">Cassie Davidson</h3>
+                        <p class="font-body text-sm font-semibold mb-6" style="color: #5b3e9e;">Mom, Baker, Accessibility Champion</p>
+                        <div class="space-y-4">
+                            <p class="text-navy/65 font-body leading-relaxed">The heart of Mouse28. Cassie is the one who makes sure every tip we share actually helps real families. She brings warmth, honesty, and a park snack bag that has never once let us down.</p>
+                            <p class="text-navy/65 font-body leading-relaxed">When she's not at the parks, Cassie runs a cottage food bakery, wrangles two huskies, and somehow keeps everything running smoothly. She's the reason this whole thing works.</p>
+                        </div>
+                        {{-- Fun facts --}}
+                        <div class="mt-8 flex flex-wrap gap-3">
+                            <span class="text-xs px-4 py-2 rounded-full font-body font-medium" style="color: #1a1040; background: rgba(91,62,158,0.1); border: 1px solid rgba(91,62,158,0.15);">Snack queen</span>
+                            <span class="text-xs px-4 py-2 rounded-full font-body font-medium" style="color: #1a1040; background: rgba(212,168,67,0.15); border: 1px solid rgba(212,168,67,0.2);">Cottage food baker</span>
+                            <span class="text-xs px-4 py-2 rounded-full font-body font-medium" style="color: #1a1040; background: rgba(91,62,158,0.1); border: 1px solid rgba(91,62,158,0.15);">Accessibility advocate</span>
+                        </div>
                     </div>
-                    <h3 class="font-heading text-xl font-bold text-navy">Cassie Davidson</h3>
-                    <p class="text-gold text-sm font-medium mt-1 mb-4">Co-Host & Accessibility Advocate</p>
-                    <p class="text-navy/60 text-sm leading-relaxed">The heart of Mouse28. Cassie champions accessibility awareness and brings warmth, honesty, and a snack bag that never runs out.</p>
+
+                    {{-- Photo area (right on desktop) --}}
+                    <div class="md:col-span-5 relative order-1 md:order-2">
+                        <div class="relative rounded-2xl overflow-hidden" style="aspect-ratio: 3/4;">
+                            <div class="absolute inset-0" style="background: linear-gradient(135deg, #5b3e9e, #1a1040);"></div>
+                            {{-- Placeholder until real photo --}}
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <div class="text-center">
+                                    <div class="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center" style="background: rgba(212,168,67,0.15); border: 2px solid rgba(212,168,67,0.2);">
+                                        <svg class="w-12 h-12" style="color: rgba(212,168,67,0.4);" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+                                    </div>
+                                    <p class="text-white/20 text-xs font-body">Photo coming soon</p>
+                                </div>
+                            </div>
+                            {{-- Name overlay at bottom --}}
+                            <div class="absolute bottom-0 left-0 right-0 p-6" style="background: linear-gradient(to top, rgba(26,16,64,0.95), transparent);">
+                                <span class="uppercase tracking-widest text-xs font-semibold font-body" style="color: #d4a843; letter-spacing: 0.2em;">Co-Host</span>
+                            </div>
+                        </div>
+                        {{-- Offset accent --}}
+                        <div class="hidden md:block absolute -bottom-4 -left-4 w-full h-full rounded-2xl -z-10" style="border: 1px solid rgba(91,62,158,0.15);"></div>
+                    </div>
                 </div>
             </div>
         </div>
