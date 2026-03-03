@@ -359,7 +359,7 @@
                         <h3 class="font-heading text-2xl md:text-3xl font-bold text-navy mb-2">Jeffrey Davidson</h3>
                         <p class="font-body text-sm font-semibold mb-6" style="color: #5b3e9e;">Dad, Software Engineer, Disney Strategist</p>
                         <div class="space-y-4">
-                            <p class="text-navy/65 font-body leading-relaxed">The planner. The podcast editor. The guy who can navigate World Showcase blindfolded and has strong opinions about which Dole Whip flavor is the best (it's pineapple, don't argue).</p>
+                            <p class="text-navy/65 font-body leading-relaxed">The planner. The podcast editor. The guy who can navigate World Showcase blindfolded and will debate the best Epcot festival food until closing time.</p>
                             <p class="text-navy/65 font-body leading-relaxed">Jeffrey is a software engineer by trade with over 15 years of experience building things on the internet. When he's not coding, he's mapping out the most efficient park route or convincing Cassie they need "just one more ride" before heading home.</p>
                         </div>
                         {{-- Fun facts --}}
