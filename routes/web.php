@@ -15,9 +15,10 @@ Route::get('/blog', [PostController::class, 'index']);
 Route::get('/blog/{post:slug}', [PostController::class, 'show']);
 Route::get('/episodes', [EpisodeController::class, 'index']);
 Route::get('/episodes/{episode:slug}', [EpisodeController::class, 'show']);
-Route::get('/stories', [CommunityStoryController::class, 'index']);
-Route::get('/stories/share', [CommunityStoryController::class, 'create']);
-Route::post('/stories', [CommunityStoryController::class, 'store']);
+// Community Stories disabled for now
+// Route::get('/stories', [CommunityStoryController::class, 'index']);
+// Route::get('/stories/share', [CommunityStoryController::class, 'create']);
+// Route::post('/stories', [CommunityStoryController::class, 'store']);
 Route::get('/about', fn () => view('about'));
 Route::get('/contact', [ContactController::class, 'show']);
 Route::post('/contact', [ContactController::class, 'store']);

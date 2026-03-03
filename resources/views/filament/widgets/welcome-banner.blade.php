@@ -48,7 +48,7 @@
                             default => 'Good evening!',
                         };
                         $postCount = \App\Models\Post::where('is_published', false)->count();
-                        $storyCount = \App\Models\CommunityStory::where('is_approved', false)->count();
+                        $storyCount = 0; // Community Stories disabled
                     @endphp
                     {{ $greeting }}
                     @if ($postCount > 0 || $storyCount > 0)
