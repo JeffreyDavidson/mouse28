@@ -111,64 +111,214 @@
     </section>
 
     {{-- What We Cover --}}
-    <section class="py-16 md:py-24 bg-navy relative overflow-hidden">
-        {{-- Subtle background texture --}}
-        <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+    <!-- What We Cover Section -->
+    <section class="relative overflow-hidden" style="background: linear-gradient(135deg, #1a1040 0%, #2d1a5e 50%, #1a1040 100%);">
 
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 relative z-10">
-            <div class="text-center mb-14">
-                <span class="text-gold text-sm font-semibold tracking-widest uppercase">What We Cover</span>
-                <h2 class="font-heading text-3xl md:text-4xl font-bold text-white mt-3">Everything Disney, Through Our Lens</h2>
-                <p class="text-white/40 mt-4 max-w-lg mx-auto text-sm leading-relaxed font-body">Real tips and honest experiences from a family that does Disney every single week.</p>
-            </div>
+      <!-- Decorative background elements -->
+      <div class="absolute inset-0 opacity-5">
+        <div class="absolute top-0 left-0 w-full h-full" style="background-image: radial-gradient(circle at 20% 50%, rgba(212,168,67,0.15) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(91,62,158,0.2) 0%, transparent 40%), radial-gradient(circle at 60% 80%, rgba(212,168,67,0.1) 0%, transparent 45%);"></div>
+      </div>
 
-            <div class="grid md:grid-cols-3 gap-8">
-                {{-- DAS Pass Tips --}}
-                <div class="group relative">
-                    <div class="absolute inset-0 bg-gradient-to-b from-gold/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
-                    <div class="relative bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-8 hover:border-gold/20 transition-all duration-500 hover:-translate-y-1 h-full">
-                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-gold/20 to-purple/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
-                            <svg class="w-7 h-7 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z" /></svg>
-                        </div>
-                        <h3 class="font-heading font-bold text-white text-xl mb-3">DAS Pass Tips</h3>
-                        <p class="text-white/50 text-sm leading-relaxed font-body">How to apply, what to expect, and making the most of disability accommodations at Disney parks.</p>
-                        <div class="mt-6 pt-5 border-t border-white/[0.06]">
-                            <span class="text-gold/70 text-xs font-semibold tracking-wider uppercase font-body group-hover:text-gold transition-colors">Accessibility</span>
-                        </div>
-                    </div>
-                </div>
+      <!-- Top diagonal cut -->
+      <div class="absolute top-0 left-0 w-full overflow-hidden" style="height: 80px;">
+        <div class="absolute w-full h-full" style="background: #fef9ef; clip-path: polygon(0 0, 100% 0, 100% 30%, 0 100%);"></div>
+      </div>
 
-                {{-- Park Accessibility --}}
-                <div class="group relative">
-                    <div class="absolute inset-0 bg-gradient-to-b from-purple/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
-                    <div class="relative bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-8 hover:border-purple/30 transition-all duration-500 hover:-translate-y-1 h-full">
-                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple/20 to-gold/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
-                            <svg class="w-7 h-7 text-purple-light" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" /></svg>
-                        </div>
-                        <h3 class="font-heading font-bold text-white text-xl mb-3">Park Experiences</h3>
-                        <p class="text-white/50 text-sm leading-relaxed font-body">Real-world tips on how accessible Disney parks actually are for diverse needs and abilities.</p>
-                        <div class="mt-6 pt-5 border-t border-white/[0.06]">
-                            <span class="text-purple-light/70 text-xs font-semibold tracking-wider uppercase font-body group-hover:text-purple-light transition-colors">Tips & Reviews</span>
-                        </div>
-                    </div>
-                </div>
+      <!-- Bottom diagonal cut -->
+      <div class="absolute bottom-0 left-0 w-full overflow-hidden" style="height: 80px;">
+        <div class="absolute w-full h-full" style="background: #fef9ef; clip-path: polygon(0 70%, 100% 0, 100% 100%, 0 100%);"></div>
+      </div>
 
-                {{-- Family Disney Life --}}
-                <div class="group relative">
-                    <div class="absolute inset-0 bg-gradient-to-b from-gold/20 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl"></div>
-                    <div class="relative bg-white/[0.04] backdrop-blur-sm border border-white/[0.06] rounded-2xl p-8 hover:border-gold/20 transition-all duration-500 hover:-translate-y-1 h-full">
-                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-gold/20 to-purple/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
-                            <svg class="w-7 h-7 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" /></svg>
-                        </div>
-                        <h3 class="font-heading font-bold text-white text-xl mb-3">Family Disney Life</h3>
-                        <p class="text-white/50 text-sm leading-relaxed font-body">The funny, messy, magical reality of weekly Disney trips with our family.</p>
-                        <div class="mt-6 pt-5 border-t border-white/[0.06]">
-                            <span class="text-gold/70 text-xs font-semibold tracking-wider uppercase font-body group-hover:text-gold transition-colors">Our Story</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <div class="relative z-10 max-w-7xl mx-auto px-6 md:px-12" style="padding-top: 140px; padding-bottom: 140px;">
+
+        <!-- Section Header -->
+        <div class="text-center mb-6">
+          <span class="inline-block tracking-widest uppercase text-xs font-semibold mb-4 px-6 py-2 rounded-full border" style="font-family: 'Poppins', sans-serif; color: #d4a843; border-color: rgba(212,168,67,0.3); background: rgba(212,168,67,0.05); letter-spacing: 0.25em;">What We Cover</span>
         </div>
+        <h2 class="text-center mb-4" style="font-family: 'Playfair Display', serif; color: #fef9ef; font-size: clamp(2.5rem, 5vw, 4rem); line-height: 1.1; font-weight: 700;">
+          Three Worlds.<br>
+          <span style="color: #d4a843; font-style: italic;">One Mission.</span>
+        </h2>
+        <p class="text-center max-w-xl mx-auto mb-20 opacity-70" style="font-family: 'Poppins', sans-serif; color: #fef9ef; font-size: 1.05rem; line-height: 1.7;">
+          Making Disney accessible, honest, and a whole lot more fun for families like ours.
+        </p>
+
+        <!-- TOPIC 01 — DAS Pass Tips -->
+        <div class="relative mb-32 md:mb-40">
+          <!-- Oversized number -->
+          <div class="absolute -top-8 md:-top-16 left-0 md:left-8 select-none pointer-events-none" style="font-family: 'Playfair Display', serif; font-size: clamp(8rem, 18vw, 14rem); font-weight: 900; line-height: 1; color: rgba(212,168,67,0.07);">01</div>
+
+          <div class="relative grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+            <!-- Text block -->
+            <div class="md:col-span-5 md:col-start-1 relative z-10">
+              <div class="relative p-8 md:p-10 rounded-2xl" style="background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(212,168,67,0.12);">
+                <div class="flex items-center gap-3 mb-5">
+                  <div class="flex items-center justify-center w-10 h-10 rounded-full" style="background: linear-gradient(135deg, #d4a843, #e8c36a);">
+                    <svg class="w-5 h-5" fill="none" stroke="#1a1040" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                  </div>
+                  <span class="uppercase tracking-widest text-xs font-semibold" style="font-family: 'Poppins', sans-serif; color: #d4a843; letter-spacing: 0.2em;">Topic One</span>
+                </div>
+                <h3 class="mb-4" style="font-family: 'Playfair Display', serif; color: #fef9ef; font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 700; line-height: 1.2;">
+                  DAS Pass<br><span style="color: #d4a843; font-style: italic;">Tips</span>
+                </h3>
+                <p style="font-family: 'Poppins', sans-serif; color: rgba(254,249,239,0.65); font-size: 0.95rem; line-height: 1.8;">
+                  Navigating Disney's Disability Access Service can feel overwhelming. We break it down with real experience, current policies, and practical strategies that actually work for neurodivergent families.
+                </p>
+                <!-- Decorative line -->
+                <div class="mt-6 h-px w-16" style="background: linear-gradient(90deg, #d4a843, transparent);"></div>
+              </div>
+            </div>
+
+            <!-- Visual block -->
+            <div class="md:col-span-6 md:col-start-7 relative">
+              <div class="relative rounded-2xl overflow-hidden" style="aspect-ratio: 4/3; background: linear-gradient(135deg, #5b3e9e, #1a1040);">
+                <!-- Abstract pattern -->
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div class="text-center">
+                    <div style="font-family: 'Playfair Display', serif; font-size: clamp(4rem, 8vw, 6rem); font-weight: 900; color: rgba(212,168,67,0.12); line-height: 1;">DAS</div>
+                    <div class="mt-2 flex items-center justify-center gap-2">
+                      <div class="h-px w-8" style="background: rgba(212,168,67,0.3);"></div>
+                      <svg class="w-4 h-4" style="color: #d4a843; opacity: 0.5;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                      <div class="h-px w-8" style="background: rgba(212,168,67,0.3);"></div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Floating stats -->
+                <div class="absolute bottom-4 left-4 right-4 flex gap-3">
+                  <div class="flex-1 rounded-xl p-4 text-center" style="background: rgba(26,16,64,0.85); backdrop-filter: blur(10px); border: 1px solid rgba(212,168,67,0.15);">
+                    <div class="font-bold" style="font-family: 'Playfair Display', serif; color: #d4a843; font-size: 1.5rem;">4</div>
+                    <div class="text-xs mt-1 opacity-60" style="font-family: 'Poppins', sans-serif; color: #fef9ef;">Parks Covered</div>
+                  </div>
+                  <div class="flex-1 rounded-xl p-4 text-center" style="background: rgba(26,16,64,0.85); backdrop-filter: blur(10px); border: 1px solid rgba(212,168,67,0.15);">
+                    <div class="font-bold" style="font-family: 'Playfair Display', serif; color: #d4a843; font-size: 1.5rem;">Weekly</div>
+                    <div class="text-xs mt-1 opacity-60" style="font-family: 'Poppins', sans-serif; color: #fef9ef;">Park Visits</div>
+                  </div>
+                  <div class="flex-1 rounded-xl p-4 text-center" style="background: rgba(26,16,64,0.85); backdrop-filter: blur(10px); border: 1px solid rgba(212,168,67,0.15);">
+                    <div class="font-bold" style="font-family: 'Playfair Display', serif; color: #d4a843; font-size: 1.5rem;">Real</div>
+                    <div class="text-xs mt-1 opacity-60" style="font-family: 'Poppins', sans-serif; color: #fef9ef;">Experience</div>
+                  </div>
+                </div>
+              </div>
+              <!-- Offset accent block -->
+              <div class="hidden md:block absolute -bottom-6 -right-6 w-32 h-32 rounded-2xl -z-10" style="background: linear-gradient(135deg, rgba(212,168,67,0.15), rgba(91,62,158,0.1)); border: 1px solid rgba(212,168,67,0.08);"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TOPIC 02 — Park Experiences (reversed layout) -->
+        <div class="relative mb-32 md:mb-40">
+          <!-- Oversized number -->
+          <div class="absolute -top-8 md:-top-16 right-0 md:right-8 select-none pointer-events-none text-right" style="font-family: 'Playfair Display', serif; font-size: clamp(8rem, 18vw, 14rem); font-weight: 900; line-height: 1; color: rgba(91,62,158,0.1);">02</div>
+
+          <div class="relative grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+            <!-- Visual block (left on desktop) -->
+            <div class="md:col-span-6 md:col-start-1 relative order-2 md:order-1">
+              <div class="relative rounded-2xl overflow-hidden" style="aspect-ratio: 4/3; background: linear-gradient(135deg, #1a1040, #5b3e9e);">
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div class="text-center px-6">
+                    <div style="font-family: 'Playfair Display', serif; font-size: clamp(3rem, 6vw, 4.5rem); font-weight: 900; color: rgba(254,249,239,0.06); line-height: 1;">PARKS</div>
+                    <!-- Stacked horizontal lines -->
+                    <div class="mt-6 space-y-2 flex flex-col items-center">
+                      <div class="h-px rounded-full" style="width: 120px; background: rgba(212,168,67,0.3);"></div>
+                      <div class="h-px rounded-full" style="width: 80px; background: rgba(212,168,67,0.2);"></div>
+                      <div class="h-px rounded-full" style="width: 40px; background: rgba(212,168,67,0.1);"></div>
+                    </div>
+                  </div>
+                </div>
+                <!-- Pull quote overlay -->
+                <div class="absolute top-6 left-6 right-6">
+                  <div class="rounded-xl p-5" style="background: rgba(26,16,64,0.85); backdrop-filter: blur(10px); border: 1px solid rgba(91,62,158,0.2);">
+                    <svg class="w-6 h-6 mb-2" style="color: #d4a843; opacity: 0.6;" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983z"/></svg>
+                    <p style="font-family: 'Playfair Display', serif; color: rgba(254,249,239,0.8); font-size: 1rem; font-style: italic; line-height: 1.6;">
+                      We ride every ride, test every queue, and tell you what it's really like.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <!-- Offset accent block -->
+              <div class="hidden md:block absolute -bottom-6 -left-6 w-32 h-32 rounded-2xl -z-10" style="background: linear-gradient(135deg, rgba(91,62,158,0.15), rgba(212,168,67,0.05)); border: 1px solid rgba(91,62,158,0.1);"></div>
+            </div>
+
+            <!-- Text block (right on desktop) -->
+            <div class="md:col-span-5 md:col-start-8 relative z-10 order-1 md:order-2">
+              <div class="relative p-8 md:p-10 rounded-2xl" style="background: rgba(255,255,255,0.03); backdrop-filter: blur(10px); border: 1px solid rgba(91,62,158,0.15);">
+                <div class="flex items-center gap-3 mb-5">
+                  <div class="flex items-center justify-center w-10 h-10 rounded-full" style="background: linear-gradient(135deg, #5b3e9e, #7c5cbf);">
+                    <svg class="w-5 h-5" fill="none" stroke="#fef9ef" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+                  </div>
+                  <span class="uppercase tracking-widest text-xs font-semibold" style="font-family: 'Poppins', sans-serif; color: #d4a843; letter-spacing: 0.2em;">Topic Two</span>
+                </div>
+                <h3 class="mb-4" style="font-family: 'Playfair Display', serif; color: #fef9ef; font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 700; line-height: 1.2;">
+                  Park<br><span style="color: #d4a843; font-style: italic;">Experiences</span>
+                </h3>
+                <p style="font-family: 'Poppins', sans-serif; color: rgba(254,249,239,0.65); font-size: 0.95rem; line-height: 1.8;">
+                  Honest, detailed reviews of rides, restaurants, and resort experiences through the lens of accessibility. No sugarcoating. No sponsored fluff. Just what your family actually needs to know before you go.
+                </p>
+                <!-- Tags -->
+                <div class="mt-6 flex flex-wrap gap-2">
+                  <span class="text-xs px-3 py-1.5 rounded-full" style="font-family: 'Poppins', sans-serif; color: rgba(254,249,239,0.6); border: 1px solid rgba(254,249,239,0.1); background: rgba(254,249,239,0.03);">Ride Reviews</span>
+                  <span class="text-xs px-3 py-1.5 rounded-full" style="font-family: 'Poppins', sans-serif; color: rgba(254,249,239,0.6); border: 1px solid rgba(254,249,239,0.1); background: rgba(254,249,239,0.03);">Dining</span>
+                  <span class="text-xs px-3 py-1.5 rounded-full" style="font-family: 'Poppins', sans-serif; color: rgba(254,249,239,0.6); border: 1px solid rgba(254,249,239,0.1); background: rgba(254,249,239,0.03);">Sensory Tips</span>
+                  <span class="text-xs px-3 py-1.5 rounded-full" style="font-family: 'Poppins', sans-serif; color: rgba(254,249,239,0.6); border: 1px solid rgba(254,249,239,0.1); background: rgba(254,249,239,0.03);">Resorts</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TOPIC 03 — Family Disney Life (full-width editorial) -->
+        <div class="relative">
+          <!-- Oversized number -->
+          <div class="absolute -top-8 md:-top-16 left-1/2 -translate-x-1/2 select-none pointer-events-none text-center" style="font-family: 'Playfair Display', serif; font-size: clamp(8rem, 18vw, 14rem); font-weight: 900; line-height: 1; color: rgba(212,168,67,0.05);">03</div>
+
+          <div class="relative max-w-4xl mx-auto">
+            <!-- Full-width editorial card -->
+            <div class="relative rounded-3xl overflow-hidden" style="background: linear-gradient(160deg, rgba(91,62,158,0.15), rgba(212,168,67,0.08)); border: 1px solid rgba(212,168,67,0.1);">
+              <!-- Inner layout -->
+              <div class="grid grid-cols-1 md:grid-cols-2">
+                <!-- Left: typographic art -->
+                <div class="relative flex items-center justify-center p-10 md:p-14" style="min-height: 300px;">
+                  <div class="absolute inset-0" style="background: radial-gradient(circle at 30% 50%, rgba(212,168,67,0.08), transparent 70%);"></div>
+                  <div class="relative text-center">
+                    <div class="flex items-center justify-center gap-3 mb-4">
+                      <div class="flex items-center justify-center w-10 h-10 rounded-full" style="background: linear-gradient(135deg, #d4a843, #5b3e9e);">
+                        <svg class="w-5 h-5" fill="none" stroke="#fef9ef" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+                      </div>
+                      <span class="uppercase tracking-widest text-xs font-semibold" style="font-family: 'Poppins', sans-serif; color: #d4a843; letter-spacing: 0.2em;">Topic Three</span>
+                    </div>
+                    <h3 style="font-family: 'Playfair Display', serif; color: #fef9ef; font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; line-height: 1.15;">
+                      Family<br>Disney<br><span style="color: #d4a843; font-style: italic;">Life</span>
+                    </h3>
+                    <!-- Decorative sparkles -->
+                    <div class="mt-4 flex items-center justify-center gap-3">
+                      <svg class="w-3 h-3" style="color: #d4a843; opacity: 0.4;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                      <svg class="w-4 h-4" style="color: #d4a843; opacity: 0.6;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                      <svg class="w-3 h-3" style="color: #d4a843; opacity: 0.4;" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Right: content -->
+                <div class="relative p-10 md:p-14 flex flex-col justify-center" style="border-left: 1px solid rgba(254,249,239,0.05);">
+                  <p class="mb-6" style="font-family: 'Poppins', sans-serif; color: rgba(254,249,239,0.65); font-size: 0.95rem; line-height: 1.8;">
+                    The sensory meltdowns in line. The pure joy on Viola's face during the fireworks. The snack strategy that saves every visit. This is the real, unfiltered, weekly Disney life of a family that just keeps going back.
+                  </p>
+                  <p style="font-family: 'Poppins', sans-serif; color: rgba(254,249,239,0.65); font-size: 0.95rem; line-height: 1.8;">
+                    We share the chaos, the joy, the tips you only learn after hundreds of visits, and the moments that remind us why we do this.
+                  </p>
+                  <!-- Signature-style closing -->
+                  <div class="mt-8 pt-6" style="border-top: 1px solid rgba(254,249,239,0.08);">
+                    <p style="font-family: 'Playfair Display', serif; color: #d4a843; font-size: 1.1rem; font-style: italic;">
+                      Funny. Messy. Magical. Weekly.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </section>
 
     {{-- Your Hosts --}}
