@@ -233,25 +233,14 @@
         </div>
     </section>
 
-    {{-- CTA --}}
-    <section class="bg-gradient-to-br from-navy via-navy-light to-navy relative overflow-hidden py-16 md:py-24">
-        {{-- Sparkles --}}
-        <div class="absolute inset-0 pointer-events-none">
-            <div class="sparkle absolute top-8 left-[12%] text-gold/50 text-lg">✦</div>
-            <div class="sparkle-delay absolute top-16 right-[18%] text-gold/30 text-sm">✦</div>
-            <div class="sparkle-delay-2 absolute bottom-12 left-[25%] text-gold/40 text-xl">✦</div>
-            <div class="sparkle absolute bottom-8 right-[15%] text-gold/50">✦</div>
-        </div>
-
-        <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center relative z-10">
-            <h2 class="font-heading text-3xl md:text-4xl font-bold text-white">Ready to Join Our Disney Family?</h2>
-            <p class="text-white/60 mt-4 text-lg">Listen to the podcast, read the blog, or just say hi. We'd love to connect.</p>
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
-                <a href="/episodes" class="bg-purple hover:bg-purple-dark text-white font-semibold px-8 py-3.5 rounded-full transition-all hover:shadow-lg hover:shadow-purple/25 hover:-translate-y-0.5 inline-flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" /></svg>
-                    Listen to the Podcast
-                </a>
-                <a href="/blog" class="bg-gold hover:bg-gold-light text-navy font-semibold px-8 py-3.5 rounded-full transition-all hover:shadow-lg hover:shadow-gold/25 hover:-translate-y-0.5">✨ Read the Blog</a>
+    {{-- Sign-off --}}
+    <section class="bg-gradient-to-br from-navy via-navy-light to-navy relative overflow-hidden py-16 md:py-20">
+        <div class="max-w-2xl mx-auto px-4 sm:px-6 text-center relative z-10">
+            <p class="font-heading text-2xl md:text-3xl text-white/90 italic leading-relaxed mb-3">Thanks for getting to know us.</p>
+            <p class="font-heading text-2xl md:text-3xl text-gold italic leading-relaxed mb-10">Now let's get to the good stuff.</p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="/blog" class="bg-gold hover:bg-gold-light text-navy font-semibold px-8 py-3.5 rounded-full transition-all hover:shadow-lg hover:shadow-gold/25 hover:-translate-y-0.5">Read the Blog</a>
+                <a href="/episodes" class="bg-white/10 hover:bg-white/15 text-white font-semibold px-8 py-3.5 rounded-full transition-all hover:-translate-y-0.5 border border-white/10">Listen to the Podcast</a>
             </div>
         </div>
     </section>
