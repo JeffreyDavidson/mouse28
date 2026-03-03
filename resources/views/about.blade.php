@@ -156,7 +156,6 @@
                   <div class="flex items-center justify-center w-10 h-10 rounded-full" style="background: linear-gradient(135deg, #d4a843, #e8c36a);">
                     <svg class="w-5 h-5" fill="none" stroke="#1a1040" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                   </div>
-                  <span class="uppercase tracking-widest text-xs font-semibold" style="font-family: 'Poppins', sans-serif; color: #d4a843; letter-spacing: 0.2em;">Topic One</span>
                 </div>
                 <h3 class="mb-4" style="font-family: 'Playfair Display', serif; color: #fef9ef; font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 700; line-height: 1.2;">
                   DAS Pass<br><span style="color: #d4a843; font-style: italic;">Tips</span>
@@ -246,7 +245,6 @@
                   <div class="flex items-center justify-center w-10 h-10 rounded-full" style="background: linear-gradient(135deg, #5b3e9e, #7c5cbf);">
                     <svg class="w-5 h-5" fill="none" stroke="#fef9ef" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
                   </div>
-                  <span class="uppercase tracking-widest text-xs font-semibold" style="font-family: 'Poppins', sans-serif; color: #d4a843; letter-spacing: 0.2em;">Topic Two</span>
                 </div>
                 <h3 class="mb-4" style="font-family: 'Playfair Display', serif; color: #fef9ef; font-size: clamp(1.75rem, 3vw, 2.25rem); font-weight: 700; line-height: 1.2;">
                   Park<br><span style="color: #d4a843; font-style: italic;">Experiences</span>
@@ -284,7 +282,6 @@
                       <div class="flex items-center justify-center w-10 h-10 rounded-full" style="background: linear-gradient(135deg, #d4a843, #5b3e9e);">
                         <svg class="w-5 h-5" fill="none" stroke="#fef9ef" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
                       </div>
-                      <span class="uppercase tracking-widest text-xs font-semibold" style="font-family: 'Poppins', sans-serif; color: #d4a843; letter-spacing: 0.2em;">Topic Three</span>
                     </div>
                     <h3 style="font-family: 'Playfair Display', serif; color: #fef9ef; font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; line-height: 1.15;">
                       Family<br>Disney<br><span style="color: #d4a843; font-style: italic;">Life</span>
