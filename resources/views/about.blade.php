@@ -47,20 +47,13 @@
         </div>
     </section>
 
-    {{-- Family Photo Placeholder --}}
-    <section class="py-16 bg-cream">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6">
-            <div class="bg-gradient-to-br from-purple/10 to-gold/10 rounded-3xl aspect-video flex items-center justify-center shadow-sm">
-                <div class="text-center">
-                    <span class="text-7xl block mb-3">👨‍👩‍👧</span>
-                    <span class="text-navy/30 text-sm">The Davidson Family, photo coming soon</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
     {{-- Timeline Story --}}
     <section class="py-16 md:py-24 bg-cream">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center mb-14">
+            <span class="text-gold text-sm font-semibold tracking-widest uppercase">Our Journey</span>
+            <h2 class="font-heading text-3xl md:text-4xl font-bold text-navy mt-3">How We Got Here</h2>
+            <p class="text-navy/50 mt-4 max-w-lg mx-auto font-body leading-relaxed">From first-time park visitors to weekly regulars, here's the story behind Mouse28.</p>
+        </div>
         <div class="max-w-4xl mx-auto px-4 sm:px-6">
             {{-- Section: Meet the Davidsons --}}
             <div class="relative pl-8 md:pl-12 border-l-2 border-gold/30 pb-16">
