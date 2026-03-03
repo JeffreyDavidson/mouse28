@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ContactFormSubmitted;
+use App\Models\ContactMessage;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
 {
@@ -20,8 +24,15 @@ class ContactController extends Controller
             'message' => 'required|string|max:5000',
         ]);
 
-        // TODO: Store in DB or send email notification
-        // For now, just flash success
+        $contactMessage = ContactMessage::create($validated);
+
+        try {
+            Mail::to(config('mail.admin_address', 'hello@mouse28.com'))
+                ->send(new ContactFormSubmitted($contactMessage));
+        } catch (\Throwable $e) {
+            Log::error('Failed to send contact notification: ' . $e->getMessage());
+        }
+
         return back()->with('success', true);
     }
 }
