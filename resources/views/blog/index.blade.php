@@ -121,26 +121,88 @@
                     {{ $posts->withQueryString()->links() }}
                 </div>
             @else
-                <div class="text-center py-20 bg-white rounded-2xl border border-navy/5">
-                    <div class="text-6xl mb-6 flex items-center justify-center gap-2">
-                        <span class="inline-block -rotate-12">🏰</span>
-                        <span class="inline-block rotate-6 text-5xl">📝</span>
-                        <span class="inline-block -rotate-6">✨</span>
+                <div class="relative overflow-hidden rounded-3xl" style="background: linear-gradient(135deg, #1a1040 0%, #2d1b69 50%, #3a2370 100%); padding: 5rem 3rem;">
+                    {{-- Ambient glows --}}
+                    <div style="position: absolute; top: -30%; right: -5%; width: 600px; height: 600px; background: radial-gradient(circle, rgba(212, 168, 67, 0.06) 0%, transparent 60%); pointer-events: none;"></div>
+                    <div style="position: absolute; bottom: -20%; left: -10%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(91, 62, 158, 0.2) 0%, transparent 60%); pointer-events: none;"></div>
+
+                    <div class="max-w-3xl mx-auto relative z-10">
+                        <div class="grid md:grid-cols-2 gap-12 items-center">
+                            {{-- Left: Content --}}
+                            <div class="text-center md:text-left">
+                                <div style="display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid rgba(212, 168, 67, 0.3); border-radius: 9999px; padding: 0.35rem 1rem; margin-bottom: 1.5rem;">
+                                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #d4a843;"></span>
+                                    <span style="font-family: 'Poppins', sans-serif; font-size: 0.7rem; color: #d4a843; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;">
+                                        @if($category) No Posts Yet @else Coming Soon @endif
+                                    </span>
+                                </div>
+                                <h2 class="font-heading font-bold text-cream" style="font-size: clamp(1.75rem, 3.5vw, 2.5rem); line-height: 1.15; margin-bottom: 1rem;">
+                                    @if($category)
+                                        Nothing in {{ \App\Models\Post::CATEGORIES[$category] ?? 'this category' }} yet
+                                    @else
+                                        We're putting pen to paper
+                                    @endif
+                                </h2>
+                                <p style="color: rgba(254, 249, 239, 0.5); font-size: 0.95rem; line-height: 1.8; margin-bottom: 2rem;">
+                                    @if($category)
+                                        We haven't published in this category yet, but it's on the list. In the meantime, check out everything else we've been working on.
+                                    @else
+                                        Park tips, accessibility insights, food reviews, and real family stories from Disney. Our first posts are in the works.
+                                    @endif
+                                </p>
+                                @if($category)
+                                    <a href="/blog" class="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-lg transition-all hover:-translate-y-0.5" style="background: rgba(212, 168, 67, 0.15); color: #d4a843; border: 1px solid rgba(212, 168, 67, 0.25);">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                        View all posts
+                                    </a>
+                                @else
+                                    <a href="/contact" class="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-lg transition-all hover:-translate-y-0.5" style="background: rgba(254, 249, 239, 0.08); color: rgba(254, 249, 239, 0.7); border: 1px solid rgba(254, 249, 239, 0.1);">
+                                        Get in touch
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    </a>
+                                @endif
+                            </div>
+
+                            {{-- Right: Faux blog post cards --}}
+                            <div class="hidden md:flex flex-col gap-4">
+                                {{-- Card 1 --}}
+                                <div style="background: rgba(26, 16, 64, 0.6); border: 1px solid rgba(212, 168, 67, 0.12); border-radius: 1rem; padding: 1.5rem; backdrop-filter: blur(10px); box-shadow: 0 15px 40px rgba(0,0,0,0.2);">
+                                    <div style="display: flex; gap: 1rem;">
+                                        <div style="width: 72px; height: 72px; border-radius: 0.75rem; background: linear-gradient(135deg, rgba(212, 168, 67, 0.2), rgba(91, 62, 158, 0.3)); flex-shrink: 0;"></div>
+                                        <div style="flex: 1;">
+                                            <div style="height: 8px; width: 40%; background: rgba(212, 168, 67, 0.25); border-radius: 99px; margin-bottom: 8px;"></div>
+                                            <div style="height: 11px; width: 95%; background: rgba(254, 249, 239, 0.15); border-radius: 99px; margin-bottom: 5px;"></div>
+                                            <div style="height: 11px; width: 70%; background: rgba(254, 249, 239, 0.1); border-radius: 99px; margin-bottom: 10px;"></div>
+                                            <div style="height: 7px; width: 55%; background: rgba(254, 249, 239, 0.05); border-radius: 99px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {{-- Card 2 --}}
+                                <div style="background: rgba(26, 16, 64, 0.4); border: 1px solid rgba(212, 168, 67, 0.08); border-radius: 1rem; padding: 1.5rem; backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.15);">
+                                    <div style="display: flex; gap: 1rem;">
+                                        <div style="width: 72px; height: 72px; border-radius: 0.75rem; background: linear-gradient(135deg, rgba(91, 62, 158, 0.3), rgba(58, 35, 112, 0.4)); flex-shrink: 0;"></div>
+                                        <div style="flex: 1;">
+                                            <div style="height: 8px; width: 35%; background: rgba(91, 62, 158, 0.3); border-radius: 99px; margin-bottom: 8px;"></div>
+                                            <div style="height: 11px; width: 85%; background: rgba(254, 249, 239, 0.12); border-radius: 99px; margin-bottom: 5px;"></div>
+                                            <div style="height: 11px; width: 60%; background: rgba(254, 249, 239, 0.08); border-radius: 99px; margin-bottom: 10px;"></div>
+                                            <div style="height: 7px; width: 45%; background: rgba(254, 249, 239, 0.04); border-radius: 99px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {{-- Card 3 (faded) --}}
+                                <div style="background: rgba(26, 16, 64, 0.25); border: 1px solid rgba(212, 168, 67, 0.05); border-radius: 1rem; padding: 1.5rem; opacity: 0.6;">
+                                    <div style="display: flex; gap: 1rem;">
+                                        <div style="width: 72px; height: 72px; border-radius: 0.75rem; background: rgba(91, 62, 158, 0.15); flex-shrink: 0;"></div>
+                                        <div style="flex: 1;">
+                                            <div style="height: 8px; width: 30%; background: rgba(254, 249, 239, 0.08); border-radius: 99px; margin-bottom: 8px;"></div>
+                                            <div style="height: 11px; width: 80%; background: rgba(254, 249, 239, 0.06); border-radius: 99px; margin-bottom: 5px;"></div>
+                                            <div style="height: 11px; width: 50%; background: rgba(254, 249, 239, 0.04); border-radius: 99px;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <h2 class="font-heading text-2xl font-bold text-navy mb-2">
-                        @if($category)
-                            No {{ \App\Models\Post::CATEGORIES[$category] ?? 'matching' }} posts yet
-                        @else
-                            Posts Coming Soon!
-                        @endif
-                    </h2>
-                    <p class="text-navy/50 mb-6 max-w-sm mx-auto">We're busy writing up our best Disney tips and magical stories. Check back soon!</p>
-                    @if($category)
-                        <a href="/blog" class="inline-flex items-center gap-2 bg-gold hover:bg-gold-light text-white font-semibold text-sm px-6 py-2.5 rounded-full transition-all">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                            View all posts
-                        </a>
-                    @endif
                 </div>
             @endif
         </div>
