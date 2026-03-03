@@ -392,7 +392,7 @@
                         </div>
                         {{-- Fun facts --}}
                         <div class="mt-8 flex flex-wrap gap-3">
-                            <span class="text-xs px-4 py-2 rounded-full font-body font-medium" style="color: #1a1040; background: rgba(91,62,158,0.1); border: 1px solid rgba(91,62,158,0.15);">Snack strategist</span>
+                            <span class="text-xs px-4 py-2 rounded-full font-body font-medium" style="color: #1a1040; background: rgba(91,62,158,0.1); border: 1px solid rgba(91,62,158,0.15);">Favorite park: Magic Kingdom</span>
                             <span class="text-xs px-4 py-2 rounded-full font-body font-medium" style="color: #1a1040; background: rgba(212,168,67,0.15); border: 1px solid rgba(212,168,67,0.2);">Cottage food baker</span>
                             <span class="text-xs px-4 py-2 rounded-full font-body font-medium" style="color: #1a1040; background: rgba(91,62,158,0.1); border: 1px solid rgba(91,62,158,0.15);">Accessibility advocate</span>
                         </div>
