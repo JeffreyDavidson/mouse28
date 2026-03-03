@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'About — Mouse28')
-@section('meta_description', 'Meet the Davidsons — Jeffrey, Cassie, and Viola. Learn how our family navigates Disney parks with autism and why we started Mouse28.')
+@section('title', 'About - Mouse28')
+@section('meta_description', 'Meet the Davidsons. Jeffrey, Cassie, and Viola. Learn how our family navigates Disney parks with autism and why we started Mouse28.')
 
 @section('content')
     {{-- Hero with sparkles --}}
@@ -61,7 +61,7 @@
                 <span class="text-gold text-xs font-semibold tracking-widest uppercase">Chapter One</span>
                 <h2 class="font-heading text-2xl md:text-3xl font-bold text-navy mt-2 mb-5">Meet the Davidsons</h2>
                 <div class="space-y-4 text-navy/70 leading-relaxed">
-                    <p>We're Jeffrey and Cassie, and we live in Central Florida with our daughter Viola, who's 8 years old. We're the kind of family that goes to Disney World every single week — not because we're obsessed (okay, maybe a little), but because it's genuinely become one of the best things for our family.</p>
+                    <p>We're Jeffrey and Cassie, and we live in Central Florida with our daughter Viola, who's 8 years old. We're the kind of family that goes to Disney World every single week, not because we're obsessed (okay, maybe a little), but because it's genuinely become one of the best things for our family.</p>
                     <p>When you live 30 minutes from the most magical place on Earth, you'd be surprised how quickly it becomes your go-to spot for Saturday afternoons, birthday celebrations, and even "we just need to get out of the house" moments.</p>
                 </div>
             </div>
@@ -89,7 +89,7 @@
                 <span class="text-gold text-xs font-semibold tracking-widest uppercase">Chapter Three</span>
                 <h2 class="font-heading text-2xl md:text-3xl font-bold text-navy mt-2 mb-5">Why Mouse28?</h2>
                 <div class="space-y-4 text-navy/70 leading-relaxed">
-                    <p>The name comes from 1928 — the year Mickey Mouse made his debut in <em>Steamboat Willie</em>. It felt right: the beginning of Disney magic, just like Viola is the beginning of ours.</p>
+                    <p>The name comes from 1928, the year Mickey Mouse made his debut in <em>Steamboat Willie</em>. It felt right: the beginning of Disney magic, just like Viola is the beginning of ours.</p>
                     <p>We started Mouse28 because we kept getting the same questions from other autism families: <em>"How do you do Disney with your kid?" "Is the DAS pass worth it?" "What rides are sensory-friendly?"</em></p>
                     <p>We realized we had years of hard-won knowledge about navigating Disney parks with a child who experiences the world differently. Tips about quiet spots when things get overwhelming. Strategies for wait times. Which characters are the most patient. The best times to visit specific areas.</p>
                     <p>So we hit record. And it turns out there are a lot of families out there who needed to hear exactly this.</p>
