@@ -53,7 +53,7 @@
             <div class="bg-gradient-to-br from-purple/10 to-gold/10 rounded-3xl aspect-video flex items-center justify-center shadow-sm">
                 <div class="text-center">
                     <span class="text-7xl block mb-3">👨‍👩‍👧</span>
-                    <span class="text-navy/30 text-sm">The Davidson Family — photo coming soon</span>
+                    <span class="text-navy/30 text-sm">The Davidson Family, photo coming soon</span>
                 </div>
             </div>
         </div>
@@ -84,8 +84,8 @@
                 <span class="text-gold text-xs font-semibold tracking-widest uppercase">Chapter Two</span>
                 <h2 class="font-heading text-2xl md:text-3xl font-bold text-navy mt-2 mb-5">Viola's World</h2>
                 <div class="space-y-4 text-navy/70 leading-relaxed">
-                    <p>Viola was diagnosed with autism when she was 3. Like a lot of parents, we went through a period of figuring things out — what works, what doesn't, what environments help her thrive, and which ones overwhelm her.</p>
-                    <p>Disney turned out to be one of those places that just <em>works</em> for Viola. Not always perfectly — we've had our share of meltdowns in Tomorrowland and sensory overload in the gift shops. But Disney's accessibility programs, especially the DAS (Disability Access Service) pass, have been a game-changer for our family.</p>
+                    <p>Viola was diagnosed with autism when she was 5. Like a lot of parents, we went through a period of figuring things out: what works, what doesn't, what environments help her thrive, and which ones overwhelm her.</p>
+                    <p>Disney turned out to be one of those places that just <em>works</em> for Viola. Not always perfectly. We've had our share of meltdowns in Tomorrowland and sensory overload in the gift shops. But Disney's accessibility programs, especially the DAS (Disability Access Service) pass, have been a game-changer for our family.</p>
                     <p>More than that, Viola experiences the parks in ways we never would have noticed on our own. She'll spend 20 minutes watching the water patterns in a fountain. She knows every character meet-and-greet by heart. She's taught us that slowing down and paying attention is where the real magic lives.</p>
                 </div>
             </div>
@@ -94,10 +94,10 @@
             <div class="relative pl-8 md:pl-12 border-l-2 border-gold/30 pb-16">
                 <div class="absolute left-0 top-0 w-4 h-4 bg-gold rounded-full -translate-x-[9px] ring-4 ring-cream"></div>
                 <span class="text-gold text-xs font-semibold tracking-widest uppercase">Chapter Three</span>
-                <h2 class="font-heading text-2xl md:text-3xl font-bold text-navy mt-2 mb-5">Why Mouse'28?</h2>
+                <h2 class="font-heading text-2xl md:text-3xl font-bold text-navy mt-2 mb-5">Why Mouse28?</h2>
                 <div class="space-y-4 text-navy/70 leading-relaxed">
                     <p>The name comes from 1928 — the year Mickey Mouse made his debut in <em>Steamboat Willie</em>. It felt right: the beginning of Disney magic, just like Viola is the beginning of ours.</p>
-                    <p>We started Mouse'28 because we kept getting the same questions from other autism families: <em>"How do you do Disney with your kid?" "Is the DAS pass worth it?" "What rides are sensory-friendly?"</em></p>
+                    <p>We started Mouse28 because we kept getting the same questions from other autism families: <em>"How do you do Disney with your kid?" "Is the DAS pass worth it?" "What rides are sensory-friendly?"</em></p>
                     <p>We realized we had years of hard-won knowledge about navigating Disney parks with a child who experiences the world differently. Tips about quiet spots when things get overwhelming. Strategies for wait times. Which characters are the most patient. The best times to visit specific areas.</p>
                     <p>So we hit record. And it turns out there are a lot of families out there who needed to hear exactly this.</p>
                 </div>
@@ -162,7 +162,7 @@
         <div class="max-w-4xl mx-auto px-4 sm:px-6">
             <div class="text-center mb-12">
                 <span class="text-gold text-sm font-semibold tracking-widest uppercase">Your Hosts</span>
-                <h2 class="font-heading text-3xl md:text-4xl font-bold text-navy mt-2">The Voices Behind Mouse'28</h2>
+                <h2 class="font-heading text-3xl md:text-4xl font-bold text-navy mt-2">The Voices Behind Mouse28</h2>
             </div>
             <div class="grid md:grid-cols-2 gap-8">
                 {{-- Jeffrey --}}
@@ -181,7 +181,7 @@
                     </div>
                     <h3 class="font-heading text-xl font-bold text-navy">Cassie Davidson</h3>
                     <p class="text-gold text-sm font-medium mt-1 mb-4">Co-Host & Accessibility Advocate</p>
-                    <p class="text-navy/60 text-sm leading-relaxed">The heart of Mouse'28. Cassie champions accessibility awareness and brings warmth, honesty, and a snack bag that never runs out.</p>
+                    <p class="text-navy/60 text-sm leading-relaxed">The heart of Mouse28. Cassie champions accessibility awareness and brings warmth, honesty, and a snack bag that never runs out.</p>
                 </div>
             </div>
         </div>
