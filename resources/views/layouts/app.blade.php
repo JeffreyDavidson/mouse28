@@ -174,7 +174,6 @@
                         <img src="/images/logo.jpg" alt="Mouse 28" class="h-10 w-10 rounded-full object-cover">
                         <span class="font-heading text-lg font-bold text-white">Mouse <span class="text-gold">28</span></span>
                     </a>
-                    <p class="text-sm leading-relaxed text-white/50 mt-2">A family sharing the magic (and the real talk) of Disney parks with a daughter on the autism spectrum.</p>
                 </div>
 
                 {{-- Explore --}}
