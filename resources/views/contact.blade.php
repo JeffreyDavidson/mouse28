@@ -26,13 +26,13 @@
                 </div>
                 <h1 class="font-heading text-4xl md:text-5xl font-bold text-navy mb-4">Message Sent!</h1>
                 <p class="text-navy/60 text-lg max-w-md mx-auto mb-2">Thank you for reaching out. We'll get back to you within 48 hours.</p>
-                <p class="text-navy/40 text-sm mb-8">In the meantime, feel free to explore our guides and stories.</p>
+                <p class="text-navy/40 text-sm mb-8">In the meantime, feel free to explore our blog and podcast.</p>
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
                     <a href="/guides" class="inline-flex items-center gap-2 bg-purple hover:bg-purple-dark text-white font-semibold px-6 py-3 rounded-full transition-all hover:shadow-lg hover:-translate-y-0.5">
                         📖 Browse Guides
                     </a>
-                    <a href="/stories" class="inline-flex items-center gap-2 text-navy/60 hover:text-purple font-medium transition-colors">
-                        Read community stories →
+                    <a href="/blog" class="inline-flex items-center gap-2 text-navy/60 hover:text-purple font-medium transition-colors">
+                        Read our blog →
                     </a>
                 </div>
             </div>
@@ -172,14 +172,6 @@
                                     <div>
                                         <p class="text-sm font-semibold text-navy group-hover:text-purple transition-colors">DAS tips & accessibility guides</p>
                                         <p class="text-xs text-navy/40">Browse our full guide collection</p>
-                                    </div>
-                                    <svg class="w-4 h-4 text-navy/20 group-hover:text-purple ml-auto flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                </a>
-                                <a href="/stories/share" class="flex items-center gap-3 p-3 -mx-1 rounded-xl hover:bg-cream transition-colors group">
-                                    <span class="text-xl">💛</span>
-                                    <div>
-                                        <p class="text-sm font-semibold text-navy group-hover:text-purple transition-colors">Share your family's story</p>
-                                        <p class="text-xs text-navy/40">Help other families on their journey</p>
                                     </div>
                                     <svg class="w-4 h-4 text-navy/20 group-hover:text-purple ml-auto flex-shrink-0 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                                 </a>
