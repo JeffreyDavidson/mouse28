@@ -127,6 +127,7 @@
                     <a href="/blog" class="{{ request()->is('blog*') ? 'text-gold nav-link-active' : 'text-white/80' }} hover:text-gold transition-colors text-sm font-medium tracking-wide">Blog</a>
                     <a href="/episodes" class="{{ request()->is('episodes*') ? 'text-gold nav-link-active' : 'text-white/80' }} hover:text-gold transition-colors text-sm font-medium tracking-wide">Podcast</a>
                     <a href="/about" class="{{ request()->is('about') ? 'text-gold nav-link-active' : 'text-white/80' }} hover:text-gold transition-colors text-sm font-medium tracking-wide">About</a>
+                    <a href="/contact" class="{{ request()->is('contact') ? 'text-gold nav-link-active' : 'text-white/80' }} hover:text-gold transition-colors text-sm font-medium tracking-wide">Contact</a>
                 </div>
 
                 {{-- Mobile menu button (animated hamburger → X) --}}
@@ -151,6 +152,7 @@
                     <a href="/blog" class="{{ request()->is('blog*') ? 'text-gold bg-white/5' : 'text-white/80' }} hover:text-gold hover:bg-white/5 transition-all text-sm font-medium px-4 py-3 min-h-[44px] flex items-center rounded-lg">Blog</a>
                     <a href="/episodes" class="{{ request()->is('episodes*') ? 'text-gold bg-white/5' : 'text-white/80' }} hover:text-gold hover:bg-white/5 transition-all text-sm font-medium px-4 py-3 min-h-[44px] flex items-center rounded-lg">Podcast</a>
                     <a href="/about" class="{{ request()->is('about') ? 'text-gold bg-white/5' : 'text-white/80' }} hover:text-gold hover:bg-white/5 transition-all text-sm font-medium px-4 py-3 min-h-[44px] flex items-center rounded-lg">About</a>
+                    <a href="/contact" class="{{ request()->is('contact') ? 'text-gold bg-white/5' : 'text-white/80' }} hover:text-gold hover:bg-white/5 transition-all text-sm font-medium px-4 py-3 min-h-[44px] flex items-center rounded-lg">Contact</a>
                 </div>
             </div>
         </div>
