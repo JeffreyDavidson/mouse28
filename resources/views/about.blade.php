@@ -360,10 +360,10 @@
                     {{-- Bio --}}
                     <div class="md:col-span-7">
                         <h3 class="font-heading text-2xl md:text-3xl font-bold text-navy mb-2">Jeffrey Davidson</h3>
-                        <p class="font-body text-sm font-semibold mb-6" style="color: #5b3e9e;">Dad, Web Developer, Disney Strategist</p>
+                        <p class="font-body text-sm font-semibold mb-6" style="color: #5b3e9e;">Dad, Software Engineer, Disney Strategist</p>
                         <div class="space-y-4">
                             <p class="text-navy/65 font-body leading-relaxed">The planner. The podcast editor. The guy who knows every shortcut in Magic Kingdom and has strong opinions about which Dole Whip flavor is the best (it's pineapple, don't argue).</p>
-                            <p class="text-navy/65 font-body leading-relaxed">Jeffrey is a web developer by trade with over 15 years of experience building things on the internet. When he's not coding, he's mapping out the most efficient park route or convincing Cassie they need "just one more ride" before heading home.</p>
+                            <p class="text-navy/65 font-body leading-relaxed">Jeffrey is a software engineer by trade with over 15 years of experience building things on the internet. When he's not coding, he's mapping out the most efficient park route or convincing Cassie they need "just one more ride" before heading home.</p>
                         </div>
                         {{-- Fun facts --}}
                         <div class="mt-8 flex flex-wrap gap-3">
