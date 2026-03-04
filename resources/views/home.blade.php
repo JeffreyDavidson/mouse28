@@ -88,9 +88,9 @@
             inset: 0;
             background: linear-gradient(
                 135deg,
-                rgba(26, 16, 64, 0.88) 0%,
-                rgba(26, 16, 64, 0.7) 40%,
-                rgba(45, 27, 105, 0.55) 100%
+                rgba(26, 16, 64, 0.85) 0%,
+                rgba(26, 16, 64, 0.65) 50%,
+                rgba(26, 16, 64, 0.55) 100%
             );
         }
         .hero-photo-vignette {
