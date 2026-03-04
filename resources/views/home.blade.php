@@ -189,12 +189,8 @@
         </section>
     @endif
 
-    {{-- Transition: Navy → Cream --}}
-    <div class="bg-cream" aria-hidden="true">
-        <svg viewBox="0 0 1440 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto block -mt-px">
-            <path d="M0 0V28C360 0 720 48 1080 24C1260 12 1380 4 1440 0V0H0Z" fill="#1a1040"/>
-        </svg>
-    </div>
+    {{-- Transition: Hero → Cream (clean edge, no wave) --}}
+    <div style="height: 4px; background: linear-gradient(90deg, #d4a843, #b8922e, #d4a843);"></div>
 
     {{-- Latest Posts / Coming Soon --}}
     @if($latestPosts->count())
