@@ -402,34 +402,17 @@
     </section>
 
     {{-- Wave: White → Cream --}}
-    {{-- About the Hosts --}}
-    <section style="background: linear-gradient(135deg, #1a1040 0%, #2d1b69 50%, #1a1040 100%); position: relative; overflow: hidden;">
-        <div style="position: absolute; top: -20%; left: -10%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(212, 168, 67, 0.05) 0%, transparent 60%); pointer-events: none;"></div>
-        {{-- Gold line top --}}
-        <div style="height: 4px; background: linear-gradient(90deg, #d4a843, #b8922e, #d4a843);"></div>
-
-        <div class="max-w-5xl mx-auto px-4 sm:px-6" style="padding: 5rem 1rem;">
-            <div class="flex flex-col md:flex-row gap-12 items-center relative z-10" data-animate>
-                <div class="flex-shrink-0">
-                    <img src="/images/logo.jpg" alt="Jeffrey & Cassie Davidson" style="width: 11rem; height: 11rem; border-radius: 1rem; object-fit: cover; box-shadow: 0 20px 40px rgba(0,0,0,0.3); border: 2px solid rgba(212,168,67,0.2);">
-                </div>
-                <div>
-                    <span class="font-body" style="font-size: 0.75rem; color: #d4a843; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;">Meet the Family</span>
-                    <h2 class="font-heading" style="font-size: clamp(1.75rem, 3.5vw, 2.5rem); font-weight: 700; color: #fef9ef; margin-top: 0.5rem; margin-bottom: 1.25rem;">Jeffrey &amp; Cassie Davidson</h2>
-                    <div style="border-left: 3px solid rgba(212,168,67,0.3); padding-left: 1.25rem; margin-bottom: 1.25rem;">
-                        <p class="font-body" style="color: rgba(254,249,239,0.6); font-size: 1.05rem; font-style: italic; line-height: 1.7;">
-                            She's taught us to see magic in ways we never imagined.
-                        </p>
-                    </div>
-                    <p class="font-body" style="color: rgba(254,249,239,0.45); line-height: 1.75; max-width: 32rem;">
-                        We're a Central Florida family who visits Disney every week. Our daughter Viola has autism and experiences the parks differently. Mouse28 is where we share what we've learned: DAS tips, sensory-friendly spots, and the joy that makes it all worth it.
-                    </p>
-                    <a href="/about" class="font-body inline-flex items-center gap-1" style="margin-top: 1.25rem; color: #d4a843; font-weight: 600; font-size: 0.875rem; text-decoration: none;">
-                        Our full story
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                    </a>
-                </div>
-            </div>
+    {{-- About the Hosts — compact centered strip --}}
+    <section style="background: #fef9ef; border-top: 1px solid rgba(26,16,64,0.06); border-bottom: 1px solid rgba(26,16,64,0.06);">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center" style="padding: 3.5rem 1rem;">
+            <img src="/images/logo.jpg" alt="Jeffrey & Cassie Davidson" style="width: 5rem; height: 5rem; border-radius: 50%; object-fit: cover; margin: 0 auto 1.25rem; border: 3px solid rgba(212,168,67,0.25);">
+            <p class="font-body" style="color: rgba(26,16,64,0.5); font-size: 0.95rem; line-height: 1.8; max-width: 28rem; margin: 0 auto 1rem;">
+                We're a Central Florida family who visits Disney every week with our autistic daughter. This is where we share what we've learned.
+            </p>
+            <a href="/about" class="font-body inline-flex items-center gap-1" style="color: #5b3e9e; font-weight: 600; font-size: 0.85rem; text-decoration: none;">
+                Meet Jeffrey &amp; Cassie
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </a>
         </div>
     </section>
 
