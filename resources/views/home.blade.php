@@ -68,91 +68,115 @@
         .js-animate [data-animate].is-visible { opacity: 1; transform: translateY(0); }
         .wave-divider svg { display: block; filter: none; }
 
-        /* Hero photo */
-        .hero-photo {
-            position: relative;
-            min-height: min(75vh, 700px);
+        /* Hero split */
+        .hero-split {
+            display: grid;
+            grid-template-columns: 1fr;
+            min-height: 0;
+        }
+        @media (min-width: 768px) {
+            .hero-split {
+                grid-template-columns: 1fr 1fr;
+                min-height: min(70vh, 640px);
+            }
+        }
+        .hero-split-text {
+            background: linear-gradient(135deg, #1a1040 0%, #2d1b69 100%);
             display: flex;
             align-items: center;
+            position: relative;
+            overflow: hidden;
+            padding: 4rem 2rem;
+        }
+        @media (min-width: 768px) {
+            .hero-split-text { padding: 4rem 3rem 4rem 0; }
+        }
+        .hero-split-photo {
+            position: relative;
+            min-height: 300px;
             overflow: hidden;
         }
-        .hero-photo-bg {
+        .hero-split-photo img {
             position: absolute;
             inset: 0;
-            /* Placeholder: Unsplash Disney-style castle at dusk */
-            background: url('https://images.unsplash.com/photo-1597466599360-3b9775841aec?w=1920&q=80&auto=format&fit=crop') center 40%/cover no-repeat;
-            /* When you have your own photo, replace the URL above */
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 20%;
         }
-        .hero-photo-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(
-                135deg,
-                rgba(26, 16, 64, 0.85) 0%,
-                rgba(26, 16, 64, 0.65) 50%,
-                rgba(26, 16, 64, 0.55) 100%
-            );
+        /* Diagonal edge on desktop */
+        @media (min-width: 768px) {
+            .hero-split-photo::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                width: 80px;
+                background: linear-gradient(135deg, #1a1040 0%, #2d1b69 100%);
+                clip-path: polygon(0 0, 100% 0, 0 100%);
+                z-index: 2;
+            }
         }
-        .hero-photo-vignette {
-            position: absolute;
-            inset: 0;
-            box-shadow: inset 0 0 150px rgba(26, 16, 64, 0.4);
-            pointer-events: none;
+        /* Gradient fade on mobile */
+        @media (max-width: 767px) {
+            .hero-split-photo::before {
+                content: '';
+                position: absolute;
+                top: 0; left: 0; right: 0;
+                height: 60px;
+                background: linear-gradient(to bottom, #2d1b69, transparent);
+                z-index: 2;
+            }
         }
     </style>
 
-    {{-- Hero Section — Photo-Forward --}}
-    <section class="hero-photo">
-        {{-- Background: gradient placeholder (swap for photo later) --}}
-        <div class="hero-photo-bg">
-            {{-- To use a photo, add the image and uncomment:
-                 <img src="/images/hero.jpg" alt="" class="absolute inset-0 w-full h-full object-cover"> --}}
-        </div>
+        {{-- Hero Section — Split Identity --}}
+    <section class="hero-split">
+        {{-- Left: Text --}}
+        <div class="hero-split-text">
+            <div style="position: absolute; bottom: -30%; right: -20%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(212, 168, 67, 0.06) 0%, transparent 60%); pointer-events: none;"></div>
+            <span class="sparkle absolute top-[15%] left-[10%] text-gold/25 text-[10px]">✦</span>
+            <span class="sparkle-delay absolute bottom-[20%] right-[15%] text-gold/15 text-sm">✧</span>
 
-        {{-- Dark overlay for text legibility --}}
-        <div class="hero-photo-overlay"></div>
-        <div class="hero-photo-vignette"></div>
-
-        {{-- Subtle sparkles --}}
-        <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
-            <span class="sparkle absolute top-[12%] left-[8%] text-gold/30 text-[10px]">✦</span>
-            <span class="sparkle-delay absolute top-[8%] right-[15%] text-gold/20 text-sm">✧</span>
-            <span class="sparkle-delay-2 absolute top-[25%] left-[45%] text-gold/25 text-xs">✦</span>
-            <span class="sparkle absolute top-[18%] right-[30%] text-gold/15 text-[10px]">⭐</span>
-        </div>
-
-        {{-- Content --}}
-        <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 w-full" style="padding: 4rem 0;">
-            <div class="max-w-2xl">
+            <div class="relative z-10 max-w-lg ml-auto">
                 <div style="display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid rgba(212, 168, 67, 0.3); border-radius: 9999px; padding: 0.35rem 1rem; margin-bottom: 1.5rem;">
                     <span style="width: 6px; height: 6px; border-radius: 50%; background: #d4a843;"></span>
                     <span class="font-body" style="font-size: 0.7rem; color: #d4a843; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;">Autism Family · Disney Every Week</span>
                 </div>
 
-                <h1 class="font-heading font-bold text-white" style="font-size: clamp(2.5rem, 6vw, 4.5rem); line-height: 1.05; margin-bottom: 1.25rem;">
-                    Disney Parks Through<br>
+                <h1 class="font-heading font-bold text-white" style="font-size: clamp(2.25rem, 4vw, 3.5rem); line-height: 1.08; margin-bottom: 1.25rem;">
+                    Disney Parks<br>Through<br>
                     <span class="text-gold">Different Eyes</span>
                 </h1>
 
-                <p class="font-body" style="color: rgba(254, 249, 239, 0.55); font-size: 1.15rem; line-height: 1.75; max-width: 36rem; margin-bottom: 2.5rem;">
+                <p class="font-body" style="color: rgba(254, 249, 239, 0.5); font-size: 1rem; line-height: 1.75; margin-bottom: 2rem;">
                     Accessibility tips, sensory-friendly recommendations, and real stories from a family who visits Disney every single week with our autistic daughter.
                 </p>
 
                 <div class="flex flex-wrap items-center gap-4">
-                    <a href="/blog" class="cta-primary bg-gold hover:bg-gold-light text-navy font-semibold px-8 py-4 rounded-full shadow-lg shadow-gold/20 hover:shadow-gold/50 hover:scale-105 transition-all duration-300 hover:-translate-y-1 text-base font-body inline-flex items-center">
+                    <a href="/blog" class="cta-primary bg-gold hover:bg-gold-light text-navy font-semibold px-7 py-3.5 rounded-full shadow-lg shadow-gold/20 hover:shadow-gold/50 hover:scale-105 transition-all duration-300 hover:-translate-y-1 text-sm font-body inline-flex items-center">
                         Read Our Blog
                     </a>
-                    <a href="/episodes" class="font-body inline-flex items-center gap-2 text-sm font-medium transition-colors duration-200" style="color: rgba(254, 249, 239, 0.5);" onmouseenter="this.style.color='#d4a843'" onmouseleave="this.style.color='rgba(254, 249, 239, 0.5)'">
+                    <a href="/episodes" class="font-body inline-flex items-center gap-2 text-sm font-medium transition-colors duration-200" style="color: rgba(254, 249, 239, 0.45);" onmouseenter="this.style.color='#d4a843'" onmouseleave="this.style.color='rgba(254, 249, 239, 0.45)'">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
                         Listen to the podcast
                     </a>
                 </div>
             </div>
+        </div>
 
+        {{-- Right: Photo --}}
+        <div class="hero-split-photo">
+            <img src="/images/jeffrey.jpg" alt="Jeffrey Davidson at Epcot Japan Pavilion">
+            <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(to top, rgba(26,16,64,0.3), transparent); z-index: 1;"></div>
         </div>
     </section>
 
-    {{-- Featured Post --}}
+    {{-- Gold divider --}}
+    <div style="height: 4px; background: linear-gradient(90deg, #d4a843, #b8922e, #d4a843);"></div>
+
+{{-- Featured Post --}}
     @if($featuredPost)
         <section class="bg-navy" data-animate>
             <a href="/blog/{{ $featuredPost->slug }}" class="featured-link group block relative overflow-hidden">
@@ -188,9 +212,6 @@
             </a>
         </section>
     @endif
-
-    {{-- Transition: Hero → Cream (clean edge, no wave) --}}
-    <div style="height: 4px; background: linear-gradient(90deg, #d4a843, #b8922e, #d4a843);"></div>
 
     {{-- Latest Posts / Coming Soon --}}
     @if($latestPosts->count())
@@ -500,16 +521,15 @@
             document.querySelectorAll('[data-animate]').forEach(el => obs.observe(el));
 
             // Subtle hero parallax on scroll
-            const heroSection = document.querySelector('.hero-photo');
-            if (heroSection) {
+            const heroPhoto = document.querySelector('.hero-split-photo img');
+            if (heroPhoto) {
                 let ticking = false;
                 window.addEventListener('scroll', function() {
                     if (!ticking) {
                         requestAnimationFrame(function() {
                             const scroll = window.scrollY;
-                            const bg = heroSection.querySelector('.hero-photo-bg');
-                            if (bg && scroll < 800) {
-                                bg.style.transform = 'translateY(' + (scroll * 0.3) + 'px)';
+                            if (scroll < 800) {
+                                heroPhoto.style.transform = 'translateY(' + (scroll * 0.15) + 'px) scale(1.05)';
                             }
                             ticking = false;
                         });
