@@ -201,16 +201,7 @@
                     {{-- Photo area (right on desktop) --}}
                     <div class="md:col-span-5 relative order-1 md:order-2">
                         <div class="relative rounded-2xl overflow-hidden" style="aspect-ratio: 3/4;">
-                            <div class="absolute inset-0" style="background: linear-gradient(135deg, #5b3e9e, #1a1040);"></div>
-                            {{-- Placeholder until real photo --}}
-                            <div class="absolute inset-0 flex items-center justify-center">
-                                <div class="text-center">
-                                    <div class="w-24 h-24 rounded-full mx-auto mb-4 flex items-center justify-center" style="background: rgba(212,168,67,0.15); border: 2px solid rgba(212,168,67,0.2);">
-                                        <svg class="w-12 h-12" style="color: rgba(212,168,67,0.4);" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
-                                    </div>
-                                    <p class="text-white/20 text-xs font-body">Photo coming soon</p>
-                                </div>
-                            </div>
+                            <img src="/images/cassie.jpg" alt="Cassie Davidson at Magic Kingdom's Winnie the Pooh" class="absolute inset-0 w-full h-full object-cover object-top">
                             {{-- Name overlay at bottom --}}
                             <div class="absolute bottom-0 left-0 right-0 p-6" style="background: linear-gradient(to top, rgba(26,16,64,0.95), transparent);">
                                 <span class="uppercase tracking-widest text-xs font-semibold font-body" style="color: #d4a843; letter-spacing: 0.2em;">Co-Host</span>
