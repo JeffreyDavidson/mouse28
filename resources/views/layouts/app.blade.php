@@ -204,18 +204,11 @@
                         </div>
                     </div>
 
-                    {{-- Resources --}}
-                    <div>
-                        <h4 class="font-heading text-white font-semibold mb-4 text-sm tracking-wider uppercase">Resources</h4>
-                        <div class="flex flex-col gap-2.5 text-sm">
-                            <a href="/contact" class="hover:text-gold transition-colors">Contact Us</a>
-                        </div>
-                    </div>
-
                     {{-- Connect --}}
                     <div>
                         <h4 class="font-heading text-white font-semibold mb-4 text-sm tracking-wider uppercase">Connect</h4>
                         <div class="flex flex-col gap-2.5 text-sm">
+                            <a href="/contact" class="hover:text-gold transition-colors">Contact Us</a>
                             <a href="#" class="hover:text-gold transition-colors">Apple Podcasts</a>
                             <a href="#" class="hover:text-gold transition-colors">Spotify</a>
                         </div>
