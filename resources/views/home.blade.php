@@ -411,16 +411,16 @@
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
                 <div class="text-center">
-                    <div class="font-heading" style="font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; color: #1a1040; line-height: 1;">Weekly</div>
-                    <p class="font-body" style="color: rgba(26,16,64,0.45); font-size: 0.8rem; margin-top: 0.5rem; line-height: 1.5;">Disney park visitors<br>since 2018</p>
+                    <div class="font-heading" style="font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; color: #1a1040; line-height: 1;">20</div>
+                    <p class="font-body" style="color: rgba(26,16,64,0.45); font-size: 0.8rem; margin-top: 0.5rem; line-height: 1.5;">Minutes from<br>the Magic Kingdom</p>
                 </div>
                 <div class="text-center">
-                    <div class="font-heading" style="font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; color: #1a1040; line-height: 1;">1</div>
-                    <p class="font-body" style="color: rgba(26,16,64,0.45); font-size: 0.8rem; margin-top: 0.5rem; line-height: 1.5;">Amazing daughter<br>who changed everything</p>
+                    <div class="font-heading" style="font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; color: #1a1040; line-height: 1;">2</div>
+                    <p class="font-body" style="color: rgba(26,16,64,0.45); font-size: 0.8rem; margin-top: 0.5rem; line-height: 1.5;">Voices, one mic,<br>zero filter</p>
                 </div>
                 <div class="text-center">
-                    <div class="font-heading" style="font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; color: #d4a843; line-height: 1;">5+</div>
-                    <p class="font-body" style="color: rgba(26,16,64,0.45); font-size: 0.8rem; margin-top: 0.5rem; line-height: 1.5;">Years navigating<br>DAS &amp; accessibility</p>
+                    <div class="font-heading" style="font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; color: #d4a843; line-height: 1;">52</div>
+                    <p class="font-body" style="color: rgba(26,16,64,0.45); font-size: 0.8rem; margin-top: 0.5rem; line-height: 1.5;">Park days a year<br>(at least)</p>
                 </div>
                 <div class="text-center">
                     <div class="font-heading" style="font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; color: #1a1040; line-height: 1;">∞</div>
