@@ -117,9 +117,8 @@
         <div class="max-w-6xl mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-20">
                 {{-- Logo --}}
-                <a href="/" class="flex items-center gap-3 group">
-                    <img src="/images/logo.jpg" alt="Mouse 28" class="h-11 w-11 rounded-full object-cover ring-2 ring-gold/30 group-hover:ring-gold/60 transition-all">
-                    <span class="font-heading text-xl font-bold text-white group-hover:text-gold transition-colors">Mouse <span class="text-gold">28</span></span>
+                <a href="/" class="group" style="letter-spacing: -0.02em;">
+                    <span class="font-heading text-2xl font-bold text-white group-hover:text-gold transition-colors">Mouse<span class="text-gold">28</span></span>
                 </a>
 
                 {{-- Desktop Nav --}}
