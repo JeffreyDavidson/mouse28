@@ -71,33 +71,32 @@
         /* Hero photo */
         .hero-photo {
             position: relative;
-            min-height: 85vh;
+            min-height: min(75vh, 700px);
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             overflow: hidden;
         }
         .hero-photo-bg {
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, #1a1040 0%, #2d1b69 40%, #3a2370 100%);
-            /* When you have a photo, replace the above with:
-               background: url('/images/hero.jpg') center/cover no-repeat; */
+            /* Placeholder: Unsplash Disney-style castle at dusk */
+            background: url('https://images.unsplash.com/photo-1597466599360-3b9775841aec?w=1920&q=80&auto=format&fit=crop') center 40%/cover no-repeat;
+            /* When you have your own photo, replace the URL above */
         }
         .hero-photo-overlay {
             position: absolute;
             inset: 0;
             background: linear-gradient(
-                to top,
-                rgba(26, 16, 64, 0.97) 0%,
-                rgba(26, 16, 64, 0.75) 35%,
-                rgba(26, 16, 64, 0.4) 60%,
-                rgba(26, 16, 64, 0.2) 100%
+                135deg,
+                rgba(26, 16, 64, 0.88) 0%,
+                rgba(26, 16, 64, 0.7) 40%,
+                rgba(45, 27, 105, 0.55) 100%
             );
         }
         .hero-photo-vignette {
             position: absolute;
             inset: 0;
-            box-shadow: inset 0 0 200px rgba(26, 16, 64, 0.5);
+            box-shadow: inset 0 0 150px rgba(26, 16, 64, 0.4);
             pointer-events: none;
         }
     </style>
@@ -123,7 +122,7 @@
         </div>
 
         {{-- Content --}}
-        <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 w-full" style="padding-bottom: 5rem;">
+        <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 w-full" style="padding: 4rem 0;">
             <div class="max-w-2xl">
                 <div style="display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid rgba(212, 168, 67, 0.3); border-radius: 9999px; padding: 0.35rem 1rem; margin-bottom: 1.5rem;">
                     <span style="width: 6px; height: 6px; border-radius: 50%; background: #d4a843;"></span>
@@ -150,11 +149,6 @@
                 </div>
             </div>
 
-            {{-- Scroll indicator --}}
-            <div class="absolute bottom-8 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2" style="color: rgba(254,249,239,0.2);">
-                <span class="font-body text-[10px] uppercase tracking-[0.2em]">Scroll</span>
-                <svg class="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7"/></svg>
-            </div>
         </div>
     </section>
 
