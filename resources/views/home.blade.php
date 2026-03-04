@@ -102,7 +102,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            object-position: center 20%;
+            object-position: center 30%;
         }
         /* Diagonal edge on desktop */
         @media (min-width: 768px) {
@@ -168,7 +168,7 @@
 
         {{-- Right: Photo --}}
         <div class="hero-split-photo">
-            <img src="/images/jeffrey.jpg" alt="Jeffrey Davidson at Epcot Japan Pavilion">
+            <img src="/images/hero-family.jpg" alt="Jeffrey and Cassie Davidson on Kilimanjaro Safaris at Disney's Animal Kingdom">
             <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(to top, rgba(26,16,64,0.3), transparent); z-index: 1;"></div>
         </div>
     </section>
