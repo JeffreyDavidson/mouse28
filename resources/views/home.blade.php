@@ -4,10 +4,6 @@
 
 @section('content')
     <style>
-        @keyframes heroGradient {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
         @keyframes shimmer {
             0% { transform: translateX(-100%); }
             100% { transform: translateX(100%); }
@@ -15,16 +11,6 @@
         @keyframes gentlePulse {
             0%, 100% { box-shadow: 0 4px 15px rgba(212,168,67,0.2); }
             50% { box-shadow: 0 4px 25px rgba(212,168,67,0.45); }
-        }
-        @keyframes successPop {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-            100% { transform: scale(1); }
-        }
-        .hero-animated-bg {
-            background: linear-gradient(270deg, #1a1040, #2d1b69, #1a1040, #3a2370);
-            background-size: 400% 400%;
-            animation: heroGradient 12s ease infinite;
         }
         .cta-primary {
             animation: gentlePulse 3s ease-in-out infinite;
@@ -43,7 +29,6 @@
         .group:hover .card-shimmer::after {
             animation: shimmer 0.8s ease forwards;
         }
-        /* Card hover enhancements */
         .post-card {
             border-color: rgba(26,16,64,0.05);
             transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -65,7 +50,6 @@
         .post-card:hover .card-overlay {
             opacity: 1;
         }
-        /* Featured post overlay */
         .featured-link .featured-overlay {
             background: linear-gradient(to top, rgba(26,16,64,0.95), rgba(26,16,64,0.7), rgba(26,16,64,0.2));
             transition: background 0.5s ease;
@@ -73,235 +57,104 @@
         .featured-link:hover .featured-overlay {
             background: linear-gradient(to top, rgba(26,16,64,0.95), rgba(45,27,105,0.75), rgba(91,62,158,0.25));
         }
-        /* Newsletter input glow */
         .newsletter-input:focus {
             box-shadow: 0 0 0 3px rgba(212,168,67,0.25), 0 0 20px rgba(212,168,67,0.1);
         }
-        /* Scroll animations with stagger support */
-        [data-animate] {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        [data-animate] { opacity: 1; transform: translateY(0); }
         .js-animate [data-animate] {
-            opacity: 0;
-            transform: translateY(24px);
+            opacity: 0; transform: translateY(24px);
             transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
-        .js-animate [data-animate].is-visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        /* Wave dividers — smoother rendering */
-        .wave-divider svg {
-            display: block;
-            filter: none;
-        }
-        /* Hero floating card animations */
-        @keyframes float1 {
-            0%, 100% { transform: translateY(0) rotate(-2deg); }
-            50% { transform: translateY(-12px) rotate(-1deg); }
-        }
-        @keyframes float2 {
-            0%, 100% { transform: translateY(0) rotate(3deg); }
-            50% { transform: translateY(-8px) rotate(2deg); }
-        }
-        @keyframes float3 {
-            0%, 100% { transform: translateY(0) rotate(1deg); }
-            50% { transform: translateY(-10px) rotate(2deg); }
-        }
-        .hero-float-card {
-            will-change: transform;
-            cursor: pointer;
-        }
-        /* Magical scene animations */
-        @keyframes twinkle {
-            0%, 100% { opacity: 0.2; }
-            50% { opacity: 1; }
-        }
-        @keyframes twinkle-alt {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 0.15; }
-        }
+        .js-animate [data-animate].is-visible { opacity: 1; transform: translateY(0); }
+        .wave-divider svg { display: block; filter: none; }
 
+        /* Hero photo */
+        .hero-photo {
+            position: relative;
+            min-height: 85vh;
+            display: flex;
+            align-items: flex-end;
+            overflow: hidden;
+        }
+        .hero-photo-bg {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #1a1040 0%, #2d1b69 40%, #3a2370 100%);
+            /* When you have a photo, replace the above with:
+               background: url('/images/hero.jpg') center/cover no-repeat; */
+        }
+        .hero-photo-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+                to top,
+                rgba(26, 16, 64, 0.97) 0%,
+                rgba(26, 16, 64, 0.75) 35%,
+                rgba(26, 16, 64, 0.4) 60%,
+                rgba(26, 16, 64, 0.2) 100%
+            );
+        }
+        .hero-photo-vignette {
+            position: absolute;
+            inset: 0;
+            box-shadow: inset 0 0 200px rgba(26, 16, 64, 0.5);
+            pointer-events: none;
+        }
     </style>
 
-    {{-- Hero Section --}}
-    <section class="relative hero-animated-bg overflow-hidden">
-        {{-- Stars / sparkles scattered across hero --}}
-        <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
-            <span class="sparkle absolute top-[8%] left-[5%] text-gold/40 text-[10px]">✦</span>
-            <span class="sparkle-delay absolute top-[12%] left-[25%] text-gold/25 text-lg">✧</span>
-            <span class="sparkle absolute top-[6%] left-[52%] text-gold/30 text-xs">⭐</span>
-            <span class="sparkle-delay-2 absolute top-[18%] right-[12%] text-gold/20 text-sm">✦</span>
-            <span class="sparkle absolute top-[30%] left-[8%] text-gold/15 text-base">✧</span>
-            <span class="sparkle-delay absolute top-[22%] left-[42%] text-gold/35 text-[10px]">✦</span>
-            <span class="sparkle-delay-2 absolute top-[35%] right-[25%] text-gold/20 text-xs">⭐</span>
-            <span class="sparkle absolute top-[50%] left-[15%] text-gold/25 text-sm">✧</span>
-            <span class="sparkle-delay absolute top-[45%] right-[8%] text-gold/30 text-[10px]">✦</span>
-            <span class="sparkle-delay-2 absolute top-[55%] left-[35%] text-gold/15 text-lg">✧</span>
-            <span class="sparkle absolute top-[65%] right-[18%] text-gold/20 text-xs">✦</span>
-            <span class="sparkle-delay absolute top-[70%] left-[60%] text-gold/25 text-[10px]">⭐</span>
-            <span class="sparkle-delay-2 absolute top-[75%] left-[10%] text-gold/20 text-sm">✦</span>
-            <span class="sparkle absolute top-[80%] right-[35%] text-gold/15 text-xs">✧</span>
-            <span class="sparkle-delay-2 absolute top-[40%] left-[70%] text-gold/30 text-[8px]">✦</span>
+    {{-- Hero Section — Photo-Forward --}}
+    <section class="hero-photo">
+        {{-- Background: gradient placeholder (swap for photo later) --}}
+        <div class="hero-photo-bg">
+            {{-- To use a photo, add the image and uncomment:
+                 <img src="/images/hero.jpg" alt="" class="absolute inset-0 w-full h-full object-cover"> --}}
         </div>
 
-        {{-- Warm glow behind cards area --}}
-        <div class="absolute top-1/2 right-[15%] -translate-y-1/2 w-[500px] h-[500px] rounded-full pointer-events-none hidden lg:block" style="background: radial-gradient(circle, rgba(212,168,67,0.07) 0%, transparent 70%);" aria-hidden="true"></div>
+        {{-- Dark overlay for text legibility --}}
+        <div class="hero-photo-overlay"></div>
+        <div class="hero-photo-vignette"></div>
 
-        <div class="hero-content max-w-7xl mx-auto px-4 sm:px-6 py-20 md:py-28 lg:py-36 relative z-10">
-            <div class="flex flex-col lg:flex-row items-center lg:items-start gap-12 lg:gap-16">
+        {{-- Subtle sparkles --}}
+        <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+            <span class="sparkle absolute top-[12%] left-[8%] text-gold/30 text-[10px]">✦</span>
+            <span class="sparkle-delay absolute top-[8%] right-[15%] text-gold/20 text-sm">✧</span>
+            <span class="sparkle-delay-2 absolute top-[25%] left-[45%] text-gold/25 text-xs">✦</span>
+            <span class="sparkle absolute top-[18%] right-[30%] text-gold/15 text-[10px]">⭐</span>
+        </div>
 
-                {{-- Left side: Text content (55-60%) --}}
-                <div class="lg:w-[58%] lg:pt-8">
-                    <span class="inline-block text-gold/80 text-xs font-semibold tracking-[0.2em] uppercase mb-5 font-body">Autism Family · Disney Every Week</span>
-                    <h1 class="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.08] mb-6">
-                        Disney Parks Through<br>
-                        <span class="text-gold">Different Eyes</span>
-                    </h1>
-                    <p class="text-white/60 text-lg md:text-xl max-w-xl mb-8 leading-[1.7] font-body">
-                        Accessibility tips, sensory-friendly recommendations, and real stories from a family who visits Disney every single week with our autistic daughter.
-                    </p>
-                    <div class="flex flex-wrap items-center gap-4 mb-8">
-                        <a href="/blog" class="cta-primary bg-gold hover:bg-gold-light text-navy font-semibold px-8 py-4 min-h-[48px] rounded-full shadow-lg shadow-gold/20 hover:shadow-gold/50 hover:scale-105 transition-all duration-300 hover:-translate-y-1 text-base font-body inline-flex items-center">
-                            Read Our Blog
-                        </a>
-                        @if($featuredPost)
-                            <a href="/blog/{{ $featuredPost->slug }}" class="text-white/55 hover:text-gold text-sm font-medium font-body transition-colors duration-200">
-                                or read the latest post →
-                            </a>
-                        @endif
-                    </div>
+        {{-- Content --}}
+        <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 w-full" style="padding-bottom: 5rem;">
+            <div class="max-w-2xl">
+                <div style="display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid rgba(212, 168, 67, 0.3); border-radius: 9999px; padding: 0.35rem 1rem; margin-bottom: 1.5rem;">
+                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #d4a843;"></span>
+                    <span class="font-body" style="font-size: 0.7rem; color: #d4a843; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;">Autism Family · Disney Every Week</span>
                 </div>
 
-                {{-- Right side: Castle silhouette with stars --}}
-                <div class="lg:w-[42%] relative w-full max-w-md lg:max-w-none mx-auto lg:mx-0">
-                    <div class="relative h-[280px] sm:h-[350px] lg:h-[480px]" style="-webkit-mask-image: radial-gradient(ellipse 90% 85% at center 55%, black 50%, transparent 100%); mask-image: radial-gradient(ellipse 90% 85% at center 55%, black 50%, transparent 100%);">
-                        <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" class="w-full h-full" preserveAspectRatio="xMidYMid meet">
-                            <defs>
-                                <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="0%" stop-color="#0d0a24"/>
-                                    <stop offset="50%" stop-color="#1a1040"/>
-                                    <stop offset="100%" stop-color="#2d1b69"/>
-                                </linearGradient>
-                                <radialGradient id="moonGlow" cx="70%" cy="15%" r="25%">
-                                    <stop offset="0%" stop-color="#fef9ef" stop-opacity="0.12"/>
-                                    <stop offset="100%" stop-color="#1a1040" stop-opacity="0"/>
-                                </radialGradient>
-                                <radialGradient id="castleGlow" cx="50%" cy="85%" r="30%">
-                                    <stop offset="0%" stop-color="#d4a843" stop-opacity="0.15"/>
-                                    <stop offset="100%" stop-color="#1a1040" stop-opacity="0"/>
-                                </radialGradient>
-                            </defs>
+                <h1 class="font-heading font-bold text-white" style="font-size: clamp(2.5rem, 6vw, 4.5rem); line-height: 1.05; margin-bottom: 1.25rem;">
+                    Disney Parks Through<br>
+                    <span class="text-gold">Different Eyes</span>
+                </h1>
 
-                            {{-- Sky --}}
-                            <rect width="500" height="500" fill="url(#skyGrad)"/>
-                            <rect width="500" height="500" fill="url(#moonGlow)"/>
+                <p class="font-body" style="color: rgba(254, 249, 239, 0.55); font-size: 1.15rem; line-height: 1.75; max-width: 36rem; margin-bottom: 2.5rem;">
+                    Accessibility tips, sensory-friendly recommendations, and real stories from a family who visits Disney every single week with our autistic daughter.
+                </p>
 
-                            {{-- Stars --}}
-                            @for($i = 0; $i < 60; $i++)
-                                <circle
-                                    cx="{{ rand(10, 490) }}"
-                                    cy="{{ rand(10, 280) }}"
-                                    r="{{ rand(3, 8) / 10 }}"
-                                    fill="#fef9ef"
-                                    opacity="{{ rand(2, 8) / 10 }}"
-                                >
-                                    <animate attributeName="opacity"
-                                        values="{{ rand(2, 4) / 10 }};{{ rand(7, 10) / 10 }};{{ rand(2, 4) / 10 }}"
-                                        dur="{{ rand(20, 50) / 10 }}s"
-                                        begin="{{ rand(0, 30) / 10 }}s"
-                                        repeatCount="indefinite"/>
-                                </circle>
-                            @endfor
-
-                            {{-- Distant trees/treeline --}}
-                            <path d="M0 380 Q50 360 80 370 Q100 350 130 365 Q160 345 190 360 Q210 340 240 355 Q270 335 300 350 Q330 340 350 355 Q370 338 400 350 Q430 340 460 355 Q480 345 500 360 L500 500 L0 500 Z" fill="#0d0a24" opacity="0.5"/>
-
-                            {{-- Castle silhouette --}}
-                            <g transform="translate(250, 350)" style="filter: drop-shadow(0 0 20px rgba(212, 168, 67, 0.1));">
-                                {{-- Main structure --}}
-                                <rect x="-80" y="-80" width="160" height="80" fill="#0a0620" rx="2"/>
-                                {{-- Center tower --}}
-                                <rect x="-15" y="-170" width="30" height="90" fill="#0a0620"/>
-                                <polygon points="-20,-170 0,-200 20,-170" fill="#0a0620"/>
-                                {{-- Spire --}}
-                                <line x1="0" y1="-200" x2="0" y2="-215" stroke="#d4a843" stroke-width="1.5" opacity="0.6"/>
-                                {{-- Left tower --}}
-                                <rect x="-75" y="-130" width="25" height="50" fill="#0a0620"/>
-                                <polygon points="-78,-130 -62,-155 -47,-130" fill="#0a0620"/>
-                                <line x1="-62" y1="-155" x2="-62" y2="-165" stroke="#d4a843" stroke-width="1" opacity="0.5"/>
-                                {{-- Right tower --}}
-                                <rect x="50" y="-130" width="25" height="50" fill="#0a0620"/>
-                                <polygon points="47,-130 62,-155 78,-130" fill="#0a0620"/>
-                                <line x1="62" y1="-155" x2="62" y2="-165" stroke="#d4a843" stroke-width="1" opacity="0.5"/>
-                                {{-- Far left turret --}}
-                                <rect x="-95" y="-110" width="18" height="30" fill="#0a0620"/>
-                                <polygon points="-97,-110 -86,-128 -75,-110" fill="#0a0620"/>
-                                {{-- Far right turret --}}
-                                <rect x="77" y="-110" width="18" height="30" fill="#0a0620"/>
-                                <polygon points="75,-110 86,-128 97,-110" fill="#0a0620"/>
-                                {{-- Windows (warm glow) --}}
-                                <rect x="-8" y="-100" width="6" height="10" rx="3" fill="#d4a843" opacity="0.4"/>
-                                <rect x="2" y="-100" width="6" height="10" rx="3" fill="#d4a843" opacity="0.35"/>
-                                <rect x="-50" y="-65" width="5" height="8" rx="2" fill="#d4a843" opacity="0.25"/>
-                                <rect x="-35" y="-65" width="5" height="8" rx="2" fill="#d4a843" opacity="0.3"/>
-                                <rect x="30" y="-65" width="5" height="8" rx="2" fill="#d4a843" opacity="0.25"/>
-                                <rect x="45" y="-65" width="5" height="8" rx="2" fill="#d4a843" opacity="0.3"/>
-                                {{-- Entrance arch --}}
-                                <path d="M-12,-10 L-12,-35 Q0,-48 12,-35 L12,-10" fill="#0a0620" stroke="#d4a843" stroke-width="0.5" stroke-opacity="0.3"/>
-                                <rect x="-10" y="-28" width="20" height="28" fill="#d4a843" opacity="0.08"/>
-                            </g>
-
-                            {{-- Castle base glow --}}
-                            <rect x="0" y="340" width="500" height="160" fill="url(#castleGlow)"/>
-
-                            {{-- Ground --}}
-                            <path d="M0 400 Q125 385 250 390 Q375 395 500 388 L500 500 L0 500 Z" fill="#0d0a24"/>
-
-                            {{-- Shooting star --}}
-                            <line x1="0" y1="0" x2="30" y2="15" stroke="white" stroke-width="1" opacity="0">
-                                <animate attributeName="x1" values="400;100" dur="3s" begin="4s" repeatCount="indefinite"/>
-                                <animate attributeName="y1" values="50;150" dur="3s" begin="4s" repeatCount="indefinite"/>
-                                <animate attributeName="x2" values="430;130" dur="3s" begin="4s" repeatCount="indefinite"/>
-                                <animate attributeName="y2" values="65;165" dur="3s" begin="4s" repeatCount="indefinite"/>
-                                <animate attributeName="opacity" values="0;0;0.8;0" dur="3s" begin="4s" repeatCount="indefinite"/>
-                            </line>
-                        </svg>
-                    </div>
+                <div class="flex flex-wrap items-center gap-4">
+                    <a href="/blog" class="cta-primary bg-gold hover:bg-gold-light text-navy font-semibold px-8 py-4 rounded-full shadow-lg shadow-gold/20 hover:shadow-gold/50 hover:scale-105 transition-all duration-300 hover:-translate-y-1 text-base font-body inline-flex items-center">
+                        Read Our Blog
+                    </a>
+                    <a href="/episodes" class="font-body inline-flex items-center gap-2 text-sm font-medium transition-colors duration-200" style="color: rgba(254, 249, 239, 0.5);" onmouseenter="this.style.color='#d4a843'" onmouseleave="this.style.color='rgba(254, 249, 239, 0.5)'">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+                        Listen to the podcast
+                    </a>
+                </div>
             </div>
-        </div>
 
-
-        {{-- Castle silhouette divider --}}
-        <div class="absolute bottom-0 left-0 right-0 z-10" aria-hidden="true">
-            <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto block" preserveAspectRatio="none">
-                {{-- Background base --}}
-                <rect y="100" width="1440" height="20" fill="#1a1040"/>
-                {{-- Castle silhouette --}}
-                <path d="
-                    M0 120 L0 105 Q100 100 200 102 L250 100 L260 85 L265 100 L290 98 L295 80 L300 98
-                    L350 95 L380 90 L385 70 L388 55 L390 45 L392 55 L395 70 L400 90 L430 95
-                    L460 98 L470 85 L475 75 L478 65 L480 55 L482 45 L484 35 L486 28 L488 22 L490 18
-                    L492 22 L494 28 L496 35 L498 45 L500 55 L502 65 L505 75 L510 85 L520 98
-                    L560 95 L590 90 L600 75 L610 65 L615 58 L618 50 L620 42 L622 36 L624 30
-                    L626 26 L628 22 L630 20 L632 18 L634 15 L636 12 L638 10 L640 8
-                    L641 5 L642 3 L643 2 L644 1 L645 0 L646 0 L647 0 L648 0
-                    L649 1 L650 2 L651 3 L652 5 L654 8 L656 10 L658 12 L660 15
-                    L662 18 L664 20 L666 22 L668 26 L670 30 L672 36 L674 42 L676 50
-                    L678 58 L680 65 L690 75 L700 90 L720 95
-                    L740 90 L750 82 L755 72 L758 65 L760 58 L762 50 L764 42 L766 36
-                    L768 32 L770 28 L772 32 L774 36 L776 42 L778 50 L780 58 L782 65
-                    L785 72 L790 82 L800 90 L820 95
-                    L860 98 L880 92 L885 82 L888 72 L890 65 L892 58 L894 52 L896 48
-                    L898 52 L900 58 L902 65 L905 72 L910 82 L915 92 L940 98
-                    L980 100 L1000 95 L1010 85 L1015 95 L1040 98 L1060 95 L1070 80 L1075 95
-                    L1100 98 L1120 100 L1160 102 L1200 100 L1230 98 L1240 88 L1245 98
-                    L1280 100 L1320 102 Q1380 105 1440 108 L1440 120 Z
-                " fill="rgba(45,27,105,0.3)"/>
-                {{-- Solid base strip --}}
-                <path d="M0 110 Q360 100 720 108 Q1080 116 1440 108 L1440 120 L0 120 Z" fill="#1a1040"/>
-            </svg>
+            {{-- Scroll indicator --}}
+            <div class="absolute bottom-8 left-1/2 -translate-x-1/2 hidden md:flex flex-col items-center gap-2" style="color: rgba(254,249,239,0.2);">
+                <span class="font-body text-[10px] uppercase tracking-[0.2em]">Scroll</span>
+                <svg class="w-4 h-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7"/></svg>
+            </div>
         </div>
     </section>
 
@@ -324,7 +177,6 @@
                                     <span class="bg-white/15 backdrop-blur-sm text-white/80 text-xs font-semibold px-3 py-1 rounded-full font-body">{{ $featuredPost->category_label }}</span>
                                 @endif
                                 <span class="text-white/40 text-sm font-body">{{ $featuredPost->published_at->format('M j, Y') }}</span>
-                                <span class="bg-white/10 backdrop-blur-sm text-white/65 text-xs font-semibold px-3 py-1 rounded-full font-body">{{ $featuredPost->reading_time }} min read</span>
                             </div>
                             <h2 class="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4 group-hover:text-gold transition-colors duration-300">
                                 {{ $featuredPost->title }}
@@ -343,7 +195,7 @@
         </section>
     @endif
 
-    {{-- Wave: Navy → Cream --}}
+    {{-- Transition: Navy → Cream --}}
     <div class="bg-cream" aria-hidden="true">
         <svg viewBox="0 0 1440 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto block -mt-px">
             <path d="M0 0V28C360 0 720 48 1080 24C1260 12 1380 4 1440 0V0H0Z" fill="#1a1040"/>
@@ -666,17 +518,17 @@
             }, { threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
             document.querySelectorAll('[data-animate]').forEach(el => obs.observe(el));
 
-            // Subtle hero parallax on scroll (content only, not the background)
-            const heroContent = document.querySelector('.hero-content');
-            if (heroContent) {
+            // Subtle hero parallax on scroll
+            const heroSection = document.querySelector('.hero-photo');
+            if (heroSection) {
                 let ticking = false;
                 window.addEventListener('scroll', function() {
                     if (!ticking) {
                         requestAnimationFrame(function() {
                             const scroll = window.scrollY;
-                            if (scroll < 600) {
-                                heroContent.style.transform = 'translateY(' + (scroll * 0.1) + 'px)';
-                                heroContent.style.opacity = Math.max(0.4, 1 - scroll / 800);
+                            const bg = heroSection.querySelector('.hero-photo-bg');
+                            if (bg && scroll < 800) {
+                                bg.style.transform = 'translateY(' + (scroll * 0.3) + 'px)';
                             }
                             ticking = false;
                         });
