@@ -12,6 +12,8 @@ class PostController extends Controller
         $category = $request->query('category');
 
         $search = $request->query('q');
+        $sort = $request->query('sort', 'newest');
+        $hasAnyPosts = Post::published()->exists();
 
         $posts = Post::published()
             ->when($category, fn($q) => $q->where('category', $category))
@@ -20,10 +22,10 @@ class PostController extends Controller
                   ->orWhere('excerpt', 'like', "%{$search}%")
                   ->orWhere('body', 'like', "%{$search}%")
             ))
-            ->latest('published_at')
+            ->orderBy('published_at', $sort === 'oldest' ? 'asc' : 'desc')
             ->paginate(12);
 
-        return view('blog.index', compact('posts', 'category'));
+        return view('blog.index', compact('posts', 'category', 'sort', 'hasAnyPosts'));
     }
 
     public function show(Post $post)

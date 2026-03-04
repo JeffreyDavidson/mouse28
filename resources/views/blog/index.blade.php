@@ -30,6 +30,7 @@
     </section>
 
     {{-- Search + Category Filters --}}
+    @if($hasAnyPosts)
     <section style="background: linear-gradient(180deg, #1a1040 0%, #2d1b69 100%); padding: 0 0 1px 0; position: relative;">
         <div class="max-w-6xl mx-auto px-4 sm:px-6" style="padding-top: 2rem; padding-bottom: 1.75rem;">
             {{-- Search --}}
@@ -91,10 +92,27 @@
                     </a>
                 @endforeach
             </div>
+
+            {{-- Sort Toggle --}}
+            <div class="flex justify-center mt-4">
+                <div style="display: inline-flex; border-radius: 0.5rem; overflow: hidden; border: 1px solid rgba(254,249,239,0.1);">
+                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'newest']) }}"
+                       style="padding: 0.4rem 1rem; font-size: 0.75rem; font-weight: 600; font-family: 'Poppins', sans-serif; text-decoration: none; transition: all 0.2s;
+                       {{ ($sort ?? 'newest') === 'newest' ? 'background: rgba(212,168,67,0.15); color: #d4a843;' : 'background: transparent; color: rgba(254,249,239,0.4);' }}">
+                        Newest First
+                    </a>
+                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'oldest']) }}"
+                       style="padding: 0.4rem 1rem; font-size: 0.75rem; font-weight: 600; font-family: 'Poppins', sans-serif; text-decoration: none; transition: all 0.2s; border-left: 1px solid rgba(254,249,239,0.1);
+                       {{ ($sort ?? 'newest') === 'oldest' ? 'background: rgba(212,168,67,0.15); color: #d4a843;' : 'background: transparent; color: rgba(254,249,239,0.4);' }}">
+                        Oldest First
+                    </a>
+                </div>
+            </div>
         </div>
         {{-- Bottom fade into cream --}}
         <div style="height: 1px; background: linear-gradient(90deg, transparent, rgba(212,168,67,0.2), transparent);"></div>
     </section>
+    @endif
 
     {{-- Posts Grid --}}
     <section class="py-16 bg-cream">
