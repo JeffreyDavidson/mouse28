@@ -293,10 +293,6 @@
                             </div>
                             <div style="display: flex; align-items: center; gap: 0.75rem;">
                                 <div style="width: 8px; height: 8px; border-radius: 50%; background: #d4a843; flex-shrink: 0;"></div>
-                                <span style="font-family: 'Poppins', sans-serif; color: rgba(254, 249, 239, 0.7); font-size: 0.9rem;">Sensory-friendly ride &amp; dining guides</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                <div style="width: 8px; height: 8px; border-radius: 50%; background: #d4a843; flex-shrink: 0;"></div>
                                 <span style="font-family: 'Poppins', sans-serif; color: rgba(254, 249, 239, 0.7); font-size: 0.9rem;">Honest food &amp; resort reviews</span>
                             </div>
                             <div style="display: flex; align-items: center; gap: 0.75rem;">
