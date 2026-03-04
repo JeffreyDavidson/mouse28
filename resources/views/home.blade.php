@@ -424,7 +424,7 @@
                 </div>
                 <div class="text-center">
                     <div class="font-heading" style="font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; color: #1a1040; line-height: 1;">∞</div>
-                    <p class="font-body" style="color: rgba(26,16,64,0.45); font-size: 0.8rem; margin-top: 0.5rem; line-height: 1.5;">Churros consumed<br>(and counting)</p>
+                    <p class="font-body" style="color: rgba(26,16,64,0.45); font-size: 0.8rem; margin-top: 0.5rem; line-height: 1.5;">Buckets of maple popcorn<br>(and counting)</p>
                 </div>
             </div>
             <div class="text-center" style="margin-top: 2.5rem;">
