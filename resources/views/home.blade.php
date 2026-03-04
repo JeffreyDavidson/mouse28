@@ -402,18 +402,39 @@
     </section>
 
     {{-- Wave: White → Cream --}}
-    {{-- About the Hosts — compact centered strip --}}
-    <section style="background: #fef9ef; border-top: 1px solid rgba(26,16,64,0.06); border-bottom: 1px solid rgba(26,16,64,0.06);">
-        <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center" style="padding: 3.5rem 1rem;">
-            <img src="/images/logo.jpg" alt="Jeffrey & Cassie Davidson" style="width: 5rem; height: 5rem; border-radius: 50%; object-fit: cover; margin: 0 auto 1.25rem; border: 3px solid rgba(212,168,67,0.25);">
-            <p class="font-body" style="color: rgba(26,16,64,0.5); font-size: 0.95rem; line-height: 1.8; max-width: 28rem; margin: 0 auto 1rem;">
-                We're a Central Florida family who visits Disney every week with our autistic daughter. This is where we share what we've learned.
-            </p>
-            <a href="/about" class="font-body inline-flex items-center gap-1" style="color: #5b3e9e; font-weight: 600; font-size: 0.85rem; text-decoration: none;">
-                Meet Jeffrey &amp; Cassie
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-            </a>
+    {{-- The Story in Numbers --}}
+    <section style="background: #fef9ef; position: relative;">
+        <div style="height: 1px; background: linear-gradient(90deg, transparent, rgba(212,168,67,0.2), transparent);"></div>
+        <div class="max-w-5xl mx-auto px-4 sm:px-6" style="padding: 4.5rem 1rem;">
+            <div class="text-center" style="margin-bottom: 2.5rem;">
+                <span class="font-body" style="font-size: 0.7rem; color: #d4a843; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;">The Family Behind Mouse28</span>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+                <div class="text-center">
+                    <div class="font-heading" style="font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; color: #1a1040; line-height: 1;">Weekly</div>
+                    <p class="font-body" style="color: rgba(26,16,64,0.45); font-size: 0.8rem; margin-top: 0.5rem; line-height: 1.5;">Disney park visitors<br>since 2018</p>
+                </div>
+                <div class="text-center">
+                    <div class="font-heading" style="font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; color: #1a1040; line-height: 1;">1</div>
+                    <p class="font-body" style="color: rgba(26,16,64,0.45); font-size: 0.8rem; margin-top: 0.5rem; line-height: 1.5;">Amazing daughter<br>who changed everything</p>
+                </div>
+                <div class="text-center">
+                    <div class="font-heading" style="font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; color: #d4a843; line-height: 1;">5+</div>
+                    <p class="font-body" style="color: rgba(26,16,64,0.45); font-size: 0.8rem; margin-top: 0.5rem; line-height: 1.5;">Years navigating<br>DAS &amp; accessibility</p>
+                </div>
+                <div class="text-center">
+                    <div class="font-heading" style="font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; color: #1a1040; line-height: 1;">∞</div>
+                    <p class="font-body" style="color: rgba(26,16,64,0.45); font-size: 0.8rem; margin-top: 0.5rem; line-height: 1.5;">Churros consumed<br>(and counting)</p>
+                </div>
+            </div>
+            <div class="text-center" style="margin-top: 2.5rem;">
+                <a href="/about" class="font-body inline-flex items-center gap-1.5" style="color: #5b3e9e; font-weight: 600; font-size: 0.85rem; text-decoration: none; transition: color 0.2s;" onmouseenter="this.style.color='#1a1040'" onmouseleave="this.style.color='#5b3e9e'">
+                    Meet Jeffrey &amp; Cassie
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </a>
+            </div>
         </div>
+        <div style="height: 1px; background: linear-gradient(90deg, transparent, rgba(212,168,67,0.2), transparent);"></div>
     </section>
 
     {{-- Newsletter CTA --}}
