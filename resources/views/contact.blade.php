@@ -43,7 +43,7 @@
                 <div class="text-center" style="margin-bottom: 3.5rem;">
                     <div style="display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid rgba(212, 168, 67, 0.3); border-radius: 9999px; padding: 0.35rem 1rem; margin-bottom: 1.5rem;">
                         <span style="width: 6px; height: 6px; border-radius: 50%; background: #d4a843;"></span>
-                        <span style="font-family: 'Poppins', sans-serif; font-size: 0.7rem; color: #d4a843; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;">Get in Touch</span>
+                        <span style="font-family: 'Poppins', sans-serif; font-size: 0.7rem; color: #f0c75e; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;">Get in Touch</span>
                     </div>
                     <h1 class="font-heading font-bold" style="font-size: clamp(2rem, 5vw, 3rem); color: #fef9ef; line-height: 1.15; margin-bottom: 1rem;">We'd Love to Hear From You</h1>
                     <p style="color: rgba(254, 249, 239, 0.45); font-size: 1.05rem; max-width: 32rem; margin: 0 auto; line-height: 1.7;">Have a question about DAS, want to share your story, or just say hi? We read every message.</p>
@@ -58,7 +58,7 @@
 
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
                                 <div>
-                                    <label for="name" style="display: block; font-size: 0.75rem; font-weight: 600; color: #d4a843; margin-bottom: 0.5rem; font-family: 'Poppins', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">Name</label>
+                                    <label for="name" style="display: block; font-size: 0.75rem; font-weight: 600; color: #f0c75e; margin-bottom: 0.5rem; font-family: 'Poppins', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">Name</label>
                                     <input type="text" id="name" name="name" required value="{{ old('name') }}" placeholder="Your name"
                                         style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid rgba(254,249,239,0.1); background: rgba(254,249,239,0.04); color: #fef9ef; font-size: 0.9rem; font-family: 'Poppins', sans-serif; outline: none; transition: all 0.2s; box-sizing: border-box;"
                                         onfocus="this.style.borderColor='rgba(212,168,67,0.4)';this.style.background='rgba(254,249,239,0.06)'"
@@ -67,7 +67,7 @@
                                     @error('name') <p style="color: #f87171; font-size: 0.75rem; margin-top: 0.4rem;">{{ $message }}</p> @enderror
                                 </div>
                                 <div>
-                                    <label for="email" style="display: block; font-size: 0.75rem; font-weight: 600; color: #d4a843; margin-bottom: 0.5rem; font-family: 'Poppins', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">Email</label>
+                                    <label for="email" style="display: block; font-size: 0.75rem; font-weight: 600; color: #f0c75e; margin-bottom: 0.5rem; font-family: 'Poppins', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">Email</label>
                                     <input type="email" id="email" name="email" required value="{{ old('email') }}" placeholder="you@example.com"
                                         style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid rgba(254,249,239,0.1); background: rgba(254,249,239,0.04); color: #fef9ef; font-size: 0.9rem; font-family: 'Poppins', sans-serif; outline: none; transition: all 0.2s; box-sizing: border-box;"
                                         onfocus="this.style.borderColor='rgba(212,168,67,0.4)';this.style.background='rgba(254,249,239,0.06)'"
@@ -78,7 +78,7 @@
                             </div>
 
                             <div>
-                                <label for="subject" style="display: block; font-size: 0.75rem; font-weight: 600; color: #d4a843; margin-bottom: 0.5rem; font-family: 'Poppins', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">Topic</label>
+                                <label for="subject" style="display: block; font-size: 0.75rem; font-weight: 600; color: #f0c75e; margin-bottom: 0.5rem; font-family: 'Poppins', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">Topic</label>
                                 <select id="subject" name="subject" required
                                     style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid rgba(254,249,239,0.1); background: rgba(254,249,239,0.04); color: rgba(254,249,239,0.7); font-size: 0.9rem; font-family: 'Poppins', sans-serif; outline: none; transition: all 0.2s; box-sizing: border-box; -webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml,<svg width=&quot;12&quot; height=&quot;8&quot; viewBox=&quot;0 0 12 8&quot; fill=&quot;none&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;><path d=&quot;M1 1.5L6 6.5L11 1.5&quot; stroke=&quot;rgba(254,249,239,0.4)&quot; stroke-width=&quot;1.5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;/></svg>'); background-repeat: no-repeat; background-position: right 1rem center;"
                                     onfocus="this.style.borderColor='rgba(212,168,67,0.4)'"
@@ -96,7 +96,7 @@
                             </div>
 
                             <div>
-                                <label for="message" style="display: block; font-size: 0.75rem; font-weight: 600; color: #d4a843; margin-bottom: 0.5rem; font-family: 'Poppins', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">Message</label>
+                                <label for="message" style="display: block; font-size: 0.75rem; font-weight: 600; color: #f0c75e; margin-bottom: 0.5rem; font-family: 'Poppins', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">Message</label>
                                 <textarea id="message" name="message" required rows="5" placeholder="What's on your mind?"
                                     style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid rgba(254,249,239,0.1); background: rgba(254,249,239,0.04); color: #fef9ef; font-size: 0.9rem; font-family: 'Poppins', sans-serif; outline: none; transition: all 0.2s; resize: vertical; box-sizing: border-box; min-height: 140px;"
                                     onfocus="this.style.borderColor='rgba(212,168,67,0.4)';this.style.background='rgba(254,249,239,0.06)'"
@@ -122,7 +122,7 @@
                         <div style="background: rgba(254,249,239,0.04); border: 1px solid rgba(254,249,239,0.08); border-radius: 1rem; padding: 1.5rem;">
                             <div style="display: flex; align-items: center; gap: 0.85rem; margin-bottom: 1.25rem;">
                                 <div style="width: 40px; height: 40px; border-radius: 0.6rem; background: rgba(212,168,67,0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                    <svg style="width: 18px; height: 18px; color: #d4a843;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                    <svg style="width: 18px; height: 18px; color: #f0c75e;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                                 </div>
                                 <div>
                                     <a href="mailto:hello@mouse28.com" style="color: #fef9ef; font-weight: 600; font-size: 0.9rem; font-family: 'Poppins', sans-serif; text-decoration: none;">hello@mouse28.com</a>
@@ -130,7 +130,7 @@
                                 </div>
                             </div>
                             <div style="display: flex; align-items: center; gap: 0.5rem; background: rgba(254,249,239,0.04); border-radius: 0.6rem; padding: 0.65rem 0.85rem;">
-                                <svg style="width: 14px; height: 14px; color: #d4a843; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                <svg style="width: 14px; height: 14px; color: #f0c75e; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                 <p style="color: rgba(254,249,239,0.5); font-size: 0.8rem; font-family: 'Poppins', sans-serif;">Typically within <strong style="color: rgba(254,249,239,0.8);">48 hours</strong></p>
                             </div>
                         </div>
@@ -159,11 +159,11 @@
                         {{-- Quick links --}}
                         <div style="display: flex; flex-direction: column; gap: 0.5rem;">
                             <a href="/blog" style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1rem; border-radius: 0.75rem; background: rgba(254,249,239,0.03); border: 1px solid rgba(254,249,239,0.06); text-decoration: none; transition: all 0.2s;" onmouseenter="this.style.background='rgba(254,249,239,0.06)';this.style.borderColor='rgba(212,168,67,0.15)'" onmouseleave="this.style.background='rgba(254,249,239,0.03)';this.style.borderColor='rgba(254,249,239,0.06)'">
-                                <span style="color: #d4a843; font-size: 0.8rem; font-weight: 600; font-family: 'Poppins', sans-serif;">Read the Blog</span>
+                                <span style="color: #f0c75e; font-size: 0.8rem; font-weight: 600; font-family: 'Poppins', sans-serif;">Read the Blog</span>
                                 <svg style="width: 14px; height: 14px; color: rgba(254,249,239,0.25);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </a>
                             <a href="/episodes" style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1rem; border-radius: 0.75rem; background: rgba(254,249,239,0.03); border: 1px solid rgba(254,249,239,0.06); text-decoration: none; transition: all 0.2s;" onmouseenter="this.style.background='rgba(254,249,239,0.06)';this.style.borderColor='rgba(212,168,67,0.15)'" onmouseleave="this.style.background='rgba(254,249,239,0.03)';this.style.borderColor='rgba(254,249,239,0.06)'">
-                                <span style="color: #d4a843; font-size: 0.8rem; font-weight: 600; font-family: 'Poppins', sans-serif;">Listen to the Podcast</span>
+                                <span style="color: #f0c75e; font-size: 0.8rem; font-weight: 600; font-family: 'Poppins', sans-serif;">Listen to the Podcast</span>
                                 <svg style="width: 14px; height: 14px; color: rgba(254,249,239,0.25);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </a>
                         </div>
