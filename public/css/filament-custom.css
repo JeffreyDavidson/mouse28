@@ -406,8 +406,11 @@
     box-shadow: 0 0 0 2px rgba(212, 168, 67, 0.15) !important;
 }
 
-.fi-main .fi-fo-field-wrp-label label {
-    color: #fef9ef !important;
+.fi-main .fi-fo-field-wrp-label label,
+.fi-main .fi-field-wrp-label label,
+.fi-main label,
+.fi-main [class*="field-wrp"] label {
+    color: #d4a843 !important;
 }
 
 .fi-main .fi-fo-field-wrp-hint {
