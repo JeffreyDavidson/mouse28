@@ -31,6 +31,7 @@ class Post extends Model
         'resort-reviews' => 'Resort Reviews',
         'disney-plus' => 'Disney+',
         'merchandise' => 'Merchandise',
+        'general' => 'General',
     ];
 
     public function episode(): BelongsTo
@@ -72,6 +73,7 @@ class Post extends Model
             'resort-reviews' => 'bg-teal-500/20 text-teal-600',
             'disney-plus' => 'bg-indigo-500/20 text-indigo-600',
             'merchandise' => 'bg-rose-500/20 text-rose-600',
+            'general' => 'bg-slate-500/20 text-slate-600',
             default => 'bg-navy/10 text-navy',
         };
     }
