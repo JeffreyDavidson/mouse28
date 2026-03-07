@@ -169,8 +169,8 @@
                         .ribbon span {
                             position: absolute;
                             display: block;
-                            width: 150px;
-                            padding: 6px 0;
+                            width: 141px;
+                            padding: 5px 0;
                             background: linear-gradient(#f5dc6b 0%, #d4a843 50%, #b8922f 100%);
                             box-shadow: 0 3px 6px rgba(0,0,0,.12);
                             color: #1a1040;
@@ -197,8 +197,8 @@
                             left: 0;
                         }
                         .ribbon-top-left span {
-                            right: -11px;
-                            top: 22px;
+                            right: -3px;
+                            top: 21px;
                             transform: rotate(-45deg);
                         }
                     </style>
