@@ -239,8 +239,9 @@
                 }
                 .featured-card-border {
                     position: relative;
-                    background: #eae6f0;
+                    background: linear-gradient(135deg, #1a1040, #2d1b69);
                     border-radius: 1.5rem;
+                    color: white;
                 }
                 .featured-card-border::before {
                     content: '';
@@ -266,17 +267,24 @@
 
                 <a href="#" class="featured-card-border group block overflow-hidden transition-all duration-300 hover:-translate-y-1 relative">
                     {{-- Featured ribbon --}}
-                    <div class="absolute top-0 left-0 z-20 overflow-hidden w-28 h-28 pointer-events-none">
-                        <div class="absolute top-[14px] left-[-20px] w-[140px] text-center text-[9px] font-bold uppercase tracking-widest text-white py-1.5 rotate-[-45deg]" style="background: linear-gradient(135deg, #d4a843, #c4963a);">
-                            Featured
+                    {{-- Wrap-around ribbon --}}
+                    <div class="absolute top-0 left-0 z-20 pointer-events-none">
+                        {{-- Ribbon fold (dark shadow triangle behind) --}}
+                        <div class="absolute top-[46px] left-0 w-0 h-0" style="border-top: 6px solid #a07c2e; border-left: 6px solid transparent;"></div>
+                        <div class="absolute top-0 left-[46px] w-0 h-0" style="border-left: 6px solid #a07c2e; border-top: 6px solid transparent;"></div>
+                        {{-- Main ribbon --}}
+                        <div class="overflow-hidden w-32 h-32">
+                            <div class="absolute top-[16px] left-[-24px] w-[150px] text-center text-[9px] font-bold uppercase tracking-[0.2em] text-navy py-2 rotate-[-45deg]" style="background: linear-gradient(135deg, #f0d060, #d4a843, #c4963a); box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+                                ✦ Featured
+                            </div>
                         </div>
                     </div>
 
                     <div class="grid md:grid-cols-5 min-h-[280px] relative">
                         {{-- Excerpt side --}}
                         <div class="md:col-span-2 p-8 md:p-10 flex flex-col justify-center relative">
-                            <span class="text-[10px] font-bold uppercase tracking-widest mb-4 block" style="color: {{ $fColor }};">Featured Post</span>
-                            <p class="text-navy/70 text-sm md:text-base leading-relaxed relative z-10">
+                            <span class="text-[10px] font-bold uppercase tracking-widest mb-4 block text-gold/70">Featured Post</span>
+                            <p class="text-white/70 text-sm md:text-base leading-relaxed relative z-10">
                                 {{ $feat->excerpt }}
                             </p>
                         </div>
@@ -291,17 +299,17 @@
                         {{-- Content side --}}
                         <div class="md:col-span-3 p-8 md:p-10 flex flex-col justify-center">
                             <div class="flex items-center gap-3 mb-4">
-                                <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background: {{ $fColor }}15; color: {{ $fColor }};">{{ $feat->category_label }}</span>
-                                <span class="text-navy/25 text-xs">{{ $feat->reading_time }} min read</span>
+                                <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background: {{ $fColor }}30; color: {{ $fColor }};">{{ $feat->category_label }}</span>
+                                <span class="text-white/30 text-xs">{{ $feat->reading_time }} min read</span>
                             </div>
-                            <h2 class="font-heading text-2xl md:text-3xl font-bold text-navy group-hover:text-purple transition-colors leading-snug">{{ $feat->title }}</h2>
-                            <div class="flex items-center gap-4 mt-auto pt-6 border-t border-navy/5">
-                                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gold/25 to-purple/15 flex items-center justify-center text-gold text-[10px] font-bold font-heading border border-gold/15">
+                            <h2 class="font-heading text-2xl md:text-3xl font-bold text-white group-hover:text-gold transition-colors leading-snug">{{ $feat->title }}</h2>
+                            <div class="flex items-center gap-4 mt-auto pt-6 border-t border-white/10">
+                                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gold/25 to-purple/15 flex items-center justify-center text-gold text-[10px] font-bold font-heading border border-gold/20">
                                     {{ collect(explode(' ', $feat->author_name))->reject(fn($w) => in_array($w, ['&', 'and']))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('&') }}
                                 </div>
                                 <div>
-                                    <p class="text-navy text-sm font-semibold">{{ $feat->author_name }}</p>
-                                    <p class="text-navy/30 text-xs">{{ $feat->published_at->format('F j, Y') }}</p>
+                                    <p class="text-white text-sm font-semibold">{{ $feat->author_name }}</p>
+                                    <p class="text-white/40 text-xs">{{ $feat->published_at->format('F j, Y') }}</p>
                                 </div>
                             </div>
                         </div>
