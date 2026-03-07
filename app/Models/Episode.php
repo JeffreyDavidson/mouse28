@@ -24,6 +24,11 @@ class Episode extends Model
         return $query->where('is_published', true)->whereNotNull('published_at')->where('published_at', '<=', now());
     }
 
+    public function getOgImageUrlAttribute(): ?string
+    {
+        return $this->og_image ? '/storage/' . $this->og_image : null;
+    }
+
     public function getFormattedDurationAttribute(): string
     {
         if (!$this->duration_seconds) return '';

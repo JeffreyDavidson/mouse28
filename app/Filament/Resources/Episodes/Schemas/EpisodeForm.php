@@ -101,6 +101,23 @@ class EpisodeForm
                         DateTimePicker::make('published_at')
                             ->label('Publish Date'),
                     ]),
+
+                Section::make('SEO')
+                    ->collapsed()
+                    ->schema([
+                        TextInput::make('meta_title')
+                            ->maxLength(70)
+                            ->helperText('Recommended: 50–70 characters for optimal display in search results.'),
+                        Textarea::make('meta_description')
+                            ->maxLength(160)
+                            ->rows(2)
+                            ->helperText('Recommended: 120–160 characters for search result snippets.'),
+                        FileUpload::make('og_image')
+                            ->image()
+                            ->disk('public')
+                            ->directory('episodes/og')
+                            ->helperText('Custom image for social media sharing. Falls back to cover image.'),
+                    ]),
             ]);
     }
 }
