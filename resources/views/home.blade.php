@@ -304,7 +304,7 @@
                         <div class="relative md:w-2/5 min-h-[220px] md:min-h-[320px] overflow-hidden flex-shrink-0">
                             @if($featuredPost->cover_image_url)
                                 <img src="{{ $featuredPost->cover_image_url }}" alt="{{ $featuredPost->title }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
-                                <div class="absolute inset-0 bg-gradient-to-r from-transparent to-navy/30 md:bg-gradient-to-r md:from-transparent md:to-navy"></div>
+                                <div class="absolute inset-0 md:bg-gradient-to-r md:from-transparent md:via-transparent md:to-navy/40" style="left: 50%;"></div>
                             @else
                                 <div class="absolute inset-0 bg-gradient-to-br from-purple/40 to-navy flex items-center justify-center">
                                     <div class="w-20 h-20 rounded-2xl bg-white/10 flex items-center justify-center border border-white/10">
