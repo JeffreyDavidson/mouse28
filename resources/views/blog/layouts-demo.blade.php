@@ -261,60 +261,65 @@
                 <span class="sparkle-delay-2 absolute -bottom-3 -right-3 text-gold/30 text-sm z-10">✦</span>
                 <span class="sparkle absolute bottom-4 -left-2 text-gold/15 text-xs z-10">✧</span>
 
-                <a href="#" class="featured-card-border group block overflow-hidden transition-all duration-300 relative">
+                <a href="#" class="featured-card-border group block overflow-visible transition-all duration-300 relative">
                     {{-- Featured ribbon --}}
                     {{-- 3D Wrap-around ribbon --}}
                     <style>
-                        .ribbon-wrap {
+                        .ribbon-corner {
                             position: absolute;
-                            top: -8px;
-                            left: -8px;
+                            top: 0;
+                            left: 0;
+                            width: 120px;
+                            height: 120px;
+                            overflow: visible;
                             z-index: 30;
                             pointer-events: none;
                         }
-                        .ribbon-wrap .ribbon {
-                            position: relative;
-                            display: block;
-                            width: 180px;
-                            height: 32px;
-                            line-height: 32px;
-                            text-align: center;
-                            transform: rotate(-45deg) translateX(-50px) translateY(-10px);
+                        .ribbon-corner .ribbon-band {
+                            position: absolute;
+                            top: 18px;
+                            left: -34px;
+                            width: 170px;
+                            height: 28px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            transform: rotate(-45deg);
                             background: linear-gradient(180deg, #f5dc6b 0%, #d4a843 40%, #b8922f 100%);
                             color: #1a1040;
                             font-size: 10px;
                             font-weight: 700;
                             letter-spacing: 0.18em;
                             text-transform: uppercase;
-                            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+                            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
                         }
-                        /* Left fold - tucks behind card bottom edge */
-                        .ribbon-wrap .ribbon::before {
-                            content: '';
+                        /* Dark fold: bottom-left (ribbon wraps behind left edge) */
+                        .ribbon-corner .fold-left {
                             position: absolute;
-                            bottom: -8px;
+                            top: 72px;
                             left: 0;
                             width: 0;
                             height: 0;
                             border-style: solid;
-                            border-width: 8px 8px 0 0;
-                            border-color: #7a5e1e transparent transparent transparent;
+                            border-width: 0 10px 10px 0;
+                            border-color: transparent #6b4f18 transparent transparent;
                         }
-                        /* Right fold - tucks behind card top edge */
-                        .ribbon-wrap .ribbon::after {
-                            content: '';
+                        /* Dark fold: top-right (ribbon wraps behind top edge) */
+                        .ribbon-corner .fold-top {
                             position: absolute;
-                            top: -8px;
-                            right: 0;
+                            top: 0;
+                            left: 72px;
                             width: 0;
                             height: 0;
                             border-style: solid;
-                            border-width: 0 0 8px 8px;
-                            border-color: transparent transparent #7a5e1e transparent;
+                            border-width: 10px 0 0 10px;
+                            border-color: #6b4f18 transparent transparent transparent;
                         }
                     </style>
-                    <div class="ribbon-wrap">
-                        <span class="ribbon">✦ Featured ✦</span>
+                    <div class="ribbon-corner">
+                        <div class="fold-left"></div>
+                        <div class="fold-top"></div>
+                        <div class="ribbon-band">✦ Featured ✦</div>
                     </div>
 
                     <div class="grid md:grid-cols-5 min-h-[280px] relative">
