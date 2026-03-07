@@ -264,12 +264,25 @@
                 <a href="#" class="featured-card-border group block overflow-hidden transition-all duration-300 relative">
                     {{-- Featured ribbon --}}
                     {{-- 3D Wrap-around ribbon --}}
-                    {{-- Fold triangles sit BEHIND the card (z-10, card is z-20) --}}
-                    <div class="absolute top-[48px] left-[-6px] z-[-1] pointer-events-none" style="width: 0; height: 0; border-style: solid; border-width: 0 6px 10px 0; border-color: transparent #6b4f18 transparent transparent;"></div>
-                    <div class="absolute top-[-6px] left-[48px] z-[-1] pointer-events-none" style="width: 0; height: 0; border-style: solid; border-width: 0 0 10px 6px; border-color: transparent transparent #6b4f18 transparent;"></div>
-                    {{-- Main ribbon face --}}
-                    <div class="absolute top-0 left-0 z-20 pointer-events-none overflow-hidden w-36 h-36">
-                        <div class="absolute top-[20px] left-[-28px] w-[170px] flex items-center justify-center text-[10px] font-bold uppercase tracking-[0.18em] text-navy rotate-[-45deg]" style="height: 28px; line-height: 28px; background: linear-gradient(180deg, #f5dc6b 0%, #d4a843 45%, #b8922f 100%); box-shadow: 0 3px 6px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.15);">
+                    <div class="absolute -top-[6px] -left-[6px] z-20 pointer-events-none" style="width: 150px; height: 150px;">
+                        {{-- Back folds (darker triangles peeking out) --}}
+                        <svg style="position:absolute;top:0;left:0;width:150px;height:150px;" viewBox="0 0 150 150">
+                            {{-- Left fold --}}
+                            <polygon points="0,80 0,90 6,84" fill="#6b4f18"/>
+                            {{-- Top fold --}}
+                            <polygon points="80,0 90,0 84,6" fill="#6b4f18"/>
+                            {{-- Ribbon band --}}
+                            <polygon points="0,50 0,70 70,0 50,0" fill="url(#ribbonGrad)"/>
+                            <defs>
+                                <linearGradient id="ribbonGrad" x1="0" y1="0" x2="1" y2="1">
+                                    <stop offset="0%" stop-color="#f5dc6b"/>
+                                    <stop offset="50%" stop-color="#d4a843"/>
+                                    <stop offset="100%" stop-color="#b8922f"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                        {{-- Ribbon text --}}
+                        <div style="position:absolute; top:28px; left:-12px; width:130px; text-align:center; transform:rotate(-45deg); transform-origin:center center; font-size:9px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:#1a1040;">
                             ✦ Featured ✦
                         </div>
                     </div>
