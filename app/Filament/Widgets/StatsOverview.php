@@ -25,9 +25,6 @@ class StatsOverview extends StatsOverviewWidget
                 ->icon('heroicon-o-microphone')
                 ->description('Published')
                 ->color('success'),
-
-                ->icon('heroicon-o-heart')
-                ->color('warning'),
         ];
     }
 }

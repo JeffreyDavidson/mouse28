@@ -40,16 +40,6 @@ class RecentActivity extends Widget
             ]);
         });
 
-            $items->push([
-                'icon' => 'heart',
-                'color' => '#b8922e',
-                'label' => $story->title,
-                'type' => $story->is_approved ? 'Approved story' : 'Pending review',
-                'time' => $story->updated_at,
-                'url' => route('filament.admin.resources.community-stories.edit', $story),
-            ]);
-        });
-
         return $items->sortByDesc('time')->take(8)->values()->toArray();
     }
 }
