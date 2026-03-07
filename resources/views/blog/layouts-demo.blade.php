@@ -178,6 +178,7 @@
                             text-transform: uppercase;
                             text-align: center;
                             letter-spacing: 0.15em;
+                            text-indent: -15px;
                         }
                         .ribbon-top-left {
                             top: -10px;
