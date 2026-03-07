@@ -53,9 +53,9 @@ class AdminPanelProvider extends PanelProvider
                 '<link rel="stylesheet" href="' . asset('css/filament-custom.css') . '?v=' . filemtime(public_path('css/filament-custom.css')) . '">'
             ))
             ->navigationGroups([
-                NavigationGroup::make('Content')->icon('heroicon-o-document-text'),
-                NavigationGroup::make('Communication')->icon('heroicon-o-envelope'),
-                NavigationGroup::make('Settings')->icon('heroicon-o-cog-6-tooth'),
+                NavigationGroup::make('Content'),
+                NavigationGroup::make('Communication'),
+                NavigationGroup::make('Settings'),
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
