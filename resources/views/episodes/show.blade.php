@@ -387,8 +387,8 @@
                                 <div class="space-y-4">
                                     @foreach($relatedPosts as $post)
                                         <a href="/blog/{{ $post->slug }}" class="group flex items-start gap-3">
-                                            @if($post->cover_image)
-                                                <img src="{{ $post->cover_image }}" alt="{{ $post->title }}" class="w-16 h-16 rounded-xl object-cover flex-shrink-0">
+                                            @if($post->cover_image_url)
+                                                <img src="{{ $post->cover_image_url }}" alt="{{ $post->title }}" class="w-16 h-16 rounded-xl object-cover flex-shrink-0">
                                             @else
                                                 <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-purple/10 to-gold/10 flex items-center justify-center flex-shrink-0">
                                                     <svg class="w-6 h-6 text-purple/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>

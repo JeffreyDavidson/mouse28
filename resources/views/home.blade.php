@@ -302,8 +302,8 @@
                     <div class="flex flex-col md:flex-row">
                         {{-- Left: Cover image or gradient --}}
                         <div class="relative md:w-2/5 min-h-[220px] md:min-h-[320px] overflow-hidden flex-shrink-0">
-                            @if($featuredPost->cover_image)
-                                <img src="{{ $featuredPost->cover_image }}" alt="{{ $featuredPost->title }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                            @if($featuredPost->cover_image_url)
+                                <img src="{{ $featuredPost->cover_image_url }}" alt="{{ $featuredPost->title }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                                 <div class="absolute inset-0 bg-gradient-to-r from-transparent to-navy/30 md:bg-gradient-to-r md:from-transparent md:to-navy"></div>
                             @else
                                 <div class="absolute inset-0 bg-gradient-to-br from-purple/40 to-navy flex items-center justify-center">
@@ -369,8 +369,8 @@
                     @foreach($latestPosts as $post)
                         <a href="/blog/{{ $post->slug }}" class="post-card group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-2 border border-navy/5 relative" data-animate data-stagger="{{ $loop->index }}">
                             <div class="relative overflow-hidden card-shimmer">
-                                @if($post->cover_image)
-                                    <img src="{{ $post->cover_image }}" alt="{{ $post->title }}" class="card-img w-full h-52 object-cover">
+                                @if($post->cover_image_url)
+                                    <img src="{{ $post->cover_image_url }}" alt="{{ $post->title }}" class="card-img w-full h-52 object-cover">
                                     <div class="card-overlay absolute inset-0 bg-gradient-to-t from-purple/20 to-transparent"></div>
                                 @else
                                     <div class="w-full h-52 bg-gradient-to-br from-purple/10 to-gold/10 flex items-center justify-center">
