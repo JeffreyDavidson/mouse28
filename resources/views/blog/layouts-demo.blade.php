@@ -69,7 +69,7 @@
             'resort-reviews' => '#14b8a6',
             'disney-plus' => '#6366f1',
             'merchandise' => '#f43f5e',
-            'general' => '#64748b',
+            'general' => '#4a90a4',
         ];
 
         $categoryGradients = [
@@ -83,7 +83,7 @@
             'resort-reviews' => ['from' => '#0d9488', 'to' => '#5eead4', 'icon' => '🏨'],
             'disney-plus' => ['from' => '#4f46e5', 'to' => '#818cf8', 'icon' => '📺'],
             'merchandise' => ['from' => '#e11d48', 'to' => '#fb7185', 'icon' => '🛍️'],
-            'general' => ['from' => '#475569', 'to' => '#94a3b8', 'icon' => '✨'],
+            'general' => ['from' => '#4a90a4', 'to' => '#7bc4d4', 'icon' => '✨'],
         ];
         $defaultGrad = ['from' => '#5b3e9e', 'to' => '#7c5cbf', 'icon' => '✨'];
     @endphp
