@@ -37,7 +37,58 @@ class DatabaseSeeder extends Seeder
                 'title' => 'Welcome to Mouse28',
                 'slug' => 'welcome-to-mouse28',
                 'description' => "Our very first episode! We introduce ourselves, share why we started Mouse28, and talk about what it's like visiting Disney World every single week with our daughter Viola.",
-                'show_notes' => "In this episode:\n- Who are the Davidsons?\n- How we became weekly Disney visitors\n- Viola's story and how autism shapes our Disney experience\n- What to expect from Mouse28\n- Our favorite park (spoiler: it might surprise you)",
+                'show_notes' => '<h2>What We Cover</h2>
+<p>This is our very first episode, and we wanted to start by introducing ourselves and sharing the story behind Mouse28. We talk about our family, how Disney became such a central part of our lives, and what you can expect from this podcast.</p>
+
+<h3>Topics in This Episode</h3>
+<ul>
+<li><strong>Meet the Davidsons</strong> — Jeffrey, Cassie, and our daughter Viola</li>
+<li><strong>Why "Mouse28"?</strong> — The name comes from Mickey\'s 1928 debut in <em>Steamboat Willie</em></li>
+<li><strong>Our weekly Disney habit</strong> — Living 20 minutes from the parks changed everything</li>
+<li><strong>Viola\'s story</strong> — How autism shapes our Disney experience (and makes it better)</li>
+<li><strong>The DAS pass</strong> — A quick intro to what it is and why it matters</li>
+<li><strong>Our favorite park</strong> — Spoiler: it might surprise you</li>
+</ul>
+
+<h3>Resources Mentioned</h3>
+<ul>
+<li><a href="https://disneyworld.disney.go.com/guest-services/disability-access-service/">Disney\'s DAS Pass Info</a></li>
+<li><a href="https://www.autismspeaks.org/">Autism Speaks</a> — Resource hub for families</li>
+</ul>
+
+<h3>Timestamps</h3>
+<ul>
+<li><strong>0:00</strong> — Intro & welcome</li>
+<li><strong>2:15</strong> — Meet the family</li>
+<li><strong>8:30</strong> — How we became weekly Disney visitors</li>
+<li><strong>15:45</strong> — Viola\'s story and our autism journey</li>
+<li><strong>24:10</strong> — What is the DAS pass?</li>
+<li><strong>31:00</strong> — Our favorite park reveal</li>
+<li><strong>36:20</strong> — What to expect from Mouse28</li>
+<li><strong>38:00</strong> — Wrap up</li>
+</ul>
+
+<blockquote><p>"Every family experiences Disney differently. Ours just happens to include a lot more planning, a lot more patience, and honestly? A lot more magic because of it."</p></blockquote>',
+                'transcript' => '<p><strong>Jeffrey:</strong> Hey everybody, welcome to Mouse28. I\'m Jeffrey.</p>
+<p><strong>Cassie:</strong> And I\'m Cassie.</p>
+<p><strong>Jeffrey:</strong> And this is our very first episode. We are so excited to finally be doing this. We\'ve been talking about starting a podcast for — how long has it been?</p>
+<p><strong>Cassie:</strong> Like a year? At least a year. Every time we\'d leave a park, one of us would say "we should really be recording this."</p>
+<p><strong>Jeffrey:</strong> Exactly. So here we are. Mouse28 — our Disney podcast. And the name, if you\'re wondering, comes from 1928, which is the year Mickey Mouse first appeared in <em>Steamboat Willie</em>.</p>
+<p><strong>Cassie:</strong> Which Viola loves, by the way. She watches that short on repeat.</p>
+<p><strong>Jeffrey:</strong> She really does. So for those who don\'t know us, we\'re the Davidsons. We live in Davenport, Florida, which is about twenty minutes from Walt Disney World. And we go to the parks basically every single week.</p>
+<p><strong>Cassie:</strong> Sometimes twice a week if we\'re being honest.</p>
+<p><strong>Jeffrey:</strong> <em>(laughing)</em> Yeah, sometimes twice. And we have a daughter named Viola, she\'s eight years old, and she is autistic and nonverbal. And that really shapes how we experience Disney in a huge way.</p>
+<p><strong>Cassie:</strong> It shapes everything, really. But Disney especially. Because there\'s so much sensory input at the parks — the sounds, the crowds, the lights — and we\'ve learned over the years how to navigate all of that in a way that works for our family.</p>
+<p><strong>Jeffrey:</strong> And that\'s really what this podcast is about. It\'s not just a Disney fan podcast — although we are absolutely Disney fans — it\'s about experiencing Disney through the lens of a family with a special needs child. The planning, the DAS pass, the quiet spots, the meltdowns in Fantasyland...</p>
+<p><strong>Cassie:</strong> <em>(laughing)</em> We\'ve had a few of those.</p>
+<p><strong>Jeffrey:</strong> We\'ve had more than a few. And we want to share all of it — the good, the hard, and the magical. Because there are so many families out there who might be thinking "can we even do Disney?" And the answer is absolutely yes.</p>
+<p><strong>Cassie:</strong> One hundred percent yes. It just takes some extra planning and knowing what to expect. And that\'s what we\'re here to help with.</p>
+<p><strong>Jeffrey:</strong> So in upcoming episodes, we\'re going to dive deep into the DAS pass, sensory-friendly spots at each park, our favorite rides ranked by how sensory-intense they are, character interactions that work for kids with sensory sensitivities — all of it.</p>
+<p><strong>Cassie:</strong> And food! We\'ll definitely talk about food.</p>
+<p><strong>Jeffrey:</strong> Oh, we will absolutely talk about food. Cassie has opinions about every single restaurant on property.</p>
+<p><strong>Cassie:</strong> I do. And I\'m right about all of them.</p>
+<p><strong>Jeffrey:</strong> <em>(laughing)</em> She usually is. Alright, so that\'s what you can expect from us. New episodes every week. We\'re the Davidsons, this is Mouse28, and we\'ll see you real soon.</p>
+<p><strong>Cassie:</strong> See ya real soon!</p>',
                 'episode_number' => 1,
                 'season_number' => null,
                 'duration_seconds' => 2340,
