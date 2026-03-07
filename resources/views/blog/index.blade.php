@@ -167,29 +167,6 @@
 
     {{-- Hero --}}
     <section class="bg-gradient-to-br from-navy to-navy-light py-16 md:py-24 relative overflow-hidden">
-        {{-- Quill SVG decoration (top-right corner) --}}
-        <div class="absolute top-8 right-8 opacity-10 pointer-events-none">
-            <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M95 10C95 10 75 25 60 50C50 67 42 82 38 95L35 105L40 100C50 88 62 70 72 55C85 35 95 10 95 10Z" stroke="white" stroke-width="2" fill="white" fill-opacity="0.05"/>
-                <path d="M38 95L25 110" stroke="white" stroke-width="2" stroke-linecap="round"/>
-                <path d="M35 105L22 108L25 110L28 107" stroke="white" stroke-width="1.5" fill="white" fill-opacity="0.1"/>
-                <circle cx="22" cy="110" r="2" fill="white" fill-opacity="0.3"/>
-            </svg>
-        </div>
-        {{-- Ink trail swoosh (bottom of hero) --}}
-        <div class="absolute bottom-0 left-0 w-full opacity-[0.07] pointer-events-none">
-            <svg class="w-full h-24" viewBox="0 0 1200 96" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0 80 C100 80, 150 20, 300 40 S500 90, 650 50 S800 10, 900 45 S1050 80, 1200 30" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
-                <path d="M0 85 C120 85, 180 35, 350 50 S520 85, 680 55 S830 25, 940 55 S1080 75, 1200 40" stroke="white" stroke-width="1" stroke-linecap="round" fill="none" opacity="0.5"/>
-                {{-- Ink splatter dots along the trail --}}
-                <circle cx="300" cy="40" r="3" fill="white" opacity="0.4"/>
-                <circle cx="305" cy="35" r="1.5" fill="white" opacity="0.3"/>
-                <circle cx="650" cy="50" r="2.5" fill="white" opacity="0.35"/>
-                <circle cx="900" cy="45" r="3.5" fill="white" opacity="0.3"/>
-                <circle cx="895" cy="40" r="1.5" fill="white" opacity="0.2"/>
-                <circle cx="1100" cy="35" r="2" fill="white" opacity="0.25"/>
-            </svg>
-        </div>
         <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center relative z-10">
             <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6">
                 <span class="w-2 h-2 bg-gold rounded-full animate-pulse"></span>
