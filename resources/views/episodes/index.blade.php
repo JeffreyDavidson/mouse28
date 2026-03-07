@@ -54,11 +54,17 @@
     </section>
 
     <section class="py-16 bg-cream">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <div class="flex flex-col lg:flex-row gap-10">
+                <div class="lg:w-[66%]">
             @if($episodes->count())
                 {{-- Group by season if available --}}
                 @php
                     $grouped = $episodes->getCollection()->groupBy(fn($ep) => $ep->season_number ?? 0);
+                    $allEpisodes = $episodes->getCollection();
+                    $totalSeconds = $allEpisodes->sum('duration_seconds');
+                    $totalHours = round($totalSeconds / 3600, 1);
+                    $latestEpisode = $allEpisodes->first();
                 @endphp
 
                 @foreach($grouped as $season => $seasonEpisodes)
@@ -143,7 +149,115 @@
                 <div class="mt-12 pagination flex justify-center">
                     {{ $episodes->links() }}
                 </div>
+                </div>{{-- end lg:w-[66%] --}}
+
+                <aside class="lg:w-[34%]">
+                    <div class="lg:sticky lg:top-[90px] space-y-6">
+                        {{-- Podcast Stats --}}
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-navy/5">
+                            <div class="flex items-center justify-around">
+                                <div class="text-center">
+                                    <span class="block text-2xl font-bold text-navy font-heading">{{ $episodes->total() }}</span>
+                                    <span class="text-navy/35 text-xs uppercase tracking-wider">{{ Str::plural('Episode', $episodes->total()) }}</span>
+                                </div>
+                                <div class="w-px h-10 bg-navy/8"></div>
+                                <div class="text-center">
+                                    <span class="block text-2xl font-bold text-purple font-heading">{{ $totalHours }}h</span>
+                                    <span class="text-navy/35 text-xs uppercase tracking-wider">Listening</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Listen On --}}
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-navy/5">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div style="height: 3px; width: 40px; background: linear-gradient(90deg, #d4a843, #f0c75e); border-radius: 2px;"></div>
+                                <h3 class="font-heading text-lg font-bold text-navy">Listen On</h3>
+                            </div>
+                            <div class="space-y-3">
+                                <a href="#" target="_blank" rel="noopener" class="flex items-center gap-3 w-full bg-navy/5 hover:bg-navy text-navy/60 hover:text-white font-semibold text-sm px-4 py-3 rounded-xl transition-all">
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.56 2.93 11.3 4.7 7.72C5.57 5.94 7.36 4.86 9.28 4.84C10.56 4.81 11.78 5.7 12.56 5.7C13.34 5.7 14.85 4.62 16.41 4.8C17.07 4.83 18.96 5.06 20.16 6.87C20.05 6.95 17.58 8.37 17.61 11.34C17.65 14.9 20.68 16.04 20.71 16.06C20.69 16.13 20.18 17.86 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"/></svg>
+                                    Apple Podcasts
+                                </a>
+                                <a href="#" target="_blank" rel="noopener" class="flex items-center gap-3 w-full bg-navy/5 hover:bg-navy text-navy/60 hover:text-white font-semibold text-sm px-4 py-3 rounded-xl transition-all">
+                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+                                    Spotify
+                                </a>
+                            </div>
+                        </div>
+
+                        {{-- Latest Episode --}}
+                        @if($latestEpisode)
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-navy/5">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div style="height: 3px; width: 40px; background: linear-gradient(90deg, #d4a843, #f0c75e); border-radius: 2px;"></div>
+                                <h3 class="font-heading text-lg font-bold text-navy">Latest Episode</h3>
+                            </div>
+                            <a href="/episodes/{{ $latestEpisode->slug }}" class="group block">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="w-10 h-10 bg-gradient-to-br from-purple to-navy rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <span class="text-white text-xs font-bold">{{ $latestEpisode->episode_number }}</span>
+                                    </div>
+                                    <div class="min-w-0">
+                                        <h4 class="font-heading text-sm font-bold text-navy group-hover:text-purple transition-colors line-clamp-2">{{ $latestEpisode->title }}</h4>
+                                        <div class="flex items-center gap-2 mt-0.5">
+                                            @if($latestEpisode->duration_seconds)
+                                                <span class="text-navy/40 text-xs">{{ $latestEpisode->formatted_duration }}</span>
+                                            @endif
+                                            @if($latestEpisode->season_number)
+                                                <span class="text-navy/20">•</span>
+                                                <span class="text-navy/40 text-xs">S{{ $latestEpisode->season_number }}E{{ $latestEpisode->episode_number }}</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="text-purple text-sm font-semibold inline-flex items-center gap-1 group-hover:gap-2 transition-all">
+                                    Listen →
+                                </span>
+                            </a>
+                        </div>
+                        @endif
+
+                        {{-- Blog CTA --}}
+                        <div class="rounded-2xl p-6 text-center" style="background: linear-gradient(135deg, #1a1040, #2d1b69);">
+                            <div class="text-3xl mb-3">📝</div>
+                            <h3 class="font-heading text-lg font-bold text-cream mb-2">Read the Blog</h3>
+                            <p class="text-cream/50 text-sm mb-4">Disney tips, park guides, and family stories</p>
+                            <a href="/blog" class="inline-block bg-gradient-to-r from-gold to-gold-light text-navy font-bold text-sm px-6 py-2.5 rounded-xl transition-all hover:-translate-y-0.5 shadow-md shadow-gold/15">
+                                Visit Blog ✨
+                            </a>
+                        </div>
+
+                        {{-- Newsletter --}}
+                        <div class="rounded-2xl overflow-hidden shadow-sm border border-gold/15">
+                            <div class="bg-gradient-to-r from-gold/15 via-gold/8 to-purple/8 px-6 pt-5 pb-4 text-center relative">
+                                <div class="absolute top-3 right-4 text-gold/15 text-xs">✦</div>
+                                <div class="w-10 h-10 mx-auto mb-2 rounded-full bg-white/80 flex items-center justify-center shadow-sm">
+                                    <svg class="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+                                </div>
+                                <h3 class="font-heading text-base font-bold text-navy">Stay in the Loop</h3>
+                                <p class="text-navy/45 text-xs mt-1">Disney tips & new episodes</p>
+                            </div>
+                            <div class="bg-white px-6 py-5">
+                                <form action="/newsletter" method="POST" class="space-y-3">
+                                    @csrf
+                                    <input type="email" name="email" placeholder="your@email.com" required
+                                        class="w-full px-4 py-2.5 text-sm rounded-xl border border-navy/10 focus:border-gold focus:ring-2 focus:ring-gold/20 outline-none transition-all placeholder:text-navy/25 text-navy">
+                                    <button type="submit" class="w-full bg-gradient-to-r from-gold to-gold-light text-navy font-bold text-sm py-2.5 rounded-xl transition-all hover:-translate-y-0.5 shadow-md shadow-gold/15">
+                                        Subscribe ✨
+                                    </button>
+                                </form>
+                                <p class="text-navy/25 text-[10px] text-center mt-3">No spam. Unsubscribe anytime.</p>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>{{-- end flex --}}
+        </div>
+    </section>
             @else
+    <section class="py-16 bg-cream">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
                 <style>
                     @keyframes waveformPulse {
                         0%, 100% { transform: scaleY(1); }
