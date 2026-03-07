@@ -222,7 +222,7 @@
     <div style="height: 4px; background: linear-gradient(90deg, #d4a843, #b8922e, #d4a843);"></div>
 
     {{-- What We Cover — Ticket Stubs --}}
-    <section class="py-16 md:py-24 bg-cream">
+    <section class="py-16 md:py-24 bg-white">
         <div class="max-w-5xl mx-auto px-4 sm:px-6">
             <div class="text-center mb-12" data-animate>
                 <span class="text-gold text-sm font-semibold tracking-[0.15em] uppercase font-body">What We Cover</span>
@@ -240,7 +240,7 @@
                         </div>
                     </div>
                     <div class="ticket-hole" style="color: #fce4e8;"></div>
-                    <div class="ticket-tear" style="color: #fef9ef;"></div>
+                    <div class="ticket-tear" style="color: #ffffff;"></div>
                 </a>
 
                 {{-- Ticket: Park Strategy --}}
@@ -254,7 +254,7 @@
                         </div>
                     </div>
                     <div class="ticket-hole" style="color: #ede4f7;"></div>
-                    <div class="ticket-tear" style="color: #fef9ef;"></div>
+                    <div class="ticket-tear" style="color: #ffffff;"></div>
                 </a>
 
                 {{-- Ticket: Food & Reviews --}}
@@ -268,7 +268,7 @@
                         </div>
                     </div>
                     <div class="ticket-hole" style="color: #fdf3dc;"></div>
-                    <div class="ticket-tear" style="color: #fef9ef;"></div>
+                    <div class="ticket-tear" style="color: #ffffff;"></div>
                 </a>
 
                 {{-- Ticket: Family Stories --}}
@@ -282,7 +282,7 @@
                         </div>
                     </div>
                     <div class="ticket-hole" style="color: #ddf0f5;"></div>
-                    <div class="ticket-tear" style="color: #fef9ef;"></div>
+                    <div class="ticket-tear" style="color: #ffffff;"></div>
                 </a>
             </div>
         </div>
@@ -293,7 +293,7 @@
 
 {{-- Featured Post --}}
     @if($featuredPost)
-        <section class="py-16 md:py-20 bg-cream" data-animate>
+        <section class="py-16 md:py-20 bg-white" data-animate>
             <div class="max-w-5xl mx-auto px-4 sm:px-6">
                 <div class="text-center mb-10">
                     <span class="text-gold text-sm font-semibold tracking-[0.15em] uppercase font-body">Latest from the Blog</span>
@@ -523,7 +523,7 @@
     </section>
 
     {{-- The Story in Numbers --}}
-    <section style="background: #fef9ef; position: relative;">
+    <section style="background: #ffffff; position: relative;">
         <div style="height: 1px; background: linear-gradient(90deg, transparent, rgba(212,168,67,0.2), transparent);"></div>
         <div class="max-w-5xl mx-auto px-4 sm:px-6" style="padding: 4.5rem 1rem;">
             <div class="text-center" style="margin-bottom: 2.5rem;">
