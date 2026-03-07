@@ -19,68 +19,108 @@
         .pagination a:hover { color: #1a1040; border-color: #d4a843; }
         .pagination span[aria-disabled="true"] span { color: rgba(26,16,64,0.2); background: transparent; border: 1px solid rgba(26,16,64,0.05); }
 
-        /* Post cards */
+        /* Animated border */
+        @property --border-angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+        @keyframes borderRotate {
+            0% { --border-angle: 0deg; }
+            100% { --border-angle: 360deg; }
+        }
+        .featured-wrapper {
+            position: relative;
+            z-index: 1;
+            overflow: visible;
+        }
+        .featured-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 1.625rem;
+            background: conic-gradient(from var(--border-angle), #d4a843, #7b5eb5, #4a90a4, #d4a843);
+            animation: borderRotate 6s linear infinite;
+            z-index: 0;
+            opacity: 0.5;
+        }
+        .featured-card-border {
+            position: relative;
+            z-index: 1;
+            background: linear-gradient(135deg, #1a1040, #2d1b69);
+            border-radius: 1.5rem;
+            color: white;
+            overflow: hidden;
+        }
+
+        /* Ribbon: exact nxworld CodePen pattern */
+        .ribbon {
+            width: 150px;
+            height: 150px;
+            overflow: hidden;
+            position: absolute;
+            z-index: 30;
+            pointer-events: none;
+        }
+        .ribbon::before,
+        .ribbon::after {
+            position: absolute;
+            z-index: -1;
+            content: '';
+            display: block;
+            border: 5px solid #7a5e1e;
+        }
+        .ribbon span {
+            position: absolute;
+            display: block;
+            width: 225px;
+            padding: 15px 0;
+            background-color: #d4a843;
+            box-shadow: 0 5px 10px rgba(0,0,0,.1);
+            color: #1a1040;
+            font: 700 18px/1 'Poppins', sans-serif;
+            text-shadow: 0 1px 1px rgba(0,0,0,.2);
+            text-transform: uppercase;
+            text-align: center;
+        }
+        .ribbon-top-left {
+            top: -10px;
+            left: -10px;
+        }
+        .ribbon-top-left::before,
+        .ribbon-top-left::after {
+            border-top-color: transparent;
+            border-left-color: transparent;
+        }
+        .ribbon-top-left::before {
+            top: 0;
+            right: 0;
+        }
+        .ribbon-top-left::after {
+            bottom: 0;
+            left: 0;
+        }
+        .ribbon-top-left span {
+            right: -25px;
+            top: 30px;
+            transform: rotate(-45deg);
+        }
+
+        /* Grid post cards */
         .post-card {
-            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
         }
-        .post-card::before {
-            content: '';
-            position: absolute; top: 0; left: 0; right: 0; height: 3px;
-            background: var(--cat-color, #5b3e9e);
+        .post-card .accent-bar {
+            transition: transform 0.3s ease;
             transform: scaleX(0);
             transform-origin: left;
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 2;
         }
-        .post-card:hover::before { transform: scaleX(1); }
+        .post-card:hover .accent-bar { transform: scaleX(1); }
         .post-card:hover {
             transform: translateY(-6px);
             box-shadow: 0 20px 40px rgba(26,16,64,0.08), 0 8px 16px rgba(26,16,64,0.04);
-        }
-        .post-card .card-image {
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .post-card:hover .card-image { transform: scale(1.08); }
-
-        /* Featured card */
-        .featured-card {
-            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .featured-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 25px 50px rgba(26,16,64,0.12), 0 10px 20px rgba(26,16,64,0.06);
-        }
-        .featured-card .featured-image {
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .featured-card:hover .featured-image { transform: scale(1.05); }
-
-        /* Category pills */
-        .category-pill-filter {
-            display: inline-flex; align-items: center; gap: 0.4rem;
-            padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 600;
-            font-family: 'Poppins', sans-serif; transition: all 0.25s ease; text-decoration: none;
-            position: relative; overflow: hidden;
-        }
-        .category-pill-filter::after {
-            content: '';
-            position: absolute; bottom: 0; left: 50%; right: 50%;
-            height: 2px; background: currentColor; opacity: 0;
-            transition: all 0.3s ease;
-        }
-        .category-pill-filter:hover::after {
-            left: 20%; right: 20%; opacity: 0.3;
-        }
-        .category-pill-filter.active::after {
-            left: 20%; right: 20%; opacity: 0.5;
-        }
-
-        /* Reading time badge */
-        .reading-badge {
-            backdrop-filter: blur(8px);
-            transition: all 0.3s ease;
         }
 
         /* Search bar glow */
@@ -93,48 +133,49 @@
             0%, 100% { opacity: 0.15; transform: translateY(0) rotate(0deg); }
             50% { opacity: 0.4; transform: translateY(-4px) rotate(15deg); }
         }
-
-        /* Post count badge */
-        .post-count-badge {
-            display: inline-flex; align-items: center; justify-content: center;
-            min-width: 1.5rem; height: 1.5rem; padding: 0 0.4rem;
-            border-radius: 9999px; font-size: 0.65rem; font-weight: 700;
-        }
-
-        /* View toggle */
-        .view-btn {
-            padding: 0.5rem; border-radius: 0.5rem;
-            transition: all 0.2s; color: rgba(254,249,239,0.3);
-            border: 1px solid transparent;
-        }
-        .view-btn:hover { color: rgba(254,249,239,0.6); }
-        .view-btn.active {
-            color: #d4a843; background: rgba(212,168,67,0.1);
-            border-color: rgba(212,168,67,0.2);
-        }
     </style>
 
+    @php
+        $categoryColors = [
+            'disney-tips' => '#d4a843',
+            'park-accessibility' => '#7b5eb5',
+            'episode-recap' => '#22c55e',
+            'family-life' => '#3b82f6',
+            'autism-awareness' => '#ec4899',
+            'disney-news' => '#f97316',
+            'food-reviews' => '#f59e0b',
+            'resort-reviews' => '#14b8a6',
+            'disney-plus' => '#6366f1',
+            'merchandise' => '#f43f5e',
+            'general' => '#4a90a4',
+        ];
+        $categoryGradients = [
+            'disney-tips' => ['from' => '#d4a843', 'to' => '#f0c75e', 'icon' => '🏰'],
+            'park-accessibility' => ['from' => '#7b5eb5', 'to' => '#a78bfa', 'icon' => '💜'],
+            'episode-recap' => ['from' => '#059669', 'to' => '#34d399', 'icon' => '🎙️'],
+            'family-life' => ['from' => '#2563eb', 'to' => '#60a5fa', 'icon' => '👨‍👩‍👧'],
+            'autism-awareness' => ['from' => '#db2777', 'to' => '#f472b6', 'icon' => '🧩'],
+            'disney-news' => ['from' => '#ea580c', 'to' => '#fb923c', 'icon' => '📰'],
+            'food-reviews' => ['from' => '#d97706', 'to' => '#fbbf24', 'icon' => '🍽️'],
+            'resort-reviews' => ['from' => '#0d9488', 'to' => '#5eead4', 'icon' => '🏨'],
+            'disney-plus' => ['from' => '#4f46e5', 'to' => '#818cf8', 'icon' => '📺'],
+            'merchandise' => ['from' => '#e11d48', 'to' => '#fb7185', 'icon' => '🛍️'],
+            'general' => ['from' => '#4a90a4', 'to' => '#7bc4d4', 'icon' => '✨'],
+        ];
+        $defaultGrad = ['from' => '#5b3e9e', 'to' => '#7c5cbf', 'icon' => '✨'];
+    @endphp
+
     {{-- Hero --}}
-    <section class="relative overflow-hidden" style="background: linear-gradient(135deg, #1a1040 0%, #2d1b69 60%, #1a1040 100%);">
-        {{-- Decorative elements --}}
-        <div class="absolute top-0 right-0 w-96 h-96 bg-gold/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
-        <div class="absolute bottom-0 left-0 w-64 h-64 bg-purple/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/4"></div>
+    <section class="bg-gradient-to-br from-navy to-navy-light py-14 relative overflow-hidden">
         <div class="absolute top-[15%] right-[10%] text-gold/20 text-sm" style="animation: sparkle-float 4s ease-in-out infinite;">&#10022;</div>
         <div class="absolute top-[35%] left-[7%] text-gold/10 text-xs" style="animation: sparkle-float 5s ease-in-out 1.5s infinite;">&#10022;</div>
+        <div class="max-w-4xl mx-auto px-4 text-center relative">
+            <span class="text-gold text-xs font-semibold tracking-widest uppercase">Stories & Tips</span>
+            <h1 class="font-heading text-3xl md:text-4xl font-bold text-white mt-2">Blog <span class="inline-block text-gold/40 text-lg">✦</span></h1>
+            <p class="text-white/40 mt-3">Disney tips, park guides, and stories from our family to yours.</p>
 
-        <div class="relative max-w-6xl mx-auto px-4 sm:px-6 py-16 md:py-20 text-center">
-            <div class="inline-flex items-center gap-2 border border-gold/20 rounded-full px-4 py-1.5 mb-6">
-                <span class="w-1.5 h-1.5 rounded-full bg-gold"></span>
-                <span class="text-gold text-xs font-semibold tracking-widest uppercase" style="font-family: 'Poppins', sans-serif;">Blog</span>
-            </div>
-            <h1 class="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight">
-                Tips, Stories &amp; <span class="text-gold">Disney Life</span>
-            </h1>
-            <p class="text-white/50 mt-5 max-w-xl mx-auto text-lg leading-relaxed">Park accessibility guides, sensory-friendly tips, and stories from our family's Disney adventures.</p>
-
-            {{-- Post stats --}}
             @if($hasAnyPosts)
-                <div class="flex items-center justify-center gap-6 mt-8">
+                <div class="flex items-center justify-center gap-6 mt-6">
                     <div class="text-center">
                         <span class="block text-2xl font-bold text-white font-heading">{{ $posts->total() }}</span>
                         <span class="text-white/30 text-xs uppercase tracking-wider">{{ Str::plural('Post', $posts->total()) }}</span>
@@ -170,38 +211,15 @@
                 @endif
             </form>
 
-            {{-- Category filters --}}
-            @php
-                $categoryColors = [
-                    'disney-tips' => '#d4a843',
-                    'park-accessibility' => '#7b5eb5',
-                    'episode-recap' => '#22c55e',
-                    'family-life' => '#3b82f6',
-                    'autism-awareness' => '#ec4899',
-                    'disney-news' => '#f97316',
-                    'food-reviews' => '#f59e0b',
-                    'resort-reviews' => '#14b8a6',
-                    'disney-plus' => '#6366f1',
-                    'merchandise' => '#f43f5e',
-                    'general' => '#64748b',
-                ];
-            @endphp
-            <div class="flex items-center justify-center gap-2 flex-wrap">
-                <a href="/blog" class="category-pill-filter {{ !$category ? 'active' : '' }}"
-                   style="{{ !$category
-                       ? 'background: rgba(212,168,67,0.15); color: #d4a843; border: 1px solid rgba(212,168,67,0.3);'
-                       : 'background: rgba(254,249,239,0.04); color: rgba(254,249,239,0.5); border: 1px solid rgba(254,249,239,0.08);' }}">
-                    All Posts
-                    <span class="post-count-badge" style="{{ !$category ? 'background: rgba(212,168,67,0.2); color: #d4a843;' : 'background: rgba(254,249,239,0.08); color: rgba(254,249,239,0.4);' }}">{{ $posts->total() }}</span>
+            {{-- Category filters (Alpine.js style from layouts-demo) --}}
+            <div class="flex flex-wrap items-center justify-center gap-2" x-data="{ active: '{{ $category ?? 'all' }}' }">
+                <a href="/blog" @click="active = 'all'" :class="active === 'all' ? 'bg-navy text-white border-navy' : 'bg-white/5 text-white/50 border-white/10 hover:text-white hover:border-white/20'" class="text-xs font-semibold uppercase tracking-wider px-4 py-2 rounded-full border transition-all duration-200">
+                    All
                 </a>
-
                 @foreach(\App\Models\Post::CATEGORIES as $slug => $label)
                     @continue(!in_array($slug, $usedCategories))
-                    @php $color = $categoryColors[$slug] ?? '#7b5eb5'; $isActive = $category === $slug; @endphp
-                    <a href="/blog?category={{ $slug }}" class="category-pill-filter {{ $isActive ? 'active' : '' }}"
-                       style="{{ $isActive
-                           ? "background: {$color}20; color: {$color}; border: 1px solid {$color}40;"
-                           : "background: rgba(254,249,239,0.04); color: rgba(254,249,239,0.5); border: 1px solid rgba(254,249,239,0.08);" }}">
+                    @php $color = $categoryColors[$slug] ?? '#7b5eb5'; @endphp
+                    <a href="/blog?category={{ $slug }}" @click="active = '{{ $slug }}'" :class="active === '{{ $slug }}' ? 'text-white' : 'bg-white/5 hover:border-current'" class="text-xs font-semibold uppercase tracking-wider px-4 py-2 rounded-full border border-white/10 transition-all duration-200" :style="active === '{{ $slug }}' ? 'background: {{ $color }}; border-color: {{ $color }}; color: white;' : 'color: {{ $color }};'">
                         {{ $label }}
                     </a>
                 @endforeach
@@ -235,156 +253,106 @@
 
     {{-- Posts Section --}}
     <section class="py-16 bg-cream relative">
-        {{-- Subtle pattern overlay --}}
         <div class="absolute inset-0 opacity-[0.02]" style="background-image: radial-gradient(#1a1040 1px, transparent 1px); background-size: 24px 24px;"></div>
 
         <div class="max-w-6xl mx-auto px-4 sm:px-6 relative">
             @if($posts->count())
                 @php $featured = $posts->first(); $rest = $posts->skip(1); @endphp
 
-                @php
-                    $categoryGradients = [
-                        'disney-tips' => ['from' => '#d4a843', 'to' => '#f0c75e', 'icon' => '🏰'],
-                        'park-accessibility' => ['from' => '#7b5eb5', 'to' => '#a78bfa', 'icon' => '💜'],
-                        'episode-recap' => ['from' => '#059669', 'to' => '#34d399', 'icon' => '🎙️'],
-                        'family-life' => ['from' => '#2563eb', 'to' => '#60a5fa', 'icon' => '👨‍👩‍👧'],
-                        'autism-awareness' => ['from' => '#db2777', 'to' => '#f472b6', 'icon' => '🧩'],
-                        'disney-news' => ['from' => '#ea580c', 'to' => '#fb923c', 'icon' => '📰'],
-                        'food-reviews' => ['from' => '#d97706', 'to' => '#fbbf24', 'icon' => '🍽️'],
-                        'resort-reviews' => ['from' => '#0d9488', 'to' => '#5eead4', 'icon' => '🏨'],
-                        'disney-plus' => ['from' => '#4f46e5', 'to' => '#818cf8', 'icon' => '📺'],
-                        'merchandise' => ['from' => '#e11d48', 'to' => '#fb7185', 'icon' => '🛍️'],
-                        'general' => ['from' => '#475569', 'to' => '#94a3b8', 'icon' => '✨'],
-                    ];
-                    $defaultGrad = ['from' => '#5b3e9e', 'to' => '#7c5cbf', 'icon' => '✨'];
-                @endphp
-
-                {{-- Featured Post (first post, large card) --}}
+                {{-- Featured Post: Navy gradient + animated border + ribbon --}}
                 @if($posts->currentPage() === 1 && !request('q'))
-                    @php $fGrad = $categoryGradients[$featured->category] ?? $defaultGrad; @endphp
-                    <a href="/blog/{{ $featured->slug }}" class="featured-card group block bg-white rounded-3xl overflow-hidden shadow-lg shadow-navy/5 border border-navy/5 mb-12">
-                        <div class="grid md:grid-cols-2">
-                            {{-- Visual side --}}
-                            <div class="relative overflow-hidden" style="min-height: 320px; background: linear-gradient(135deg, {{ $fGrad['from'] }}18, {{ $fGrad['to'] }}10);">
-                                @if($featured->cover_image)
-                                    <img src="{{ $featured->cover_image }}" alt="{{ $featured->title }}" class="featured-image absolute inset-0 w-full h-full object-cover">
-                                @else
-                                    {{-- Category-themed decorative panel --}}
-                                    <div class="absolute inset-0" style="background: linear-gradient(135deg, {{ $fGrad['from'] }}15, {{ $fGrad['to'] }}08);">
-                                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
-                                            <span class="text-7xl block mb-4 opacity-80 group-hover:scale-110 transition-transform duration-500">{{ $fGrad['icon'] }}</span>
-                                            <span class="text-xs font-bold uppercase tracking-[0.25em] opacity-20" style="color: {{ $fGrad['from'] }};">{{ $featured->category_label }}</span>
+                    @php $fColor = $categoryColors[$featured->category] ?? '#5b3e9e'; @endphp
+                    <div class="mb-8 featured-wrapper rounded-3xl" style="overflow: visible;">
+                        {{-- Corner ribbon --}}
+                        <div class="ribbon ribbon-top-left"><span>Featured</span></div>
+
+                        <a href="/blog/{{ $featured->slug }}" class="featured-card-border group block transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+                            <div class="grid md:grid-cols-5 min-h-[280px] relative">
+                                {{-- Excerpt side --}}
+                                <div class="md:col-span-2 p-8 md:p-10 pl-12 md:pl-16 pt-24 pb-8 flex flex-col justify-center relative">
+                                    @if($featured->excerpt)
+                                        <p class="text-white/70 text-sm md:text-base leading-relaxed relative z-10">
+                                            {{ $featured->excerpt }}
+                                        </p>
+                                    @endif
+                                </div>
+                                {{-- Content side --}}
+                                <div class="md:col-span-3 p-8 md:p-10 flex flex-col justify-center">
+                                    <div class="flex items-center gap-3 mb-4">
+                                        @if($featured->category)
+                                            <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background: {{ $fColor }}30; color: {{ $fColor }};">{{ $featured->category_label }}</span>
+                                        @endif
+                                        <span class="text-white/30 text-xs">{{ $featured->reading_time }} min read</span>
+                                    </div>
+                                    <h2 class="font-heading text-2xl md:text-3xl font-bold text-white group-hover:text-gold transition-colors leading-snug">{{ $featured->title }}</h2>
+                                    <div class="flex items-center justify-between mt-6 pt-6 border-t border-white/10">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gold/25 to-purple/15 flex items-center justify-center text-gold text-[10px] font-bold font-heading border border-gold/20">
+                                                {{ collect(explode(' ', $featured->author_name))->reject(fn($w) => in_array($w, ['&', 'and']))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('&') }}
+                                            </div>
+                                            <div>
+                                                <p class="text-white text-sm font-semibold">{{ $featured->author_name }}</p>
+                                                <p class="text-white/40 text-xs">{{ $featured->published_at->format('F j, Y') }}</p>
+                                            </div>
                                         </div>
-                                        {{-- Decorative circles --}}
-                                        <div class="absolute -top-16 -right-16 w-48 h-48 rounded-full opacity-[0.06]" style="background: {{ $fGrad['from'] }};"></div>
-                                        <div class="absolute -bottom-12 -left-12 w-36 h-36 rounded-full opacity-[0.04]" style="background: {{ $fGrad['to'] }};"></div>
-                                        <div class="absolute top-8 left-8 w-2 h-2 rounded-full opacity-20" style="background: {{ $fGrad['from'] }};"></div>
-                                        <div class="absolute bottom-12 right-10 w-1.5 h-1.5 rounded-full opacity-15" style="background: {{ $fGrad['to'] }};"></div>
+                                        <span class="hidden sm:inline-flex items-center gap-1.5 text-gold text-sm font-semibold group-hover:gap-2.5 transition-all">
+                                            Read Article
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                        </span>
                                     </div>
-                                @endif
-                                {{-- Featured badge --}}
-                                <div class="absolute top-5 left-5 z-10">
-                                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider text-gold bg-navy/80 backdrop-blur-md border border-gold/20">
-                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
-                                        Latest Post
-                                    </span>
                                 </div>
                             </div>
-                            {{-- Content side --}}
-                            <div class="p-8 md:p-10 lg:p-12 flex flex-col justify-center">
-                                @if($featured->category)
-                                    <span class="inline-block text-xs font-semibold px-3 py-1 rounded-full mb-4 w-fit {{ $featured->category_color }}">
-                                        {{ $featured->category_label }}
-                                    </span>
-                                @endif
-                                <h2 class="font-heading text-2xl md:text-3xl font-bold text-navy group-hover:text-purple transition-colors leading-snug">
-                                    {{ $featured->title }}
-                                </h2>
-                                @if($featured->excerpt)
-                                    <p class="text-navy/55 mt-4 leading-relaxed line-clamp-3">{{ $featured->excerpt }}</p>
-                                @endif
-                                <div class="flex items-center gap-4 mt-6 pt-6 border-t border-navy/5">
-                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gold/25 to-purple/15 flex items-center justify-center text-gold text-xs font-bold font-heading border border-gold/15">
-                                        {{ collect(explode(' ', $featured->author_name))->reject(fn($w) => in_array($w, ['&', 'and']))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('&') }}
-                                    </div>
-                                    <div class="flex-1">
-                                        <p class="text-navy text-sm font-semibold">{{ $featured->author_name }}</p>
-                                        <p class="text-navy/35 text-xs">{{ $featured->published_at->format('F j, Y') }} · {{ $featured->reading_time }} min read</p>
-                                    </div>
-                                    <span class="hidden sm:inline-flex items-center gap-1.5 text-gold text-sm font-semibold group-hover:gap-2.5 transition-all">
-                                        Read
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
+                        </a>
+                    </div>
                 @else
                     @php $rest = $posts; @endphp
                 @endif
 
-                {{-- Post Grid --}}
+                {{-- Post Grid (2-column) --}}
                 @if($rest->count())
-                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="grid sm:grid-cols-2 gap-6">
                         @foreach($rest as $post)
-                            @php
-                                $catColor = $categoryColors[$post->category] ?? '#5b3e9e';
-                            @endphp
-                            @php $pGrad = $categoryGradients[$post->category] ?? $defaultGrad; @endphp
-                            <a href="/blog/{{ $post->slug }}" class="post-card group bg-white rounded-2xl shadow-sm border border-navy/5" style="--cat-color: {{ $catColor }};">
-                                {{-- Visual header --}}
-                                <div class="relative overflow-hidden rounded-t-2xl" style="height: 180px;">
-                                    @if($post->cover_image)
-                                        <img src="{{ $post->cover_image }}" alt="{{ $post->title }}" class="card-image absolute inset-0 w-full h-full object-cover">
-                                    @else
-                                        <div class="absolute inset-0" style="background: linear-gradient(135deg, {{ $pGrad['from'] }}12, {{ $pGrad['to'] }}08);">
-                                            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                                                <span class="text-5xl block group-hover:scale-110 transition-transform duration-500 opacity-70">{{ $pGrad['icon'] }}</span>
-                                            </div>
-                                            <div class="absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-[0.05]" style="background: {{ $pGrad['from'] }};"></div>
-                                            <div class="absolute -bottom-8 -left-8 w-24 h-24 rounded-full opacity-[0.04]" style="background: {{ $pGrad['to'] }};"></div>
-                                        </div>
-                                    @endif
-                                    {{-- Reading time overlay --}}
-                                    <div class="absolute top-3 right-3">
-                                        <span class="reading-badge text-[10px] font-bold text-white bg-navy/60 px-2.5 py-1 rounded-full">
-                                            {{ $post->reading_time }} min
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {{-- Content --}}
-                                <div class="p-6">
+                            @php $pColor = $categoryColors[$post->category] ?? '#5b3e9e'; @endphp
+                            <a href="/blog/{{ $post->slug }}" class="post-card group bg-white rounded-2xl p-7 shadow-sm border border-navy/5 relative">
+                                {{-- Top accent bar on hover --}}
+                                <div class="accent-bar absolute top-0 left-0 right-0 h-1" style="background: {{ $pColor }};"></div>
+                                <div class="flex items-center gap-3 mb-3">
                                     @if($post->category)
-                                        <span class="inline-block text-[10px] font-bold px-2.5 py-1 rounded-full mb-3 uppercase tracking-wider {{ $post->category_color }}">
-                                            {{ $post->category_label }}
-                                        </span>
+                                        <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background: {{ $pColor }}15; color: {{ $pColor }};">{{ $post->category_label }}</span>
                                     @endif
-                                    <h2 class="font-heading text-lg font-bold text-navy group-hover:text-purple transition-colors leading-snug line-clamp-2">
-                                        {{ $post->title }}
-                                    </h2>
-                                    @if($post->excerpt)
-                                        <p class="text-navy/50 text-sm leading-relaxed line-clamp-2 mt-2">{{ Str::limit($post->excerpt, 120) }}</p>
-                                    @endif
-                                    <div class="flex items-center gap-3 mt-5 pt-4 border-t border-navy/5">
-                                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-gold/20 to-purple/10 flex items-center justify-center text-gold text-[10px] font-bold font-heading flex-shrink-0 border border-gold/10">
-                                            {{ collect(explode(' ', $post->author_name))->reject(fn($w) => in_array($w, ['&', 'and']))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('&') }}
-                                        </div>
-                                        <div class="flex-1 min-w-0">
-                                            <p class="text-navy text-xs font-semibold truncate">{{ $post->author_name }}</p>
-                                            <p class="text-navy/30 text-[11px]">{{ $post->published_at->format('M j, Y') }}</p>
-                                        </div>
-                                        <svg class="w-4 h-4 text-navy/20 group-hover:text-gold group-hover:translate-x-1 transition-all flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    <span class="text-navy/25 text-xs">{{ $post->reading_time }} min read</span>
+                                </div>
+                                <h3 class="font-heading text-xl font-bold text-navy group-hover:text-purple transition-colors leading-snug line-clamp-2">{{ $post->title }}</h3>
+                                @if($post->excerpt)
+                                    <p class="text-navy/45 text-sm leading-relaxed mt-2 line-clamp-3">{{ $post->excerpt }}</p>
+                                @endif
+                                <div class="flex items-center justify-between mt-6 pt-4 border-t border-navy/5">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-navy/60 text-xs font-medium">{{ $post->author_name }}</span>
+                                        <span class="text-navy/20">·</span>
+                                        <span class="text-navy/30 text-xs">{{ $post->published_at->format('M j, Y') }}</span>
                                     </div>
+                                    <span class="text-xs font-semibold group-hover:gap-2 transition-all inline-flex items-center gap-1" style="color: {{ $pColor }};">
+                                        Read
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    </span>
                                 </div>
                             </a>
                         @endforeach
                     </div>
                 @endif
 
-                {{-- Pagination --}}
+                {{-- Pagination / Load More --}}
                 @if($posts->hasPages())
-                    <div class="mt-14 pagination flex justify-center">
+                    <div class="text-center mt-12">
+                        @if($posts->hasMorePages())
+                            <a href="{{ $posts->withQueryString()->nextPageUrl() }}" class="inline-flex items-center gap-2 bg-gradient-to-r from-gold to-gold-light text-navy font-semibold text-sm px-8 py-3 rounded-full transition-all hover:shadow-lg hover:shadow-gold/25 hover:-translate-y-0.5">
+                                Load More Stories
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </a>
+                        @endif
+                    </div>
+                    <div class="mt-6 pagination flex justify-center">
                         {{ $posts->withQueryString()->links() }}
                     </div>
                 @endif
@@ -455,7 +423,7 @@
         </div>
     </section>
 
-    {{-- Newsletter CTA (bottom of page) --}}
+    {{-- Newsletter CTA --}}
     @if($posts->count())
     <section class="relative overflow-hidden" style="background: linear-gradient(135deg, #1a1040 0%, #2d1b69 100%);">
         <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent"></div>
