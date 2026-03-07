@@ -15,6 +15,14 @@
             width: 0%; transition: width 0.1s linear;
             box-shadow: 0 0 8px rgba(212,168,67,0.4);
         }
+        .article-content p + p {
+            margin-top: 1.5em;
+        }
+        .article-content br {
+            display: block;
+            content: "";
+            margin-top: 1em;
+        }
         .article-content > p:first-of-type::first-letter {
             float: left; font-family: 'Playfair Display', serif;
             font-size: 3.5em; line-height: 0.8; font-weight: 700;
@@ -88,7 +96,10 @@
 
                     <article id="article-body" class="bg-white rounded-2xl p-8 md:p-12 shadow-sm border border-navy/5">
                         <div class="prose prose-lg prose-navy max-w-none text-navy/80 leading-relaxed article-content">
-                            {!! Str::markdown($post->body ?? '') !!}
+                            {!! Str::markdown($post->body ?? '', [
+                                'html_input' => 'strip',
+                                'allow_unsafe_links' => false,
+                            ]) !!}
                         </div>
                     </article>
 
