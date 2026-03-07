@@ -328,7 +328,7 @@
                     <div class="lg:sticky lg:top-[90px] space-y-6">
                         {{-- Search --}}
                         <div class="bg-white rounded-2xl p-6 shadow-sm border border-navy/5">
-                            <div class="flex items-center gap-3 mb-4">
+                            <div class="flex items-center gap-3 mb-5">
                                 <div style="height: 3px; width: 40px; background: linear-gradient(90deg, #d4a843, #f0c75e); border-radius: 2px;"></div>
                                 <h3 class="font-heading text-lg font-bold text-navy">Search</h3>
                             </div>
@@ -349,9 +349,29 @@
                             @endif
                         </div>
 
+                        {{-- Blog Stats --}}
+                        @if($hasAnyPosts)
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-navy/5">
+                            <div class="flex items-center gap-3 mb-5">
+                                <div style="height: 3px; width: 40px; background: linear-gradient(90deg, #d4a843, #f0c75e); border-radius: 2px;"></div>
+                                <h3 class="font-heading text-lg font-bold text-navy">Blog Stats</h3>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-gradient-to-br from-purple/8 to-navy/5 rounded-xl p-4 text-center">
+                                    <span class="block text-3xl font-bold text-navy font-heading">{{ $posts->total() }}</span>
+                                    <span class="text-navy/45 text-xs font-medium uppercase tracking-wider mt-1 block">{{ Str::plural('Post', $posts->total()) }}</span>
+                                </div>
+                                <div class="bg-gradient-to-br from-gold/8 to-gold/3 rounded-xl p-4 text-center">
+                                    <span class="block text-3xl font-bold text-navy font-heading">{{ count($usedCategories) }}</span>
+                                    <span class="text-navy/45 text-xs font-medium uppercase tracking-wider mt-1 block">{{ Str::plural('Category', count($usedCategories)) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
                         {{-- Categories --}}
                         <div class="bg-white rounded-2xl p-6 shadow-sm border border-navy/5">
-                            <div class="flex items-center gap-3 mb-4">
+                            <div class="flex items-center gap-3 mb-5">
                                 <div style="height: 3px; width: 40px; background: linear-gradient(90deg, #d4a843, #f0c75e); border-radius: 2px;"></div>
                                 <h3 class="font-heading text-lg font-bold text-navy">Categories</h3>
                             </div>
@@ -373,7 +393,7 @@
 
                         {{-- Sort --}}
                         <div class="bg-white rounded-2xl p-6 shadow-sm border border-navy/5">
-                            <div class="flex items-center gap-3 mb-4">
+                            <div class="flex items-center gap-3 mb-5">
                                 <div style="height: 3px; width: 40px; background: linear-gradient(90deg, #d4a843, #f0c75e); border-radius: 2px;"></div>
                                 <h3 class="font-heading text-lg font-bold text-navy">Sort By</h3>
                             </div>
@@ -389,43 +409,43 @@
                             </div>
                         </div>
 
-                        {{-- Post Stats --}}
-                        @if($hasAnyPosts)
-                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-navy/5">
-                            <div class="flex items-center justify-around">
-                                <div class="text-center">
-                                    <span class="block text-2xl font-bold text-navy font-heading">{{ $posts->total() }}</span>
-                                    <span class="text-navy/35 text-xs uppercase tracking-wider">{{ Str::plural('Post', $posts->total()) }}</span>
+                        {{-- Podcast CTA --}}
+                        <div class="bg-gradient-to-br from-navy via-navy-light to-navy rounded-2xl p-7 text-center relative overflow-hidden border border-white/5">
+                            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-gold/5 rounded-full blur-3xl"></div>
+                            <div class="relative">
+                                <div class="w-12 h-12 mx-auto mb-4 rounded-xl bg-white/10 flex items-center justify-center border border-white/10">
+                                    <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
                                 </div>
-                                <div class="w-px h-10 bg-navy/8"></div>
-                                <div class="text-center">
-                                    <span class="block text-2xl font-bold text-gold font-heading">{{ count($usedCategories) }}</span>
-                                    <span class="text-navy/35 text-xs uppercase tracking-wider">{{ Str::plural('Category', count($usedCategories)) }}</span>
-                                </div>
+                                <h3 class="font-heading text-lg font-bold text-white mb-2">Listen to the Podcast</h3>
+                                <p class="text-white/40 text-sm mb-5 leading-relaxed">Disney parks, accessibility, and family stories</p>
+                                <a href="/episodes" class="inline-block bg-gradient-to-r from-gold to-gold-light text-navy font-bold text-sm px-7 py-3 rounded-full transition-all hover:-translate-y-0.5 shadow-lg shadow-gold/20">
+                                    Browse Episodes
+                                </a>
                             </div>
                         </div>
-                        @endif
 
                         {{-- Newsletter --}}
-                        <div class="rounded-2xl overflow-hidden shadow-sm border border-gold/15">
-                            <div class="bg-gradient-to-r from-gold/15 via-gold/8 to-purple/8 px-6 pt-5 pb-4 text-center relative">
-                                <div class="absolute top-3 right-4 text-gold/15 text-xs">✦</div>
-                                <div class="w-10 h-10 mx-auto mb-2 rounded-full bg-white/80 flex items-center justify-center shadow-sm">
-                                    <svg class="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+                        <div class="bg-gradient-to-br from-navy via-navy-light to-navy rounded-2xl p-7 text-center relative overflow-hidden border border-white/5">
+                            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-gold/5 rounded-full blur-3xl"></div>
+                            <div class="relative">
+                                <div class="w-12 h-12 mx-auto mb-4 rounded-xl bg-white/10 flex items-center justify-center border border-white/10">
+                                    <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
                                 </div>
-                                <h3 class="font-heading text-base font-bold text-navy">Stay in the Loop</h3>
-                                <p class="text-navy/45 text-xs mt-1">Disney tips & new posts</p>
-                            </div>
-                            <div class="bg-white px-6 py-5">
+                                <h3 class="font-heading text-lg font-bold text-white mb-2">Stay in the Loop</h3>
+                                <p class="text-white/40 text-sm mb-5 leading-relaxed">New posts & Disney tips delivered to your inbox</p>
                                 <form action="/newsletter" method="POST" class="space-y-3">
                                     @csrf
                                     <input type="email" name="email" placeholder="your@email.com" required
-                                        class="w-full px-4 py-2.5 text-sm rounded-xl border border-navy/10 focus:border-gold focus:ring-2 focus:ring-gold/20 outline-none transition-all placeholder:text-navy/25 text-navy">
-                                    <button type="submit" class="w-full bg-gradient-to-r from-gold to-gold-light text-navy font-bold text-sm py-2.5 rounded-xl transition-all hover:-translate-y-0.5 shadow-md shadow-gold/15">
-                                        Subscribe ✨
+                                        class="w-full px-4 py-3 text-sm rounded-xl outline-none transition-all placeholder:text-white/25 text-white"
+                                        style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);"
+                                        onfocus="this.style.borderColor='rgba(212,168,67,0.4)';this.style.background='rgba(255,255,255,0.12)'"
+                                        onblur="this.style.borderColor='rgba(255,255,255,0.1)';this.style.background='rgba(255,255,255,0.08)'"
+                                    >
+                                    <button type="submit" class="w-full bg-gradient-to-r from-gold to-gold-light text-navy font-bold text-sm py-3 rounded-full transition-all hover:-translate-y-0.5 shadow-lg shadow-gold/20">
+                                        Subscribe
                                     </button>
                                 </form>
-                                <p class="text-navy/25 text-[10px] text-center mt-3">No spam. Unsubscribe anytime.</p>
+                                <p class="text-white/20 text-[10px] mt-3">No spam. Unsubscribe anytime.</p>
                             </div>
                         </div>
                     </div>
