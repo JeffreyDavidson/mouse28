@@ -80,7 +80,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($episodes as $ep) {
-            Episode::create($ep);
+            Episode::firstOrCreate(['slug' => $ep['slug']], $ep);
         }
 
         // Blog posts
@@ -171,7 +171,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($posts as $post) {
-            Post::create($post);
+            Post::firstOrCreate(['slug' => $post['slug']], $post);
         }
 
         $this->call(CommunityStorySeeder::class);
