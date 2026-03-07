@@ -15,6 +15,7 @@ class PostController extends Controller
         $sort = $request->query('sort', 'newest');
         $hasAnyPosts = Post::published()->exists();
         $usedCategories = Post::published()->distinct()->pluck('category')->filter()->toArray();
+        $categoryCounts = Post::published()->selectRaw('category, count(*) as count')->groupBy('category')->pluck('count', 'category');
 
         $posts = Post::published()
             ->when($category, fn($q) => $q->where('category', $category))
@@ -26,7 +27,7 @@ class PostController extends Controller
             ->orderBy('published_at', $sort === 'oldest' ? 'asc' : 'desc')
             ->paginate(12);
 
-        return view('blog.index', compact('posts', 'category', 'sort', 'hasAnyPosts', 'usedCategories'));
+        return view('blog.index', compact('posts', 'category', 'sort', 'hasAnyPosts', 'usedCategories', 'categoryCounts'));
     }
 
     public function show(Post $post)
