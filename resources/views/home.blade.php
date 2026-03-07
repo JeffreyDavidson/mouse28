@@ -429,7 +429,7 @@
                 <div class="flex-shrink-0 w-full md:w-2/5">
                     <div class="relative">
                         <div class="rounded-2xl overflow-hidden shadow-xl" style="border: 3px solid rgba(212,168,67,0.2);">
-                            <img src="/images/hero-family.jpg" alt="Jeffrey and Cassie Davidson at Disney" class="w-full h-auto object-cover" style="aspect-ratio: 4/5;">
+                            <img src="/images/meet-jeffrey-cassie.jpg" alt="Jeffrey and Cassie Davidson at Disney" class="w-full h-auto object-cover" style="aspect-ratio: 4/5;">
                         </div>
                         {{-- Decorative corner accent --}}
                         <div class="hidden md:block absolute -bottom-3 -right-3 w-24 h-24 border-b-2 border-r-2 rounded-br-2xl" style="border-color: rgba(212,168,67,0.25);"></div>
