@@ -124,8 +124,8 @@
                                         <span class="text-white text-xl font-heading font-bold block -mt-0.5">{{ $episode->episode_number }}</span>
                                     </div>
                                 </div>
-                                <div>
-                                    <span class="text-navy font-heading font-bold text-sm block">Episode {{ $episode->episode_number }}</span>
+                                <div class="min-w-0">
+                                    <span class="text-navy font-heading font-bold text-sm block truncate">{{ $episode->title }}</span>
                                     <span class="text-navy/40 text-xs">{{ $episode->published_at->format('F j, Y') }}</span>
                                 </div>
                             </div>
