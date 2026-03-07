@@ -197,8 +197,8 @@
                             left: 0;
                         }
                         .ribbon-top-left span {
-                            right: -18px;
-                            top: 19px;
+                            right: -11px;
+                            top: 22px;
                             transform: rotate(-45deg);
                         }
                     </style>
