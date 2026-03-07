@@ -4,6 +4,134 @@
 @section('meta_description', Str::limit($episode->description, 160))
 
 @section('content')
+    <style>
+        /* Show Notes Styling */
+        .show-notes-content h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #1a1040;
+            margin: 2rem 0 0.75rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid rgba(212, 168, 67, 0.2);
+        }
+        .show-notes-content h2:first-child { margin-top: 0; }
+        .show-notes-content h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #1a1040;
+            margin: 1.75rem 0 0.6rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .show-notes-content h3::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 1.1rem;
+            background: linear-gradient(180deg, #d4a843, #f0c75e);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        .show-notes-content p {
+            color: rgba(26, 16, 64, 0.7);
+            font-size: 0.95rem;
+            line-height: 1.8;
+            margin: 0.75rem 0;
+        }
+        .show-notes-content ul {
+            list-style: none;
+            padding: 0;
+            margin: 0.75rem 0;
+        }
+        .show-notes-content ul li {
+            position: relative;
+            padding: 0.6rem 0 0.6rem 1.75rem;
+            color: rgba(26, 16, 64, 0.7);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            border-bottom: 1px solid rgba(26, 16, 64, 0.04);
+        }
+        .show-notes-content ul li:last-child { border-bottom: none; }
+        .show-notes-content ul li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 1rem;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #7b5eb5, #d4a843);
+        }
+        .show-notes-content ul li strong {
+            color: #1a1040;
+            font-weight: 600;
+        }
+        .show-notes-content a {
+            color: #7b5eb5;
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px solid rgba(123, 94, 181, 0.3);
+            transition: all 0.2s;
+        }
+        .show-notes-content a:hover {
+            color: #5b3e9e;
+            border-bottom-color: #5b3e9e;
+        }
+        .show-notes-content blockquote {
+            margin: 1.5rem 0;
+            padding: 1.25rem 1.5rem;
+            background: linear-gradient(135deg, rgba(212, 168, 67, 0.08), rgba(123, 94, 181, 0.05));
+            border-left: 4px solid #d4a843;
+            border-radius: 0 0.75rem 0.75rem 0;
+        }
+        .show-notes-content blockquote p {
+            color: rgba(26, 16, 64, 0.8);
+            font-style: italic;
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        /* Transcript Styling */
+        .transcript-content {
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+        .transcript-content::-webkit-scrollbar { width: 6px; }
+        .transcript-content::-webkit-scrollbar-track { background: rgba(26, 16, 64, 0.03); border-radius: 3px; }
+        .transcript-content::-webkit-scrollbar-thumb { background: rgba(26, 16, 64, 0.12); border-radius: 3px; }
+        .transcript-content::-webkit-scrollbar-thumb:hover { background: rgba(26, 16, 64, 0.2); }
+        .transcript-content p {
+            padding: 0.65rem 0.85rem;
+            margin: 0.25rem 0;
+            border-radius: 0.6rem;
+            font-size: 0.9rem;
+            line-height: 1.7;
+            color: rgba(26, 16, 64, 0.7);
+            transition: background 0.15s;
+        }
+        .transcript-content p:hover {
+            background: rgba(26, 16, 64, 0.025);
+        }
+        .transcript-content p strong {
+            color: #1a1040;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.01em;
+        }
+        /* Alternate speaker colors */
+        .transcript-content p:has(strong:first-child) {
+            border-left: 3px solid transparent;
+            padding-left: calc(0.85rem + 3px);
+        }
+        .transcript-content p em {
+            color: rgba(26, 16, 64, 0.4);
+            font-size: 0.85rem;
+        }
+    </style>
     <section class="bg-gradient-to-br from-navy to-navy-light py-16 md:py-20 relative overflow-hidden">
         {{-- Waveform background --}}
         <div class="absolute inset-0 opacity-[0.07] pointer-events-none">
@@ -83,13 +211,13 @@
                     {{-- Show Notes --}}
                     @if($episode->show_notes)
                         <div class="bg-white rounded-2xl p-8 md:p-10 shadow-sm border border-navy/5 mb-8">
-                            <div class="flex items-center gap-3 mb-6">
+                            <div class="flex items-center gap-3 mb-8">
                                 <div class="w-10 h-10 bg-purple/10 rounded-xl flex items-center justify-center">
                                     <svg class="w-5 h-5 text-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                 </div>
                                 <h2 class="font-heading text-2xl font-bold text-navy">Show Notes</h2>
                             </div>
-                            <div class="prose prose-lg prose-navy max-w-none text-navy/80 leading-relaxed prose-headings:font-heading prose-headings:text-navy prose-a:text-purple prose-a:no-underline hover:prose-a:underline prose-li:marker:text-purple prose-strong:text-navy">
+                            <div class="show-notes-content">
                                 {!! $episode->show_notes !!}
                             </div>
                         </div>
@@ -97,15 +225,24 @@
 
                     {{-- Transcript --}}
                     <div class="bg-white rounded-2xl p-8 md:p-10 shadow-sm border border-navy/5 mb-8">
-                        <div class="flex items-center gap-3 mb-6">
+                        <div class="flex items-center gap-3 mb-8">
                             <div class="w-10 h-10 bg-gold/10 rounded-xl flex items-center justify-center">
                                 <svg class="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
                             </div>
                             <h2 class="font-heading text-2xl font-bold text-navy">Transcript</h2>
                         </div>
                         @if($episode->transcript)
-                            <div class="prose prose-lg prose-navy max-w-none text-navy/80 leading-relaxed prose-headings:font-heading prose-headings:text-navy prose-a:text-purple prose-a:no-underline hover:prose-a:underline prose-strong:text-navy prose-p:my-3">
-                                {!! $episode->transcript !!}
+                            <div x-data="{ expanded: false }">
+                                <div class="transcript-content" :style="expanded ? 'max-height: none' : ''">
+                                    {!! $episode->transcript !!}
+                                </div>
+                                <div class="relative" x-show="!expanded">
+                                    <div style="position: absolute; bottom: 100%; left: 0; right: 0; height: 80px; background: linear-gradient(to top, white, transparent); pointer-events: none;"></div>
+                                </div>
+                                <button @click="expanded = !expanded" class="mt-4 w-full py-3 text-center text-sm font-semibold rounded-xl border border-navy/10 hover:border-gold hover:bg-gold/5 transition-all" style="color: #d4a843;">
+                                    <span x-text="expanded ? 'Collapse Transcript' : 'Read Full Transcript'" class="inline-flex items-center gap-1.5">Read Full Transcript</span>
+                                    <svg :class="expanded ? 'rotate-180' : ''" class="w-4 h-4 inline-block ml-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </button>
                             </div>
                         @else
                             <p class="text-navy/40 italic">Transcript coming soon. We're working on making all episodes accessible with full text transcripts.</p>
