@@ -55,9 +55,9 @@
 
     <section class="py-16 bg-cream">
         <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            @if($episodes->count())
             <div class="flex flex-col lg:flex-row gap-10">
                 <div class="lg:w-[66%]">
-            @if($episodes->count())
                 {{-- Group by season if available --}}
                 @php
                     $grouped = $episodes->getCollection()->groupBy(fn($ep) => $ep->season_number ?? 0);
@@ -258,11 +258,7 @@
                     </div>
                 </aside>
             </div>{{-- end flex --}}
-        </div>
-    </section>
             @else
-    <section class="py-16 bg-cream">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6">
                 <style>
                     @keyframes waveformPulse {
                         0%, 100% { transform: scaleY(1); }
