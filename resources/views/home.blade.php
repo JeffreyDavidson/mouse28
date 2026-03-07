@@ -293,7 +293,7 @@
 
 {{-- Featured Post --}}
     @if($featuredPost)
-        <section class="py-16 md:py-20 bg-white" data-animate>
+        <section class="py-16 md:py-20 bg-cream" data-animate>
             <div class="max-w-5xl mx-auto px-4 sm:px-6">
                 <div class="text-center mb-10">
                     <span class="text-gold text-sm font-semibold tracking-[0.15em] uppercase font-body">Latest from the Blog</span>
@@ -353,7 +353,7 @@
 
     {{-- Latest Posts / Coming Soon --}}
     @if($latestPosts->count())
-        <section class="py-16 md:py-24 bg-cream">
+        <section class="py-16 md:py-24 bg-white">
             <div class="max-w-6xl mx-auto px-4 sm:px-6">
                 <div class="flex items-end justify-between mb-12" data-animate>
                     <div>
