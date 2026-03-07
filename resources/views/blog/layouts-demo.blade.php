@@ -151,8 +151,8 @@
                     {{-- Corner ribbon styles --}}
                     <style>
                         .ribbon {
-                            width: 150px;
-                            height: 150px;
+                            width: 100px;
+                            height: 100px;
                             overflow: hidden;
                             position: absolute;
                             z-index: 30;
@@ -164,25 +164,24 @@
                             z-index: -1;
                             content: '';
                             display: block;
-                            border: 5px solid #7a5e1e;
+                            border: 4px solid #7a5e1e;
                         }
                         .ribbon span {
                             position: absolute;
                             display: block;
-                            width: 225px;
-                            padding: 8px 0;
+                            width: 150px;
+                            padding: 6px 0;
                             background: linear-gradient(#f5dc6b 0%, #d4a843 50%, #b8922f 100%);
-                            box-shadow: 0 5px 10px rgba(0,0,0,.1);
+                            box-shadow: 0 3px 6px rgba(0,0,0,.12);
                             color: #1a1040;
-                            font: 700 10px/1 'Poppins', sans-serif;
+                            font: 700 8px/1 'Poppins', sans-serif;
                             text-transform: uppercase;
                             text-align: center;
-                            letter-spacing: 0.15em;
-                            text-indent: -15px;
+                            letter-spacing: 0.12em;
                         }
                         .ribbon-top-left {
-                            top: -10px;
-                            left: -10px;
+                            top: -6px;
+                            left: -6px;
                         }
                         .ribbon-top-left::before,
                         .ribbon-top-left::after {
@@ -198,8 +197,8 @@
                             left: 0;
                         }
                         .ribbon-top-left span {
-                            right: -25px;
-                            top: 30px;
+                            right: -18px;
+                            top: 19px;
                             transform: rotate(-45deg);
                         }
                     </style>
