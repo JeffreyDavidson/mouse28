@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class NewsletterSubscribers extends Page
 {
-    protected static string $view = 'filament.pages.newsletter-subscribers';
+    protected string $view = 'filament.pages.newsletter-subscribers';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedEnvelopeOpen;
 
