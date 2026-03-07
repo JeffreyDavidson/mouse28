@@ -167,34 +167,6 @@
 
     {{-- Hero --}}
     <section class="bg-gradient-to-br from-navy to-navy-light py-16 md:py-24 relative overflow-hidden">
-        {{-- Stacked paper/cards decoration --}}
-        <div class="absolute top-8 right-8 opacity-10 pointer-events-none hidden md:block">
-            <svg width="140" height="140" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
-                {{-- Back card (most rotated) --}}
-                <rect x="30" y="10" width="85" height="110" rx="8" stroke="white" stroke-width="1.5" transform="rotate(8 72 65)" fill="white" fill-opacity="0.02"/>
-                {{-- Middle card --}}
-                <rect x="25" y="12" width="85" height="110" rx="8" stroke="white" stroke-width="1.5" transform="rotate(-4 67 67)" fill="white" fill-opacity="0.03"/>
-                {{-- Front card --}}
-                <rect x="20" y="15" width="85" height="110" rx="8" stroke="white" stroke-width="2" fill="white" fill-opacity="0.04"/>
-                {{-- Lines on front card suggesting text --}}
-                <line x1="32" y1="40" x2="78" y2="40" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
-                <line x1="32" y1="52" x2="92" y2="52" stroke="white" stroke-width="1" stroke-linecap="round" opacity="0.25"/>
-                <line x1="32" y1="62" x2="88" y2="62" stroke="white" stroke-width="1" stroke-linecap="round" opacity="0.25"/>
-                <line x1="32" y1="72" x2="72" y2="72" stroke="white" stroke-width="1" stroke-linecap="round" opacity="0.2"/>
-            </svg>
-        </div>
-        {{-- Scattered cards along bottom --}}
-        <div class="absolute bottom-0 left-0 w-full opacity-[0.06] pointer-events-none">
-            <svg class="w-full h-28" viewBox="0 0 1200 112" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
-                {{-- Scattered small card outlines --}}
-                <rect x="80" y="40" width="55" height="70" rx="5" stroke="white" stroke-width="1.5" transform="rotate(-12 107 75)"/>
-                <rect x="250" y="50" width="55" height="70" rx="5" stroke="white" stroke-width="1.5" transform="rotate(6 277 85)"/>
-                <rect x="460" y="35" width="55" height="70" rx="5" stroke="white" stroke-width="1.5" transform="rotate(-8 487 70)"/>
-                <rect x="680" y="45" width="55" height="70" rx="5" stroke="white" stroke-width="1.5" transform="rotate(10 707 80)"/>
-                <rect x="880" y="38" width="55" height="70" rx="5" stroke="white" stroke-width="1.5" transform="rotate(-5 907 73)"/>
-                <rect x="1060" y="50" width="55" height="70" rx="5" stroke="white" stroke-width="1.5" transform="rotate(7 1087 85)"/>
-            </svg>
-        </div>
         <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center relative z-10">
             <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6">
                 <span class="w-2 h-2 bg-gold rounded-full animate-pulse"></span>
