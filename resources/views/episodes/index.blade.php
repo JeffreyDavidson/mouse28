@@ -87,20 +87,22 @@
                         @foreach($seasonEpisodes as $episode)
                             <a href="/episodes/{{ $episode->slug }}" class="group block bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-navy/5 hover:border-purple/20 overflow-hidden">
                                 <div class="flex flex-col sm:flex-row">
-                                    {{-- Episode number with play overlay --}}
-                                    <div class="relative flex-shrink-0 sm:w-28 h-20 sm:h-auto bg-gradient-to-br from-purple to-navy flex items-center justify-center">
-                                        <span class="font-heading text-3xl font-bold text-white/20">{{ $episode->episode_number }}</span>
-                                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-purple/80">
-                                            <svg class="w-10 h-10 text-white drop-shadow-lg" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                    {{-- Episode badge with play button --}}
+                                    <div class="relative flex-shrink-0 sm:w-32 h-24 sm:h-auto bg-gradient-to-br from-purple to-navy flex items-center justify-center">
+                                        {{-- EP badge --}}
+                                        <div class="text-center relative z-10 transition-all duration-300 group-hover:scale-90 group-hover:opacity-0">
+                                            <span class="text-white/40 text-[10px] uppercase font-bold tracking-widest block">EP</span>
+                                            <span class="text-white text-3xl font-heading font-bold block -mt-1">{{ $episode->episode_number }}</span>
                                         </div>
-                                        {{-- Mini waveform decoration --}}
-                                        <div class="absolute bottom-1.5 left-1/2 -translate-x-1/2 flex items-end gap-[2px] h-3 opacity-20 group-hover:opacity-40 transition-opacity">
-                                            <div class="w-[2px] bg-white rounded-full h-1"></div>
-                                            <div class="w-[2px] bg-white rounded-full h-2.5"></div>
-                                            <div class="w-[2px] bg-white rounded-full h-1.5"></div>
-                                            <div class="w-[2px] bg-white rounded-full h-3"></div>
-                                            <div class="w-[2px] bg-white rounded-full h-1.5"></div>
+                                        {{-- Play button (shows on hover) --}}
+                                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                            <div class="w-14 h-14 rounded-full flex items-center justify-center shadow-lg" style="background: linear-gradient(135deg, #d4a843, #f0c75e);">
+                                                <svg class="w-6 h-6 text-navy ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                            </div>
                                         </div>
+                                        {{-- Subtle corner accent --}}
+                                        <div class="absolute top-2 left-2 w-5 h-5 border-t-2 border-l-2 border-white/10 rounded-tl-md"></div>
+                                        <div class="absolute bottom-2 right-2 w-5 h-5 border-b-2 border-r-2 border-white/10 rounded-br-md"></div>
                                     </div>
 
                                     <div class="flex-1 min-w-0 p-6">
