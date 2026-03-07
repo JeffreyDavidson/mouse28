@@ -255,28 +255,25 @@
                 }
             </style>
             <div class="relative mb-8 featured-wrapper">
-                {{-- Ribbon fold shadows (outside card so not clipped) --}}
-                <div class="fold-left"></div>
-                <div class="fold-top"></div>
                 {{-- Floating corner sparkles --}}
                 <span class="sparkle absolute -top-3 -left-3 text-gold/30 text-sm z-10">✦</span>
                 <span class="sparkle-delay absolute -top-2 right-8 text-gold/20 text-xs z-10">✧</span>
                 <span class="sparkle-delay-2 absolute -bottom-3 -right-3 text-gold/30 text-sm z-10">✦</span>
                 <span class="sparkle absolute bottom-4 -left-2 text-gold/15 text-xs z-10">✧</span>
 
-                <a href="#" class="featured-card-border group block overflow-hidden transition-all duration-300 relative">
+                <a href="#" class="featured-card-border group block overflow-visible transition-all duration-300 relative">
                     {{-- Featured ribbon --}}
-                    {{-- Corner ribbon (band only — folds are on outer wrapper) --}}
+                    {{-- Corner ribbon with wrap-around --}}
                     <style>
                         .corner-ribbon {
-                            width: 200px;
+                            width: 230px;
                             background: linear-gradient(to bottom, #f5dc6b, #d4a843 50%, #b8922f);
                             position: absolute;
-                            top: 25px;
-                            left: -50px;
+                            top: 32px;
+                            left: -55px;
                             text-align: center;
-                            line-height: 40px;
-                            height: 40px;
+                            line-height: 38px;
+                            height: 38px;
                             letter-spacing: 0.15em;
                             color: #1a1040;
                             font-size: 11px;
@@ -284,35 +281,35 @@
                             text-transform: uppercase;
                             transform: rotate(-45deg);
                             z-index: 30;
-                            box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+                            box-shadow: 0 3px 8px rgba(0,0,0,0.25);
                         }
-                        /* Fold triangles on the OUTER wrapper so they're not clipped */
-                        .featured-wrapper .fold-left {
+                        /* Fold triangles — these sit UNDER the ribbon at each end */
+                        .corner-ribbon::before {
+                            content: '';
                             position: absolute;
-                            top: 96px;
+                            bottom: -8px;
                             left: 0;
                             width: 0;
                             height: 0;
-                            z-index: 10;
                             border-style: solid;
-                            border-width: 0 10px 10px 0;
-                            border-color: transparent #7a5e1e transparent transparent;
+                            border-width: 8px 10px 0 0;
+                            border-color: #7a5e1e transparent transparent transparent;
                         }
-                        .featured-wrapper .fold-top {
+                        .corner-ribbon::after {
+                            content: '';
                             position: absolute;
-                            top: 0;
-                            left: 96px;
+                            bottom: -8px;
+                            right: 0;
                             width: 0;
                             height: 0;
-                            z-index: 10;
                             border-style: solid;
-                            border-width: 0 0 10px 10px;
-                            border-color: transparent transparent #7a5e1e transparent;
+                            border-width: 0 10px 8px 0;
+                            border-color: transparent #7a5e1e transparent transparent;
                         }
                     </style>
                     <div class="corner-ribbon">✦ Featured ✦</div>
 
-                    <div class="grid md:grid-cols-5 min-h-[280px] relative">
+                    <div class="grid md:grid-cols-5 min-h-[280px] relative overflow-hidden rounded-3xl">
                         {{-- Excerpt side --}}
                         <div class="md:col-span-2 p-8 md:p-10 flex flex-col justify-center relative">
                             <span class="text-[10px] font-bold uppercase tracking-widest mb-4 block text-gold/70">Featured Post</span>
