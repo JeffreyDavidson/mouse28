@@ -187,7 +187,7 @@
             @if($posts->count())
                 @php $featured = $posts->first(); $rest = $posts->skip(1); @endphp
 
-                {{-- Featured Post: Navy gradient + animated border + ribbon --}}
+                {{-- Featured Post: Single-column, navy gradient + animated border + ribbon --}}
                 @if($posts->currentPage() === 1 && !request('q'))
                     @php $fColor = $categoryColors[$featured->category] ?? '#5b3e9e'; @endphp
                     <div class="mb-8 featured-wrapper rounded-3xl" style="overflow: visible;">
@@ -195,39 +195,38 @@
                         <div class="ribbon ribbon-top-left"><span>Featured</span></div>
 
                         <a href="/blog/{{ $featured->slug }}" class="featured-card-border group block transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
-                            <div class="grid md:grid-cols-5 min-h-[280px] relative">
-                                {{-- Excerpt side --}}
-                                <div class="md:col-span-2 p-8 md:p-10 pl-12 md:pl-16 pt-24 pb-8 flex flex-col justify-center relative">
-                                    @if($featured->excerpt)
-                                        <p class="text-white/70 text-sm md:text-base leading-relaxed relative z-10">
-                                            {{ $featured->excerpt }}
-                                        </p>
+                            <div class="p-8 md:p-10 lg:p-12 pt-20 md:pt-16 relative">
+                                {{-- Category + read time --}}
+                                <div class="flex items-center gap-3 mb-5 md:pl-20">
+                                    @if($featured->category)
+                                        <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background: {{ $fColor }}30; color: {{ $fColor }};">{{ $featured->category_label }}</span>
                                     @endif
+                                    <span class="text-white/30 text-xs">{{ $featured->reading_time }} min read</span>
                                 </div>
-                                {{-- Content side --}}
-                                <div class="md:col-span-3 p-8 md:p-10 flex flex-col justify-center">
-                                    <div class="flex items-center gap-3 mb-4">
-                                        @if($featured->category)
-                                            <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background: {{ $fColor }}30; color: {{ $fColor }};">{{ $featured->category_label }}</span>
-                                        @endif
-                                        <span class="text-white/30 text-xs">{{ $featured->reading_time }} min read</span>
-                                    </div>
-                                    <h2 class="font-heading text-2xl md:text-3xl font-bold text-white group-hover:text-gold transition-colors leading-snug">{{ $featured->title }}</h2>
-                                    <div class="flex items-center justify-between mt-6 pt-6 border-t border-white/10">
-                                        <div class="flex items-center gap-4">
-                                            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gold/25 to-purple/15 flex items-center justify-center text-gold text-[10px] font-bold font-heading border border-gold/20">
-                                                {{ collect(explode(' ', $featured->author_name))->reject(fn($w) => in_array($w, ['&', 'and']))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('&') }}
-                                            </div>
-                                            <div>
-                                                <p class="text-white text-sm font-semibold">{{ $featured->author_name }}</p>
-                                                <p class="text-white/40 text-xs">{{ $featured->published_at->format('F j, Y') }}</p>
-                                            </div>
+
+                                {{-- Title --}}
+                                <h2 class="font-heading text-2xl md:text-3xl font-bold text-white group-hover:text-gold transition-colors leading-snug md:pl-20">{{ $featured->title }}</h2>
+
+                                {{-- Excerpt --}}
+                                @if($featured->excerpt)
+                                    <p class="text-white/55 text-sm md:text-base leading-relaxed mt-4 md:pl-20 max-w-2xl">{{ $featured->excerpt }}</p>
+                                @endif
+
+                                {{-- Author + CTA --}}
+                                <div class="flex items-center justify-between mt-8 pt-6 border-t border-white/10 md:ml-20">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gold/25 to-purple/15 flex items-center justify-center text-gold text-[10px] font-bold font-heading border border-gold/20">
+                                            {{ collect(explode(' ', $featured->author_name))->reject(fn($w) => in_array($w, ['&', 'and']))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('&') }}
                                         </div>
-                                        <span class="hidden sm:inline-flex items-center gap-1.5 text-gold text-sm font-semibold group-hover:gap-2.5 transition-all">
-                                            Read Article
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                        </span>
+                                        <div>
+                                            <p class="text-white text-sm font-semibold">{{ $featured->author_name }}</p>
+                                            <p class="text-white/40 text-xs">{{ $featured->published_at->format('F j, Y') }}</p>
+                                        </div>
                                     </div>
+                                    <span class="hidden sm:inline-flex items-center gap-1.5 text-gold text-sm font-semibold group-hover:gap-2.5 transition-all">
+                                        Read Article
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    </span>
                                 </div>
                             </div>
                         </a>
