@@ -225,6 +225,5 @@ class DatabaseSeeder extends Seeder
             Post::firstOrCreate(['slug' => $post['slug']], $post);
         }
 
-        $this->call(CommunityStorySeeder::class);
     }
 }

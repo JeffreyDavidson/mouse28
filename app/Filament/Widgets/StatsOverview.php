@@ -2,7 +2,6 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\CommunityStory;
 use App\Models\Episode;
 use App\Models\Post;
 use Filament\Widgets\StatsOverviewWidget;
@@ -27,9 +26,7 @@ class StatsOverview extends StatsOverviewWidget
                 ->description('Published')
                 ->color('success'),
 
-            Stat::make('Community Stories', CommunityStory::where('is_approved', true)->count())
                 ->icon('heroicon-o-heart')
-                ->description(($pending = CommunityStory::where('is_approved', false)->count()) > 0 ? "{$pending} pending review" : 'None pending')
                 ->color('warning'),
         ];
     }

@@ -2,7 +2,6 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\CommunityStory;
 use App\Models\Episode;
 use App\Models\Post;
 use Filament\Widgets\Widget;
@@ -41,7 +40,6 @@ class RecentActivity extends Widget
             ]);
         });
 
-        CommunityStory::latest('updated_at')->limit(3)->get()->each(function ($story) use ($items) {
             $items->push([
                 'icon' => 'heart',
                 'color' => '#b8922e',
