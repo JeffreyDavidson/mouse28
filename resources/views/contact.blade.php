@@ -33,14 +33,14 @@
         </style>
     @else
         {{-- Full-width dark hero with form embedded --}}
-        <section style="background: linear-gradient(135deg, #1a1040 0%, #2d1b69 50%, #1a1040 100%); position: relative; overflow: hidden;">
+        <section class="bg-gradient-to-br from-navy via-navy-light to-navy relative overflow-hidden">
             {{-- Ambient glows --}}
             <div style="position: absolute; top: -20%; right: -5%; width: 700px; height: 700px; background: radial-gradient(circle, rgba(212, 168, 67, 0.05) 0%, transparent 60%); pointer-events: none;"></div>
             <div style="position: absolute; bottom: -30%; left: -10%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(91, 62, 158, 0.15) 0%, transparent 60%); pointer-events: none;"></div>
 
-            <div class="max-w-5xl mx-auto px-4 sm:px-6" style="padding: 5rem 1rem 6rem;">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 py-16 md:py-24">
                 {{-- Header --}}
-                <div class="text-center" style="margin-bottom: 3.5rem;">
+                <div class="text-center mb-14">
                     <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6">
                         <span class="w-2 h-2 bg-gold rounded-full animate-pulse"></span>
                         <span class="text-gold text-sm font-semibold tracking-widest uppercase">Get in Touch</span>

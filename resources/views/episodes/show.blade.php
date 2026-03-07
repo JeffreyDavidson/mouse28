@@ -132,7 +132,7 @@
             font-size: 0.85rem;
         }
     </style>
-    <section class="bg-gradient-to-br from-navy to-navy-light py-16 md:py-20 relative overflow-hidden">
+    <section class="bg-gradient-to-br from-navy to-navy-light py-16 md:py-24 relative overflow-hidden">
         {{-- Waveform background --}}
         <div class="absolute inset-0 opacity-[0.07] pointer-events-none">
             <svg class="absolute bottom-0 left-0 w-full h-32" viewBox="0 0 1200 120" preserveAspectRatio="none" fill="none" stroke="currentColor" class="text-white">
@@ -148,7 +148,13 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                 All Episodes
             </a>
-            <div class="flex items-center gap-3 mb-4 mt-4">
+
+            <div class="inline-flex items-center gap-2 border border-gold/30 rounded-full px-4 py-1.5 mt-4 mb-5">
+                <span class="w-2 h-2 bg-gold rounded-full animate-pulse"></span>
+                <span class="text-gold text-xs font-semibold tracking-[0.15em] uppercase font-body">Episode {{ $episode->episode_number }}</span>
+            </div>
+
+            <div class="flex items-center gap-3 mb-4">
                 <span class="bg-gold/20 text-gold text-sm font-bold px-4 py-1 rounded-full backdrop-blur-sm">Episode {{ $episode->episode_number }}</span>
                 @if($episode->season_number)
                     <span class="bg-white/10 text-white/70 text-sm px-3 py-1 rounded-full">Season {{ $episode->season_number }}</span>
@@ -161,7 +167,7 @@
                 @endif
                 <span class="text-white/40 text-sm">{{ $episode->published_at->format('F j, Y') }}</span>
             </div>
-            <h1 class="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-white">{{ $episode->title }}</h1>
+            <h1 class="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-white">{{ $episode->title }}</h1>
             @if($episode->description)
                 <p class="text-white/60 text-lg mt-4 leading-relaxed max-w-3xl">{{ $episode->description }}</p>
             @endif

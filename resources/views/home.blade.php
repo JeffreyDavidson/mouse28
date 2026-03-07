@@ -293,7 +293,7 @@
 
 {{-- Featured Post --}}
     @if($featuredPost)
-        <section class="py-16 md:py-20 bg-cream" data-animate>
+        <section class="py-16 md:py-24 bg-cream" data-animate>
             <div class="max-w-5xl mx-auto px-4 sm:px-6">
                 <div class="text-center mb-10">
                     <span class="text-gold text-sm font-semibold tracking-[0.15em] uppercase font-body">Latest from the Blog</span>

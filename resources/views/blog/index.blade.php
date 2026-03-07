@@ -425,7 +425,7 @@
                         </div>
 
                         {{-- Newsletter --}}
-                        <x-newsletter-card />
+                        <x-newsletter-card subtitle="Disney tips, park updates, and new posts" />
                     </div>
                 </aside>
             </div>{{-- end flex --}}
