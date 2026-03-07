@@ -443,6 +443,18 @@ label.fi-fo-field-wrp-label,
     color: #fef9ef !important;
 }
 
+.fi-main select,
+.fi-main select option,
+.fi-main .fi-select-input option {
+    color: #1a1040 !important;
+    background: #fef9ef !important;
+}
+
+/* Placeholder/selected text in select */
+.fi-main .fi-input-wrp select {
+    color: #fef9ef !important;
+}
+
 /* Toggle */
 .fi-main .fi-fo-field-wrp-label + div {
     color: rgba(254, 249, 239, 0.7) !important;
