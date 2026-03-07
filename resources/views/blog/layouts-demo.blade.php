@@ -217,106 +217,53 @@
             <div class="demo-divider"></div>
 
             {{-- ═══════════════════════════════════════════════ --}}
-            {{-- OPTION C: Stacked Spotlight --}}
+            {{-- OPTION C: A+B Hybrid (Full-width featured + grid) --}}
             {{-- ═══════════════════════════════════════════════ --}}
             <div class="text-center mb-2">
                 <span class="option-label">C</span>
             </div>
-            <h2 class="font-heading text-2xl font-bold text-navy text-center">Stacked Spotlight</h2>
-            <p class="option-desc">Every post gets the spotlight treatment. Full-width stacked cards with a gradient header band per category. Bold, generous spacing, great on mobile.</p>
+            <h2 class="font-heading text-2xl font-bold text-navy text-center">Hybrid: Full-Width Featured + Grid</h2>
+            <p class="option-desc">The latest post gets A's full-width editorial treatment with the category accent stripe. Everything else goes into B's text-only grid cards below.</p>
 
-            <div class="space-y-6 max-w-4xl mx-auto">
-                @foreach($demoPosts as $i => $post)
-                    @php
-                        $color = $categoryColors[$post->category] ?? '#5b3e9e';
-                        $grad = $categoryGradients[$post->category] ?? $defaultGrad;
-                    @endphp
-                    <a href="#" class="group block bg-white rounded-2xl overflow-hidden shadow-sm border border-navy/5 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                        {{-- Category gradient header band --}}
-                        <div class="px-6 md:px-8 py-4 flex items-center justify-between" style="background: linear-gradient(135deg, {{ $grad['from'] }}12, {{ $grad['to'] }}06);">
-                            <div class="flex items-center gap-3">
-                                <span class="text-2xl">{{ $grad['icon'] }}</span>
-                                <span class="text-xs font-bold uppercase tracking-wider" style="color: {{ $color }};">{{ $post->category_label }}</span>
+            {{-- Featured: A-style full-width --}}
+            @php $feat = $demoPosts[0]; $fColor = $categoryColors[$feat->category] ?? '#5b3e9e'; @endphp
+            <a href="#" class="group block bg-white rounded-2xl overflow-hidden shadow-sm border border-navy/5 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 mb-8 max-w-4xl mx-auto" style="border-left: 4px solid {{ $fColor }};">
+                <div class="p-6 md:p-8">
+                    <div class="flex flex-wrap items-center gap-3 mb-3">
+                        <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background: {{ $fColor }}15; color: {{ $fColor }};">{{ $feat->category_label }}</span>
+                        <span class="text-navy/25 text-xs">{{ $feat->reading_time }} min read</span>
+                    </div>
+                    <h2 class="font-heading text-2xl md:text-3xl font-bold text-navy group-hover:text-purple transition-colors leading-snug">{{ $feat->title }}</h2>
+                    <p class="text-navy/50 md:text-base leading-relaxed mt-3 line-clamp-3">{{ $feat->excerpt }}</p>
+                    <div class="flex items-center justify-between mt-6 pt-5 border-t border-navy/5">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gold/25 to-purple/15 flex items-center justify-center text-gold text-[10px] font-bold font-heading border border-gold/15">
+                                {{ collect(explode(' ', $feat->author_name))->reject(fn($w) => in_array($w, ['&', 'and']))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('&') }}
                             </div>
-                            <div class="flex items-center gap-3">
-                                <span class="text-navy/25 text-xs">{{ $post->reading_time }} min read</span>
-                                <span class="text-navy/15 hidden sm:inline">·</span>
-                                <span class="text-navy/25 text-xs hidden sm:inline">{{ $post->published_at->format('M j, Y') }}</span>
-                            </div>
-                        </div>
-                        {{-- Content --}}
-                        <div class="px-6 md:px-8 py-6 md:py-7">
-                            <h3 class="font-heading text-xl md:text-2xl font-bold text-navy group-hover:text-purple transition-colors leading-snug">{{ $post->title }}</h3>
-                            <p class="text-navy/45 text-sm md:text-base leading-relaxed mt-3 line-clamp-2">{{ $post->excerpt }}</p>
-                            <div class="flex items-center justify-between mt-5 pt-4 border-t border-navy/5">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-gold/25 to-purple/15 flex items-center justify-center text-gold text-[10px] font-bold font-heading border border-gold/15">
-                                        {{ collect(explode(' ', $post->author_name))->reject(fn($w) => in_array($w, ['&', 'and']))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('&') }}
-                                    </div>
-                                    <span class="text-navy/50 text-sm font-medium">{{ $post->author_name }}</span>
-                                </div>
-                                <span class="inline-flex items-center gap-1.5 text-sm font-semibold group-hover:gap-2.5 transition-all" style="color: {{ $color }};">
-                                    Read
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                </span>
+                            <div>
+                                <p class="text-navy text-sm font-semibold">{{ $feat->author_name }}</p>
+                                <p class="text-navy/30 text-xs">{{ $feat->published_at->format('F j, Y') }}</p>
                             </div>
                         </div>
-                    </a>
-                @endforeach
-            </div>
-
-            <div class="demo-divider"></div>
-
-            {{-- ═══════════════════════════════════════════════ --}}
-            {{-- OPTION D: Alternating Feature --}}
-            {{-- ═══════════════════════════════════════════════ --}}
-            <div class="text-center mb-2">
-                <span class="option-label">D</span>
-            </div>
-            <h2 class="font-heading text-2xl font-bold text-navy text-center">Alternating Feature</h2>
-            <p class="option-desc">Two-column cards that alternate direction. One post per row, big and breathable. Gives every post the "featured" treatment with the excerpt front and center.</p>
-
-            <div class="space-y-6 max-w-5xl mx-auto">
-                @foreach($demoPosts as $i => $post)
-                    @php
-                        $color = $categoryColors[$post->category] ?? '#5b3e9e';
-                        $grad = $categoryGradients[$post->category] ?? $defaultGrad;
-                        $flip = $i % 2 === 1;
-                    @endphp
-                    <a href="#" class="group block bg-white rounded-2xl overflow-hidden shadow-sm border border-navy/5 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-                        <div class="grid md:grid-cols-5 {{ $flip ? 'direction-rtl' : '' }}">
-                            {{-- Accent panel --}}
-                            <div class="md:col-span-2 p-8 md:p-10 flex flex-col justify-center relative {{ $flip ? 'md:order-2' : '' }}" style="background: linear-gradient({{ $flip ? '225deg' : '135deg' }}, {{ $grad['from'] }}10, {{ $grad['to'] }}05);">
-                                {{-- Decorative elements --}}
-                                <div class="absolute {{ $flip ? 'right-6' : 'left-6' }} top-6 text-5xl opacity-30 group-hover:opacity-50 group-hover:scale-110 transition-all duration-500">{{ $grad['icon'] }}</div>
-                                <div class="absolute {{ $flip ? '-left-8' : '-right-8' }} -bottom-8 w-28 h-28 rounded-full opacity-[0.04]" style="background: {{ $grad['from'] }};"></div>
-
-                                <div class="relative z-10 mt-12 md:mt-0">
-                                    <span class="text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full inline-block" style="background: {{ $color }}15; color: {{ $color }};">{{ $post->category_label }}</span>
-                                    <div class="flex items-center gap-4 mt-6">
-                                        <div class="text-center">
-                                            <span class="block text-2xl font-bold font-heading" style="color: {{ $color }};">{{ $post->reading_time }}</span>
-                                            <span class="text-navy/25 text-[10px] uppercase tracking-wider">min read</span>
-                                        </div>
-                                        <div class="w-px h-10" style="background: {{ $color }}20;"></div>
-                                        <div>
-                                            <span class="block text-navy/50 text-xs font-medium">{{ $post->author_name }}</span>
-                                            <span class="block text-navy/25 text-xs">{{ $post->published_at->format('M j, Y') }}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            {{-- Content --}}
-                            <div class="md:col-span-3 p-7 md:p-10 flex flex-col justify-center {{ $flip ? 'md:order-1' : '' }}">
-                                <h3 class="font-heading text-xl md:text-2xl lg:text-[1.7rem] font-bold text-navy group-hover:text-purple transition-colors leading-snug">{{ $post->title }}</h3>
-                                <p class="text-navy/50 leading-relaxed mt-3 line-clamp-3">{{ $post->excerpt }}</p>
-                                <div class="mt-6">
-                                    <span class="inline-flex items-center gap-2 text-sm font-semibold group-hover:gap-3 transition-all" style="color: {{ $color }};">
-                                        Read this post
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                    </span>
-                                </div>
-                            </div>
+                        <span class="inline-flex items-center gap-1.5 text-sm font-semibold group-hover:gap-2.5 transition-all" style="color: {{ $fColor }};">
+                            Read
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </span>
+                    </div>
+                </div>
+            </a>
+            {{-- Grid: B-style cards --}}
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach(array_slice($demoPosts, 1) as $post)
+                    @php $pColor = $categoryColors[$post->category] ?? '#5b3e9e'; @endphp
+                    <a href="#" class="group bg-white rounded-2xl p-6 shadow-sm border border-navy/5 transition-all duration-300 hover:shadow-lg hover:-translate-y-1.5 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 right-0 h-1 transition-transform origin-left duration-300 group-hover:scale-x-100 scale-x-0" style="background: {{ $pColor }};"></div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full inline-block mb-3" style="background: {{ $pColor }}15; color: {{ $pColor }};">{{ $post->category_label }}</span>
+                        <h3 class="font-heading text-lg font-bold text-navy group-hover:text-purple transition-colors leading-snug line-clamp-2">{{ $post->title }}</h3>
+                        <p class="text-navy/45 text-sm leading-relaxed mt-2 line-clamp-2">{{ $post->excerpt }}</p>
+                        <div class="flex items-center justify-between mt-5 pt-4 border-t border-navy/5">
+                            <span class="text-navy/40 text-xs">{{ $post->author_name }}</span>
+                            <span class="text-navy/25 text-xs">{{ $post->reading_time }} min</span>
                         </div>
                     </a>
                 @endforeach
