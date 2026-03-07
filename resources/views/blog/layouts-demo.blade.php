@@ -254,7 +254,10 @@
                     opacity: 0.5;
                 }
             </style>
-            <div class="relative mb-8">
+            <div class="relative mb-8 featured-wrapper">
+                {{-- Ribbon fold shadows (outside card so not clipped) --}}
+                <div class="fold-left"></div>
+                <div class="fold-top"></div>
                 {{-- Floating corner sparkles --}}
                 <span class="sparkle absolute -top-3 -left-3 text-gold/30 text-sm z-10">✦</span>
                 <span class="sparkle-delay absolute -top-2 right-8 text-gold/20 text-xs z-10">✧</span>
@@ -263,7 +266,7 @@
 
                 <a href="#" class="featured-card-border group block overflow-hidden transition-all duration-300 relative">
                     {{-- Featured ribbon --}}
-                    {{-- Corner ribbon --}}
+                    {{-- Corner ribbon (band only — folds are on outer wrapper) --}}
                     <style>
                         .corner-ribbon {
                             width: 200px;
@@ -283,23 +286,28 @@
                             z-index: 30;
                             box-shadow: 0 2px 8px rgba(0,0,0,0.25);
                         }
-                        .corner-ribbon::before,
-                        .corner-ribbon::after {
-                            content: '';
+                        /* Fold triangles on the OUTER wrapper so they're not clipped */
+                        .featured-wrapper .fold-left {
                             position: absolute;
-                            top: 100%;
-                            border-style: solid;
-                            border-color: #8a6d20 transparent transparent transparent;
-                        }
-                        .corner-ribbon::before {
+                            top: 96px;
                             left: 0;
-                            border-width: 6px 0 0 6px;
-                            border-color: #8a6d20 transparent transparent transparent;
+                            width: 0;
+                            height: 0;
+                            z-index: 10;
+                            border-style: solid;
+                            border-width: 0 10px 10px 0;
+                            border-color: transparent #7a5e1e transparent transparent;
                         }
-                        .corner-ribbon::after {
-                            right: 0;
-                            border-width: 6px 6px 0 0;
-                            border-color: #8a6d20 transparent transparent transparent;
+                        .featured-wrapper .fold-top {
+                            position: absolute;
+                            top: 0;
+                            left: 96px;
+                            width: 0;
+                            height: 0;
+                            z-index: 10;
+                            border-style: solid;
+                            border-width: 0 0 10px 10px;
+                            border-color: transparent transparent #7a5e1e transparent;
                         }
                     </style>
                     <div class="corner-ribbon">✦ Featured ✦</div>
