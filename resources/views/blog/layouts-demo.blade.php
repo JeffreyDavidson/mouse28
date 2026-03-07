@@ -238,8 +238,14 @@
                             {{ $feat->excerpt }}
                         </p>
                     </div>
-                    {{-- Vertical divider --}}
-                    <div class="hidden md:block absolute left-[40%] top-6 bottom-6 w-px" style="background: linear-gradient(180deg, transparent, {{ $fColor }}30, transparent);"></div>
+                    {{-- Vertical star divider --}}
+                    <div class="hidden md:flex absolute left-[40%] top-0 bottom-0 flex-col items-center justify-center gap-2">
+                        <span class="text-gold/30 text-xs">✦</span>
+                        <div class="w-px flex-1 max-h-16" style="background: linear-gradient(180deg, transparent, {{ $fColor }}20, transparent);"></div>
+                        <span class="text-gold/50 text-sm">✦</span>
+                        <div class="w-px flex-1 max-h-16" style="background: linear-gradient(180deg, transparent, {{ $fColor }}20, transparent);"></div>
+                        <span class="text-gold/30 text-xs">✦</span>
+                    </div>
                     {{-- Content side --}}
                     <div class="md:col-span-3 p-8 md:p-10 flex flex-col justify-center">
                         <div class="flex items-center gap-3 mb-4">
