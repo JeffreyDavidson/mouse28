@@ -4,27 +4,51 @@ namespace App\Filament\Widgets;
 
 use App\Models\Episode;
 use App\Models\Post;
-use Filament\Widgets\StatsOverviewWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
+use Filament\Widgets\Widget;
 
-class StatsOverview extends StatsOverviewWidget
+class StatsOverview extends Widget
 {
-    protected function getStats(): array
+    protected static ?int $sort = -2;
+
+    protected int|string|array $columnSpan = 'full';
+
+    protected string $view = 'filament.widgets.stats-overview';
+
+    public function getStats(): array
     {
         $publishedPosts = Post::where('is_published', true)->count();
-        $draftPosts = Post::where('is_published', false)->count();
         $publishedEpisodes = Episode::where('is_published', true)->count();
+        $drafts = Post::where('is_published', false)->count() + Episode::where('is_published', false)->count();
 
         return [
-            Stat::make('Blog Posts', $publishedPosts)
-                ->icon('heroicon-o-document-text')
-                ->description($draftPosts > 0 ? "{$draftPosts} drafts" : 'All published')
-                ->color('primary'),
-
-            Stat::make('Episodes', $publishedEpisodes)
-                ->icon('heroicon-o-microphone')
-                ->description('Published')
-                ->color('success'),
+            [
+                'label' => 'Blog Posts',
+                'value' => $publishedPosts,
+                'icon' => 'heroicon-o-document-text',
+                'description' => 'Published',
+                'color' => '#5b3e9e',
+            ],
+            [
+                'label' => 'Episodes',
+                'value' => $publishedEpisodes,
+                'icon' => 'heroicon-o-microphone',
+                'description' => 'Published',
+                'color' => '#d4a843',
+            ],
+            [
+                'label' => 'Drafts',
+                'value' => $drafts,
+                'icon' => 'heroicon-o-pencil-square',
+                'description' => 'Posts & episodes',
+                'color' => '#2d1b69',
+            ],
+            [
+                'label' => 'Subscribers',
+                'value' => 0,
+                'icon' => 'heroicon-o-envelope',
+                'description' => 'Coming soon',
+                'color' => '#1a1040',
+            ],
         ];
     }
 }

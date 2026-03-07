@@ -69,6 +69,7 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Widgets\RecentActivity::class,
                 \App\Filament\Widgets\QuickDraft::class,
                 \App\Filament\Widgets\ContentCalendar::class,
+                \App\Filament\Widgets\InspirationWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
