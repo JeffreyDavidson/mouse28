@@ -5,7 +5,7 @@
 @section('og_title', $post->title)
 @section('og_description', Str::limit($post->excerpt, 200))
 @section('og_type', 'article')
-@if($post->cover_image) @section('og_image', $post->cover_image) @endif
+@if($post->cover_image_url) @section('og_image', $post->cover_image_url) @endif
 
 @section('content')
     <style>
@@ -225,8 +225,8 @@
 
     {{-- Hero Section --}}
     <section class="post-hero">
-        <div class="post-hero-bg {{ $post->cover_image ? 'has-image' : '' }}"
-             @if($post->cover_image) style="background-image: url('{{ $post->cover_image }}')" @endif>
+        <div class="post-hero-bg {{ $post->cover_image_url ? 'has-image' : '' }}"
+             @if($post->cover_image_url) style="background-image: url('{{ $post->cover_image_url }}')" @endif>
         </div>
 
         <div class="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 pb-14 pt-20">
@@ -392,8 +392,8 @@
                                     @php $nGrad = $categoryGradients[$next->category] ?? $defaultGrad; @endphp
                                     <a href="/blog/{{ $next->slug }}" class="group bg-white rounded-2xl overflow-hidden shadow-md shadow-navy/5 hover:shadow-xl transition-all duration-300 border border-navy/5 hover:-translate-y-1">
                                         <div class="overflow-hidden" style="height: 160px;">
-                                            @if($next->cover_image)
-                                                <img src="{{ $next->cover_image }}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                            @if($next->cover_image_url)
+                                                <img src="{{ $next->cover_image_url }}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                                             @else
                                                 <div class="w-full h-full flex items-center justify-center" style="background: linear-gradient(135deg, {{ $nGrad['from'] }}12, {{ $nGrad['to'] }}08);">
                                                     <span class="text-4xl opacity-60 group-hover:scale-110 transition-transform duration-500">{{ $nGrad['icon'] }}</span>
@@ -437,8 +437,8 @@
                                     @foreach($recentPosts as $recent)
                                         @php $rGrad = $categoryGradients[$recent->category] ?? $defaultGrad; @endphp
                                         <a href="/blog/{{ $recent->slug }}" class="group flex gap-4 items-start p-2 -mx-2 rounded-xl hover:bg-cream/50 transition-colors">
-                                            @if($recent->cover_image)
-                                                <img src="{{ $recent->cover_image }}" alt="" class="w-16 h-16 rounded-xl object-cover flex-shrink-0 shadow-sm">
+                                            @if($recent->cover_image_url)
+                                                <img src="{{ $recent->cover_image_url }}" alt="" class="w-16 h-16 rounded-xl object-cover flex-shrink-0 shadow-sm">
                                             @else
                                                 <div class="w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, {{ $rGrad['from'] }}15, {{ $rGrad['to'] }}10);">
                                                     <span class="text-2xl opacity-60">{{ $rGrad['icon'] }}</span>

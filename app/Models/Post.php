@@ -60,6 +60,11 @@ class Post extends Model
         return self::CATEGORIES[$this->category] ?? ucwords(str_replace('-', ' ', $this->category ?? ''));
     }
 
+    public function getCoverImageUrlAttribute(): ?string
+    {
+        return $this->cover_image ? '/storage/' . $this->cover_image : null;
+    }
+
     public function getCategoryColorAttribute(): string
     {
         return match ($this->category) {
