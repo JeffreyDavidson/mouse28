@@ -67,6 +67,8 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Widgets\WelcomeBanner::class,
                 StatsOverview::class,
                 \App\Filament\Widgets\RecentActivity::class,
+                \App\Filament\Widgets\QuickDraft::class,
+                \App\Filament\Widgets\ContentCalendar::class,
             ])
             ->middleware([
                 EncryptCookies::class,
