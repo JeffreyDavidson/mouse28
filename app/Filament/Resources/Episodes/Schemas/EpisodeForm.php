@@ -4,7 +4,7 @@ namespace App\Filament\Resources\Episodes\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -48,8 +48,24 @@ class EpisodeForm
                     ->schema([
                         Textarea::make('description')
                             ->rows(3)
-                            ->maxLength(500),
-                        MarkdownEditor::make('show_notes')
+                            ->maxLength(500)
+                            ->helperText('Short description shown in episode listings.'),
+                        RichEditor::make('show_notes')
+                            ->toolbarButtons([
+                                'bold', 'italic', 'link',
+                                'h2', 'h3',
+                                'bulletList', 'orderedList',
+                                'blockquote',
+                                'undo', 'redo',
+                            ])
+                            ->helperText('Use H2 for main sections (e.g. "What We Cover"), H3 for subsections (e.g. "Timestamps"). Bold speaker names in timestamps.')
+                            ->columnSpanFull(),
+                        RichEditor::make('transcript')
+                            ->toolbarButtons([
+                                'bold', 'italic',
+                                'undo', 'redo',
+                            ])
+                            ->helperText('Format each line as: <strong>Speaker:</strong> dialogue text. Use italic for stage directions like (laughing).')
                             ->columnSpanFull(),
                     ]),
 
