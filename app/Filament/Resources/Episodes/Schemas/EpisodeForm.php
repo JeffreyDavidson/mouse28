@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Episodes\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -19,13 +20,17 @@ class EpisodeForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Episode Details')
-                    ->columns(2)
+                    ->icon('heroicon-o-information-circle')
+                    ->description('Basic episode information')
+                    ->columns(4)
                     ->schema([
                         TextInput::make('title')
                             ->required()
                             ->maxLength(255)
+                            ->columnSpan(2)
                             ->live(onBlur: true)
                             ->afterStateUpdated(function (Get $get, Set $set, ?string $state) {
                                 if (! $get('slug') || $get('slug') === Str::slug($get('title'))) {
@@ -35,16 +40,52 @@ class EpisodeForm
                         TextInput::make('slug')
                             ->required()
                             ->maxLength(255)
+                            ->columnSpan(2)
                             ->unique(ignoreRecord: true),
                         TextInput::make('episode_number')
                             ->numeric()
-                            ->required(),
+                            ->required()
+                            ->columnSpan(1),
                         TextInput::make('season_number')
                             ->numeric()
-                            ->default(1),
+                            ->default(1)
+                            ->columnSpan(1),
+                        TextInput::make('audio_url')
+                            ->url()
+                            ->maxLength(500)
+                            ->columnSpan(2)
+                            ->prefixIcon('heroicon-o-link'),
+                    ]),
+
+                Grid::make(2)
+                    ->schema([
+                        Section::make('Media')
+                            ->icon('heroicon-o-photo')
+                            ->schema([
+                                FileUpload::make('cover_image')
+                                    ->image()
+                                    ->disk('public')
+                                    ->directory('episodes'),
+                                TextInput::make('duration_seconds')
+                                    ->numeric()
+                                    ->suffix('seconds')
+                                    ->prefixIcon('heroicon-o-clock'),
+                            ]),
+
+                        Section::make('Publishing')
+                            ->icon('heroicon-o-rocket-launch')
+                            ->schema([
+                                Toggle::make('is_published')
+                                    ->label('Published')
+                                    ->default(false),
+                                DateTimePicker::make('published_at')
+                                    ->label('Publish Date'),
+                            ]),
                     ]),
 
                 Section::make('Content')
+                    ->icon('heroicon-o-document-text')
+                    ->description('Episode description, show notes, and transcript')
                     ->schema([
                         Textarea::make('description')
                             ->rows(3)
@@ -58,65 +99,44 @@ class EpisodeForm
                                 'blockquote',
                                 'undo', 'redo',
                             ])
-                            ->helperText('Use H2 for main sections (e.g. "What We Cover"), H3 for subsections (e.g. "Timestamps"). Bold speaker names in timestamps.')
-                            ->columnSpanFull(),
+                            ->helperText('Use H2 for main sections (e.g. "What We Cover"), H3 for subsections (e.g. "Timestamps"). Bold speaker names in timestamps.'),
                         RichEditor::make('transcript')
                             ->toolbarButtons([
                                 'bold', 'italic',
                                 'undo', 'redo',
                             ])
-                            ->helperText('Format each line as: <strong>Speaker:</strong> dialogue text. Use italic for stage directions like (laughing).')
-                            ->columnSpanFull(),
+                            ->helperText('Format each line as: <strong>Speaker:</strong> dialogue text. Use italic for stage directions like (laughing).'),
                     ]),
 
-                Section::make('Media')
-                    ->columns(2)
+                Grid::make(2)
                     ->schema([
-                        TextInput::make('audio_url')
-                            ->url()
-                            ->maxLength(500),
-                        FileUpload::make('cover_image')
-                            ->image()
-                            ->disk('public')
-                            ->directory('episodes'),
-                        TextInput::make('duration_seconds')
-                            ->numeric()
-                            ->suffix('seconds'),
-                    ]),
+                        Section::make('Distribution')
+                            ->icon('heroicon-o-signal')
+                            ->description('Where listeners can find this episode')
+                            ->schema([
+                                TextInput::make('apple_url')->url()->label('Apple Podcasts')->prefixIcon('heroicon-o-link'),
+                                TextInput::make('spotify_url')->url()->label('Spotify')->prefixIcon('heroicon-o-link'),
+                                TextInput::make('youtube_url')->url()->label('YouTube')->prefixIcon('heroicon-o-link'),
+                            ]),
 
-                Section::make('Distribution')
-                    ->columns(3)
-                    ->schema([
-                        TextInput::make('apple_url')->url()->label('Apple Podcasts'),
-                        TextInput::make('spotify_url')->url()->label('Spotify'),
-                        TextInput::make('youtube_url')->url()->label('YouTube'),
-                    ]),
-
-                Section::make('Publishing')
-                    ->columns(2)
-                    ->schema([
-                        Toggle::make('is_published')
-                            ->label('Published')
-                            ->default(false),
-                        DateTimePicker::make('published_at')
-                            ->label('Publish Date'),
-                    ]),
-
-                Section::make('SEO')
-                    ->collapsed()
-                    ->schema([
-                        TextInput::make('meta_title')
-                            ->maxLength(70)
-                            ->helperText('Recommended: 50–70 characters for optimal display in search results.'),
-                        Textarea::make('meta_description')
-                            ->maxLength(160)
-                            ->rows(2)
-                            ->helperText('Recommended: 120–160 characters for search result snippets.'),
-                        FileUpload::make('og_image')
-                            ->image()
-                            ->disk('public')
-                            ->directory('episodes/og')
-                            ->helperText('Custom image for social media sharing. Falls back to cover image.'),
+                        Section::make('SEO')
+                            ->icon('heroicon-o-magnifying-glass')
+                            ->description('Search engine optimization')
+                            ->collapsed()
+                            ->schema([
+                                TextInput::make('meta_title')
+                                    ->maxLength(70)
+                                    ->helperText('50–70 characters recommended.'),
+                                Textarea::make('meta_description')
+                                    ->maxLength(160)
+                                    ->rows(2)
+                                    ->helperText('120–160 characters recommended.'),
+                                FileUpload::make('og_image')
+                                    ->image()
+                                    ->disk('public')
+                                    ->directory('episodes/og')
+                                    ->helperText('Custom social sharing image. Falls back to cover.'),
+                            ]),
                     ]),
             ]);
     }
