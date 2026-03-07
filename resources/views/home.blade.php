@@ -176,6 +176,57 @@
     {{-- Gold divider --}}
     <div style="height: 4px; background: linear-gradient(90deg, #d4a843, #b8922e, #d4a843);"></div>
 
+    {{-- What We Cover --}}
+    <section class="py-16 md:py-24 bg-cream">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6">
+            <div class="text-center mb-12" data-animate>
+                <span class="text-gold text-sm font-semibold tracking-[0.15em] uppercase font-body">What We Cover</span>
+                <h2 class="font-heading text-3xl md:text-4xl font-bold text-navy mt-2">Disney, Your Way</h2>
+                <p class="text-navy/50 text-base mt-3 max-w-xl mx-auto font-body leading-relaxed">Real advice from a family that does Disney every week — with a focus on making the parks work for everyone.</p>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6" data-animate>
+                {{-- Pillar 1: Accessibility --}}
+                <div class="group text-center p-6 rounded-2xl border border-navy/5 bg-white hover:border-gold/30 hover:shadow-lg transition-all duration-300">
+                    <div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br from-purple/10 to-gold/10 flex items-center justify-center group-hover:from-purple/20 group-hover:to-gold/20 transition-all">
+                        <svg class="w-7 h-7 text-purple" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
+                    </div>
+                    <h3 class="font-heading text-lg font-bold text-navy mb-2">Accessibility</h3>
+                    <p class="text-navy/50 text-sm font-body leading-relaxed">DAS tips, sensory guides, and honest advice for neurodivergent families navigating the parks.</p>
+                </div>
+
+                {{-- Pillar 2: Park Guides --}}
+                <div class="group text-center p-6 rounded-2xl border border-navy/5 bg-white hover:border-gold/30 hover:shadow-lg transition-all duration-300">
+                    <div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br from-purple/10 to-gold/10 flex items-center justify-center group-hover:from-purple/20 group-hover:to-gold/20 transition-all">
+                        <svg class="w-7 h-7 text-purple" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"/></svg>
+                    </div>
+                    <h3 class="font-heading text-lg font-bold text-navy mb-2">Park Strategy</h3>
+                    <p class="text-navy/50 text-sm font-body leading-relaxed">Ride tips, rope drop plans, and weekly-tested strategies from locals who know every shortcut.</p>
+                </div>
+
+                {{-- Pillar 3: Food & Reviews --}}
+                <div class="group text-center p-6 rounded-2xl border border-navy/5 bg-white hover:border-gold/30 hover:shadow-lg transition-all duration-300">
+                    <div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br from-purple/10 to-gold/10 flex items-center justify-center group-hover:from-purple/20 group-hover:to-gold/20 transition-all">
+                        <svg class="w-7 h-7 text-purple" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
+                    </div>
+                    <h3 class="font-heading text-lg font-bold text-navy mb-2">Food & Reviews</h3>
+                    <p class="text-navy/50 text-sm font-body leading-relaxed">Honest reviews of restaurants, snacks, and resorts — including diabetic-friendly options.</p>
+                </div>
+
+                {{-- Pillar 4: Family Stories --}}
+                <div class="group text-center p-6 rounded-2xl border border-navy/5 bg-white hover:border-gold/30 hover:shadow-lg transition-all duration-300">
+                    <div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br from-purple/10 to-gold/10 flex items-center justify-center group-hover:from-purple/20 group-hover:to-gold/20 transition-all">
+                        <svg class="w-7 h-7 text-purple" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg>
+                    </div>
+                    <h3 class="font-heading text-lg font-bold text-navy mb-2">Family Stories</h3>
+                    <p class="text-navy/50 text-sm font-body leading-relaxed">Real moments from our weekly trips — the magical, the messy, and everything in between.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- Thin gold line divider --}}
+    <div style="height: 1px; background: linear-gradient(90deg, transparent, rgba(212,168,67,0.25), transparent);"></div>
+
 {{-- Featured Post --}}
     @if($featuredPost)
         <section class="py-16 md:py-20 bg-cream" data-animate>
@@ -370,7 +421,43 @@
         </div>
     </section>
 
-    {{-- Wave: White → Cream --}}
+    {{-- Meet the Family --}}
+    <section class="py-16 md:py-24 bg-cream relative overflow-hidden">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6">
+            <div class="flex flex-col md:flex-row items-center gap-10 md:gap-14" data-animate>
+                {{-- Photo --}}
+                <div class="flex-shrink-0 w-full md:w-2/5">
+                    <div class="relative">
+                        <div class="rounded-2xl overflow-hidden shadow-xl" style="border: 3px solid rgba(212,168,67,0.2);">
+                            <img src="/images/hero-family.jpg" alt="Jeffrey and Cassie Davidson at Disney" class="w-full h-auto object-cover" style="aspect-ratio: 4/5;">
+                        </div>
+                        {{-- Decorative corner accent --}}
+                        <div class="hidden md:block absolute -bottom-3 -right-3 w-24 h-24 border-b-2 border-r-2 rounded-br-2xl" style="border-color: rgba(212,168,67,0.25);"></div>
+                    </div>
+                </div>
+
+                {{-- Text --}}
+                <div class="flex-1">
+                    <span class="text-gold text-sm font-semibold tracking-[0.15em] uppercase font-body">The Family Behind Mouse28</span>
+                    <h2 class="font-heading text-3xl md:text-4xl font-bold text-navy mt-2 mb-4">Meet Jeffrey & Cassie</h2>
+                    <div class="space-y-4 text-navy/60 font-body leading-relaxed">
+                        <p>We're a Florida family who visits Disney every single week with our daughter Viola. She's autistic and nonverbal, and she's taught us to experience the parks in ways we never expected.</p>
+                        <p>Mouse28 is where we share what we've learned — the accessibility tips nobody tells you, the sensory-friendly spots, the real moments that make it all worth it. Two voices, no filter, lots of maple popcorn.</p>
+                    </div>
+                    <div class="mt-6 flex flex-wrap items-center gap-4">
+                        <a href="/about" class="inline-flex items-center gap-2 bg-navy hover:bg-navy-light text-white font-semibold px-6 py-3 rounded-full text-sm font-body transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
+                            Our Full Story
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        </a>
+                        <a href="/contact" class="inline-flex items-center gap-1.5 text-purple hover:text-navy font-semibold text-sm font-body transition-colors">
+                            Say hello →
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     {{-- The Story in Numbers --}}
     <section style="background: #fef9ef; position: relative;">
         <div style="height: 1px; background: linear-gradient(90deg, transparent, rgba(212,168,67,0.2), transparent);"></div>
