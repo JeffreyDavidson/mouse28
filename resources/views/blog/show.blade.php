@@ -205,6 +205,24 @@
 
     <div id="reading-progress"></div>
 
+    @php
+        $categoryGradients = [
+            'disney-tips' => ['from' => '#d4a843', 'to' => '#f0c75e', 'icon' => '🏰'],
+            'park-accessibility' => ['from' => '#7b5eb5', 'to' => '#a78bfa', 'icon' => '💜'],
+            'episode-recap' => ['from' => '#059669', 'to' => '#34d399', 'icon' => '🎙️'],
+            'family-life' => ['from' => '#2563eb', 'to' => '#60a5fa', 'icon' => '👨‍👩‍👧'],
+            'autism-awareness' => ['from' => '#db2777', 'to' => '#f472b6', 'icon' => '🧩'],
+            'disney-news' => ['from' => '#ea580c', 'to' => '#fb923c', 'icon' => '📰'],
+            'food-reviews' => ['from' => '#d97706', 'to' => '#fbbf24', 'icon' => '🍽️'],
+            'resort-reviews' => ['from' => '#0d9488', 'to' => '#5eead4', 'icon' => '🏨'],
+            'disney-plus' => ['from' => '#4f46e5', 'to' => '#818cf8', 'icon' => '📺'],
+            'merchandise' => ['from' => '#e11d48', 'to' => '#fb7185', 'icon' => '🛍️'],
+            'general' => ['from' => '#475569', 'to' => '#94a3b8', 'icon' => '✨'],
+        ];
+        $defaultGrad = ['from' => '#5b3e9e', 'to' => '#7c5cbf', 'icon' => '✨'];
+        $showGrad = $categoryGradients[$post->category] ?? $defaultGrad;
+    @endphp
+
     {{-- Hero Section --}}
     <section class="post-hero">
         <div class="post-hero-bg {{ $post->cover_image ? 'has-image' : '' }}"
@@ -371,12 +389,17 @@
                             </div>
                             <div class="grid sm:grid-cols-2 gap-6">
                                 @foreach($recentPosts->take(2) as $next)
+                                    @php $nGrad = $categoryGradients[$next->category] ?? $defaultGrad; @endphp
                                     <a href="/blog/{{ $next->slug }}" class="group bg-white rounded-2xl overflow-hidden shadow-md shadow-navy/5 hover:shadow-xl transition-all duration-300 border border-navy/5 hover:-translate-y-1">
-                                        @if($next->cover_image)
-                                            <div class="overflow-hidden">
-                                                <img src="{{ $next->cover_image }}" alt="" class="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-500">
-                                            </div>
-                                        @endif
+                                        <div class="overflow-hidden" style="height: 160px;">
+                                            @if($next->cover_image)
+                                                <img src="{{ $next->cover_image }}" alt="" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                            @else
+                                                <div class="w-full h-full flex items-center justify-center" style="background: linear-gradient(135deg, {{ $nGrad['from'] }}12, {{ $nGrad['to'] }}08);">
+                                                    <span class="text-4xl opacity-60 group-hover:scale-110 transition-transform duration-500">{{ $nGrad['icon'] }}</span>
+                                                </div>
+                                            @endif
+                                        </div>
                                         <div class="p-6">
                                             @if($next->category)
                                                 <span class="text-[10px] font-bold text-gold uppercase tracking-wider">{{ $next->category_label }}</span>
@@ -412,12 +435,13 @@
                                 </div>
                                 <div class="space-y-4">
                                     @foreach($recentPosts as $recent)
+                                        @php $rGrad = $categoryGradients[$recent->category] ?? $defaultGrad; @endphp
                                         <a href="/blog/{{ $recent->slug }}" class="group flex gap-4 items-start p-2 -mx-2 rounded-xl hover:bg-cream/50 transition-colors">
                                             @if($recent->cover_image)
                                                 <img src="{{ $recent->cover_image }}" alt="" class="w-16 h-16 rounded-xl object-cover flex-shrink-0 shadow-sm">
                                             @else
-                                                <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-purple/8 to-gold/8 flex items-center justify-center flex-shrink-0">
-                                                    <span class="text-gold/50 text-sm">✦</span>
+                                                <div class="w-16 h-16 rounded-xl flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, {{ $rGrad['from'] }}15, {{ $rGrad['to'] }}10);">
+                                                    <span class="text-2xl opacity-60">{{ $rGrad['icon'] }}</span>
                                                 </div>
                                             @endif
                                             <div class="min-w-0 pt-0.5">
