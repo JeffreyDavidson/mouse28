@@ -205,7 +205,7 @@
                     </style>
                     <div class="grid md:grid-cols-5 min-h-[280px] relative">
                         {{-- Excerpt side --}}
-                        <div class="md:col-span-2 p-8 md:p-10 pt-16 md:pt-14 flex flex-col justify-center relative">
+                        <div class="md:col-span-2 p-8 md:p-10 pt-40 md:pt-36 flex flex-col relative">
                             <p class="text-white/70 text-sm md:text-base leading-relaxed relative z-10">
                                 {{ $feat->excerpt }}
                             </p>
