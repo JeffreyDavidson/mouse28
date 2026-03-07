@@ -10,6 +10,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
@@ -21,13 +22,17 @@ class PostForm
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 Section::make('Post Details')
-                    ->columns(2)
+                    ->icon('heroicon-o-information-circle')
+                    ->description('Basic post information')
+                    ->columns(4)
                     ->schema([
                         TextInput::make('title')
                             ->required()
                             ->maxLength(255)
+                            ->columnSpan(2)
                             ->live(onBlur: true)
                             ->afterStateUpdated(function (Get $get, Set $set, ?string $state) {
                                 if (! $get('slug') || $get('slug') === Str::slug($get('title'))) {
@@ -37,68 +42,77 @@ class PostForm
                         TextInput::make('slug')
                             ->required()
                             ->maxLength(255)
+                            ->columnSpan(2)
                             ->unique(ignoreRecord: true),
                         Select::make('category')
                             ->options(\App\Models\Post::CATEGORIES)
-                            ->required(),
+                            ->required()
+                            ->columnSpan(1),
                         Select::make('author')
                             ->options(\App\Models\Post::AUTHORS)
                             ->required()
-                            ->default('both'),
-                    ]),
-
-                Section::make('Content')
-                    ->schema([
-                        Textarea::make('excerpt')
-                            ->rows(3)
-                            ->maxLength(300),
-                        MarkdownEditor::make('body')
-                            ->columnSpanFull(),
-                    ]),
-
-                Section::make('Media')
-                    ->schema([
-                        FileUpload::make('cover_image')
-                            ->image()
-                            ->disk('public')
-                            ->directory('posts'),
-                    ]),
-
-                Section::make('Relations')
-                    ->schema([
+                            ->default('both')
+                            ->columnSpan(1),
                         Select::make('episode_id')
                             ->label('Related Episode')
                             ->relationship('episode', 'title')
                             ->searchable()
                             ->preload()
-                            ->placeholder('None'),
+                            ->placeholder('None')
+                            ->columnSpan(2),
                     ]),
 
-                Section::make('Publishing')
-                    ->columns(2)
+                Section::make('Content')
+                    ->icon('heroicon-o-document-text')
+                    ->description('Post excerpt and body content')
                     ->schema([
-                        Toggle::make('is_published')
-                            ->label('Published')
-                            ->default(false),
-                        DateTimePicker::make('published_at')
-                            ->label('Publish Date'),
+                        Textarea::make('excerpt')
+                            ->rows(3)
+                            ->maxLength(300)
+                            ->helperText('Short summary shown in post listings.'),
+                        MarkdownEditor::make('body'),
+                    ]),
+
+                Grid::make(2)
+                    ->schema([
+                        Section::make('Media')
+                            ->icon('heroicon-o-photo')
+                            ->schema([
+                                FileUpload::make('cover_image')
+                                    ->image()
+                                    ->disk('public')
+                                    ->directory('posts'),
+                            ]),
+
+                        Section::make('Publishing')
+                            ->icon('heroicon-o-rocket-launch')
+                            ->schema([
+                                Toggle::make('is_published')
+                                    ->label('Published')
+                                    ->default(false),
+                                DateTimePicker::make('published_at')
+                                    ->label('Publish Date'),
+                            ]),
                     ]),
 
                 Section::make('SEO')
+                    ->icon('heroicon-o-magnifying-glass')
+                    ->description('Search engine optimization')
                     ->collapsed()
+                    ->columns(2)
                     ->schema([
                         TextInput::make('meta_title')
                             ->maxLength(70)
-                            ->helperText('Recommended: 50–70 characters for optimal display in search results.'),
+                            ->helperText('50–70 characters recommended.'),
                         Textarea::make('meta_description')
                             ->maxLength(160)
                             ->rows(2)
-                            ->helperText('Recommended: 120–160 characters for search result snippets.'),
+                            ->helperText('120–160 characters recommended.'),
                         FileUpload::make('og_image')
                             ->image()
                             ->disk('public')
                             ->directory('posts/og')
-                            ->helperText('Custom image for social media sharing. Falls back to cover image.'),
+                            ->helperText('Custom social sharing image. Falls back to cover.'),
                     ]),
             ]);
     }
