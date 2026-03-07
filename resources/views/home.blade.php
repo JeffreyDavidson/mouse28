@@ -68,6 +68,51 @@
         .js-animate [data-animate].is-visible { opacity: 1; transform: translateY(0); }
         .wave-divider svg { display: block; filter: none; }
 
+        /* Ticket stubs */
+        .ticket {
+            position: relative;
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.4s ease;
+            display: block;
+            text-decoration: none;
+        }
+        .ticket:hover {
+            transform: translateY(-6px) rotate(-1deg);
+            box-shadow: 0 20px 40px rgba(26,16,64,0.15);
+        }
+        .ticket-tear {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: radial-gradient(circle at 10px -5px, transparent 12px, currentColor 12px);
+            background-size: 20px 20px;
+            background-position: -5px bottom;
+        }
+        .ticket-hole {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px dashed currentColor;
+            opacity: 0.3;
+        }
+        .ticket::before {
+            content: '';
+            position: absolute;
+            right: 50px;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: repeating-linear-gradient(to bottom, transparent, transparent 4px, currentColor 4px, currentColor 8px);
+            opacity: 0.15;
+        }
+
         /* Hero split */
         .hero-split {
             display: grid;
@@ -176,50 +221,69 @@
     {{-- Gold divider --}}
     <div style="height: 4px; background: linear-gradient(90deg, #d4a843, #b8922e, #d4a843);"></div>
 
-    {{-- What We Cover --}}
+    {{-- What We Cover — Ticket Stubs --}}
     <section class="py-16 md:py-24 bg-cream">
         <div class="max-w-5xl mx-auto px-4 sm:px-6">
             <div class="text-center mb-12" data-animate>
                 <span class="text-gold text-sm font-semibold tracking-[0.15em] uppercase font-body">What We Cover</span>
-                <h2 class="font-heading text-3xl md:text-4xl font-bold text-navy mt-2">Disney, Your Way</h2>
-                <p class="text-navy/50 text-base mt-3 max-w-xl mx-auto font-body leading-relaxed">Real advice from a family that does Disney every week — with a focus on making the parks work for everyone.</p>
+                <h2 class="font-heading text-3xl md:text-4xl font-bold text-navy mt-2">Your Guide to the Parks</h2>
             </div>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6" data-animate>
-                {{-- Pillar 1: Accessibility --}}
-                <div class="group text-center p-6 rounded-2xl border border-navy/5 bg-white hover:border-gold/30 hover:shadow-lg transition-all duration-300">
-                    <div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br from-purple/10 to-gold/10 flex items-center justify-center group-hover:from-purple/20 group-hover:to-gold/20 transition-all">
-                        <svg class="w-7 h-7 text-purple" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
+            <div class="grid sm:grid-cols-2 gap-5" data-animate>
+                {{-- Ticket: Accessibility --}}
+                <a href="/blog" class="ticket" style="background: linear-gradient(135deg, #e88d9a, #d4627a); color: #fce4e8;">
+                    <div class="p-7 pb-10 pr-16 relative">
+                        <div class="text-[10px] font-bold uppercase tracking-[0.2em] font-body mb-1" style="color: rgba(255,255,255,0.5);">Mouse28 · Admit One</div>
+                        <h3 class="font-heading text-2xl font-bold text-white mb-2">Accessibility</h3>
+                        <p class="font-body text-sm leading-relaxed" style="color: rgba(255,255,255,0.7);">DAS tips, sensory guides, and honest advice for neurodivergent families navigating the parks.</p>
+                        <div class="mt-4 flex items-center gap-2">
+                            <span class="bg-white/20 text-white text-[10px] font-bold px-3 py-1 rounded-full font-body uppercase tracking-wider">Explore →</span>
+                        </div>
                     </div>
-                    <h3 class="font-heading text-lg font-bold text-navy mb-2">Accessibility</h3>
-                    <p class="text-navy/50 text-sm font-body leading-relaxed">DAS tips, sensory guides, and honest advice for neurodivergent families navigating the parks.</p>
-                </div>
+                    <div class="ticket-hole" style="color: #fce4e8;"></div>
+                    <div class="ticket-tear" style="color: #fef9ef;"></div>
+                </a>
 
-                {{-- Pillar 2: Park Guides --}}
-                <div class="group text-center p-6 rounded-2xl border border-navy/5 bg-white hover:border-gold/30 hover:shadow-lg transition-all duration-300">
-                    <div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br from-purple/10 to-gold/10 flex items-center justify-center group-hover:from-purple/20 group-hover:to-gold/20 transition-all">
-                        <svg class="w-7 h-7 text-purple" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"/></svg>
+                {{-- Ticket: Park Strategy --}}
+                <a href="/blog" class="ticket" style="background: linear-gradient(135deg, #7b5eb5, #5b3e9e); color: #ede4f7;">
+                    <div class="p-7 pb-10 pr-16 relative">
+                        <div class="text-[10px] font-bold uppercase tracking-[0.2em] font-body mb-1" style="color: rgba(255,255,255,0.5);">Mouse28 · Admit One</div>
+                        <h3 class="font-heading text-2xl font-bold text-white mb-2">Park Strategy</h3>
+                        <p class="font-body text-sm leading-relaxed" style="color: rgba(255,255,255,0.7);">Ride tips, rope drop plans, and weekly-tested strategies from locals who know every shortcut.</p>
+                        <div class="mt-4 flex items-center gap-2">
+                            <span class="bg-white/20 text-white text-[10px] font-bold px-3 py-1 rounded-full font-body uppercase tracking-wider">Explore →</span>
+                        </div>
                     </div>
-                    <h3 class="font-heading text-lg font-bold text-navy mb-2">Park Strategy</h3>
-                    <p class="text-navy/50 text-sm font-body leading-relaxed">Ride tips, rope drop plans, and weekly-tested strategies from locals who know every shortcut.</p>
-                </div>
+                    <div class="ticket-hole" style="color: #ede4f7;"></div>
+                    <div class="ticket-tear" style="color: #fef9ef;"></div>
+                </a>
 
-                {{-- Pillar 3: Food & Reviews --}}
-                <div class="group text-center p-6 rounded-2xl border border-navy/5 bg-white hover:border-gold/30 hover:shadow-lg transition-all duration-300">
-                    <div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br from-purple/10 to-gold/10 flex items-center justify-center group-hover:from-purple/20 group-hover:to-gold/20 transition-all">
-                        <svg class="w-7 h-7 text-purple" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"/></svg>
+                {{-- Ticket: Food & Reviews --}}
+                <a href="/blog" class="ticket" style="background: linear-gradient(135deg, #f0c75e, #d4a843); color: #fdf3dc;">
+                    <div class="p-7 pb-10 pr-16 relative">
+                        <div class="text-[10px] font-bold uppercase tracking-[0.2em] font-body mb-1" style="color: rgba(26,16,64,0.4);">Mouse28 · Admit One</div>
+                        <h3 class="font-heading text-2xl font-bold text-navy mb-2">Food & Reviews</h3>
+                        <p class="font-body text-sm leading-relaxed" style="color: rgba(26,16,64,0.6);">Honest reviews of restaurants, snacks, and resorts — including diabetic-friendly options.</p>
+                        <div class="mt-4 flex items-center gap-2">
+                            <span class="bg-navy/15 text-navy text-[10px] font-bold px-3 py-1 rounded-full font-body uppercase tracking-wider">Explore →</span>
+                        </div>
                     </div>
-                    <h3 class="font-heading text-lg font-bold text-navy mb-2">Food & Reviews</h3>
-                    <p class="text-navy/50 text-sm font-body leading-relaxed">Honest reviews of restaurants, snacks, and resorts — including diabetic-friendly options.</p>
-                </div>
+                    <div class="ticket-hole" style="color: #fdf3dc;"></div>
+                    <div class="ticket-tear" style="color: #fef9ef;"></div>
+                </a>
 
-                {{-- Pillar 4: Family Stories --}}
-                <div class="group text-center p-6 rounded-2xl border border-navy/5 bg-white hover:border-gold/30 hover:shadow-lg transition-all duration-300">
-                    <div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br from-purple/10 to-gold/10 flex items-center justify-center group-hover:from-purple/20 group-hover:to-gold/20 transition-all">
-                        <svg class="w-7 h-7 text-purple" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/></svg>
+                {{-- Ticket: Family Stories --}}
+                <a href="/blog" class="ticket" style="background: linear-gradient(135deg, #5ba4ad, #4a90a4); color: #ddf0f5;">
+                    <div class="p-7 pb-10 pr-16 relative">
+                        <div class="text-[10px] font-bold uppercase tracking-[0.2em] font-body mb-1" style="color: rgba(255,255,255,0.5);">Mouse28 · Admit One</div>
+                        <h3 class="font-heading text-2xl font-bold text-white mb-2">Family Stories</h3>
+                        <p class="font-body text-sm leading-relaxed" style="color: rgba(255,255,255,0.7);">Real moments from our weekly trips — the magical, the messy, and everything in between.</p>
+                        <div class="mt-4 flex items-center gap-2">
+                            <span class="bg-white/20 text-white text-[10px] font-bold px-3 py-1 rounded-full font-body uppercase tracking-wider">Explore →</span>
+                        </div>
                     </div>
-                    <h3 class="font-heading text-lg font-bold text-navy mb-2">Family Stories</h3>
-                    <p class="text-navy/50 text-sm font-body leading-relaxed">Real moments from our weekly trips — the magical, the messy, and everything in between.</p>
-                </div>
+                    <div class="ticket-hole" style="color: #ddf0f5;"></div>
+                    <div class="ticket-tear" style="color: #fef9ef;"></div>
+                </a>
             </div>
         </div>
     </section>
