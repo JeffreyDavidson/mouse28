@@ -92,7 +92,7 @@
     <section class="bg-gradient-to-br from-navy to-navy-light py-14">
         <div class="max-w-4xl mx-auto px-4 text-center">
             <span class="text-gold text-xs font-semibold tracking-widest uppercase">Stories & Tips</span>
-            <h1 class="font-heading text-3xl md:text-4xl font-bold text-white mt-2">Blog</h1>
+            <h1 class="font-heading text-3xl md:text-4xl font-bold text-white mt-2">Blog <span class="sparkle inline-block text-gold/40 text-lg">✦</span></h1>
             <p class="text-white/40 mt-3">Disney tips, park guides, and stories from our family to yours.</p>
         </div>
     </section>
@@ -230,21 +230,55 @@
                     </div>
                 </a>
             </div>
-            {{-- Grid: B-style cards --}}
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {{-- Category filter bar --}}
+            <div class="flex flex-wrap items-center justify-center gap-2 mb-10" x-data="{ active: 'all' }">
+                <button @click="active = 'all'" :class="active === 'all' ? 'bg-navy text-white' : 'bg-white text-navy/60 hover:text-navy hover:border-navy/20'" class="text-xs font-semibold uppercase tracking-wider px-4 py-2 rounded-full border border-navy/10 transition-all duration-200">
+                    All
+                </button>
+                @foreach($categoryColors as $slug => $color)
+                    @php
+                        $label = str_replace('-', ' ', ucwords($slug, '-'));
+                    @endphp
+                    <button @click="active = '{{ $slug }}'" :class="active === '{{ $slug }}' ? 'text-white' : 'bg-white hover:border-current'" class="text-xs font-semibold uppercase tracking-wider px-4 py-2 rounded-full border border-navy/10 transition-all duration-200" :style="active === '{{ $slug }}' ? 'background: {{ $color }}; border-color: {{ $color }}; color: white;' : 'color: {{ $color }};'">
+                        {{ $label }}
+                    </button>
+                @endforeach
+            </div>
+
+            {{-- Grid cards --}}
+            <div class="grid sm:grid-cols-2 gap-6">
                 @foreach(array_slice($demoPosts, 1) as $post)
                     @php $pColor = $categoryColors[$post->category] ?? '#5b3e9e'; @endphp
-                    <a href="#" class="group bg-white rounded-2xl p-6 shadow-sm border border-navy/5 transition-all duration-300 hover:shadow-lg hover:-translate-y-1.5 relative overflow-hidden">
+                    <a href="#" class="group bg-white rounded-2xl p-7 shadow-sm border border-navy/5 transition-all duration-300 hover:shadow-lg hover:-translate-y-1.5 relative overflow-hidden">
+                        {{-- Top accent bar on hover --}}
                         <div class="absolute top-0 left-0 right-0 h-1 transition-transform origin-left duration-300 group-hover:scale-x-100 scale-x-0" style="background: {{ $pColor }};"></div>
-                        <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full inline-block mb-3" style="background: {{ $pColor }}15; color: {{ $pColor }};">{{ $post->category_label }}</span>
-                        <h3 class="font-heading text-lg font-bold text-navy group-hover:text-purple transition-colors leading-snug line-clamp-2">{{ $post->title }}</h3>
-                        <p class="text-navy/45 text-sm leading-relaxed mt-2 line-clamp-2">{{ $post->excerpt }}</p>
-                        <div class="flex items-center justify-between mt-5 pt-4 border-t border-navy/5">
-                            <span class="text-navy/40 text-xs">{{ $post->author_name }}</span>
-                            <span class="text-navy/25 text-xs">{{ $post->reading_time }} min</span>
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background: {{ $pColor }}15; color: {{ $pColor }};">{{ $post->category_label }}</span>
+                            <span class="text-navy/25 text-xs">{{ $post->reading_time }} min read</span>
+                        </div>
+                        <h3 class="font-heading text-xl font-bold text-navy group-hover:text-purple transition-colors leading-snug line-clamp-2">{{ $post->title }}</h3>
+                        <p class="text-navy/45 text-sm leading-relaxed mt-2 line-clamp-3">{{ $post->excerpt }}</p>
+                        <div class="flex items-center justify-between mt-6 pt-4 border-t border-navy/5">
+                            <div class="flex items-center gap-2">
+                                <span class="text-navy/60 text-xs font-medium">{{ $post->author_name }}</span>
+                                <span class="text-navy/20">·</span>
+                                <span class="text-navy/30 text-xs">{{ $post->published_at->format('M j, Y') }}</span>
+                            </div>
+                            <span class="text-xs font-semibold group-hover:gap-2 transition-all inline-flex items-center gap-1" style="color: {{ $pColor }};">
+                                Read
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            </span>
                         </div>
                     </a>
                 @endforeach
+            </div>
+
+            {{-- Load More --}}
+            <div class="text-center mt-12">
+                <button class="inline-flex items-center gap-2 bg-gradient-to-r from-gold to-gold-light text-navy font-semibold text-sm px-8 py-3 rounded-full transition-all hover:shadow-lg hover:shadow-gold/25 hover:-translate-y-0.5">
+                    Load More Stories
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </button>
             </div>
 
         </div>
