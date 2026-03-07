@@ -23,6 +23,22 @@
             content: "";
             margin-top: 1em;
         }
+        .article-content h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1a1040;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .article-content h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #1a1040;
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+        }
         .article-content > p:first-of-type::first-letter {
             float: left; font-family: 'Playfair Display', serif;
             font-size: 3.5em; line-height: 0.8; font-weight: 700;
