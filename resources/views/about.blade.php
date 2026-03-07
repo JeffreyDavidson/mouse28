@@ -5,7 +5,7 @@
 
 @section('content')
     {{-- Hero with sparkles --}}
-    <section class="bg-gradient-to-br from-navy via-navy-light to-navy relative overflow-hidden py-20 md:py-28">
+    <section class="bg-gradient-to-br from-navy to-navy-light py-16 md:py-24 relative overflow-hidden">
         {{-- Sparkles --}}
         <div class="absolute inset-0 pointer-events-none">
             <div class="sparkle absolute top-12 left-[15%] text-gold/60 text-lg">✦</div>
@@ -16,10 +16,13 @@
             <div class="sparkle-delay-2 absolute top-16 right-[40%] text-gold/40">✦</div>
         </div>
 
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center relative z-10">
-            <span class="inline-block text-gold text-sm font-semibold tracking-widest uppercase mb-4 bg-gold/10 px-4 py-1.5 rounded-full">About Us</span>
-            <h1 class="font-heading text-4xl md:text-6xl font-bold text-white mt-2">Our Story</h1>
-            <p class="text-white/60 mt-5 max-w-xl mx-auto text-lg leading-relaxed">How a family, a little girl, and a whole lot of Disney magic became something worth sharing.</p>
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center relative z-10">
+            <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6">
+                <span class="w-2 h-2 bg-gold rounded-full animate-pulse"></span>
+                <span class="text-gold text-sm font-semibold tracking-widest uppercase">About Us</span>
+            </div>
+            <h1 class="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-white mt-2">Our Story</h1>
+            <p class="text-white/60 mt-4 max-w-xl mx-auto text-lg">How a family, a little girl, and a whole lot of Disney magic became something worth sharing.</p>
         </div>
     </section>
 

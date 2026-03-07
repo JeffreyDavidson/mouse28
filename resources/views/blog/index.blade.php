@@ -166,13 +166,14 @@
     @endphp
 
     {{-- Hero --}}
-    <section class="bg-gradient-to-br from-navy to-navy-light py-14 relative overflow-hidden">
-        <div class="absolute top-[15%] right-[10%] text-gold/20 text-sm" style="animation: sparkle-float 4s ease-in-out infinite;">&#10022;</div>
-        <div class="absolute top-[35%] left-[7%] text-gold/10 text-xs" style="animation: sparkle-float 5s ease-in-out 1.5s infinite;">&#10022;</div>
-        <div class="max-w-4xl mx-auto px-4 text-center relative">
-            <span class="text-gold text-xs font-semibold tracking-widest uppercase">Stories & Tips</span>
-            <h1 class="font-heading text-3xl md:text-4xl font-bold text-white mt-2">Blog <span class="inline-block text-gold/40 text-lg">✦</span></h1>
-            <p class="text-white/40 mt-3">Disney tips, park guides, and stories from our family to yours.</p>
+    <section class="bg-gradient-to-br from-navy to-navy-light py-16 md:py-24 relative overflow-hidden">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center relative z-10">
+            <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6">
+                <span class="w-2 h-2 bg-gold rounded-full animate-pulse"></span>
+                <span class="text-gold text-sm font-semibold tracking-widest uppercase">Stories & Tips</span>
+            </div>
+            <h1 class="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-white mt-2">Blog <span class="inline-block text-gold/40 text-lg">✦</span></h1>
+            <p class="text-white/60 mt-4 max-w-xl mx-auto text-lg">Disney tips, park guides, and stories from our family to yours.</p>
         </div>
     </section>
 
