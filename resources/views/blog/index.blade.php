@@ -165,94 +165,25 @@
         $defaultGrad = ['from' => '#5b3e9e', 'to' => '#7c5cbf', 'icon' => '✨'];
     @endphp
 
-    {{-- Hero + Search + Filters (unified) --}}
-    <section class="relative overflow-hidden" style="background: linear-gradient(180deg, #1a1040 0%, #2d1b69 100%); padding-bottom: 0;">
+    {{-- Hero --}}
+    <section class="bg-gradient-to-br from-navy to-navy-light py-14 relative overflow-hidden">
         <div class="absolute top-[15%] right-[10%] text-gold/20 text-sm" style="animation: sparkle-float 4s ease-in-out infinite;">&#10022;</div>
         <div class="absolute top-[35%] left-[7%] text-gold/10 text-xs" style="animation: sparkle-float 5s ease-in-out 1.5s infinite;">&#10022;</div>
-
-        <div class="max-w-4xl mx-auto px-4 text-center relative pt-14">
+        <div class="max-w-4xl mx-auto px-4 text-center relative">
             <span class="text-gold text-xs font-semibold tracking-widest uppercase">Stories & Tips</span>
             <h1 class="font-heading text-3xl md:text-4xl font-bold text-white mt-2">Blog <span class="inline-block text-gold/40 text-lg">✦</span></h1>
             <p class="text-white/40 mt-3">Disney tips, park guides, and stories from our family to yours.</p>
-
-            @if($hasAnyPosts)
-                {{-- Post stats --}}
-                <div class="flex items-center justify-center gap-6 mt-6">
-                    <div class="text-center">
-                        <span class="block text-2xl font-bold text-white font-heading">{{ $posts->total() }}</span>
-                        <span class="text-white/30 text-xs uppercase tracking-wider">{{ Str::plural('Post', $posts->total()) }}</span>
-                    </div>
-                    <div class="w-px h-8 bg-white/10"></div>
-                    <div class="text-center">
-                        <span class="block text-2xl font-bold text-gold font-heading">{{ count($usedCategories) }}</span>
-                        <span class="text-white/30 text-xs uppercase tracking-wider">{{ Str::plural('Category', count($usedCategories)) }}</span>
-                    </div>
-                </div>
-
-                {{-- Search --}}
-                <form action="/blog" method="GET" class="relative max-w-xl mx-auto mt-8">
-                    @if($category)<input type="hidden" name="category" value="{{ $category }}">@endif
-                    <svg class="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4" style="color: rgba(254,249,239,0.3);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Search posts..."
-                        class="search-glow"
-                        style="width: 100%; padding: 0.85rem 1.25rem 0.85rem 2.75rem; border-radius: 1rem; border: 1px solid rgba(254,249,239,0.1); background: rgba(254,249,239,0.05); color: #fef9ef; font-size: 0.875rem; font-family: 'Poppins', sans-serif; outline: none; transition: all 0.3s;"
-                        onfocus="this.style.borderColor='rgba(212,168,67,0.4)';this.style.background='rgba(254,249,239,0.08)'"
-                        onblur="this.style.borderColor='rgba(254,249,239,0.1)';this.style.background='rgba(254,249,239,0.05)'"
-                    >
-                    @if(request('q'))
-                        <a href="/blog{{ $category ? '?category='.$category : '' }}" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-gold transition-colors" title="Clear search">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </a>
-                    @endif
-                </form>
-
-                {{-- Category filters --}}
-                <div class="flex flex-wrap items-center justify-center gap-2 mt-5" x-data="{ active: '{{ $category ?? 'all' }}' }">
-                    <a href="/blog" @click="active = 'all'" :class="active === 'all' ? 'bg-white/15 text-white border-white/20' : 'bg-white/5 text-white/50 border-white/10 hover:text-white hover:border-white/20'" class="text-xs font-semibold uppercase tracking-wider px-4 py-2 rounded-full border transition-all duration-200">
-                        All
-                    </a>
-                    @foreach(\App\Models\Post::CATEGORIES as $slug => $label)
-                        @continue(!in_array($slug, $usedCategories))
-                        @php $color = $categoryColors[$slug] ?? '#7b5eb5'; @endphp
-                        <a href="/blog?category={{ $slug }}" @click="active = '{{ $slug }}'" :class="active === '{{ $slug }}' ? 'text-white' : 'bg-white/5 hover:border-current'" class="text-xs font-semibold uppercase tracking-wider px-4 py-2 rounded-full border border-white/10 transition-all duration-200" :style="active === '{{ $slug }}' ? 'background: {{ $color }}; border-color: {{ $color }}; color: white;' : 'color: {{ $color }};'">
-                            {{ $label }}
-                        </a>
-                    @endforeach
-                </div>
-
-                {{-- Sort + active search indicator --}}
-                <div class="flex items-center justify-center gap-4 mt-5">
-                    @if(request('q'))
-                        <span class="text-white/30 text-xs">
-                            {{ $posts->total() }} {{ Str::plural('result', $posts->total()) }} for "<span class="text-gold">{{ request('q') }}</span>"
-                        </span>
-                        <span class="text-white/10">|</span>
-                    @endif
-                    <div style="display: inline-flex; border-radius: 0.5rem; overflow: hidden; border: 1px solid rgba(254,249,239,0.1);">
-                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'newest']) }}"
-                           style="padding: 0.4rem 1rem; font-size: 0.75rem; font-weight: 600; font-family: 'Poppins', sans-serif; text-decoration: none; transition: all 0.2s;
-                           {{ ($sort ?? 'newest') === 'newest' ? 'background: rgba(212,168,67,0.15); color: #d4a843;' : 'background: transparent; color: rgba(254,249,239,0.4);' }}">
-                            Newest
-                        </a>
-                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'oldest']) }}"
-                           style="padding: 0.4rem 1rem; font-size: 0.75rem; font-weight: 600; font-family: 'Poppins', sans-serif; text-decoration: none; transition: all 0.2s; border-left: 1px solid rgba(254,249,239,0.1);
-                           {{ ($sort ?? 'newest') === 'oldest' ? 'background: rgba(212,168,67,0.15); color: #d4a843;' : 'background: transparent; color: rgba(254,249,239,0.4);' }}">
-                            Oldest
-                        </a>
-                    </div>
-                </div>
-            @endif
         </div>
-
-        {{-- Smooth transition to cream --}}
-        <div class="mt-10" style="height: 48px; background: linear-gradient(180deg, transparent 0%, #fef9ef 100%);"></div>
     </section>
 
-    {{-- Posts Section --}}
-    <section class="py-16 bg-cream relative">
+    {{-- Posts Section with Sidebar --}}
+    <section class="py-12 bg-cream relative">
         <div class="absolute inset-0 opacity-[0.02]" style="background-image: radial-gradient(#1a1040 1px, transparent 1px); background-size: 24px 24px;"></div>
 
         <div class="max-w-6xl mx-auto px-4 sm:px-6 relative">
+            <div class="flex flex-col lg:flex-row gap-10">
+                {{-- Main Content --}}
+                <div class="lg:w-[66%]">
             @if($posts->count())
                 @php $featured = $posts->first(); $rest = $posts->skip(1); @endphp
 
@@ -305,14 +236,14 @@
                     @php $rest = $posts; @endphp
                 @endif
 
-                {{-- Post Grid (2-column) --}}
+                {{-- Post Grid (single column since sidebar takes space) --}}
                 @if($rest->count())
-                    <div class="grid sm:grid-cols-2 gap-6">
+                    <div class="space-y-6">
                         @foreach($rest as $post)
                             @php $pColor = $categoryColors[$post->category] ?? '#5b3e9e'; @endphp
-                            <a href="/blog/{{ $post->slug }}" class="post-card group bg-white rounded-2xl p-7 shadow-sm border border-navy/5 relative">
+                            <a href="/blog/{{ $post->slug }}" class="post-card group bg-white rounded-2xl p-7 shadow-sm border border-navy/5 relative block">
                                 {{-- Top accent bar on hover --}}
-                                <div class="accent-bar absolute top-0 left-0 right-0 h-1" style="background: {{ $pColor }};"></div>
+                                <div class="accent-bar absolute top-0 left-0 right-0 h-1 rounded-t-2xl" style="background: {{ $pColor }};"></div>
                                 <div class="flex items-center gap-3 mb-3">
                                     @if($post->category)
                                         <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background: {{ $pColor }}15; color: {{ $pColor }};">{{ $post->category_label }}</span>
@@ -355,95 +286,151 @@
                 @endif
             @else
                 {{-- Empty State --}}
-                <div class="relative overflow-hidden rounded-3xl" style="background: linear-gradient(135deg, #1a1040 0%, #2d1b69 50%, #3a2370 100%); padding: 5rem 3rem;">
-                    <div style="position: absolute; top: -30%; right: -5%; width: 600px; height: 600px; background: radial-gradient(circle, rgba(212, 168, 67, 0.06) 0%, transparent 60%); pointer-events: none;"></div>
-                    <div style="position: absolute; bottom: -20%; left: -10%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(91, 62, 158, 0.2) 0%, transparent 60%); pointer-events: none;"></div>
-
-                    <div class="max-w-3xl mx-auto relative z-10">
-                        <div class="grid md:grid-cols-2 gap-12 items-center">
-                            <div class="text-center md:text-left">
-                                <div style="display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid rgba(212, 168, 67, 0.3); border-radius: 9999px; padding: 0.35rem 1rem; margin-bottom: 1.5rem;">
-                                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #d4a843;"></span>
-                                    <span style="font-family: 'Poppins', sans-serif; font-size: 0.7rem; color: #d4a843; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;">
-                                        @if(request('q')) No Results @elseif($category) No Posts Yet @else Coming Soon @endif
-                                    </span>
-                                </div>
-                                <h2 class="font-heading font-bold text-cream" style="font-size: clamp(1.75rem, 3.5vw, 2.5rem); line-height: 1.15; margin-bottom: 1rem;">
-                                    @if(request('q'))
-                                        No posts match "{{ request('q') }}"
-                                    @elseif($category)
-                                        Nothing in {{ \App\Models\Post::CATEGORIES[$category] ?? 'this category' }} yet
-                                    @else
-                                        We're putting pen to paper
-                                    @endif
-                                </h2>
-                                <p style="color: rgba(254, 249, 239, 0.5); font-size: 0.95rem; line-height: 1.8; margin-bottom: 2rem;">
-                                    @if(request('q'))
-                                        Try a different search term or browse all posts instead.
-                                    @elseif($category)
-                                        We haven't published in this category yet, but it's on the list. Check out everything else in the meantime.
-                                    @else
-                                        Park tips, accessibility insights, food reviews, and real family stories from Disney. Our first posts are in the works.
-                                    @endif
-                                </p>
-                                @if(request('q') || $category)
-                                    <a href="/blog" class="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-lg transition-all hover:-translate-y-0.5" style="background: rgba(212, 168, 67, 0.15); color: #d4a843; border: 1px solid rgba(212, 168, 67, 0.25);">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-                                        View all posts
-                                    </a>
-                                @else
-                                    <a href="/contact" class="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-lg transition-all hover:-translate-y-0.5" style="background: rgba(254, 249, 239, 0.08); color: rgba(254, 249, 239, 0.7); border: 1px solid rgba(254, 249, 239, 0.1);">
-                                        Get in touch
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                    </a>
-                                @endif
-                            </div>
-
-                            <div class="hidden md:flex flex-col gap-4">
-                                @for($i = 0; $i < 3; $i++)
-                                <div style="background: rgba(26, 16, 64, {{ 0.6 - $i * 0.15 }}); border: 1px solid rgba(212, 168, 67, {{ 0.12 - $i * 0.03 }}); border-radius: 1rem; padding: 1.5rem; {{ $i === 2 ? 'opacity: 0.6;' : '' }}">
-                                    <div style="display: flex; gap: 1rem;">
-                                        <div style="width: 72px; height: 72px; border-radius: 0.75rem; background: linear-gradient(135deg, rgba(212, 168, 67, {{ 0.2 - $i * 0.05 }}), rgba(91, 62, 158, {{ 0.3 - $i * 0.05 }})); flex-shrink: 0;"></div>
-                                        <div style="flex: 1;">
-                                            <div style="height: 8px; width: {{ 40 - $i * 5 }}%; background: rgba(212, 168, 67, {{ 0.25 - $i * 0.07 }}); border-radius: 99px; margin-bottom: 8px;"></div>
-                                            <div style="height: 11px; width: {{ 95 - $i * 10 }}%; background: rgba(254, 249, 239, {{ 0.15 - $i * 0.04 }}); border-radius: 99px; margin-bottom: 5px;"></div>
-                                            <div style="height: 11px; width: {{ 70 - $i * 10 }}%; background: rgba(254, 249, 239, {{ 0.1 - $i * 0.03 }}); border-radius: 99px;"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                                @endfor
-                            </div>
+                <div class="relative overflow-hidden rounded-3xl" style="background: linear-gradient(135deg, #1a1040 0%, #2d1b69 50%, #3a2370 100%); padding: 4rem 2rem;">
+                    <div class="relative z-10 text-center">
+                        <div style="display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid rgba(212, 168, 67, 0.3); border-radius: 9999px; padding: 0.35rem 1rem; margin-bottom: 1.5rem;">
+                            <span style="width: 6px; height: 6px; border-radius: 50%; background: #d4a843;"></span>
+                            <span style="font-family: 'Poppins', sans-serif; font-size: 0.7rem; color: #d4a843; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;">
+                                @if(request('q')) No Results @elseif($category) No Posts Yet @else Coming Soon @endif
+                            </span>
                         </div>
+                        <h2 class="font-heading text-2xl font-bold text-cream mb-3">
+                            @if(request('q'))
+                                No posts match "{{ request('q') }}"
+                            @elseif($category)
+                                Nothing in {{ \App\Models\Post::CATEGORIES[$category] ?? 'this category' }} yet
+                            @else
+                                We're putting pen to paper
+                            @endif
+                        </h2>
+                        <p style="color: rgba(254, 249, 239, 0.5); font-size: 0.9rem; line-height: 1.8; margin-bottom: 1.5rem;">
+                            @if(request('q'))
+                                Try a different search term or browse all posts.
+                            @elseif($category)
+                                Check out everything else in the meantime.
+                            @else
+                                Park tips, accessibility insights, and real family stories. Our first posts are in the works.
+                            @endif
+                        </p>
+                        @if(request('q') || $category)
+                            <a href="/blog" class="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-lg transition-all hover:-translate-y-0.5" style="background: rgba(212, 168, 67, 0.15); color: #d4a843; border: 1px solid rgba(212, 168, 67, 0.25);">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                                View all posts
+                            </a>
+                        @endif
                     </div>
                 </div>
             @endif
-        </div>
-    </section>
+                </div>{{-- end main content --}}
 
-    {{-- Newsletter CTA --}}
-    @if($posts->count())
-    <section class="relative overflow-hidden" style="background: linear-gradient(135deg, #1a1040 0%, #2d1b69 100%);">
-        <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gold/5 rounded-full blur-3xl"></div>
-        <div class="max-w-2xl mx-auto px-4 sm:px-6 py-16 text-center relative">
-            <span class="text-gold text-xs font-bold uppercase tracking-widest">Stay Updated</span>
-            <h2 class="font-heading text-2xl md:text-3xl font-bold text-white mt-3 mb-3">Never Miss a Post</h2>
-            <p class="text-white/40 mb-8 leading-relaxed">Get Disney tips, park guides, and family stories delivered to your inbox. No spam, just magic.</p>
-            <form action="/newsletter" method="POST" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-                @csrf
-                <input type="email" name="email" placeholder="your@email.com" required
-                    class="flex-1 px-5 py-3 rounded-xl text-sm outline-none transition-all"
-                    style="background: rgba(254,249,239,0.08); border: 1px solid rgba(254,249,239,0.12); color: #fef9ef;"
-                    onfocus="this.style.borderColor='rgba(212,168,67,0.4)'"
-                    onblur="this.style.borderColor='rgba(254,249,239,0.12)'"
-                >
-                <button type="submit" class="px-6 py-3 rounded-xl font-bold text-sm text-navy transition-all hover:-translate-y-0.5 shadow-lg shadow-gold/20"
-                    style="background: linear-gradient(135deg, #d4a843, #f0c75e);">
-                    Subscribe
-                </button>
-            </form>
-            <p class="text-white/20 text-[10px] mt-4">No spam. Unsubscribe anytime.</p>
+                {{-- Sidebar --}}
+                <aside class="lg:w-[34%]">
+                    <div class="lg:sticky lg:top-[90px] space-y-6">
+                        {{-- Search --}}
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-navy/5">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div style="height: 3px; width: 40px; background: linear-gradient(90deg, #d4a843, #f0c75e); border-radius: 2px;"></div>
+                                <h3 class="font-heading text-lg font-bold text-navy">Search</h3>
+                            </div>
+                            <form action="/blog" method="GET" class="relative">
+                                @if($category)<input type="hidden" name="category" value="{{ $category }}">@endif
+                                <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-navy/25" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search posts..."
+                                    class="w-full pl-11 pr-4 py-3 rounded-xl border border-navy/10 text-sm text-navy placeholder:text-navy/25 outline-none transition-all focus:border-gold focus:ring-2 focus:ring-gold/20"
+                                >
+                                @if(request('q'))
+                                    <a href="/blog{{ $category ? '?category='.$category : '' }}" class="absolute right-3 top-1/2 -translate-y-1/2 text-navy/30 hover:text-gold transition-colors" title="Clear search">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                    </a>
+                                @endif
+                            </form>
+                            @if(request('q'))
+                                <p class="text-navy/40 text-xs mt-2">{{ $posts->total() }} {{ Str::plural('result', $posts->total()) }} for "<span class="text-gold font-semibold">{{ request('q') }}</span>"</p>
+                            @endif
+                        </div>
+
+                        {{-- Categories --}}
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-navy/5">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div style="height: 3px; width: 40px; background: linear-gradient(90deg, #d4a843, #f0c75e); border-radius: 2px;"></div>
+                                <h3 class="font-heading text-lg font-bold text-navy">Categories</h3>
+                            </div>
+                            <div class="space-y-1">
+                                <a href="/blog" class="flex items-center justify-between py-2.5 px-3 rounded-xl transition-all group {{ !$category ? 'bg-gold/10' : 'hover:bg-cream' }}">
+                                    <span class="text-sm font-medium {{ !$category ? 'text-gold font-semibold' : 'text-navy/65 group-hover:text-navy' }} transition-colors">All Posts</span>
+                                    <span class="text-xs bg-gold/8 px-3 py-0.5 rounded-full font-bold {{ !$category ? 'text-gold' : 'text-gold/70' }}">{{ $posts->total() }}</span>
+                                </a>
+                                @foreach(\App\Models\Post::CATEGORIES as $slug => $label)
+                                    @continue(!in_array($slug, $usedCategories))
+                                    @php $color = $categoryColors[$slug] ?? '#7b5eb5'; @endphp
+                                    <a href="/blog?category={{ $slug }}" class="flex items-center justify-between py-2.5 px-3 rounded-xl transition-all group {{ $category === $slug ? 'bg-opacity-10' : 'hover:bg-cream' }}" @if($category === $slug) style="background: {{ $color }}12;" @endif>
+                                        <span class="text-sm font-medium transition-colors {{ $category === $slug ? 'font-semibold' : 'text-navy/65 group-hover:text-navy' }}" @if($category === $slug) style="color: {{ $color }};" @endif>{{ $label }}</span>
+                                        <span class="text-xs px-3 py-0.5 rounded-full font-bold" style="background: {{ $color }}12; color: {{ $color }};">{{ $categoryCounts[$slug] ?? 0 }}</span>
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        {{-- Sort --}}
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-navy/5">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div style="height: 3px; width: 40px; background: linear-gradient(90deg, #d4a843, #f0c75e); border-radius: 2px;"></div>
+                                <h3 class="font-heading text-lg font-bold text-navy">Sort By</h3>
+                            </div>
+                            <div class="flex rounded-xl overflow-hidden border border-navy/10">
+                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'newest']) }}"
+                                   class="flex-1 text-center py-2.5 text-xs font-semibold transition-all {{ ($sort ?? 'newest') === 'newest' ? 'bg-gold/15 text-gold' : 'text-navy/40 hover:text-navy/60' }}">
+                                    Newest
+                                </a>
+                                <a href="{{ request()->fullUrlWithQuery(['sort' => 'oldest']) }}"
+                                   class="flex-1 text-center py-2.5 text-xs font-semibold transition-all border-l border-navy/10 {{ ($sort ?? 'newest') === 'oldest' ? 'bg-gold/15 text-gold' : 'text-navy/40 hover:text-navy/60' }}">
+                                    Oldest
+                                </a>
+                            </div>
+                        </div>
+
+                        {{-- Post Stats --}}
+                        @if($hasAnyPosts)
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-navy/5">
+                            <div class="flex items-center justify-around">
+                                <div class="text-center">
+                                    <span class="block text-2xl font-bold text-navy font-heading">{{ $posts->total() }}</span>
+                                    <span class="text-navy/35 text-xs uppercase tracking-wider">{{ Str::plural('Post', $posts->total()) }}</span>
+                                </div>
+                                <div class="w-px h-10 bg-navy/8"></div>
+                                <div class="text-center">
+                                    <span class="block text-2xl font-bold text-gold font-heading">{{ count($usedCategories) }}</span>
+                                    <span class="text-navy/35 text-xs uppercase tracking-wider">{{ Str::plural('Category', count($usedCategories)) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
+                        {{-- Newsletter --}}
+                        <div class="rounded-2xl overflow-hidden shadow-sm border border-gold/15">
+                            <div class="bg-gradient-to-r from-gold/15 via-gold/8 to-purple/8 px-6 pt-5 pb-4 text-center relative">
+                                <div class="absolute top-3 right-4 text-gold/15 text-xs">✦</div>
+                                <div class="w-10 h-10 mx-auto mb-2 rounded-full bg-white/80 flex items-center justify-center shadow-sm">
+                                    <svg class="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
+                                </div>
+                                <h3 class="font-heading text-base font-bold text-navy">Stay in the Loop</h3>
+                                <p class="text-navy/45 text-xs mt-1">Disney tips & new posts</p>
+                            </div>
+                            <div class="bg-white px-6 py-5">
+                                <form action="/newsletter" method="POST" class="space-y-3">
+                                    @csrf
+                                    <input type="email" name="email" placeholder="your@email.com" required
+                                        class="w-full px-4 py-2.5 text-sm rounded-xl border border-navy/10 focus:border-gold focus:ring-2 focus:ring-gold/20 outline-none transition-all placeholder:text-navy/25 text-navy">
+                                    <button type="submit" class="w-full bg-gradient-to-r from-gold to-gold-light text-navy font-bold text-sm py-2.5 rounded-xl transition-all hover:-translate-y-0.5 shadow-md shadow-gold/15">
+                                        Subscribe ✨
+                                    </button>
+                                </form>
+                                <p class="text-navy/25 text-[10px] text-center mt-3">No spam. Unsubscribe anytime.</p>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>{{-- end flex --}}
         </div>
     </section>
-    @endif
 @endsection
