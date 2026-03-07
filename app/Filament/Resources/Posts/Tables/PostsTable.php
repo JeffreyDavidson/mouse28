@@ -5,7 +5,6 @@ namespace App\Filament\Resources\Posts\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -37,9 +36,19 @@ class PostsTable
                     ->label('Episode')
                     ->limit(30)
                     ->placeholder('—'),
-                IconColumn::make('is_published')
-                    ->label('Published')
-                    ->boolean(),
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->getStateUsing(function ($record): string {
+                        if (! $record->is_published) return 'Draft';
+                        if ($record->published_at && $record->published_at->isFuture()) return 'Scheduled';
+                        return 'Published';
+                    })
+                    ->color(fn (string $state): string => match ($state) {
+                        'Published' => 'success',
+                        'Scheduled' => 'warning',
+                        'Draft' => 'gray',
+                    }),
                 TextColumn::make('published_at')
                     ->label('Published Date')
                     ->date()
