@@ -88,7 +88,7 @@
 
                     <article id="article-body" class="bg-white rounded-2xl p-8 md:p-12 shadow-sm border border-navy/5">
                         <div class="prose prose-lg prose-navy max-w-none text-navy/80 leading-relaxed article-content">
-                            {!! $post->body !!}
+                            {!! Str::markdown($post->body ?? '') !!}
                         </div>
                     </article>
 
