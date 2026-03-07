@@ -65,6 +65,11 @@ class Post extends Model
         return $this->cover_image ? '/storage/' . $this->cover_image : null;
     }
 
+    public function getOgImageUrlAttribute(): ?string
+    {
+        return $this->og_image ? '/storage/' . $this->og_image : null;
+    }
+
     public function getCategoryColorAttribute(): string
     {
         return match ($this->category) {

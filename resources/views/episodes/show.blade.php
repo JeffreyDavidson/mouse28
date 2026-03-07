@@ -1,7 +1,10 @@
 @extends('layouts.app')
 
-@section('title', $episode->title . ' — Mouse28')
-@section('meta_description', Str::limit($episode->description, 160))
+@section('title', ($episode->meta_title ?: $episode->title) . ' — Mouse28')
+@section('meta_description', $episode->meta_description ?: Str::limit($episode->description, 160))
+@section('og_title', $episode->meta_title ?: $episode->title)
+@section('og_description', $episode->meta_description ?: Str::limit($episode->description, 200))
+@if($episode->og_image_url) @section('og_image', $episode->og_image_url) @endif
 
 @section('content')
     <style>

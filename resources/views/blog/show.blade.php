@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', $post->title . ' — Mouse28')
-@section('meta_description', Str::limit($post->excerpt, 160))
-@section('og_title', $post->title)
-@section('og_description', Str::limit($post->excerpt, 200))
+@section('title', ($post->meta_title ?: $post->title) . ' — Mouse28')
+@section('meta_description', $post->meta_description ?: Str::limit($post->excerpt, 160))
+@section('og_title', $post->meta_title ?: $post->title)
+@section('og_description', $post->meta_description ?: Str::limit($post->excerpt, 200))
 @section('og_type', 'article')
-@if($post->cover_image_url) @section('og_image', $post->cover_image_url) @endif
+@if($post->og_image_url ?: $post->cover_image_url) @section('og_image', $post->og_image_url ?: $post->cover_image_url) @endif
 
 @section('content')
     <style>
