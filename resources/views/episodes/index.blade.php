@@ -155,33 +155,48 @@
                     <div class="lg:sticky lg:top-[90px] space-y-6">
                         {{-- Podcast Stats --}}
                         <div class="bg-white rounded-2xl p-6 shadow-sm border border-navy/5">
-                            <div class="flex items-center justify-around">
-                                <div class="text-center">
-                                    <span class="block text-2xl font-bold text-navy font-heading">{{ $episodes->total() }}</span>
-                                    <span class="text-navy/35 text-xs uppercase tracking-wider">{{ Str::plural('Episode', $episodes->total()) }}</span>
+                            <div class="flex items-center gap-3 mb-5">
+                                <div style="height: 3px; width: 40px; background: linear-gradient(90deg, #d4a843, #f0c75e); border-radius: 2px;"></div>
+                                <h3 class="font-heading text-lg font-bold text-navy">Show Stats</h3>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-gradient-to-br from-purple/8 to-navy/5 rounded-xl p-4 text-center">
+                                    <span class="block text-3xl font-bold text-navy font-heading">{{ $episodes->total() }}</span>
+                                    <span class="text-navy/45 text-xs font-medium uppercase tracking-wider mt-1 block">{{ Str::plural('Episode', $episodes->total()) }}</span>
                                 </div>
-                                <div class="w-px h-10 bg-navy/8"></div>
-                                <div class="text-center">
-                                    <span class="block text-2xl font-bold text-purple font-heading">{{ $totalHours }}h</span>
-                                    <span class="text-navy/35 text-xs uppercase tracking-wider">Listening</span>
+                                <div class="bg-gradient-to-br from-gold/8 to-gold/3 rounded-xl p-4 text-center">
+                                    <span class="block text-3xl font-bold text-navy font-heading">{{ $totalHours }}<span class="text-lg text-navy/40">h</span></span>
+                                    <span class="text-navy/45 text-xs font-medium uppercase tracking-wider mt-1 block">Listening</span>
                                 </div>
                             </div>
                         </div>
 
                         {{-- Listen On --}}
                         <div class="bg-white rounded-2xl p-6 shadow-sm border border-navy/5">
-                            <div class="flex items-center gap-3 mb-4">
+                            <div class="flex items-center gap-3 mb-5">
                                 <div style="height: 3px; width: 40px; background: linear-gradient(90deg, #d4a843, #f0c75e); border-radius: 2px;"></div>
                                 <h3 class="font-heading text-lg font-bold text-navy">Listen On</h3>
                             </div>
                             <div class="space-y-3">
-                                <a href="#" target="_blank" rel="noopener" class="flex items-center gap-3 w-full bg-navy/5 hover:bg-navy text-navy/60 hover:text-white font-semibold text-sm px-4 py-3 rounded-xl transition-all">
-                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.56 2.93 11.3 4.7 7.72C5.57 5.94 7.36 4.86 9.28 4.84C10.56 4.81 11.78 5.7 12.56 5.7C13.34 5.7 14.85 4.62 16.41 4.8C17.07 4.83 18.96 5.06 20.16 6.87C20.05 6.95 17.58 8.37 17.61 11.34C17.65 14.9 20.68 16.04 20.71 16.06C20.69 16.13 20.18 17.86 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"/></svg>
-                                    Apple Podcasts
+                                <a href="#" target="_blank" rel="noopener" class="flex items-center gap-3 w-full px-4 py-3.5 rounded-xl border border-navy/8 hover:border-navy/20 hover:bg-navy/[0.03] transition-all group">
+                                    <div class="w-9 h-9 bg-gradient-to-br from-[#fc3c44] to-[#d42d56] rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
+                                        <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.56 2.93 11.3 4.7 7.72C5.57 5.94 7.36 4.86 9.28 4.84C10.56 4.81 11.78 5.7 12.56 5.7C13.34 5.7 14.85 4.62 16.41 4.8C17.07 4.83 18.96 5.06 20.16 6.87C20.05 6.95 17.58 8.37 17.61 11.34C17.65 14.9 20.68 16.04 20.71 16.06C20.69 16.13 20.18 17.86 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"/></svg>
+                                    </div>
+                                    <div>
+                                        <span class="text-navy font-semibold text-sm block group-hover:text-purple transition-colors">Apple Podcasts</span>
+                                        <span class="text-navy/35 text-xs">Subscribe free</span>
+                                    </div>
+                                    <svg class="w-4 h-4 text-navy/20 ml-auto group-hover:text-purple/50 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                                 </a>
-                                <a href="#" target="_blank" rel="noopener" class="flex items-center gap-3 w-full bg-navy/5 hover:bg-navy text-navy/60 hover:text-white font-semibold text-sm px-4 py-3 rounded-xl transition-all">
-                                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
-                                    Spotify
+                                <a href="#" target="_blank" rel="noopener" class="flex items-center gap-3 w-full px-4 py-3.5 rounded-xl border border-navy/8 hover:border-navy/20 hover:bg-navy/[0.03] transition-all group">
+                                    <div class="w-9 h-9 bg-gradient-to-br from-[#1DB954] to-[#169c46] rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
+                                        <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
+                                    </div>
+                                    <div>
+                                        <span class="text-navy font-semibold text-sm block group-hover:text-purple transition-colors">Spotify</span>
+                                        <span class="text-navy/35 text-xs">Subscribe free</span>
+                                    </div>
+                                    <svg class="w-4 h-4 text-navy/20 ml-auto group-hover:text-purple/50 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                                 </a>
                             </div>
                         </div>
@@ -189,43 +204,51 @@
                         {{-- Latest Episode --}}
                         @if($latestEpisode)
                         <div class="bg-white rounded-2xl p-6 shadow-sm border border-navy/5">
-                            <div class="flex items-center gap-3 mb-4">
+                            <div class="flex items-center gap-3 mb-5">
                                 <div style="height: 3px; width: 40px; background: linear-gradient(90deg, #d4a843, #f0c75e); border-radius: 2px;"></div>
                                 <h3 class="font-heading text-lg font-bold text-navy">Latest Episode</h3>
                             </div>
-                            <a href="/episodes/{{ $latestEpisode->slug }}" class="group block">
-                                <div class="flex items-center gap-3 mb-3">
-                                    <div class="w-10 h-10 bg-gradient-to-br from-purple to-navy rounded-lg flex items-center justify-center flex-shrink-0">
-                                        <span class="text-white text-xs font-bold">{{ $latestEpisode->episode_number }}</span>
-                                    </div>
-                                    <div class="min-w-0">
-                                        <h4 class="font-heading text-sm font-bold text-navy group-hover:text-purple transition-colors line-clamp-2">{{ $latestEpisode->title }}</h4>
-                                        <div class="flex items-center gap-2 mt-0.5">
-                                            @if($latestEpisode->duration_seconds)
-                                                <span class="text-navy/40 text-xs">{{ $latestEpisode->formatted_duration }}</span>
-                                            @endif
-                                            @if($latestEpisode->season_number)
-                                                <span class="text-navy/20">•</span>
-                                                <span class="text-navy/40 text-xs">S{{ $latestEpisode->season_number }}E{{ $latestEpisode->episode_number }}</span>
-                                            @endif
+                            <a href="/episodes/{{ $latestEpisode->slug }}" class="group block bg-gradient-to-br from-purple/5 to-navy/5 rounded-xl p-4 border border-purple/10 hover:border-purple/25 transition-all">
+                                <div class="flex items-start gap-3">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-purple to-navy rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
+                                        <div class="text-center leading-none">
+                                            <span class="text-white/50 text-[8px] uppercase font-bold block">EP</span>
+                                            <span class="text-white text-lg font-heading font-bold block -mt-0.5">{{ $latestEpisode->episode_number }}</span>
                                         </div>
                                     </div>
+                                    <div class="min-w-0 flex-1">
+                                        <h4 class="font-heading text-sm font-bold text-navy group-hover:text-purple transition-colors line-clamp-2 leading-snug">{{ $latestEpisode->title }}</h4>
+                                        @if($latestEpisode->duration_seconds)
+                                            <div class="flex items-center gap-1.5 mt-2">
+                                                <svg class="w-3 h-3 text-navy/30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                                <span class="text-navy/40 text-xs">{{ $latestEpisode->formatted_duration }}</span>
+                                            </div>
+                                        @endif
+                                    </div>
                                 </div>
-                                <span class="text-purple text-sm font-semibold inline-flex items-center gap-1 group-hover:gap-2 transition-all">
-                                    Listen →
-                                </span>
+                                <div class="flex items-center justify-end mt-3 pt-3 border-t border-purple/10">
+                                    <span class="text-purple text-sm font-semibold inline-flex items-center gap-1.5 group-hover:gap-2.5 transition-all">
+                                        Listen Now
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                    </span>
+                                </div>
                             </a>
                         </div>
                         @endif
 
                         {{-- Blog CTA --}}
-                        <div class="rounded-2xl p-6 text-center" style="background: linear-gradient(135deg, #1a1040, #2d1b69);">
-                            <div class="text-3xl mb-3">📝</div>
-                            <h3 class="font-heading text-lg font-bold text-cream mb-2">Read the Blog</h3>
-                            <p class="text-cream/50 text-sm mb-4">Disney tips, park guides, and family stories</p>
-                            <a href="/blog" class="inline-block bg-gradient-to-r from-gold to-gold-light text-navy font-bold text-sm px-6 py-2.5 rounded-xl transition-all hover:-translate-y-0.5 shadow-md shadow-gold/15">
-                                Visit Blog ✨
-                            </a>
+                        <div class="bg-gradient-to-br from-navy via-navy-light to-navy rounded-2xl p-7 text-center relative overflow-hidden border border-white/5">
+                            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-gold/5 rounded-full blur-3xl"></div>
+                            <div class="relative">
+                                <div class="w-12 h-12 mx-auto mb-4 rounded-xl bg-white/10 flex items-center justify-center border border-white/10">
+                                    <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+                                </div>
+                                <h3 class="font-heading text-lg font-bold text-white mb-2">Read the Blog</h3>
+                                <p class="text-white/40 text-sm mb-5 leading-relaxed">Disney tips, park guides, and family stories</p>
+                                <a href="/blog" class="inline-block bg-gradient-to-r from-gold to-gold-light text-navy font-bold text-sm px-7 py-3 rounded-full transition-all hover:-translate-y-0.5 shadow-lg shadow-gold/20">
+                                    Visit Blog
+                                </a>
+                            </div>
                         </div>
 
                         {{-- Newsletter --}}
@@ -236,7 +259,7 @@
                                     <svg class="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
                                 </div>
                                 <h3 class="font-heading text-base font-bold text-navy">Stay in the Loop</h3>
-                                <p class="text-navy/45 text-xs mt-1">Disney tips & new episodes</p>
+                                <p class="text-navy/45 text-xs mt-1">New episodes & Disney tips</p>
                             </div>
                             <div class="bg-white px-6 py-5">
                                 <form action="/newsletter" method="POST" class="space-y-3">
@@ -244,7 +267,7 @@
                                     <input type="email" name="email" placeholder="your@email.com" required
                                         class="w-full px-4 py-2.5 text-sm rounded-xl border border-navy/10 focus:border-gold focus:ring-2 focus:ring-gold/20 outline-none transition-all placeholder:text-navy/25 text-navy">
                                     <button type="submit" class="w-full bg-gradient-to-r from-gold to-gold-light text-navy font-bold text-sm py-2.5 rounded-xl transition-all hover:-translate-y-0.5 shadow-md shadow-gold/15">
-                                        Subscribe ✨
+                                        Subscribe
                                     </button>
                                 </form>
                                 <p class="text-navy/25 text-[10px] text-center mt-3">No spam. Unsubscribe anytime.</p>
