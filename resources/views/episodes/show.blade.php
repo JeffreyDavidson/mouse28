@@ -96,14 +96,20 @@
                     @endif
 
                     {{-- Transcript --}}
-                    <div class="bg-white rounded-2xl p-8 shadow-sm border border-navy/5 mb-8">
-                        <div class="flex items-center gap-3 mb-3">
+                    <div class="bg-white rounded-2xl p-8 md:p-10 shadow-sm border border-navy/5 mb-8">
+                        <div class="flex items-center gap-3 mb-6">
                             <div class="w-10 h-10 bg-gold/10 rounded-xl flex items-center justify-center">
                                 <svg class="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/></svg>
                             </div>
                             <h2 class="font-heading text-2xl font-bold text-navy">Transcript</h2>
                         </div>
-                        <p class="text-navy/40 italic">Transcript coming soon. We're working on making all episodes accessible with full text transcripts.</p>
+                        @if($episode->transcript)
+                            <div class="prose prose-lg prose-navy max-w-none text-navy/80 leading-relaxed prose-headings:font-heading prose-headings:text-navy prose-a:text-purple prose-a:no-underline hover:prose-a:underline prose-strong:text-navy prose-p:my-3">
+                                {!! $episode->transcript !!}
+                            </div>
+                        @else
+                            <p class="text-navy/40 italic">Transcript coming soon. We're working on making all episodes accessible with full text transcripts.</p>
+                        @endif
                     </div>
                 </div>
 
