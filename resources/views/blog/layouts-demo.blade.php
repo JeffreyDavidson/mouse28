@@ -227,7 +227,9 @@
 
             {{-- Featured: B-style two-column with excerpt --}}
             @php $feat = $demoPosts[0]; $fColor = $categoryColors[$feat->category] ?? '#5b3e9e'; @endphp
-            <a href="#" class="group block bg-white rounded-3xl overflow-hidden shadow-lg shadow-navy/5 border border-navy/5 mb-8 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+            <a href="#" class="group block bg-white rounded-3xl overflow-hidden shadow-lg shadow-navy/5 border border-navy/5 mb-8 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 relative">
+                {{-- Top accent bar on hover --}}
+                <div class="absolute top-0 left-0 right-0 h-1 rounded-t-3xl transition-transform origin-left duration-300 group-hover:scale-x-100 scale-x-0" style="background: {{ $fColor }};"></div>
                 <div class="grid md:grid-cols-5">
                     {{-- Excerpt side --}}
                     <div class="md:col-span-2 p-8 md:p-10 flex items-center relative" style="background: linear-gradient(135deg, {{ $fColor }}08, {{ $fColor }}03);">
