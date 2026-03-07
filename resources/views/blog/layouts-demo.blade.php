@@ -252,10 +252,6 @@
                     animation: borderRotate 6s linear infinite;
                     z-index: -1;
                     opacity: 0.5;
-                    transition: opacity 0.3s;
-                }
-                .featured-card-border:hover::before {
-                    opacity: 0.85;
                 }
             </style>
             <div class="relative mb-8">
@@ -265,17 +261,17 @@
                 <span class="sparkle-delay-2 absolute -bottom-3 -right-3 text-gold/30 text-sm z-10">✦</span>
                 <span class="sparkle absolute bottom-4 -left-2 text-gold/15 text-xs z-10">✧</span>
 
-                <a href="#" class="featured-card-border group block overflow-hidden transition-all duration-300 hover:-translate-y-1 relative">
+                <a href="#" class="featured-card-border group block overflow-hidden transition-all duration-300 relative">
                     {{-- Featured ribbon --}}
-                    {{-- Wrap-around ribbon --}}
+                    {{-- 3D Wrap-around ribbon --}}
                     <div class="absolute top-0 left-0 z-20 pointer-events-none">
-                        {{-- Ribbon fold (dark shadow triangle behind) --}}
-                        <div class="absolute top-[46px] left-0 w-0 h-0" style="border-top: 6px solid #a07c2e; border-left: 6px solid transparent;"></div>
-                        <div class="absolute top-0 left-[46px] w-0 h-0" style="border-left: 6px solid #a07c2e; border-top: 6px solid transparent;"></div>
-                        {{-- Main ribbon --}}
-                        <div class="overflow-hidden w-32 h-32">
-                            <div class="absolute top-[16px] left-[-24px] w-[150px] text-center text-[9px] font-bold uppercase tracking-[0.2em] text-navy py-2 rotate-[-45deg]" style="background: linear-gradient(135deg, #f0d060, #d4a843, #c4963a); box-shadow: 0 2px 4px rgba(0,0,0,0.3);">
-                                ✦ Featured
+                        {{-- Shadow folds that tuck behind the card --}}
+                        <div class="absolute top-[52px] left-[1px]" style="width: 0; height: 0; border-style: solid; border-width: 8px 8px 0 0; border-color: #7a5e1e transparent transparent transparent;"></div>
+                        <div class="absolute top-[1px] left-[52px]" style="width: 0; height: 0; border-style: solid; border-width: 0 8px 8px 0; border-color: transparent #7a5e1e transparent transparent;"></div>
+                        {{-- Main ribbon face --}}
+                        <div class="overflow-hidden w-36 h-36">
+                            <div class="absolute top-[18px] left-[-30px] w-[170px] text-center text-[10px] font-bold uppercase tracking-[0.18em] text-navy rotate-[-45deg]" style="padding: 8px 0; background: linear-gradient(180deg, #f5dc6b 0%, #d4a843 45%, #b8922f 100%); box-shadow: 0 3px 6px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.15);">
+                                ✦ Featured ✦
                             </div>
                         </div>
                     </div>
