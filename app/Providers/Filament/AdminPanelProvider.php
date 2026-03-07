@@ -8,6 +8,7 @@ use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages\Dashboard;
+use Filament\Navigation\NavigationGroup;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -51,6 +52,11 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook('panels::head.end', fn () => new HtmlString(
                 '<link rel="stylesheet" href="' . asset('css/filament-custom.css') . '?v=' . filemtime(public_path('css/filament-custom.css')) . '">'
             ))
+            ->navigationGroups([
+                NavigationGroup::make('Content')->icon('heroicon-o-document-text'),
+                NavigationGroup::make('Communication')->icon('heroicon-o-envelope'),
+                NavigationGroup::make('Settings')->icon('heroicon-o-cog-6-tooth'),
+            ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
