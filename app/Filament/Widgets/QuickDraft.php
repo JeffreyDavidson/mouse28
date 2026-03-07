@@ -12,10 +12,14 @@ use Filament\Schemas\Components\EmbeddedSchema;
 use Filament\Schemas\Components\Form;
 use Filament\Schemas\Schema;
 use Filament\Widgets\Widget;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
 use Illuminate\Support\Str;
 
-class QuickDraft extends Widget
+class QuickDraft extends Widget implements HasForms
 {
+    use InteractsWithForms;
+
     protected static ?int $sort = 4;
 
     protected int|string|array $columnSpan = 'full';
