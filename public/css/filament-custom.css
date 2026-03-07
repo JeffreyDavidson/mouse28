@@ -409,7 +409,18 @@
 .fi-main .fi-fo-field-wrp-label label,
 .fi-main .fi-field-wrp-label label,
 .fi-main label,
-.fi-main [class*="field-wrp"] label {
+.fi-main [class*="field-wrp"] label,
+.fi-body .fi-fo-field-wrp-label label,
+.fi-body label:not(.fi-sidebar label):not(.fi-topbar label),
+label.fi-fo-field-wrp-label,
+.fi-section label,
+.fi-section-content label {
+    color: #d4a843 !important;
+}
+
+/* Nuclear: override any Filament label color in forms */
+[class*="fi-fo"] label,
+[class*="fi-section"] label {
     color: #d4a843 !important;
 }
 
