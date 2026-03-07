@@ -138,14 +138,8 @@
                 }
             </style>
             <div class="mb-8 featured-wrapper rounded-3xl">
-                {{-- Corner ribbon — on outer wrapper so it extends past card --}}
+                {{-- Corner ribbon --}}
                 <div class="ribbon ribbon-top-left"><span>Featured</span></div>
-
-                {{-- Floating corner sparkles --}}
-                <span class="sparkle absolute -top-3 -left-3 text-gold/30 text-sm z-10">✦</span>
-                <span class="sparkle-delay absolute -top-2 right-8 text-gold/20 text-xs z-10">✧</span>
-                <span class="sparkle-delay-2 absolute -bottom-3 -right-3 text-gold/30 text-sm z-10">✦</span>
-                <span class="sparkle absolute bottom-4 -left-2 text-gold/15 text-xs z-10">✧</span>
 
                 <a href="#" class="featured-card-border group block transition-all duration-300">
                     {{-- Corner ribbon styles --}}
