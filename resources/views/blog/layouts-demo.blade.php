@@ -264,15 +264,13 @@
                 <a href="#" class="featured-card-border group block overflow-hidden transition-all duration-300 relative">
                     {{-- Featured ribbon --}}
                     {{-- 3D Wrap-around ribbon --}}
-                    <div class="absolute top-0 left-0 z-20 pointer-events-none">
-                        {{-- Shadow folds that tuck behind the card --}}
-                        <div class="absolute top-[52px] left-[1px]" style="width: 0; height: 0; border-style: solid; border-width: 8px 8px 0 0; border-color: #7a5e1e transparent transparent transparent;"></div>
-                        <div class="absolute top-[1px] left-[52px]" style="width: 0; height: 0; border-style: solid; border-width: 0 8px 8px 0; border-color: transparent #7a5e1e transparent transparent;"></div>
-                        {{-- Main ribbon face --}}
-                        <div class="overflow-hidden w-36 h-36">
-                            <div class="absolute top-[18px] left-[-30px] w-[170px] text-center text-[10px] font-bold uppercase tracking-[0.18em] text-navy rotate-[-45deg]" style="padding: 8px 0; background: linear-gradient(180deg, #f5dc6b 0%, #d4a843 45%, #b8922f 100%); box-shadow: 0 3px 6px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.15);">
-                                ✦ Featured ✦
-                            </div>
+                    {{-- Fold triangles sit BEHIND the card (z-10, card is z-20) --}}
+                    <div class="absolute top-[48px] left-[-6px] z-[-1] pointer-events-none" style="width: 0; height: 0; border-style: solid; border-width: 0 6px 10px 0; border-color: transparent #6b4f18 transparent transparent;"></div>
+                    <div class="absolute top-[-6px] left-[48px] z-[-1] pointer-events-none" style="width: 0; height: 0; border-style: solid; border-width: 0 0 10px 6px; border-color: transparent transparent #6b4f18 transparent;"></div>
+                    {{-- Main ribbon face --}}
+                    <div class="absolute top-0 left-0 z-20 pointer-events-none overflow-hidden w-36 h-36">
+                        <div class="absolute top-[20px] left-[-28px] w-[170px] flex items-center justify-center text-[10px] font-bold uppercase tracking-[0.18em] text-navy rotate-[-45deg]" style="height: 28px; line-height: 28px; background: linear-gradient(180deg, #f5dc6b 0%, #d4a843 45%, #b8922f 100%); box-shadow: 0 3px 6px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.15);">
+                            ✦ Featured ✦
                         </div>
                     </div>
 
