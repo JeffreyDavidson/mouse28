@@ -137,18 +137,16 @@
                                 <span class="text-navy/40 text-xs font-semibold uppercase tracking-wider">Written by</span>
                                 <h3 class="font-heading text-xl font-bold text-navy mt-0.5">{{ $post->author_name }}</h3>
                                 <p class="text-navy/60 text-sm leading-relaxed mt-1">
-                                    @if(Str::contains($post->author_name, 'Cassie'))
+                                    @if(Str::contains($post->author_name, '&') || (Str::contains($post->author_name, 'Jeffrey') && Str::contains($post->author_name, 'Cassie')))
+                                        The couple behind Mouse28. Over a decade as Disney passholders, navigating park life with their daughter Viola and sharing every tip, review, and memory along the way.
+                                    @elseif(Str::contains($post->author_name, 'Cassie'))
                                         Co-host of Mouse28. Disney magic-maker, accessibility champion, and the planner behind every park day.
                                     @elseif(Str::contains($post->author_name, 'Jeffrey'))
                                         Co-host of Mouse28. Theme park nerd, tech enthusiast, and the voice keeping it real about Disney life.
                                     @else
-                                        Co-host of Mouse28. Disney park explorer, accessibility advocate, and parent.
+                                        Disney park explorer, accessibility advocate, and parent.
                                     @endif
                                 </p>
-                                <a href="/blog?author={{ Str::slug($post->author_name) }}" class="inline-flex items-center gap-1 mt-3 text-purple hover:text-navy font-semibold text-sm transition-colors">
-                                    More from {{ explode(' ', $post->author_name)[0] }}
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                                </a>
                             </div>
                         </div>
                     </div>
