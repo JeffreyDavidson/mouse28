@@ -98,7 +98,7 @@
     </section>
 
     {{-- Quote Banner --}}
-    <section class="relative overflow-hidden py-20 md:py-28" style="background: linear-gradient(135deg, #1a1040 0%, #2d1a5e 50%, #1a1040 100%);">
+    <section class="bg-gradient-to-br from-navy to-navy-light relative overflow-hidden py-16 md:py-24">
         <!-- Subtle dot pattern -->
         <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 40px 40px;"></div>
 
@@ -131,7 +131,7 @@
     </section>
 
     {{-- Your Hosts --}}
-    <section class="py-20 md:py-28 bg-cream relative overflow-hidden">
+    <section class="py-16 md:py-24 bg-cream relative overflow-hidden">
         {{-- Subtle background pattern --}}
         <div class="absolute inset-0 opacity-[0.02]" style="background-image: radial-gradient(circle at 1px 1px, #1a1040 1px, transparent 0); background-size: 32px 32px;"></div>
 
@@ -219,7 +219,7 @@
     </section>
 
     {{-- Sign-off --}}
-    <section class="bg-gradient-to-br from-navy via-navy-light to-navy relative overflow-hidden py-16 md:py-20">
+    <section class="bg-gradient-to-br from-navy to-navy-light relative overflow-hidden py-16 md:py-20">
         <div class="max-w-2xl mx-auto px-4 sm:px-6 text-center relative z-10">
             <p class="font-heading text-2xl md:text-3xl text-white/90 italic leading-relaxed mb-3">Thanks for getting to know us.</p>
             <p class="font-heading text-2xl md:text-3xl text-gold italic leading-relaxed mb-10">Now let's get to the good stuff.</p>
