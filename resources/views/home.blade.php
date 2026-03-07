@@ -408,7 +408,7 @@
     @endif
 
     {{-- Podcast Section --}}
-    <section class="py-16 md:py-24 bg-white relative">
+    <section class="py-16 md:py-24 bg-cream relative">
         <div class="max-w-4xl mx-auto px-4 sm:px-6">
             <div class="flex items-end justify-between mb-12" data-animate>
                 <div>
@@ -486,7 +486,7 @@
     </section>
 
     {{-- Meet the Family --}}
-    <section class="py-16 md:py-24 bg-cream relative overflow-hidden">
+    <section class="py-16 md:py-24 bg-white relative overflow-hidden">
         <div class="max-w-5xl mx-auto px-4 sm:px-6">
             <div class="flex flex-col md:flex-row items-center gap-10 md:gap-14" data-animate>
                 {{-- Photo --}}
@@ -523,7 +523,7 @@
     </section>
 
     {{-- The Story in Numbers --}}
-    <section style="background: #ffffff; position: relative;">
+    <section style="background: #fef9ef; position: relative;">
         <div style="height: 1px; background: linear-gradient(90deg, transparent, rgba(212,168,67,0.2), transparent);"></div>
         <div class="max-w-5xl mx-auto px-4 sm:px-6" style="padding: 4.5rem 1rem;">
             <div class="text-center" style="margin-bottom: 2.5rem;">
