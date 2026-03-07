@@ -40,14 +40,14 @@ class StatsOverview extends Widget
                 'value' => $drafts,
                 'icon' => 'heroicon-o-pencil-square',
                 'description' => 'Posts & episodes',
-                'color' => '#2d1b69',
+                'color' => '#e8a838',
             ],
             [
                 'label' => 'Subscribers',
                 'value' => 0,
-                'icon' => 'heroicon-o-envelope',
+                'icon' => 'heroicon-o-users',
                 'description' => 'Coming soon',
-                'color' => '#1a1040',
+                'color' => '#7b5eb5',
             ],
         ];
     }
