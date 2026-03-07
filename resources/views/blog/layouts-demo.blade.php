@@ -239,7 +239,7 @@
                 }
                 .featured-card-border {
                     position: relative;
-                    background: white;
+                    background: #eae6f0;
                     border-radius: 1.5rem;
                 }
                 .featured-card-border::before {
@@ -266,15 +266,15 @@
 
                 <a href="#" class="featured-card-border group block overflow-hidden transition-all duration-300 hover:-translate-y-1 relative">
                     {{-- Featured ribbon --}}
-                    <div class="absolute top-0 left-0 z-20 overflow-hidden w-24 h-24 pointer-events-none">
-                        <div class="absolute top-[10px] left-[-28px] w-[130px] text-center text-[9px] font-bold uppercase tracking-widest text-white py-1.5 rotate-[-45deg]" style="background: linear-gradient(135deg, #d4a843, #c4963a);">
+                    <div class="absolute top-0 left-0 z-20 overflow-hidden w-28 h-28 pointer-events-none">
+                        <div class="absolute top-[14px] left-[-20px] w-[140px] text-center text-[9px] font-bold uppercase tracking-widest text-white py-1.5 rotate-[-45deg]" style="background: linear-gradient(135deg, #d4a843, #c4963a);">
                             Featured
                         </div>
                     </div>
 
                     <div class="grid md:grid-cols-5 min-h-[280px] relative">
-                        {{-- Excerpt side with category accent strip --}}
-                        <div class="md:col-span-2 p-8 md:p-10 flex flex-col justify-center relative" style="border-left: 4px solid {{ $fColor }};">
+                        {{-- Excerpt side --}}
+                        <div class="md:col-span-2 p-8 md:p-10 flex flex-col justify-center relative">
                             <span class="text-[10px] font-bold uppercase tracking-widest mb-4 block" style="color: {{ $fColor }};">Featured Post</span>
                             <p class="text-navy/70 text-sm md:text-base leading-relaxed relative z-10">
                                 {{ $feat->excerpt }}
