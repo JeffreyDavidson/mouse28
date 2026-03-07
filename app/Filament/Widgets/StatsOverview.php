@@ -5,6 +5,8 @@ namespace App\Filament\Widgets;
 use App\Models\Episode;
 use App\Models\Post;
 use Filament\Widgets\Widget;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 
 class StatsOverview extends Widget
 {
@@ -13,6 +15,24 @@ class StatsOverview extends Widget
     protected int|string|array $columnSpan = 'full';
 
     protected string $view = 'filament.widgets.stats-overview';
+
+    protected function getSubscriberCount(): int
+    {
+        try {
+            return Cache::remember('newsletter_subscriber_count', 300, function () {
+                $response = Http::withToken(config('services.resend.key'))
+                    ->get('https://api.resend.com/audiences/05c28c48-d37a-4429-9fdf-6ee261c023f4/contacts');
+
+                if ($response->successful()) {
+                    return count($response->json('data', []));
+                }
+
+                return 0;
+            });
+        } catch (\Exception $e) {
+            return 0;
+        }
+    }
 
     public function getStats(): array
     {
@@ -44,9 +64,9 @@ class StatsOverview extends Widget
             ],
             [
                 'label' => 'Subscribers',
-                'value' => 0,
+                'value' => $this->getSubscriberCount(),
                 'icon' => 'heroicon-o-users',
-                'description' => 'Coming soon',
+                'description' => 'Newsletter',
                 'color' => '#7b5eb5',
             ],
         ];
