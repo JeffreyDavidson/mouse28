@@ -139,7 +139,7 @@
             </style>
             <div class="mb-8 featured-wrapper rounded-3xl">
                 {{-- Corner ribbon — on outer wrapper so it extends past card --}}
-                <div class="ribbon ribbon-top-left"><span>✦ Featured ✦</span></div>
+                <div class="ribbon ribbon-top-left"><span>Featured</span></div>
 
                 {{-- Floating corner sparkles --}}
                 <span class="sparkle absolute -top-3 -left-3 text-gold/30 text-sm z-10">✦</span>
@@ -150,10 +150,10 @@
                 <a href="#" class="featured-card-border group block transition-all duration-300">
                     {{-- Corner ribbon styles --}}
                     <style>
-                        /* Ribbon: exact nxworld pattern scaled to 66% */
+                        /* Ribbon: exact nxworld CodePen — only colors changed */
                         .ribbon {
-                            width: 100px;
-                            height: 100px;
+                            width: 150px;
+                            height: 150px;
                             overflow: hidden;
                             position: absolute;
                             z-index: 30;
@@ -165,24 +165,24 @@
                             z-index: -1;
                             content: '';
                             display: block;
-                            border: 3px solid #7a5e1e;
+                            border: 5px solid #7a5e1e;
                         }
                         .ribbon span {
                             position: absolute;
                             display: block;
-                            width: 150px;
-                            padding: 10px 0;
-                            background: linear-gradient(#f5dc6b 0%, #d4a843 50%, #b8922f 100%);
-                            box-shadow: 0 3px 6px rgba(0,0,0,.1);
+                            width: 225px;
+                            padding: 15px 0;
+                            background-color: #d4a843;
+                            box-shadow: 0 5px 10px rgba(0,0,0,.1);
                             color: #1a1040;
-                            font: 700 9px/1 'Poppins', sans-serif;
+                            font: 700 18px/1 'Poppins', sans-serif;
+                            text-shadow: 0 1px 1px rgba(0,0,0,.2);
                             text-transform: uppercase;
                             text-align: center;
-                            letter-spacing: 0.12em;
                         }
                         .ribbon-top-left {
-                            top: -7px;
-                            left: -7px;
+                            top: -10px;
+                            left: -10px;
                         }
                         .ribbon-top-left::before,
                         .ribbon-top-left::after {
@@ -198,8 +198,8 @@
                             left: 0;
                         }
                         .ribbon-top-left span {
-                            right: -17px;
-                            top: 20px;
+                            right: -25px;
+                            top: 30px;
                             transform: rotate(-45deg);
                         }
                     </style>
