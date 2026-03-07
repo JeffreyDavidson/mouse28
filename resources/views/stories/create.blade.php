@@ -3,10 +3,13 @@
 @section('title', 'Share Your Story — Mouse28')
 
 @section('content')
-    <section class="bg-gradient-to-br from-navy to-navy-light py-16 md:py-20">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-            <span class="text-gold text-sm font-semibold tracking-widest uppercase">Community</span>
-            <h1 class="font-heading text-4xl md:text-5xl font-bold text-white mt-2">Share Your Story</h1>
+    <section class="bg-gradient-to-br from-navy to-navy-light py-16 md:py-24 relative overflow-hidden">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center relative z-10">
+            <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6">
+                <span class="w-2 h-2 bg-gold rounded-full animate-pulse"></span>
+                <span class="text-gold text-sm font-semibold tracking-widest uppercase">Community</span>
+            </div>
+            <h1 class="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-white mt-2">Share Your Story</h1>
             <p class="text-white/60 mt-4 max-w-xl mx-auto text-lg">Every family's Disney experience is unique. We'd love to hear yours, especially if it can help another family feel less alone.</p>
         </div>
     </section>
