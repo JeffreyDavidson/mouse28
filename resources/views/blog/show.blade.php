@@ -61,7 +61,7 @@
                 <div class="flex items-center gap-4 mt-5">
                     <div class="flex items-center gap-3">
                         <div class="w-9 h-9 rounded-full bg-gold/20 flex items-center justify-center text-gold text-xs font-bold">
-                            {{ collect(explode(' ', $post->author_name))->map(fn($w) => strtoupper(substr($w, 0, 1)))->join('') }}
+                            {{ collect(explode(' ', $post->author_name))->reject(fn($w) => in_array($w, ['&', 'and']))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('&') }}
                         </div>
                         <span class="text-white/60 text-sm font-medium">{{ $post->author_name }}</span>
                     </div>
@@ -107,7 +107,7 @@
                     <div class="mt-8 bg-white rounded-2xl p-8 shadow-sm border border-navy/5">
                         <div class="flex items-start gap-5">
                             <div class="w-16 h-16 rounded-full bg-gradient-to-br from-gold/30 to-purple/20 flex items-center justify-center text-gold text-lg font-bold font-heading flex-shrink-0">
-                                {{ collect(explode(' ', $post->author_name))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('') }}
+                                {{ collect(explode(' ', $post->author_name))->reject(fn($w) => in_array($w, ['&', 'and']))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('&') }}
                             </div>
                             <div>
                                 <span class="text-navy/40 text-xs font-semibold uppercase tracking-wider">Written by</span>
