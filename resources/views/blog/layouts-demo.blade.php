@@ -264,27 +264,57 @@
                 <a href="#" class="featured-card-border group block overflow-hidden transition-all duration-300 relative">
                     {{-- Featured ribbon --}}
                     {{-- 3D Wrap-around ribbon --}}
-                    <div class="absolute -top-[6px] -left-[6px] z-20 pointer-events-none" style="width: 150px; height: 150px;">
-                        {{-- Back folds (darker triangles peeking out) --}}
-                        <svg style="position:absolute;top:0;left:0;width:150px;height:150px;" viewBox="0 0 150 150">
-                            {{-- Left fold --}}
-                            <polygon points="0,80 0,90 6,84" fill="#6b4f18"/>
-                            {{-- Top fold --}}
-                            <polygon points="80,0 90,0 84,6" fill="#6b4f18"/>
-                            {{-- Ribbon band --}}
-                            <polygon points="0,50 0,70 70,0 50,0" fill="url(#ribbonGrad)"/>
-                            <defs>
-                                <linearGradient id="ribbonGrad" x1="0" y1="0" x2="1" y2="1">
-                                    <stop offset="0%" stop-color="#f5dc6b"/>
-                                    <stop offset="50%" stop-color="#d4a843"/>
-                                    <stop offset="100%" stop-color="#b8922f"/>
-                                </linearGradient>
-                            </defs>
-                        </svg>
-                        {{-- Ribbon text --}}
-                        <div style="position:absolute; top:28px; left:-12px; width:130px; text-align:center; transform:rotate(-45deg); transform-origin:center center; font-size:9px; font-weight:700; letter-spacing:0.15em; text-transform:uppercase; color:#1a1040;">
-                            ✦ Featured ✦
-                        </div>
+                    <style>
+                        .ribbon-wrap {
+                            position: absolute;
+                            top: -8px;
+                            left: -8px;
+                            z-index: 30;
+                            pointer-events: none;
+                        }
+                        .ribbon-wrap .ribbon {
+                            position: relative;
+                            display: block;
+                            width: 180px;
+                            height: 32px;
+                            line-height: 32px;
+                            text-align: center;
+                            transform: rotate(-45deg) translateX(-50px) translateY(-10px);
+                            background: linear-gradient(180deg, #f5dc6b 0%, #d4a843 40%, #b8922f 100%);
+                            color: #1a1040;
+                            font-size: 10px;
+                            font-weight: 700;
+                            letter-spacing: 0.18em;
+                            text-transform: uppercase;
+                            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+                        }
+                        /* Left fold - tucks behind card bottom edge */
+                        .ribbon-wrap .ribbon::before {
+                            content: '';
+                            position: absolute;
+                            bottom: -8px;
+                            left: 0;
+                            width: 0;
+                            height: 0;
+                            border-style: solid;
+                            border-width: 8px 8px 0 0;
+                            border-color: #7a5e1e transparent transparent transparent;
+                        }
+                        /* Right fold - tucks behind card top edge */
+                        .ribbon-wrap .ribbon::after {
+                            content: '';
+                            position: absolute;
+                            top: -8px;
+                            right: 0;
+                            width: 0;
+                            height: 0;
+                            border-style: solid;
+                            border-width: 0 0 8px 8px;
+                            border-color: transparent transparent #7a5e1e transparent;
+                        }
+                    </style>
+                    <div class="ribbon-wrap">
+                        <span class="ribbon">✦ Featured ✦</span>
                     </div>
 
                     <div class="grid md:grid-cols-5 min-h-[280px] relative">
