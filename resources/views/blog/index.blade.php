@@ -165,16 +165,18 @@
         $defaultGrad = ['from' => '#5b3e9e', 'to' => '#7c5cbf', 'icon' => '✨'];
     @endphp
 
-    {{-- Hero --}}
-    <section class="bg-gradient-to-br from-navy to-navy-light py-14 relative overflow-hidden">
+    {{-- Hero + Search + Filters (unified) --}}
+    <section class="relative overflow-hidden" style="background: linear-gradient(180deg, #1a1040 0%, #2d1b69 100%); padding-bottom: 0;">
         <div class="absolute top-[15%] right-[10%] text-gold/20 text-sm" style="animation: sparkle-float 4s ease-in-out infinite;">&#10022;</div>
         <div class="absolute top-[35%] left-[7%] text-gold/10 text-xs" style="animation: sparkle-float 5s ease-in-out 1.5s infinite;">&#10022;</div>
-        <div class="max-w-4xl mx-auto px-4 text-center relative">
+
+        <div class="max-w-4xl mx-auto px-4 text-center relative pt-14">
             <span class="text-gold text-xs font-semibold tracking-widest uppercase">Stories & Tips</span>
             <h1 class="font-heading text-3xl md:text-4xl font-bold text-white mt-2">Blog <span class="inline-block text-gold/40 text-lg">✦</span></h1>
             <p class="text-white/40 mt-3">Disney tips, park guides, and stories from our family to yours.</p>
 
             @if($hasAnyPosts)
+                {{-- Post stats --}}
                 <div class="flex items-center justify-center gap-6 mt-6">
                     <div class="text-center">
                         <span class="block text-2xl font-bold text-white font-heading">{{ $posts->total() }}</span>
@@ -186,70 +188,65 @@
                         <span class="text-white/30 text-xs uppercase tracking-wider">{{ Str::plural('Category', count($usedCategories)) }}</span>
                     </div>
                 </div>
+
+                {{-- Search --}}
+                <form action="/blog" method="GET" class="relative max-w-xl mx-auto mt-8">
+                    @if($category)<input type="hidden" name="category" value="{{ $category }}">@endif
+                    <svg class="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4" style="color: rgba(254,249,239,0.3);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Search posts..."
+                        class="search-glow"
+                        style="width: 100%; padding: 0.85rem 1.25rem 0.85rem 2.75rem; border-radius: 1rem; border: 1px solid rgba(254,249,239,0.1); background: rgba(254,249,239,0.05); color: #fef9ef; font-size: 0.875rem; font-family: 'Poppins', sans-serif; outline: none; transition: all 0.3s;"
+                        onfocus="this.style.borderColor='rgba(212,168,67,0.4)';this.style.background='rgba(254,249,239,0.08)'"
+                        onblur="this.style.borderColor='rgba(254,249,239,0.1)';this.style.background='rgba(254,249,239,0.05)'"
+                    >
+                    @if(request('q'))
+                        <a href="/blog{{ $category ? '?category='.$category : '' }}" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-gold transition-colors" title="Clear search">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </a>
+                    @endif
+                </form>
+
+                {{-- Category filters --}}
+                <div class="flex flex-wrap items-center justify-center gap-2 mt-5" x-data="{ active: '{{ $category ?? 'all' }}' }">
+                    <a href="/blog" @click="active = 'all'" :class="active === 'all' ? 'bg-white/15 text-white border-white/20' : 'bg-white/5 text-white/50 border-white/10 hover:text-white hover:border-white/20'" class="text-xs font-semibold uppercase tracking-wider px-4 py-2 rounded-full border transition-all duration-200">
+                        All
+                    </a>
+                    @foreach(\App\Models\Post::CATEGORIES as $slug => $label)
+                        @continue(!in_array($slug, $usedCategories))
+                        @php $color = $categoryColors[$slug] ?? '#7b5eb5'; @endphp
+                        <a href="/blog?category={{ $slug }}" @click="active = '{{ $slug }}'" :class="active === '{{ $slug }}' ? 'text-white' : 'bg-white/5 hover:border-current'" class="text-xs font-semibold uppercase tracking-wider px-4 py-2 rounded-full border border-white/10 transition-all duration-200" :style="active === '{{ $slug }}' ? 'background: {{ $color }}; border-color: {{ $color }}; color: white;' : 'color: {{ $color }};'">
+                            {{ $label }}
+                        </a>
+                    @endforeach
+                </div>
+
+                {{-- Sort + active search indicator --}}
+                <div class="flex items-center justify-center gap-4 mt-5">
+                    @if(request('q'))
+                        <span class="text-white/30 text-xs">
+                            {{ $posts->total() }} {{ Str::plural('result', $posts->total()) }} for "<span class="text-gold">{{ request('q') }}</span>"
+                        </span>
+                        <span class="text-white/10">|</span>
+                    @endif
+                    <div style="display: inline-flex; border-radius: 0.5rem; overflow: hidden; border: 1px solid rgba(254,249,239,0.1);">
+                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'newest']) }}"
+                           style="padding: 0.4rem 1rem; font-size: 0.75rem; font-weight: 600; font-family: 'Poppins', sans-serif; text-decoration: none; transition: all 0.2s;
+                           {{ ($sort ?? 'newest') === 'newest' ? 'background: rgba(212,168,67,0.15); color: #d4a843;' : 'background: transparent; color: rgba(254,249,239,0.4);' }}">
+                            Newest
+                        </a>
+                        <a href="{{ request()->fullUrlWithQuery(['sort' => 'oldest']) }}"
+                           style="padding: 0.4rem 1rem; font-size: 0.75rem; font-weight: 600; font-family: 'Poppins', sans-serif; text-decoration: none; transition: all 0.2s; border-left: 1px solid rgba(254,249,239,0.1);
+                           {{ ($sort ?? 'newest') === 'oldest' ? 'background: rgba(212,168,67,0.15); color: #d4a843;' : 'background: transparent; color: rgba(254,249,239,0.4);' }}">
+                            Oldest
+                        </a>
+                    </div>
+                </div>
             @endif
         </div>
+
+        {{-- Smooth transition to cream --}}
+        <div class="mt-10" style="height: 48px; background: linear-gradient(180deg, transparent 0%, #fef9ef 100%);"></div>
     </section>
-
-    {{-- Search + Filters Bar --}}
-    @if($hasAnyPosts)
-    <section style="background: linear-gradient(180deg, #1a1040 0%, #2d1b69 100%); position: relative;">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-2 pb-7">
-            {{-- Search --}}
-            <form action="/blog" method="GET" class="relative max-w-xl mx-auto mb-6">
-                @if($category)<input type="hidden" name="category" value="{{ $category }}">@endif
-                <svg class="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4" style="color: rgba(254,249,239,0.3);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search posts..."
-                    class="search-glow"
-                    style="width: 100%; padding: 0.85rem 1.25rem 0.85rem 2.75rem; border-radius: 1rem; border: 1px solid rgba(254,249,239,0.1); background: rgba(254,249,239,0.05); color: #fef9ef; font-size: 0.875rem; font-family: 'Poppins', sans-serif; outline: none; transition: all 0.3s;"
-                    onfocus="this.style.borderColor='rgba(212,168,67,0.4)';this.style.background='rgba(254,249,239,0.08)'"
-                    onblur="this.style.borderColor='rgba(254,249,239,0.1)';this.style.background='rgba(254,249,239,0.05)'"
-                >
-                @if(request('q'))
-                    <a href="/blog{{ $category ? '?category='.$category : '' }}" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-gold transition-colors" title="Clear search">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </a>
-                @endif
-            </form>
-
-            {{-- Category filters (Alpine.js style from layouts-demo) --}}
-            <div class="flex flex-wrap items-center justify-center gap-2" x-data="{ active: '{{ $category ?? 'all' }}' }">
-                <a href="/blog" @click="active = 'all'" :class="active === 'all' ? 'bg-navy text-white border-navy' : 'bg-white/5 text-white/50 border-white/10 hover:text-white hover:border-white/20'" class="text-xs font-semibold uppercase tracking-wider px-4 py-2 rounded-full border transition-all duration-200">
-                    All
-                </a>
-                @foreach(\App\Models\Post::CATEGORIES as $slug => $label)
-                    @continue(!in_array($slug, $usedCategories))
-                    @php $color = $categoryColors[$slug] ?? '#7b5eb5'; @endphp
-                    <a href="/blog?category={{ $slug }}" @click="active = '{{ $slug }}'" :class="active === '{{ $slug }}' ? 'text-white' : 'bg-white/5 hover:border-current'" class="text-xs font-semibold uppercase tracking-wider px-4 py-2 rounded-full border border-white/10 transition-all duration-200" :style="active === '{{ $slug }}' ? 'background: {{ $color }}; border-color: {{ $color }}; color: white;' : 'color: {{ $color }};'">
-                        {{ $label }}
-                    </a>
-                @endforeach
-            </div>
-
-            {{-- Sort + active search indicator --}}
-            <div class="flex items-center justify-center gap-4 mt-5">
-                @if(request('q'))
-                    <span class="text-white/30 text-xs">
-                        {{ $posts->total() }} {{ Str::plural('result', $posts->total()) }} for "<span class="text-gold">{{ request('q') }}</span>"
-                    </span>
-                    <span class="text-white/10">|</span>
-                @endif
-                <div style="display: inline-flex; border-radius: 0.5rem; overflow: hidden; border: 1px solid rgba(254,249,239,0.1);">
-                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'newest']) }}"
-                       style="padding: 0.4rem 1rem; font-size: 0.75rem; font-weight: 600; font-family: 'Poppins', sans-serif; text-decoration: none; transition: all 0.2s;
-                       {{ ($sort ?? 'newest') === 'newest' ? 'background: rgba(212,168,67,0.15); color: #d4a843;' : 'background: transparent; color: rgba(254,249,239,0.4);' }}">
-                        Newest
-                    </a>
-                    <a href="{{ request()->fullUrlWithQuery(['sort' => 'oldest']) }}"
-                       style="padding: 0.4rem 1rem; font-size: 0.75rem; font-weight: 600; font-family: 'Poppins', sans-serif; text-decoration: none; transition: all 0.2s; border-left: 1px solid rgba(254,249,239,0.1);
-                       {{ ($sort ?? 'newest') === 'oldest' ? 'background: rgba(212,168,67,0.15); color: #d4a843;' : 'background: transparent; color: rgba(254,249,239,0.4);' }}">
-                        Oldest
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div style="height: 1px; background: linear-gradient(90deg, transparent, rgba(212,168,67,0.2), transparent);"></div>
-    </section>
-    @endif
 
     {{-- Posts Section --}}
     <section class="py-16 bg-cream relative">
