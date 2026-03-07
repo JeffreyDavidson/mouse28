@@ -41,12 +41,12 @@
             <div class="max-w-5xl mx-auto px-4 sm:px-6" style="padding: 5rem 1rem 6rem;">
                 {{-- Header --}}
                 <div class="text-center" style="margin-bottom: 3.5rem;">
-                    <div style="display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid rgba(212, 168, 67, 0.3); border-radius: 9999px; padding: 0.35rem 1rem; margin-bottom: 1.5rem;">
-                        <span style="width: 6px; height: 6px; border-radius: 50%; background: #d4a843;"></span>
-                        <span style="font-family: 'Poppins', sans-serif; font-size: 0.7rem; color: #f0c75e; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;">Get in Touch</span>
+                    <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6">
+                        <span class="w-2 h-2 bg-gold rounded-full animate-pulse"></span>
+                        <span class="text-gold text-sm font-semibold tracking-widest uppercase">Get in Touch</span>
                     </div>
-                    <h1 class="font-heading font-bold" style="font-size: clamp(2rem, 5vw, 3rem); color: #fef9ef; line-height: 1.15; margin-bottom: 1rem;">We'd Love to Hear From You</h1>
-                    <p style="color: rgba(254, 249, 239, 0.45); font-size: 1.05rem; max-width: 32rem; margin: 0 auto; line-height: 1.7;">Have a question about DAS, want to share your story, or just say hi? We read every message.</p>
+                    <h1 class="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-white mt-2">We'd Love to Hear From You</h1>
+                    <p class="text-white/60 mt-4 max-w-xl mx-auto text-lg">Have a question about DAS, want to share your story, or just say hi? We read every message.</p>
                 </div>
 
                 {{-- Two-column layout --}}
