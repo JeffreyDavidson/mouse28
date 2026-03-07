@@ -27,6 +27,7 @@ Route::post('/newsletter', [NewsletterController::class, 'store']);
 
 Route::get('/blog-layouts', fn () => view('blog.layouts-demo'));
 Route::get('/pillars-demo', fn () => view('pillars-demo'));
+Route::get('/pillars-demo-2', fn () => view('pillars-demo-2'));
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index']);
 Route::get('/robots.txt', [SitemapController::class, 'robots']);
