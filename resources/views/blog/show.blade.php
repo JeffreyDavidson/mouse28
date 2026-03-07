@@ -149,6 +149,58 @@
         @media (min-width: 1024px) {
             .sticky-sidebar { position: sticky; top: 90px; }
         }
+
+        /* Table of Contents */
+        .toc-link {
+            display: block; padding: 0.4rem 0; padding-left: 1rem;
+            font-size: 0.8rem; color: rgba(26,16,64,0.5);
+            border-left: 2px solid rgba(26,16,64,0.08);
+            transition: all 0.2s ease; text-decoration: none;
+            line-height: 1.4;
+        }
+        .toc-link:hover, .toc-link.active {
+            color: #d4a843;
+            border-left-color: #d4a843;
+        }
+        .toc-link.active { font-weight: 600; }
+        .toc-link.toc-h3 { padding-left: 2rem; font-size: 0.75rem; }
+
+        /* Bottom share buttons */
+        .share-btn-lg {
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+            padding: 0.65rem 1.25rem; border-radius: 9999px;
+            font-size: 0.8rem; font-weight: 600;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(26,16,64,0.1);
+            color: rgba(26,16,64,0.6); background: white;
+        }
+        .share-btn-lg:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(26,16,64,0.1);
+        }
+        .share-btn-lg.twitter:hover { color: #1da1f2; border-color: #1da1f2; }
+        .share-btn-lg.facebook:hover { color: #1877f2; border-color: #1877f2; }
+        .share-btn-lg.copy:hover { color: #d4a843; border-color: #d4a843; }
+
+        /* Back to top */
+        #back-to-top {
+            position: fixed; bottom: 2rem; right: 2rem; z-index: 50;
+            width: 3rem; height: 3rem; border-radius: 9999px;
+            background: linear-gradient(135deg, #d4a843, #f0c75e);
+            color: white; border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 15px rgba(212,168,67,0.3);
+            transition: all 0.3s ease;
+            opacity: 0; pointer-events: none;
+            transform: translateY(10px);
+        }
+        #back-to-top.visible {
+            opacity: 1; pointer-events: auto; transform: translateY(0);
+        }
+        #back-to-top:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(212,168,67,0.4);
+        }
     </style>
 
     <div id="reading-progress"></div>
@@ -273,6 +325,27 @@
                         </div>
                     </div>
 
+                    {{-- Share This Post --}}
+                    <div class="mt-10 bg-white rounded-3xl p-8 md:p-10 shadow-lg shadow-navy/5 border border-navy/5 text-center">
+                        <span class="text-gold text-xs font-bold uppercase tracking-widest">Enjoyed this post?</span>
+                        <h3 class="font-heading text-xl font-bold text-navy mt-2 mb-2">Share it with fellow Disney fans</h3>
+                        <p class="text-navy/40 text-sm mb-6">Help others discover Mouse28</p>
+                        <div class="flex flex-wrap items-center justify-center gap-3">
+                            <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($post->title . ' — Mouse28') }}" target="_blank" rel="noopener" class="share-btn-lg twitter">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                                Share on X
+                            </a>
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" rel="noopener" class="share-btn-lg facebook">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                                Share on Facebook
+                            </a>
+                            <button onclick="navigator.clipboard.writeText(window.location.href).then(()=>{this.textContent='Copied! ✓';setTimeout(()=>{this.innerHTML='<svg class=\'w-4 h-4\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1\'/></svg> Copy Link';},1500)})" class="share-btn-lg copy">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                                Copy Link
+                            </button>
+                        </div>
+                    </div>
+
                     {{-- Related Episode --}}
                     @if($post->episode)
                         <div class="mt-8 bg-white rounded-3xl p-8 shadow-lg shadow-navy/5 border border-navy/5">
@@ -321,6 +394,15 @@
                 {{-- Sidebar --}}
                 <aside class="lg:w-[34%]">
                     <div class="sticky-sidebar space-y-7">
+                        {{-- Table of Contents (populated by JS) --}}
+                        <div id="toc-card" class="sidebar-card bg-white rounded-2xl p-7 shadow-md shadow-navy/5 border border-navy/5 hidden">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="gold-divider"></div>
+                                <h3 class="font-heading text-lg font-bold text-navy">In This Post</h3>
+                            </div>
+                            <nav id="toc-nav" class="space-y-0.5"></nav>
+                        </div>
+
                         {{-- Recent Posts --}}
                         @if($recentPosts->count())
                             <div class="sidebar-card bg-white rounded-2xl p-7 shadow-md shadow-navy/5 border border-navy/5">
@@ -421,12 +503,19 @@
         </div>
     </section>
 
+    {{-- Back to Top Button --}}
+    <button id="back-to-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to top">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
+    </button>
+
     <script>
         const bar = document.getElementById('reading-progress');
         const article = document.getElementById('article-body');
         const indicator = document.getElementById('reading-indicator');
         const totalMin = {{ $post->reading_time }};
+        const backToTop = document.getElementById('back-to-top');
 
+        // Reading progress + back to top visibility
         function updateProgress() {
             if (!article) return;
             const rect = article.getBoundingClientRect();
@@ -440,9 +529,58 @@
                 const currentMin = Math.max(1, Math.ceil((pct / 100) * totalMin));
                 indicator.textContent = currentMin + ' of ' + totalMin + ' min read';
             }
+
+            // Back to top
+            if (window.scrollY > 500) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
         }
 
         window.addEventListener('scroll', updateProgress, { passive: true });
         updateProgress();
+
+        // Table of Contents — auto-generate from headings
+        (function() {
+            const content = document.querySelector('.article-content');
+            const tocCard = document.getElementById('toc-card');
+            const tocNav = document.getElementById('toc-nav');
+            if (!content || !tocNav) return;
+
+            const headings = content.querySelectorAll('h1, h2, h3');
+            if (headings.length < 2) return; // Don't show TOC for short posts
+
+            tocCard.classList.remove('hidden');
+
+            headings.forEach((h, i) => {
+                const id = 'section-' + i;
+                h.id = id;
+
+                const link = document.createElement('a');
+                link.href = '#' + id;
+                link.textContent = h.textContent;
+                link.className = 'toc-link' + (h.tagName === 'H3' ? ' toc-h3' : '');
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+                tocNav.appendChild(link);
+            });
+
+            // Highlight active TOC item on scroll
+            const tocLinks = tocNav.querySelectorAll('.toc-link');
+            function updateToc() {
+                let current = 0;
+                headings.forEach((h, i) => {
+                    if (h.getBoundingClientRect().top < 150) current = i;
+                });
+                tocLinks.forEach((l, i) => {
+                    l.classList.toggle('active', i === current);
+                });
+            }
+            window.addEventListener('scroll', updateToc, { passive: true });
+            updateToc();
+        })();
     </script>
 @endsection
