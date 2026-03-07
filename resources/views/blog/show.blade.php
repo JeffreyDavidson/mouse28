@@ -497,30 +497,7 @@
                         </div>
 
                         {{-- Newsletter --}}
-                        <div class="sidebar-card rounded-2xl overflow-hidden shadow-md shadow-navy/5 border border-gold/15 relative">
-                            {{-- Gold gradient header --}}
-                            <div class="bg-gradient-to-r from-gold/15 via-gold/8 to-purple/8 px-7 pt-6 pb-5 text-center relative">
-                                <div class="absolute top-3 right-4 text-gold/15 text-xs">✦</div>
-                                <div class="absolute bottom-3 left-4 text-gold/10 text-[10px]">✦</div>
-                                <div class="w-12 h-12 mx-auto mb-3 rounded-full bg-white/80 flex items-center justify-center shadow-sm">
-                                    <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"/></svg>
-                                </div>
-                                <h3 class="font-heading text-lg font-bold text-navy">Stay in the Loop</h3>
-                                <p class="text-navy/45 text-xs mt-1">Disney tips, park updates, and new posts</p>
-                            </div>
-                            {{-- Form area --}}
-                            <div class="bg-white px-7 py-6">
-                                <form action="/newsletter" method="POST" class="space-y-3">
-                                    @csrf
-                                    <input type="email" name="email" placeholder="your@email.com" required
-                                        class="w-full px-4 py-2.5 text-sm rounded-xl border border-navy/10 focus:border-gold focus:ring-2 focus:ring-gold/20 outline-none transition-all placeholder:text-navy/25 text-navy">
-                                    <button type="submit" class="w-full bg-gradient-to-r from-gold to-gold-light hover:from-gold-light hover:to-gold text-navy font-bold text-sm py-2.5 rounded-xl transition-all hover:-translate-y-0.5 shadow-md shadow-gold/15">
-                                        Subscribe ✨
-                                    </button>
-                                </form>
-                                <p class="text-navy/25 text-[10px] text-center mt-3">No spam. Unsubscribe anytime.</p>
-                            </div>
-                        </div>
+                        <x-newsletter-card subtitle="Disney tips, park updates, and new posts" />
                     </div>
                 </aside>
             </div>
