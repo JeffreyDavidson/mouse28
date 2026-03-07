@@ -266,13 +266,14 @@
                     {{-- Corner ribbon with wrap-around --}}
                     <style>
                         .ribbon-wrapper {
-                            width: 85px;
-                            height: 88px;
+                            width: 75px;
+                            height: 75px;
                             overflow: hidden;
                             position: absolute;
                             top: -3px;
                             left: -3px;
                             z-index: 30;
+                            pointer-events: none;
                         }
                         .ribbon-wrapper::before {
                             content: '';
@@ -295,20 +296,20 @@
                             left: 0;
                         }
                         .ribbon-wrapper .ribbon-band {
-                            font-size: 9px;
+                            font-size: 8px;
                             font-weight: 700;
                             color: #1a1040;
                             text-align: center;
                             text-transform: uppercase;
-                            letter-spacing: 0.12em;
+                            letter-spacing: 0.1em;
                             transform: rotate(-45deg);
                             position: relative;
-                            padding: 7px 0;
-                            top: 15px;
-                            left: -28px;
-                            width: 130px;
+                            padding: 4px 0;
+                            top: 14px;
+                            left: -20px;
+                            width: 110px;
                             background: linear-gradient(#f5dc6b 0%, #d4a843 50%, #b8922f 100%);
-                            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
                         }
                     </style>
                     <div class="ribbon-wrapper">
