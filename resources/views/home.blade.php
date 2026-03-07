@@ -547,12 +547,6 @@
                     <p class="font-body" style="color: rgba(26,16,64,0.45); font-size: 0.8rem; margin-top: 0.5rem; line-height: 1.5;">Buckets of maple popcorn<br>(and counting)</p>
                 </div>
             </div>
-            <div class="text-center" style="margin-top: 2.5rem;">
-                <a href="/about" class="font-body inline-flex items-center gap-1.5" style="color: #5b3e9e; font-weight: 600; font-size: 0.85rem; text-decoration: none; transition: color 0.2s;" onmouseenter="this.style.color='#1a1040'" onmouseleave="this.style.color='#5b3e9e'">
-                    Meet Jeffrey &amp; Cassie
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                </a>
-            </div>
         </div>
         <div style="height: 1px; background: linear-gradient(90deg, transparent, rgba(212,168,67,0.2), transparent);"></div>
     </section>
