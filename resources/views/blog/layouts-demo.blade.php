@@ -205,7 +205,7 @@
                     </style>
                     <div class="grid md:grid-cols-5 min-h-[280px] relative">
                         {{-- Excerpt side --}}
-                        <div class="md:col-span-2 p-8 md:p-10 pl-10 md:pl-12 pt-20 flex flex-col justify-center relative">
+                        <div class="md:col-span-2 p-8 md:p-10 pl-10 md:pl-14 pt-24 pb-8 flex flex-col justify-center relative">
                             <p class="text-white/70 text-sm md:text-base leading-relaxed relative z-10">
                                 {{ $feat->excerpt }}
                             </p>
@@ -217,7 +217,7 @@
                                 <span class="text-white/30 text-xs">{{ $feat->reading_time }} min read</span>
                             </div>
                             <h2 class="font-heading text-2xl md:text-3xl font-bold text-white group-hover:text-gold transition-colors leading-snug">{{ $feat->title }}</h2>
-                            <div class="flex items-center gap-4 mt-auto pt-6 border-t border-white/10">
+                            <div class="flex items-center gap-4 mt-6 pt-6 border-t border-white/10">
                                 <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gold/25 to-purple/15 flex items-center justify-center text-gold text-[10px] font-bold font-heading border border-gold/20">
                                     {{ collect(explode(' ', $feat->author_name))->reject(fn($w) => in_array($w, ['&', 'and']))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('&') }}
                                 </div>
