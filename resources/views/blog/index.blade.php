@@ -137,10 +137,6 @@
                                 <div class="overflow-hidden">
                                     <img src="{{ $post->cover_image }}" alt="{{ $post->title }}" class="w-full h-52 object-cover group-hover:scale-105 transition-transform duration-500">
                                 </div>
-                            @else
-                                <div class="w-full h-52 bg-gradient-to-br from-purple/10 to-gold/10 flex items-center justify-center">
-                                    <span class="text-4xl">✨</span>
-                                </div>
                             @endif
                             <div class="p-6">
                                 @if($post->category)
