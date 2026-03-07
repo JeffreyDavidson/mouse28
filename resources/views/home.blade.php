@@ -178,38 +178,61 @@
 
 {{-- Featured Post --}}
     @if($featuredPost)
-        <section class="bg-navy" data-animate>
-            <a href="/blog/{{ $featuredPost->slug }}" class="featured-link group block relative overflow-hidden">
-                <div class="max-w-7xl mx-auto">
-                    <div class="relative min-h-[400px] md:min-h-[500px] flex items-end">
-                        @if($featuredPost->cover_image)
-                            <img src="{{ $featuredPost->cover_image }}" alt="{{ $featuredPost->title }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
-                            <div class="featured-overlay absolute inset-0 bg-gradient-to-t from-navy via-navy/70 to-navy/20"></div>
-                        @else
-                            <div class="absolute inset-0 bg-gradient-to-br from-navy-light via-purple/30 to-navy"></div>
-                        @endif
-                        <div class="relative z-10 p-8 md:p-14 max-w-3xl border-l-4 border-gold ml-4 md:ml-10">
-                            <div class="flex items-center gap-3 mb-4 flex-wrap">
-                                <span class="bg-gold/90 text-navy text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider font-body">Featured</span>
+        <section class="py-16 md:py-20 bg-cream" data-animate>
+            <div class="max-w-5xl mx-auto px-4 sm:px-6">
+                <div class="text-center mb-10">
+                    <span class="text-gold text-sm font-semibold tracking-[0.15em] uppercase font-body">Latest from the Blog</span>
+                </div>
+                <a href="/blog/{{ $featuredPost->slug }}" class="group block bg-gradient-to-br from-navy to-navy-light rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                    <div class="flex flex-col md:flex-row">
+                        {{-- Left: Cover image or gradient --}}
+                        <div class="relative md:w-2/5 min-h-[220px] md:min-h-[320px] overflow-hidden flex-shrink-0">
+                            @if($featuredPost->cover_image)
+                                <img src="{{ $featuredPost->cover_image }}" alt="{{ $featuredPost->title }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                                <div class="absolute inset-0 bg-gradient-to-r from-transparent to-navy/30 md:bg-gradient-to-r md:from-transparent md:to-navy"></div>
+                            @else
+                                <div class="absolute inset-0 bg-gradient-to-br from-purple/40 to-navy flex items-center justify-center">
+                                    <div class="w-20 h-20 rounded-2xl bg-white/10 flex items-center justify-center border border-white/10">
+                                        <svg class="w-10 h-10 text-gold/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+                                    </div>
+                                </div>
+                            @endif
+                        </div>
+
+                        {{-- Right: Content --}}
+                        <div class="flex-1 p-8 md:p-10 lg:p-12 flex flex-col justify-center">
+                            <div class="flex items-center gap-3 mb-5 flex-wrap">
+                                <span class="bg-gold/20 text-gold text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Featured</span>
                                 @if($featuredPost->category)
-                                    <span class="bg-white/15 backdrop-blur-sm text-white/80 text-xs font-semibold px-3 py-1 rounded-full font-body">{{ $featuredPost->category_label }}</span>
+                                    <span class="bg-white/10 text-white/70 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">{{ $featuredPost->category_label }}</span>
                                 @endif
-                                <span class="text-white/40 text-sm font-body">{{ $featuredPost->published_at->format('M j, Y') }}</span>
+                                <span class="text-white/30 text-xs">{{ $featuredPost->reading_time }} min read</span>
                             </div>
-                            <h2 class="font-heading text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-4 group-hover:text-gold transition-colors duration-300">
+                            <h2 class="font-heading text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-snug mb-4 group-hover:text-gold transition-colors duration-300">
                                 {{ $featuredPost->title }}
                             </h2>
                             @if($featuredPost->excerpt)
-                                <p class="text-white/65 text-lg leading-relaxed line-clamp-2 font-body">{{ $featuredPost->excerpt }}</p>
+                                <p class="text-white/55 text-base leading-relaxed line-clamp-3 mb-6">{{ $featuredPost->excerpt }}</p>
                             @endif
-                            <span class="inline-flex items-center gap-2 mt-6 text-gold font-semibold text-sm font-body group-hover:gap-3 transition-all">
-                                Read article
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                            </span>
+                            <div class="flex items-center justify-between mt-auto pt-6 border-t border-white/10">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gold/25 to-purple/15 flex items-center justify-center text-gold text-[10px] font-bold font-heading border border-gold/20">
+                                        {{ collect(explode(' ', $featuredPost->author_name))->reject(fn($w) => in_array($w, ['&', 'and']))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('&') }}
+                                    </div>
+                                    <div>
+                                        <p class="text-white text-sm font-semibold">{{ $featuredPost->author_name }}</p>
+                                        <p class="text-white/40 text-xs">{{ $featuredPost->published_at->format('F j, Y') }}</p>
+                                    </div>
+                                </div>
+                                <span class="hidden sm:inline-flex items-center gap-1.5 text-gold text-sm font-semibold group-hover:gap-2.5 transition-all">
+                                    Read Article
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </a>
+                </a>
+            </div>
         </section>
     @endif
 
