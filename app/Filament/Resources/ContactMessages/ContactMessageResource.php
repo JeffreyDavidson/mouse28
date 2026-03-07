@@ -39,17 +39,22 @@ class ContactMessageResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->heading('All Messages')
+            ->description('View and manage messages from site visitors')
             ->columns([
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable()
-                    ->weight(fn (ContactMessage $record) => $record->is_read ? 'normal' : 'bold'),
+                    ->weight(fn (ContactMessage $record) => $record->is_read ? 'normal' : 'bold')
+                    ->icon('heroicon-o-user'),
                 TextColumn::make('email')
                     ->searchable()
-                    ->copyable(),
+                    ->copyable()
+                    ->icon('heroicon-o-envelope'),
                 TextColumn::make('subject')
                     ->formatStateUsing(fn (string $state) => ContactMessage::SUBJECTS[$state] ?? ucfirst($state))
-                    ->badge(),
+                    ->badge()
+                    ->color('warning'),
                 TextColumn::make('message')
                     ->limit(60)
                     ->wrap(),
@@ -58,7 +63,8 @@ class ContactMessageResource extends Resource
                     ->label('Read'),
                 TextColumn::make('created_at')
                     ->dateTime('M j, Y g:i A')
-                    ->sortable(),
+                    ->sortable()
+                    ->since(),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
