@@ -475,25 +475,17 @@
 
                         {{-- Podcast CTA --}}
                         <div class="sidebar-card bg-gradient-to-br from-navy via-navy-light to-navy rounded-2xl p-7 text-center relative overflow-hidden border border-white/5">
-                            {{-- Waveform decoration --}}
-                            <div class="absolute bottom-3 left-4 waveform-decoration" aria-hidden="true">
-                                <span style="height: 40%"></span><span style="height: 70%"></span><span style="height: 50%"></span>
-                                <span style="height: 90%"></span><span style="height: 30%"></span><span style="height: 60%"></span>
-                                <span style="height: 80%"></span><span style="height: 45%"></span><span style="height: 65%"></span>
-                            </div>
-                            <div class="absolute bottom-3 right-4 waveform-decoration" aria-hidden="true">
-                                <span style="height: 55%"></span><span style="height: 85%"></span><span style="height: 40%"></span>
-                                <span style="height: 70%"></span><span style="height: 50%"></span><span style="height: 90%"></span>
-                                <span style="height: 35%"></span><span style="height: 60%"></span><span style="height: 75%"></span>
-                            </div>
-                            {{-- Subtle glow --}}
                             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-gold/5 rounded-full blur-3xl"></div>
-                            <span class="text-4xl block mb-4 relative">🎧</span>
-                            <h3 class="font-heading text-lg font-bold text-white mb-2 relative">Listen to the Podcast</h3>
-                            <p class="text-white/40 text-sm mb-5 relative leading-relaxed">Catch our latest episodes about Disney, accessibility, and family life.</p>
-                            <a href="/episodes" class="inline-block bg-gradient-to-r from-gold to-gold-light hover:from-gold-light hover:to-gold text-navy font-bold text-sm px-7 py-3 rounded-full transition-all relative hover:-translate-y-0.5 shadow-lg shadow-gold/20">
-                                Browse Episodes
-                            </a>
+                            <div class="relative">
+                                <div class="w-12 h-12 mx-auto mb-4 rounded-xl bg-white/10 flex items-center justify-center border border-white/10">
+                                    <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+                                </div>
+                                <h3 class="font-heading text-lg font-bold text-white mb-2">Listen to the Podcast</h3>
+                                <p class="text-white/40 text-sm mb-5 leading-relaxed">Disney parks, accessibility, and family stories</p>
+                                <a href="/episodes" class="inline-block bg-gradient-to-r from-gold to-gold-light text-navy font-bold text-sm px-7 py-3 rounded-full transition-all hover:-translate-y-0.5 shadow-lg shadow-gold/20">
+                                    Browse Episodes
+                                </a>
+                            </div>
                         </div>
 
                         {{-- Newsletter --}}
