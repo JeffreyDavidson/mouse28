@@ -19,7 +19,10 @@ class CleanSeededEpisodes extends Command
             return;
         }
 
-        Episode::truncate();
+        // Null out episode references on posts first
+        \App\Models\Post::whereNotNull('episode_id')->update(['episode_id' => null]);
+
+        Episode::query()->delete();
 
         $this->info("Deleted {$count} episodes.");
     }
