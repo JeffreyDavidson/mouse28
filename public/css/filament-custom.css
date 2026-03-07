@@ -424,6 +424,15 @@ label.fi-fo-field-wrp-label,
     color: #d4a843 !important;
 }
 
+/* Filament 5 exact field label class */
+.fi-fo-field-label {
+    color: #d4a843 !important;
+}
+
+.fi-fo-field-label-content {
+    color: #d4a843 !important;
+}
+
 .fi-main .fi-fo-field-wrp-hint {
     color: rgba(254, 249, 239, 0.5) !important;
 }
