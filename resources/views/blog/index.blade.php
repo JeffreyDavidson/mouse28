@@ -75,6 +75,7 @@
                 ">All Posts</a>
 
                 @foreach(\App\Models\Post::CATEGORIES as $slug => $label)
+                    @continue(!in_array($slug, $usedCategories ?? []))
                     @php $color = $categoryColors[$slug] ?? '#7b5eb5'; $icon = $categoryIcons[$slug] ?? ''; $isActive = $category === $slug; @endphp
                     <a href="/blog?category={{ $slug }}" style="
                         display: inline-flex; align-items: center; gap: 0.4rem;
