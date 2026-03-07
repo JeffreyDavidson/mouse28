@@ -50,8 +50,6 @@ class PostForm
                 Section::make('Content')
                     ->schema([
                         Textarea::make('excerpt')
-                            ->hiddenLabel()
-                            ->placeholder('Write a short summary for the blog card...')
                             ->rows(3)
                             ->maxLength(300),
                         MarkdownEditor::make('body')
