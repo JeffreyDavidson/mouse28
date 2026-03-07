@@ -205,8 +205,7 @@
                     </style>
                     <div class="grid md:grid-cols-5 min-h-[280px] relative">
                         {{-- Excerpt side --}}
-                        <div class="md:col-span-2 p-8 md:p-10 flex flex-col justify-center relative">
-                            <span class="text-[10px] font-bold uppercase tracking-widest mb-4 block text-gold/70">Featured Post</span>
+                        <div class="md:col-span-2 p-8 md:p-10 pt-16 md:pt-14 flex flex-col justify-center relative">
                             <p class="text-white/70 text-sm md:text-base leading-relaxed relative z-10">
                                 {{ $feat->excerpt }}
                             </p>
