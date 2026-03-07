@@ -12,10 +12,13 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        User::factory()->create([
-            'name' => 'Jeffrey Davidson',
-            'email' => 'thelaravelarchitect@gmail.com',
-        ]);
+        User::firstOrCreate(
+            ['email' => 'thelaravelarchitect@gmail.com'],
+            [
+                'name' => 'Jeffrey Davidson',
+                'password' => bcrypt('password'),
+            ]
+        );
 
         // Podcast metadata
         Podcast::firstOrCreate(['id' => 1], [
