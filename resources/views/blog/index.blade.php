@@ -242,20 +242,44 @@
             @if($posts->count())
                 @php $featured = $posts->first(); $rest = $posts->skip(1); @endphp
 
+                @php
+                    $categoryGradients = [
+                        'disney-tips' => ['from' => '#d4a843', 'to' => '#f0c75e', 'icon' => '🏰'],
+                        'park-accessibility' => ['from' => '#7b5eb5', 'to' => '#a78bfa', 'icon' => '💜'],
+                        'episode-recap' => ['from' => '#059669', 'to' => '#34d399', 'icon' => '🎙️'],
+                        'family-life' => ['from' => '#2563eb', 'to' => '#60a5fa', 'icon' => '👨‍👩‍👧'],
+                        'autism-awareness' => ['from' => '#db2777', 'to' => '#f472b6', 'icon' => '🧩'],
+                        'disney-news' => ['from' => '#ea580c', 'to' => '#fb923c', 'icon' => '📰'],
+                        'food-reviews' => ['from' => '#d97706', 'to' => '#fbbf24', 'icon' => '🍽️'],
+                        'resort-reviews' => ['from' => '#0d9488', 'to' => '#5eead4', 'icon' => '🏨'],
+                        'disney-plus' => ['from' => '#4f46e5', 'to' => '#818cf8', 'icon' => '📺'],
+                        'merchandise' => ['from' => '#e11d48', 'to' => '#fb7185', 'icon' => '🛍️'],
+                        'general' => ['from' => '#475569', 'to' => '#94a3b8', 'icon' => '✨'],
+                    ];
+                    $defaultGrad = ['from' => '#5b3e9e', 'to' => '#7c5cbf', 'icon' => '✨'];
+                @endphp
+
                 {{-- Featured Post (first post, large card) --}}
                 @if($posts->currentPage() === 1 && !request('q'))
+                    @php $fGrad = $categoryGradients[$featured->category] ?? $defaultGrad; @endphp
                     <a href="/blog/{{ $featured->slug }}" class="featured-card group block bg-white rounded-3xl overflow-hidden shadow-lg shadow-navy/5 border border-navy/5 mb-12">
                         <div class="grid md:grid-cols-2">
-                            {{-- Image side --}}
-                            <div class="relative overflow-hidden bg-gradient-to-br from-navy/5 to-purple/5" style="min-height: 320px;">
+                            {{-- Visual side --}}
+                            <div class="relative overflow-hidden" style="min-height: 320px; background: linear-gradient(135deg, {{ $fGrad['from'] }}18, {{ $fGrad['to'] }}10);">
                                 @if($featured->cover_image)
                                     <img src="{{ $featured->cover_image }}" alt="{{ $featured->title }}" class="featured-image absolute inset-0 w-full h-full object-cover">
                                 @else
-                                    <div class="absolute inset-0 flex items-center justify-center">
-                                        <div class="text-center">
-                                            <span class="text-gold/20 text-6xl block mb-2">&#10022;</span>
-                                            <span class="text-navy/15 text-xs uppercase tracking-widest font-semibold">Mouse28</span>
+                                    {{-- Category-themed decorative panel --}}
+                                    <div class="absolute inset-0" style="background: linear-gradient(135deg, {{ $fGrad['from'] }}15, {{ $fGrad['to'] }}08);">
+                                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center">
+                                            <span class="text-7xl block mb-4 opacity-80 group-hover:scale-110 transition-transform duration-500">{{ $fGrad['icon'] }}</span>
+                                            <span class="text-xs font-bold uppercase tracking-[0.25em] opacity-20" style="color: {{ $fGrad['from'] }};">{{ $featured->category_label }}</span>
                                         </div>
+                                        {{-- Decorative circles --}}
+                                        <div class="absolute -top-16 -right-16 w-48 h-48 rounded-full opacity-[0.06]" style="background: {{ $fGrad['from'] }};"></div>
+                                        <div class="absolute -bottom-12 -left-12 w-36 h-36 rounded-full opacity-[0.04]" style="background: {{ $fGrad['to'] }};"></div>
+                                        <div class="absolute top-8 left-8 w-2 h-2 rounded-full opacity-20" style="background: {{ $fGrad['from'] }};"></div>
+                                        <div class="absolute bottom-12 right-10 w-1.5 h-1.5 rounded-full opacity-15" style="background: {{ $fGrad['to'] }};"></div>
                                     </div>
                                 @endif
                                 {{-- Featured badge --}}
@@ -306,14 +330,19 @@
                             @php
                                 $catColor = $categoryColors[$post->category] ?? '#5b3e9e';
                             @endphp
+                            @php $pGrad = $categoryGradients[$post->category] ?? $defaultGrad; @endphp
                             <a href="/blog/{{ $post->slug }}" class="post-card group bg-white rounded-2xl shadow-sm border border-navy/5" style="--cat-color: {{ $catColor }};">
-                                {{-- Image --}}
-                                <div class="relative overflow-hidden rounded-t-2xl" style="height: 200px;">
+                                {{-- Visual header --}}
+                                <div class="relative overflow-hidden rounded-t-2xl" style="height: 180px;">
                                     @if($post->cover_image)
                                         <img src="{{ $post->cover_image }}" alt="{{ $post->title }}" class="card-image absolute inset-0 w-full h-full object-cover">
                                     @else
-                                        <div class="absolute inset-0 bg-gradient-to-br from-navy/5 to-purple/5 flex items-center justify-center">
-                                            <span class="text-gold/15 text-4xl">&#10022;</span>
+                                        <div class="absolute inset-0" style="background: linear-gradient(135deg, {{ $pGrad['from'] }}12, {{ $pGrad['to'] }}08);">
+                                            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                                                <span class="text-5xl block group-hover:scale-110 transition-transform duration-500 opacity-70">{{ $pGrad['icon'] }}</span>
+                                            </div>
+                                            <div class="absolute -top-10 -right-10 w-32 h-32 rounded-full opacity-[0.05]" style="background: {{ $pGrad['from'] }};"></div>
+                                            <div class="absolute -bottom-8 -left-8 w-24 h-24 rounded-full opacity-[0.04]" style="background: {{ $pGrad['to'] }};"></div>
                                         </div>
                                     @endif
                                     {{-- Reading time overlay --}}
