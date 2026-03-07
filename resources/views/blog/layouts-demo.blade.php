@@ -114,31 +114,37 @@
                     initial-value: 0deg;
                     inherits: false;
                 }
-                .featured-card-border {
+                .featured-wrapper {
                     position: relative;
-                    background: linear-gradient(135deg, #1a1040, #2d1b69);
-                    border-radius: 1.5rem;
-                    color: white;
+                    z-index: 1;
                 }
-                .featured-card-border::before {
+                .featured-wrapper::before {
                     content: '';
                     position: absolute;
                     inset: -2px;
                     border-radius: 1.625rem;
                     background: conic-gradient(from var(--border-angle), #d4a843, #7b5eb5, #4a90a4, #d4a843);
                     animation: borderRotate 6s linear infinite;
-                    z-index: -1;
+                    z-index: 0;
                     opacity: 0.5;
                 }
+                .featured-card-border {
+                    position: relative;
+                    z-index: 1;
+                    background: linear-gradient(135deg, #1a1040, #2d1b69);
+                    border-radius: 1.5rem;
+                    color: white;
+                    overflow: hidden;
+                }
             </style>
-            <div class="relative mb-8 featured-wrapper">
+            <div class="mb-8 featured-wrapper rounded-3xl">
                 {{-- Floating corner sparkles --}}
                 <span class="sparkle absolute -top-3 -left-3 text-gold/30 text-sm z-10">✦</span>
                 <span class="sparkle-delay absolute -top-2 right-8 text-gold/20 text-xs z-10">✧</span>
                 <span class="sparkle-delay-2 absolute -bottom-3 -right-3 text-gold/30 text-sm z-10">✦</span>
                 <span class="sparkle absolute bottom-4 -left-2 text-gold/15 text-xs z-10">✧</span>
 
-                <a href="#" class="featured-card-border group block overflow-visible transition-all duration-300 relative" style="clip-path: none;">
+                <a href="#" class="featured-card-border group block transition-all duration-300">
                     {{-- Featured ribbon --}}
                     {{-- Corner ribbon (nxworld pattern) --}}
                     <style>
