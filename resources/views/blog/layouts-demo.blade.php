@@ -227,44 +227,87 @@
 
             {{-- Featured: B-style two-column with excerpt --}}
             @php $feat = $demoPosts[0]; $fColor = $categoryColors[$feat->category] ?? '#5b3e9e'; @endphp
-            <a href="#" class="group block bg-white rounded-3xl overflow-hidden shadow-lg shadow-navy/5 border border-navy/5 mb-8 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 relative">
-                {{-- Top accent bar on hover --}}
-                <div class="absolute top-0 left-0 right-0 h-1 rounded-t-3xl transition-transform origin-left duration-300 group-hover:scale-x-100 scale-x-0" style="background: {{ $fColor }};"></div>
-                <div class="grid md:grid-cols-5 min-h-[280px] relative">
-                    {{-- Excerpt side --}}
-                    <div class="md:col-span-2 p-8 md:p-10 flex flex-col justify-center relative">
-                        <span class="text-[10px] font-bold uppercase tracking-widest mb-4 block" style="color: {{ $fColor }};">Featured Post</span>
-                        <p class="text-navy/70 text-sm md:text-base leading-relaxed relative z-10">
-                            {{ $feat->excerpt }}
-                        </p>
-                    </div>
-                    {{-- Magic star divider --}}
-                    <div class="hidden md:flex absolute left-[40%] top-0 bottom-0 items-center justify-center">
-                        <div class="relative w-8 h-8">
-                            <span class="sparkle absolute inset-0 flex items-center justify-center text-gold/50 text-base">✦</span>
-                            <span class="sparkle-delay absolute -top-2 -right-1 text-gold/25 text-[8px]">✦</span>
-                            <span class="sparkle-delay-2 absolute -bottom-1 -left-1 text-gold/20 text-[7px]">✧</span>
+            <style>
+                @keyframes borderRotate {
+                    0% { --border-angle: 0deg; }
+                    100% { --border-angle: 360deg; }
+                }
+                @property --border-angle {
+                    syntax: '<angle>';
+                    initial-value: 0deg;
+                    inherits: false;
+                }
+                .featured-card-border {
+                    position: relative;
+                    background: white;
+                    border-radius: 1.5rem;
+                }
+                .featured-card-border::before {
+                    content: '';
+                    position: absolute;
+                    inset: -2px;
+                    border-radius: 1.625rem;
+                    background: conic-gradient(from var(--border-angle), #d4a843, #7b5eb5, #4a90a4, #d4a843);
+                    animation: borderRotate 6s linear infinite;
+                    z-index: -1;
+                    opacity: 0.5;
+                    transition: opacity 0.3s;
+                }
+                .featured-card-border:hover::before {
+                    opacity: 0.85;
+                }
+            </style>
+            <div class="relative mb-8">
+                {{-- Floating corner sparkles --}}
+                <span class="sparkle absolute -top-3 -left-3 text-gold/30 text-sm z-10">✦</span>
+                <span class="sparkle-delay absolute -top-2 right-8 text-gold/20 text-xs z-10">✧</span>
+                <span class="sparkle-delay-2 absolute -bottom-3 -right-3 text-gold/30 text-sm z-10">✦</span>
+                <span class="sparkle absolute bottom-4 -left-2 text-gold/15 text-xs z-10">✧</span>
+
+                <a href="#" class="featured-card-border group block overflow-hidden transition-all duration-300 hover:-translate-y-1 relative">
+                    {{-- Featured ribbon --}}
+                    <div class="absolute top-0 left-0 z-20 overflow-hidden w-24 h-24 pointer-events-none">
+                        <div class="absolute top-[10px] left-[-28px] w-[130px] text-center text-[9px] font-bold uppercase tracking-widest text-white py-1.5 rotate-[-45deg]" style="background: linear-gradient(135deg, #d4a843, #c4963a);">
+                            Featured
                         </div>
                     </div>
-                    {{-- Content side --}}
-                    <div class="md:col-span-3 p-8 md:p-10 flex flex-col justify-center">
-                        <div class="flex items-center gap-3 mb-4">
-                            <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background: {{ $fColor }}15; color: {{ $fColor }};">{{ $feat->category_label }}</span>
-                            <span class="text-navy/25 text-xs">{{ $feat->reading_time }} min read</span>
+
+                    <div class="grid md:grid-cols-5 min-h-[280px] relative">
+                        {{-- Excerpt side with category accent strip --}}
+                        <div class="md:col-span-2 p-8 md:p-10 flex flex-col justify-center relative" style="border-left: 4px solid {{ $fColor }};">
+                            <span class="text-[10px] font-bold uppercase tracking-widest mb-4 block" style="color: {{ $fColor }};">Featured Post</span>
+                            <p class="text-navy/70 text-sm md:text-base leading-relaxed relative z-10">
+                                {{ $feat->excerpt }}
+                            </p>
                         </div>
-                        <h2 class="font-heading text-2xl md:text-3xl font-bold text-navy group-hover:text-purple transition-colors leading-snug">{{ $feat->title }}</h2>
-                        <div class="flex items-center gap-4 mt-auto pt-6 border-t border-navy/5">
-                            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gold/25 to-purple/15 flex items-center justify-center text-gold text-[10px] font-bold font-heading border border-gold/15">
-                                {{ collect(explode(' ', $feat->author_name))->reject(fn($w) => in_array($w, ['&', 'and']))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('&') }}
+                        {{-- Magic star divider --}}
+                        <div class="hidden md:flex absolute left-[40%] top-0 bottom-0 items-center justify-center">
+                            <div class="relative w-8 h-8">
+                                <span class="sparkle absolute inset-0 flex items-center justify-center text-gold/50 text-base">✦</span>
+                                <span class="sparkle-delay absolute -top-2 -right-1 text-gold/25 text-[8px]">✦</span>
+                                <span class="sparkle-delay-2 absolute -bottom-1 -left-1 text-gold/20 text-[7px]">✧</span>
                             </div>
-                            <div>
-                                <p class="text-navy text-sm font-semibold">{{ $feat->author_name }}</p>
-                                <p class="text-navy/30 text-xs">{{ $feat->published_at->format('F j, Y') }}</p>
+                        </div>
+                        {{-- Content side --}}
+                        <div class="md:col-span-3 p-8 md:p-10 flex flex-col justify-center">
+                            <div class="flex items-center gap-3 mb-4">
+                                <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background: {{ $fColor }}15; color: {{ $fColor }};">{{ $feat->category_label }}</span>
+                                <span class="text-navy/25 text-xs">{{ $feat->reading_time }} min read</span>
+                            </div>
+                            <h2 class="font-heading text-2xl md:text-3xl font-bold text-navy group-hover:text-purple transition-colors leading-snug">{{ $feat->title }}</h2>
+                            <div class="flex items-center gap-4 mt-auto pt-6 border-t border-navy/5">
+                                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gold/25 to-purple/15 flex items-center justify-center text-gold text-[10px] font-bold font-heading border border-gold/15">
+                                    {{ collect(explode(' ', $feat->author_name))->reject(fn($w) => in_array($w, ['&', 'and']))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('&') }}
+                                </div>
+                                <div>
+                                    <p class="text-navy text-sm font-semibold">{{ $feat->author_name }}</p>
+                                    <p class="text-navy/30 text-xs">{{ $feat->published_at->format('F j, Y') }}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </a>
+                </a>
+            </div>
             {{-- Grid: B-style cards --}}
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach(array_slice($demoPosts, 1) as $post)
