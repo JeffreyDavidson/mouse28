@@ -51,6 +51,8 @@ class PodcastSettings extends Page
         return $form
             ->schema([
                 Section::make('General')
+                    ->icon('heroicon-o-microphone')
+                    ->description('Your podcast name, description, and cover art')
                     ->columns(2)
                     ->schema([
                         TextInput::make('name')->required()->maxLength(255),
@@ -63,19 +65,29 @@ class PodcastSettings extends Page
                     ]),
 
                 Section::make('Distribution Links')
+                    ->icon('heroicon-o-signal')
+                    ->description('Where listeners can find your podcast')
                     ->columns(2)
                     ->schema([
-                        TextInput::make('apple_url')->url()->label('Apple Podcasts'),
-                        TextInput::make('spotify_url')->url()->label('Spotify'),
-                        TextInput::make('youtube_url')->url()->label('YouTube'),
-                        TextInput::make('rss_url')->url()->label('RSS Feed'),
+                        TextInput::make('apple_url')->url()->label('Apple Podcasts')
+                            ->prefixIcon('heroicon-o-link'),
+                        TextInput::make('spotify_url')->url()->label('Spotify')
+                            ->prefixIcon('heroicon-o-link'),
+                        TextInput::make('youtube_url')->url()->label('YouTube')
+                            ->prefixIcon('heroicon-o-link'),
+                        TextInput::make('rss_url')->url()->label('RSS Feed')
+                            ->prefixIcon('heroicon-o-rss'),
                     ]),
 
                 Section::make('Social Media')
+                    ->icon('heroicon-o-heart')
+                    ->description('Connect your social accounts')
                     ->columns(2)
                     ->schema([
-                        TextInput::make('instagram_url')->url()->label('Instagram'),
-                        TextInput::make('tiktok_url')->url()->label('TikTok'),
+                        TextInput::make('instagram_url')->url()->label('Instagram')
+                            ->prefixIcon('heroicon-o-link'),
+                        TextInput::make('tiktok_url')->url()->label('TikTok')
+                            ->prefixIcon('heroicon-o-link'),
                     ]),
 
                 Actions::make([
