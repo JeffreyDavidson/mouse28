@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body { display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f5f0e8; }
+
+.box {
+    position: relative;
+    width: 600px;
+    height: 300px;
+    background: linear-gradient(135deg, #1a1040, #2d1b69);
+    border-radius: 1.5rem;
+    z-index: 1;
+}
+
+/* common */
+.ribbon {
+    width: 100px;
+    height: 100px;
+    overflow: hidden;
+    position: absolute;
+}
+.ribbon::before,
+.ribbon::after {
+    position: absolute;
+    z-index: -1;
+    content: '';
+    display: block;
+    border: 4px solid #7a5e1e;
+}
+.ribbon span {
+    position: absolute;
+    display: block;
+    width: 150px;
+    padding: 6px 0;
+    background: linear-gradient(#f5dc6b 0%, #d4a843 50%, #b8922f 100%);
+    box-shadow: 0 3px 6px rgba(0,0,0,.12);
+    color: #1a1040;
+    font: 700 8px/1 sans-serif;
+    text-transform: uppercase;
+    text-align: center;
+    letter-spacing: 0.12em;
+}
+
+/* top left */
+.ribbon-top-left {
+    top: -6px;
+    left: -6px;
+}
+.ribbon-top-left::before,
+.ribbon-top-left::after {
+    border-top-color: transparent;
+    border-left-color: transparent;
+}
+.ribbon-top-left::before {
+    top: 0;
+    right: 0;
+}
+.ribbon-top-left::after {
+    bottom: 0;
+    left: 0;
+}
+.ribbon-top-left span {
+    right: -6px;
+    top: 17px;
+    transform: rotate(-45deg);
+}
+</style>
+</head>
+<body>
+<div class="box">
+    <div class="ribbon ribbon-top-left"><span>✦ Featured ✦</span></div>
+</div>
+</body>
+</html>
