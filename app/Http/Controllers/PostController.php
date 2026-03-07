@@ -33,7 +33,24 @@ class PostController extends Controller
     {
         abort_unless($post->is_published, 404);
 
-        $recentPosts = Post::published()->where('id', '!=', $post->id)->latest('published_at')->take(5)->get();
+        // Prioritize same-category posts, then fill with others
+        $sameCategoryPosts = Post::published()
+            ->where('id', '!=', $post->id)
+            ->where('category', $post->category)
+            ->latest('published_at')
+            ->take(5)
+            ->get();
+
+        $recentPosts = $sameCategoryPosts->count() >= 5
+            ? $sameCategoryPosts
+            : $sameCategoryPosts->merge(
+                Post::published()
+                    ->where('id', '!=', $post->id)
+                    ->whereNotIn('id', $sameCategoryPosts->pluck('id'))
+                    ->latest('published_at')
+                    ->take(5 - $sameCategoryPosts->count())
+                    ->get()
+            );
         $categoryCounts = Post::published()->selectRaw('category, count(*) as count')->groupBy('category')->pluck('count', 'category');
 
         return view('blog.show', [
