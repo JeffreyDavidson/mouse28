@@ -149,7 +149,7 @@
                                 <p class="text-navy/55 text-sm leading-relaxed line-clamp-2 mb-4">{{ Str::limit($post->excerpt, 120) }}</p>
                                 <div class="flex items-center gap-3 pt-3 border-t border-navy/5">
                                     <div class="w-7 h-7 rounded-full bg-purple/10 flex items-center justify-center text-purple text-[10px] font-bold flex-shrink-0">
-                                        {{ collect(explode(' ', $post->author_name))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('') }}
+                                        {{ collect(explode(' ', $post->author_name))->reject(fn($w) => in_array($w, ['&', 'and']))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('&') }}
                                     </div>
                                     <div class="flex-1 flex items-center justify-between text-xs text-navy/40">
                                         <span>{{ $post->author_name }} · {{ $post->published_at->format('M j, Y') }}</span>
