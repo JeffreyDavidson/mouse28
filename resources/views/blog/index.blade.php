@@ -172,13 +172,13 @@
                 <span class="w-2 h-2 bg-gold rounded-full animate-pulse"></span>
                 <span class="text-gold text-sm font-semibold tracking-widest uppercase">Stories & Tips</span>
             </div>
-            <h1 class="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-white mt-2">Blog <span class="inline-block text-gold/40 text-lg">✦</span></h1>
+            <h1 class="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-white mt-2">Blog</h1>
             <p class="text-white/60 mt-4 max-w-xl mx-auto text-lg">Disney tips, park guides, and stories from our family to yours.</p>
         </div>
     </section>
 
     {{-- Posts Section with Sidebar --}}
-    <section class="py-12 bg-cream relative">
+    <section class="py-16 bg-cream relative">
         <div class="absolute inset-0 opacity-[0.02]" style="background-image: radial-gradient(#1a1040 1px, transparent 1px); background-size: 24px 24px;"></div>
 
         <div class="max-w-6xl mx-auto px-4 sm:px-6 relative">

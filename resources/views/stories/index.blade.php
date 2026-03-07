@@ -5,15 +5,14 @@
 
 @section('content')
     {{-- Hero --}}
-    <section class="bg-gradient-to-br from-navy via-navy-light to-purple py-16 sm:py-24 relative overflow-hidden">
-        <div class="absolute inset-0 opacity-10">
-            <div class="absolute top-10 left-10 text-4xl sparkle">✨</div>
-            <div class="absolute top-20 right-20 text-3xl sparkle-delay">⭐</div>
-            <div class="absolute bottom-16 left-1/3 text-2xl sparkle-delay-2">✨</div>
-        </div>
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center relative z-10">
-            <h1 class="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4">Our Disney Family</h1>
-            <p class="text-lg text-white/70 max-w-2xl mx-auto leading-relaxed">Real stories from real families navigating the magic of Disney with children on the autism spectrum. You're not alone on this journey.</p>
+    <section class="bg-gradient-to-br from-navy to-navy-light py-16 md:py-24 relative overflow-hidden">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 text-center relative z-10">
+            <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6">
+                <span class="w-2 h-2 bg-gold rounded-full animate-pulse"></span>
+                <span class="text-gold text-sm font-semibold tracking-widest uppercase">Community Stories</span>
+            </div>
+            <h1 class="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-white mt-2">Our Disney Family</h1>
+            <p class="text-white/60 mt-4 max-w-xl mx-auto text-lg">Real stories from real families navigating the magic of Disney with children on the autism spectrum. You're not alone on this journey.</p>
 
             {{-- Community Stats --}}
             @php $totalStories = ($featured->count() ?? 0) + ($stories->total() ?? 0); @endphp
@@ -153,7 +152,7 @@
 
     {{-- Bottom CTA Banner --}}
     @if($stories->isNotEmpty())
-        <section class="bg-gradient-to-r from-purple to-navy py-16 no-print">
+        <section class="bg-gradient-to-br from-navy to-navy-light py-16 no-print">
             <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center">
                 <h2 class="font-heading text-3xl font-bold text-white mb-4">Your Story Matters</h2>
                 <p class="text-white/70 text-lg mb-8">Every family's Disney experience is unique. Share yours and help another family feel less alone on their journey.</p>
