@@ -205,18 +205,10 @@
                     </style>
                     <div class="grid md:grid-cols-5 min-h-[280px] relative">
                         {{-- Excerpt side --}}
-                        <div class="md:col-span-2 p-8 md:p-10 pt-40 md:pt-36 flex flex-col relative">
+                        <div class="md:col-span-2 p-8 md:p-10 pl-10 md:pl-12 pt-20 flex flex-col justify-center relative">
                             <p class="text-white/70 text-sm md:text-base leading-relaxed relative z-10">
                                 {{ $feat->excerpt }}
                             </p>
-                        </div>
-                        {{-- Magic star divider --}}
-                        <div class="hidden md:flex absolute left-[40%] top-0 bottom-0 items-center justify-center">
-                            <div class="relative w-8 h-8">
-                                <span class="sparkle absolute inset-0 flex items-center justify-center text-gold/50 text-base">✦</span>
-                                <span class="sparkle-delay absolute -top-2 -right-1 text-gold/25 text-[8px]">✦</span>
-                                <span class="sparkle-delay-2 absolute -bottom-1 -left-1 text-gold/20 text-[7px]">✧</span>
-                            </div>
                         </div>
                         {{-- Content side --}}
                         <div class="md:col-span-3 p-8 md:p-10 flex flex-col justify-center">
