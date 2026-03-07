@@ -261,55 +261,61 @@
                 <span class="sparkle-delay-2 absolute -bottom-3 -right-3 text-gold/30 text-sm z-10">✦</span>
                 <span class="sparkle absolute bottom-4 -left-2 text-gold/15 text-xs z-10">✧</span>
 
-                <a href="#" class="featured-card-border group block overflow-visible transition-all duration-300 relative">
+                <a href="#" class="featured-card-border group block overflow-visible transition-all duration-300 relative" style="clip-path: none;">
                     {{-- Featured ribbon --}}
                     {{-- Corner ribbon with wrap-around --}}
                     <style>
-                        .corner-ribbon {
-                            width: 230px;
-                            background: linear-gradient(to bottom, #f5dc6b, #d4a843 50%, #b8922f);
+                        .ribbon-wrapper {
+                            width: 85px;
+                            height: 88px;
+                            overflow: hidden;
                             position: absolute;
-                            top: 32px;
-                            left: -55px;
-                            text-align: center;
-                            line-height: 38px;
-                            height: 38px;
-                            letter-spacing: 0.15em;
-                            color: #1a1040;
-                            font-size: 11px;
-                            font-weight: 700;
-                            text-transform: uppercase;
-                            transform: rotate(-45deg);
+                            top: -3px;
+                            left: -3px;
                             z-index: 30;
-                            box-shadow: 0 3px 8px rgba(0,0,0,0.25);
                         }
-                        /* Fold triangles — these sit UNDER the ribbon at each end */
-                        .corner-ribbon::before {
+                        .ribbon-wrapper::before {
                             content: '';
                             position: absolute;
-                            bottom: -8px;
-                            left: 0;
-                            width: 0;
-                            height: 0;
-                            border-style: solid;
-                            border-width: 8px 10px 0 0;
-                            border-color: #7a5e1e transparent transparent transparent;
-                        }
-                        .corner-ribbon::after {
-                            content: '';
-                            position: absolute;
-                            bottom: -8px;
+                            display: block;
+                            border: 3px solid #7a5e1e;
+                            border-top-color: transparent;
+                            border-left-color: transparent;
+                            top: 0;
                             right: 0;
-                            width: 0;
-                            height: 0;
-                            border-style: solid;
-                            border-width: 0 10px 8px 0;
-                            border-color: transparent #7a5e1e transparent transparent;
+                        }
+                        .ribbon-wrapper::after {
+                            content: '';
+                            position: absolute;
+                            display: block;
+                            border: 3px solid #7a5e1e;
+                            border-top-color: transparent;
+                            border-left-color: transparent;
+                            bottom: 0;
+                            left: 0;
+                        }
+                        .ribbon-wrapper .ribbon-band {
+                            font-size: 9px;
+                            font-weight: 700;
+                            color: #1a1040;
+                            text-align: center;
+                            text-transform: uppercase;
+                            letter-spacing: 0.12em;
+                            transform: rotate(-45deg);
+                            position: relative;
+                            padding: 7px 0;
+                            top: 15px;
+                            left: -28px;
+                            width: 130px;
+                            background: linear-gradient(#f5dc6b 0%, #d4a843 50%, #b8922f 100%);
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
                         }
                     </style>
-                    <div class="corner-ribbon">✦ Featured ✦</div>
+                    <div class="ribbon-wrapper">
+                        <div class="ribbon-band">✦ Featured ✦</div>
+                    </div>
 
-                    <div class="grid md:grid-cols-5 min-h-[280px] relative overflow-hidden rounded-3xl">
+                    <div class="grid md:grid-cols-5 min-h-[280px] relative">
                         {{-- Excerpt side --}}
                         <div class="md:col-span-2 p-8 md:p-10 flex flex-col justify-center relative">
                             <span class="text-[10px] font-bold uppercase tracking-widest mb-4 block text-gold/70">Featured Post</span>
