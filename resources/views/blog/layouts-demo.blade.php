@@ -217,14 +217,20 @@
                                 <span class="text-white/30 text-xs">{{ $feat->reading_time }} min read</span>
                             </div>
                             <h2 class="font-heading text-2xl md:text-3xl font-bold text-white group-hover:text-gold transition-colors leading-snug">{{ $feat->title }}</h2>
-                            <div class="flex items-center gap-4 mt-6 pt-6 border-t border-white/10">
-                                <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gold/25 to-purple/15 flex items-center justify-center text-gold text-[10px] font-bold font-heading border border-gold/20">
-                                    {{ collect(explode(' ', $feat->author_name))->reject(fn($w) => in_array($w, ['&', 'and']))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('&') }}
+                            <div class="flex items-center justify-between mt-6 pt-6 border-t border-white/10">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gold/25 to-purple/15 flex items-center justify-center text-gold text-[10px] font-bold font-heading border border-gold/20">
+                                        {{ collect(explode(' ', $feat->author_name))->reject(fn($w) => in_array($w, ['&', 'and']))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('&') }}
+                                    </div>
+                                    <div>
+                                        <p class="text-white text-sm font-semibold">{{ $feat->author_name }}</p>
+                                        <p class="text-white/40 text-xs">{{ $feat->published_at->format('F j, Y') }}</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p class="text-white text-sm font-semibold">{{ $feat->author_name }}</p>
-                                    <p class="text-white/40 text-xs">{{ $feat->published_at->format('F j, Y') }}</p>
-                                </div>
+                                <span class="inline-flex items-center gap-1.5 text-gold text-sm font-semibold group-hover:gap-2.5 transition-all">
+                                    Read Article
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                                </span>
                             </div>
                         </div>
                     </div>
