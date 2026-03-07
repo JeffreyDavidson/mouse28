@@ -50,6 +50,7 @@ class PostForm
                 Section::make('Content')
                     ->schema([
                         Textarea::make('excerpt')
+                            ->label('Summary')
                             ->rows(3)
                             ->maxLength(300),
                         MarkdownEditor::make('body')
