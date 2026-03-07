@@ -232,19 +232,15 @@
                 <div class="absolute top-0 left-0 right-0 h-1 rounded-t-3xl transition-transform origin-left duration-300 group-hover:scale-x-100 scale-x-0" style="background: {{ $fColor }};"></div>
                 <div class="grid md:grid-cols-5 min-h-[280px] relative">
                     {{-- Excerpt side --}}
-                    <div class="md:col-span-2 p-8 md:p-10 flex flex-col justify-center relative" style="background: linear-gradient(135deg, {{ $fColor }}12, {{ $fColor }}05);">
+                    <div class="md:col-span-2 p-8 md:p-10 flex flex-col justify-center relative">
                         <span class="text-[10px] font-bold uppercase tracking-widest mb-4 block" style="color: {{ $fColor }};">Featured Post</span>
                         <p class="text-navy/70 text-sm md:text-base leading-relaxed relative z-10">
                             {{ $feat->excerpt }}
                         </p>
                     </div>
-                    {{-- Vertical star divider --}}
-                    <div class="hidden md:flex absolute left-[40%] top-0 bottom-0 flex-col items-center justify-center gap-2">
-                        <span class="text-gold/30 text-xs">✦</span>
-                        <div class="w-px flex-1 max-h-16" style="background: linear-gradient(180deg, transparent, {{ $fColor }}20, transparent);"></div>
-                        <span class="text-gold/50 text-sm">✦</span>
-                        <div class="w-px flex-1 max-h-16" style="background: linear-gradient(180deg, transparent, {{ $fColor }}20, transparent);"></div>
-                        <span class="text-gold/30 text-xs">✦</span>
+                    {{-- Star divider --}}
+                    <div class="hidden md:flex absolute left-[40%] top-0 bottom-0 items-center justify-center">
+                        <span class="text-gold/40 text-sm">✦</span>
                     </div>
                     {{-- Content side --}}
                     <div class="md:col-span-3 p-8 md:p-10 flex flex-col justify-center">
