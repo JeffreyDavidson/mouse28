@@ -225,18 +225,24 @@
             <h2 class="font-heading text-2xl font-bold text-navy text-center">Hybrid: Full-Width Featured + Grid</h2>
             <p class="option-desc">The latest post gets A's full-width editorial treatment with the category accent stripe. Everything else goes into B's text-only grid cards below.</p>
 
-            {{-- Featured: A-style full-width --}}
+            {{-- Featured: B-style two-column with excerpt --}}
             @php $feat = $demoPosts[0]; $fColor = $categoryColors[$feat->category] ?? '#5b3e9e'; @endphp
-            <a href="#" class="group block bg-white rounded-2xl overflow-hidden shadow-sm border border-navy/5 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 mb-8 max-w-4xl mx-auto" style="border-left: 4px solid {{ $fColor }};">
-                <div class="p-6 md:p-8">
-                    <div class="flex flex-wrap items-center gap-3 mb-3">
-                        <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background: {{ $fColor }}15; color: {{ $fColor }};">{{ $feat->category_label }}</span>
-                        <span class="text-navy/25 text-xs">{{ $feat->reading_time }} min read</span>
+            <a href="#" class="group block bg-white rounded-3xl overflow-hidden shadow-lg shadow-navy/5 border border-navy/5 mb-8 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                <div class="grid md:grid-cols-5">
+                    {{-- Excerpt side --}}
+                    <div class="md:col-span-2 p-8 md:p-10 flex items-center relative" style="background: linear-gradient(135deg, {{ $fColor }}08, {{ $fColor }}03);">
+                        <p class="text-navy/60 text-sm md:text-base leading-relaxed relative z-10">
+                            {{ $feat->excerpt }}
+                        </p>
                     </div>
-                    <h2 class="font-heading text-2xl md:text-3xl font-bold text-navy group-hover:text-purple transition-colors leading-snug">{{ $feat->title }}</h2>
-                    <p class="text-navy/50 md:text-base leading-relaxed mt-3 line-clamp-3">{{ $feat->excerpt }}</p>
-                    <div class="flex items-center justify-between mt-6 pt-5 border-t border-navy/5">
-                        <div class="flex items-center gap-3">
+                    {{-- Content side --}}
+                    <div class="md:col-span-3 p-8 md:p-10 flex flex-col justify-center">
+                        <div class="flex items-center gap-3 mb-4">
+                            <span class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full" style="background: {{ $fColor }}15; color: {{ $fColor }};">{{ $feat->category_label }}</span>
+                            <span class="text-navy/25 text-xs">{{ $feat->reading_time }} min read</span>
+                        </div>
+                        <h2 class="font-heading text-2xl md:text-3xl font-bold text-navy group-hover:text-purple transition-colors leading-snug">{{ $feat->title }}</h2>
+                        <div class="flex items-center gap-4 mt-6 pt-5 border-t border-navy/5">
                             <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gold/25 to-purple/15 flex items-center justify-center text-gold text-[10px] font-bold font-heading border border-gold/15">
                                 {{ collect(explode(' ', $feat->author_name))->reject(fn($w) => in_array($w, ['&', 'and']))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('&') }}
                             </div>
@@ -245,10 +251,6 @@
                                 <p class="text-navy/30 text-xs">{{ $feat->published_at->format('F j, Y') }}</p>
                             </div>
                         </div>
-                        <span class="inline-flex items-center gap-1.5 text-sm font-semibold group-hover:gap-2.5 transition-all" style="color: {{ $fColor }};">
-                            Read
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-                        </span>
                     </div>
                 </div>
             </a>
