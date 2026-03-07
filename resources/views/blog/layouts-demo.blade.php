@@ -140,58 +140,61 @@
 
                 <a href="#" class="featured-card-border group block overflow-visible transition-all duration-300 relative" style="clip-path: none;">
                     {{-- Featured ribbon --}}
-                    {{-- Corner ribbon with wrap-around --}}
+                    {{-- Corner ribbon (nxworld pattern) --}}
                     <style>
-                        .ribbon-wrapper {
-                            width: 75px;
-                            height: 75px;
+                        .ribbon {
+                            width: 150px;
+                            height: 150px;
                             overflow: hidden;
                             position: absolute;
-                            top: -3px;
-                            left: -3px;
                             z-index: 30;
                             pointer-events: none;
                         }
-                        .ribbon-wrapper::before {
+                        .ribbon::before,
+                        .ribbon::after {
+                            position: absolute;
+                            z-index: -1;
                             content: '';
+                            display: block;
+                            border: 5px solid #7a5e1e;
+                        }
+                        .ribbon span {
                             position: absolute;
                             display: block;
-                            border: 3px solid #7a5e1e;
+                            width: 225px;
+                            padding: 8px 0;
+                            background: linear-gradient(#f5dc6b 0%, #d4a843 50%, #b8922f 100%);
+                            box-shadow: 0 5px 10px rgba(0,0,0,.1);
+                            color: #1a1040;
+                            font: 700 10px/1 'Poppins', sans-serif;
+                            text-transform: uppercase;
+                            text-align: center;
+                            letter-spacing: 0.15em;
+                        }
+                        .ribbon-top-left {
+                            top: -10px;
+                            left: -10px;
+                        }
+                        .ribbon-top-left::before,
+                        .ribbon-top-left::after {
                             border-top-color: transparent;
                             border-left-color: transparent;
+                        }
+                        .ribbon-top-left::before {
                             top: 0;
                             right: 0;
                         }
-                        .ribbon-wrapper::after {
-                            content: '';
-                            position: absolute;
-                            display: block;
-                            border: 3px solid #7a5e1e;
-                            border-top-color: transparent;
-                            border-left-color: transparent;
+                        .ribbon-top-left::after {
                             bottom: 0;
                             left: 0;
                         }
-                        .ribbon-wrapper .ribbon-band {
-                            font-size: 8px;
-                            font-weight: 700;
-                            color: #1a1040;
-                            text-align: center;
-                            text-transform: uppercase;
-                            letter-spacing: 0.1em;
+                        .ribbon-top-left span {
+                            right: -25px;
+                            top: 30px;
                             transform: rotate(-45deg);
-                            position: relative;
-                            padding: 4px 0;
-                            top: 14px;
-                            left: -20px;
-                            width: 110px;
-                            background: linear-gradient(#f5dc6b 0%, #d4a843 50%, #b8922f 100%);
-                            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
                         }
                     </style>
-                    <div class="ribbon-wrapper">
-                        <div class="ribbon-band">✦ Featured ✦</div>
-                    </div>
+                    <div class="ribbon ribbon-top-left"><span>✦ Featured ✦</span></div>
 
                     <div class="grid md:grid-cols-5 min-h-[280px] relative">
                         {{-- Excerpt side --}}
