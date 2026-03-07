@@ -238,9 +238,13 @@
                             {{ $feat->excerpt }}
                         </p>
                     </div>
-                    {{-- Star divider --}}
+                    {{-- Magic star divider --}}
                     <div class="hidden md:flex absolute left-[40%] top-0 bottom-0 items-center justify-center">
-                        <span class="text-gold/40 text-sm">✦</span>
+                        <div class="relative w-8 h-8">
+                            <span class="sparkle absolute inset-0 flex items-center justify-center text-gold/50 text-base">✦</span>
+                            <span class="sparkle-delay absolute -top-2 -right-1 text-gold/25 text-[8px]">✦</span>
+                            <span class="sparkle-delay-2 absolute -bottom-1 -left-1 text-gold/20 text-[7px]">✧</span>
+                        </div>
                     </div>
                     {{-- Content side --}}
                     <div class="md:col-span-3 p-8 md:p-10 flex flex-col justify-center">
