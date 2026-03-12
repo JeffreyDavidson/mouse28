@@ -32,7 +32,7 @@ class ContactController extends Controller
         $contactMessage = ContactMessage::create($validated);
 
         try {
-            $recipients = array_filter(array_map('trim', explode(',', config('mail.admin_address', 'hello@mouse28.com'))));
+            $recipients = array_filter(array_map('trim', explode(',', config('mail.admin_address', 'mouse28podcast@gmail.com'))));
             Mail::to($recipients)
                 ->send(new ContactFormSubmitted($contactMessage));
         } catch (\Throwable $e) {
