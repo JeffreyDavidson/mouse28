@@ -17,6 +17,11 @@ class ContactController extends Controller
 
     public function store(Request $request)
     {
+        // Honeypot: if this hidden field is filled, it is a bot
+        if ($request->filled('website_url')) {
+            return back()->with('success', true);
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
