@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ContactFormConfirmation;
 use App\Mail\ContactFormSubmitted;
 use App\Models\ContactMessage;
 use Illuminate\Http\Request;
@@ -37,6 +38,13 @@ class ContactController extends Controller
                 ->send(new ContactFormSubmitted($contactMessage));
         } catch (\Throwable $e) {
             Log::error('Failed to send contact notification: ' . $e->getMessage());
+        }
+
+        try {
+            Mail::to($contactMessage->email)
+                ->send(new ContactFormConfirmation($contactMessage));
+        } catch (\Throwable $e) {
+            Log::error('Failed to send contact confirmation: ' . $e->getMessage());
         }
 
         return back()->with('success', true);
