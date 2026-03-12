@@ -130,7 +130,7 @@
                                     <svg style="width: 18px; height: 18px; color: #f0c75e;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                                 </div>
                                 <div>
-                                    <a href="mailto:hello@mouse28.com" style="color: #fef9ef; font-weight: 600; font-size: 0.9rem; font-family: 'Poppins', sans-serif; text-decoration: none;">hello@mouse28.com</a>
+                                    <a href="mailto:mouse28podcast@gmail.com" style="color: #fef9ef; font-weight: 600; font-size: 0.9rem; font-family: 'Poppins', sans-serif; text-decoration: none;">mouse28podcast@gmail.com</a>
                                     <p style="color: rgba(254,249,239,0.35); font-size: 0.75rem; font-family: 'Poppins', sans-serif;">We read every message</p>
                                 </div>
                             </div>
