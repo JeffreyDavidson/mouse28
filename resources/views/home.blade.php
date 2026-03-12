@@ -332,7 +332,7 @@
                             <div class="flex items-center justify-between mt-auto pt-6 border-t border-white/10">
                                 <div class="flex items-center gap-3">
                                     <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gold/25 to-purple/15 flex items-center justify-center text-gold text-[10px] font-bold font-heading border border-gold/20">
-                                        {{ collect(explode(' ', $featuredPost->author_name))->reject(fn($w) => in_array($w, ['&', 'and']))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('&') }}
+                                        {{ $featuredPost->author_initials }}
                                     </div>
                                     <div>
                                         <p class="text-white text-sm font-semibold">{{ $featuredPost->author_name }}</p>
@@ -392,7 +392,7 @@
                                 @endif
                                 <div class="flex items-center gap-2 pt-3 border-t border-navy/5">
                                     <div class="w-7 h-7 rounded-full bg-purple/10 flex items-center justify-center text-purple text-[10px] font-bold flex-shrink-0">
-                                        {{ collect(explode(' ', $post->author_name))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('') }}
+                                        {{ $post->author_initials }}
                                     </div>
                                     <span class="text-navy/40 text-xs font-medium font-body">{{ $post->author_name }}</span>
                                 </div>
