@@ -4,12 +4,13 @@ namespace App\Filament\Resources\ContactMessages\Pages;
 
 use App\Filament\Resources\ContactMessages\ContactMessageResource;
 use App\Models\ContactMessage;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Infolists\Components\IconEntry;
-use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Schemas\Schema;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 
 class ViewContactMessage extends ViewRecord
 {
@@ -33,8 +34,7 @@ class ViewContactMessage extends ViewRecord
                         ->icon('heroicon-o-user'),
                     TextEntry::make('email')
                         ->icon('heroicon-o-envelope')
-                        ->copyable()
-                        ->url(fn (ContactMessage $record) => "mailto:{$record->email}"),
+                        ->copyable(),
                     TextEntry::make('subject')
                         ->formatStateUsing(fn (string $state) => ContactMessage::SUBJECTS[$state] ?? ucfirst($state))
                         ->badge()
@@ -59,7 +59,7 @@ class ViewContactMessage extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            \Filament\Actions\Action::make('reply')
+            Action::make('reply')
                 ->label('Reply')
                 ->icon('heroicon-o-paper-airplane')
                 ->url(fn () => "mailto:{$this->record->email}?subject=" . urlencode("Re: {$this->record->subject_label}"))
