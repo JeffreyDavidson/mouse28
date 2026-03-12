@@ -55,6 +55,11 @@
                     <div style="background: rgba(254, 249, 239, 0.03); border: 1px solid rgba(254, 249, 239, 0.08); border-radius: 1.5rem; padding: 2.5rem; backdrop-filter: blur(10px);">
                         <form action="/contact" method="POST" style="display: flex; flex-direction: column; gap: 1.5rem;">
                             @csrf
+                            <!-- Honeypot - hidden from humans, bots fill this -->
+                            <div style="position: absolute; left: -9999px; top: -9999px;" aria-hidden="true">
+                                <label for="website_url">Website</label>
+                                <input type="text" id="website_url" name="website_url" tabindex="-1" autocomplete="off">
+                            </div>
 
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
                                 <div>
