@@ -265,7 +265,7 @@
             <div class="flex items-center justify-between mt-8">
                 <div class="flex items-center gap-4">
                     <div class="w-12 h-12 rounded-full bg-gradient-to-br from-gold/30 to-purple/20 flex items-center justify-center text-gold font-bold font-heading border-2 border-gold/20">
-                        {{ collect(explode(' ', $post->author_name))->reject(fn($w) => in_array($w, ['&', 'and']))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('&') }}
+                        {{ $post->author_initials }}
                     </div>
                     <div>
                         <p class="text-white font-semibold text-sm">{{ $post->author_name }}</p>
@@ -322,7 +322,7 @@
                     <div class="author-card mt-10 bg-white rounded-3xl p-8 md:p-10 shadow-lg shadow-navy/5 border border-navy/5">
                         <div class="flex flex-col sm:flex-row items-start gap-6">
                             <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-gold/25 to-purple/15 flex items-center justify-center text-gold text-xl font-bold font-heading flex-shrink-0 border border-gold/15">
-                                {{ collect(explode(' ', $post->author_name))->reject(fn($w) => in_array($w, ['&', 'and']))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('&') }}
+                                {{ $post->author_initials }}
                             </div>
                             <div>
                                 <span class="text-gold text-xs font-bold uppercase tracking-widest">Written by</span>

@@ -49,6 +49,19 @@ class Post extends Model
         return self::AUTHORS[$this->author] ?? 'Mouse28 Team';
     }
 
+    public function getAuthorInitialsAttribute(): string
+    {
+        if ($this->author === 'both') {
+            return 'J&C';
+        }
+
+        $name = $this->author_name;
+        return collect(explode(' ', $name))
+            ->map(fn($w) => strtoupper(substr($w, 0, 1)))
+            ->take(2)
+            ->join('');
+    }
+
     public function getReadingTimeAttribute(): int
     {
         $words = str_word_count(strip_tags($this->body ?? ''));
