@@ -110,6 +110,9 @@
         }
     </style>
     @stack('styles')
+@if(config('services.fathom.site_id'))
+<script src="https://cdn.usefathom.com/script.js" data-site="{{ config('services.fathom.site_id') }}" defer></script>
+@endif
 </head>
 <body class="bg-cream text-navy min-h-screen flex flex-col font-body">
     {{-- Navigation --}}
