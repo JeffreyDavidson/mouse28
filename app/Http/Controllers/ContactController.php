@@ -27,7 +27,8 @@ class ContactController extends Controller
         $contactMessage = ContactMessage::create($validated);
 
         try {
-            Mail::to(config('mail.admin_address', 'hello@mouse28.com'))
+            $recipients = array_filter(array_map('trim', explode(',', config('mail.admin_address', 'hello@mouse28.com'))));
+            Mail::to($recipients)
                 ->send(new ContactFormSubmitted($contactMessage));
         } catch (\Throwable $e) {
             Log::error('Failed to send contact notification: ' . $e->getMessage());
