@@ -217,7 +217,7 @@
                                 <div class="flex items-center justify-between mt-8 pt-6 border-t border-white/10 md:ml-20">
                                     <div class="flex items-center gap-4">
                                         <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gold/25 to-purple/15 flex items-center justify-center text-gold text-[10px] font-bold font-heading border border-gold/20">
-                                            {{ collect(explode(' ', $featured->author_name))->reject(fn($w) => in_array($w, ['&', 'and']))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('&') }}
+                                            {{ $featured->author_initials }}
                                         </div>
                                         <div>
                                             <p class="text-white text-sm font-semibold">{{ $featured->author_name }}</p>
