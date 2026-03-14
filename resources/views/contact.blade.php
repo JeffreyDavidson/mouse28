@@ -54,6 +54,11 @@
                     {{-- Form --}}
                     <div style="background: rgba(254, 249, 239, 0.03); border: 1px solid rgba(254, 249, 239, 0.08); border-radius: 1.5rem; padding: 2.5rem; backdrop-filter: blur(10px);">
                         <form action="/contact" method="POST" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                            <!-- Honeypot -->
+                            <div style="position:absolute;left:-9999px;" aria-hidden="true">
+                                <input type="text" name="website" tabindex="-1" autocomplete="off">
+                                <input type="text" name="fax_number" tabindex="-1" autocomplete="off">
+                            </div>
                             @csrf
 
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
