@@ -53,6 +53,7 @@
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi",
+            "@php -r \"file_exists('vendor/filament/forms/dist/components/file-upload.js') && file_put_contents('vendor/filament/forms/dist/components/file-upload.js', preg_replace('/[ \\t]+\\R/', PHP_EOL, file_get_contents('vendor/filament/forms/dist/components/file-upload.js')));\"",
             "@php artisan filament:upgrade"
         ],
         "post-update-cmd": [
