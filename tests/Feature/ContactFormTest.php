@@ -21,6 +21,8 @@ class ContactFormTest extends TestCase
         config()->set('services.turnstile.site_key', 'test-site-key');
         config()->set('services.turnstile.secret_key', 'test-secret-key');
         config()->set('services.turnstile.siteverify_url', 'https://challenges.cloudflare.com/turnstile/v0/siteverify');
+        config()->set('services.turnstile.action', 'contact-form');
+        config()->set('services.turnstile.allowed_hostnames', ['mouse28.com', 'www.mouse28.com']);
     }
 
     public function test_contact_page_renders_turnstile_widget(): void
@@ -29,7 +31,8 @@ class ContactFormTest extends TestCase
             ->assertOk()
             ->assertSee('https://challenges.cloudflare.com/turnstile/v0/api.js', false)
             ->assertSee('class="cf-turnstile"', false)
-            ->assertSee('data-sitekey="test-site-key"', false);
+            ->assertSee('data-sitekey="test-site-key"', false)
+            ->assertSee('data-action="contact-form"', false);
     }
 
     public function test_valid_contact_submission_requires_successful_turnstile_verification(): void
@@ -37,7 +40,11 @@ class ContactFormTest extends TestCase
         Mail::fake();
 
         Http::fake([
-            'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response(['success' => true]),
+            'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response([
+                'success' => true,
+                'action' => 'contact-form',
+                'hostname' => 'mouse28.com',
+            ]),
         ]);
 
         $response = $this->from('/contact')->post('/contact', $this->validPayload());
@@ -78,6 +85,48 @@ class ContactFormTest extends TestCase
         Mail::assertNothingSent();
     }
 
+    public function test_contact_submission_rejects_wrong_or_missing_turnstile_hostname_or_action_before_persistence_or_mail(): void
+    {
+        $invalidResponses = [
+            'wrong hostname' => [
+                'success' => true,
+                'action' => 'contact-form',
+                'hostname' => 'attacker.example',
+            ],
+            'missing hostname' => [
+                'success' => true,
+                'action' => 'contact-form',
+            ],
+            'wrong action' => [
+                'success' => true,
+                'action' => 'newsletter',
+                'hostname' => 'mouse28.com',
+            ],
+            'missing action' => [
+                'success' => true,
+                'hostname' => 'mouse28.com',
+            ],
+        ];
+
+        foreach ($invalidResponses as $case => $turnstileResponse) {
+            Mail::fake();
+
+            Http::fake([
+                'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response($turnstileResponse),
+            ]);
+
+            $response = $this->from('/contact')->post('/contact', array_merge($this->validPayload(), [
+                'email' => str_replace(' ', '-', $case).'@example.com',
+            ]));
+
+            $response->assertRedirect('/contact')
+                ->assertSessionHasErrors('cf-turnstile-response');
+
+            $this->assertDatabaseCount('contact_messages', 0);
+            Mail::assertNothingSent();
+        }
+    }
+
     public function test_contact_submission_rejects_missing_turnstile_secret_before_persistence_or_mail(): void
     {
         Mail::fake();
@@ -114,7 +163,11 @@ class ContactFormTest extends TestCase
         Mail::fake();
 
         Http::fake([
-            'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response(['success' => true]),
+            'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response([
+                'success' => true,
+                'action' => 'contact-form',
+                'hostname' => 'www.mouse28.com',
+            ]),
         ]);
 
         for ($i = 0; $i < 5; $i++) {

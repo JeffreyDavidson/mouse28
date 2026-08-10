@@ -40,6 +40,8 @@ return [
     ],
 
     'turnstile' => [
+        'action' => env('TURNSTILE_CONTACT_ACTION', 'contact-form'),
+        'allowed_hostnames' => array_filter(array_map('trim', explode(',', env('TURNSTILE_ALLOWED_HOSTNAMES', 'mouse28.com,www.mouse28.com')))),
         'site_key' => env('TURNSTILE_SITE_KEY'),
         'secret_key' => env('TURNSTILE_SECRET_KEY'),
         'siteverify_url' => env('TURNSTILE_SITEVERIFY_URL', 'https://challenges.cloudflare.com/turnstile/v0/siteverify'),

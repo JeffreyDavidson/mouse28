@@ -119,7 +119,7 @@
 
                             <div>
                                 @if (config('services.turnstile.site_key'))
-                                    <div class="cf-turnstile" data-sitekey="{{ config('services.turnstile.site_key') }}" data-theme="dark"></div>
+                                    <div class="cf-turnstile" data-sitekey="{{ config('services.turnstile.site_key') }}" data-action="{{ config('services.turnstile.action', 'contact-form') }}" data-theme="dark"></div>
                                 @else
                                     <p role="alert" style="color: #fecaca; font-size: 0.75rem; margin-top: 0.4rem;">Contact verification is temporarily unavailable. Please try again later.</p>
                                 @endif

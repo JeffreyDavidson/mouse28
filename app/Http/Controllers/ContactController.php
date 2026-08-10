@@ -60,6 +60,8 @@ class ContactController extends Controller
         $secret = config('services.turnstile.secret_key');
         $endpoint = config('services.turnstile.siteverify_url', 'https://challenges.cloudflare.com/turnstile/v0/siteverify');
 
+        $expectedAction = config('services.turnstile.action', 'contact-form');
+        $allowedHostnames = config('services.turnstile.allowed_hostnames', []);
         if (! is_string($token) || trim($token) === '' || ! is_string($secret) || trim($secret) === '') {
             $this->throwTurnstileValidationException();
         }
@@ -77,7 +79,12 @@ class ContactController extends Controller
             $this->throwTurnstileValidationException();
         }
 
-        if (! $response->ok() || $response->json('success') !== true) {
+        $hostname = strtolower((string) $response->json('hostname', ''));
+        $allowedHostnames = array_map('strtolower', array_filter($allowedHostnames, 'is_string'));
+
+        if (! $response->ok() || $response->json('success') !== true
+            || $response->json('action') !== $expectedAction
+            || ! in_array($hostname, $allowedHostnames, true)) {
             $this->throwTurnstileValidationException();
         }
     }
