@@ -55,6 +55,13 @@
                     <div style="background: rgba(254, 249, 239, 0.03); border: 1px solid rgba(254, 249, 239, 0.08); border-radius: 1.5rem; padding: 2.5rem; backdrop-filter: blur(10px);">
                         <form action="/contact" method="POST" style="display: flex; flex-direction: column; gap: 1.5rem;">
                             @csrf
+                            <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+                            @if ($errors->has('contact_rate_limit'))
+                                <div role="alert" style="color: #fecaca; font-size: 0.85rem; background: rgba(248,113,113,0.12); border: 1px solid rgba(248,113,113,0.25); border-radius: 0.75rem; padding: 0.85rem 1rem;">
+                                    {{ $errors->first('contact_rate_limit') }}
+                                </div>
+                            @endif
+
                             <!-- Honeypot - hidden from humans, bots fill this -->
                             <div style="position: absolute; left: -9999px; top: -9999px;" aria-hidden="true">
                                 <label for="website_url">Website</label>
@@ -108,6 +115,15 @@
                                     onblur="this.style.borderColor='rgba(254,249,239,0.1)';this.style.background='rgba(254,249,239,0.04)'"
                                 >{{ old('message') }}</textarea>
                                 @error('message') <p style="color: #f87171; font-size: 0.75rem; margin-top: 0.4rem;">{{ $message }}</p> @enderror
+                            </div>
+
+                            <div>
+                                @if (config('services.turnstile.site_key'))
+                                    <div class="cf-turnstile" data-sitekey="{{ config('services.turnstile.site_key') }}" data-theme="dark"></div>
+                                @else
+                                    <p role="alert" style="color: #fecaca; font-size: 0.75rem; margin-top: 0.4rem;">Contact verification is temporarily unavailable. Please try again later.</p>
+                                @endif
+                                @error('cf-turnstile-response') <p id="turnstile-error" role="alert" style="color: #f87171; font-size: 0.75rem; margin-top: 0.4rem;">{{ $message }}</p> @enderror
                             </div>
 
                             <button type="submit" style="
