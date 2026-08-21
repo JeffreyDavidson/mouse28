@@ -50,6 +50,15 @@ class Guide extends Model
             ->where('published_at', '<=', now());
     }
 
+    #[Scope]
+    protected function reviewDue(Builder $query): void
+    {
+        $query->where(function (Builder $query): void {
+            $query->whereNull('last_reviewed_at')
+                ->orWhere('last_reviewed_at', '<', today()->subDays(config('mouse28.guide_review_interval_days')));
+        });
+    }
+
     public function getAuthorNameAttribute(): string
     {
         return Post::AUTHORS[$this->author] ?? 'Mouse28 Team';
@@ -73,5 +82,16 @@ class Guide extends Model
     public function getReadingTimeAttribute(): int
     {
         return max(1, (int) ceil(str_word_count(strip_tags($this->body)) / 200));
+    }
+
+    public function getReviewStatusAttribute(): string
+    {
+        return $this->isReviewDue() ? 'Review due' : 'Current';
+    }
+
+    public function isReviewDue(): bool
+    {
+        return ! $this->last_reviewed_at
+            || $this->last_reviewed_at->lt(today()->subDays(config('mouse28.guide_review_interval_days')));
     }
 }

@@ -21,6 +21,10 @@ class GuidesTable
                     ->badge()
                     ->formatStateUsing(fn (string $state): string => Guide::CATEGORIES[$state] ?? $state),
                 TextColumn::make('last_reviewed_at')->date()->sortable()->placeholder('Not reviewed'),
+                TextColumn::make('review_status')
+                    ->label('Review')
+                    ->badge()
+                    ->color(fn (string $state): string => $state === 'Current' ? 'success' : 'warning'),
                 TextColumn::make('status')
                     ->badge()
                     ->getStateUsing(function (Guide $record): string {

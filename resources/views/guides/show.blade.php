@@ -7,6 +7,10 @@
 @section('og_type', 'article')
 @if ($guide->og_image_url ?: $guide->cover_image_url) @section('og_image', $guide->og_image_url ?: $guide->cover_image_url) @endif
 
+@push('head')
+    <x-structured-data :data="\App\Support\StructuredData::forGuide($guide)" />
+@endpush
+
 @section('content')
     <section class="relative overflow-hidden bg-linear-to-br from-navy via-navy-light to-purple py-14 md:py-20">
         <div class="mx-auto max-w-5xl px-4 sm:px-6">
@@ -26,6 +30,12 @@
                 <span>Written by {{ $guide->author_name }}</span>
                 @if ($guide->last_reviewed_at)<span>Last reviewed {{ $guide->last_reviewed_at->format('F j, Y') }}</span>@endif
             </div>
+
+            @if ($guide->isReviewDue())
+                <div role="note" class="mb-6 rounded-2xl border border-amber-500/30 bg-amber-100 px-5 py-4 text-sm/relaxed text-amber-950">
+                    This guide is due for editorial review. Disney policies and park operations can change, so confirm current details with official Disney information before your visit.
+                </div>
+            @endif
 
             <article class="rounded-3xl border border-navy/5 bg-white p-6 shadow-lg shadow-navy/5 sm:p-10 md:p-14">
                 <div class="blog-article-content prose-navy prose prose-lg max-w-none text-[1.1rem] leading-[1.85] text-navy/80">

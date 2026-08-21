@@ -71,7 +71,8 @@ class GuideForm
                                     ->maxLength(255)
                                     ->helperText('Link to the official policy or primary source.'),
                                 DatePicker::make('last_reviewed_at')
-                                    ->label('Last Reviewed'),
+                                    ->label('Last Reviewed')
+                                    ->helperText('Guides are flagged after '.config('mouse28.guide_review_interval_days').' days.'),
                             ]),
                         Section::make('Publishing')
                             ->schema([
