@@ -25,6 +25,10 @@ class PublicPagesTest extends TestCase
             ->assertOk()
             ->assertSee('Blog');
 
+        $this->get(route('guides.index'))
+            ->assertOk()
+            ->assertSee('Park Guides');
+
         $this->get(route('episodes.index'))
             ->assertOk()
             ->assertSee('Listen Along');

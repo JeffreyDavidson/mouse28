@@ -32,10 +32,6 @@ _Avoid_: guide when the content is timely or personal.
 A podcast episode with audio, show notes, distribution metadata, and optional related posts.
 _Avoid_: podcast when referring to one installment.
 
-**Community story**
-A contributed family experience or reader-submitted story.
-_Avoid_: testimonial unless it is explicitly praising Mouse28.
-
 **Host voice**
 Jeffrey and Cassie speaking candidly as parents, not as medical or Disney policy authorities.
 _Avoid_: expert voice unless citing a qualified source.
@@ -45,7 +41,8 @@ _Avoid_: expert voice unless citing a qualified source.
 - Episodes can have related Posts and show notes.
 - Guides form the accessibility hub and should be maintained as policy changes.
 - Trip reports can feed both Posts and Episode topics.
-- Community stories support the mission but need privacy-sensitive handling.
+
+Reader-submitted Community Stories are intentionally outside the Mouse28 product scope.
 
 ## Flagged Ambiguities
 

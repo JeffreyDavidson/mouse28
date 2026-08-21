@@ -15,7 +15,7 @@ class EpisodeController extends Controller
 
     public function show(Episode $episode)
     {
-        abort_unless($episode->is_published, 404);
+        abort_unless($episode->is_published && $episode->published_at?->isPast(), 404);
 
         return view('episodes.show', [
             'episode' => $episode,

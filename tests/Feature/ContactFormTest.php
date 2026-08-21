@@ -21,7 +21,7 @@ class ContactFormTest extends TestCase
         config()->set('services.turnstile.site_key', 'test-site-key');
         config()->set('services.turnstile.secret_key', 'test-secret-key');
         config()->set('services.turnstile.siteverify_url', 'https://challenges.cloudflare.com/turnstile/v0/siteverify');
-        config()->set('services.turnstile.action', 'contact-form');
+        config()->set('services.turnstile.contact_action', 'contact-form');
         config()->set('services.turnstile.allowed_hostnames', ['mouse28.com', 'www.mouse28.com']);
     }
 

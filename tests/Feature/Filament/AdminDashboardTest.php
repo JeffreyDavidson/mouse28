@@ -23,7 +23,7 @@ class AdminDashboardTest extends TestCase
             'https://api.resend.com/*' => Http::response(['data' => []]),
         ]);
 
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
 
         $this->actingAs($user)
             ->get('/admin')

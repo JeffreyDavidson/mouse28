@@ -35,5 +35,13 @@ class AppServiceProvider extends ServiceProvider
                     ->withInput();
             });
         });
+
+        RateLimiter::for('newsletter', function (Request $request) {
+            return Limit::perMinute(5)->by($request->ip())->response(function () {
+                return back()
+                    ->withErrors(['newsletter_rate_limit' => 'Too many signup attempts. Please wait a minute and try again.'])
+                    ->withInput();
+            });
+        });
     }
 }

@@ -48,76 +48,6 @@
     {{-- Gold divider --}}
     <div class="h-1 bg-linear-to-r from-gold via-gold-dark to-gold"></div>
 
-    {{-- What We Cover — Ticket Stubs --}}
-    <section class="bg-white py-16 md:py-24">
-        <div class="mx-auto max-w-5xl px-4 sm:px-6">
-            <div class="mb-12 text-center" data-animate>
-                <span class="font-body text-sm font-semibold tracking-[0.15em] text-gold uppercase">What We Cover</span>
-                <h2 class="mt-2 font-heading text-3xl font-bold text-navy md:text-4xl">Your Guide to the Parks</h2>
-            </div>
-            <div class="grid gap-5 sm:grid-cols-2" data-animate>
-                {{-- Ticket: Accessibility --}}
-                <a href="{{ route('blog.index') }}" class="ticket bg-linear-to-br from-[#e88d9a] to-[#d4627a] text-[#fce4e8]">
-                    <div class="relative p-7 pr-16 pb-10">
-                        <div class="mb-1 font-body text-[10px] font-bold tracking-[0.2em] text-white/50 uppercase">Mouse28 · Admit One</div>
-                        <h3 class="mb-2 font-heading text-2xl font-bold text-white">Accessibility</h3>
-                        <p class="font-body text-base/relaxed text-white/70 sm:text-sm/relaxed">DAS tips, sensory guides, and honest advice for neurodivergent families navigating the parks.</p>
-                        <div class="mt-4 flex items-center gap-2">
-                            <span class="rounded-full bg-white/20 px-3 py-1 font-body text-[10px] font-bold tracking-wider text-white uppercase">Explore →</span>
-                        </div>
-                    </div>
-                    <div class="ticket-hole"></div>
-                    <div class="ticket-tear text-white"></div>
-                </a>
-
-                {{-- Ticket: Park Strategy --}}
-                <a href="{{ route('blog.index') }}" class="ticket bg-linear-to-br from-purple-light to-purple text-[#ede4f7]">
-                    <div class="relative p-7 pr-16 pb-10">
-                        <div class="mb-1 font-body text-[10px] font-bold tracking-[0.2em] text-white/50 uppercase">Mouse28 · Admit One</div>
-                        <h3 class="mb-2 font-heading text-2xl font-bold text-white">Park Strategy</h3>
-                        <p class="font-body text-base/relaxed text-white/70 sm:text-sm/relaxed">Ride tips, rope drop plans, and weekly-tested strategies from locals who know every shortcut.</p>
-                        <div class="mt-4 flex items-center gap-2">
-                            <span class="rounded-full bg-white/20 px-3 py-1 font-body text-[10px] font-bold tracking-wider text-white uppercase">Explore →</span>
-                        </div>
-                    </div>
-                    <div class="ticket-hole"></div>
-                    <div class="ticket-tear text-white"></div>
-                </a>
-
-                {{-- Ticket: Food & Reviews --}}
-                <a href="{{ route('blog.index') }}" class="ticket bg-linear-to-br from-gold-light to-gold text-[#fdf3dc]">
-                    <div class="relative p-7 pr-16 pb-10">
-                        <div class="mb-1 font-body text-[10px] font-bold tracking-[0.2em] text-navy/40 uppercase">Mouse28 · Admit One</div>
-                        <h3 class="mb-2 font-heading text-2xl font-bold text-navy">Food & Reviews</h3>
-                        <p class="font-body text-base/relaxed text-navy/60 sm:text-sm/relaxed">Honest reviews of restaurants, snacks, and resorts — including diabetic-friendly options.</p>
-                        <div class="mt-4 flex items-center gap-2">
-                            <span class="rounded-full bg-navy/15 px-3 py-1 font-body text-[10px] font-bold tracking-wider text-navy uppercase">Explore →</span>
-                        </div>
-                    </div>
-                    <div class="ticket-hole"></div>
-                    <div class="ticket-tear text-white"></div>
-                </a>
-
-                {{-- Ticket: Family Stories --}}
-                <a href="{{ route('blog.index') }}" class="ticket bg-linear-to-br from-[#5ba4ad] to-[#4a90a4] text-[#ddf0f5]">
-                    <div class="relative p-7 pr-16 pb-10">
-                        <div class="mb-1 font-body text-[10px] font-bold tracking-[0.2em] text-white/50 uppercase">Mouse28 · Admit One</div>
-                        <h3 class="mb-2 font-heading text-2xl font-bold text-white">Family Stories</h3>
-                        <p class="font-body text-base/relaxed text-white/70 sm:text-sm/relaxed">Real moments from our weekly trips — the magical, the messy, and everything in between.</p>
-                        <div class="mt-4 flex items-center gap-2">
-                            <span class="rounded-full bg-white/20 px-3 py-1 font-body text-[10px] font-bold tracking-wider text-white uppercase">Explore →</span>
-                        </div>
-                    </div>
-                    <div class="ticket-hole"></div>
-                    <div class="ticket-tear text-white"></div>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    {{-- Thin gold line divider --}}
-    <div class="h-px bg-linear-to-r from-transparent via-gold/25 to-transparent"></div>
-
 {{-- Featured Post --}}
     @if($featuredPost)
         <section class="bg-cream py-16 md:py-24" data-animate>
@@ -233,6 +163,45 @@
             </div>
         </section>
     @endif
+
+    {{-- Guides --}}
+    <section class="bg-cream py-16 md:py-24">
+        <div class="mx-auto max-w-5xl px-4 sm:px-6">
+            <div class="mb-12 text-center" data-animate>
+                <span class="font-body text-sm font-semibold tracking-[0.15em] text-gold uppercase">Plan With Confidence</span>
+                <h2 class="mt-2 font-heading text-3xl font-bold text-navy md:text-4xl">Your Guide to the Parks</h2>
+                <p class="mx-auto mt-4 max-w-2xl text-base/relaxed text-navy/50">Practical, regularly reviewed guidance for more comfortable and accessible Disney park days.</p>
+            </div>
+
+            @if ($latestGuides->isNotEmpty())
+                <div class="grid gap-5 sm:grid-cols-2" data-animate>
+                    @foreach ($latestGuides as $guide)
+                        <a href="{{ route('guides.show', $guide) }}" class="group rounded-3xl border border-navy/5 bg-white p-7 shadow-sm transition-[transform,box-shadow] hover:-translate-y-1 hover:shadow-xl">
+                            <span class="text-xs font-bold tracking-widest text-gold uppercase">{{ $guide->category_label }}</span>
+                            <h3 class="mt-3 font-heading text-2xl font-bold text-navy transition-colors group-hover:text-purple">{{ $guide->title }}</h3>
+                            @if ($guide->excerpt)
+                                <p class="mt-3 text-base/relaxed text-navy/55">{{ $guide->excerpt }}</p>
+                            @endif
+                            <span class="mt-5 inline-flex min-h-12 items-center text-sm font-semibold text-purple">Read guide →</span>
+                        </a>
+                    @endforeach
+                </div>
+            @else
+                <div class="grid gap-5 sm:grid-cols-2" data-animate>
+                    @foreach (\App\Models\Guide::CATEGORIES as $slug => $label)
+                        <a href="{{ route('guides.index', ['category' => $slug]) }}" class="group rounded-3xl border border-navy/5 bg-white p-7 shadow-sm transition-[transform,box-shadow] hover:-translate-y-1 hover:shadow-xl">
+                            <h3 class="font-heading text-2xl font-bold text-navy transition-colors group-hover:text-purple">{{ $label }}</h3>
+                            <span class="mt-4 inline-flex min-h-12 items-center text-sm font-semibold text-gold">Explore guides →</span>
+                        </a>
+                    @endforeach
+                </div>
+            @endif
+
+            <div class="mt-10 text-center">
+                <a href="{{ route('guides.index') }}" class="inline-flex min-h-12 items-center rounded-full bg-navy px-7 py-3 text-base font-semibold text-white transition-colors hover:bg-purple">Browse all guides</a>
+            </div>
+        </div>
+    </section>
 
     {{-- Podcast Section --}}
     <section class="relative bg-white py-16 md:py-24">
@@ -393,24 +362,30 @@
                 <div class="mx-auto mb-4 max-w-md rounded-xl border border-red-400/30 bg-red-500/20 px-6 py-4">
                     <p class="font-body text-sm text-red-300">{{ session('newsletter_error') }}</p>
                 </div>
-                <form action="{{ route('newsletter.store') }}" method="POST" class="mx-auto flex max-w-md flex-col gap-3 sm:flex-row">
+                <form action="{{ route('newsletter.store') }}" method="POST" class="mx-auto max-w-md space-y-3">
                     @csrf
+                    <x-newsletter-protection honeypot-id="home-newsletter-website-error" />
+                    <div class="flex flex-col gap-3 sm:flex-row">
                     <label for="home-newsletter-email-error" class="sr-only">Email address</label>
                     <input id="home-newsletter-email-error" type="email" name="email" placeholder="your@email.com" autocomplete="email" required
                         class="newsletter-input min-h-[48px] flex-1 rounded-full border border-white/20 bg-white/10 px-5 py-3.5 font-body text-base text-white transition-[border-color,box-shadow] duration-300 placeholder:text-white/35 focus:border-gold/40 focus:ring-2 focus:ring-gold/60 focus:outline-none sm:text-sm">
                     <button type="submit" class="min-h-[48px] rounded-full bg-gold px-7 py-3.5 font-body text-base font-semibold text-navy transition-[transform,background-color,box-shadow] duration-300 hover:-translate-y-0.5 hover:scale-105 hover:bg-gold-light hover:shadow-lg hover:shadow-gold/30 active:scale-95 sm:text-sm">
                         Subscribe
                     </button>
+                    </div>
                 </form>
             @else
-                <form action="{{ route('newsletter.store') }}" method="POST" class="mx-auto flex max-w-md flex-col gap-3 sm:flex-row">
+                <form action="{{ route('newsletter.store') }}" method="POST" class="mx-auto max-w-md space-y-3">
                     @csrf
+                    <x-newsletter-protection honeypot-id="home-newsletter-website" />
+                    <div class="flex flex-col gap-3 sm:flex-row">
                     <label for="home-newsletter-email" class="sr-only">Email address</label>
                     <input id="home-newsletter-email" type="email" name="email" placeholder="your@email.com" autocomplete="email" required
                         class="newsletter-input min-h-[48px] flex-1 rounded-full border border-white/20 bg-white/10 px-5 py-3.5 font-body text-base text-white transition-[border-color,box-shadow] duration-300 placeholder:text-white/35 focus:border-gold/40 focus:ring-2 focus:ring-gold/60 focus:outline-none sm:text-sm">
                     <button type="submit" class="min-h-[48px] rounded-full bg-gold px-7 py-3.5 font-body text-base font-semibold text-navy transition-[transform,background-color,box-shadow] duration-300 hover:-translate-y-0.5 hover:scale-105 hover:bg-gold-light hover:shadow-lg hover:shadow-gold/30 active:scale-95 sm:text-sm">
                         Subscribe
                     </button>
+                    </div>
                 </form>
             @endif
             <div class="mt-10 flex items-center justify-center gap-6 border-t border-white/10 pt-8">

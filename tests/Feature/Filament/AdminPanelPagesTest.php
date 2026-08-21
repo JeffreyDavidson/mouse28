@@ -6,6 +6,7 @@ use App\Filament\Pages\NewsletterSubscribers;
 use App\Filament\Pages\PodcastSettings;
 use App\Filament\Resources\ContactMessages\ContactMessageResource;
 use App\Filament\Resources\Episodes\EpisodeResource;
+use App\Filament\Resources\Guides\GuideResource;
 use App\Filament\Resources\Posts\PostResource;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -30,7 +31,7 @@ class AdminPanelPagesTest extends TestCase
             'https://api.resend.com/*' => Http::response(['data' => []]),
         ]);
 
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
 
         $this->actingAs($user)
             ->get(NewsletterSubscribers::getUrl())
@@ -46,7 +47,7 @@ class AdminPanelPagesTest extends TestCase
 
     public function test_authenticated_user_can_render_the_resource_headers_and_forms(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->admin()->create();
 
         $this->actingAs($user)
             ->get(PostResource::getUrl())
@@ -56,6 +57,14 @@ class AdminPanelPagesTest extends TestCase
         $this->get(PostResource::getUrl('create'))
             ->assertOk()
             ->assertSee('Create Post');
+
+        $this->get(GuideResource::getUrl())
+            ->assertOk()
+            ->assertSee('Guides');
+
+        $this->get(GuideResource::getUrl('create'))
+            ->assertOk()
+            ->assertSee('Create Guide');
 
         $this->get(EpisodeResource::getUrl())
             ->assertOk()
@@ -68,5 +77,14 @@ class AdminPanelPagesTest extends TestCase
         $this->get(ContactMessageResource::getUrl())
             ->assertOk()
             ->assertSee('Contact Messages');
+    }
+
+    public function test_non_admin_user_cannot_access_the_admin_panel(): void
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+            ->get('/admin')
+            ->assertForbidden();
     }
 }

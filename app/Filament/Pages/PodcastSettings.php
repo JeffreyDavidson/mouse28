@@ -31,9 +31,14 @@ class PodcastSettings extends Page
 
     public ?array $data = [];
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->is_admin === true;
+    }
+
     public function mount(): void
     {
-        $podcast = Podcast::info();
+        $podcast = Podcast::settings();
         $this->form->fill($podcast->toArray());
     }
 
@@ -103,7 +108,7 @@ class PodcastSettings extends Page
     public function save(): void
     {
         $data = $this->form->getState();
-        $podcast = Podcast::info();
+        $podcast = Podcast::settings();
         $podcast->update($data);
 
         Notification::make()

@@ -13,8 +13,7 @@ The homepage content order is:
 4. Guides teaser
 5. Podcast
 6. About
-7. Community stories
-8. Newsletter
+7. Newsletter
 
 ## Stack
 
@@ -47,12 +46,14 @@ work in the existing Vite pipeline and do not introduce a second toolchain.
 - `Post` is the primary blog content model.
 - `Episode` contains podcast episodes.
 - `Guide` contains accessibility resources.
-- `CommunityStory` contains reader-submitted stories.
 - `Podcast::info()` provides the single-row podcast metadata record.
 - Jeffrey, Cassie, or both may be credited as post authors.
 
 The main navigation contains Home, Blog, Podcast, About, and Contact. Preserve
 the site's blog-first content hierarchy when changing public pages.
+
+Community Stories are intentionally outside the product scope. Do not restore
+reader-submitted story collection, moderation, or public story pages.
 
 ## Design System
 

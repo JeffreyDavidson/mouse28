@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Mail\ContactFormConfirmation;
 use App\Mail\ContactFormSubmitted;
 use App\Models\ContactMessage;
+use App\Support\Turnstile;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\ValidationException;
@@ -18,14 +18,18 @@ class ContactController extends Controller
         return view('contact');
     }
 
-    public function store(Request $request)
+    public function store(Request $request, Turnstile $turnstile)
     {
         // Honeypot: if this hidden field is filled, it is a bot
         if ($request->filled('website_url')) {
             return back()->with('success', true);
         }
 
-        $this->validateTurnstile($request);
+        if (! $turnstile->passes($request, config('services.turnstile.contact_action'))) {
+            throw ValidationException::withMessages([
+                'cf-turnstile-response' => 'Please verify that you are human and try again.',
+            ]);
+        }
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -52,47 +56,5 @@ class ContactController extends Controller
         }
 
         return back()->with('success', true);
-    }
-
-    private function validateTurnstile(Request $request): void
-    {
-        $token = $request->input('cf-turnstile-response');
-        $secret = config('services.turnstile.secret_key');
-        $endpoint = config('services.turnstile.siteverify_url', 'https://challenges.cloudflare.com/turnstile/v0/siteverify');
-
-        $expectedAction = config('services.turnstile.action', 'contact-form');
-        $allowedHostnames = config('services.turnstile.allowed_hostnames', []);
-        if (! is_string($token) || trim($token) === '' || ! is_string($secret) || trim($secret) === '') {
-            $this->throwTurnstileValidationException();
-        }
-
-        try {
-            $response = Http::asForm()
-                ->timeout(5)
-                ->post($endpoint, [
-                    'secret' => $secret,
-                    'response' => $token,
-                    'remoteip' => $request->ip(),
-                ]);
-        } catch (\Throwable $e) {
-            Log::warning('Turnstile verification request failed: '.$e->getMessage());
-            $this->throwTurnstileValidationException();
-        }
-
-        $hostname = strtolower((string) $response->json('hostname', ''));
-        $allowedHostnames = array_map('strtolower', array_filter($allowedHostnames, 'is_string'));
-
-        if (! $response->ok() || $response->json('success') !== true
-            || $response->json('action') !== $expectedAction
-            || ! in_array($hostname, $allowedHostnames, true)) {
-            $this->throwTurnstileValidationException();
-        }
-    }
-
-    private function throwTurnstileValidationException(): never
-    {
-        throw ValidationException::withMessages([
-            'cf-turnstile-response' => 'Please verify that you are human and try again.',
-        ]);
     }
 }

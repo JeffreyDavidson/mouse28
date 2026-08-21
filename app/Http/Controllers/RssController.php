@@ -58,8 +58,11 @@ class RssController extends Controller
         $xml .= '<description>'.htmlspecialchars($podcast->description ?? 'Disney parks through the eyes of a family raising a daughter with autism.').'</description>';
         $xml .= '<language>en-us</language>';
         $xml .= '<atom:link href="'.url('/rss/podcast').'" rel="self" type="application/rss+xml"/>';
-        $xml .= '<itunes:author>Jeffrey &amp; Cassie Davidson</itunes:author>';
-        $xml .= '<itunes:owner><itunes:name>Jeffrey Davidson</itunes:name><itunes:email>jdavidsonwebdev@gmail.com</itunes:email></itunes:owner>';
+        $author = $this->xml((string) config('podcast.author'));
+        $ownerName = $this->xml((string) config('podcast.owner_name'));
+        $ownerEmail = $this->xml((string) ($podcast->email ?: config('podcast.owner_email')));
+        $xml .= "<itunes:author>{$author}</itunes:author>";
+        $xml .= "<itunes:owner><itunes:name>{$ownerName}</itunes:name><itunes:email>{$ownerEmail}</itunes:email></itunes:owner>";
         $xml .= '<itunes:category text="Society &amp; Culture"><itunes:category text="Documentary"/></itunes:category>';
         $xml .= '<itunes:category text="Kids &amp; Family"/>';
         $xml .= '<itunes:explicit>false</itunes:explicit>';
@@ -89,5 +92,10 @@ class RssController extends Controller
         $xml .= '</channel></rss>';
 
         return response($xml, 200, ['Content-Type' => 'application/rss+xml']);
+    }
+
+    private function xml(string $value): string
+    {
+        return htmlspecialchars($value, ENT_XML1 | ENT_QUOTES, 'UTF-8');
     }
 }
