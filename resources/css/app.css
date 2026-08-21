@@ -380,6 +380,171 @@
     }
 }
 
+@property --blog-border-angle {
+    syntax: '<angle>';
+    initial-value: 0deg;
+    inherits: false;
+}
+
+@layer components {
+    .blog-pagination nav > div:first-child {
+        display: none;
+    }
+
+    .blog-pagination span,
+    .blog-pagination a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 9999px;
+        padding: 0 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .blog-pagination span[aria-current='page'] span {
+        background: var(--color-gold);
+        box-shadow: 0 2px 8px rgb(212 168 67 / 30%);
+        color: white;
+    }
+
+    .blog-pagination a {
+        border: 1px solid rgb(26 16 64 / 10%);
+        background: white;
+        color: rgb(26 16 64 / 50%);
+    }
+
+    .blog-pagination a:hover {
+        border-color: var(--color-gold);
+        color: var(--color-navy);
+    }
+
+    .blog-pagination span[aria-disabled='true'] span {
+        border: 1px solid rgb(26 16 64 / 5%);
+        background: transparent;
+        color: rgb(26 16 64 / 20%);
+    }
+
+    .blog-featured-wrapper {
+        position: relative;
+        z-index: 1;
+        overflow: visible;
+    }
+
+    .blog-featured-wrapper::before {
+        position: absolute;
+        z-index: 0;
+        inset: -2px;
+        border-radius: 1.625rem;
+        animation: blog-border-rotate 6s linear infinite;
+        background: conic-gradient(from var(--blog-border-angle), var(--color-gold), var(--color-purple-light), #4a90a4, var(--color-gold));
+        content: '';
+        opacity: 0.5;
+    }
+
+    .blog-featured-card-border {
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+        border-radius: 1.5rem;
+        background: linear-gradient(135deg, var(--color-navy), var(--color-navy-light));
+        color: white;
+    }
+
+    .blog-ribbon {
+        position: absolute;
+        z-index: 30;
+        width: 150px;
+        height: 150px;
+        overflow: hidden;
+        pointer-events: none;
+    }
+
+    .blog-ribbon::before,
+    .blog-ribbon::after {
+        position: absolute;
+        z-index: -1;
+        display: block;
+        border: 5px solid #7a5e1e;
+        content: '';
+    }
+
+    .blog-ribbon span {
+        position: absolute;
+        display: block;
+        width: 225px;
+        background-color: var(--color-gold);
+        box-shadow: 0 5px 10px rgb(0 0 0 / 10%);
+        padding: 15px 0;
+        color: var(--color-navy);
+        font: 700 18px/1 var(--font-body);
+        text-align: center;
+        text-shadow: 0 1px 1px rgb(0 0 0 / 20%);
+        text-transform: uppercase;
+    }
+
+    .blog-ribbon-top-left {
+        top: -10px;
+        left: -10px;
+    }
+
+    .blog-ribbon-top-left::before,
+    .blog-ribbon-top-left::after {
+        border-top-color: transparent;
+        border-left-color: transparent;
+    }
+
+    .blog-ribbon-top-left::before {
+        top: 0;
+        right: 0;
+    }
+
+    .blog-ribbon-top-left::after {
+        bottom: 0;
+        left: 0;
+    }
+
+    .blog-ribbon-top-left span {
+        top: 30px;
+        right: -25px;
+        transform: rotate(-45deg);
+    }
+
+    .blog-post-card {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .blog-post-card .blog-accent-bar {
+        transition: transform 0.3s ease;
+        transform: scaleX(0);
+        transform-origin: left;
+    }
+
+    .blog-post-card:hover .blog-accent-bar {
+        transform: scaleX(1);
+    }
+
+    .blog-post-card:hover {
+        box-shadow: 0 20px 40px rgb(26 16 64 / 8%), 0 8px 16px rgb(26 16 64 / 4%);
+        transform: translateY(-6px);
+    }
+}
+
+@keyframes blog-border-rotate {
+    from {
+        --blog-border-angle: 0deg;
+    }
+
+    to {
+        --blog-border-angle: 360deg;
+    }
+}
+
 @keyframes contact-check-circle {
     to {
         stroke-dashoffset: 0;
