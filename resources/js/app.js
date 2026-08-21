@@ -29,7 +29,16 @@ function initializeBlogArticle() {
             readingIndicator.textContent = `${currentMinute} of ${readingMinutes} min read`;
         }
 
-        backToTop?.classList.toggle('is-visible', window.scrollY > 500);
+        if (backToTop) {
+            const isVisible = window.scrollY > 500;
+
+            backToTop.classList.toggle('pointer-events-none', !isVisible);
+            backToTop.classList.toggle('translate-y-2.5', !isVisible);
+            backToTop.classList.toggle('opacity-0', !isVisible);
+            backToTop.classList.toggle('pointer-events-auto', isVisible);
+            backToTop.classList.toggle('translate-y-0', isVisible);
+            backToTop.classList.toggle('opacity-100', isVisible);
+        }
     };
 
     window.addEventListener('scroll', updateProgress, { passive: true });
@@ -84,7 +93,8 @@ function initializeBlogArticle() {
         heading.id = id;
         link.href = `#${id}`;
         link.textContent = heading.textContent;
-        link.className = `blog-toc-link${heading.tagName === 'H3' ? ' is-level-three' : ''}`;
+        link.dataset.blogTocLink = '';
+        link.className = `block border-l-2 border-navy/8 py-1.5 leading-[1.4] text-navy/50 no-underline transition-all duration-200 hover:border-gold hover:text-gold ${heading.tagName === 'H3' ? 'pl-8 text-xs' : 'pl-4 text-[0.8rem]'}`;
         link.addEventListener('click', (event) => {
             event.preventDefault();
             heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -92,7 +102,7 @@ function initializeBlogArticle() {
         tocNav.appendChild(link);
     });
 
-    const tocLinks = Array.from(tocNav.querySelectorAll('.blog-toc-link'));
+    const tocLinks = Array.from(tocNav.querySelectorAll('[data-blog-toc-link]'));
     const updateTableOfContents = () => {
         let currentHeading = 0;
 
@@ -103,7 +113,13 @@ function initializeBlogArticle() {
         });
 
         tocLinks.forEach((link, index) => {
-            link.classList.toggle('active', index === currentHeading);
+            const isActive = index === currentHeading;
+
+            link.classList.toggle('border-navy/8', !isActive);
+            link.classList.toggle('text-navy/50', !isActive);
+            link.classList.toggle('border-gold', isActive);
+            link.classList.toggle('text-gold', isActive);
+            link.classList.toggle('font-semibold', isActive);
         });
     };
 
