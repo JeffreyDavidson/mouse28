@@ -46,6 +46,7 @@ class StatsOverview extends Widget
         $publishedPosts = Post::where('is_published', true)->count();
         $publishedEpisodes = Episode::where('is_published', true)->count();
         $publishedGuides = Guide::where('is_published', true)->count();
+        $guidesDueForReview = Guide::published()->reviewDue()->count();
         $drafts = Post::where('is_published', false)->count()
             + Episode::where('is_published', false)->count()
             + Guide::where('is_published', false)->count();
@@ -55,7 +56,7 @@ class StatsOverview extends Widget
                 'label' => 'Guides',
                 'value' => $publishedGuides,
                 'icon' => 'heroicon-o-book-open',
-                'description' => 'Published',
+                'description' => $guidesDueForReview > 0 ? "{$guidesDueForReview} need review" : 'Reviews current',
                 'color' => '#4a90a4',
             ],
             [

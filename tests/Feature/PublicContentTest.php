@@ -135,4 +135,35 @@ class PublicContentTest extends TestCase
             ->assertOk()
             ->assertSee($guide->title);
     }
+
+    public function test_guides_are_flagged_when_their_editorial_review_is_due(): void
+    {
+        config()->set('mouse28.guide_review_interval_days', 180);
+
+        $currentGuide = Guide::factory()->create([
+            'last_reviewed_at' => now()->subDays(30),
+        ]);
+        $staleGuide = Guide::factory()->create([
+            'last_reviewed_at' => now()->subDays(181),
+        ]);
+        $unreviewedGuide = Guide::factory()->create([
+            'last_reviewed_at' => null,
+        ]);
+
+        $this->assertFalse($currentGuide->isReviewDue());
+        $this->assertTrue($staleGuide->isReviewDue());
+        $this->assertTrue($unreviewedGuide->isReviewDue());
+        $this->assertEqualsCanonicalizing(
+            [$staleGuide->id, $unreviewedGuide->id],
+            Guide::reviewDue()->pluck('id')->all(),
+        );
+
+        $this->get(route('guides.show', $currentGuide))
+            ->assertOk()
+            ->assertDontSee('due for editorial review');
+
+        $this->get(route('guides.show', $staleGuide))
+            ->assertOk()
+            ->assertSee('due for editorial review');
+    }
 }

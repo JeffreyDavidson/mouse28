@@ -7,6 +7,10 @@
 @section('og_type', 'article')
 @if($post->og_image_url ?: $post->cover_image_url) @section('og_image', $post->og_image_url ?: $post->cover_image_url) @endif
 
+@push('head')
+    <x-structured-data :data="\App\Support\StructuredData::forPost($post)" />
+@endpush
+
 @section('content')
     <div id="reading-progress" class="fixed top-16 left-0 z-40 h-[3px] w-0 bg-linear-to-r from-gold to-gold-light shadow-[0_0_8px_rgb(212_168_67/40%)] transition-[width] duration-100 ease-linear"></div>
 

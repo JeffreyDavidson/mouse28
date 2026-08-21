@@ -6,6 +6,10 @@
 @section('og_description', $episode->meta_description ?: Str::limit($episode->description, 200))
 @if($episode->og_image_url) @section('og_image', $episode->og_image_url) @endif
 
+@push('head')
+    <x-structured-data :data="\App\Support\StructuredData::forEpisode($episode)" />
+@endpush
+
 @section('content')
     <section class="relative overflow-hidden bg-linear-to-br from-navy to-navy-light py-16 md:py-24">
         {{-- Waveform background --}}

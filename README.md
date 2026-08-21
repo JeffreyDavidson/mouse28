@@ -42,6 +42,7 @@ The application can run locally without live third-party calls, but these featur
 - `MAIL_*` and `MAIL_ADMIN_ADDRESS` deliver contact notifications and confirmations.
 - `PODCAST_OWNER_NAME` and `PODCAST_OWNER_EMAIL` populate podcast-feed ownership metadata.
 - `FATHOM_SITE_ID` enables the optional analytics script.
+- `GUIDE_REVIEW_INTERVAL_DAYS` controls when durable guides are flagged for editorial review; it defaults to 180 days.
 
 Never commit live credentials. Keep them in the deployment environment.
 
@@ -55,6 +56,8 @@ The Filament panel is available at `/admin` to users with `is_admin = true`.
 - Podcast Settings owns show-level distribution metadata.
 
 Content is publicly visible only when it is marked published and its publication date is not in the future. Community Stories and reader-submitted story publishing are intentionally outside the product scope.
+
+Published post, guide, and episode pages emit Schema.org content and breadcrumb data. Guides older than the configured review interval display a reader notice and are flagged in Filament.
 
 ## Development commands
 
