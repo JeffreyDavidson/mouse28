@@ -58,11 +58,11 @@
                             <table width="100%" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <td align="center">
-                                        <a href="{{ url('/episodes') }}"
+                                        <a href="{{ route('episodes.index') }}"
                                            style="display: inline-block; background: linear-gradient(135deg, #2d1b69, #1a1040); color: #ffffff; font-size: 14px; font-weight: 600; padding: 14px 32px; border-radius: 10px; text-decoration: none; letter-spacing: 0.02em; margin: 0 6px;">
                                             🎙️&nbsp;&nbsp;Listen Now
                                         </a>
-                                        <a href="{{ url('/blog') }}"
+                                        <a href="{{ route('blog.index') }}"
                                            style="display: inline-block; background: transparent; color: #2d1b69; font-size: 14px; font-weight: 600; padding: 12px 32px; border-radius: 10px; text-decoration: none; letter-spacing: 0.02em; border: 2px solid #2d1b69; margin: 0 6px;">
                                             📖&nbsp;&nbsp;Read Blog
                                         </a>
@@ -79,7 +79,7 @@
                                 Jeffrey &amp; Cassie Davidson
                             </p>
                             <p style="margin: 0; font-size: 12px; color: rgba(255,255,255,0.35);">
-                                <a href="{{ url('/') }}" style="color: #d4a843; text-decoration: none;">mouse28.com</a>
+                                <a href="{{ route('home') }}" style="color: #d4a843; text-decoration: none;">mouse28.com</a>
                             </p>
                         </td>
                     </tr>

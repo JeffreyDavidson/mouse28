@@ -17,7 +17,7 @@
             </p>
         @endif
 
-        <form action="/newsletter" method="POST" class="space-y-3">
+        <form action="{{ route('newsletter.store') }}" method="POST" class="space-y-3">
             @csrf
             <label for="newsletter-email" class="sr-only">Email address</label>
             <input id="newsletter-email" type="email" name="email" value="{{ old('email') }}" placeholder="your@email.com" autocomplete="email" required
@@ -27,7 +27,7 @@
             @error('email')
                 <p id="newsletter-email-error" role="alert" class="text-left text-sm text-red-200">{{ $message }}</p>
             @enderror
-            <button type="submit" class="min-h-12 w-full rounded-full bg-linear-to-r from-gold to-gold-light py-3 text-base font-bold text-navy shadow-lg shadow-gold/20 transition-all hover:-translate-y-0.5 sm:text-sm">
+            <button type="submit" class="min-h-12 w-full rounded-full bg-linear-to-r from-gold to-gold-light py-3 text-base font-bold text-navy shadow-lg shadow-gold/20 transition-transform hover:-translate-y-0.5 sm:text-sm">
                 Subscribe
             </button>
         </form>

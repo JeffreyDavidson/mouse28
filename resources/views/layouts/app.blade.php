@@ -21,48 +21,47 @@
     <meta name="twitter:image" content="@yield('og_image', url('/images/logo.jpg'))">
 
     <link rel="canonical" href="{{ url()->current() }}">
-    <link rel="alternate" type="application/rss+xml" title="Mouse28 Blog" href="{{ url('/rss/blog') }}">
-    <link rel="alternate" type="application/rss+xml" title="Mouse28 Podcast" href="{{ url('/rss/podcast') }}">
+    <link rel="alternate" type="application/rss+xml" title="Mouse28 Blog" href="{{ route('rss.blog') }}">
+    <link rel="alternate" type="application/rss+xml" title="Mouse28 Podcast" href="{{ route('rss.podcast') }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @stack('styles')
 @if(config('services.fathom.site_id'))
 <script src="https://cdn.usefathom.com/script.js" data-site="{{ config('services.fathom.site_id') }}" defer></script>
 @endif
 </head>
 <body class="flex min-h-dvh flex-col bg-cream font-body text-navy">
-    <a href="#main-content" class="fixed left-4 top-4 z-[100] -translate-y-24 rounded-lg bg-gold px-4 py-3 font-semibold text-navy shadow-xl transition-transform focus:translate-y-0">
+    <a href="#main-content" class="fixed top-4 left-4 z-100 -translate-y-24 rounded-lg bg-gold px-4 py-3 font-semibold text-navy shadow-xl transition-transform focus:translate-y-0">
         Skip to content
     </a>
 
     {{-- Navigation --}}
     <nav class="sticky top-0 z-50 border-b border-white/10 bg-navy/95 backdrop-blur-sm" aria-label="Primary navigation" x-data="{ open: false }" @keydown.escape.window="open = false">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6">
-            <div class="flex items-center justify-between h-20">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+            <div class="flex h-20 items-center justify-between">
                 {{-- Logo --}}
-                <a href="/" aria-label="Mouse28 homepage" class="group inline-flex min-h-12 items-center tracking-tight">
-                    <span class="font-heading text-2xl font-bold text-white group-hover:text-gold transition-colors">Mouse<span class="text-gold">28</span></span>
+                <a href="{{ route('home') }}" aria-label="Mouse28 homepage" class="group inline-flex min-h-12 items-center tracking-tight">
+                    <span class="font-heading text-2xl font-bold text-white transition-colors group-hover:text-gold">Mouse<span class="text-gold">28</span></span>
                 </a>
 
                 {{-- Desktop Nav --}}
-                <div class="hidden md:flex items-center gap-10">
-                    <a href="/" @if(request()->is('/')) aria-current="page" @endif class="{{ request()->is('/') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-11 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold">Home</a>
-                    <a href="/blog" @if(request()->is('blog*')) aria-current="page" @endif class="{{ request()->is('blog*') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-11 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold">Blog</a>
-                    <a href="/episodes" @if(request()->is('episodes*')) aria-current="page" @endif class="{{ request()->is('episodes*') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-11 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold">Podcast</a>
-                    <a href="/about" @if(request()->is('about')) aria-current="page" @endif class="{{ request()->is('about') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-11 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold">About</a>
-                    <a href="/contact" @if(request()->is('contact')) aria-current="page" @endif class="{{ request()->is('contact') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-11 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold">Contact</a>
+                <div class="hidden items-center gap-10 md:flex">
+                    <a href="{{ route('home') }}" @if(request()->routeIs('home')) aria-current="page" @endif class="{{ request()->routeIs('home') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-11 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold">Home</a>
+                    <a href="{{ route('blog.index') }}" @if(request()->routeIs('blog.*')) aria-current="page" @endif class="{{ request()->routeIs('blog.*') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-11 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold">Blog</a>
+                    <a href="{{ route('episodes.index') }}" @if(request()->routeIs('episodes.*')) aria-current="page" @endif class="{{ request()->routeIs('episodes.*') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-11 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold">Podcast</a>
+                    <a href="{{ route('about') }}" @if(request()->routeIs('about')) aria-current="page" @endif class="{{ request()->routeIs('about') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-11 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold">About</a>
+                    <a href="{{ route('contact.show') }}" @if(request()->routeIs('contact.*')) aria-current="page" @endif class="{{ request()->routeIs('contact.*') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-11 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold">Contact</a>
                 </div>
 
                 {{-- Mobile menu button (animated hamburger → X) --}}
                 <button type="button" @click="open = !open" :aria-expanded="open.toString()" aria-controls="mobile-navigation" class="relative -mr-3 size-12 text-white/80 transition-colors hover:text-gold md:hidden" aria-label="Toggle navigation menu">
-                    <span class="hamburger-line absolute left-3 w-6 origin-center rounded bg-current h-0.5" :class="open ? 'top-[23px] rotate-45' : 'top-[15px] rotate-0'"></span>
-                    <span class="hamburger-line absolute left-3 top-[23px] w-6 rounded bg-current h-0.5" :class="open ? 'opacity-0' : 'opacity-100'"></span>
-                    <span class="hamburger-line absolute left-3 w-6 origin-center rounded bg-current h-0.5" :class="open ? 'top-[23px] -rotate-45' : 'top-[31px] rotate-0'"></span>
+                    <span class="hamburger-line absolute left-3 h-0.5 w-6 origin-center rounded bg-current" :class="open ? 'top-[23px] rotate-45' : 'top-[15px] rotate-0'"></span>
+                    <span class="hamburger-line absolute top-[23px] left-3 h-0.5 w-6 rounded bg-current" :class="open ? 'opacity-0' : 'opacity-100'"></span>
+                    <span class="hamburger-line absolute left-3 h-0.5 w-6 origin-center rounded bg-current" :class="open ? 'top-[23px] -rotate-45' : 'top-[31px] rotate-0'"></span>
                 </button>
             </div>
 
@@ -76,14 +75,14 @@
                  x-transition:leave="transition ease-in duration-150"
                  x-transition:leave-start="opacity-100 translate-y-0"
                  x-transition:leave-end="opacity-0 -translate-y-2"
-                 class="md:hidden pb-5 border-t border-white/10 mt-2 pt-4"
+                 class="mt-2 border-t border-white/10 pt-4 pb-5 md:hidden"
                  x-cloak>
                 <div class="flex flex-col gap-1">
-                    <a href="/" @if(request()->is('/')) aria-current="page" @endif class="{{ request()->is('/') ? 'text-gold bg-white/5' : 'text-white/80' }} flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium transition-all hover:bg-white/5 hover:text-gold">Home</a>
-                    <a href="/blog" @if(request()->is('blog*')) aria-current="page" @endif class="{{ request()->is('blog*') ? 'text-gold bg-white/5' : 'text-white/80' }} flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium transition-all hover:bg-white/5 hover:text-gold">Blog</a>
-                    <a href="/episodes" @if(request()->is('episodes*')) aria-current="page" @endif class="{{ request()->is('episodes*') ? 'text-gold bg-white/5' : 'text-white/80' }} flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium transition-all hover:bg-white/5 hover:text-gold">Podcast</a>
-                    <a href="/about" @if(request()->is('about')) aria-current="page" @endif class="{{ request()->is('about') ? 'text-gold bg-white/5' : 'text-white/80' }} flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium transition-all hover:bg-white/5 hover:text-gold">About</a>
-                    <a href="/contact" @if(request()->is('contact')) aria-current="page" @endif class="{{ request()->is('contact') ? 'text-gold bg-white/5' : 'text-white/80' }} flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium transition-all hover:bg-white/5 hover:text-gold">Contact</a>
+                    <a href="{{ route('home') }}" @if(request()->routeIs('home')) aria-current="page" @endif class="{{ request()->routeIs('home') ? 'text-gold bg-white/5' : 'text-white/80' }} flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium transition-colors hover:bg-white/5 hover:text-gold">Home</a>
+                    <a href="{{ route('blog.index') }}" @if(request()->routeIs('blog.*')) aria-current="page" @endif class="{{ request()->routeIs('blog.*') ? 'text-gold bg-white/5' : 'text-white/80' }} flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium transition-colors hover:bg-white/5 hover:text-gold">Blog</a>
+                    <a href="{{ route('episodes.index') }}" @if(request()->routeIs('episodes.*')) aria-current="page" @endif class="{{ request()->routeIs('episodes.*') ? 'text-gold bg-white/5' : 'text-white/80' }} flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium transition-colors hover:bg-white/5 hover:text-gold">Podcast</a>
+                    <a href="{{ route('about') }}" @if(request()->routeIs('about')) aria-current="page" @endif class="{{ request()->routeIs('about') ? 'text-gold bg-white/5' : 'text-white/80' }} flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium transition-colors hover:bg-white/5 hover:text-gold">About</a>
+                    <a href="{{ route('contact.show') }}" @if(request()->routeIs('contact.*')) aria-current="page" @endif class="{{ request()->routeIs('contact.*') ? 'text-gold bg-white/5' : 'text-white/80' }} flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium transition-colors hover:bg-white/5 hover:text-gold">Contact</a>
                 </div>
             </div>
         </div>
@@ -95,27 +94,27 @@
     </main>
 
     {{-- Footer --}}
-    <footer class="bg-navy text-white/70 relative">
+    <footer class="relative bg-navy text-white/70">
         {{-- Decorative gold gradient top border --}}
         <div class="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-gold-dark via-gold-light to-gold-dark"></div>
 
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-8">
-            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-10">
+        <div class="mx-auto max-w-6xl px-4 pt-16 pb-8 sm:px-6">
+            <div class="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
                 {{-- Newsletter (left side) --}}
-                <div class="lg:max-w-md flex-shrink-0" x-data="{ submitted: false, error: false }">
+                <div class="shrink-0 lg:max-w-md" x-data="{ submitted: false, error: false }">
                     <h2 class="mb-2 font-heading text-base font-semibold tracking-wider text-white uppercase sm:text-sm">Stay in the Loop</h2>
                     <p class="mb-4 text-base text-white/50 sm:text-sm">New posts, episodes, and park tips straight to your inbox.</p>
                     <form x-show="!submitted" @submit.prevent="
                         error = false;
-                        fetch('/newsletter', {
+                        fetch(@js(route('newsletter.store')), {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
                             body: JSON.stringify({ email: $refs.footerEmail.value })
                         }).then(r => { if (r.ok || r.redirected) { submitted = true } else { error = true } }).catch(() => error = true)
                     " class="flex flex-col gap-2 sm:flex-row">
                         <label for="footer-newsletter-email" class="sr-only">Email address</label>
-                        <input id="footer-newsletter-email" x-ref="footerEmail" type="email" name="email" placeholder="your@email.com" autocomplete="email" required class="min-h-12 min-w-0 flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-2.5 text-base text-white placeholder-white/30 transition-colors focus:border-gold/50 focus:outline-none focus:ring-1 focus:ring-gold/30 sm:text-sm">
-                        <button type="submit" class="min-h-12 rounded-full bg-gold px-6 py-2.5 text-base font-semibold whitespace-nowrap text-navy transition-all hover:bg-gold-light hover:shadow-lg hover:shadow-gold/25 sm:text-sm">Subscribe</button>
+                        <input id="footer-newsletter-email" x-ref="footerEmail" type="email" name="email" placeholder="your@email.com" autocomplete="email" required class="min-h-12 min-w-0 flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-2.5 text-base text-white placeholder-white/30 transition-colors focus:border-gold/50 focus:ring-1 focus:ring-gold/30 focus:outline-none sm:text-sm">
+                        <button type="submit" class="min-h-12 rounded-full bg-gold px-6 py-2.5 text-base font-semibold whitespace-nowrap text-navy transition-[background-color,box-shadow] hover:bg-gold-light hover:shadow-lg hover:shadow-gold/25 sm:text-sm">Subscribe</button>
                     </form>
                     <div x-show="submitted" x-cloak x-transition role="status" class="rounded-full border border-gold/30 bg-gold/10 px-5 py-2.5 text-center text-base font-medium text-gold sm:text-sm">
                         You're in! We'll keep you posted.
@@ -129,9 +128,9 @@
                     <div>
                         <h2 class="mb-4 font-heading text-base font-semibold tracking-wider text-white uppercase sm:text-sm">Explore</h2>
                         <div class="flex flex-col gap-1 text-base sm:text-sm">
-                            <a href="/blog" class="inline-flex min-h-11 items-center transition-colors hover:text-gold sm:min-h-6">Blog</a>
-                            <a href="/episodes" class="inline-flex min-h-11 items-center transition-colors hover:text-gold sm:min-h-6">Podcast</a>
-                            <a href="/about" class="inline-flex min-h-11 items-center transition-colors hover:text-gold sm:min-h-6">About Us</a>
+                            <a href="{{ route('blog.index') }}" class="inline-flex min-h-11 items-center transition-colors hover:text-gold sm:min-h-6">Blog</a>
+                            <a href="{{ route('episodes.index') }}" class="inline-flex min-h-11 items-center transition-colors hover:text-gold sm:min-h-6">Podcast</a>
+                            <a href="{{ route('about') }}" class="inline-flex min-h-11 items-center transition-colors hover:text-gold sm:min-h-6">About Us</a>
                         </div>
                     </div>
 
@@ -139,7 +138,7 @@
                     <div>
                         <h2 class="mb-4 font-heading text-base font-semibold tracking-wider text-white uppercase sm:text-sm">Connect</h2>
                         <div class="flex flex-col gap-1 text-base sm:text-sm">
-                            <a href="/contact" class="inline-flex min-h-11 items-center transition-colors hover:text-gold sm:min-h-6">Contact Us</a>
+                            <a href="{{ route('contact.show') }}" class="inline-flex min-h-11 items-center transition-colors hover:text-gold sm:min-h-6">Contact Us</a>
                             <span class="inline-flex min-h-11 items-center text-white/35 sm:min-h-6">Apple Podcasts · Soon</span>
                             <span class="inline-flex min-h-11 items-center text-white/35 sm:min-h-6">Spotify · Soon</span>
                         </div>
@@ -148,7 +147,7 @@
             </div>
 
             {{-- Bottom bar --}}
-            <div class="border-t border-white/10 mt-8 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="mt-8 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row">
                 <p class="text-base text-white/40 sm:text-sm">&copy; {{ date('Y') }} Mouse28. All rights reserved.</p>
                 <p class="text-base text-white/40 sm:text-sm">Made with ✨ from Infinity Digital</p>
             </div>

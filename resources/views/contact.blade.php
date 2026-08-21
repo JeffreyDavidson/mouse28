@@ -22,8 +22,8 @@
                 <p class="mx-auto mb-2 max-w-md text-lg text-navy/60">Thank you for reaching out. We'll get back to you within 48 hours.</p>
                 <p class="mb-8 text-sm text-navy/40">In the meantime, feel free to explore our blog and podcast.</p>
                 <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
-                    <a href="/blog" class="inline-flex items-center gap-2 rounded-full bg-purple px-6 py-3 font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-purple-dark hover:shadow-lg">Read our blog</a>
-                    <a href="/episodes" class="inline-flex items-center gap-2 font-medium text-navy/60 transition-colors hover:text-purple">Listen to podcast →</a>
+                    <a href="{{ route('blog.index') }}" class="inline-flex items-center gap-2 rounded-full bg-purple px-6 py-3 font-semibold text-white transition-[transform,background-color,box-shadow] hover:-translate-y-0.5 hover:bg-purple-dark hover:shadow-lg">Read our blog</a>
+                    <a href="{{ route('episodes.index') }}" class="inline-flex items-center gap-2 font-medium text-navy/60 transition-colors hover:text-purple">Listen to podcast →</a>
                 </div>
             </div>
         </section>
@@ -49,7 +49,7 @@
                 <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_340px]">
                     {{-- Form --}}
                     <div class="rounded-2xl border border-cream/10 bg-cream/3 p-5 backdrop-blur-sm sm:p-8 md:p-10">
-                        <form action="/contact" method="POST" class="flex flex-col gap-6">
+                        <form action="{{ route('contact.store') }}" method="POST" class="flex flex-col gap-6">
                             @csrf
                             <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
                             @if ($errors->has('contact_rate_limit'))
@@ -118,7 +118,7 @@
                                 @error('cf-turnstile-response') <p id="turnstile-error" role="alert" class="mt-2 text-sm text-red-400">{{ $message }}</p> @enderror
                             </div>
 
-                            <button type="submit" class="min-h-12 w-full rounded-xl bg-linear-to-br from-gold to-gold-dark px-6 py-3 text-base font-semibold text-navy transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-gold/30 focus-visible:outline-gold sm:text-sm">
+                            <button type="submit" class="min-h-12 w-full rounded-xl bg-linear-to-br from-gold to-gold-dark px-6 py-3 text-base font-semibold text-navy transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-lg hover:shadow-gold/30 focus-visible:outline-gold sm:text-sm">
                                 Send Message
                             </button>
                         </form>
@@ -133,7 +133,7 @@
                                     <svg class="size-[18px] text-gold-light" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                                 </div>
                                 <div class="min-w-0">
-                                    <a href="mailto:mouse28podcast@gmail.com" class="inline-flex min-h-11 items-center break-all text-base font-semibold text-cream sm:min-h-6 sm:text-sm">mouse28podcast@gmail.com</a>
+                                    <a href="mailto:mouse28podcast@gmail.com" class="inline-flex min-h-11 items-center text-base font-semibold break-all text-cream sm:min-h-6 sm:text-sm">mouse28podcast@gmail.com</a>
                                     <p class="mt-1 text-base text-cream/35 sm:text-sm">We read every message</p>
                                 </div>
                             </div>
@@ -166,11 +166,11 @@
 
                         {{-- Quick links --}}
                         <div class="flex flex-col gap-2">
-                            <a href="/blog" class="flex min-h-12 items-center justify-between rounded-xl border border-cream/6 bg-cream/3 px-4 py-3 transition-all hover:border-gold/15 hover:bg-cream/6">
+                            <a href="{{ route('blog.index') }}" class="flex min-h-12 items-center justify-between rounded-xl border border-cream/6 bg-cream/3 px-4 py-3 transition-colors hover:border-gold/15 hover:bg-cream/6">
                                 <span class="text-base font-semibold text-gold-light sm:text-sm">Read the Blog</span>
                                 <svg class="size-3.5 text-cream/25" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </a>
-                            <a href="/episodes" class="flex min-h-12 items-center justify-between rounded-xl border border-cream/6 bg-cream/3 px-4 py-3 transition-all hover:border-gold/15 hover:bg-cream/6">
+                            <a href="{{ route('episodes.index') }}" class="flex min-h-12 items-center justify-between rounded-xl border border-cream/6 bg-cream/3 px-4 py-3 transition-colors hover:border-gold/15 hover:bg-cream/6">
                                 <span class="text-base font-semibold text-gold-light sm:text-sm">Listen to the Podcast</span>
                                 <svg class="size-3.5 text-cream/25" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                             </a>

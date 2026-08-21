@@ -27,11 +27,10 @@ The homepage content order is:
 
 The Vite entry points are `resources/css/app.css`,
 `resources/css/filament/admin/theme.css`, and `resources/js/app.js`. The public
-layout loads Tailwind through Vite and loads Alpine from its CDN. The Filament
-entry point owns admin design tokens and global panel overrides; custom admin
-Blade views use the shared components in `resources/views/components/filament`.
-Keep frontend work in the existing Vite pipeline and do not introduce a second
-toolchain.
+layout loads Tailwind and Alpine through Vite. The Filament entry point owns
+admin design tokens and global panel overrides; custom admin Blade views use
+the shared components in `resources/views/components/filament`. Keep frontend
+work in the existing Vite pipeline and do not introduce a second toolchain.
 
 ## Git Workflow
 
