@@ -40,7 +40,8 @@
     </a>
 
     {{-- Navigation --}}
-    <nav class="sticky top-0 z-50 border-b border-white/10 bg-navy/95 backdrop-blur-sm" aria-label="Primary navigation" x-data="{ open: false }" @keydown.escape.window="open = false">
+    <header class="sticky top-0 z-50">
+    <nav class="border-b border-white/10 bg-navy/95 backdrop-blur-sm" aria-label="Primary navigation" x-data="{ open: false }" @keydown.escape.window="open = false">
         <div class="mx-auto max-w-6xl px-4 sm:px-6">
             <div class="flex h-20 items-center justify-between">
                 {{-- Logo --}}
@@ -87,6 +88,7 @@
             </div>
         </div>
     </nav>
+    </header>
 
     {{-- Main Content --}}
     <main id="main-content" tabindex="-1" class="isolate flex-1">
@@ -101,25 +103,25 @@
         <div class="mx-auto max-w-6xl px-4 pt-16 pb-8 sm:px-6">
             <div class="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
                 {{-- Newsletter (left side) --}}
-                <div class="shrink-0 lg:max-w-md" x-data="{ submitted: false, error: false }">
+                <div class="shrink-0 lg:max-w-md">
                     <h2 class="mb-2 font-heading text-base font-semibold tracking-wider text-white uppercase sm:text-sm">Stay in the Loop</h2>
                     <p class="mb-4 text-base text-white/50 sm:text-sm">New posts, episodes, and park tips straight to your inbox.</p>
-                    <form x-show="!submitted" @submit.prevent="
-                        error = false;
-                        fetch(@js(route('newsletter.store')), {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json' },
-                            body: JSON.stringify({ email: $refs.footerEmail.value })
-                        }).then(r => { if (r.ok || r.redirected) { submitted = true } else { error = true } }).catch(() => error = true)
-                    " class="flex flex-col gap-2 sm:flex-row">
+                    @if (session('newsletter_success'))
+                        <div role="status" class="mb-3 rounded-xl border border-gold/30 bg-gold/10 px-5 py-2.5 text-center text-base font-medium text-gold sm:text-sm">
+                            You're in! We'll keep you posted.
+                        </div>
+                    @elseif (session('newsletter_error'))
+                        <p role="alert" class="mb-3 text-base text-red-300 sm:text-sm">{{ session('newsletter_error') }}</p>
+                    @endif
+                    <form action="{{ route('newsletter.store') }}" method="POST" class="flex flex-col gap-2">
+                        @csrf
+                        <x-newsletter-protection honeypot-id="footer-newsletter-website" />
+                        <div class="flex flex-col gap-2 sm:flex-row">
                         <label for="footer-newsletter-email" class="sr-only">Email address</label>
-                        <input id="footer-newsletter-email" x-ref="footerEmail" type="email" name="email" placeholder="your@email.com" autocomplete="email" required class="min-h-12 min-w-0 flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-2.5 text-base text-white placeholder-white/30 transition-colors focus:border-gold/50 focus:ring-1 focus:ring-gold/30 focus:outline-none sm:text-sm">
+                        <input id="footer-newsletter-email" type="email" name="email" value="{{ old('email') }}" placeholder="your@email.com" autocomplete="email" required class="min-h-12 min-w-0 flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-2.5 text-base text-white placeholder-white/30 transition-colors focus:border-gold/50 focus:ring-1 focus:ring-gold/30 focus:outline-none sm:text-sm">
                         <button type="submit" class="min-h-12 rounded-full bg-gold px-6 py-2.5 text-base font-semibold whitespace-nowrap text-navy transition-[background-color,box-shadow] hover:bg-gold-light hover:shadow-lg hover:shadow-gold/25 sm:text-sm">Subscribe</button>
+                        </div>
                     </form>
-                    <div x-show="submitted" x-cloak x-transition role="status" class="rounded-full border border-gold/30 bg-gold/10 px-5 py-2.5 text-center text-base font-medium text-gold sm:text-sm">
-                        You're in! We'll keep you posted.
-                    </div>
-                    <div x-show="error" x-cloak x-transition role="alert" class="mt-2 text-base text-red-400 sm:text-sm">Something went wrong. Please try again.</div>
                 </div>
 
                 {{-- Links (right side) --}}
@@ -129,6 +131,7 @@
                         <h2 class="mb-4 font-heading text-base font-semibold tracking-wider text-white uppercase sm:text-sm">Explore</h2>
                         <div class="flex flex-col gap-1 text-base sm:text-sm">
                             <a href="{{ route('blog.index') }}" class="inline-flex min-h-11 items-center transition-colors hover:text-gold sm:min-h-6">Blog</a>
+                            <a href="{{ route('guides.index') }}" class="inline-flex min-h-11 items-center transition-colors hover:text-gold sm:min-h-6">Guides</a>
                             <a href="{{ route('episodes.index') }}" class="inline-flex min-h-11 items-center transition-colors hover:text-gold sm:min-h-6">Podcast</a>
                             <a href="{{ route('about') }}" class="inline-flex min-h-11 items-center transition-colors hover:text-gold sm:min-h-6">About Us</a>
                         </div>

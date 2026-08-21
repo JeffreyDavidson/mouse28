@@ -2,12 +2,32 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Post extends Model
 {
-    protected $guarded = [];
+    /** @use HasFactory<\Database\Factories\PostFactory> */
+    use HasFactory;
+
+    protected $fillable = [
+        'title',
+        'slug',
+        'excerpt',
+        'body',
+        'cover_image',
+        'episode_id',
+        'category',
+        'author',
+        'is_published',
+        'published_at',
+        'meta_title',
+        'meta_description',
+        'og_image',
+    ];
 
     protected $casts = [
         'is_published' => 'boolean',
@@ -39,9 +59,12 @@ class Post extends Model
         return $this->belongsTo(Episode::class);
     }
 
-    public function scopePublished($query)
+    #[Scope]
+    protected function published(Builder $query): void
     {
-        return $query->where('is_published', true)->whereNotNull('published_at')->where('published_at', '<=', now());
+        $query->where('is_published', true)
+            ->whereNotNull('published_at')
+            ->where('published_at', '<=', now());
     }
 
     public function getAuthorNameAttribute(): string

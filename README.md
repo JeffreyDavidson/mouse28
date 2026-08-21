@@ -1,59 +1,81 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Mouse28
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Mouse28 is a blog-first Disney parks and podcast site from Jeffrey and Cassie Davidson. It focuses on accessibility, autism awareness, practical park planning, family experience, and the Mouse28 podcast.
 
-## About Laravel
+## Stack
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.4 and Laravel 13
+- Filament 5 administration panel
+- Blade, Tailwind CSS 4, Alpine.js, and Vite 7
+- SQLite locally by default
+- PHPUnit with Laravel's test runner
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Local setup with Herd
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+1. Clone the repository under the Herd directory and link or park it as `mouse28.test`.
+2. Install dependencies and initialize the application:
 
-## Learning Laravel
+   ```bash
+   composer install
+   cp .env.example .env
+   php artisan key:generate
+   php artisan migrate
+   npm install
+   npm run build
+   ```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+3. Configure the application URL in `.env`:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+   ```dotenv
+   APP_NAME=Mouse28
+   APP_URL=https://mouse28.test
+   ```
 
-## Laravel Sponsors
+4. To create a local administrator while seeding sample content, set `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD`, then run `php artisan db:seed`. No administrator is created when either value is absent.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## External services
 
-### Premium Partners
+The application can run locally without live third-party calls, but these features require production configuration:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- `RESEND_API_KEY` and `RESEND_AUDIENCE_ID` power newsletter signup and the subscriber dashboard.
+- `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` protect contact and newsletter forms. `TURNSTILE_ALLOWED_HOSTNAMES` must contain the exact production and local hostnames.
+- `MAIL_*` and `MAIL_ADMIN_ADDRESS` deliver contact notifications and confirmations.
+- `PODCAST_OWNER_NAME` and `PODCAST_OWNER_EMAIL` populate podcast-feed ownership metadata.
+- `FATHOM_SITE_ID` enables the optional analytics script.
 
-## Contributing
+Never commit live credentials. Keep them in the deployment environment.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Content workflow
 
-## Code of Conduct
+The Filament panel is available at `/admin` to users with `is_admin = true`.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- Posts contain news, trip reports, recaps, and family writing.
+- Guides contain durable park resources. Policy-sensitive guides should include an official source and a current `last_reviewed_at` date.
+- Episodes contain podcast metadata, audio links, show notes, and transcripts.
+- Podcast Settings owns show-level distribution metadata.
 
-## Security Vulnerabilities
+Content is publicly visible only when it is marked published and its publication date is not in the future. Community Stories and reader-submitted story publishing are intentionally outside the product scope.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Development commands
 
-## License
+```bash
+composer test
+npm run build
+vendor/bin/pint
+git diff --check
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Use `composer dev` only when a long-running local server, queue listener, Vite server, and log viewer are all needed.
+
+## Deployment checklist
+
+- Configure the application URL, database, mail, Resend, Turnstile, podcast ownership, storage, cache, sessions, and queues.
+- Run `php artisan migrate --force`.
+- Run `npm run build` before publishing the release artifact.
+- Ensure `public/storage` is linked when uploaded media is used.
+- Run `php artisan optimize` after environment configuration is final.
+- Confirm the scheduler and queue worker are supervised if production uses queued work.
+- Verify `/`, `/guides`, `/sitemap.xml`, both RSS feeds, contact submission, and newsletter signup.
+- Back up the database and uploaded files before each deployment.
+
+See [docs/architecture.md](docs/architecture.md) for application boundaries and [docs/content-model.md](docs/content-model.md) for editorial language.

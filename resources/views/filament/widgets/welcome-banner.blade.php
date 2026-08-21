@@ -19,14 +19,14 @@
                             default => 'Good evening!',
                         };
                         $postCount = \App\Models\Post::where('is_published', false)->count();
-                        $storyCount = 0; // Community Stories disabled
+                        $guideCount = \App\Models\Guide::where('is_published', false)->count();
                     @endphp
                     {{ $greeting }}
-                    @if ($postCount > 0 || $storyCount > 0)
+                    @if ($postCount > 0 || $guideCount > 0)
                         You have
                         @if ($postCount > 0) {{ $postCount }} draft {{ str('post')->plural($postCount) }} @endif
-                        @if ($postCount > 0 && $storyCount > 0) and @endif
-                        @if ($storyCount > 0) {{ $storyCount }} {{ str('story')->plural($storyCount) }} awaiting review @endif
+                        @if ($postCount > 0 && $guideCount > 0) and @endif
+                        @if ($guideCount > 0) {{ $guideCount }} draft {{ str('guide')->plural($guideCount) }} @endif
                     @else
                         Ready to create something magical?
                     @endif
@@ -37,6 +37,10 @@
                 <a href="{{ \App\Filament\Resources\Posts\PostResource::getUrl('create') }}" class="font-mouse-body from-mouse-gold hover:from-mouse-gold-light hover:to-mouse-gold text-mouse-navy to-mouse-gold-dark inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-linear-to-br px-5 py-2.5 text-base font-semibold no-underline transition hover:-translate-y-0.5 sm:text-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
                     New Post
+                </a>
+                <a href="{{ \App\Filament\Resources\Guides\GuideResource::getUrl('create') }}" class="bg-mouse-cream/10 border-mouse-gold/30 font-mouse-body hover:bg-mouse-cream/15 text-mouse-cream inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border px-5 py-2.5 text-base font-medium no-underline transition hover:-translate-y-0.5 sm:text-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+                    New Guide
                 </a>
                 <a href="{{ \App\Filament\Resources\Episodes\EpisodeResource::getUrl('create') }}" class="bg-mouse-cream/10 border-mouse-gold/30 font-mouse-body hover:bg-mouse-cream/15 text-mouse-cream inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border px-5 py-2.5 text-base font-medium no-underline transition hover:-translate-y-0.5 sm:text-sm">
                     <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>

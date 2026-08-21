@@ -20,6 +20,7 @@ return [
 
     'resend' => [
         'key' => env('RESEND_API_KEY'),
+        'audience_id' => env('RESEND_AUDIENCE_ID'),
     ],
 
     'ses' => [
@@ -40,7 +41,8 @@ return [
     ],
 
     'turnstile' => [
-        'action' => env('TURNSTILE_CONTACT_ACTION', 'contact-form'),
+        'contact_action' => env('TURNSTILE_CONTACT_ACTION', 'contact-form'),
+        'newsletter_action' => env('TURNSTILE_NEWSLETTER_ACTION', 'newsletter'),
         'allowed_hostnames' => array_filter(array_map('trim', explode(',', env('TURNSTILE_ALLOWED_HOSTNAMES', 'mouse28.com,www.mouse28.com')))),
         'site_key' => env('TURNSTILE_SITE_KEY'),
         'secret_key' => env('TURNSTILE_SECRET_KEY'),

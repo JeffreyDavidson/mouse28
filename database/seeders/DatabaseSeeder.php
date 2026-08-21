@@ -12,13 +12,18 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        User::firstOrCreate(
-            ['email' => 'thelaravelarchitect@gmail.com'],
-            [
-                'name' => 'Jeffrey Davidson',
-                'password' => bcrypt('password'),
-            ]
-        );
+        $adminEmail = config('mouse28.seed_admin.email');
+        $adminPassword = config('mouse28.seed_admin.password');
+        if (is_string($adminEmail) && $adminEmail !== '' && is_string($adminPassword) && $adminPassword !== '') {
+            $user = User::query()->firstOrCreate(
+                ['email' => $adminEmail],
+                [
+                    'name' => config('mouse28.seed_admin.name'),
+                    'password' => $adminPassword,
+                ]
+            );
+            $user->forceFill(['is_admin' => true])->save();
+        }
 
         // Podcast metadata
         Podcast::firstOrCreate(['id' => 1], [

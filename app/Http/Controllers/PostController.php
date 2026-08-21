@@ -31,7 +31,7 @@ class PostController extends Controller
 
     public function show(Post $post)
     {
-        abort_unless($post->is_published, 404);
+        abort_unless($post->is_published && $post->published_at?->isPast(), 404);
 
         // Prioritize same-category posts, then fill with others
         $sameCategoryPosts = Post::published()

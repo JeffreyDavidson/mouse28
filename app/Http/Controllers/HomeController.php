@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Episode;
+use App\Models\Guide;
 use App\Models\Post;
 
 class HomeController extends Controller
@@ -14,11 +15,13 @@ class HomeController extends Controller
             ->when($featuredPost, fn ($q) => $q->where('id', '!=', $featuredPost->id))
             ->take(6)->get();
         $latestEpisodes = Episode::published()->latest('published_at')->take(3)->get();
+        $latestGuides = Guide::published()->latest('published_at')->take(4)->get();
 
         return view('home', compact(
             'featuredPost',
             'latestPosts',
             'latestEpisodes',
+            'latestGuides',
         ));
     }
 }

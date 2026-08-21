@@ -1,0 +1,57 @@
+@extends('layouts.app')
+
+@section('title', ($category ? \App\Models\Guide::CATEGORIES[$category] : 'Guides').' — Mouse28')
+@section('meta_description', 'Practical, regularly reviewed Disney park guides for accessibility, planning, food, and family visits.')
+
+@section('content')
+    <section class="relative overflow-hidden bg-linear-to-br from-navy via-navy-light to-purple py-16 md:py-24">
+        <div class="mx-auto max-w-6xl px-4 text-center sm:px-6">
+            <span class="text-sm font-semibold tracking-[0.15em] text-gold uppercase">Plan With Confidence</span>
+            <h1 class="mt-3 font-heading text-4xl font-bold text-white md:text-6xl">Park Guides</h1>
+            <p class="mx-auto mt-5 max-w-2xl text-lg/relaxed text-white/65">Clear, experience-based guidance for accessible and enjoyable Disney park days.</p>
+        </div>
+    </section>
+
+    <section class="bg-cream py-12 md:py-16">
+        <div class="mx-auto max-w-6xl px-4 sm:px-6">
+            <nav aria-label="Guide categories" class="mb-10 flex flex-wrap justify-center gap-3">
+                <a href="{{ route('guides.index') }}" @if (! $category) aria-current="page" @endif class="inline-flex min-h-12 items-center rounded-full px-5 py-3 text-sm font-semibold {{ ! $category ? 'bg-navy text-white' : 'border border-navy/10 bg-white text-navy hover:border-purple/30' }}">All guides</a>
+                @foreach (\App\Models\Guide::CATEGORIES as $slug => $label)
+                    <a href="{{ route('guides.index', ['category' => $slug]) }}" @if ($category === $slug) aria-current="page" @endif class="inline-flex min-h-12 items-center rounded-full px-5 py-3 text-sm font-semibold {{ $category === $slug ? 'bg-navy text-white' : 'border border-navy/10 bg-white text-navy hover:border-purple/30' }}">{{ $label }}</a>
+                @endforeach
+            </nav>
+
+            @if ($guides->isNotEmpty())
+                <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    @foreach ($guides as $guide)
+                        <article class="flex flex-col overflow-hidden rounded-3xl border border-navy/5 bg-white shadow-sm transition-[transform,box-shadow] hover:-translate-y-1 hover:shadow-xl">
+                            @if ($guide->cover_image_url)
+                                <img src="{{ $guide->cover_image_url }}" alt="" class="h-52 w-full object-cover">
+                            @else
+                                <div class="flex h-40 items-center justify-center bg-linear-to-br from-purple/15 to-gold/15" aria-hidden="true"><span class="text-5xl">✦</span></div>
+                            @endif
+                            <div class="flex flex-1 flex-col p-6">
+                                <span class="text-xs font-bold tracking-widest text-gold uppercase">{{ $guide->category_label }}</span>
+                                <h2 class="mt-3 font-heading text-2xl font-bold text-navy"><a href="{{ route('guides.show', $guide) }}" class="inline-flex min-h-12 items-center hover:text-purple">{{ $guide->title }}</a></h2>
+                                @if ($guide->excerpt)<p class="mt-3 flex-1 text-base/relaxed text-navy/55">{{ $guide->excerpt }}</p>@endif
+                                <div class="mt-5 flex items-center justify-between border-t border-navy/5 pt-4 text-sm">
+                                    <span class="text-navy/40">{{ $guide->reading_time }} min read</span>
+                                    <a href="{{ route('guides.show', $guide) }}" class="inline-flex min-h-12 items-center font-semibold text-purple">Read guide →</a>
+                                </div>
+                            </div>
+                        </article>
+                    @endforeach
+                </div>
+
+                @if ($guides->hasPages())
+                    <div class="mt-12">{{ $guides->links() }}</div>
+                @endif
+            @else
+                <div class="rounded-3xl border border-navy/5 bg-white px-6 py-16 text-center shadow-sm">
+                    <h2 class="font-heading text-3xl font-bold text-navy">Guides are on the way</h2>
+                    <p class="mx-auto mt-3 max-w-xl text-base/relaxed text-navy/55">We are reviewing our park notes and sources so every published guide is useful and current.</p>
+                </div>
+            @endif
+        </div>
+    </section>
+@endsection

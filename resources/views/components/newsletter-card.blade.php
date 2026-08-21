@@ -19,6 +19,7 @@
 
         <form action="{{ route('newsletter.store') }}" method="POST" class="space-y-3">
             @csrf
+            <x-newsletter-protection honeypot-id="card-newsletter-website" />
             <label for="newsletter-email" class="sr-only">Email address</label>
             <input id="newsletter-email" type="email" name="email" value="{{ old('email') }}" placeholder="your@email.com" autocomplete="email" required
                 @error('email') aria-invalid="true" aria-describedby="newsletter-email-error" @enderror
