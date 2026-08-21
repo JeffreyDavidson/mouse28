@@ -3,199 +3,26 @@
 @section('title', 'Mouse28 — Disney Parks Through Different Eyes')
 
 @section('content')
-    <style>
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-        @keyframes gentlePulse {
-            0%, 100% { box-shadow: 0 4px 15px rgba(212,168,67,0.2); }
-            50% { box-shadow: 0 4px 25px rgba(212,168,67,0.45); }
-        }
-        .cta-primary {
-            animation: gentlePulse 3s ease-in-out infinite;
-        }
-        .cta-primary:hover {
-            animation: none;
-        }
-        .card-shimmer::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(105deg, transparent 40%, rgba(212,168,67,0.08) 50%, transparent 60%);
-            transform: translateX(-100%);
-            transition: none;
-        }
-        .group:hover .card-shimmer::after {
-            animation: shimmer 0.8s ease forwards;
-        }
-        .post-card {
-            border-color: rgba(26,16,64,0.05);
-            transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-        .post-card:hover {
-            border-color: rgba(212,168,67,0.3);
-            background: linear-gradient(to bottom, #fff, #fffdf8);
-        }
-        .post-card .card-img {
-            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-        .post-card:hover .card-img {
-            transform: scale(1.07);
-        }
-        .post-card .card-overlay {
-            opacity: 0;
-            transition: opacity 0.35s ease;
-        }
-        .post-card:hover .card-overlay {
-            opacity: 1;
-        }
-        .featured-link .featured-overlay {
-            background: linear-gradient(to top, rgba(26,16,64,0.95), rgba(26,16,64,0.7), rgba(26,16,64,0.2));
-            transition: background 0.5s ease;
-        }
-        .featured-link:hover .featured-overlay {
-            background: linear-gradient(to top, rgba(26,16,64,0.95), rgba(45,27,105,0.75), rgba(91,62,158,0.25));
-        }
-        .newsletter-input:focus {
-            box-shadow: 0 0 0 3px rgba(212,168,67,0.25), 0 0 20px rgba(212,168,67,0.1);
-        }
-        [data-animate] { opacity: 1; transform: translateY(0); }
-        .js-animate [data-animate] {
-            opacity: 0; transform: translateY(24px);
-            transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        }
-        .js-animate [data-animate].is-visible { opacity: 1; transform: translateY(0); }
-        .wave-divider svg { display: block; filter: none; }
-
-        /* Ticket stubs */
-        .ticket {
-            position: relative;
-            border-radius: 1rem;
-            overflow: hidden;
-            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.4s ease;
-            display: block;
-            text-decoration: none;
-        }
-        .ticket:hover {
-            transform: translateY(-6px) rotate(-1deg);
-            box-shadow: 0 20px 40px rgba(26,16,64,0.15);
-        }
-        .ticket-tear {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 20px;
-            background: radial-gradient(circle at 10px -5px, transparent 12px, currentColor 12px);
-            background-size: 20px 20px;
-            background-position: -5px bottom;
-        }
-        .ticket-hole {
-            position: absolute;
-            right: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            border: 2px dashed currentColor;
-            opacity: 0.3;
-        }
-        .ticket::before {
-            content: '';
-            position: absolute;
-            right: 50px;
-            top: 0;
-            bottom: 0;
-            width: 1px;
-            background: repeating-linear-gradient(to bottom, transparent, transparent 4px, currentColor 4px, currentColor 8px);
-            opacity: 0.15;
-        }
-
-        /* Hero split */
-        .hero-split {
-            display: grid;
-            grid-template-columns: 1fr;
-            min-height: 0;
-        }
-        @media (min-width: 768px) {
-            .hero-split {
-                grid-template-columns: 1fr 1fr;
-                min-height: min(70vh, 640px);
-            }
-        }
-        .hero-split-text {
-            background: linear-gradient(135deg, #1a1040 0%, #2d1b69 100%);
-            display: flex;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-            padding: 4rem 2rem;
-        }
-        @media (min-width: 768px) {
-            .hero-split-text { padding: 4rem 3rem 4rem 0; }
-        }
-        .hero-split-photo {
-            position: relative;
-            min-height: 300px;
-            overflow: hidden;
-        }
-        .hero-split-photo img {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: center 30%;
-        }
-        /* Diagonal edge on desktop */
-        @media (min-width: 768px) {
-            .hero-split-photo::before {
-                content: '';
-                position: absolute;
-                top: 0;
-                left: 0;
-                bottom: 0;
-                width: 80px;
-                background: linear-gradient(135deg, #1a1040 0%, #2d1b69 100%);
-                clip-path: polygon(0 0, 100% 0, 0 100%);
-                z-index: 2;
-            }
-        }
-        /* Gradient fade on mobile */
-        @media (max-width: 767px) {
-            .hero-split-photo::before {
-                content: '';
-                position: absolute;
-                top: 0; left: 0; right: 0;
-                height: 60px;
-                background: linear-gradient(to bottom, #2d1b69, transparent);
-                z-index: 2;
-            }
-        }
-    </style>
-
-        {{-- Hero Section — Split Identity --}}
+    {{-- Hero Section — Split Identity --}}
     <section class="hero-split">
         {{-- Left: Text --}}
         <div class="hero-split-text">
-            <div style="position: absolute; bottom: -30%; right: -20%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(212, 168, 67, 0.06) 0%, transparent 60%); pointer-events: none;"></div>
+            <div class="pointer-events-none absolute right-[-20%] bottom-[-30%] size-[400px] bg-[radial-gradient(circle,rgb(212_168_67/6%)_0%,transparent_60%)]"></div>
             <span class="sparkle absolute top-[15%] left-[10%] text-gold/25 text-[10px]">✦</span>
             <span class="sparkle-delay absolute bottom-[20%] right-[15%] text-gold/15 text-sm">✧</span>
 
             <div class="relative z-10 max-w-lg ml-auto">
-                <div style="display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid rgba(212, 168, 67, 0.3); border-radius: 9999px; padding: 0.35rem 1rem; margin-bottom: 1.5rem;">
-                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #d4a843;"></span>
-                    <span class="font-body" style="font-size: 0.7rem; color: #d4a843; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;">Autism Family · Disney Every Week</span>
+                <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-gold/30 px-4 py-[0.35rem]">
+                    <span class="size-1.5 rounded-full bg-gold"></span>
+                    <span class="font-body text-[0.7rem] font-semibold tracking-[0.15em] text-gold uppercase">Autism Family · Disney Every Week</span>
                 </div>
 
-                <h1 class="font-heading font-bold text-white" style="font-size: clamp(2.25rem, 4vw, 3.5rem); line-height: 1.08; margin-bottom: 1.25rem;">
+                <h1 class="mb-5 font-heading text-[clamp(2.25rem,4vw,3.5rem)] leading-[1.08] font-bold text-white">
                     Disney Parks<br>Through<br>
                     <span class="text-gold">Different Eyes</span>
                 </h1>
 
-                <p class="font-body" style="color: rgba(254, 249, 239, 0.5); font-size: 1rem; line-height: 1.75; margin-bottom: 2rem;">
+                <p class="mb-8 font-body text-base/7 text-cream/50">
                     Accessibility tips, sensory-friendly recommendations, and real stories from a family who visits Disney every single week with our autistic daughter.
                 </p>
 
@@ -203,7 +30,7 @@
                     <a href="/blog" class="cta-primary bg-gold hover:bg-gold-light text-navy font-semibold px-7 py-3.5 rounded-full shadow-lg shadow-gold/20 hover:shadow-gold/50 hover:scale-105 transition-all duration-300 hover:-translate-y-1 text-sm font-body inline-flex items-center">
                         Read Our Blog
                     </a>
-                    <a href="/episodes" class="font-body inline-flex items-center gap-2 text-sm font-medium transition-colors duration-200" style="color: rgba(254, 249, 239, 0.45);" onmouseenter="this.style.color='#d4a843'" onmouseleave="this.style.color='rgba(254, 249, 239, 0.45)'">
+                    <a href="/episodes" class="inline-flex items-center gap-2 font-body text-sm font-medium text-cream/45 transition-colors duration-200 hover:text-gold">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
                         Listen to the podcast
                     </a>
@@ -214,12 +41,12 @@
         {{-- Right: Photo --}}
         <div class="hero-split-photo">
             <img src="/images/hero-family.jpg" alt="Jeffrey and Cassie Davidson on Kilimanjaro Safaris at Disney's Animal Kingdom" width="2048" height="2048" fetchpriority="high">
-            <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(to top, rgba(26,16,64,0.3), transparent); z-index: 1;"></div>
+            <div class="absolute inset-x-0 bottom-0 z-1 h-20 bg-linear-to-t from-navy/30 to-transparent"></div>
         </div>
     </section>
 
     {{-- Gold divider --}}
-    <div style="height: 4px; background: linear-gradient(90deg, #d4a843, #b8922e, #d4a843);"></div>
+    <div class="h-1 bg-linear-to-r from-gold via-gold-dark to-gold"></div>
 
     {{-- What We Cover — Ticket Stubs --}}
     <section class="py-16 md:py-24 bg-white">
@@ -230,66 +57,66 @@
             </div>
             <div class="grid sm:grid-cols-2 gap-5" data-animate>
                 {{-- Ticket: Accessibility --}}
-                <a href="/blog" class="ticket" style="background: linear-gradient(135deg, #e88d9a, #d4627a); color: #fce4e8;">
+                <a href="/blog" class="ticket bg-linear-to-br from-[#e88d9a] to-[#d4627a] text-[#fce4e8]">
                     <div class="p-7 pb-10 pr-16 relative">
-                        <div class="text-[10px] font-bold uppercase tracking-[0.2em] font-body mb-1" style="color: rgba(255,255,255,0.5);">Mouse28 · Admit One</div>
+                        <div class="mb-1 font-body text-[10px] font-bold tracking-[0.2em] text-white/50 uppercase">Mouse28 · Admit One</div>
                         <h3 class="font-heading text-2xl font-bold text-white mb-2">Accessibility</h3>
-                        <p class="font-body text-sm leading-relaxed" style="color: rgba(255,255,255,0.7);">DAS tips, sensory guides, and honest advice for neurodivergent families navigating the parks.</p>
+                        <p class="font-body text-sm/relaxed text-white/70">DAS tips, sensory guides, and honest advice for neurodivergent families navigating the parks.</p>
                         <div class="mt-4 flex items-center gap-2">
                             <span class="bg-white/20 text-white text-[10px] font-bold px-3 py-1 rounded-full font-body uppercase tracking-wider">Explore →</span>
                         </div>
                     </div>
-                    <div class="ticket-hole" style="color: #fce4e8;"></div>
-                    <div class="ticket-tear" style="color: #ffffff;"></div>
+                    <div class="ticket-hole"></div>
+                    <div class="ticket-tear text-white"></div>
                 </a>
 
                 {{-- Ticket: Park Strategy --}}
-                <a href="/blog" class="ticket" style="background: linear-gradient(135deg, #7b5eb5, #5b3e9e); color: #ede4f7;">
+                <a href="/blog" class="ticket bg-linear-to-br from-purple-light to-purple text-[#ede4f7]">
                     <div class="p-7 pb-10 pr-16 relative">
-                        <div class="text-[10px] font-bold uppercase tracking-[0.2em] font-body mb-1" style="color: rgba(255,255,255,0.5);">Mouse28 · Admit One</div>
+                        <div class="mb-1 font-body text-[10px] font-bold tracking-[0.2em] text-white/50 uppercase">Mouse28 · Admit One</div>
                         <h3 class="font-heading text-2xl font-bold text-white mb-2">Park Strategy</h3>
-                        <p class="font-body text-sm leading-relaxed" style="color: rgba(255,255,255,0.7);">Ride tips, rope drop plans, and weekly-tested strategies from locals who know every shortcut.</p>
+                        <p class="font-body text-sm/relaxed text-white/70">Ride tips, rope drop plans, and weekly-tested strategies from locals who know every shortcut.</p>
                         <div class="mt-4 flex items-center gap-2">
                             <span class="bg-white/20 text-white text-[10px] font-bold px-3 py-1 rounded-full font-body uppercase tracking-wider">Explore →</span>
                         </div>
                     </div>
-                    <div class="ticket-hole" style="color: #ede4f7;"></div>
-                    <div class="ticket-tear" style="color: #ffffff;"></div>
+                    <div class="ticket-hole"></div>
+                    <div class="ticket-tear text-white"></div>
                 </a>
 
                 {{-- Ticket: Food & Reviews --}}
-                <a href="/blog" class="ticket" style="background: linear-gradient(135deg, #f0c75e, #d4a843); color: #fdf3dc;">
+                <a href="/blog" class="ticket bg-linear-to-br from-gold-light to-gold text-[#fdf3dc]">
                     <div class="p-7 pb-10 pr-16 relative">
-                        <div class="text-[10px] font-bold uppercase tracking-[0.2em] font-body mb-1" style="color: rgba(26,16,64,0.4);">Mouse28 · Admit One</div>
+                        <div class="mb-1 font-body text-[10px] font-bold tracking-[0.2em] text-navy/40 uppercase">Mouse28 · Admit One</div>
                         <h3 class="font-heading text-2xl font-bold text-navy mb-2">Food & Reviews</h3>
-                        <p class="font-body text-sm leading-relaxed" style="color: rgba(26,16,64,0.6);">Honest reviews of restaurants, snacks, and resorts — including diabetic-friendly options.</p>
+                        <p class="font-body text-sm/relaxed text-navy/60">Honest reviews of restaurants, snacks, and resorts — including diabetic-friendly options.</p>
                         <div class="mt-4 flex items-center gap-2">
                             <span class="bg-navy/15 text-navy text-[10px] font-bold px-3 py-1 rounded-full font-body uppercase tracking-wider">Explore →</span>
                         </div>
                     </div>
-                    <div class="ticket-hole" style="color: #fdf3dc;"></div>
-                    <div class="ticket-tear" style="color: #ffffff;"></div>
+                    <div class="ticket-hole"></div>
+                    <div class="ticket-tear text-white"></div>
                 </a>
 
                 {{-- Ticket: Family Stories --}}
-                <a href="/blog" class="ticket" style="background: linear-gradient(135deg, #5ba4ad, #4a90a4); color: #ddf0f5;">
+                <a href="/blog" class="ticket bg-linear-to-br from-[#5ba4ad] to-[#4a90a4] text-[#ddf0f5]">
                     <div class="p-7 pb-10 pr-16 relative">
-                        <div class="text-[10px] font-bold uppercase tracking-[0.2em] font-body mb-1" style="color: rgba(255,255,255,0.5);">Mouse28 · Admit One</div>
+                        <div class="mb-1 font-body text-[10px] font-bold tracking-[0.2em] text-white/50 uppercase">Mouse28 · Admit One</div>
                         <h3 class="font-heading text-2xl font-bold text-white mb-2">Family Stories</h3>
-                        <p class="font-body text-sm leading-relaxed" style="color: rgba(255,255,255,0.7);">Real moments from our weekly trips — the magical, the messy, and everything in between.</p>
+                        <p class="font-body text-sm/relaxed text-white/70">Real moments from our weekly trips — the magical, the messy, and everything in between.</p>
                         <div class="mt-4 flex items-center gap-2">
                             <span class="bg-white/20 text-white text-[10px] font-bold px-3 py-1 rounded-full font-body uppercase tracking-wider">Explore →</span>
                         </div>
                     </div>
-                    <div class="ticket-hole" style="color: #ddf0f5;"></div>
-                    <div class="ticket-tear" style="color: #ffffff;"></div>
+                    <div class="ticket-hole"></div>
+                    <div class="ticket-tear text-white"></div>
                 </a>
             </div>
         </div>
     </section>
 
     {{-- Thin gold line divider --}}
-    <div style="height: 1px; background: linear-gradient(90deg, transparent, rgba(212,168,67,0.25), transparent);"></div>
+    <div class="h-px bg-linear-to-r from-transparent via-gold/25 to-transparent"></div>
 
 {{-- Featured Post --}}
     @if($featuredPost)
@@ -304,7 +131,7 @@
                         <div class="relative md:w-2/5 min-h-[220px] md:min-h-[320px] overflow-hidden flex-shrink-0">
                             @if($featuredPost->cover_image_url)
                                 <img src="{{ $featuredPost->cover_image_url }}" alt="{{ $featuredPost->title }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
-                                <div class="absolute inset-0 md:bg-gradient-to-r md:from-transparent md:via-transparent md:to-navy/40" style="left: 50%;"></div>
+                                <div class="absolute inset-y-0 right-0 left-1/2 md:bg-linear-to-r md:from-transparent md:via-transparent md:to-navy/40"></div>
                             @else
                                 <div class="absolute inset-0 bg-gradient-to-br from-purple/40 to-navy flex items-center justify-center">
                                     <div class="w-20 h-20 rounded-2xl bg-white/10 flex items-center justify-center border border-white/10">
@@ -446,36 +273,29 @@
                     <a href="/episodes" class="text-purple hover:text-navy font-semibold text-sm transition-colors font-body">All episodes →</a>
                 </div>
             @else
-                <div style="
-                    background: linear-gradient(135deg, #1a1040, #2d1b69);
-                    border-radius: 1.5rem;
-                    padding: 3rem 2.5rem;
-                    position: relative;
-                    overflow: hidden;
-                    border: 1px solid rgba(212, 168, 67, 0.12);
-                ">
+                <div class="relative overflow-hidden rounded-3xl border border-gold/12 bg-linear-to-br from-navy to-navy-light px-6 py-12 sm:px-10">
                     {{-- Ambient glow --}}
-                    <div style="position: absolute; top: -40%; right: -20%; width: 300px; height: 300px; background: radial-gradient(circle, rgba(212, 168, 67, 0.1) 0%, transparent 60%); pointer-events: none;"></div>
+                    <div class="pointer-events-none absolute top-[-40%] right-[-20%] size-[300px] bg-[radial-gradient(circle,rgb(212_168_67/10%)_0%,transparent_60%)]"></div>
 
-                    <div style="display: flex; align-items: center; gap: 2.5rem; flex-wrap: wrap; position: relative;">
+                    <div class="relative flex flex-wrap items-center gap-10">
                         {{-- Waveform visual --}}
-                        <div style="flex-shrink: 0;">
-                            <div style="width: 100px; height: 100px; border-radius: 1.25rem; background: linear-gradient(135deg, #d4a843, #b8922e); display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 30px rgba(212, 168, 67, 0.25);">
+                        <div class="shrink-0">
+                            <div class="flex size-[100px] items-center justify-center rounded-[1.25rem] bg-linear-to-br from-gold to-gold-dark shadow-[0_10px_30px_rgb(212_168_67/25%)]">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1a1040" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
                             </div>
                         </div>
 
-                        <div style="flex: 1; min-width: 240px;">
-                            <h3 style="font-family: 'Playfair Display', serif; font-size: 1.5rem; font-weight: 700; color: #fef9ef; margin-bottom: 0.5rem;">
+                        <div class="min-w-60 flex-1">
+                            <h3 class="mb-2 font-heading text-2xl font-bold text-cream">
                                 Episode One Is Coming
                             </h3>
-                            <p style="font-family: 'Poppins', sans-serif; color: rgba(254, 249, 239, 0.5); font-size: 0.95rem; line-height: 1.7; margin-bottom: 1.25rem;">
+                            <p class="mb-5 font-body text-[0.95rem] leading-[1.7] text-cream/50">
                                 Jeffrey &amp; Cassie are recording their first episode, an intro to who they are, why they started Mouse28, and what to expect from the show.
                             </p>
                             {{-- Faux waveform bars --}}
-                            <div style="display: flex; align-items: end; gap: 3px; height: 28px; opacity: 0.3;">
+                            <div class="flex h-7 items-end gap-[3px] opacity-30">
                                 @for($i = 0; $i < 40; $i++)
-                                    <div style="width: 3px; background: #d4a843; border-radius: 2px; height: {{ rand(15, 100) }}%;"></div>
+                                    <div class="waveform-bar" style="--waveform-height: {{ rand(15, 100) }}%;"></div>
                                 @endfor
                             </div>
                         </div>
@@ -492,11 +312,11 @@
                 {{-- Photo --}}
                 <div class="flex-shrink-0 w-full md:w-2/5">
                     <div class="relative">
-                        <div class="rounded-2xl overflow-hidden shadow-xl" style="border: 3px solid rgba(212,168,67,0.2);">
-                            <img src="/images/meet-jeffrey-and-cassie.jpg" alt="Jeffrey and Cassie Davidson at Disney" width="1024" height="1536" loading="lazy" decoding="async" class="w-full h-auto object-cover" style="aspect-ratio: 4/5;">
+                        <div class="overflow-hidden rounded-2xl border-[3px] border-gold/20 shadow-xl">
+                            <img src="/images/meet-jeffrey-and-cassie.jpg" alt="Jeffrey and Cassie Davidson at Disney" width="1024" height="1536" loading="lazy" decoding="async" class="aspect-4/5 h-auto w-full object-cover">
                         </div>
                         {{-- Decorative corner accent --}}
-                        <div class="hidden md:block absolute -bottom-3 -right-3 w-24 h-24 border-b-2 border-r-2 rounded-br-2xl" style="border-color: rgba(212,168,67,0.25);"></div>
+                        <div class="absolute -right-3 -bottom-3 hidden size-24 rounded-br-2xl border-r-2 border-b-2 border-gold/25 md:block"></div>
                     </div>
                 </div>
 
@@ -523,32 +343,32 @@
     </section>
 
     {{-- The Story in Numbers --}}
-    <section style="background: #ffffff; position: relative;">
-        <div style="height: 1px; background: linear-gradient(90deg, transparent, rgba(212,168,67,0.2), transparent);"></div>
-        <div class="max-w-5xl mx-auto px-4 sm:px-6" style="padding: 4.5rem 1rem;">
-            <div class="text-center" style="margin-bottom: 2.5rem;">
-                <span class="font-body" style="font-size: 0.7rem; color: #d4a843; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;">The Family Behind Mouse28</span>
+    <section class="relative bg-white">
+        <div class="h-px bg-linear-to-r from-transparent via-gold/20 to-transparent"></div>
+        <div class="mx-auto max-w-5xl px-4 py-18 sm:px-6">
+            <div class="mb-10 text-center">
+                <span class="font-body text-[0.7rem] font-semibold tracking-[0.15em] text-gold uppercase">The Family Behind Mouse28</span>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
                 <div class="text-center">
-                    <div class="font-heading" style="font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; color: #1a1040; line-height: 1;">20</div>
-                    <p class="font-body" style="color: rgba(26,16,64,0.45); font-size: 0.8rem; margin-top: 0.5rem; line-height: 1.5;">Minutes from<br>the Magic Kingdom</p>
+                    <div class="font-heading text-[clamp(2.5rem,5vw,3.5rem)] leading-none font-extrabold text-navy">20</div>
+                    <p class="mt-2 font-body text-[0.8rem]/6 text-navy/45">Minutes from<br>the Magic Kingdom</p>
                 </div>
                 <div class="text-center">
-                    <div class="font-heading" style="font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; color: #1a1040; line-height: 1;">2</div>
-                    <p class="font-body" style="color: rgba(26,16,64,0.45); font-size: 0.8rem; margin-top: 0.5rem; line-height: 1.5;">Voices, one mic,<br>zero filter</p>
+                    <div class="font-heading text-[clamp(2.5rem,5vw,3.5rem)] leading-none font-extrabold text-navy">2</div>
+                    <p class="mt-2 font-body text-[0.8rem]/6 text-navy/45">Voices, one mic,<br>zero filter</p>
                 </div>
                 <div class="text-center">
-                    <div class="font-heading" style="font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; color: #d4a843; line-height: 1;">52</div>
-                    <p class="font-body" style="color: rgba(26,16,64,0.45); font-size: 0.8rem; margin-top: 0.5rem; line-height: 1.5;">Park days a year<br>(at least)</p>
+                    <div class="font-heading text-[clamp(2.5rem,5vw,3.5rem)] leading-none font-extrabold text-gold">52</div>
+                    <p class="mt-2 font-body text-[0.8rem]/6 text-navy/45">Park days a year<br>(at least)</p>
                 </div>
                 <div class="text-center">
-                    <div class="font-heading" style="font-size: clamp(2.5rem, 5vw, 3.5rem); font-weight: 800; color: #1a1040; line-height: 1;">∞</div>
-                    <p class="font-body" style="color: rgba(26,16,64,0.45); font-size: 0.8rem; margin-top: 0.5rem; line-height: 1.5;">Buckets of maple popcorn<br>(and counting)</p>
+                    <div class="font-heading text-[clamp(2.5rem,5vw,3.5rem)] leading-none font-extrabold text-navy">∞</div>
+                    <p class="mt-2 font-body text-[0.8rem]/6 text-navy/45">Buckets of maple popcorn<br>(and counting)</p>
                 </div>
             </div>
         </div>
-        <div style="height: 1px; background: linear-gradient(90deg, transparent, rgba(212,168,67,0.2), transparent);"></div>
+        <div class="h-px bg-linear-to-r from-transparent via-gold/20 to-transparent"></div>
     </section>
 
     {{-- Newsletter CTA --}}
