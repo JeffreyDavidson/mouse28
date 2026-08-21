@@ -1,8 +1,5 @@
 /* Mouse28 Admin — Navy/Purple/Gold Theme */
 
-/* ===== FONTS ===== */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
-
 /* ===== LOGIN PAGE ===== */
 .fi-simple-layout {
     background: linear-gradient(135deg, #1a1040 0%, #2d1b69 40%, #3a2370 70%, #1a1040 100%) !important;

@@ -2,10 +2,11 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Resources\Episodes\EpisodeResource;
+use App\Filament\Resources\Posts\PostResource;
 use App\Models\Episode;
 use App\Models\Post;
 use Filament\Widgets\Widget;
-use Illuminate\Support\Carbon;
 
 class ContentCalendar extends Widget
 {
@@ -27,8 +28,8 @@ class ContentCalendar extends Widget
                 'title' => $post->title,
                 'type' => 'Post',
                 'date' => $post->published_at,
-                'status' => !$post->is_published ? 'Draft' : ($post->published_at->isFuture() ? 'Scheduled' : 'Published'),
-                'url' => route('filament.admin.resources.posts.edit', $post),
+                'status' => ! $post->is_published ? 'Draft' : ($post->published_at->isFuture() ? 'Scheduled' : 'Published'),
+                'url' => PostResource::getUrl('edit', ['record' => $post]),
             ]);
 
         $episodes = Episode::whereBetween('published_at', [$start, $end])
@@ -38,8 +39,8 @@ class ContentCalendar extends Widget
                 'title' => $episode->title,
                 'type' => 'Episode',
                 'date' => $episode->published_at,
-                'status' => !$episode->is_published ? 'Draft' : ($episode->published_at->isFuture() ? 'Scheduled' : 'Published'),
-                'url' => route('filament.admin.resources.episodes.edit', $episode),
+                'status' => ! $episode->is_published ? 'Draft' : ($episode->published_at->isFuture() ? 'Scheduled' : 'Published'),
+                'url' => EpisodeResource::getUrl('edit', ['record' => $episode]),
             ]);
 
         return $posts->merge($episodes)->sortBy('date')->values()->toArray();

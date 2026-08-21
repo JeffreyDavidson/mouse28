@@ -7,13 +7,10 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
 use Filament\Navigation\NavigationGroup;
+use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Filament\Support\Colors\Color;
-use Filament\Widgets\AccountWidget;
-use Illuminate\Support\HtmlString;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -34,6 +31,7 @@ class AdminPanelProvider extends PanelProvider
             ->darkModeBrandLogo(view('filament.brand-logo'))
             ->login(\App\Filament\Pages\Auth\Login::class)
             ->spa()
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->colors([
                 'primary' => [
                     50 => '#fef9ef',
@@ -49,9 +47,6 @@ class AdminPanelProvider extends PanelProvider
                     950 => '#0a0620',
                 ],
             ])
-            ->renderHook('panels::head.end', fn () => new HtmlString(
-                '<link rel="stylesheet" href="' . asset('css/filament-custom.css') . '?v=' . filemtime(public_path('css/filament-custom.css')) . '">'
-            ))
             ->navigationGroups([
                 NavigationGroup::make('Content'),
                 NavigationGroup::make('Communication'),
