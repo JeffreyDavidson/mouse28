@@ -56,8 +56,9 @@ class Post extends Model
         }
 
         $name = $this->author_name;
+
         return collect(explode(' ', $name))
-            ->map(fn($w) => strtoupper(substr($w, 0, 1)))
+            ->map(fn ($w) => strtoupper(substr($w, 0, 1)))
             ->take(2)
             ->join('');
     }
@@ -65,6 +66,7 @@ class Post extends Model
     public function getReadingTimeAttribute(): int
     {
         $words = str_word_count(strip_tags($this->body ?? ''));
+
         return max(1, (int) ceil($words / 200));
     }
 
@@ -75,12 +77,12 @@ class Post extends Model
 
     public function getCoverImageUrlAttribute(): ?string
     {
-        return $this->cover_image ? '/storage/' . $this->cover_image : null;
+        return $this->cover_image ? '/storage/'.$this->cover_image : null;
     }
 
     public function getOgImageUrlAttribute(): ?string
     {
-        return $this->og_image ? '/storage/' . $this->og_image : null;
+        return $this->og_image ? '/storage/'.$this->og_image : null;
     }
 
     public function getCategoryColorAttribute(): string

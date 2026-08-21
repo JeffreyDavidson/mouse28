@@ -28,8 +28,13 @@ class EpisodesTable
                     ->label('Status')
                     ->badge()
                     ->getStateUsing(function ($record): string {
-                        if (! $record->is_published) return 'Draft';
-                        if ($record->published_at && $record->published_at->isFuture()) return 'Scheduled';
+                        if (! $record->is_published) {
+                            return 'Draft';
+                        }
+                        if ($record->published_at && $record->published_at->isFuture()) {
+                            return 'Scheduled';
+                        }
+
                         return 'Published';
                     })
                     ->color(fn (string $state): string => match ($state) {
@@ -44,7 +49,10 @@ class EpisodesTable
                 TextColumn::make('duration_seconds')
                     ->label('Duration')
                     ->formatStateUsing(function (?int $state): string {
-                        if (! $state) return '—';
+                        if (! $state) {
+                            return '—';
+                        }
+
                         return sprintf('%d:%02d', floor($state / 60), $state % 60);
                     }),
             ])

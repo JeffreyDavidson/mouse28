@@ -8,14 +8,16 @@ use Illuminate\Console\Command;
 class PopulateEpisodeContent extends Command
 {
     protected $signature = 'episodes:populate-content';
+
     protected $description = 'Populate Episode 1 with rich show notes and transcript';
 
     public function handle(): void
     {
         $episode = Episode::where('slug', 'welcome-to-mouse28')->first();
 
-        if (!$episode) {
+        if (! $episode) {
             $this->error('Episode not found.');
+
             return;
         }
 

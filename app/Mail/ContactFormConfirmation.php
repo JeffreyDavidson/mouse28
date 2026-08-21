@@ -13,14 +13,12 @@ class ContactFormConfirmation extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public ContactMessage $contactMessage)
-    {
-    }
+    public function __construct(public ContactMessage $contactMessage) {}
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: "We got your message! — Mouse28",
+            subject: 'We got your message! — Mouse28',
             replyTo: [config('mail.admin_address', 'mouse28podcast@gmail.com')],
         );
     }

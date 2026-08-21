@@ -16,12 +16,12 @@ class InspirationWidget extends Widget
     {
         $prompts = [
             "What's your family's favorite hidden Mickey?",
-            "Share a sensory-friendly tip from your last visit",
-            "Review the last thing you ate at the parks",
-            "What ride has the best queue experience?",
-            "Describe your perfect Disney day from rope drop to fireworks",
+            'Share a sensory-friendly tip from your last visit',
+            'Review the last thing you ate at the parks',
+            'What ride has the best queue experience?',
+            'Describe your perfect Disney day from rope drop to fireworks',
             "What's one thing first-timers always miss?",
-            "Share a moment that made the magic real for your family",
+            'Share a moment that made the magic real for your family',
         ];
 
         return $prompts[array_rand($prompts)];
