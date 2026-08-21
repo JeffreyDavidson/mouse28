@@ -26,14 +26,17 @@ class Episode extends Model
 
     public function getOgImageUrlAttribute(): ?string
     {
-        return $this->og_image ? '/storage/' . $this->og_image : null;
+        return $this->og_image ? '/storage/'.$this->og_image : null;
     }
 
     public function getFormattedDurationAttribute(): string
     {
-        if (!$this->duration_seconds) return '';
+        if (! $this->duration_seconds) {
+            return '';
+        }
         $minutes = floor($this->duration_seconds / 60);
         $seconds = $this->duration_seconds % 60;
+
         return sprintf('%d:%02d', $minutes, $seconds);
     }
 }

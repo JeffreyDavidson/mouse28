@@ -4,7 +4,6 @@ namespace App\Filament\Pages;
 
 use BackedEnum;
 use Filament\Pages\Page;
-use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -48,11 +47,11 @@ class NewsletterSubscribers extends Page
             $response = Http::withToken(config('services.resend.key'))
                 ->get('https://api.resend.com/audiences/05c28c48-d37a-4429-9fdf-6ee261c023f4/contacts');
 
-            if (!$response->successful()) {
-                return 'Failed to fetch subscribers from Resend API (HTTP ' . $response->status() . ')';
+            if (! $response->successful()) {
+                return 'Failed to fetch subscribers from Resend API (HTTP '.$response->status().')';
             }
         } catch (\Exception $e) {
-            return 'Could not connect to Resend API: ' . $e->getMessage();
+            return 'Could not connect to Resend API: '.$e->getMessage();
         }
 
         return null;
@@ -72,7 +71,7 @@ class NewsletterSubscribers extends Page
                 ]);
             }
             fclose($handle);
-        }, 'newsletter-subscribers-' . now()->format('Y-m-d') . '.csv', [
+        }, 'newsletter-subscribers-'.now()->format('Y-m-d').'.csv', [
             'Content-Type' => 'text/csv',
         ]);
     }

@@ -9,18 +9,18 @@ use App\Http\Controllers\RssController;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [HomeController::class, 'index']);
-Route::get('/blog', [PostController::class, 'index']);
-Route::get('/blog/{post:slug}', [PostController::class, 'show']);
-Route::get('/episodes', [EpisodeController::class, 'index']);
-Route::get('/episodes/{episode:slug}', [EpisodeController::class, 'show']);
-Route::get('/about', fn () => view('about'));
-Route::get('/contact', [ContactController::class, 'show']);
-Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:contact-form');
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/blog', [PostController::class, 'index'])->name('blog.index');
+Route::get('/blog/{post:slug}', [PostController::class, 'show'])->name('blog.show');
+Route::get('/episodes', [EpisodeController::class, 'index'])->name('episodes.index');
+Route::get('/episodes/{episode:slug}', [EpisodeController::class, 'show'])->name('episodes.show');
+Route::get('/about', fn () => view('about'))->name('about');
+Route::get('/contact', [ContactController::class, 'show'])->name('contact.show');
+Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:contact-form')->name('contact.store');
 
-Route::post('/newsletter', [NewsletterController::class, 'store']);
+Route::post('/newsletter', [NewsletterController::class, 'store'])->name('newsletter.store');
 
-Route::get('/sitemap.xml', [SitemapController::class, 'index']);
-Route::get('/robots.txt', [SitemapController::class, 'robots']);
-Route::get('/rss/blog', [RssController::class, 'blog']);
-Route::get('/rss/podcast', [RssController::class, 'podcast']);
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
+Route::get('/rss/blog', [RssController::class, 'blog'])->name('rss.blog');
+Route::get('/rss/podcast', [RssController::class, 'podcast'])->name('rss.podcast');

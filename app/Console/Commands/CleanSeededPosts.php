@@ -8,6 +8,7 @@ use Illuminate\Console\Command;
 class CleanSeededPosts extends Command
 {
     protected $signature = 'posts:clean-seeded';
+
     protected $description = 'Remove seeded demo blog posts, keep real ones';
 
     public function handle(): void

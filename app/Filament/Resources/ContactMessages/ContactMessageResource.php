@@ -7,7 +7,6 @@ use App\Models\ContactMessage;
 use BackedEnum;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -82,7 +81,7 @@ class ContactMessageResource extends Resource
                 \Filament\Actions\Action::make('reply')
                     ->label('Reply')
                     ->icon('heroicon-o-paper-airplane')
-                    ->url(fn (ContactMessage $record) => "mailto:{$record->email}?subject=" . urlencode("Re: {$record->subject_label}"))
+                    ->url(fn (ContactMessage $record) => "mailto:{$record->email}?subject=".urlencode("Re: {$record->subject_label}"))
                     ->openUrlInNewTab(),
                 \Filament\Actions\DeleteAction::make(),
             ])

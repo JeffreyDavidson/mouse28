@@ -18,11 +18,10 @@ class PostController extends Controller
         $categoryCounts = Post::published()->selectRaw('category, count(*) as count')->groupBy('category')->pluck('count', 'category');
 
         $posts = Post::published()
-            ->when($category, fn($q) => $q->where('category', $category))
-            ->when($search, fn($q) => $q->where(fn($q) =>
-                $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('excerpt', 'like', "%{$search}%")
-                  ->orWhere('body', 'like', "%{$search}%")
+            ->when($category, fn ($q) => $q->where('category', $category))
+            ->when($search, fn ($q) => $q->where(fn ($q) => $q->where('title', 'like', "%{$search}%")
+                ->orWhere('excerpt', 'like', "%{$search}%")
+                ->orWhere('body', 'like', "%{$search}%")
             ))
             ->orderBy('published_at', $sort === 'oldest' ? 'asc' : 'desc')
             ->paginate(12);

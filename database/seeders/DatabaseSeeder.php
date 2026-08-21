@@ -109,7 +109,7 @@ class DatabaseSeeder extends Seeder
             [
                 'title' => 'Sensory-Friendly Spots at Magic Kingdom',
                 'slug' => 'sensory-friendly-spots-magic-kingdom',
-                'description' => "Magic Kingdom can be overwhelming for sensory-sensitive kids (and adults!). We share our tried-and-true quiet spots, calm rides, and decompression strategies.",
+                'description' => 'Magic Kingdom can be overwhelming for sensory-sensitive kids (and adults!). We share our tried-and-true quiet spots, calm rides, and decompression strategies.',
                 'show_notes' => "In this episode:\n- The best quiet spots in each land\n- Rides ranked by sensory intensity\n- Our secret decompression routine\n- Cast member interactions that surprised us\n- Viola's favorite Magic Kingdom moments",
                 'episode_number' => 3,
                 'season_number' => null,
@@ -120,8 +120,8 @@ class DatabaseSeeder extends Seeder
             [
                 'title' => 'EPCOT With Kids Who Think Differently',
                 'slug' => 'epcot-with-kids-who-think-differently',
-                'description' => "EPCOT is secretly the best park for neurodiverse kids. We break down why World Showcase is a sensory paradise and which Future World rides are worth the wait.",
-                'show_notes' => "Coming soon...",
+                'description' => 'EPCOT is secretly the best park for neurodiverse kids. We break down why World Showcase is a sensory paradise and which Future World rides are worth the wait.',
+                'show_notes' => 'Coming soon...',
                 'episode_number' => 4,
                 'season_number' => null,
                 'duration_seconds' => 2580,
@@ -139,7 +139,7 @@ class DatabaseSeeder extends Seeder
             [
                 'title' => '10 Quiet Spots at Disney World When Your Kid Needs a Break',
                 'slug' => '10-quiet-spots-disney-world-kid-needs-break',
-                'excerpt' => "Overstimulated? Meltdown incoming? Here are our go-to decompression spots at all four parks — tested by a family who visits every single week.",
+                'excerpt' => 'Overstimulated? Meltdown incoming? Here are our go-to decompression spots at all four parks — tested by a family who visits every single week.',
                 'body' => "<p>If you have a child who gets overstimulated, you know the signs. The hand-flapping gets faster. The covering of ears. The look in their eyes that says \"I need out of here NOW.\"</p><p>After three years of weekly Disney visits with our daughter Viola, we've mapped out the best quiet spots at every park. These aren't just \"less crowded areas\" — these are places where the noise drops, the crowds thin, and your kid can actually breathe.</p><h2>Magic Kingdom</h2><p><strong>1. Tom Sawyer Island</strong> — This is our #1 pick. You take a raft over and suddenly the noise just... disappears. Viola can explore at her own pace with zero crowd pressure.</p><p><strong>2. The back of Tomorrowland near the Speedway</strong> — Most people rush to Space Mountain. Walk past the Speedway and there's a quiet stretch with benches and shade.</p><p><strong>3. The garden behind the castle</strong> — Not many people know about this. Walk through the castle and look for the garden area to the right. It's a peaceful pocket.</p><h2>EPCOT</h2><p><strong>4. Japan Pavilion gardens</strong> — The koi pond area is genuinely calming. Viola will sit and watch the fish for 20 minutes straight.</p><p><strong>5. Morocco Pavilion inner courtyard</strong> — The most underrated quiet spot in all of Disney World. Beautifully tiled, shaded, and almost always empty.</p><h2>Hollywood Studios</h2><p><strong>6. Animation Courtyard</strong> — When it's not a character meet time, this area empties out completely.</p><h2>Animal Kingdom</h2><p><strong>7. The Maharajah Jungle Trek</strong> — A self-paced walking trail. No time limits, no crowds pushing behind you. Viola loves the bat enclosure.</p><p><strong>8. Discovery Island trails</strong> — Most people walk right past these to get to rides. The trails are shaded and quiet.</p><h2>Pro Tips</h2><p><strong>9. First Aid stations</strong> — Every park has one. They have quiet rooms specifically for situations like this. Don't be afraid to ask.</p><p><strong>10. Baby Care Centers</strong> — Not just for babies! These have quiet rooms with dim lighting. We've used them countless times.</p><p>The most important thing? Know your kid's limits and leave BEFORE the meltdown, not during. We've learned this the hard way more times than we'd like to admit.</p>",
                 'category' => 'park-accessibility',
                 'author' => 'both',
@@ -181,7 +181,7 @@ class DatabaseSeeder extends Seeder
             [
                 'title' => 'Our Top 5 Character Interactions for Sensory-Sensitive Kids',
                 'slug' => 'top-5-character-interactions-sensory-sensitive-kids',
-                'excerpt' => "Not all character meets are created equal. Here are the ones that consistently work for Viola — and why.",
+                'excerpt' => 'Not all character meets are created equal. Here are the ones that consistently work for Viola — and why.',
                 'body' => "<p>Character meets can be magical or disastrous for sensory-sensitive kids. After hundreds of interactions (literally), here are the five that consistently work for us.</p><h2>1. Winnie the Pooh (Magic Kingdom)</h2><p>Pooh is gentle, slow-moving, and patient. He'll wait for your child to approach on their own terms. We've had interactions where Viola just stood six feet away and waved, and Pooh waved back for a full minute. No pressure.</p><h2>2. Baymax (EPCOT)</h2><p>Baymax's costume is designed for hugs — he's soft and round. The interaction area is usually quieter than other meets. And something about that big white shape is incredibly calming for Viola.</p><h2>3. Mickey at Town Square Theater (Magic Kingdom)</h2><p>The cast members at this location are specifically trained for accessibility interactions. They'll adjust the experience — dimmer photo flash, more time, quieter voice. Just let them know at the door.</p><h2>4. Chip & Dale (Various)</h2><p>These guys are hilarious and they read the room. If your kid is shy, they'll do silly dances from a distance. If your kid is engaged, they'll get up close. Viola LOVES them.</p><h2>5. Stitch (Magic Kingdom)</h2><p>Stitch is mischievous and playful. He communicates a lot through gestures and sounds rather than words, which actually works great for nonverbal kids. Viola and Stitch have a thing.</p><h2>Tips for Character Meets</h2><ul><li>Go at rope drop — shorter waits, calmer environment</li><li>Let cast members know about your child's needs</li><li>Don't force photos — the interaction matters more</li><li>Have an exit strategy if it's not working</li></ul>",
                 'category' => 'disney-tips',
                 'author' => 'cassie',
@@ -189,9 +189,9 @@ class DatabaseSeeder extends Seeder
                 'published_at' => now()->subDays(3),
             ],
             [
-                'title' => "Recap: EPCOT With Kids Who Think Differently (Ep. 4)",
+                'title' => 'Recap: EPCOT With Kids Who Think Differently (Ep. 4)',
                 'slug' => 'recap-epcot-kids-think-differently-ep4',
-                'excerpt' => "Show notes and expanded thoughts from our latest episode about why EPCOT might be the best park for neurodiverse families.",
+                'excerpt' => 'Show notes and expanded thoughts from our latest episode about why EPCOT might be the best park for neurodiverse families.',
                 'body' => "<p>In our latest episode, we dove into why EPCOT has become our favorite park for Viola. Here's the expanded version with all the details we couldn't fit in the show.</p><h2>Why EPCOT Works</h2><p>EPCOT is more spread out than any other park. That alone makes a huge difference for sensory management. But there's more to it:</p><ul><li><strong>World Showcase is a sensory paradise</strong> — Different sights, sounds, and smells in each pavilion, but the transitions are gradual, not jarring.</li><li><strong>Fewer sudden loud noises</strong> — Compared to Magic Kingdom's fireworks cannon and Hollywood Studios' action shows, EPCOT is relatively gentle.</li><li><strong>Water everywhere</strong> — Viola is obsessed with water. The fountains, the lagoon, the aquarium at The Seas... she could spend all day.</li></ul><h2>Our EPCOT Routine</h2><p>We've dialed in a routine that works:</p><ol><li>Arrive at park open, head straight to The Seas with Nemo (aquarium time)</li><li>Ride Frozen Ever After while crowds are still thin</li><li>Walk World Showcase counter-clockwise (less crowded direction)</li><li>Lunch in Japan (Viola loves the rice)</li><li>End at the fountain near the entrance for decompression</li></ol><p>Listen to the full episode for our ride-by-ride sensory ratings and the story about Viola's first time on Remy's Ratatouille Adventure (spoiler: she loved it).</p>",
                 'category' => 'episode-recap',
                 'author' => 'both',
@@ -212,7 +212,7 @@ class DatabaseSeeder extends Seeder
             [
                 'title' => 'Best Disney Snacks for Kids with Sensory Food Issues',
                 'slug' => 'best-disney-snacks-sensory-food-issues',
-                'excerpt' => "Picky eating meets Disney dining. Here are the snacks that work for our sensory-sensitive daughter — and where to find them.",
+                'excerpt' => 'Picky eating meets Disney dining. Here are the snacks that work for our sensory-sensitive daughter — and where to find them.',
                 'body' => "<p>Feeding a sensory-sensitive kid at Disney is its own adventure. Viola has about 8 foods she'll reliably eat, and exactly zero of them are \"adventurous.\"</p><h2>Viola-Approved Disney Snacks</h2><ul><li><strong>Mickey pretzels</strong> (everywhere) — Safe, predictable, salty. Her #1.</li><li><strong>Plain rice from Katsura Grill</strong> (EPCOT Japan) — No sauce, no seasoning. Just rice. She'll eat two bowls.</li><li><strong>French fries from Cosmic Ray's</strong> (Magic Kingdom) — Consistent every time.</li><li><strong>Dole Whip</strong> (Adventureland) — The texture works for her. Pineapple only.</li><li><strong>Popcorn</strong> (carts everywhere) — Reliable and she loves the buckets.</li></ul><h2>Tips for Sensory Eaters at Disney</h2><ul><li><strong>Bring safe foods.</strong> Disney allows outside food. We always pack Goldfish crackers and apple sauce pouches.</li><li><strong>Mobile order everything.</strong> Standing in a food line is a meltdown trigger. Mobile ordering means grab-and-go.</li><li><strong>Eat at off-peak times.</strong> 11 AM or 2 PM. Crowded restaurants are sensory nightmares.</li><li><strong>Don't try new foods on a park day.</strong> Park days are stressful enough. New foods can wait.</li></ul><p>The most important thing: fed is best. If your kid eats nothing but Mickey pretzels for an entire Disney day, that's a win.</p>",
                 'category' => 'disney-tips',
                 'author' => 'jeffrey',

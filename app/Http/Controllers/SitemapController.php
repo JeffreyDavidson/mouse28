@@ -18,20 +18,20 @@ class SitemapController extends Controller
 
         // Static pages
         foreach (['/', '/blog', '/episodes', '/about', '/contact'] as $path) {
-            $xml .= '<url><loc>' . url($path) . '</loc><changefreq>weekly</changefreq><priority>' . ($path === '/' ? '1.0' : '0.8') . '</priority></url>';
+            $xml .= '<url><loc>'.url($path).'</loc><changefreq>weekly</changefreq><priority>'.($path === '/' ? '1.0' : '0.8').'</priority></url>';
         }
 
         // Blog posts
         foreach ($posts as $post) {
-            $xml .= '<url><loc>' . url("/blog/{$post->slug}") . '</loc>';
-            $xml .= '<lastmod>' . $post->updated_at->toW3cString() . '</lastmod>';
+            $xml .= '<url><loc>'.url("/blog/{$post->slug}").'</loc>';
+            $xml .= '<lastmod>'.$post->updated_at->toW3cString().'</lastmod>';
             $xml .= '<changefreq>monthly</changefreq><priority>0.7</priority></url>';
         }
 
         // Episodes
         foreach ($episodes as $episode) {
-            $xml .= '<url><loc>' . url("/episodes/{$episode->slug}") . '</loc>';
-            $xml .= '<lastmod>' . $episode->updated_at->toW3cString() . '</lastmod>';
+            $xml .= '<url><loc>'.url("/episodes/{$episode->slug}").'</loc>';
+            $xml .= '<lastmod>'.$episode->updated_at->toW3cString().'</lastmod>';
             $xml .= '<changefreq>monthly</changefreq><priority>0.7</priority></url>';
         }
 
@@ -42,7 +42,8 @@ class SitemapController extends Controller
 
     public function robots(): Response
     {
-        $content = "User-agent: *\nAllow: /\n\nSitemap: " . url('/sitemap.xml');
+        $content = "User-agent: *\nAllow: /\n\nSitemap: ".url('/sitemap.xml');
+
         return response($content, 200, ['Content-Type' => 'text/plain']);
     }
 }

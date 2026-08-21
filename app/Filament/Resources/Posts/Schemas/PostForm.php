@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Posts\Schemas;
 
-use App\Models\Episode;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;

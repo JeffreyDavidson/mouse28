@@ -11,7 +11,7 @@ class HomeController extends Controller
     {
         $featuredPost = Post::published()->latest('published_at')->first();
         $latestPosts = Post::published()->latest('published_at')
-            ->when($featuredPost, fn($q) => $q->where('id', '!=', $featuredPost->id))
+            ->when($featuredPost, fn ($q) => $q->where('id', '!=', $featuredPost->id))
             ->take(6)->get();
         $latestEpisodes = Episode::published()->latest('published_at')->take(3)->get();
 

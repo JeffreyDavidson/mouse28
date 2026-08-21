@@ -40,8 +40,13 @@ class PostsTable
                     ->label('Status')
                     ->badge()
                     ->getStateUsing(function ($record): string {
-                        if (! $record->is_published) return 'Draft';
-                        if ($record->published_at && $record->published_at->isFuture()) return 'Scheduled';
+                        if (! $record->is_published) {
+                            return 'Draft';
+                        }
+                        if ($record->published_at && $record->published_at->isFuture()) {
+                            return 'Scheduled';
+                        }
+
                         return 'Published';
                     })
                     ->color(fn (string $state): string => match ($state) {
