@@ -26,9 +26,9 @@ The homepage content order is:
 - Pest-style tests run through Laravel's test command
 
 The Vite entry points are `resources/css/app.css` and
-`resources/js/app.js`. The public layout still loads Tailwind and Alpine from
-CDNs while the frontend is migrated to the Vite build. Keep changes compatible
-with that transition and do not introduce a second frontend toolchain.
+`resources/js/app.js`. The public layout loads Tailwind through Vite and loads
+Alpine from its CDN. Keep frontend work in the existing Vite pipeline and do not
+introduce a second toolchain.
 
 ## Git Workflow
 

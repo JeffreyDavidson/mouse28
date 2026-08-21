@@ -28,116 +28,20 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        navy: '#1a1040',
-                        'navy-light': '#2d1b69',
-                        purple: '#5b3e9e',
-                        'purple-light': '#7b5eb5',
-                        'purple-dark': '#3a2370',
-                        gold: '#d4a843',
-                        'gold-light': '#f0c75e',
-                        'gold-dark': '#b8922e',
-                        cream: '#fef9ef',
-                        'cream-dark': '#f5efe0',
-                    },
-                    fontFamily: {
-                        heading: ['"Playfair Display"', 'serif'],
-                        body: ['Poppins', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
-    <style>
-        body { font-family: 'Poppins', sans-serif; }
-        h1, h2, h3, h4, h5, h6 { font-family: 'Playfair Display', serif; }
-
-        /* Sparkle animations */
-        .sparkle { animation: sparkle 3s ease-in-out infinite; }
-        .sparkle-delay { animation: sparkle 3s ease-in-out 0.8s infinite; }
-        .sparkle-delay-2 { animation: sparkle 3s ease-in-out 1.6s infinite; }
-        @keyframes sparkle {
-            0%, 100% { opacity: 0.2; transform: scale(0.8) rotate(0deg); }
-            50% { opacity: 0.9; transform: scale(1.15) rotate(15deg); }
-        }
-
-        /* Smooth page transitions */
-        main { animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Better prose styling for articles */
-        .prose h2 { font-family: 'Playfair Display', serif; color: #1a1040; margin-top: 2em; }
-        .prose h3 { font-family: 'Playfair Display', serif; color: #2d1b69; }
-        .prose a { color: #5b3e9e; text-decoration: underline; text-underline-offset: 3px; }
-        .prose blockquote { border-left-color: #d4a843; background: #fef9ef; padding: 1rem 1.5rem; border-radius: 0 0.75rem 0.75rem 0; }
-        .prose img { border-radius: 1rem; }
-
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #fef9ef; }
-        ::-webkit-scrollbar-thumb { background: #d4a843; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #b8922e; }
-
-        /* Line clamp utilities */
-        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-
-        /* Nav active underline */
-        .nav-link-active { position: relative; }
-        .nav-link-active::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #d4a843, #f0c75e);
-            border-radius: 1px;
-        }
-
-        /* Hamburger animation */
-        .hamburger-line {
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-
-        [x-cloak] { display: none !important; }
-
-        :focus-visible {
-            outline: 2px solid #f0c75e;
-            outline-offset: 3px;
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            html { scroll-behavior: auto; }
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                scroll-behavior: auto !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-    </style>
     @stack('styles')
 @if(config('services.fathom.site_id'))
 <script src="https://cdn.usefathom.com/script.js" data-site="{{ config('services.fathom.site_id') }}" defer></script>
 @endif
 </head>
-<body class="bg-cream text-navy min-h-dvh flex flex-col font-body">
+<body class="flex min-h-dvh flex-col bg-cream font-body text-navy">
     <a href="#main-content" class="fixed left-4 top-4 z-[100] -translate-y-24 rounded-lg bg-gold px-4 py-3 font-semibold text-navy shadow-xl transition-transform focus:translate-y-0">
         Skip to content
     </a>
 
     {{-- Navigation --}}
-    <nav class="bg-navy/95 backdrop-blur-sm sticky top-0 z-50 border-b border-white/10" aria-label="Primary navigation" x-data="{ open: false }" @keydown.escape.window="open = false">
+    <nav class="sticky top-0 z-50 border-b border-white/10 bg-navy/95 backdrop-blur-sm" aria-label="Primary navigation" x-data="{ open: false }" @keydown.escape.window="open = false">
         <div class="max-w-6xl mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-20">
                 {{-- Logo --}}
@@ -193,7 +97,7 @@
     {{-- Footer --}}
     <footer class="bg-navy text-white/70 relative">
         {{-- Decorative gold gradient top border --}}
-        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-gold-dark via-gold-light to-gold-dark"></div>
+        <div class="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-gold-dark via-gold-light to-gold-dark"></div>
 
         <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-16 pb-8">
             <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-10">
@@ -211,7 +115,7 @@
                     " class="flex flex-col gap-2 sm:flex-row">
                         <label for="footer-newsletter-email" class="sr-only">Email address</label>
                         <input id="footer-newsletter-email" x-ref="footerEmail" type="email" name="email" placeholder="your@email.com" autocomplete="email" required class="min-h-12 min-w-0 flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-2.5 text-base text-white placeholder-white/30 transition-colors focus:border-gold/50 focus:outline-none focus:ring-1 focus:ring-gold/30 sm:text-sm">
-                        <button type="submit" class="min-h-12 whitespace-nowrap rounded-full bg-gold px-6 py-2.5 text-base font-semibold text-navy transition-all hover:bg-gold-light hover:shadow-lg hover:shadow-gold/25 sm:text-sm">Subscribe</button>
+                        <button type="submit" class="min-h-12 rounded-full bg-gold px-6 py-2.5 text-base font-semibold whitespace-nowrap text-navy transition-all hover:bg-gold-light hover:shadow-lg hover:shadow-gold/25 sm:text-sm">Subscribe</button>
                     </form>
                     <div x-show="submitted" x-transition role="status" class="rounded-full border border-gold/30 bg-gold/10 px-5 py-2.5 text-center text-base font-medium text-gold sm:text-sm">
                         You're in! We'll keep you posted.
