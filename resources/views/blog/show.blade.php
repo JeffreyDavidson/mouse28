@@ -297,7 +297,7 @@
             <div class="flex flex-col lg:flex-row gap-12">
                 {{-- Main Content --}}
                 <div class="lg:w-[66%]">
-                    <article id="article-body" class="bg-white rounded-3xl p-8 md:p-14 shadow-lg shadow-navy/5 border border-navy/5 relative">
+                    <article id="article-body" class="relative rounded-3xl border border-navy/5 bg-white p-5 shadow-lg shadow-navy/5 sm:p-8 md:p-14">
                         {{-- Decorative corner accent --}}
                         <div class="absolute top-0 right-0 w-24 h-24 overflow-hidden rounded-tr-3xl">
                             <div class="absolute -top-12 -right-12 w-24 h-24 bg-gradient-to-bl from-gold/8 to-transparent rotate-45"></div>
@@ -322,7 +322,7 @@
                     </article>
 
                     {{-- Author Card --}}
-                    <div class="author-card mt-10 bg-white rounded-3xl p-8 md:p-10 shadow-lg shadow-navy/5 border border-navy/5">
+                    <div class="author-card mt-10 rounded-3xl border border-navy/5 bg-white p-5 shadow-lg shadow-navy/5 sm:p-8 md:p-10">
                         <div class="flex flex-col sm:flex-row items-start gap-6">
                             <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-gold/25 to-purple/15 flex items-center justify-center text-gold text-xl font-bold font-heading flex-shrink-0 border border-gold/15">
                                 {{ $post->author_initials }}
@@ -347,7 +347,7 @@
                     </div>
 
                     {{-- Share This Post --}}
-                    <div class="mt-10 bg-white rounded-3xl p-8 md:p-10 shadow-lg shadow-navy/5 border border-navy/5 text-center">
+                    <div class="mt-10 rounded-3xl border border-navy/5 bg-white p-5 text-center shadow-lg shadow-navy/5 sm:p-8 md:p-10">
                         <span class="text-gold text-xs font-bold uppercase tracking-widest">Enjoyed this post?</span>
                         <h3 class="font-heading text-xl font-bold text-navy mt-2 mb-2">Share it with fellow Disney fans</h3>
                         <p class="text-navy/40 text-sm mb-6">Help others discover Mouse28</p>
