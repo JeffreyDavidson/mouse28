@@ -2,6 +2,8 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Resources\Episodes\EpisodeResource;
+use App\Filament\Resources\Posts\PostResource;
 use App\Models\Episode;
 use App\Models\Post;
 use Filament\Widgets\Widget;
@@ -25,7 +27,7 @@ class RecentActivity extends Widget
                 'label' => $post->title,
                 'type' => $post->is_published ? 'Published post' : 'Draft post',
                 'time' => $post->updated_at,
-                'url' => route('filament.admin.resources.posts.edit', $post),
+                'url' => PostResource::getUrl('edit', ['record' => $post]),
             ]);
         });
 
@@ -36,7 +38,7 @@ class RecentActivity extends Widget
                 'label' => $episode->title,
                 'type' => $episode->is_published ? 'Published episode' : 'Draft episode',
                 'time' => $episode->updated_at,
-                'url' => route('filament.admin.resources.episodes.edit', $episode),
+                'url' => EpisodeResource::getUrl('edit', ['record' => $episode]),
             ]);
         });
 
