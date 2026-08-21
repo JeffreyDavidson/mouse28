@@ -125,7 +125,7 @@
                 <div class="text-center mb-10">
                     <span class="text-gold text-sm font-semibold tracking-[0.15em] uppercase font-body">Latest from the Blog</span>
                 </div>
-                <a href="/blog/{{ $featuredPost->slug }}" class="group block bg-gradient-to-br from-navy to-navy-light rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+                <a href="/blog/{{ $featuredPost->slug }}" class="group block overflow-hidden rounded-2xl bg-linear-to-br from-navy to-navy-light shadow-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
                     <div class="flex flex-col md:flex-row">
                         {{-- Left: Cover image or gradient --}}
                         <div class="relative md:w-2/5 min-h-[220px] md:min-h-[320px] overflow-hidden flex-shrink-0">
@@ -133,7 +133,7 @@
                                 <img src="{{ $featuredPost->cover_image_url }}" alt="{{ $featuredPost->title }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                                 <div class="absolute inset-y-0 right-0 left-1/2 md:bg-linear-to-r md:from-transparent md:via-transparent md:to-navy/40"></div>
                             @else
-                                <div class="absolute inset-0 bg-gradient-to-br from-purple/40 to-navy flex items-center justify-center">
+                                <div class="absolute inset-0 flex items-center justify-center bg-linear-to-br from-purple/40 to-navy">
                                     <div class="w-20 h-20 rounded-2xl bg-white/10 flex items-center justify-center border border-white/10">
                                         <svg class="w-10 h-10 text-gold/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
                                     </div>
@@ -158,7 +158,7 @@
                             @endif
                             <div class="flex items-center justify-between mt-auto pt-6 border-t border-white/10">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gold/25 to-purple/15 flex items-center justify-center text-gold text-[10px] font-bold font-heading border border-gold/20">
+                                    <div class="flex size-9 items-center justify-center rounded-full border border-gold/20 bg-linear-to-br from-gold/25 to-purple/15 font-heading text-[10px] font-bold text-gold">
                                         {{ $featuredPost->author_initials }}
                                     </div>
                                     <div>
@@ -198,9 +198,9 @@
                             <div class="relative overflow-hidden card-shimmer">
                                 @if($post->cover_image_url)
                                     <img src="{{ $post->cover_image_url }}" alt="{{ $post->title }}" class="card-img w-full h-52 object-cover">
-                                    <div class="card-overlay absolute inset-0 bg-gradient-to-t from-purple/20 to-transparent"></div>
+                                    <div class="card-overlay absolute inset-0 bg-linear-to-t from-purple/20 to-transparent"></div>
                                 @else
-                                    <div class="w-full h-52 bg-gradient-to-br from-purple/10 to-gold/10 flex items-center justify-center">
+                                    <div class="flex h-52 w-full items-center justify-center bg-linear-to-br from-purple/10 to-gold/10">
                                         <span class="text-3xl">✨</span>
                                     </div>
                                 @endif
@@ -273,6 +273,9 @@
                     <a href="/episodes" class="text-purple hover:text-navy font-semibold text-sm transition-colors font-body">All episodes →</a>
                 </div>
             @else
+                @php
+                    $homeWaveformHeights = ['h-[20%]', 'h-[35%]', 'h-[55%]', 'h-[75%]', 'h-full', 'h-[65%]', 'h-[45%]', 'h-[30%]'];
+                @endphp
                 <div class="relative overflow-hidden rounded-3xl border border-gold/12 bg-linear-to-br from-navy to-navy-light px-6 py-12 sm:px-10">
                     {{-- Ambient glow --}}
                     <div class="pointer-events-none absolute top-[-40%] right-[-20%] size-[300px] bg-[radial-gradient(circle,rgb(212_168_67/10%)_0%,transparent_60%)]"></div>
@@ -295,7 +298,7 @@
                             {{-- Faux waveform bars --}}
                             <div class="flex h-7 items-end gap-[3px] opacity-30">
                                 @for($i = 0; $i < 40; $i++)
-                                    <div class="waveform-bar" style="--waveform-height: {{ rand(15, 100) }}%;"></div>
+                                    <div class="w-[3px] rounded-sm bg-gold {{ $homeWaveformHeights[$i % count($homeWaveformHeights)] }}"></div>
                                 @endfor
                             </div>
                         </div>
@@ -372,7 +375,7 @@
     </section>
 
     {{-- Newsletter CTA --}}
-    <section id="newsletter" class="py-16 md:py-24 bg-gradient-to-br from-navy via-navy-light to-navy relative overflow-hidden">
+    <section id="newsletter" class="relative overflow-hidden bg-linear-to-br from-navy via-navy-light to-navy py-16 md:py-24">
         <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
             <span class="sparkle absolute top-[20%] left-[15%] text-gold/30 text-sm">✦</span>
             <span class="sparkle-delay absolute bottom-[25%] right-[20%] text-gold/20 text-lg">✧</span>
