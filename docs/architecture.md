@@ -16,6 +16,8 @@ The homepage is assembled by `HomeController` in this order: hero, featured post
 
 The `published` model scopes require both an enabled publication flag and a non-future publication date. Public detail controllers enforce the same rule so direct URLs cannot expose drafts or scheduled content.
 
+Site search is handled by the invokable `SearchController`. It searches posts, guides, and episodes independently, limits each result group, and always begins with the models' `published` scopes so drafts and scheduled content remain private. Search result pages are marked `noindex,follow` and are not included in the sitemap.
+
 Public detail pages emit Schema.org JSON-LD through `StructuredData`: `BlogPosting` for posts, `Article` for guides, `PodcastEpisode` for episodes, and `BreadcrumbList` navigation for each type. JSON output is hex-escaped before it is placed in the document head.
 
 ## Administration and authorization
@@ -40,4 +42,4 @@ The public layout provides a semantic header, primary navigation, skip link, mai
 
 ## Verification
 
-Feature tests cover public visibility rules, guide pages, blog filtering, feeds, sitemap output, contact protection, newsletter protection, and Filament access. The release checks are `composer test`, `npm run build`, and `git diff --check`.
+Feature tests cover public visibility rules, guide pages, blog filtering, site search, feeds, sitemap output, contact protection, newsletter protection, and Filament access. The release checks are `composer test`, `npm run build`, and `git diff --check`.
