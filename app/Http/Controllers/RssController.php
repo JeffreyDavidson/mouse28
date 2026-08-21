@@ -46,6 +46,9 @@ class RssController extends Controller
     {
         $podcast = Podcast::info();
         $episodes = Episode::published()->latest('published_at')->get();
+        $coverImageUrl = $podcast->cover_image
+            ? url('/storage/' . ltrim($podcast->cover_image, '/'))
+            : url('/images/podcast/mouse28-cover.jpg');
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:atom="http://www.w3.org/2005/Atom">';
@@ -60,8 +63,8 @@ class RssController extends Controller
         $xml .= '<itunes:category text="Society &amp; Culture"><itunes:category text="Documentary"/></itunes:category>';
         $xml .= '<itunes:category text="Kids &amp; Family"/>';
         $xml .= '<itunes:explicit>false</itunes:explicit>';
-        $xml .= '<itunes:image href="' . url('/images/logo.jpg') . '"/>';
-        $xml .= '<image><url>' . url('/images/logo.jpg') . '</url><title>Mouse28</title><link>' . url('/') . '</link></image>';
+        $xml .= '<itunes:image href="' . $coverImageUrl . '"/>';
+        $xml .= '<image><url>' . $coverImageUrl . '</url><title>Mouse28</title><link>' . url('/') . '</link></image>';
 
         foreach ($episodes as $episode) {
             $xml .= '<item>';
