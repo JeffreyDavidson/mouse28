@@ -3,25 +3,10 @@
 @section('title', 'Episodes — Mouse28')
 
 @section('content')
-    <style>
-        .pagination nav > div:first-child { display: none; }
-        .pagination span, .pagination a {
-            display: inline-flex; align-items: center; justify-content: center;
-            min-width: 2.25rem; height: 2.25rem; padding: 0 0.75rem;
-            border-radius: 9999px; font-size: 0.875rem; font-weight: 600;
-            transition: all 0.2s ease;
-        }
-        .pagination span[aria-current="page"] span {
-            background: #d4a843; color: white; box-shadow: 0 2px 8px rgba(212,168,67,0.3);
-        }
-        .pagination a { color: rgba(26,16,64,0.5); border: 1px solid rgba(26,16,64,0.1); background: white; }
-        .pagination a:hover { color: #1a1040; border-color: #d4a843; }
-        .pagination span[aria-disabled="true"] span { color: rgba(26,16,64,0.2); background: transparent; border: 1px solid rgba(26,16,64,0.05); }
-    </style>
-    <section class="bg-gradient-to-br from-navy to-navy-light py-16 md:py-24 relative overflow-hidden">
+    <section class="relative overflow-hidden bg-linear-to-br from-navy to-navy-light py-16 md:py-24">
         {{-- Waveform SVG decoration --}}
         <div class="absolute inset-0 opacity-[0.07] pointer-events-none">
-            <svg class="absolute bottom-0 left-0 w-full h-32" viewBox="0 0 1200 120" preserveAspectRatio="none" fill="none" stroke="currentColor" class="text-white">
+            <svg class="absolute bottom-0 left-0 h-32 w-full text-white" viewBox="0 0 1200 120" preserveAspectRatio="none" fill="none" stroke="currentColor">
                 <g stroke="white" stroke-width="2">
                     @for($i = 0; $i < 60; $i++)
                         <line x1="{{ $i * 20 + 10 }}" y1="{{ 60 - rand(5, 50) }}" x2="{{ $i * 20 + 10 }}" y2="{{ 60 + rand(5, 50) }}" stroke-linecap="round"/>
@@ -72,7 +57,7 @@
                         <div class="{{ !$loop->first ? 'mt-14' : '' }} mb-8">
                             <div class="flex items-center gap-4">
                                 <div class="flex items-center gap-3 bg-white rounded-full px-5 py-2 shadow-sm border border-navy/5">
-                                    <div class="w-8 h-8 bg-gradient-to-br from-purple to-navy rounded-full flex items-center justify-center">
+                                    <div class="flex size-8 items-center justify-center rounded-full bg-linear-to-br from-purple to-navy">
                                         <span class="text-white text-xs font-bold">S{{ $season }}</span>
                                     </div>
                                     <span class="font-heading text-lg font-bold text-navy">Season {{ $season }}</span>
@@ -88,7 +73,7 @@
                             <a href="/episodes/{{ $episode->slug }}" class="group block bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-navy/5 hover:border-purple/20 overflow-hidden">
                                 <div class="flex flex-col sm:flex-row">
                                     {{-- Episode badge with play button --}}
-                                    <div class="relative flex-shrink-0 sm:w-32 h-24 sm:h-auto bg-gradient-to-br from-purple to-navy flex items-center justify-center">
+                                    <div class="relative flex h-24 shrink-0 items-center justify-center bg-linear-to-br from-purple to-navy sm:h-auto sm:w-32">
                                         {{-- EP badge --}}
                                         <div class="text-center relative z-10 transition-all duration-300 group-hover:scale-90 group-hover:opacity-0">
                                             <span class="text-white/40 text-[10px] uppercase font-bold tracking-widest block">EP</span>
@@ -96,7 +81,7 @@
                                         </div>
                                         {{-- Play button (shows on hover) --}}
                                         <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                                            <div class="w-14 h-14 rounded-full flex items-center justify-center shadow-lg" style="background: linear-gradient(135deg, #d4a843, #f0c75e);">
+                                            <div class="flex size-14 items-center justify-center rounded-full bg-linear-to-br from-gold to-gold-light shadow-lg">
                                                 <svg class="w-6 h-6 text-navy ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                                             </div>
                                         </div>
@@ -148,7 +133,7 @@
                     </div>
                 @endforeach
 
-                <div class="mt-12 pagination flex justify-center">
+                <div class="episodes-pagination mt-12 flex justify-center">
                     {{ $episodes->links() }}
                 </div>
                 </div>{{-- end lg:w-[66%] --}}
@@ -158,15 +143,15 @@
                         {{-- Podcast Stats --}}
                         <div class="bg-white rounded-2xl p-6 shadow-sm border border-navy/5">
                             <div class="flex items-center gap-3 mb-5">
-                                <div style="height: 3px; width: 40px; background: linear-gradient(90deg, #d4a843, #f0c75e); border-radius: 2px;"></div>
+                                <div class="h-[3px] w-10 rounded-sm bg-linear-to-r from-gold to-gold-light"></div>
                                 <h3 class="font-heading text-lg font-bold text-navy">Show Stats</h3>
                             </div>
                             <div class="grid grid-cols-2 gap-4">
-                                <div class="bg-gradient-to-br from-purple/8 to-navy/5 rounded-xl p-4 text-center">
+                                <div class="rounded-xl bg-linear-to-br from-purple/8 to-navy/5 p-4 text-center">
                                     <span class="block text-3xl font-bold text-navy font-heading">{{ $episodes->total() }}</span>
                                     <span class="text-navy/45 text-xs font-medium uppercase tracking-wider mt-1 block">{{ Str::plural('Episode', $episodes->total()) }}</span>
                                 </div>
-                                <div class="bg-gradient-to-br from-gold/8 to-gold/3 rounded-xl p-4 text-center">
+                                <div class="rounded-xl bg-linear-to-br from-gold/8 to-gold/3 p-4 text-center">
                                     <span class="block text-3xl font-bold text-navy font-heading">{{ $totalHours }}<span class="text-lg text-navy/40">h</span></span>
                                     <span class="text-navy/45 text-xs font-medium uppercase tracking-wider mt-1 block">Listening</span>
                                 </div>
@@ -176,12 +161,12 @@
                         {{-- Listen On --}}
                         <div class="bg-white rounded-2xl p-6 shadow-sm border border-navy/5">
                             <div class="flex items-center gap-3 mb-5">
-                                <div style="height: 3px; width: 40px; background: linear-gradient(90deg, #d4a843, #f0c75e); border-radius: 2px;"></div>
+                                <div class="h-[3px] w-10 rounded-sm bg-linear-to-r from-gold to-gold-light"></div>
                                 <h3 class="font-heading text-lg font-bold text-navy">Listen On</h3>
                             </div>
                             <div class="space-y-3">
                                 <a href="#" target="_blank" rel="noopener" class="flex items-center gap-3 w-full px-4 py-3.5 rounded-xl border border-navy/8 hover:border-navy/20 hover:bg-navy/[0.03] transition-all group">
-                                    <div class="w-9 h-9 bg-gradient-to-br from-[#fc3c44] to-[#d42d56] rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
+                                    <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-[#fc3c44] to-[#d42d56] shadow-sm">
                                         <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.56 2.93 11.3 4.7 7.72C5.57 5.94 7.36 4.86 9.28 4.84C10.56 4.81 11.78 5.7 12.56 5.7C13.34 5.7 14.85 4.62 16.41 4.8C17.07 4.83 18.96 5.06 20.16 6.87C20.05 6.95 17.58 8.37 17.61 11.34C17.65 14.9 20.68 16.04 20.71 16.06C20.69 16.13 20.18 17.86 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"/></svg>
                                     </div>
                                     <div>
@@ -191,7 +176,7 @@
                                     <svg class="w-4 h-4 text-navy/20 ml-auto group-hover:text-purple/50 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                                 </a>
                                 <a href="#" target="_blank" rel="noopener" class="flex items-center gap-3 w-full px-4 py-3.5 rounded-xl border border-navy/8 hover:border-navy/20 hover:bg-navy/[0.03] transition-all group">
-                                    <div class="w-9 h-9 bg-gradient-to-br from-[#1DB954] to-[#169c46] rounded-lg flex items-center justify-center flex-shrink-0 shadow-sm">
+                                    <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-[#1DB954] to-[#169c46] shadow-sm">
                                         <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
                                     </div>
                                     <div>
@@ -207,12 +192,12 @@
                         @if($latestEpisode)
                         <div class="bg-white rounded-2xl p-6 shadow-sm border border-navy/5">
                             <div class="flex items-center gap-3 mb-5">
-                                <div style="height: 3px; width: 40px; background: linear-gradient(90deg, #d4a843, #f0c75e); border-radius: 2px;"></div>
+                                <div class="h-[3px] w-10 rounded-sm bg-linear-to-r from-gold to-gold-light"></div>
                                 <h3 class="font-heading text-lg font-bold text-navy">Latest Episode</h3>
                             </div>
-                            <a href="/episodes/{{ $latestEpisode->slug }}" class="group block bg-gradient-to-br from-purple/5 to-navy/5 rounded-xl p-4 border border-purple/10 hover:border-purple/25 transition-all">
+                            <a href="/episodes/{{ $latestEpisode->slug }}" class="group block rounded-xl border border-purple/10 bg-linear-to-br from-purple/5 to-navy/5 p-4 transition-all hover:border-purple/25">
                                 <div class="flex items-start gap-3">
-                                    <div class="w-12 h-12 bg-gradient-to-br from-purple to-navy rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
+                                    <div class="flex size-12 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-purple to-navy shadow-md">
                                         <div class="text-center leading-none">
                                             <span class="text-white/50 text-[8px] uppercase font-bold block">EP</span>
                                             <span class="text-white text-lg font-heading font-bold block -mt-0.5">{{ $latestEpisode->episode_number }}</span>
@@ -239,7 +224,7 @@
                         @endif
 
                         {{-- Blog CTA --}}
-                        <div class="bg-gradient-to-br from-navy via-navy-light to-navy rounded-2xl p-7 text-center relative overflow-hidden border border-white/5">
+                        <div class="relative overflow-hidden rounded-2xl border border-white/5 bg-linear-to-br from-navy via-navy-light to-navy p-7 text-center">
                             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-gold/5 rounded-full blur-3xl"></div>
                             <div class="relative">
                                 <div class="w-12 h-12 mx-auto mb-4 rounded-xl bg-white/10 flex items-center justify-center border border-white/10">
@@ -247,7 +232,7 @@
                                 </div>
                                 <h3 class="font-heading text-lg font-bold text-white mb-2">Read the Blog</h3>
                                 <p class="text-white/40 text-sm mb-5 leading-relaxed">Disney tips, park guides, and family stories</p>
-                                <a href="/blog" class="inline-block bg-gradient-to-r from-gold to-gold-light text-navy font-bold text-sm px-7 py-3 rounded-full transition-all hover:-translate-y-0.5 shadow-lg shadow-gold/20">
+                                <a href="/blog" class="inline-block rounded-full bg-linear-to-r from-gold to-gold-light px-7 py-3 text-sm font-bold text-navy shadow-lg shadow-gold/20 transition-all hover:-translate-y-0.5">
                                     Visit Blog
                                 </a>
                             </div>
@@ -259,22 +244,19 @@
                 </aside>
             </div>{{-- end flex --}}
             @else
-                <style>
-                    @keyframes waveformPulse {
-                        0%, 100% { transform: scaleY(1); }
-                        50% { transform: scaleY(0.6); }
-                    }
-                    .waveform-bar { animation: waveformPulse 1.5s ease-in-out infinite; transform-origin: bottom; }
-                </style>
-                <div class="relative overflow-hidden rounded-3xl" style="background: linear-gradient(135deg, #1a1040 0%, #2d1b69 50%, #3a2370 100%); padding: 5rem 3rem;">
+                @php
+                    $emptyWaveformHeights = ['h-[20%]', 'h-[35%]', 'h-[55%]', 'h-[75%]', 'h-full', 'h-[65%]', 'h-[45%]', 'h-[30%]'];
+                    $playerWaveformHeights = ['h-[30%]', 'h-[55%]', 'h-[80%]', 'h-full', 'h-[70%]', 'h-[45%]', 'h-[65%]', 'h-[35%]'];
+                @endphp
+                <div class="relative overflow-hidden rounded-3xl bg-linear-to-br from-navy via-navy-light to-purple-dark px-6 py-16 sm:px-12 sm:py-20">
                     {{-- Ambient glows --}}
-                    <div style="position: absolute; top: -30%; right: -5%; width: 600px; height: 600px; background: radial-gradient(circle, rgba(212, 168, 67, 0.06) 0%, transparent 60%); pointer-events: none;"></div>
-                    <div style="position: absolute; bottom: -20%; left: -10%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(91, 62, 158, 0.2) 0%, transparent 60%); pointer-events: none;"></div>
+                    <div class="pointer-events-none absolute -top-[30%] -right-[5%] size-[600px] bg-[radial-gradient(circle,rgb(212_168_67_/_6%)_0%,transparent_60%)]"></div>
+                    <div class="pointer-events-none absolute -bottom-[20%] -left-[10%] size-[400px] bg-[radial-gradient(circle,rgb(91_62_158_/_20%)_0%,transparent_60%)]"></div>
 
                     {{-- Background waveform decoration --}}
-                    <div style="position: absolute; bottom: 0; left: 0; right: 0; display: flex; align-items: flex-end; gap: 3px; height: 80px; opacity: 0.04; padding: 0 2rem; pointer-events: none;">
+                    <div class="pointer-events-none absolute right-0 bottom-0 left-0 flex h-20 items-end gap-[3px] px-8 opacity-[0.04]">
                         @for($i = 0; $i < 60; $i++)
-                            <div style="flex: 1; background: white; border-radius: 99px; height: {{ rand(15, 100) }}%;"></div>
+                            <div class="flex-1 rounded-full bg-white {{ $emptyWaveformHeights[$i % count($emptyWaveformHeights)] }}"></div>
                         @endfor
                     </div>
 
@@ -282,20 +264,20 @@
                         <div class="grid md:grid-cols-2 gap-12 items-center">
                             {{-- Left: Content --}}
                             <div class="text-center md:text-left">
-                                <div style="display: inline-flex; align-items: center; gap: 0.5rem; border: 1px solid rgba(212, 168, 67, 0.3); border-radius: 9999px; padding: 0.35rem 1rem; margin-bottom: 1.5rem;">
-                                    <span style="width: 6px; height: 6px; border-radius: 50%; background: #d4a843;"></span>
-                                    <span style="font-family: 'Poppins', sans-serif; font-size: 0.7rem; color: #d4a843; letter-spacing: 0.15em; text-transform: uppercase; font-weight: 600;">Coming Soon</span>
+                                <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-gold/30 px-4 py-[0.35rem]">
+                                    <span class="size-1.5 rounded-full bg-gold"></span>
+                                    <span class="font-body text-[0.7rem] font-semibold tracking-[0.15em] text-gold uppercase">Coming Soon</span>
                                 </div>
-                                <h2 class="font-heading font-bold text-cream" style="font-size: clamp(1.75rem, 3.5vw, 2.5rem); line-height: 1.15; margin-bottom: 1rem;">We're warming up the mics</h2>
-                                <p style="color: rgba(254, 249, 239, 0.5); font-size: 0.95rem; line-height: 1.8; margin-bottom: 2rem;">
+                                <h2 class="mb-4 font-heading text-[clamp(1.75rem,3.5vw,2.5rem)] leading-[1.15] font-bold text-cream">We're warming up the mics</h2>
+                                <p class="mb-8 text-[0.95rem] leading-[1.8] text-cream/50">
                                     Our first episode is in the works. Disney parks, accessibility, family stories, and a lot of heart. Subscribe so you're there from the very start.
                                 </p>
                                 <div class="flex items-center justify-center md:justify-start gap-3">
-                                    <a href="#" class="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-lg transition-all hover:-translate-y-0.5" style="background: rgba(254, 249, 239, 0.08); color: rgba(254, 249, 239, 0.7); border: 1px solid rgba(254, 249, 239, 0.1);">
+                                    <a href="#" class="inline-flex items-center gap-2 rounded-lg border border-cream/10 bg-cream/8 px-4 py-2 text-xs font-semibold text-cream/70 transition-all hover:-translate-y-0.5">
                                         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.56 2.93 11.3 4.7 7.72C5.57 5.94 7.36 4.86 9.28 4.84C10.56 4.81 11.78 5.7 12.56 5.7C13.34 5.7 14.85 4.62 16.41 4.8C17.07 4.83 18.96 5.06 20.16 6.87C20.05 6.95 17.58 8.37 17.61 11.34C17.65 14.9 20.68 16.04 20.71 16.06C20.69 16.13 20.18 17.86 18.71 19.5Z"/></svg>
                                         Apple Podcasts
                                     </a>
-                                    <a href="#" class="inline-flex items-center gap-2 text-xs font-semibold px-4 py-2 rounded-lg transition-all hover:-translate-y-0.5" style="background: rgba(254, 249, 239, 0.08); color: rgba(254, 249, 239, 0.7); border: 1px solid rgba(254, 249, 239, 0.1);">
+                                    <a href="#" class="inline-flex items-center gap-2 rounded-lg border border-cream/10 bg-cream/8 px-4 py-2 text-xs font-semibold text-cream/70 transition-all hover:-translate-y-0.5">
                                         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02z"/></svg>
                                         Spotify
                                     </a>
@@ -304,47 +286,47 @@
 
                             {{-- Right: Faux player --}}
                             <div class="hidden md:block">
-                                <div style="background: rgba(26, 16, 64, 0.6); border: 1px solid rgba(212, 168, 67, 0.12); border-radius: 1.5rem; padding: 2rem; backdrop-filter: blur(10px); box-shadow: 0 25px 50px rgba(0,0,0,0.3);">
+                                <div class="rounded-3xl border border-gold/12 bg-navy/60 p-8 shadow-2xl shadow-black/30 backdrop-blur-[10px]">
                                     {{-- Episode header --}}
-                                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
-                                        <div style="width: 56px; height: 56px; border-radius: 0.75rem; background: linear-gradient(135deg, #5b3e9e, #3a2370); display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 4px 12px rgba(91, 62, 158, 0.4);">
-                                            <svg style="width: 22px; height: 22px; color: #d4a843;" fill="currentColor" viewBox="0 0 24 24"><path d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+                                    <div class="mb-6 flex items-center gap-4">
+                                        <div class="flex size-14 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-purple to-purple-dark shadow-lg shadow-purple/40">
+                                            <svg class="size-[22px] text-gold" fill="currentColor" viewBox="0 0 24 24"><path d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
                                         </div>
-                                        <div style="flex: 1;">
-                                            <div style="height: 9px; width: 45%; background: rgba(212, 168, 67, 0.3); border-radius: 99px; margin-bottom: 8px;"></div>
-                                            <div style="height: 12px; width: 85%; background: rgba(254, 249, 239, 0.15); border-radius: 99px; margin-bottom: 5px;"></div>
-                                            <div style="height: 12px; width: 60%; background: rgba(254, 249, 239, 0.1); border-radius: 99px;"></div>
+                                        <div class="flex-1">
+                                            <div class="mb-2 h-[9px] w-[45%] rounded-full bg-gold/30"></div>
+                                            <div class="mb-[5px] h-3 w-[85%] rounded-full bg-cream/15"></div>
+                                            <div class="h-3 w-3/5 rounded-full bg-cream/10"></div>
                                         </div>
                                     </div>
 
                                     {{-- Waveform bars with animation --}}
-                                    <div style="display: flex; align-items: end; gap: 2px; height: 48px; margin-bottom: 0.75rem;">
+                                    <div class="mb-3 flex h-12 items-end gap-0.5">
                                         @for($i = 0; $i < 32; $i++)
-                                            @php $h = rand(20, 100); $played = $i < 12; @endphp
-                                            <div class="waveform-bar" style="flex: 1; background: {{ $played ? 'rgba(212, 168, 67, 0.5)' : 'rgba(254, 249, 239, 0.1)' }}; border-radius: 99px; height: {{ $h }}%; animation-delay: {{ $i * 0.08 }}s;"></div>
+                                            @php $played = $i < 12; @endphp
+                                            <div class="episodes-waveform-bar flex-1 rounded-full {{ $played ? 'bg-gold/50' : 'bg-cream/10' }} {{ $playerWaveformHeights[$i % count($playerWaveformHeights)] }}"></div>
                                         @endfor
                                     </div>
 
                                     {{-- Progress bar --}}
-                                    <div style="height: 3px; background: rgba(254, 249, 239, 0.06); border-radius: 99px; margin-bottom: 0.5rem; position: relative;">
-                                        <div style="position: absolute; left: 0; top: 0; width: 38%; height: 100%; background: linear-gradient(90deg, #d4a843, #f0c75e); border-radius: 99px;"></div>
-                                        <div style="position: absolute; left: 38%; top: 50%; transform: translate(-50%, -50%); width: 9px; height: 9px; background: #f0c75e; border-radius: 50%; box-shadow: 0 0 8px rgba(212, 168, 67, 0.5);"></div>
+                                    <div class="relative mb-2 h-[3px] rounded-full bg-cream/6">
+                                        <div class="absolute top-0 left-0 h-full w-[38%] rounded-full bg-linear-to-r from-gold to-gold-light"></div>
+                                        <div class="absolute top-1/2 left-[38%] size-[9px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gold-light shadow-[0_0_8px_rgb(212_168_67_/_50%)]"></div>
                                     </div>
-                                    <div style="display: flex; justify-content: space-between;">
-                                        <span style="font-size: 0.65rem; color: rgba(254, 249, 239, 0.25); font-family: 'Poppins', sans-serif;">12:34</span>
-                                        <span style="font-size: 0.65rem; color: rgba(254, 249, 239, 0.25); font-family: 'Poppins', sans-serif;">32:18</span>
+                                    <div class="flex justify-between">
+                                        <span class="font-body text-[0.65rem] text-cream/25">12:34</span>
+                                        <span class="font-body text-[0.65rem] text-cream/25">32:18</span>
                                     </div>
 
                                     {{-- Playback controls --}}
-                                    <div style="display: flex; align-items: center; justify-content: center; gap: 1.5rem; margin-top: 1rem;">
-                                        <div style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
-                                            <svg style="width: 16px; height: 16px; color: rgba(254, 249, 239, 0.25);" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                                    <div class="mt-4 flex items-center justify-center gap-6">
+                                        <div class="flex size-7 items-center justify-center">
+                                            <svg class="size-4 text-cream/25" fill="currentColor" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
                                         </div>
-                                        <div style="width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #d4a843, #b8922e); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(212, 168, 67, 0.3);">
-                                            <svg style="width: 20px; height: 20px; color: #1a1040; margin-left: 2px;" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                        <div class="flex size-12 items-center justify-center rounded-full bg-linear-to-br from-gold to-gold-dark shadow-lg shadow-gold/30">
+                                            <svg class="ml-0.5 size-5 text-navy" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
                                         </div>
-                                        <div style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
-                                            <svg style="width: 16px; height: 16px; color: rgba(254, 249, 239, 0.25);" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                                        <div class="flex size-7 items-center justify-center">
+                                            <svg class="size-4 text-cream/25" fill="currentColor" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
                                         </div>
                                     </div>
                                 </div>

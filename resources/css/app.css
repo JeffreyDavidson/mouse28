@@ -610,6 +610,77 @@
     }
 }
 
+@layer components {
+    .episodes-pagination nav > div:first-child {
+        display: none;
+    }
+
+    .episodes-pagination span,
+    .episodes-pagination a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 9999px;
+        padding: 0 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .episodes-pagination span[aria-current='page'] span {
+        background: var(--color-gold);
+        box-shadow: 0 2px 8px rgb(212 168 67 / 30%);
+        color: white;
+    }
+
+    .episodes-pagination a {
+        border: 1px solid rgb(26 16 64 / 10%);
+        background: white;
+        color: rgb(26 16 64 / 50%);
+    }
+
+    .episodes-pagination a:hover {
+        border-color: var(--color-gold);
+        color: var(--color-navy);
+    }
+
+    .episodes-pagination span[aria-disabled='true'] span {
+        border: 1px solid rgb(26 16 64 / 5%);
+        background: transparent;
+        color: rgb(26 16 64 / 20%);
+    }
+
+    .episodes-waveform-bar {
+        animation: episodes-waveform-pulse 1.5s ease-in-out infinite;
+        transform-origin: bottom;
+    }
+
+    .episodes-waveform-bar:nth-child(4n + 2) {
+        animation-delay: 0.12s;
+    }
+
+    .episodes-waveform-bar:nth-child(4n + 3) {
+        animation-delay: 0.24s;
+    }
+
+    .episodes-waveform-bar:nth-child(4n + 4) {
+        animation-delay: 0.36s;
+    }
+}
+
+@keyframes episodes-waveform-pulse {
+    0%,
+    100% {
+        transform: scaleY(1);
+    }
+
+    50% {
+        transform: scaleY(0.6);
+    }
+}
+
 @keyframes contact-check-circle {
     to {
         stroke-dashoffset: 0;
