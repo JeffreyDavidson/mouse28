@@ -1,3 +1,3 @@
-<div style="font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 800; color: #f0c75e; letter-spacing: -0.02em; line-height: 1.2;">
+<div class="font-mouse-heading text-[1.4rem] leading-tight font-extrabold tracking-[-0.02em] text-mouse-gold-light">
     Mouse28
 </div>
