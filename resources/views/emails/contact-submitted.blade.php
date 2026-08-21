@@ -80,7 +80,7 @@
                             <p style="margin: 0 0 6px; font-size: 12px; color: rgba(255,255,255,0.4);">
                                 <a href="{{ url('/admin') }}" style="color: #d4a843; text-decoration: none; font-weight: 600;">View in Admin</a>
                                 &nbsp;&middot;&nbsp;
-                                <a href="{{ url('/') }}" style="color: rgba(255,255,255,0.5); text-decoration: none;">mouse28.com</a>
+                                <a href="{{ route('home') }}" style="color: rgba(255,255,255,0.5); text-decoration: none;">mouse28.com</a>
                             </p>
                         </td>
                     </tr>

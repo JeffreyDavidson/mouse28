@@ -50,7 +50,7 @@
                         {{-- Corner ribbon --}}
                         <div class="blog-ribbon blog-ribbon-top-left"><span>Featured</span></div>
 
-                        <a href="/blog/{{ $featured->slug }}" class="blog-featured-card-border group block transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
+                        <a href="{{ route('blog.show', $featured) }}" class="blog-featured-card-border group block transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-2xl">
                             <div class="relative p-5 pt-20 sm:p-8 sm:pt-20 md:p-10 md:pt-16 lg:p-12">
                                 {{-- Category + read time --}}
                                 <div class="mb-5 flex items-center gap-3 md:pl-20">
@@ -79,7 +79,7 @@
                                             <p class="text-xs text-white/40">{{ $featured->published_at->format('F j, Y') }}</p>
                                         </div>
                                     </div>
-                                    <span class="hidden items-center gap-1.5 text-sm font-semibold text-gold transition-all group-hover:gap-2.5 sm:inline-flex">
+                                    <span class="hidden items-center gap-1.5 text-sm font-semibold text-gold transition-[gap] group-hover:gap-2.5 sm:inline-flex">
                                         Read Article
                                         <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                                     </span>
@@ -96,7 +96,7 @@
                     <div class="space-y-6">
                         @foreach($rest as $post)
                             @php $postStyle = $categoryStyles[$post->category] ?? $defaultCategoryStyle; @endphp
-                            <a href="/blog/{{ $post->slug }}" class="blog-post-card group relative block rounded-2xl border border-navy/5 bg-white p-5 shadow-sm sm:p-7">
+                            <a href="{{ route('blog.show', $post) }}" class="blog-post-card group relative block rounded-2xl border border-navy/5 bg-white p-5 shadow-sm sm:p-7">
                                 {{-- Top accent bar on hover --}}
                                 <div class="blog-accent-bar absolute inset-x-0 top-0 h-1 rounded-t-2xl {{ $postStyle['accent'] }}"></div>
                                 <div class="mb-3 flex items-center gap-3">
@@ -115,7 +115,7 @@
                                         <span class="text-navy/20">·</span>
                                         <span class="text-xs text-navy/30">{{ $post->published_at->format('M j, Y') }}</span>
                                     </div>
-                                    <span class="inline-flex items-center gap-1 text-xs font-semibold transition-all group-hover:gap-2 {{ $postStyle['text'] }}">
+                                    <span class="inline-flex items-center gap-1 text-xs font-semibold transition-[gap] group-hover:gap-2 {{ $postStyle['text'] }}">
                                         Read
                                         <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                                     </span>
@@ -129,7 +129,7 @@
                 @if($posts->hasPages())
                     <div class="mt-12 text-center">
                         @if($posts->hasMorePages())
-                            <a href="{{ $posts->withQueryString()->nextPageUrl() }}" class="inline-flex items-center gap-2 rounded-full bg-linear-to-r from-gold to-gold-light px-8 py-3 text-sm font-semibold text-navy transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-gold/25">
+                            <a href="{{ $posts->withQueryString()->nextPageUrl() }}" class="inline-flex items-center gap-2 rounded-full bg-linear-to-r from-gold to-gold-light px-8 py-3 text-sm font-semibold text-navy transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-lg hover:shadow-gold/25">
                                 Load More Stories
                                 <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                             </a>
@@ -168,7 +168,7 @@
                             @endif
                         </p>
                         @if(request('q') || $category)
-                            <a href="/blog" class="inline-flex items-center gap-2 rounded-lg border border-gold/25 bg-gold/15 px-4 py-2 text-xs font-semibold text-gold transition-all hover:-translate-y-0.5">
+                            <a href="{{ route('blog.index') }}" class="inline-flex items-center gap-2 rounded-lg border border-gold/25 bg-gold/15 px-4 py-2 text-xs font-semibold text-gold transition-transform hover:-translate-y-0.5">
                                 <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                                 View all posts
                             </a>
@@ -187,15 +187,15 @@
                                 <div class="h-[3px] w-10 rounded-sm bg-linear-to-r from-gold to-gold-light"></div>
                                 <h3 class="font-heading text-lg font-bold text-navy">Search</h3>
                             </div>
-                            <form action="/blog" method="GET" class="relative">
+                            <form action="{{ route('blog.index') }}" method="GET" class="relative">
                                 @if($category)<input type="hidden" name="category" value="{{ $category }}">@endif
                                 <svg class="absolute top-1/2 left-4 size-4 -translate-y-1/2 text-navy/25" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                                 <label for="blog-search" class="sr-only">Search blog posts</label>
                                 <input id="blog-search" type="search" name="q" value="{{ request('q') }}" placeholder="Search posts..."
-                                    class="min-h-12 w-full rounded-xl border border-navy/10 py-3 pr-12 pl-11 text-base text-navy transition-all outline-none placeholder:text-navy/25 focus:border-gold focus:ring-2 focus:ring-gold/20 sm:text-sm"
+                                    class="min-h-12 w-full rounded-xl border border-navy/10 py-3 pr-12 pl-11 text-base text-navy transition-[border-color,box-shadow] outline-none placeholder:text-navy/25 focus:border-gold focus:ring-2 focus:ring-gold/20 sm:text-sm"
                                 >
                                 @if(request('q'))
-                                    <a href="/blog{{ $category ? '?category='.$category : '' }}" class="absolute top-1/2 right-0 flex size-12 -translate-y-1/2 items-center justify-center text-navy/30 transition-colors hover:text-gold" aria-label="Clear search">
+                                    <a href="{{ route('blog.index', array_filter(['category' => $category])) }}" class="absolute top-1/2 right-0 flex size-12 -translate-y-1/2 items-center justify-center text-navy/30 transition-colors hover:text-gold" aria-label="Clear search">
                                         <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                                     </a>
                                 @endif
@@ -232,14 +232,14 @@
                                 <h3 class="font-heading text-lg font-bold text-navy">Categories</h3>
                             </div>
                             <div class="space-y-1">
-                                <a href="/blog" class="group flex min-h-11 items-center justify-between rounded-xl px-3 py-2.5 transition-all {{ !$category ? 'bg-gold/10' : 'hover:bg-cream' }}">
+                                <a href="{{ route('blog.index') }}" class="group flex min-h-11 items-center justify-between rounded-xl px-3 py-2.5 transition-colors {{ !$category ? 'bg-gold/10' : 'hover:bg-cream' }}">
                                     <span class="text-sm font-medium {{ !$category ? 'text-gold font-semibold' : 'text-navy/65 group-hover:text-navy' }} transition-colors">All Posts</span>
                                     <span class="rounded-full bg-gold/8 px-3 py-0.5 text-xs font-bold {{ !$category ? 'text-gold' : 'text-gold/70' }}">{{ $posts->total() }}</span>
                                 </a>
                                 @foreach(\App\Models\Post::CATEGORIES as $slug => $label)
                                     @continue(!in_array($slug, $usedCategories))
                                     @php $categoryStyle = $categoryStyles[$slug] ?? $defaultCategoryStyle; @endphp
-                                    <a href="/blog?category={{ $slug }}" class="group flex min-h-11 items-center justify-between rounded-xl px-3 py-2.5 transition-all {{ $category === $slug ? $categoryStyle['subtle'] : 'hover:bg-cream' }}">
+                                    <a href="{{ route('blog.index', ['category' => $slug]) }}" class="group flex min-h-11 items-center justify-between rounded-xl px-3 py-2.5 transition-colors {{ $category === $slug ? $categoryStyle['subtle'] : 'hover:bg-cream' }}">
                                         <span class="text-sm font-medium transition-colors {{ $category === $slug ? 'font-semibold '.$categoryStyle['text'] : 'text-navy/65 group-hover:text-navy' }}">{{ $label }}</span>
                                         <span class="rounded-full px-3 py-0.5 text-xs font-bold {{ $categoryStyle['subtle'] }} {{ $categoryStyle['text'] }}">{{ $categoryCounts[$slug] ?? 0 }}</span>
                                     </a>
@@ -255,11 +255,11 @@
                             </div>
                             <div class="flex overflow-hidden rounded-xl border border-navy/10">
                                 <a href="{{ request()->fullUrlWithQuery(['sort' => 'newest']) }}"
-                                   class="flex min-h-11 flex-1 items-center justify-center py-2.5 text-base font-semibold transition-all sm:text-xs {{ ($sort ?? 'newest') === 'newest' ? 'bg-gold/15 text-gold' : 'text-navy/40 hover:text-navy/60' }}">
+                                   class="flex min-h-11 flex-1 items-center justify-center py-2.5 text-base font-semibold transition-colors sm:text-xs {{ ($sort ?? 'newest') === 'newest' ? 'bg-gold/15 text-gold' : 'text-navy/40 hover:text-navy/60' }}">
                                     Newest
                                 </a>
                                 <a href="{{ request()->fullUrlWithQuery(['sort' => 'oldest']) }}"
-                                   class="flex min-h-11 flex-1 items-center justify-center border-l border-navy/10 py-2.5 text-base font-semibold transition-all sm:text-xs {{ ($sort ?? 'newest') === 'oldest' ? 'bg-gold/15 text-gold' : 'text-navy/40 hover:text-navy/60' }}">
+                                   class="flex min-h-11 flex-1 items-center justify-center border-l border-navy/10 py-2.5 text-base font-semibold transition-colors sm:text-xs {{ ($sort ?? 'newest') === 'oldest' ? 'bg-gold/15 text-gold' : 'text-navy/40 hover:text-navy/60' }}">
                                     Oldest
                                 </a>
                             </div>
@@ -274,7 +274,7 @@
                                 </div>
                                 <h3 class="mb-2 font-heading text-lg font-bold text-white">Listen to the Podcast</h3>
                                 <p class="mb-5 text-base/relaxed text-white/40 sm:text-sm/relaxed">Disney parks, accessibility, and family stories</p>
-                                <a href="/episodes" class="inline-block rounded-full bg-linear-to-r from-gold to-gold-light px-7 py-3 text-sm font-bold text-navy shadow-lg shadow-gold/20 transition-all hover:-translate-y-0.5">
+                                <a href="{{ route('episodes.index') }}" class="inline-block rounded-full bg-linear-to-r from-gold to-gold-light px-7 py-3 text-sm font-bold text-navy shadow-lg shadow-gold/20 transition-transform hover:-translate-y-0.5">
                                     Browse Episodes
                                 </a>
                             </div>

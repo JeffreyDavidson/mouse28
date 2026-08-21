@@ -23,16 +23,16 @@
                     ],
                 };
             @endphp
-            <div class="group relative overflow-hidden rounded-[1.25rem] border border-mouse-gold/15 bg-linear-to-br from-mouse-navy/95 to-mouse-navy-light/90 p-6 transition duration-200 hover:-translate-y-0.5 hover:border-mouse-gold/40 hover:shadow-[0_8px_25px_rgb(212_168_67/15%)]">
+            <div class="border-mouse-gold/15 from-mouse-navy/95 group hover:border-mouse-gold/40 to-mouse-navy-light/90 relative overflow-hidden rounded-[1.25rem] border bg-linear-to-br p-6 transition duration-200 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgb(212_168_67/15%)]">
                 <div class="pointer-events-none absolute top-0 right-0 size-20 bg-[radial-gradient(circle_at_top_right,rgb(212_168_67/8%),transparent_70%)]"></div>
                 <div class="flex items-start gap-4">
                     <div class="{{ $accentClasses['surface'] }} flex size-12 shrink-0 items-center justify-center rounded-xl">
                         <x-filament::icon :icon="$stat['icon']" class="{{ $accentClasses['icon'] }} size-6" />
                     </div>
                     <div class="min-w-0 flex-1">
-                        <p class="font-mouse-body text-xs font-medium tracking-wider text-mouse-cream/60 uppercase">{{ $stat['label'] }}</p>
-                        <p class="my-1 font-mouse-heading text-3xl/9 font-bold text-mouse-cream">{{ $stat['value'] }}</p>
-                        <p class="font-mouse-body text-xs text-mouse-gold-light/70">{{ $stat['description'] }}</p>
+                        <p class="font-mouse-body text-mouse-cream/60 text-xs font-medium tracking-wider uppercase">{{ $stat['label'] }}</p>
+                        <p class="font-mouse-heading text-mouse-cream my-1 text-3xl/9 font-bold">{{ $stat['value'] }}</p>
+                        <p class="font-mouse-body text-mouse-gold-light/70 text-xs">{{ $stat['description'] }}</p>
                     </div>
                 </div>
             </div>

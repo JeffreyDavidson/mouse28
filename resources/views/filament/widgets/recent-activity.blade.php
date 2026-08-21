@@ -1,9 +1,9 @@
 <x-filament-widgets::widget>
     @php $activity = $this->getActivity(); @endphp
 
-    <div class="overflow-hidden rounded-[1.25rem] border border-mouse-gold/15 bg-mouse-navy-light/30">
-        <div class="border-b border-mouse-gold/10 px-6 py-5">
-            <h3 class="font-mouse-heading text-lg font-bold text-mouse-gold-light">Recent Activity</h3>
+    <div class="bg-mouse-navy-light/30 border-mouse-gold/15 overflow-hidden rounded-[1.25rem] border">
+        <div class="border-mouse-gold/10 border-b px-6 py-5">
+            <h3 class="font-mouse-heading text-mouse-gold-light text-lg font-bold">Recent Activity</h3>
         </div>
 
         @if (count($activity) > 0)
@@ -21,15 +21,15 @@
                             ],
                         };
                     @endphp
-                    <a href="{{ $item['url'] }}" class="flex items-center gap-4 px-6 py-3.5 no-underline transition-colors hover:bg-mouse-gold/6">
+                    <a href="{{ $item['url'] }}" class="hover:bg-mouse-gold/6 flex items-center gap-4 px-6 py-3.5 no-underline transition-colors">
                         <div class="{{ $accentClasses['surface'] }} flex size-9 shrink-0 items-center justify-center rounded-[0.625rem]">
                             <x-filament::icon icon="heroicon-o-{{ $item['icon'] }}" class="{{ $accentClasses['icon'] }} size-4.5" />
                         </div>
                         <div class="min-w-0 flex-1">
-                            <p class="truncate font-mouse-body text-sm font-medium text-mouse-cream">{{ $item['label'] }}</p>
-                            <p class="font-mouse-body text-xs text-mouse-cream/50">{{ $item['type'] }}</p>
+                            <p class="font-mouse-body text-mouse-cream truncate text-sm font-medium">{{ $item['label'] }}</p>
+                            <p class="font-mouse-body text-mouse-cream/50 text-xs">{{ $item['type'] }}</p>
                         </div>
-                        <time class="shrink-0 font-mouse-body text-xs text-mouse-cream/50" datetime="{{ \Carbon\Carbon::parse($item['time'])->toIso8601String() }}">
+                        <time class="font-mouse-body text-mouse-cream/50 shrink-0 text-xs" datetime="{{ \Carbon\Carbon::parse($item['time'])->toIso8601String() }}">
                             {{ \Carbon\Carbon::parse($item['time'])->diffForHumans(short: true) }}
                         </time>
                     </a>
@@ -37,8 +37,8 @@
             </div>
         @else
             <div class="px-6 py-12 text-center">
-                <x-filament::icon icon="heroicon-o-sparkles" class="mx-auto mb-3 size-10 text-mouse-gold/30" />
-                <p class="font-mouse-body text-sm text-mouse-cream/50">No activity yet. Start creating something magical!</p>
+                <x-filament::icon icon="heroicon-o-sparkles" class="text-mouse-gold/30 mx-auto mb-3 size-10" />
+                <p class="font-mouse-body text-mouse-cream/50 text-sm">No activity yet. Start creating something magical!</p>
             </div>
         @endif
     </div>

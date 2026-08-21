@@ -224,8 +224,8 @@
             <p class="mb-3 font-heading text-2xl/relaxed text-white/90 italic md:text-3xl">Thanks for getting to know us.</p>
             <p class="mb-10 font-heading text-2xl/relaxed text-gold italic md:text-3xl">Now let's get to the good stuff.</p>
             <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
-                <a href="/blog" class="rounded-full bg-gold px-8 py-3.5 font-semibold text-navy transition-all hover:-translate-y-0.5 hover:bg-gold-light hover:shadow-lg hover:shadow-gold/25">Read the Blog</a>
-                <a href="/episodes" class="rounded-full border border-white/10 bg-white/10 px-8 py-3.5 font-semibold text-white transition-all hover:-translate-y-0.5 hover:bg-white/15">Listen to the Podcast</a>
+                <a href="{{ route('blog.index') }}" class="rounded-full bg-gold px-8 py-3.5 font-semibold text-navy transition-[transform,background-color,box-shadow] hover:-translate-y-0.5 hover:bg-gold-light hover:shadow-lg hover:shadow-gold/25">Read the Blog</a>
+                <a href="{{ route('episodes.index') }}" class="rounded-full border border-white/10 bg-white/10 px-8 py-3.5 font-semibold text-white transition-[transform,background-color] hover:-translate-y-0.5 hover:bg-white/15">Listen to the Podcast</a>
             </div>
         </div>
     </section>

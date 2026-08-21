@@ -1,4 +1,9 @@
 import './bootstrap';
+import Alpine from 'alpinejs';
+
+window.Alpine = Alpine;
+
+Alpine.start();
 
 function initializeCopyLinks() {
     document.querySelectorAll('[data-copy-link]').forEach((button) => {
@@ -96,7 +101,7 @@ function initializeBlogArticle() {
         link.href = `#${id}`;
         link.textContent = heading.textContent;
         link.dataset.blogTocLink = '';
-        link.className = `block border-l-2 border-navy/8 py-1.5 leading-[1.4] text-navy/50 no-underline transition-all duration-200 hover:border-gold hover:text-gold ${heading.tagName === 'H3' ? 'pl-8 text-xs' : 'pl-4 text-[0.8rem]'}`;
+        link.className = `block border-l-2 border-navy/8 py-1.5 leading-[1.4] text-navy/50 no-underline transition-colors duration-200 hover:border-gold hover:text-gold ${heading.tagName === 'H3' ? 'pl-8 text-xs' : 'pl-4 text-[0.8rem]'}`;
         link.addEventListener('click', (event) => {
             event.preventDefault();
             heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
