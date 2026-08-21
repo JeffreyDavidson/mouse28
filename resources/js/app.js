@@ -1,5 +1,28 @@
 import './bootstrap';
 
+function initializeCopyLinks() {
+    document.querySelectorAll('[data-copy-link]').forEach((button) => {
+        button.addEventListener('click', async () => {
+            const feedback = button.querySelector('[data-copy-feedback], .copy-feedback');
+            const label = button.querySelector('[data-copy-label]');
+
+            try {
+                await navigator.clipboard.writeText(window.location.href);
+
+                feedback?.classList.remove('hidden');
+                label?.classList.add('hidden');
+
+                window.setTimeout(() => {
+                    feedback?.classList.add('hidden');
+                    label?.classList.remove('hidden');
+                }, 1500);
+            } catch (error) {
+                console.error('Unable to copy the page link.', error);
+            }
+        });
+    });
+}
+
 function initializeBlogArticle() {
     const article = document.getElementById('article-body');
 
@@ -47,27 +70,6 @@ function initializeBlogArticle() {
 
     backToTop?.addEventListener('click', () => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    document.querySelectorAll('[data-copy-link]').forEach((button) => {
-        button.addEventListener('click', async () => {
-            const feedback = button.querySelector('[data-copy-feedback], .copy-feedback');
-            const label = button.querySelector('[data-copy-label]');
-
-            try {
-                await navigator.clipboard.writeText(window.location.href);
-
-                feedback?.classList.remove('hidden');
-                label?.classList.add('hidden');
-
-                window.setTimeout(() => {
-                    feedback?.classList.add('hidden');
-                    label?.classList.remove('hidden');
-                }, 1500);
-            } catch (error) {
-                console.error('Unable to copy the article link.', error);
-            }
-        });
     });
 
     const content = article.querySelector('.blog-article-content');
@@ -127,4 +129,5 @@ function initializeBlogArticle() {
     updateTableOfContents();
 }
 
+initializeCopyLinks();
 initializeBlogArticle();
