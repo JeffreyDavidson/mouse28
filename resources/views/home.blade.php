@@ -27,10 +27,10 @@
                 </p>
 
                 <div class="flex flex-wrap items-center gap-4">
-                    <a href="/blog" class="cta-primary bg-gold hover:bg-gold-light text-navy font-semibold px-7 py-3.5 rounded-full shadow-lg shadow-gold/20 hover:shadow-gold/50 hover:scale-105 transition-all duration-300 hover:-translate-y-1 text-sm font-body inline-flex items-center">
+                    <a href="/blog" class="cta-primary inline-flex min-h-12 items-center rounded-full bg-gold px-7 py-3.5 font-body text-base font-semibold text-navy shadow-lg shadow-gold/20 transition-all duration-300 hover:-translate-y-1 hover:scale-105 hover:bg-gold-light hover:shadow-gold/50 sm:text-sm">
                         Read Our Blog
                     </a>
-                    <a href="/episodes" class="inline-flex items-center gap-2 font-body text-sm font-medium text-cream/45 transition-colors duration-200 hover:text-gold">
+                    <a href="/episodes" class="inline-flex min-h-12 items-center gap-2 font-body text-base font-medium text-cream/45 transition-colors duration-200 hover:text-gold sm:text-sm">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
                         Listen to the podcast
                     </a>
@@ -61,7 +61,7 @@
                     <div class="p-7 pb-10 pr-16 relative">
                         <div class="mb-1 font-body text-[10px] font-bold tracking-[0.2em] text-white/50 uppercase">Mouse28 · Admit One</div>
                         <h3 class="font-heading text-2xl font-bold text-white mb-2">Accessibility</h3>
-                        <p class="font-body text-sm/relaxed text-white/70">DAS tips, sensory guides, and honest advice for neurodivergent families navigating the parks.</p>
+                        <p class="font-body text-base/relaxed text-white/70 sm:text-sm/relaxed">DAS tips, sensory guides, and honest advice for neurodivergent families navigating the parks.</p>
                         <div class="mt-4 flex items-center gap-2">
                             <span class="bg-white/20 text-white text-[10px] font-bold px-3 py-1 rounded-full font-body uppercase tracking-wider">Explore →</span>
                         </div>
@@ -75,7 +75,7 @@
                     <div class="p-7 pb-10 pr-16 relative">
                         <div class="mb-1 font-body text-[10px] font-bold tracking-[0.2em] text-white/50 uppercase">Mouse28 · Admit One</div>
                         <h3 class="font-heading text-2xl font-bold text-white mb-2">Park Strategy</h3>
-                        <p class="font-body text-sm/relaxed text-white/70">Ride tips, rope drop plans, and weekly-tested strategies from locals who know every shortcut.</p>
+                        <p class="font-body text-base/relaxed text-white/70 sm:text-sm/relaxed">Ride tips, rope drop plans, and weekly-tested strategies from locals who know every shortcut.</p>
                         <div class="mt-4 flex items-center gap-2">
                             <span class="bg-white/20 text-white text-[10px] font-bold px-3 py-1 rounded-full font-body uppercase tracking-wider">Explore →</span>
                         </div>
@@ -89,7 +89,7 @@
                     <div class="p-7 pb-10 pr-16 relative">
                         <div class="mb-1 font-body text-[10px] font-bold tracking-[0.2em] text-navy/40 uppercase">Mouse28 · Admit One</div>
                         <h3 class="font-heading text-2xl font-bold text-navy mb-2">Food & Reviews</h3>
-                        <p class="font-body text-sm/relaxed text-navy/60">Honest reviews of restaurants, snacks, and resorts — including diabetic-friendly options.</p>
+                        <p class="font-body text-base/relaxed text-navy/60 sm:text-sm/relaxed">Honest reviews of restaurants, snacks, and resorts — including diabetic-friendly options.</p>
                         <div class="mt-4 flex items-center gap-2">
                             <span class="bg-navy/15 text-navy text-[10px] font-bold px-3 py-1 rounded-full font-body uppercase tracking-wider">Explore →</span>
                         </div>
@@ -103,7 +103,7 @@
                     <div class="p-7 pb-10 pr-16 relative">
                         <div class="mb-1 font-body text-[10px] font-bold tracking-[0.2em] text-white/50 uppercase">Mouse28 · Admit One</div>
                         <h3 class="font-heading text-2xl font-bold text-white mb-2">Family Stories</h3>
-                        <p class="font-body text-sm/relaxed text-white/70">Real moments from our weekly trips — the magical, the messy, and everything in between.</p>
+                        <p class="font-body text-base/relaxed text-white/70 sm:text-sm/relaxed">Real moments from our weekly trips — the magical, the messy, and everything in between.</p>
                         <div class="mt-4 flex items-center gap-2">
                             <span class="bg-white/20 text-white text-[10px] font-bold px-3 py-1 rounded-full font-body uppercase tracking-wider">Explore →</span>
                         </div>
@@ -215,7 +215,7 @@
                                 </div>
                                 <h3 class="font-heading text-xl font-bold text-navy group-hover:text-purple transition-colors duration-200 mb-2 leading-snug">{{ $post->title }}</h3>
                                 @if($post->excerpt)
-                                    <p class="text-navy/65 text-sm leading-[1.7] line-clamp-2 font-body mb-4">{{ Str::limit($post->excerpt, 130) }}</p>
+                                    <p class="mb-4 line-clamp-2 font-body text-base leading-[1.7] text-navy/65 sm:text-sm">{{ Str::limit($post->excerpt, 130) }}</p>
                                 @endif
                                 <div class="flex items-center gap-2 pt-3 border-t border-navy/5">
                                     <div class="w-7 h-7 rounded-full bg-purple/10 flex items-center justify-center text-purple text-[10px] font-bold flex-shrink-0">
@@ -228,7 +228,7 @@
                     @endforeach
                 </div>
                 <div class="text-center mt-10 sm:hidden">
-                    <a href="/blog" class="text-purple hover:text-navy font-semibold text-sm transition-colors font-body">View all posts →</a>
+                    <a href="/blog" class="inline-flex min-h-12 items-center font-body text-base font-semibold text-purple transition-colors hover:text-navy sm:text-sm">View all posts →</a>
                 </div>
             </div>
         </section>
@@ -270,7 +270,7 @@
                     @endforeach
                 </div>
                 <div class="text-center mt-6 sm:hidden">
-                    <a href="/episodes" class="text-purple hover:text-navy font-semibold text-sm transition-colors font-body">All episodes →</a>
+                    <a href="/episodes" class="inline-flex min-h-12 items-center font-body text-base font-semibold text-purple transition-colors hover:text-navy sm:text-sm">All episodes →</a>
                 </div>
             @else
                 @php
@@ -336,7 +336,7 @@
                             Our Full Story
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                         </a>
-                        <a href="/contact" class="inline-flex items-center gap-1.5 text-purple hover:text-navy font-semibold text-sm font-body transition-colors">
+                        <a href="/contact" class="inline-flex min-h-12 items-center gap-1.5 font-body text-base font-semibold text-purple transition-colors hover:text-navy sm:text-sm">
                             Say hello →
                         </a>
                     </div>
@@ -355,19 +355,19 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
                 <div class="text-center">
                     <div class="font-heading text-[clamp(2.5rem,5vw,3.5rem)] leading-none font-extrabold text-navy">20</div>
-                    <p class="mt-2 font-body text-[0.8rem]/6 text-navy/45">Minutes from<br>the Magic Kingdom</p>
+                    <p class="mt-2 font-body text-base/6 text-navy/45 sm:text-[0.8rem]/6">Minutes from<br>the Magic Kingdom</p>
                 </div>
                 <div class="text-center">
                     <div class="font-heading text-[clamp(2.5rem,5vw,3.5rem)] leading-none font-extrabold text-navy">2</div>
-                    <p class="mt-2 font-body text-[0.8rem]/6 text-navy/45">Voices, one mic,<br>zero filter</p>
+                    <p class="mt-2 font-body text-base/6 text-navy/45 sm:text-[0.8rem]/6">Voices, one mic,<br>zero filter</p>
                 </div>
                 <div class="text-center">
                     <div class="font-heading text-[clamp(2.5rem,5vw,3.5rem)] leading-none font-extrabold text-gold">52</div>
-                    <p class="mt-2 font-body text-[0.8rem]/6 text-navy/45">Park days a year<br>(at least)</p>
+                    <p class="mt-2 font-body text-base/6 text-navy/45 sm:text-[0.8rem]/6">Park days a year<br>(at least)</p>
                 </div>
                 <div class="text-center">
                     <div class="font-heading text-[clamp(2.5rem,5vw,3.5rem)] leading-none font-extrabold text-navy">∞</div>
-                    <p class="mt-2 font-body text-[0.8rem]/6 text-navy/45">Buckets of maple popcorn<br>(and counting)</p>
+                    <p class="mt-2 font-body text-base/6 text-navy/45 sm:text-[0.8rem]/6">Buckets of maple popcorn<br>(and counting)</p>
                 </div>
             </div>
         </div>
@@ -413,9 +413,9 @@
                     </button>
                 </form>
             @endif
-            <div class="flex items-center justify-center gap-6 mt-10 pt-8 border-t border-white/10">
-                <a href="#" class="text-white/40 hover:text-white/65 text-sm font-body transition-colors">🎧 Apple Podcasts</a>
-                <a href="#" class="text-white/40 hover:text-white/65 text-sm font-body transition-colors">💚 Spotify</a>
+            <div class="mt-10 flex items-center justify-center gap-6 border-t border-white/10 pt-8">
+                <span class="font-body text-base text-white/40 sm:text-sm">🎧 Apple Podcasts · Soon</span>
+                <span class="font-body text-base text-white/40 sm:text-sm">💚 Spotify · Soon</span>
             </div>
         </div>
     </section>

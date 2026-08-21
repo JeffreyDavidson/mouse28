@@ -45,17 +45,17 @@
         <div class="max-w-6xl mx-auto px-4 sm:px-6">
             <div class="flex items-center justify-between h-20">
                 {{-- Logo --}}
-                <a href="/" aria-label="Mouse28 homepage" class="group tracking-tight">
+                <a href="/" aria-label="Mouse28 homepage" class="group inline-flex min-h-12 items-center tracking-tight">
                     <span class="font-heading text-2xl font-bold text-white group-hover:text-gold transition-colors">Mouse<span class="text-gold">28</span></span>
                 </a>
 
                 {{-- Desktop Nav --}}
                 <div class="hidden md:flex items-center gap-10">
-                    <a href="/" @if(request()->is('/')) aria-current="page" @endif class="{{ request()->is('/') ? 'text-gold nav-link-active' : 'text-white/80' }} hover:text-gold transition-colors text-sm font-medium tracking-wide">Home</a>
-                    <a href="/blog" @if(request()->is('blog*')) aria-current="page" @endif class="{{ request()->is('blog*') ? 'text-gold nav-link-active' : 'text-white/80' }} hover:text-gold transition-colors text-sm font-medium tracking-wide">Blog</a>
-                    <a href="/episodes" @if(request()->is('episodes*')) aria-current="page" @endif class="{{ request()->is('episodes*') ? 'text-gold nav-link-active' : 'text-white/80' }} hover:text-gold transition-colors text-sm font-medium tracking-wide">Podcast</a>
-                    <a href="/about" @if(request()->is('about')) aria-current="page" @endif class="{{ request()->is('about') ? 'text-gold nav-link-active' : 'text-white/80' }} hover:text-gold transition-colors text-sm font-medium tracking-wide">About</a>
-                    <a href="/contact" @if(request()->is('contact')) aria-current="page" @endif class="{{ request()->is('contact') ? 'text-gold nav-link-active' : 'text-white/80' }} hover:text-gold transition-colors text-sm font-medium tracking-wide">Contact</a>
+                    <a href="/" @if(request()->is('/')) aria-current="page" @endif class="{{ request()->is('/') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-11 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold">Home</a>
+                    <a href="/blog" @if(request()->is('blog*')) aria-current="page" @endif class="{{ request()->is('blog*') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-11 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold">Blog</a>
+                    <a href="/episodes" @if(request()->is('episodes*')) aria-current="page" @endif class="{{ request()->is('episodes*') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-11 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold">Podcast</a>
+                    <a href="/about" @if(request()->is('about')) aria-current="page" @endif class="{{ request()->is('about') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-11 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold">About</a>
+                    <a href="/contact" @if(request()->is('contact')) aria-current="page" @endif class="{{ request()->is('contact') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-11 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold">Contact</a>
                 </div>
 
                 {{-- Mobile menu button (animated hamburger → X) --}}
@@ -103,8 +103,8 @@
             <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-10">
                 {{-- Newsletter (left side) --}}
                 <div class="lg:max-w-md flex-shrink-0" x-data="{ submitted: false, error: false }">
-                    <h4 class="font-heading text-white font-semibold mb-2 text-sm tracking-wider uppercase">Stay in the Loop</h4>
-                    <p class="text-sm text-white/50 mb-4">New posts, episodes, and park tips straight to your inbox.</p>
+                    <h2 class="mb-2 font-heading text-base font-semibold tracking-wider text-white uppercase sm:text-sm">Stay in the Loop</h2>
+                    <p class="mb-4 text-base text-white/50 sm:text-sm">New posts, episodes, and park tips straight to your inbox.</p>
                     <form x-show="!submitted" @submit.prevent="
                         error = false;
                         fetch('/newsletter', {
@@ -117,31 +117,31 @@
                         <input id="footer-newsletter-email" x-ref="footerEmail" type="email" name="email" placeholder="your@email.com" autocomplete="email" required class="min-h-12 min-w-0 flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-2.5 text-base text-white placeholder-white/30 transition-colors focus:border-gold/50 focus:outline-none focus:ring-1 focus:ring-gold/30 sm:text-sm">
                         <button type="submit" class="min-h-12 rounded-full bg-gold px-6 py-2.5 text-base font-semibold whitespace-nowrap text-navy transition-all hover:bg-gold-light hover:shadow-lg hover:shadow-gold/25 sm:text-sm">Subscribe</button>
                     </form>
-                    <div x-show="submitted" x-transition role="status" class="rounded-full border border-gold/30 bg-gold/10 px-5 py-2.5 text-center text-base font-medium text-gold sm:text-sm">
+                    <div x-show="submitted" x-cloak x-transition role="status" class="rounded-full border border-gold/30 bg-gold/10 px-5 py-2.5 text-center text-base font-medium text-gold sm:text-sm">
                         You're in! We'll keep you posted.
                     </div>
-                    <div x-show="error" x-transition role="alert" class="mt-2 text-base text-red-400 sm:text-sm">Something went wrong. Please try again.</div>
+                    <div x-show="error" x-cloak x-transition role="alert" class="mt-2 text-base text-red-400 sm:text-sm">Something went wrong. Please try again.</div>
                 </div>
 
                 {{-- Links (right side) --}}
                 <div class="flex flex-wrap gap-x-16 gap-y-8">
                     {{-- Explore --}}
                     <div>
-                        <h4 class="font-heading text-white font-semibold mb-4 text-sm tracking-wider uppercase">Explore</h4>
-                        <div class="flex flex-col gap-2.5 text-sm">
-                            <a href="/blog" class="hover:text-gold transition-colors">Blog</a>
-                            <a href="/episodes" class="hover:text-gold transition-colors">Podcast</a>
-                            <a href="/about" class="hover:text-gold transition-colors">About Us</a>
+                        <h2 class="mb-4 font-heading text-base font-semibold tracking-wider text-white uppercase sm:text-sm">Explore</h2>
+                        <div class="flex flex-col gap-1 text-base sm:text-sm">
+                            <a href="/blog" class="inline-flex min-h-11 items-center transition-colors hover:text-gold sm:min-h-6">Blog</a>
+                            <a href="/episodes" class="inline-flex min-h-11 items-center transition-colors hover:text-gold sm:min-h-6">Podcast</a>
+                            <a href="/about" class="inline-flex min-h-11 items-center transition-colors hover:text-gold sm:min-h-6">About Us</a>
                         </div>
                     </div>
 
                     {{-- Connect --}}
                     <div>
-                        <h4 class="font-heading text-white font-semibold mb-4 text-sm tracking-wider uppercase">Connect</h4>
-                        <div class="flex flex-col gap-2.5 text-sm">
-                            <a href="/contact" class="hover:text-gold transition-colors">Contact Us</a>
-                            <a href="#" class="hover:text-gold transition-colors">Apple Podcasts</a>
-                            <a href="#" class="hover:text-gold transition-colors">Spotify</a>
+                        <h2 class="mb-4 font-heading text-base font-semibold tracking-wider text-white uppercase sm:text-sm">Connect</h2>
+                        <div class="flex flex-col gap-1 text-base sm:text-sm">
+                            <a href="/contact" class="inline-flex min-h-11 items-center transition-colors hover:text-gold sm:min-h-6">Contact Us</a>
+                            <span class="inline-flex min-h-11 items-center text-white/35 sm:min-h-6">Apple Podcasts · Soon</span>
+                            <span class="inline-flex min-h-11 items-center text-white/35 sm:min-h-6">Spotify · Soon</span>
                         </div>
                     </div>
                 </div>
@@ -149,8 +149,8 @@
 
             {{-- Bottom bar --}}
             <div class="border-t border-white/10 mt-8 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4">
-                <p class="text-sm text-white/40">&copy; {{ date('Y') }} Mouse28. All rights reserved.</p>
-                <p class="text-sm text-white/40">Made with ✨ from Infinity Digital</p>
+                <p class="text-base text-white/40 sm:text-sm">&copy; {{ date('Y') }} Mouse28. All rights reserved.</p>
+                <p class="text-base text-white/40 sm:text-sm">Made with ✨ from Infinity Digital</p>
             </div>
         </div>
     </footer>
