@@ -41,7 +41,7 @@
 
         <div class="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 pb-14 pt-20">
             {{-- Back link --}}
-            <a href="/blog" class="inline-flex items-center gap-1.5 text-white/40 hover:text-gold text-sm transition-all mb-8 group">
+            <a href="/blog" class="group mb-8 inline-flex min-h-11 items-center gap-1.5 text-base text-white/40 transition-all hover:text-gold sm:text-sm">
                 <svg class="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                 Back to Blog
             </a>
@@ -83,13 +83,13 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($post->title) }}" target="_blank" rel="noopener" class="inline-flex size-10 items-center justify-center rounded-full border border-cream/15 bg-cream/5 text-cream/40 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-gold-light/50 hover:bg-gold-light/10 hover:text-gold-light hover:shadow-[0_4px_12px_rgb(212_168_67_/_20%)]" aria-label="Share on X">
+                    <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($post->title) }}" target="_blank" rel="noopener" class="inline-flex size-11 items-center justify-center rounded-full border border-cream/15 bg-cream/5 text-cream/40 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-gold-light/50 hover:bg-gold-light/10 hover:text-gold-light hover:shadow-[0_4px_12px_rgb(212_168_67_/_20%)]" aria-label="Share on X">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                     </a>
-                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" rel="noopener" class="inline-flex size-10 items-center justify-center rounded-full border border-cream/15 bg-cream/5 text-cream/40 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-gold-light/50 hover:bg-gold-light/10 hover:text-gold-light hover:shadow-[0_4px_12px_rgb(212_168_67_/_20%)]" aria-label="Share on Facebook">
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" rel="noopener" class="inline-flex size-11 items-center justify-center rounded-full border border-cream/15 bg-cream/5 text-cream/40 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-gold-light/50 hover:bg-gold-light/10 hover:text-gold-light hover:shadow-[0_4px_12px_rgb(212_168_67_/_20%)]" aria-label="Share on Facebook">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                     </a>
-                    <button type="button" class="relative inline-flex size-10 items-center justify-center rounded-full border border-cream/15 bg-cream/5 text-cream/40 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-gold-light/50 hover:bg-gold-light/10 hover:text-gold-light hover:shadow-[0_4px_12px_rgb(212_168_67_/_20%)]" data-copy-link aria-label="Copy link">
+                    <button type="button" class="relative inline-flex size-11 items-center justify-center rounded-full border border-cream/15 bg-cream/5 text-cream/40 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-gold-light/50 hover:bg-gold-light/10 hover:text-gold-light hover:shadow-[0_4px_12px_rgb(212_168_67_/_20%)]" data-copy-link aria-label="Copy link">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
                         <span class="copy-feedback absolute -bottom-9 left-1/2 hidden -translate-x-1/2 whitespace-nowrap rounded-full bg-gold px-3 py-1 text-[10px] text-white shadow-lg" aria-live="polite">Copied!</span>
                     </button>
@@ -140,9 +140,9 @@
                             </div>
                             <div>
                                 <span class="text-gold text-xs font-bold uppercase tracking-widest">Written by</span>
-                                <h3 class="font-heading text-2xl font-bold text-navy mt-1">{{ $post->author_name }}</h3>
+                                <h2 class="font-heading text-2xl font-bold text-navy mt-1">{{ $post->author_name }}</h2>
                                 <div class="mt-3 mb-3 h-[3px] w-15 rounded-sm bg-linear-to-r from-gold to-gold-light"></div>
-                                <p class="text-navy/55 text-sm leading-relaxed">
+                                <p class="text-base/relaxed text-navy/55 sm:text-sm/relaxed">
                                     @if(Str::contains($post->author_name, '&') || (Str::contains($post->author_name, 'Jeffrey') && Str::contains($post->author_name, 'Cassie')))
                                         The couple behind Mouse28. Over a decade as Disney passholders, navigating park life with their daughter Viola and sharing every tip, review, and memory along the way.
                                     @elseif(Str::contains($post->author_name, 'Cassie'))
@@ -160,18 +160,18 @@
                     {{-- Share This Post --}}
                     <div class="mt-10 rounded-3xl border border-navy/5 bg-white p-5 text-center shadow-lg shadow-navy/5 sm:p-8 md:p-10">
                         <span class="text-gold text-xs font-bold uppercase tracking-widest">Enjoyed this post?</span>
-                        <h3 class="font-heading text-xl font-bold text-navy mt-2 mb-2">Share it with fellow Disney fans</h3>
-                        <p class="text-navy/40 text-sm mb-6">Help others discover Mouse28</p>
+                        <h2 class="mt-2 mb-2 font-heading text-xl font-bold text-navy">Share it with fellow Disney fans</h2>
+                        <p class="mb-6 text-base text-navy/40 sm:text-sm">Help others discover Mouse28</p>
                         <div class="flex flex-wrap items-center justify-center gap-3">
-                            <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($post->title . ' — Mouse28') }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 rounded-full border border-navy/10 bg-white px-5 py-2.5 text-[0.8rem] font-semibold text-navy/60 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#1da1f2] hover:text-[#1da1f2] hover:shadow-[0_4px_12px_rgb(26_16_64_/_10%)]">
+                            <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($post->title . ' — Mouse28') }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-navy/10 bg-white px-5 py-2.5 text-base font-semibold text-navy/60 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#1da1f2] hover:text-[#1da1f2] hover:shadow-[0_4px_12px_rgb(26_16_64_/_10%)] sm:text-[0.8rem]">
                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                                 Share on X
                             </a>
-                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 rounded-full border border-navy/10 bg-white px-5 py-2.5 text-[0.8rem] font-semibold text-navy/60 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#1877f2] hover:text-[#1877f2] hover:shadow-[0_4px_12px_rgb(26_16_64_/_10%)]">
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-navy/10 bg-white px-5 py-2.5 text-base font-semibold text-navy/60 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#1877f2] hover:text-[#1877f2] hover:shadow-[0_4px_12px_rgb(26_16_64_/_10%)] sm:text-[0.8rem]">
                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                                 Share on Facebook
                             </a>
-                            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-full border border-navy/10 bg-white px-5 py-2.5 text-[0.8rem] font-semibold text-navy/60 transition-all duration-300 hover:-translate-y-0.5 hover:border-gold hover:text-gold hover:shadow-[0_4px_12px_rgb(26_16_64_/_10%)]" data-copy-link>
+                            <button type="button" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-navy/10 bg-white px-5 py-2.5 text-base font-semibold text-navy/60 transition-all duration-300 hover:-translate-y-0.5 hover:border-gold hover:text-gold hover:shadow-[0_4px_12px_rgb(26_16_64_/_10%)] sm:text-[0.8rem]" data-copy-link>
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
                                 <span data-copy-label>Copy Link</span>
                                 <span class="hidden" data-copy-feedback aria-live="polite">Copied! ✓</span>
@@ -187,8 +187,8 @@
                                 <div class="flex items-center gap-5">
                                     <span class="inline-flex size-14 shrink-0 items-center justify-center rounded-2xl border border-purple/10 bg-linear-to-br from-purple/15 to-gold/10 font-heading text-lg font-bold text-purple">{{ $post->episode->episode_number }}</span>
                                     <div>
-                                        <h3 class="font-heading text-lg font-semibold text-navy group-hover:text-purple transition-colors">{{ $post->episode->title }}</h3>
-                                        <p class="text-navy/40 text-sm mt-1 group-hover:text-gold transition-colors">Listen to the full episode →</p>
+                                        <h2 class="font-heading text-lg font-semibold text-navy transition-colors group-hover:text-purple">{{ $post->episode->title }}</h2>
+                                        <p class="mt-1 text-base text-navy/40 transition-colors group-hover:text-gold sm:text-sm">Listen to the full episode →</p>
                                     </div>
                                 </div>
                             </a>
@@ -199,7 +199,7 @@
                     @if($recentPosts->count())
                         <div class="mt-12">
                             <div class="flex items-center gap-4 mb-6">
-                                <h3 class="font-heading text-xl font-bold text-navy">Continue Reading</h3>
+                                <h2 class="font-heading text-xl font-bold text-navy">Continue Reading</h2>
                                 <div class="h-px flex-1 bg-linear-to-r from-navy/10 to-transparent"></div>
                             </div>
                             <div class="grid sm:grid-cols-2 gap-6">
@@ -219,7 +219,7 @@
                                             @if($next->category)
                                                 <span class="text-[10px] font-bold text-gold uppercase tracking-wider">{{ $next->category_label }}</span>
                                             @endif
-                                            <h4 class="font-heading text-base font-semibold text-navy group-hover:text-purple transition-colors line-clamp-2 leading-snug mt-1">{{ $next->title }}</h4>
+                                            <h3 class="mt-1 line-clamp-2 font-heading text-base leading-snug font-semibold text-navy transition-colors group-hover:text-purple">{{ $next->title }}</h3>
                                             <span class="text-navy/30 text-xs mt-3 block">{{ $next->reading_time }} min read</span>
                                         </div>
                                     </a>
@@ -279,7 +279,7 @@
                                 @foreach(\App\Models\Post::CATEGORIES as $slug => $label)
                                     @php $count = $categoryCounts[$slug] ?? 0; @endphp
                                     @if($count > 0)
-                                        <a href="/blog?category={{ $slug }}" class="flex items-center justify-between py-2.5 px-3 rounded-xl hover:bg-cream transition-all group">
+                                        <a href="/blog?category={{ $slug }}" class="group flex min-h-11 items-center justify-between rounded-xl px-3 py-2.5 transition-all hover:bg-cream">
                                             <span class="text-sm text-navy/65 group-hover:text-navy transition-colors font-medium">{{ $label }}</span>
                                             <span class="text-xs text-gold/70 bg-gold/8 px-3 py-0.5 rounded-full font-bold group-hover:bg-gold/15 transition-colors">{{ $count }}</span>
                                         </a>
@@ -296,7 +296,7 @@
                                     <svg class="w-6 h-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
                                 </div>
                                 <h3 class="font-heading text-lg font-bold text-white mb-2">Listen to the Podcast</h3>
-                                <p class="text-white/40 text-sm mb-5 leading-relaxed">Disney parks, accessibility, and family stories</p>
+                                <p class="mb-5 text-base/relaxed text-white/40 sm:text-sm/relaxed">Disney parks, accessibility, and family stories</p>
                                 <a href="/episodes" class="inline-block rounded-full bg-linear-to-r from-gold to-gold-light px-7 py-3 text-sm font-bold text-navy shadow-lg shadow-gold/20 transition-all hover:-translate-y-0.5">
                                     Browse Episodes
                                 </a>

@@ -65,7 +65,7 @@
 
                                 {{-- Excerpt --}}
                                 @if($featured->excerpt)
-                                    <p class="mt-4 max-w-2xl text-sm/relaxed text-white/55 md:pl-20 md:text-base">{{ $featured->excerpt }}</p>
+                                    <p class="mt-4 max-w-2xl text-base/relaxed text-white/55 md:pl-20">{{ $featured->excerpt }}</p>
                                 @endif
 
                                 {{-- Author + CTA --}}
@@ -107,7 +107,7 @@
                                 </div>
                                 <h3 class="line-clamp-2 font-heading text-xl/snug font-bold text-navy transition-colors group-hover:text-purple">{{ $post->title }}</h3>
                                 @if($post->excerpt)
-                                    <p class="mt-2 line-clamp-3 text-sm/relaxed text-navy/45">{{ $post->excerpt }}</p>
+                                    <p class="mt-2 line-clamp-3 text-base/relaxed text-navy/45 sm:text-sm/relaxed">{{ $post->excerpt }}</p>
                                 @endif
                                 <div class="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-navy/5 pt-4">
                                     <div class="flex flex-wrap items-center gap-2">
@@ -232,14 +232,14 @@
                                 <h3 class="font-heading text-lg font-bold text-navy">Categories</h3>
                             </div>
                             <div class="space-y-1">
-                                <a href="/blog" class="group flex items-center justify-between rounded-xl px-3 py-2.5 transition-all {{ !$category ? 'bg-gold/10' : 'hover:bg-cream' }}">
+                                <a href="/blog" class="group flex min-h-11 items-center justify-between rounded-xl px-3 py-2.5 transition-all {{ !$category ? 'bg-gold/10' : 'hover:bg-cream' }}">
                                     <span class="text-sm font-medium {{ !$category ? 'text-gold font-semibold' : 'text-navy/65 group-hover:text-navy' }} transition-colors">All Posts</span>
                                     <span class="rounded-full bg-gold/8 px-3 py-0.5 text-xs font-bold {{ !$category ? 'text-gold' : 'text-gold/70' }}">{{ $posts->total() }}</span>
                                 </a>
                                 @foreach(\App\Models\Post::CATEGORIES as $slug => $label)
                                     @continue(!in_array($slug, $usedCategories))
                                     @php $categoryStyle = $categoryStyles[$slug] ?? $defaultCategoryStyle; @endphp
-                                    <a href="/blog?category={{ $slug }}" class="group flex items-center justify-between rounded-xl px-3 py-2.5 transition-all {{ $category === $slug ? $categoryStyle['subtle'] : 'hover:bg-cream' }}">
+                                    <a href="/blog?category={{ $slug }}" class="group flex min-h-11 items-center justify-between rounded-xl px-3 py-2.5 transition-all {{ $category === $slug ? $categoryStyle['subtle'] : 'hover:bg-cream' }}">
                                         <span class="text-sm font-medium transition-colors {{ $category === $slug ? 'font-semibold '.$categoryStyle['text'] : 'text-navy/65 group-hover:text-navy' }}">{{ $label }}</span>
                                         <span class="rounded-full px-3 py-0.5 text-xs font-bold {{ $categoryStyle['subtle'] }} {{ $categoryStyle['text'] }}">{{ $categoryCounts[$slug] ?? 0 }}</span>
                                     </a>
@@ -255,11 +255,11 @@
                             </div>
                             <div class="flex overflow-hidden rounded-xl border border-navy/10">
                                 <a href="{{ request()->fullUrlWithQuery(['sort' => 'newest']) }}"
-                                   class="flex-1 py-2.5 text-center text-xs font-semibold transition-all {{ ($sort ?? 'newest') === 'newest' ? 'bg-gold/15 text-gold' : 'text-navy/40 hover:text-navy/60' }}">
+                                   class="flex min-h-11 flex-1 items-center justify-center py-2.5 text-base font-semibold transition-all sm:text-xs {{ ($sort ?? 'newest') === 'newest' ? 'bg-gold/15 text-gold' : 'text-navy/40 hover:text-navy/60' }}">
                                     Newest
                                 </a>
                                 <a href="{{ request()->fullUrlWithQuery(['sort' => 'oldest']) }}"
-                                   class="flex-1 border-l border-navy/10 py-2.5 text-center text-xs font-semibold transition-all {{ ($sort ?? 'newest') === 'oldest' ? 'bg-gold/15 text-gold' : 'text-navy/40 hover:text-navy/60' }}">
+                                   class="flex min-h-11 flex-1 items-center justify-center border-l border-navy/10 py-2.5 text-base font-semibold transition-all sm:text-xs {{ ($sort ?? 'newest') === 'oldest' ? 'bg-gold/15 text-gold' : 'text-navy/40 hover:text-navy/60' }}">
                                     Oldest
                                 </a>
                             </div>
@@ -273,7 +273,7 @@
                                     <svg class="size-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
                                 </div>
                                 <h3 class="mb-2 font-heading text-lg font-bold text-white">Listen to the Podcast</h3>
-                                <p class="mb-5 text-sm/relaxed text-white/40">Disney parks, accessibility, and family stories</p>
+                                <p class="mb-5 text-base/relaxed text-white/40 sm:text-sm/relaxed">Disney parks, accessibility, and family stories</p>
                                 <a href="/episodes" class="inline-block rounded-full bg-linear-to-r from-gold to-gold-light px-7 py-3 text-sm font-bold text-navy shadow-lg shadow-gold/20 transition-all hover:-translate-y-0.5">
                                     Browse Episodes
                                 </a>

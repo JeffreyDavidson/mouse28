@@ -160,7 +160,7 @@
                     {{-- Bio --}}
                     <div class="md:col-span-7">
                         <h3 class="mb-2 font-heading text-2xl font-bold text-navy md:text-3xl">Jeffrey Davidson</h3>
-                        <p class="mb-6 font-body text-sm font-semibold text-purple">Dad, Software Engineer, Disney Strategist</p>
+                        <p class="mb-6 font-body text-base font-semibold text-purple sm:text-sm">Dad, Software Engineer, Disney Strategist</p>
                         <div class="space-y-4">
                             <p class="font-body leading-relaxed text-navy/65">The planner. The podcast editor. The guy who can navigate World Showcase blindfolded and will debate the best Epcot festival food until closing time.</p>
                             <p class="font-body leading-relaxed text-navy/65">Jeffrey is a software engineer by trade with over 15 years of experience building things on the internet. When he's not coding, he's mapping out the most efficient park route or convincing Cassie they need "just one more ride" before heading home.</p>
@@ -188,7 +188,7 @@
                     {{-- Bio (left on desktop) --}}
                     <div class="order-2 md:order-1 md:col-span-7">
                         <h3 class="mb-2 font-heading text-2xl font-bold text-navy md:text-3xl">Cassie Davidson</h3>
-                        <p class="mb-6 font-body text-sm font-semibold text-purple">Mom, Baker, Accessibility Champion</p>
+                        <p class="mb-6 font-body text-base font-semibold text-purple sm:text-sm">Mom, Baker, Accessibility Champion</p>
                         <div class="space-y-4">
                             <p class="font-body leading-relaxed text-navy/65">The heart of Mouse28. Cassie is the one who makes sure every tip we share actually helps real families. She brings warmth, honesty, and a park snack bag that has never once let us down.</p>
                             <p class="font-body leading-relaxed text-navy/65">When she's not at the parks, Cassie runs a cottage food bakery, wrangles two huskies, and somehow keeps everything running smoothly. She's the reason this whole thing works.</p>

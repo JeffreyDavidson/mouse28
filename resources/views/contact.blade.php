@@ -66,7 +66,7 @@
 
                             <div class="grid gap-5 sm:grid-cols-2">
                                 <div>
-                                    <label for="name" class="mb-2 block text-sm font-semibold text-gold-light">Name</label>
+                                    <label for="name" class="mb-2 block text-base font-semibold text-gold-light sm:text-sm">Name</label>
                                     <input type="text" id="name" name="name" required autocomplete="name" value="{{ old('name') }}" placeholder="Your name"
                                         @error('name') aria-invalid="true" aria-describedby="name-error" @enderror
                                         class="min-h-12 w-full rounded-xl border border-cream/10 bg-cream/4 px-4 py-3 text-base text-cream transition-colors placeholder:text-cream/30 focus:border-gold/50 focus:bg-cream/6 focus:ring-2 focus:ring-gold/20 focus:outline-none sm:text-sm"
@@ -74,7 +74,7 @@
                                     @error('name') <p id="name-error" role="alert" class="mt-2 text-sm text-red-400">{{ $message }}</p> @enderror
                                 </div>
                                 <div>
-                                    <label for="email" class="mb-2 block text-sm font-semibold text-gold-light">Email</label>
+                                    <label for="email" class="mb-2 block text-base font-semibold text-gold-light sm:text-sm">Email</label>
                                     <input type="email" id="email" name="email" required autocomplete="email" inputmode="email" value="{{ old('email') }}" placeholder="you@example.com"
                                         @error('email') aria-invalid="true" aria-describedby="email-error" @enderror
                                         class="min-h-12 w-full rounded-xl border border-cream/10 bg-cream/4 px-4 py-3 text-base text-cream transition-colors placeholder:text-cream/30 focus:border-gold/50 focus:bg-cream/6 focus:ring-2 focus:ring-gold/20 focus:outline-none sm:text-sm"
@@ -84,7 +84,7 @@
                             </div>
 
                             <div>
-                                <label for="subject" class="mb-2 block text-sm font-semibold text-gold-light">Topic</label>
+                                <label for="subject" class="mb-2 block text-base font-semibold text-gold-light sm:text-sm">Topic</label>
                                 <select id="subject" name="subject" required
                                     @error('subject') aria-invalid="true" aria-describedby="subject-error" @enderror
                                     class="contact-select min-h-12 w-full rounded-xl border border-cream/10 bg-cream/4 px-4 py-3 text-base text-cream/70 transition-colors focus:border-gold/50 focus:ring-2 focus:ring-gold/20 focus:outline-none sm:text-sm"
@@ -101,7 +101,7 @@
                             </div>
 
                             <div>
-                                <label for="message" class="mb-2 block text-sm font-semibold text-gold-light">Message</label>
+                                <label for="message" class="mb-2 block text-base font-semibold text-gold-light sm:text-sm">Message</label>
                                 <textarea id="message" name="message" required rows="5" placeholder="What's on your mind?"
                                     @error('message') aria-invalid="true" aria-describedby="message-error" @enderror
                                     class="min-h-36 w-full resize-y rounded-xl border border-cream/10 bg-cream/4 px-4 py-3 text-base text-cream transition-colors placeholder:text-cream/30 focus:border-gold/50 focus:bg-cream/6 focus:ring-2 focus:ring-gold/20 focus:outline-none sm:text-sm"
@@ -133,8 +133,8 @@
                                     <svg class="size-[18px] text-gold-light" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                                 </div>
                                 <div class="min-w-0">
-                                    <a href="mailto:mouse28podcast@gmail.com" class="text-base font-semibold break-all text-cream sm:text-sm">mouse28podcast@gmail.com</a>
-                                    <p class="mt-1 text-sm text-cream/35">We read every message</p>
+                                    <a href="mailto:mouse28podcast@gmail.com" class="inline-flex min-h-11 items-center break-all text-base font-semibold text-cream sm:min-h-6 sm:text-sm">mouse28podcast@gmail.com</a>
+                                    <p class="mt-1 text-base text-cream/35 sm:text-sm">We read every message</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2 rounded-[0.6rem] bg-cream/4 px-[0.85rem] py-[0.65rem]">
@@ -145,7 +145,7 @@
 
                         {{-- Topics we love --}}
                         <div class="rounded-2xl border border-cream/8 bg-cream/4 p-6">
-                            <h3 class="mb-4 font-heading text-base font-bold text-cream">We Love Hearing About</h3>
+                            <h2 class="mb-4 font-heading text-base font-bold text-cream">We Love Hearing About</h2>
                             <div class="flex flex-col gap-3">
                                 @php
                                     $topics = [
