@@ -213,7 +213,7 @@
 
         {{-- Right: Photo --}}
         <div class="hero-split-photo">
-            <img src="/images/hero-family.jpg" alt="Jeffrey and Cassie Davidson on Kilimanjaro Safaris at Disney's Animal Kingdom">
+            <img src="/images/hero-family.jpg" alt="Jeffrey and Cassie Davidson on Kilimanjaro Safaris at Disney's Animal Kingdom" width="2048" height="2048" fetchpriority="high">
             <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(to top, rgba(26,16,64,0.3), transparent); z-index: 1;"></div>
         </div>
     </section>
@@ -493,7 +493,7 @@
                 <div class="flex-shrink-0 w-full md:w-2/5">
                     <div class="relative">
                         <div class="rounded-2xl overflow-hidden shadow-xl" style="border: 3px solid rgba(212,168,67,0.2);">
-                            <img src="/images/meet-jeffrey-and-cassie.jpg" alt="Jeffrey and Cassie Davidson at Disney" class="w-full h-auto object-cover" style="aspect-ratio: 4/5;">
+                            <img src="/images/meet-jeffrey-and-cassie.jpg" alt="Jeffrey and Cassie Davidson at Disney" width="1024" height="1536" loading="lazy" decoding="async" class="w-full h-auto object-cover" style="aspect-ratio: 4/5;">
                         </div>
                         {{-- Decorative corner accent --}}
                         <div class="hidden md:block absolute -bottom-3 -right-3 w-24 h-24 border-b-2 border-r-2 rounded-br-2xl" style="border-color: rgba(212,168,67,0.25);"></div>
@@ -572,18 +572,20 @@
                 </div>
                 <form action="/newsletter" method="POST" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
                     @csrf
-                    <input type="email" name="email" placeholder="your@email.com" required
-                        class="newsletter-input flex-1 px-5 py-3.5 min-h-[48px] rounded-full bg-white/10 border border-white/20 text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-gold/60 focus:border-gold/40 text-sm font-body transition-all duration-300">
-                    <button type="submit" class="bg-gold hover:bg-gold-light text-navy font-semibold px-7 py-3.5 min-h-[48px] rounded-full transition-all duration-300 text-sm font-body hover:shadow-lg hover:shadow-gold/30 hover:-translate-y-0.5 hover:scale-105 active:scale-95">
+                    <label for="home-newsletter-email-error" class="sr-only">Email address</label>
+                    <input id="home-newsletter-email-error" type="email" name="email" placeholder="your@email.com" autocomplete="email" required
+                        class="newsletter-input flex-1 px-5 py-3.5 min-h-[48px] rounded-full bg-white/10 border border-white/20 text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-gold/60 focus:border-gold/40 text-base sm:text-sm font-body transition-all duration-300">
+                    <button type="submit" class="bg-gold hover:bg-gold-light text-navy font-semibold px-7 py-3.5 min-h-[48px] rounded-full transition-all duration-300 text-base sm:text-sm font-body hover:shadow-lg hover:shadow-gold/30 hover:-translate-y-0.5 hover:scale-105 active:scale-95">
                         Subscribe
                     </button>
                 </form>
             @else
                 <form action="/newsletter" method="POST" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
                     @csrf
-                    <input type="email" name="email" placeholder="your@email.com" required
-                        class="newsletter-input flex-1 px-5 py-3.5 min-h-[48px] rounded-full bg-white/10 border border-white/20 text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-gold/60 focus:border-gold/40 text-sm font-body transition-all duration-300">
-                    <button type="submit" class="bg-gold hover:bg-gold-light text-navy font-semibold px-7 py-3.5 min-h-[48px] rounded-full transition-all duration-300 text-sm font-body hover:shadow-lg hover:shadow-gold/30 hover:-translate-y-0.5 hover:scale-105 active:scale-95">
+                    <label for="home-newsletter-email" class="sr-only">Email address</label>
+                    <input id="home-newsletter-email" type="email" name="email" placeholder="your@email.com" autocomplete="email" required
+                        class="newsletter-input flex-1 px-5 py-3.5 min-h-[48px] rounded-full bg-white/10 border border-white/20 text-white placeholder:text-white/35 focus:outline-none focus:ring-2 focus:ring-gold/60 focus:border-gold/40 text-base sm:text-sm font-body transition-all duration-300">
+                    <button type="submit" class="bg-gold hover:bg-gold-light text-navy font-semibold px-7 py-3.5 min-h-[48px] rounded-full transition-all duration-300 text-base sm:text-sm font-body hover:shadow-lg hover:shadow-gold/30 hover:-translate-y-0.5 hover:scale-105 active:scale-95">
                         Subscribe
                     </button>
                 </form>
@@ -598,6 +600,10 @@
     {{-- Scroll animation observer --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                return;
+            }
+
             document.documentElement.classList.add('js-animate');
 
             // Staggered scroll animations

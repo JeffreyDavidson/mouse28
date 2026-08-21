@@ -178,7 +178,7 @@
     </section>
 
     {{-- Posts Section with Sidebar --}}
-    <section class="py-16 bg-cream relative">
+    <section class="relative bg-cream py-12 sm:py-16">
         <div class="absolute inset-0 opacity-[0.02]" style="background-image: radial-gradient(#1a1040 1px, transparent 1px); background-size: 24px 24px;"></div>
 
         <div class="max-w-6xl mx-auto px-4 sm:px-6 relative">
@@ -196,7 +196,7 @@
                         <div class="ribbon ribbon-top-left"><span>Featured</span></div>
 
                         <a href="/blog/{{ $featured->slug }}" class="featured-card-border group block transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl">
-                            <div class="p-8 md:p-10 lg:p-12 pt-20 md:pt-16 relative">
+                            <div class="relative p-5 pt-20 sm:p-8 sm:pt-20 md:p-10 md:pt-16 lg:p-12">
                                 {{-- Category + read time --}}
                                 <div class="flex items-center gap-3 mb-5 md:pl-20">
                                     @if($featured->category)
@@ -241,7 +241,7 @@
                     <div class="space-y-6">
                         @foreach($rest as $post)
                             @php $pColor = $categoryColors[$post->category] ?? '#5b3e9e'; @endphp
-                            <a href="/blog/{{ $post->slug }}" class="post-card group bg-white rounded-2xl p-7 shadow-sm border border-navy/5 relative block">
+                            <a href="/blog/{{ $post->slug }}" class="post-card group relative block rounded-2xl border border-navy/5 bg-white p-5 shadow-sm sm:p-7">
                                 {{-- Top accent bar on hover --}}
                                 <div class="accent-bar absolute top-0 left-0 right-0 h-1 rounded-t-2xl" style="background: {{ $pColor }};"></div>
                                 <div class="flex items-center gap-3 mb-3">
@@ -254,8 +254,8 @@
                                 @if($post->excerpt)
                                     <p class="text-navy/45 text-sm leading-relaxed mt-2 line-clamp-3">{{ $post->excerpt }}</p>
                                 @endif
-                                <div class="flex items-center justify-between mt-6 pt-4 border-t border-navy/5">
-                                    <div class="flex items-center gap-2">
+                                <div class="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-navy/5 pt-4">
+                                    <div class="flex flex-wrap items-center gap-2">
                                         <span class="text-navy/60 text-xs font-medium">{{ $post->author_name }}</span>
                                         <span class="text-navy/20">·</span>
                                         <span class="text-navy/30 text-xs">{{ $post->published_at->format('M j, Y') }}</span>
@@ -335,11 +335,12 @@
                             <form action="/blog" method="GET" class="relative">
                                 @if($category)<input type="hidden" name="category" value="{{ $category }}">@endif
                                 <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-navy/25" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                                <input type="text" name="q" value="{{ request('q') }}" placeholder="Search posts..."
-                                    class="w-full pl-11 pr-4 py-3 rounded-xl border border-navy/10 text-sm text-navy placeholder:text-navy/25 outline-none transition-all focus:border-gold focus:ring-2 focus:ring-gold/20"
+                                <label for="blog-search" class="sr-only">Search blog posts</label>
+                                <input id="blog-search" type="search" name="q" value="{{ request('q') }}" placeholder="Search posts..."
+                                    class="min-h-12 w-full rounded-xl border border-navy/10 py-3 pl-11 pr-12 text-base text-navy outline-none transition-all placeholder:text-navy/25 focus:border-gold focus:ring-2 focus:ring-gold/20 sm:text-sm"
                                 >
                                 @if(request('q'))
-                                    <a href="/blog{{ $category ? '?category='.$category : '' }}" class="absolute right-3 top-1/2 -translate-y-1/2 text-navy/30 hover:text-gold transition-colors" title="Clear search">
+                                    <a href="/blog{{ $category ? '?category='.$category : '' }}" class="absolute right-0 top-1/2 flex size-12 -translate-y-1/2 items-center justify-center text-navy/30 transition-colors hover:text-gold" aria-label="Clear search">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                                     </a>
                                 @endif
