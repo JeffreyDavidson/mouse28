@@ -8,7 +8,7 @@
 @if($post->og_image_url ?: $post->cover_image_url) @section('og_image', $post->og_image_url ?: $post->cover_image_url) @endif
 
 @section('content')
-    <div id="reading-progress" class="blog-reading-progress"></div>
+    <div id="reading-progress" class="fixed top-16 left-0 z-40 h-[3px] w-0 bg-linear-to-r from-gold to-gold-light shadow-[0_0_8px_rgb(212_168_67_/_40%)] transition-[width] duration-100 ease-linear"></div>
 
     @php
         $categoryStyles = [
@@ -28,11 +28,15 @@
     @endphp
 
     {{-- Hero Section --}}
-    <section class="blog-post-hero">
-        <div class="blog-post-hero-background {{ $post->cover_image_url ? 'has-image' : '' }}">
+    <section class="relative flex min-h-[420px] items-end overflow-hidden">
+        <span class="sparkle pointer-events-none absolute top-[15%] right-[12%] z-10 text-base text-gold-light/25" aria-hidden="true">✦</span>
+        <span class="sparkle-delay pointer-events-none absolute top-[30%] left-[8%] z-10 text-[0.7rem] text-gold-light/15" aria-hidden="true">✦</span>
+
+        <div class="absolute inset-0 bg-linear-to-br from-navy via-navy-light to-navy">
             @if($post->cover_image_url)
                 <img src="{{ $post->cover_image_url }}" alt="" aria-hidden="true" class="size-full object-cover">
             @endif
+            <div class="absolute inset-0 {{ $post->cover_image_url ? 'bg-linear-to-t from-navy/95 via-navy/70 to-navy/40' : 'bg-linear-to-t from-navy/95 via-navy/60 to-navy/30' }}"></div>
         </div>
 
         <div class="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 pb-14 pt-20">
@@ -45,7 +49,7 @@
             {{-- Meta row --}}
             <div class="flex flex-wrap items-center gap-3 mb-5">
                 @if($post->category)
-                    <span class="category-pill text-xs font-bold px-4 py-1.5 rounded-full bg-gold/15 text-gold uppercase tracking-wider">
+                    <span class="rounded-full border border-gold/30 bg-gold/15 px-4 py-1.5 text-xs font-bold tracking-wider text-gold uppercase backdrop-blur-sm">
                         {{ $post->category_label }}
                     </span>
                 @endif
@@ -60,7 +64,7 @@
             </h1>
 
             {{-- Gold divider --}}
-            <div class="gold-divider mt-6 mb-6"></div>
+            <div class="mt-6 mb-6 h-[3px] w-15 rounded-sm bg-linear-to-r from-gold to-gold-light"></div>
 
             {{-- Excerpt --}}
             @if($post->excerpt)
@@ -79,13 +83,13 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($post->title) }}" target="_blank" rel="noopener" class="blog-share-button" aria-label="Share on X">
+                    <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($post->title) }}" target="_blank" rel="noopener" class="inline-flex size-10 items-center justify-center rounded-full border border-cream/15 bg-cream/5 text-cream/40 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-gold-light/50 hover:bg-gold-light/10 hover:text-gold-light hover:shadow-[0_4px_12px_rgb(212_168_67_/_20%)]" aria-label="Share on X">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                     </a>
-                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" rel="noopener" class="blog-share-button" aria-label="Share on Facebook">
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" rel="noopener" class="inline-flex size-10 items-center justify-center rounded-full border border-cream/15 bg-cream/5 text-cream/40 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-gold-light/50 hover:bg-gold-light/10 hover:text-gold-light hover:shadow-[0_4px_12px_rgb(212_168_67_/_20%)]" aria-label="Share on Facebook">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                     </a>
-                    <button type="button" class="blog-share-button relative" data-copy-link aria-label="Copy link">
+                    <button type="button" class="relative inline-flex size-10 items-center justify-center rounded-full border border-cream/15 bg-cream/5 text-cream/40 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-gold-light/50 hover:bg-gold-light/10 hover:text-gold-light hover:shadow-[0_4px_12px_rgb(212_168_67_/_20%)]" data-copy-link aria-label="Copy link">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
                         <span class="copy-feedback absolute -bottom-9 left-1/2 hidden -translate-x-1/2 whitespace-nowrap rounded-full bg-gold px-3 py-1 text-[10px] text-white shadow-lg" aria-live="polite">Copied!</span>
                     </button>
@@ -128,7 +132,8 @@
                     </article>
 
                     {{-- Author Card --}}
-                    <div class="blog-author-card mt-10 rounded-3xl border border-navy/5 bg-white p-5 shadow-lg shadow-navy/5 sm:p-8 md:p-10">
+                    <div class="relative mt-10 overflow-hidden rounded-3xl border border-navy/5 bg-white p-5 shadow-lg shadow-navy/5 sm:p-8 md:p-10">
+                        <div class="absolute top-0 right-0 left-0 h-1 bg-linear-to-r from-gold via-purple to-gold"></div>
                         <div class="flex flex-col sm:flex-row items-start gap-6">
                             <div class="flex size-20 shrink-0 items-center justify-center rounded-2xl border border-gold/15 bg-linear-to-br from-gold/25 to-purple/15 font-heading text-xl font-bold text-gold">
                                 {{ $post->author_initials }}
@@ -136,7 +141,7 @@
                             <div>
                                 <span class="text-gold text-xs font-bold uppercase tracking-widest">Written by</span>
                                 <h3 class="font-heading text-2xl font-bold text-navy mt-1">{{ $post->author_name }}</h3>
-                                <div class="gold-divider mt-3 mb-3"></div>
+                                <div class="mt-3 mb-3 h-[3px] w-15 rounded-sm bg-linear-to-r from-gold to-gold-light"></div>
                                 <p class="text-navy/55 text-sm leading-relaxed">
                                     @if(Str::contains($post->author_name, '&') || (Str::contains($post->author_name, 'Jeffrey') && Str::contains($post->author_name, 'Cassie')))
                                         The couple behind Mouse28. Over a decade as Disney passholders, navigating park life with their daughter Viola and sharing every tip, review, and memory along the way.
@@ -158,15 +163,15 @@
                         <h3 class="font-heading text-xl font-bold text-navy mt-2 mb-2">Share it with fellow Disney fans</h3>
                         <p class="text-navy/40 text-sm mb-6">Help others discover Mouse28</p>
                         <div class="flex flex-wrap items-center justify-center gap-3">
-                            <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($post->title . ' — Mouse28') }}" target="_blank" rel="noopener" class="blog-share-button-large twitter">
+                            <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($post->title . ' — Mouse28') }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 rounded-full border border-navy/10 bg-white px-5 py-2.5 text-[0.8rem] font-semibold text-navy/60 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#1da1f2] hover:text-[#1da1f2] hover:shadow-[0_4px_12px_rgb(26_16_64_/_10%)]">
                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                                 Share on X
                             </a>
-                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" rel="noopener" class="blog-share-button-large facebook">
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 rounded-full border border-navy/10 bg-white px-5 py-2.5 text-[0.8rem] font-semibold text-navy/60 transition-all duration-300 hover:-translate-y-0.5 hover:border-[#1877f2] hover:text-[#1877f2] hover:shadow-[0_4px_12px_rgb(26_16_64_/_10%)]">
                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                                 Share on Facebook
                             </a>
-                            <button type="button" class="blog-share-button-large copy" data-copy-link>
+                            <button type="button" class="inline-flex items-center justify-center gap-2 rounded-full border border-navy/10 bg-white px-5 py-2.5 text-[0.8rem] font-semibold text-navy/60 transition-all duration-300 hover:-translate-y-0.5 hover:border-gold hover:text-gold hover:shadow-[0_4px_12px_rgb(26_16_64_/_10%)]" data-copy-link>
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
                                 <span data-copy-label>Copy Link</span>
                                 <span class="hidden" data-copy-feedback aria-live="polite">Copied! ✓</span>
@@ -226,11 +231,11 @@
 
                 {{-- Sidebar --}}
                 <aside class="lg:w-[34%]">
-                    <div class="blog-sticky-sidebar space-y-7">
+                    <div class="space-y-7 lg:sticky lg:top-[90px]">
                         {{-- Table of Contents (populated by JS) --}}
-                        <div id="toc-card" class="blog-sidebar-card hidden rounded-2xl border border-navy/5 bg-white p-7 shadow-md shadow-navy/5">
+                        <div id="toc-card" class="hidden rounded-2xl border border-navy/5 bg-white p-7 shadow-md shadow-navy/5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgb(26_16_64_/_8%)]">
                             <div class="flex items-center gap-3 mb-4">
-                                <div class="gold-divider"></div>
+                                <div class="h-[3px] w-15 rounded-sm bg-linear-to-r from-gold to-gold-light"></div>
                                 <h3 class="font-heading text-lg font-bold text-navy">In This Post</h3>
                             </div>
                             <nav id="toc-nav" class="space-y-0.5"></nav>
@@ -238,9 +243,9 @@
 
                         {{-- Recent Posts --}}
                         @if($recentPosts->count())
-                            <div class="blog-sidebar-card rounded-2xl border border-navy/5 bg-white p-7 shadow-md shadow-navy/5">
+                            <div class="rounded-2xl border border-navy/5 bg-white p-7 shadow-md shadow-navy/5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgb(26_16_64_/_8%)]">
                                 <div class="flex items-center gap-3 mb-5">
-                                    <div class="gold-divider"></div>
+                                    <div class="h-[3px] w-15 rounded-sm bg-linear-to-r from-gold to-gold-light"></div>
                                     <h3 class="font-heading text-lg font-bold text-navy">Recent Posts</h3>
                                 </div>
                                 <div class="space-y-4">
@@ -265,9 +270,9 @@
                         @endif
 
                         {{-- Categories --}}
-                        <div class="blog-sidebar-card rounded-2xl border border-navy/5 bg-white p-7 shadow-md shadow-navy/5">
+                        <div class="rounded-2xl border border-navy/5 bg-white p-7 shadow-md shadow-navy/5 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgb(26_16_64_/_8%)]">
                             <div class="flex items-center gap-3 mb-5">
-                                <div class="gold-divider"></div>
+                                <div class="h-[3px] w-15 rounded-sm bg-linear-to-r from-gold to-gold-light"></div>
                                 <h3 class="font-heading text-lg font-bold text-navy">Categories</h3>
                             </div>
                             <div class="space-y-1">
@@ -284,7 +289,7 @@
                         </div>
 
                         {{-- Podcast CTA --}}
-                        <div class="blog-sidebar-card relative overflow-hidden rounded-2xl border border-white/5 bg-linear-to-br from-navy via-navy-light to-navy p-7 text-center">
+                        <div class="relative overflow-hidden rounded-2xl border border-white/5 bg-linear-to-br from-navy via-navy-light to-navy p-7 text-center transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_25px_rgb(26_16_64_/_8%)]">
                             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-gold/5 rounded-full blur-3xl"></div>
                             <div class="relative">
                                 <div class="w-12 h-12 mx-auto mb-4 rounded-xl bg-white/10 flex items-center justify-center border border-white/10">
@@ -307,7 +312,7 @@
     </section>
 
     {{-- Back to Top Button --}}
-    <button type="button" id="back-to-top" class="blog-back-to-top" aria-label="Back to top">
+    <button type="button" id="back-to-top" class="pointer-events-none fixed right-8 bottom-8 z-50 flex size-12 translate-y-2.5 cursor-pointer items-center justify-center rounded-full bg-linear-to-br from-gold to-gold-light text-white opacity-0 shadow-[0_4px_15px_rgb(212_168_67_/_30%)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgb(212_168_67_/_40%)]" aria-label="Back to top">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
     </button>
 @endsection
