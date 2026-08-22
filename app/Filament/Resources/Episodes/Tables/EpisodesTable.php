@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Episodes\Tables;
 
+use App\Models\Episode;
+use App\Support\EditorialReadiness;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -24,24 +26,17 @@ class EpisodesTable
                 TextColumn::make('season_number')
                     ->label('Season')
                     ->sortable(),
+                TextColumn::make('readiness')
+                    ->label('Readiness')
+                    ->badge()
+                    ->getStateUsing(fn (Episode $record): string => EditorialReadiness::label($record))
+                    ->color(fn (Episode $record): string => EditorialReadiness::color($record))
+                    ->tooltip(fn (Episode $record): ?string => EditorialReadiness::summary($record)),
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->getStateUsing(function ($record): string {
-                        if (! $record->is_published) {
-                            return 'Draft';
-                        }
-                        if ($record->published_at && $record->published_at->isFuture()) {
-                            return 'Scheduled';
-                        }
-
-                        return 'Published';
-                    })
-                    ->color(fn (string $state): string => match ($state) {
-                        'Published' => 'success',
-                        'Scheduled' => 'warning',
-                        'Draft' => 'gray',
-                    }),
+                    ->getStateUsing(fn (Episode $record): string => EditorialReadiness::status($record))
+                    ->color(fn (Episode $record): string => EditorialReadiness::statusColor($record)),
                 TextColumn::make('published_at')
                     ->label('Published Date')
                     ->date()

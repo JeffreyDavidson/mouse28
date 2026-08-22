@@ -5,13 +5,19 @@
 @section('og_title', $post->meta_title ?: $post->title)
 @section('og_description', $post->meta_description ?: Str::limit($post->excerpt, 200))
 @section('og_type', 'article')
+@section('robots', ($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow')
 @if($post->og_image_url ?: $post->cover_image_url) @section('og_image', $post->og_image_url ?: $post->cover_image_url) @endif
 
-@push('head')
-    <x-structured-data :data="\App\Support\StructuredData::forPost($post)" />
-@endpush
+@unless ($isPreview ?? false)
+    @push('head')
+        <x-structured-data :data="\App\Support\StructuredData::forPost($post)" />
+    @endpush
+@endunless
 
 @section('content')
+    @if ($isPreview ?? false)
+        <div role="status" class="bg-gold px-4 py-3 text-center text-sm font-semibold text-navy">Preview mode — this page is only visible to administrators.</div>
+    @endif
     <div id="reading-progress" class="fixed top-16 left-0 z-40 h-[3px] w-0 bg-linear-to-r from-gold to-gold-light shadow-[0_0_8px_rgb(212_168_67/40%)] transition-[width] duration-100 ease-linear"></div>
 
     @php
@@ -57,7 +63,7 @@
                         {{ $post->category_label }}
                     </span>
                 @endif
-                <span class="text-sm text-white/30">{{ $post->published_at->format('F j, Y') }}</span>
+                <span class="text-sm text-white/30">{{ $post->published_at?->format('F j, Y') ?? 'Not scheduled' }}</span>
                 <span class="text-white/20">·</span>
                 <span class="text-sm text-white/30" id="reading-indicator">{{ $post->reading_time }} min read</span>
             </div>

@@ -24,6 +24,10 @@ Public detail pages emit Schema.org JSON-LD through `StructuredData`: `BlogPosti
 
 Filament is mounted at `/admin`. `User::canAccessPanel()` requires the explicit `is_admin` flag. Model policies provide the same boundary for content resources and protected record actions. Custom settings and subscriber pages also enforce administrator access.
 
+`EditorialReadiness` provides shared publication status and readiness rules for posts, guides, and episodes. Filament lists show missing-item counts with actionable tooltips, while forms require essential public content when the Published toggle is enabled. SEO fields, images, transcripts, guide review metadata, and similar quality signals remain visible reminders rather than universal blockers.
+
+Each content edit page links to an administrator-authorized preview route. Preview pages reuse the public templates, carry a visible preview banner, emit `noindex,nofollow`, and omit structured data. Every preview is authorized through its model policy, so drafts are not exposed by knowing their URL.
+
 The migration that introduces `is_admin` promotes existing accounts because every existing account had panel access under the previous behavior. New accounts default to non-administrators.
 
 ## External integrations
@@ -42,4 +46,4 @@ The public layout provides a semantic header, primary navigation, skip link, mai
 
 ## Verification
 
-Feature tests cover public visibility rules, guide pages, blog filtering, site search, feeds, sitemap output, contact protection, newsletter protection, and Filament access. The release checks are `composer test`, `npm run build`, and `git diff --check`.
+Feature tests cover public visibility rules, guide pages, blog filtering, site search, editorial readiness and previews, feeds, sitemap output, contact protection, newsletter protection, and Filament access. The release checks are `composer test`, `npm run build`, and `git diff --check`.

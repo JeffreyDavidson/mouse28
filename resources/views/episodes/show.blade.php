@@ -4,13 +4,19 @@
 @section('meta_description', $episode->meta_description ?: Str::limit($episode->description, 160))
 @section('og_title', $episode->meta_title ?: $episode->title)
 @section('og_description', $episode->meta_description ?: Str::limit($episode->description, 200))
+@section('robots', ($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow')
 @if($episode->og_image_url) @section('og_image', $episode->og_image_url) @endif
 
-@push('head')
-    <x-structured-data :data="\App\Support\StructuredData::forEpisode($episode)" />
-@endpush
+@unless ($isPreview ?? false)
+    @push('head')
+        <x-structured-data :data="\App\Support\StructuredData::forEpisode($episode)" />
+    @endpush
+@endunless
 
 @section('content')
+    @if ($isPreview ?? false)
+        <div role="status" class="bg-gold px-4 py-3 text-center text-sm font-semibold text-navy">Preview mode — this page is only visible to administrators.</div>
+    @endif
     <section class="relative overflow-hidden bg-linear-to-br from-navy to-navy-light py-16 md:py-24">
         {{-- Waveform background --}}
         <div class="pointer-events-none absolute inset-0 opacity-[0.07]">
@@ -44,7 +50,7 @@
                         {{ $episode->formatted_duration }}
                     </span>
                 @endif
-                <span class="text-sm text-white/40">{{ $episode->published_at->format('F j, Y') }}</span>
+                <span class="text-sm text-white/40">{{ $episode->published_at?->format('F j, Y') ?? 'Not scheduled' }}</span>
             </div>
             <h1 class="font-heading text-4xl font-bold text-white md:text-5xl lg:text-6xl">{{ $episode->title }}</h1>
             @if($episode->description)
@@ -154,7 +160,7 @@
                                 </div>
                                 <div class="min-w-0">
                                     <span class="block truncate font-heading text-sm font-bold text-navy">{{ $episode->title }}</span>
-                                    <span class="text-xs text-navy/40">{{ $episode->published_at->format('F j, Y') }}</span>
+                                    <span class="text-xs text-navy/40">{{ $episode->published_at?->format('F j, Y') ?? 'Not scheduled' }}</span>
                                 </div>
                             </div>
                             <dl class="space-y-0 text-sm">
@@ -181,7 +187,7 @@
                                         <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                         Published
                                     </dt>
-                                    <dd class="font-semibold text-navy">{{ $episode->published_at->format('M j, Y') }}</dd>
+                                    <dd class="font-semibold text-navy">{{ $episode->published_at?->format('M j, Y') ?? 'Not scheduled' }}</dd>
                                 </div>
                             </dl>
                         </div>

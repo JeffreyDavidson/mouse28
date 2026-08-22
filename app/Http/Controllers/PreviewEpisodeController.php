@@ -1,0 +1,21 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Episode;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\View\View;
+
+class PreviewEpisodeController extends Controller
+{
+    public function __invoke(Episode $episode): View
+    {
+        Gate::authorize('view', $episode);
+
+        return view('episodes.show', [
+            'episode' => $episode,
+            'relatedPosts' => $episode->posts()->published()->latest('published_at')->take(4)->get(),
+            'isPreview' => true,
+        ]);
+    }
+}

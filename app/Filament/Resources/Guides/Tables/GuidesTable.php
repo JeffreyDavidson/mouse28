@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Guides\Tables;
 
 use App\Models\Guide;
+use App\Support\EditorialReadiness;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -25,20 +26,16 @@ class GuidesTable
                     ->label('Review')
                     ->badge()
                     ->color(fn (string $state): string => $state === 'Current' ? 'success' : 'warning'),
+                TextColumn::make('readiness')
+                    ->label('Readiness')
+                    ->badge()
+                    ->getStateUsing(fn (Guide $record): string => EditorialReadiness::label($record))
+                    ->color(fn (Guide $record): string => EditorialReadiness::color($record))
+                    ->tooltip(fn (Guide $record): ?string => EditorialReadiness::summary($record)),
                 TextColumn::make('status')
                     ->badge()
-                    ->getStateUsing(function (Guide $record): string {
-                        if (! $record->is_published) {
-                            return 'Draft';
-                        }
-
-                        return $record->published_at?->isFuture() ? 'Scheduled' : 'Published';
-                    })
-                    ->color(fn (string $state): string => match ($state) {
-                        'Published' => 'success',
-                        'Scheduled' => 'warning',
-                        'Draft' => 'gray',
-                    }),
+                    ->getStateUsing(fn (Guide $record): string => EditorialReadiness::status($record))
+                    ->color(fn (Guide $record): string => EditorialReadiness::statusColor($record)),
                 TextColumn::make('published_at')->date()->sortable(),
             ])
             ->recordActions([
