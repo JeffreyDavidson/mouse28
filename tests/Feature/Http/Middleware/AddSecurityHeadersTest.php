@@ -9,6 +9,7 @@ uses(RefreshDatabase::class);
 
 beforeEach(function (): void {
     config()->set('app.debug', false);
+    Route::get('/preview/testing', fn (): string => 'Preview');
     Route::get('/testing/security-header-error', function (): never {
         throw new RuntimeException('Sensitive server details');
     });
@@ -28,3 +29,20 @@ test('web responses include baseline security headers', function (string $url, i
     'error response' => [fn (): string => '/this-page-does-not-exist', 404],
     'server error response' => [fn (): string => '/testing/security-header-error', 500],
 ]);
+
+test('private and error responses cannot be indexed', function (string $url, int $status): void {
+    get($url)
+        ->assertStatus($status)
+        ->assertHeader('X-Robots-Tag', 'noindex, nofollow');
+})->with([
+    'admin page' => [fn (): string => '/admin/login', 200],
+    'preview page' => [fn (): string => '/preview/testing', 200],
+    'error response' => [fn (): string => '/this-page-does-not-exist', 404],
+    'server error response' => [fn (): string => '/testing/security-header-error', 500],
+]);
+
+test('normal public responses do not receive a noindex header', function (): void {
+    get(route('home'))
+        ->assertOk()
+        ->assertHeaderMissing('X-Robots-Tag');
+});
