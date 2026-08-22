@@ -25,6 +25,7 @@ class AddSecurityHeaders
 
         $isPrivatePath = $request?->is('admin', 'admin/*', 'preview', 'preview/*') ?? false;
         if ($isPrivatePath || $response->getStatusCode() >= 400) {
+            $response->headers->set('Cache-Control', 'no-store, private');
             $response->headers->set('X-Robots-Tag', 'noindex, nofollow');
         }
 
