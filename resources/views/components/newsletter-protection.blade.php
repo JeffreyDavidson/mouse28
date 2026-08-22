@@ -17,10 +17,10 @@
     </div>
 @endif
 
-@error('cf-turnstile-response')
+@error('cf-turnstile-response', 'newsletter')
     <p role="alert" class="text-sm text-red-200">{{ $message }}</p>
 @enderror
 
-@error('newsletter_rate_limit')
+@error('newsletter_rate_limit', 'newsletter')
     <p role="alert" class="text-sm text-red-200">{{ $message }}</p>
 @enderror

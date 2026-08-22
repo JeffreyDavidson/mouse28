@@ -64,8 +64,8 @@ class NewsletterTest extends TestCase
 
         $this->from(route('home'))
             ->post(route('newsletter.store'), $this->validPayload())
-            ->assertRedirect(route('home'))
-            ->assertSessionHasErrors('cf-turnstile-response');
+            ->assertRedirect(route('home').'#newsletter')
+            ->assertSessionHasErrorsIn('newsletter', 'cf-turnstile-response');
 
         Http::assertNotSent(fn ($request): bool => str_contains($request->url(), 'api.resend.com'));
     }
@@ -125,7 +125,24 @@ class NewsletterTest extends TestCase
 
         $this->from(route('home'))
             ->post(route('newsletter.store'), $this->validPayload())
-            ->assertSessionHasErrors('newsletter_rate_limit');
+            ->assertSessionHasErrorsIn('newsletter', 'newsletter_rate_limit');
+    }
+
+    public function test_newsletter_redirects_do_not_trust_an_external_referrer(): void
+    {
+        config()->set('services.resend.audience_id');
+
+        Http::fake([
+            'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response([
+                'success' => true,
+                'action' => 'newsletter',
+                'hostname' => 'mouse28.com',
+            ]),
+        ]);
+
+        $this->from('https://attacker.example/phish')
+            ->post(route('newsletter.store'), $this->validPayload())
+            ->assertRedirect(route('home').'#newsletter');
     }
 
     private function validPayload(): array

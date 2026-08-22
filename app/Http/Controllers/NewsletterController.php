@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreNewsletterRequest;
+use App\Support\SafeReturnUrl;
 use App\Support\Turnstile;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class NewsletterController extends Controller
 {
-    public function store(Request $request, Turnstile $turnstile)
+    public function store(StoreNewsletterRequest $request, Turnstile $turnstile)
     {
         if ($request->filled('website_url')) {
             return $this->successResponse($request);
@@ -19,12 +20,10 @@ class NewsletterController extends Controller
         if (! $turnstile->passes($request, config('services.turnstile.newsletter_action'))) {
             throw ValidationException::withMessages([
                 'cf-turnstile-response' => 'Please verify that you are human and try again.',
-            ]);
+            ])->errorBag('newsletter')->redirectTo($this->redirectUrl($request));
         }
 
-        $validated = $request->validate([
-            'email' => ['required', 'email', 'max:255'],
-        ]);
+        $validated = $request->validated();
 
         $audienceId = config('services.resend.audience_id');
         if (! is_string($audienceId) || trim($audienceId) === '') {
@@ -58,23 +57,28 @@ class NewsletterController extends Controller
         }
     }
 
-    private function successResponse(Request $request)
+    private function successResponse(StoreNewsletterRequest $request)
     {
         if ($request->expectsJson()) {
             return response()->json(['success' => true]);
         }
 
-        return redirect(url()->previous().'#newsletter')->with('newsletter_success', true);
+        return redirect($this->redirectUrl($request))->with('newsletter_success', true);
     }
 
-    private function errorResponse(Request $request, int $status)
+    private function errorResponse(StoreNewsletterRequest $request, int $status)
     {
         if ($request->expectsJson()) {
             return response()->json(['error' => 'Something went wrong.'], $status);
         }
 
-        return redirect(url()->previous().'#newsletter')
+        return redirect($this->redirectUrl($request))
             ->withInput($request->only('email'))
             ->with('newsletter_error', 'Something went wrong. Please try again.');
+    }
+
+    private function redirectUrl(StoreNewsletterRequest $request): string
+    {
+        return SafeReturnUrl::from($request, route('home')).'#newsletter';
     }
 }
