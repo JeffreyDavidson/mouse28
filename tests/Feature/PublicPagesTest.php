@@ -3,6 +3,7 @@
 use App\Models\Episode;
 use App\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\get;
 
@@ -17,7 +18,7 @@ test('public index pages render', function (string $route, string $content): voi
     'about' => ['about', 'Our Story'],
     'blog' => ['blog.index', 'Blog'],
     'guides' => ['guides.index', 'Park Guides'],
-    'podcast' => ['episodes.index', 'Listen Along'],
+    'podcast' => ['episodes.index', 'The Mouse28 Podcast'],
     'contact' => ['contact.show', 'Get in Touch'],
 ]);
 
@@ -57,4 +58,36 @@ test('published episode detail page renders', function (): void {
         ->assertOk()
         ->assertSee($episode->title)
         ->assertSee('Our favorite planning strategies', false);
+});
+
+test('podcast pages describe episodes without audio as details instead of playable media', function (): void {
+    $episode = Episode::factory()->create([
+        'audio_url' => null,
+        'audio_path' => null,
+        'transcript' => null,
+    ]);
+
+    get(route('episodes.index'))
+        ->assertOk()
+        ->assertSee('Episode details')
+        ->assertDontSee('Listen now');
+
+    get(route('episodes.show', $episode))
+        ->assertOk()
+        ->assertSee('A transcript is not available for this episode.')
+        ->assertDontSee('Transcript coming soon');
+});
+
+test('podcast index identifies episodes with hosted audio as playable', function (): void {
+    Storage::fake('public');
+    Storage::disk('public')->put('episodes/audio/available.mp3', 'audio');
+
+    Episode::factory()->create([
+        'audio_path' => 'episodes/audio/available.mp3',
+    ]);
+
+    get(route('episodes.index'))
+        ->assertOk()
+        ->assertSee('Listen now')
+        ->assertDontSee('Episode details');
 });

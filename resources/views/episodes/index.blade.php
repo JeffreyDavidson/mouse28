@@ -32,9 +32,9 @@
                 <span class="bg-gold size-2 animate-pulse rounded-full"></span>
                 <span class="text-gold text-sm font-semibold tracking-widest uppercase">Podcast</span>
             </div>
-            <h1 class="font-heading mt-2 text-4xl font-bold text-white md:text-5xl lg:text-6xl">Listen Along</h1>
+            <h1 class="font-heading mt-2 text-4xl font-bold text-white md:text-5xl lg:text-6xl">The Mouse28 Podcast</h1>
             <p class="mx-auto mt-4 max-w-xl text-lg text-white/60">
-                Every week we bring you stories, tips, and magic from inside Disney parks, from our family to yours.
+                Explore stories, tips, and family experiences from inside Disney parks.
             </p>
             {{-- Platform subscribe badges --}}
             <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -97,10 +97,14 @@
                                                     <span class="block text-[10px] font-bold tracking-widest text-white/40 uppercase">EP</span>
                                                     <span class="font-heading -mt-1 block text-3xl font-bold text-white">{{ $episode->episode_number }}</span>
                                                 </div>
-                                                {{-- Play button (shows on hover) --}}
+                                                {{-- Destination indicator (shows on hover) --}}
                                                 <div class="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                                                     <div class="from-gold to-gold-light flex size-14 items-center justify-center rounded-full bg-linear-to-br shadow-lg">
-                                                        <svg class="text-navy ml-0.5 size-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                                                        @if ($episode->audio_source_url)
+                                                            <svg class="text-navy ml-0.5 size-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                                                        @else
+                                                            <svg class="text-navy size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                                        @endif
                                                     </div>
                                                 </div>
                                                 {{-- Subtle corner accent --}}
@@ -144,7 +148,7 @@
                                                         </span>
                                                     @endif
                                                     <span class="text-purple ml-auto flex items-center gap-1 text-sm font-medium transition-[gap] group-hover:gap-2">
-                                                        Listen now
+                                                        {{ $episode->audio_source_url ? 'Listen now' : 'Episode details' }}
                                                         <svg class="size-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                                                     </span>
                                                 </div>
@@ -174,7 +178,7 @@
                                     </div>
                                     <div class="from-gold/8 to-gold/3 rounded-xl bg-linear-to-br p-4 text-center">
                                         <span class="font-heading text-navy block text-3xl font-bold">{{ $totalHours }}<span class="text-navy/40 text-lg">h</span></span>
-                                        <span class="text-navy/45 mt-1 block text-xs font-medium tracking-wider uppercase">Listening</span>
+                                        <span class="text-navy/45 mt-1 block text-xs font-medium tracking-wider uppercase">Runtime</span>
                                     </div>
                                 </div>
                             </div>
@@ -232,7 +236,7 @@
                                         </div>
                                         <div class="border-purple/10 mt-3 flex items-center justify-end border-t pt-3">
                                             <span class="text-purple inline-flex items-center gap-1.5 text-sm font-semibold transition-[gap] group-hover:gap-2.5">
-                                                Listen Now
+                                                {{ $latestEpisode->audio_source_url ? 'Listen Now' : 'Episode Details' }}
                                                 <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                                             </span>
                                         </div>
