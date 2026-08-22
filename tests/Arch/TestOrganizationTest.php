@@ -17,7 +17,7 @@ test('tests use Pest files within a registered suite', function (): void {
         }
 
         $relativePath = str_replace($testRoot.DIRECTORY_SEPARATOR, '', $file->getPathname());
-        if (in_array($relativePath, ['Pest.php', 'TestCase.php'], true)) {
+        if (in_array($relativePath, ['BrowserTestCase.php', 'Pest.php', 'TestCase.php'], true)) {
             continue;
         }
 

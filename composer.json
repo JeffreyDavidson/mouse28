@@ -14,6 +14,7 @@
         "resend/resend-laravel": "^1.4"
     },
     "require-dev": {
+        "driftingly/rector-laravel": "^2.5",
         "fakerphp/faker": "^1.23",
         "jasonmccreary/double": "^0.6",
         "larastan/larastan": "^3.10",
@@ -25,7 +26,8 @@
         "pestphp/pest-plugin-arch": "^5.0",
         "pestphp/pest-plugin-browser": "^5.0",
         "pestphp/pest-plugin-laravel": "^5.0",
-        "phpstan/extension-installer": "^1.4"
+        "phpstan/extension-installer": "^1.4",
+        "rector/rector": "^2.6"
     },
     "autoload": {
         "psr-4": {
@@ -58,6 +60,8 @@
         ],
         "test:browser": "@php artisan test --testsuite=Browser",
         "analyse": "php -d memory_limit=2G vendor/bin/phpstan analyse --no-progress",
+        "rector": "vendor/bin/rector process",
+        "test:rector": "vendor/bin/rector process --dry-run",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi",

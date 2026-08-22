@@ -2,23 +2,23 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Model;
 
+#[Fillable([
+    'name',
+    'description',
+    'cover_image',
+    'apple_url',
+    'spotify_url',
+    'youtube_url',
+    'rss_url',
+    'instagram_url',
+    'tiktok_url',
+    'email',
+])]
 class Podcast extends Model
 {
-    protected $fillable = [
-        'name',
-        'description',
-        'cover_image',
-        'apple_url',
-        'spotify_url',
-        'youtube_url',
-        'rss_url',
-        'instagram_url',
-        'tiktok_url',
-        'email',
-    ];
-
     public static function info(): self
     {
         return self::query()->first() ?? new self([
