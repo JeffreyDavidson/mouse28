@@ -49,8 +49,9 @@ class PodcastRssController extends Controller
             if ($episode->duration_seconds) {
                 $xml .= '<itunes:duration>'.$episode->duration_seconds.'</itunes:duration>';
             }
-            if ($episode->audio_url) {
-                $xml .= '<enclosure url="'.htmlspecialchars($episode->audio_url).'" type="audio/mpeg"/>';
+            if ($episode->audio_source_url) {
+                $audioUrl = $this->xml($episode->audio_source_url);
+                $xml .= '<enclosure url="'.$audioUrl.'" length="'.$episode->audioFileSize().'" type="audio/mpeg"/>';
             }
             $xml .= '</item>';
         }

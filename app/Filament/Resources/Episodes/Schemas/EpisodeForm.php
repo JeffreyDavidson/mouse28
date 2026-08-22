@@ -50,12 +50,6 @@ class EpisodeForm
                             ->numeric()
                             ->default(1)
                             ->columnSpan(1),
-                        TextInput::make('audio_url')
-                            ->url()
-                            ->maxLength(500)
-                            ->required(fn (Get $get): bool => (bool) $get('is_published'))
-                            ->columnSpan(2)
-                            ->prefixIcon('heroicon-o-link'),
                     ]),
 
                 Grid::make(2)
@@ -63,6 +57,23 @@ class EpisodeForm
                         Section::make('Media')
                             ->icon('heroicon-o-photo')
                             ->schema([
+                                FileUpload::make('audio_path')
+                                    ->label('Hosted MP3')
+                                    ->acceptedFileTypes(['audio/mpeg'])
+                                    ->maxSize(262144)
+                                    ->disk('public')
+                                    ->directory('episodes/audio')
+                                    ->visibility('public')
+                                    ->downloadable()
+                                    ->required(fn (Get $get): bool => (bool) $get('is_published') && blank($get('audio_url')))
+                                    ->helperText('Upload an MP3 up to 256 MB. Hosted audio is used before an external URL.'),
+                                TextInput::make('audio_url')
+                                    ->label('External Audio URL')
+                                    ->url()
+                                    ->maxLength(500)
+                                    ->required(fn (Get $get): bool => (bool) $get('is_published') && blank($get('audio_path')))
+                                    ->prefixIcon('heroicon-o-link')
+                                    ->helperText('Optional fallback when the episode is hosted elsewhere.'),
                                 FileUpload::make('cover_image')
                                     ->image()
                                     ->disk('public')

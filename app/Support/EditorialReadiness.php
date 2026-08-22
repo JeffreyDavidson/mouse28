@@ -94,7 +94,7 @@ class EditorialReadiness
             blank($episode->description) ? 'Add a description' : null,
             blank($episode->show_notes) ? 'Add show notes' : null,
             blank($episode->transcript) ? 'Add a transcript' : null,
-            blank($episode->audio_url) ? 'Add the audio URL' : null,
+            blank($episode->audio_source_url) ? 'Add audio' : null,
             blank($episode->cover_image) ? 'Add a cover image' : null,
             blank($episode->duration_seconds) ? 'Set the duration' : null,
             blank($episode->meta_title) ? 'Add an SEO title' : null,

@@ -37,7 +37,7 @@
             image: $socialImage,
         )
         ->feed(route('rss.blog'), 'Mouse28 Blog')
-        ->feed($podcast->rss_url ?: route('rss.podcast'), 'Mouse28 Podcast');
+        ->feed(route('rss.podcast'), 'Mouse28 Podcast');
 @endphp
 
 <!DOCTYPE html>
