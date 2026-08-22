@@ -8,6 +8,7 @@ use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 #[Signature('content:attach-artwork')]
@@ -32,19 +33,29 @@ class AttachContentArtwork extends Command
     public function handle(): int
     {
         $artwork = [...self::POST_ARTWORK, ...self::EPISODE_ARTWORK];
-        $missingFiles = collect($artwork)
-            ->reject(fn (string $path): bool => Storage::disk('public')->exists($path));
+        $sourceDirectory = (string) config('mouse28.content_artwork_path');
+        $missingFiles = collect($artwork)->reject(
+            fn (string $path): bool => File::isFile("{$sourceDirectory}/{$path}"),
+        );
 
         if ($missingFiles->isNotEmpty()) {
-            $this->error('Artwork files are missing: '.$missingFiles->implode(', '));
+            $this->error('Bundled artwork files are missing: '.$missingFiles->implode(', '));
 
             return self::FAILURE;
         }
 
+        $copied = collect($artwork)->sum(function (string $path) use ($sourceDirectory): int {
+            if (Storage::disk('public')->exists($path)) {
+                return 0;
+            }
+
+            return Storage::disk('public')->put($path, File::get("{$sourceDirectory}/{$path}")) ? 1 : 0;
+        });
+
         $updated = $this->attach(Post::query(), self::POST_ARTWORK)
             + $this->attach(Episode::query(), self::EPISODE_ARTWORK);
 
-        $this->info("Attached artwork to {$updated} content records.");
+        $this->info("Copied {$copied} artwork files and attached artwork to {$updated} content records.");
 
         return self::SUCCESS;
     }

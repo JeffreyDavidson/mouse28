@@ -3,6 +3,8 @@
 return [
     'production_url' => env('MOUSE28_PRODUCTION_URL', 'https://mouse28.com'),
 
+    'content_artwork_path' => resource_path('content-artwork'),
+
     'guide_review_interval_days' => (int) env('GUIDE_REVIEW_INTERVAL_DAYS', 180),
 
     'post_review_interval_days' => (int) env('POST_REVIEW_INTERVAL_DAYS', 180),
