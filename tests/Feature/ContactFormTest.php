@@ -2,6 +2,7 @@
 
 use App\Mail\ContactFormConfirmation;
 use App\Mail\ContactFormSubmitted;
+use App\Models\ContactMessage;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
@@ -28,9 +29,13 @@ test('contact page renders turnstile widget', function (): void {
         ->assertSee('https://challenges.cloudflare.com/turnstile/v0/api.js', false)
         ->assertSee('class="cf-turnstile"', false)
         ->assertSee('data-sitekey="test-site-key"', false)
-        ->assertSee('data-action="contact-form"', false);
+        ->assertSee('data-action="contact-form"', false)
+        ->assertDontSee('Share Your Story')
+        ->assertDontSee('Family Disney stories')
+        ->assertDontSee('value="story"', false);
 
     expect(substr_count((string) $response->getContent(), 'https://challenges.cloudflare.com/turnstile/v0/api.js'))->toBe(1);
+    expect(ContactMessage::SUBJECTS)->not->toHaveKey('story');
 });
 
 test('valid contact submission requires successful turnstile verification', function (): void {
