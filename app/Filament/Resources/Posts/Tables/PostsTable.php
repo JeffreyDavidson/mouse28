@@ -22,7 +22,7 @@ class PostsTable
                     ->limit(50),
                 TextColumn::make('author')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => \App\Models\Post::AUTHORS[$state] ?? 'Team')
+                    ->formatStateUsing(fn ($state) => Post::AUTHORS[$state] ?? 'Team')
                     ->color('info'),
                 TextColumn::make('category')
                     ->badge()

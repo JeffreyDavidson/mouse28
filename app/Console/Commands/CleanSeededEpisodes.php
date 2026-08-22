@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Episode;
+use App\Models\Post;
 use Illuminate\Console\Command;
 
 class CleanSeededEpisodes extends Command
@@ -22,7 +23,7 @@ class CleanSeededEpisodes extends Command
         }
 
         // Null out episode references on posts first
-        \App\Models\Post::whereNotNull('episode_id')->update(['episode_id' => null]);
+        Post::whereNotNull('episode_id')->update(['episode_id' => null]);
 
         Episode::query()->delete();
 

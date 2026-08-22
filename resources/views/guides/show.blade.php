@@ -7,60 +7,89 @@
     :og-image="$guide->og_image_url ?: $guide->cover_image_url"
     :robots="($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow'"
 >
-
-@unless ($isPreview ?? false)
-    @push('head')
-        <x-structured-data :data="\App\Support\StructuredData::forGuide($guide)" />
-    @endpush
-@endunless
+    @unless ($isPreview ?? false)
+        @push('head')
+            <x-structured-data :data="\App\Support\StructuredData::forGuide($guide)" />
+        @endpush
+    @endunless
 
     @if ($isPreview ?? false)
-        <div role="status" class="bg-gold px-4 py-3 text-center text-sm font-semibold text-navy">Preview mode — this page is only visible to administrators.</div>
+        <div role="status" class="bg-gold text-navy px-4 py-3 text-center text-sm font-semibold">
+            Preview mode — this page is only visible to administrators.
+        </div>
     @endif
-    <section class="relative overflow-hidden bg-linear-to-br from-navy via-navy-light to-purple py-14 md:py-20">
+    <section class="from-navy via-navy-light to-purple relative overflow-hidden bg-linear-to-br py-14 md:py-20">
         <div class="mx-auto max-w-5xl px-4 sm:px-6">
-            <a href="{{ route('guides.index') }}" class="inline-flex min-h-12 items-center text-sm text-white/60 hover:text-gold">← Back to Guides</a>
+            <a
+                href="{{ route('guides.index') }}"
+                class="hover:text-gold inline-flex min-h-12 items-center text-sm text-white/60"
+            >← Back to Guides</a>
             <div class="mt-7 flex flex-wrap items-center gap-3 text-sm">
-                <a href="{{ route('guides.index', ['category' => $guide->category]) }}" class="inline-flex min-h-12 items-center rounded-full border border-gold/30 bg-gold/15 px-4 py-2 font-bold tracking-wider text-gold uppercase transition-colors hover:border-gold hover:bg-gold/25">{{ $guide->category_label }}</a>
+                <a
+                    href="{{ route('guides.index', ['category' => $guide->category]) }}"
+                    class="border-gold/30 bg-gold/15 text-gold hover:border-gold hover:bg-gold/25 inline-flex min-h-12 items-center rounded-full border px-4 py-2 font-bold tracking-wider uppercase transition-colors"
+                >{{ $guide->category_label }}</a>
                 <span class="text-white/45">{{ $guide->reading_time }} min read</span>
             </div>
-            <h1 class="mt-5 max-w-4xl font-heading text-4xl/tight font-bold text-white md:text-6xl">{{ $guide->title }}</h1>
-            @if ($guide->excerpt)<p class="mt-5 max-w-3xl text-lg/relaxed text-white/65">{{ $guide->excerpt }}</p>@endif
+            <h1 class="font-heading mt-5 max-w-4xl text-4xl/tight font-bold text-white md:text-6xl">
+                {{ $guide->title }}
+            </h1>
+            @if ($guide->excerpt)
+                <p class="mt-5 max-w-3xl text-lg/relaxed text-white/65">{{ $guide->excerpt }}</p>
+            @endif
         </div>
     </section>
 
     <section class="bg-cream py-12 md:py-16">
         <div class="mx-auto max-w-4xl px-4 sm:px-6">
-            <div class="mb-6 flex flex-col gap-2 rounded-2xl border border-gold/20 bg-gold/10 px-5 py-4 text-sm text-navy/65 sm:flex-row sm:items-center sm:justify-between">
+            <div class="border-gold/20 bg-gold/10 text-navy/65 mb-6 flex flex-col gap-2 rounded-2xl border px-5 py-4 text-sm sm:flex-row sm:items-center sm:justify-between">
                 <span>Written by {{ $guide->author_name }}</span>
-                @if ($guide->last_reviewed_at)<span>Last reviewed {{ $guide->last_reviewed_at->format('F j, Y') }}</span>@endif
+                @if ($guide->last_reviewed_at)
+                    <span>Last reviewed {{ $guide->last_reviewed_at->format('F j, Y') }}</span>
+                @endif
             </div>
 
             @if ($guide->isReviewDue())
-                <div role="note" class="mb-6 rounded-2xl border border-amber-500/30 bg-amber-100 px-5 py-4 text-sm/relaxed text-amber-950">
-                    This guide is due for editorial review. Disney policies and park operations can change, so confirm current details with official Disney information before your visit.
+                <div
+                    role="note"
+                    class="mb-6 rounded-2xl border border-amber-500/30 bg-amber-100 px-5 py-4 text-sm/relaxed text-amber-950"
+                >
+                    This guide is due for editorial review. Disney policies and park operations can change, so confirm
+                    current details with official Disney information before your visit.
                 </div>
             @endif
 
-            <article class="rounded-3xl border border-navy/5 bg-white p-6 shadow-lg shadow-navy/5 sm:p-10 md:p-14">
-                <div class="blog-article-content prose-navy prose prose-lg max-w-none text-[1.1rem] leading-[1.85] text-navy/80">
+            <article class="border-navy/5 shadow-navy/5 rounded-3xl border bg-white p-6 shadow-lg sm:p-10 md:p-14">
+                <div class="blog-article-content prose-navy prose prose-lg text-navy/80 max-w-none text-[1.1rem] leading-[1.85]">
                     {!! Str::markdown($guide->body, ['html_input' => 'strip', 'allow_unsafe_links' => false]) !!}
                 </div>
 
                 @if ($guide->source_url)
-                    <div class="mt-10 border-t border-navy/10 pt-6">
-                        <p class="text-sm text-navy/55">Policies can change. Review the official source before your visit.</p>
-                        <a href="{{ $guide->source_url }}" target="_blank" rel="noopener noreferrer" class="mt-2 inline-flex min-h-12 items-center font-semibold text-purple hover:text-navy">View official source ↗</a>
+                    <div class="border-navy/10 mt-10 border-t pt-6">
+                        <p class="text-navy/55 text-sm">
+                            Policies can change. Review the official source before your visit.
+                        </p>
+                        <a
+                            href="{{ $guide->source_url }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-purple hover:text-navy mt-2 inline-flex min-h-12 items-center font-semibold"
+                        >View official source ↗</a>
                     </div>
                 @endif
             </article>
 
             @if ($relatedGuides->isNotEmpty())
                 <section class="mt-12" aria-labelledby="related-guides-heading">
-                    <h2 id="related-guides-heading" class="font-heading text-3xl font-bold text-navy">Related guides</h2>
+                    <h2 id="related-guides-heading" class="font-heading text-navy text-3xl font-bold">
+                        Related guides
+                    </h2>
                     <div class="mt-6 grid gap-5 md:grid-cols-3">
                         @foreach ($relatedGuides as $relatedGuide)
-                            <a href="{{ route('guides.show', $relatedGuide) }}" class="rounded-2xl border border-navy/5 bg-white p-5 font-heading text-lg font-bold text-navy shadow-sm hover:text-purple">{{ $relatedGuide->title }}</a>
+                            <a
+                                href="{{ route('guides.show', $relatedGuide) }}"
+                                class="border-navy/5 font-heading text-navy hover:text-purple rounded-2xl border bg-white p-5 text-lg font-bold shadow-sm"
+                            >{{ $relatedGuide->title }}</a>
                         @endforeach
                     </div>
                 </section>

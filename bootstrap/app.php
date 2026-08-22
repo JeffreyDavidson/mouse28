@@ -19,6 +19,6 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->respond(
-            fn (Response $response, \Throwable $_exception, Request $request): Response => AddSecurityHeaders::apply($response, $request)
+            fn (Response $response, Throwable $_exception, Request $request): Response => AddSecurityHeaders::apply($response, $request)
         );
     })->create();

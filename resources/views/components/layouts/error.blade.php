@@ -21,37 +21,57 @@
 <!DOCTYPE html>
 <html lang="en" class="antialiased">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     @head
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet"
+    />
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="flex min-h-dvh flex-col bg-navy font-body text-white">
-    <a href="#main-content" class="fixed top-4 left-4 z-100 -translate-y-24 rounded-lg bg-gold px-4 py-3 font-semibold text-navy shadow-xl transition-transform focus:translate-y-0">
+<body class="bg-navy font-body flex min-h-dvh flex-col text-white">
+    <a
+        href="#main-content"
+        class="bg-gold text-navy fixed top-4 left-4 z-100 -translate-y-24 rounded-lg px-4 py-3 font-semibold shadow-xl transition-transform focus:translate-y-0"
+    >
         Skip to content
     </a>
 
-    <header class="border-b border-white/10 bg-navy/95">
-        <nav aria-label="Recovery navigation" class="mx-auto flex min-h-20 max-w-6xl items-center justify-between gap-6 px-4 sm:px-6">
-            <a href="{{ route('home') }}" aria-label="Mouse28 homepage" class="inline-flex min-h-12 items-center font-heading text-2xl font-bold text-white transition-colors hover:text-gold">Mouse<span class="text-gold">28</span></a>
+    <header class="bg-navy/95 border-b border-white/10">
+        <nav
+            aria-label="Recovery navigation"
+            class="mx-auto flex min-h-20 max-w-6xl items-center justify-between gap-6 px-4 sm:px-6"
+        >
+            <a
+                href="{{ route('home') }}"
+                aria-label="Mouse28 homepage"
+                class="font-heading hover:text-gold inline-flex min-h-12 items-center text-2xl font-bold text-white transition-colors"
+            >Mouse<span class="text-gold">28</span></a>
             <div class="hidden items-center gap-6 sm:flex">
-                <a href="{{ route('blog.index') }}" class="inline-flex min-h-12 items-center text-sm font-medium text-white/75 transition-colors hover:text-gold">Blog</a>
-                <a href="{{ route('guides.index') }}" class="inline-flex min-h-12 items-center text-sm font-medium text-white/75 transition-colors hover:text-gold">Guides</a>
-                <a href="{{ route('episodes.index') }}" class="inline-flex min-h-12 items-center text-sm font-medium text-white/75 transition-colors hover:text-gold">Podcast</a>
+                <a
+                    href="{{ route('blog.index') }}"
+                    class="hover:text-gold inline-flex min-h-12 items-center text-sm font-medium text-white/75 transition-colors"
+                >Blog</a>
+                <a
+                    href="{{ route('guides.index') }}"
+                    class="hover:text-gold inline-flex min-h-12 items-center text-sm font-medium text-white/75 transition-colors"
+                >Guides</a>
+                <a
+                    href="{{ route('episodes.index') }}"
+                    class="hover:text-gold inline-flex min-h-12 items-center text-sm font-medium text-white/75 transition-colors"
+                >Podcast</a>
             </div>
         </nav>
     </header>
 
-    <main id="main-content" tabindex="-1" class="flex flex-1 flex-col">
-        {{ $slot }}
-    </main>
+    <main id="main-content" tabindex="-1" class="flex flex-1 flex-col">{{ $slot }}</main>
 
-    <footer class="border-t border-white/10 bg-navy px-4 py-6 text-center text-sm text-white/40">
+    <footer class="bg-navy border-t border-white/10 px-4 py-6 text-center text-sm text-white/40">
         &copy; {{ date('Y') }} Mouse28
     </footer>
 </body>

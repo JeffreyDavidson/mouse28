@@ -2,9 +2,9 @@
     @php $stats = $this->getStats(); @endphp
 
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
-        @foreach($stats as $stat)
+        @foreach ($stats as $stat)
             @php
-                $accentClasses = match($stat['color']) {
+                $accentClasses = match ($stat['color']) {
                     '#d4a843' => [
                         'surface' => 'bg-mouse-gold/15',
                         'icon' => 'text-mouse-gold',
@@ -30,8 +30,12 @@
                         <x-filament::icon :icon="$stat['icon']" class="{{ $accentClasses['icon'] }} size-6" />
                     </div>
                     <div class="min-w-0 flex-1">
-                        <p class="font-mouse-body text-mouse-cream/60 text-xs font-medium tracking-wider uppercase">{{ $stat['label'] }}</p>
-                        <p class="font-mouse-heading text-mouse-cream my-1 text-3xl/9 font-bold">{{ $stat['value'] }}</p>
+                        <p class="font-mouse-body text-mouse-cream/60 text-xs font-medium tracking-wider uppercase">
+                            {{ $stat['label'] }}
+                        </p>
+                        <p class="font-mouse-heading text-mouse-cream my-1 text-3xl/9 font-bold">
+                            {{ $stat['value'] }}
+                        </p>
                         <p class="font-mouse-body text-mouse-gold-light/70 text-xs">{{ $stat['description'] }}</p>
                     </div>
                 </div>

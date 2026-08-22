@@ -72,7 +72,7 @@ npm run build
 git diff --check
 ```
 
-Run `vendor/bin/pint` to apply PHP formatting fixes.
+Run `vendor/bin/pint` to apply PHP and Blade formatting fixes. Blade formatting is enabled by default through `pint.json`.
 
 Use `composer dev` only when a long-running local server, queue listener, Vite server, and log viewer are all needed.
 

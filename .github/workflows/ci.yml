@@ -47,11 +47,11 @@ jobs:
       - name: Audit PHP dependencies
         run: composer audit --locked --format=plain
 
-      - name: Check PHP formatting
-        run: vendor/bin/pint --test
-
       - name: Install Node dependencies
         run: npm ci
+
+      - name: Check PHP and Blade formatting
+        run: vendor/bin/pint --test
 
       - name: Prepare Laravel
         run: |

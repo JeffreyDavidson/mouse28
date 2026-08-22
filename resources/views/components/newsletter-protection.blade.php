@@ -1,6 +1,6 @@
-<div class="absolute -left-[10000px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
+<div class="absolute top-auto -left-[10000px] h-px w-px overflow-hidden" aria-hidden="true">
     <label for="{{ $honeypotId }}">Website</label>
-    <input id="{{ $honeypotId }}" type="text" name="website_url" tabindex="-1" autocomplete="off">
+    <input id="{{ $honeypotId }}" type="text" name="website_url" tabindex="-1" autocomplete="off" />
 </div>
 
 @if (config('services.turnstile.site_key'))
