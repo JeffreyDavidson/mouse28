@@ -67,12 +67,14 @@ Published post, guide, and episode pages emit Schema.org content and breadcrumb 
 composer validate --strict --no-check-publish
 composer audit --locked --format=plain
 vendor/bin/pint --test
+vendor/bin/filacheck
 composer test
 npm run build
 git diff --check
 ```
 
 Run `vendor/bin/pint` to apply PHP and Blade formatting fixes. Blade formatting is enabled by default through `pint.json`.
+Run `vendor/bin/filacheck` to check Filament code for deprecated APIs and common implementation issues.
 
 Use `composer dev` only when a long-running local server, queue listener, Vite server, and log viewer are all needed.
 
