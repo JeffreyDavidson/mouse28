@@ -13,15 +13,20 @@ class AddSecurityHeaders
      */
     public function handle(Request $request, Closure $next): Response
     {
-        return self::apply($next($request));
+        return self::apply($next($request), $request);
     }
 
-    public static function apply(Response $response): Response
+    public static function apply(Response $response, ?Request $request = null): Response
     {
         $response->headers->set('X-Content-Type-Options', 'nosniff');
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->headers->set('Permissions-Policy', 'camera=(), geolocation=(), microphone=()');
+
+        $isPrivatePath = $request?->is('admin', 'admin/*', 'preview', 'preview/*') ?? false;
+        if ($isPrivatePath || $response->getStatusCode() >= 400) {
+            $response->headers->set('X-Robots-Tag', 'noindex, nofollow');
+        }
 
         return $response;
     }
