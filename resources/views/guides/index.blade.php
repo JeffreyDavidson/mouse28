@@ -1,13 +1,9 @@
-@extends('layouts.app')
-
-@section('title', $pageTitle)
-@section('meta_description', $pageDescription)
-@section('og_title', $pageTitle)
-@section('og_description', $pageDescription)
-@section('og_image', '/images/hero-family.jpg')
-@section('canonical', $canonicalUrl)
-
-@section('content')
+<x-layouts.app
+    :title="$pageTitle"
+    :description="$pageDescription"
+    og-image="/images/hero-family.jpg"
+    :canonical="$canonicalUrl"
+>
     <section class="relative overflow-hidden bg-linear-to-br from-navy via-navy-light to-purple py-16 md:py-24">
         <div class="mx-auto max-w-6xl px-4 text-center sm:px-6">
             <span class="text-sm font-semibold tracking-[0.15em] text-gold uppercase">Plan With Confidence</span>
@@ -58,4 +54,4 @@
             @endif
         </div>
     </section>
-@endsection
+</x-layouts.app>

@@ -1,13 +1,10 @@
-@extends('layouts.app')
-
-@section('title', 'About the Davidson Family — Mouse28')
-@section('meta_description', 'Meet the Davidsons. Jeffrey, Cassie, and Viola. Learn how our family navigates Disney parks with autism and why we started Mouse28.')
-@section('og_title', 'About the Davidson Family — Mouse28')
-@section('og_description', 'Meet Jeffrey, Cassie, and Viola and learn why their family shares Disney park accessibility experiences through Mouse28.')
-@section('og_image', '/images/meet-jeffrey-and-cassie.jpg')
-@section('canonical', route('about'))
-
-@section('content')
+<x-layouts.app
+    title="About the Davidson Family — Mouse28"
+    description="Meet the Davidsons. Jeffrey, Cassie, and Viola. Learn how our family navigates Disney parks with autism and why we started Mouse28."
+    og-description="Meet Jeffrey, Cassie, and Viola and learn why their family shares Disney park accessibility experiences through Mouse28."
+    og-image="/images/meet-jeffrey-and-cassie.jpg"
+    :canonical="route('about')"
+>
     {{-- Hero with sparkles --}}
     <section class="relative overflow-hidden bg-linear-to-br from-navy to-navy-light py-16 md:py-24">
         {{-- Sparkles --}}
@@ -233,4 +230,4 @@
             </div>
         </div>
     </section>
-@endsection
+</x-layouts.app>

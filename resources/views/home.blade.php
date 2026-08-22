@@ -1,13 +1,10 @@
-@extends('layouts.app')
-
-@section('title', 'Mouse28 — Disney Parks Through Different Eyes')
-@section('meta_description', 'Accessibility tips, sensory-friendly park planning, family experiences, and the Mouse28 podcast from Jeffrey and Cassie Davidson.')
-@section('og_title', 'Mouse28 — Disney Parks Through Different Eyes')
-@section('og_description', 'Accessibility tips, sensory-friendly Disney park planning, and honest family experiences from Jeffrey and Cassie Davidson.')
-@section('og_image', '/images/hero-family.jpg')
-@section('canonical', route('home'))
-
-@section('content')
+<x-layouts.app
+    title="Mouse28 — Disney Parks Through Different Eyes"
+    description="Accessibility tips, sensory-friendly park planning, family experiences, and the Mouse28 podcast from Jeffrey and Cassie Davidson."
+    og-description="Accessibility tips, sensory-friendly Disney park planning, and honest family experiences from Jeffrey and Cassie Davidson."
+    og-image="/images/hero-family.jpg"
+    :canonical="route('home')"
+>
     {{-- Hero Section — Split Identity --}}
     <section class="hero-split">
         {{-- Left: Text --}}
@@ -458,4 +455,4 @@
             }
         });
     </script>
-@endsection
+</x-layouts.app>

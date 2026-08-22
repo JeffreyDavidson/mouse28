@@ -15,7 +15,7 @@ class NotFoundPageTest extends TestCase
         $this->get('/this-page-does-not-exist')
             ->assertNotFound()
             ->assertSee('<title>Page Not Found — Mouse28</title>', false)
-            ->assertSee('<meta name="robots" content="noindex,nofollow">', false)
+            ->assertSee('<meta name="robots" content="none">', false)
             ->assertDontSee('<link rel="canonical"', false)
             ->assertSee('That page wandered off')
             ->assertSee(route('home'), false)

@@ -1,12 +1,12 @@
-@extends('layouts.app')
-
-@section('title', ($guide->meta_title ?: $guide->title).' — Mouse28')
-@section('meta_description', $guide->meta_description ?: Str::limit($guide->excerpt, 160))
-@section('og_title', $guide->meta_title ?: $guide->title)
-@section('og_description', $guide->meta_description ?: Str::limit($guide->excerpt, 200))
-@section('og_type', 'article')
-@section('robots', ($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow')
-@if ($guide->og_image_url ?: $guide->cover_image_url) @section('og_image', $guide->og_image_url ?: $guide->cover_image_url) @endif
+<x-layouts.app
+    :title="($guide->meta_title ?: $guide->title).' — Mouse28'"
+    :description="$guide->meta_description ?: Str::limit($guide->excerpt, 160)"
+    :og-title="$guide->meta_title ?: $guide->title"
+    :og-description="$guide->meta_description ?: Str::limit($guide->excerpt, 200)"
+    og-type="article"
+    :og-image="$guide->og_image_url ?: $guide->cover_image_url"
+    :robots="($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow'"
+>
 
 @unless ($isPreview ?? false)
     @push('head')
@@ -14,7 +14,6 @@
     @endpush
 @endunless
 
-@section('content')
     @if ($isPreview ?? false)
         <div role="status" class="bg-gold px-4 py-3 text-center text-sm font-semibold text-navy">Preview mode — this page is only visible to administrators.</div>
     @endif
@@ -68,4 +67,4 @@
             @endif
         </div>
     </section>
-@endsection
+</x-layouts.app>

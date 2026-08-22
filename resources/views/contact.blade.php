@@ -1,12 +1,10 @@
-@extends('layouts.app')
-
-@section('title', 'Contact — Mouse28')
-@section('meta_description', 'Contact Jeffrey and Cassie about Mouse28, Disney park accessibility, family travel, collaborations, or the podcast.')
-@section('og_title', 'Contact Mouse28')
-@section('og_description', 'Get in touch with Jeffrey and Cassie about Disney park accessibility, family travel, collaborations, or the Mouse28 podcast.')
-@section('canonical', route('contact.show'))
-
-@section('content')
+<x-layouts.app
+    title="Contact — Mouse28"
+    description="Contact Jeffrey and Cassie about Mouse28, Disney park accessibility, family travel, collaborations, or the podcast."
+    og-title="Contact Mouse28"
+    og-description="Get in touch with Jeffrey and Cassie about Disney park accessibility, family travel, collaborations, or the Mouse28 podcast."
+    :canonical="route('contact.show')"
+>
     @php
         $contactHasFeedback = $errors->contact->isNotEmpty();
     @endphp
@@ -187,4 +185,4 @@
             </div>
         </section>
     @endif
-@endsection
+</x-layouts.app>

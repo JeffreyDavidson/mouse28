@@ -1,11 +1,11 @@
-@extends('layouts.app')
-
-@section('title', ($episode->meta_title ?: $episode->title) . ' — Mouse28')
-@section('meta_description', $episode->meta_description ?: Str::limit($episode->description, 160))
-@section('og_title', $episode->meta_title ?: $episode->title)
-@section('og_description', $episode->meta_description ?: Str::limit($episode->description, 200))
-@section('robots', ($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow')
-@if($episode->og_image_url) @section('og_image', $episode->og_image_url) @endif
+<x-layouts.app
+    :title="($episode->meta_title ?: $episode->title).' — Mouse28'"
+    :description="$episode->meta_description ?: Str::limit($episode->description, 160)"
+    :og-title="$episode->meta_title ?: $episode->title"
+    :og-description="$episode->meta_description ?: Str::limit($episode->description, 200)"
+    :og-image="$episode->og_image_url"
+    :robots="($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow'"
+>
 
 @unless ($isPreview ?? false)
     @push('head')
@@ -13,7 +13,6 @@
     @endpush
 @endunless
 
-@section('content')
     @if ($isPreview ?? false)
         <div role="status" class="bg-gold px-4 py-3 text-center text-sm font-semibold text-navy">Preview mode — this page is only visible to administrators.</div>
     @endif
@@ -350,4 +349,4 @@
             @endif
         </div>
     </section>
-@endsection
+</x-layouts.app>

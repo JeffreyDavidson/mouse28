@@ -26,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::composer('layouts.app', PodcastComposer::class);
+        View::composer('components.layouts.app', PodcastComposer::class);
 
         if (str_starts_with((string) config('app.url'), 'https://')) {
             URL::forceRootUrl((string) config('app.url'));
