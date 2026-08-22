@@ -84,7 +84,15 @@
                     <div class="border-cream/10 bg-cream/3 rounded-2xl border p-5 backdrop-blur-sm sm:p-8 md:p-10">
                         <form action="{{ route('contact.store') }}" method="POST" class="flex flex-col gap-6">
                             @csrf
-                            <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+                            @if (config('services.turnstile.site_key'))
+                                @once('turnstile-api')
+                                    <script
+                                        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+                                        async
+                                        defer
+                                    ></script>
+                                @endonce
+                            @endif
                             @if ($errors->contact->has('contact_rate_limit'))
                                 <div
                                     role="alert"

@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'production_url' => env('MOUSE28_PRODUCTION_URL', 'https://mouse28.com'),
+
     'guide_review_interval_days' => (int) env('GUIDE_REVIEW_INTERVAL_DAYS', 180),
 
     'seed_admin' => [
