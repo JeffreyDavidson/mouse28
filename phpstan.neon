@@ -1,0 +1,12 @@
+parameters:
+    paths:
+        - app
+
+    level: 5
+
+    bootstrapFiles:
+        - bootstrap/app.php
+
+    excludePaths:
+        - bootstrap/cache
+        - storage

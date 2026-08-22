@@ -31,7 +31,7 @@ class GuidesTable
                     ->badge()
                     ->getStateUsing(fn (Guide $record): string => EditorialReadiness::label($record))
                     ->color(fn (Guide $record): string => EditorialReadiness::color($record))
-                    ->tooltip(fn (Guide $record): ?string => EditorialReadiness::summary($record)),
+                    ->tooltip(fn (Guide $record): string => EditorialReadiness::summary($record)),
                 TextColumn::make('status')
                     ->badge()
                     ->getStateUsing(fn (Guide $record): string => EditorialReadiness::status($record))

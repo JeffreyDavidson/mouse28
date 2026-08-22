@@ -19,17 +19,17 @@ class Podcast extends Model
         'email',
     ];
 
-    public static function info(): static
+    public static function info(): self
     {
-        return static::query()->first() ?? new static([
+        return self::query()->first() ?? new self([
             'name' => 'Mouse28',
             'description' => 'Disney parks through the lens of raising a daughter with autism.',
         ]);
     }
 
-    public static function settings(): static
+    public static function settings(): self
     {
-        return static::query()->firstOrCreate(['id' => 1], [
+        return self::query()->firstOrCreate(['id' => 1], [
             'name' => 'Mouse28',
             'description' => 'Disney parks through the lens of raising a daughter with autism.',
         ]);

@@ -81,7 +81,10 @@ class PostController extends Controller
 
         return view('blog.show', [
             'post' => $post->load([
-                'episode' => fn (BelongsTo $query) => $query->published(),
+                'episode' => fn (BelongsTo $query) => $query
+                    ->where('is_published', true)
+                    ->whereNotNull('published_at')
+                    ->where('published_at', '<=', now()),
             ]),
             'recentPosts' => $recentPosts,
             'categoryCounts' => $categoryCounts,

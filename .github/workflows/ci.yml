@@ -56,6 +56,9 @@ jobs:
       - name: Check Filament code
         run: vendor/bin/filacheck
 
+      - name: Run static analysis
+        run: composer analyse
+
       - name: Prepare Laravel
         run: |
           cp .env.example .env

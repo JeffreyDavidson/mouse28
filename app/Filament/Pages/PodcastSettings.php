@@ -17,6 +17,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 
+/** @property-read Schema $form */
 class PodcastSettings extends Page
 {
     protected string $view = 'filament.pages.podcast-settings';

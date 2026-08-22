@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Episode;
 use App\Models\Podcast;
+use App\Models\Post;
 use App\Support\ContentContinuation;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
@@ -17,7 +18,7 @@ class PreviewEpisodeController extends Controller
         return view('episodes.show', [
             'episode' => $episode,
             'podcast' => Podcast::info(),
-            'relatedPosts' => $episode->posts()->published()->latest('published_at')->take(4)->get(),
+            'relatedPosts' => Post::published()->whereBelongsTo($episode)->latest('published_at')->take(4)->get(),
             'previousEpisode' => ContentContinuation::previousEpisode($episode),
             'nextEpisode' => ContentContinuation::nextEpisode($episode),
             'isPreview' => true,

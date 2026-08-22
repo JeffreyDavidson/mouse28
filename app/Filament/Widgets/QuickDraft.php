@@ -12,6 +12,7 @@ use Filament\Schemas\Schema;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Str;
 
+/** @property-read Schema $form */
 class QuickDraft extends Widget implements HasForms
 {
     use InteractsWithForms;
