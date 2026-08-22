@@ -21,7 +21,6 @@ class ContactMessage extends Model
         'accessibility' => 'Park Accessibility',
         'collaboration' => 'Collaboration / Sponsorship',
         'guest' => 'Podcast Guest',
-        'story' => 'Share Your Story',
         'other' => 'Other',
     ];
 

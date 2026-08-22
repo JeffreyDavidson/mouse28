@@ -45,7 +45,7 @@ test('readiness reports actionable issues for each content type', function (): v
     expect(EditorialReadiness::label($post))->toBe('3 missing')
         ->and(EditorialReadiness::issues($post))->toContain('Add a cover image')
         ->and(EditorialReadiness::issues($guide))->toContain('Add an official source', 'Set the review date')
-        ->and(EditorialReadiness::issues($episode))->toContain('Add the audio URL', 'Add a transcript');
+        ->and(EditorialReadiness::issues($episode))->toContain('Add audio', 'Add a transcript');
 });
 
 test('complete content is marked ready', function (): void {
@@ -123,7 +123,9 @@ test('filament forms explain publish requirements and edit pages offer previews'
         ->assertSee('Published guides require');
     get(EpisodeResource::getUrl('create'))
         ->assertOk()
-        ->assertSee('Published episodes require');
+        ->assertSee('Published episodes require')
+        ->assertSee('Hosted MP3')
+        ->assertSee('Upload an MP3 up to 256 MB');
 
     foreach ([
         PostResource::getUrl('edit', ['record' => $post]),

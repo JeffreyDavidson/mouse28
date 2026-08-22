@@ -67,6 +67,7 @@ Published post, guide, and episode pages emit Schema.org content and breadcrumb 
 ```bash
 composer validate --strict --no-check-publish
 composer audit --locked --format=plain
+npm audit --audit-level=high
 vendor/bin/pint --test
 vendor/bin/filacheck
 composer analyse
@@ -84,6 +85,12 @@ Run `npx playwright install chromium` once before the local browser suite. Brows
 Laravel Boost provides project-aware documentation and inspection tools through the committed Codex MCP configuration. Its generated Laravel, Pest, and Tailwind skills are tracked under `.agents/skills`. Laravel Pao automatically condenses supported test and analysis output when an agent runs the commands.
 
 Use `composer dev` only when a long-running local server, queue listener, Vite server, and log viewer are all needed.
+
+## Dependency maintenance
+
+Routine dependency version pull requests are intentionally disabled. Review direct dependencies monthly with `composer outdated --direct` and `npm outdated`, then group related upgrades that need to move together into focused pull requests.
+
+Dependabot vulnerability alerts remain enabled. CI audits the locked Composer and npm dependency trees, and security findings should be addressed through the normal branch and pull request workflow.
 
 ## Deployment checklist
 

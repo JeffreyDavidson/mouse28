@@ -11,9 +11,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * @property Carbon|null $published_at
+ * @property-read string|null $audio_source_url
  * @property-read string $formatted_duration
  * @property-read string|null $og_image_url
  */
@@ -26,6 +28,7 @@ use Illuminate\Support\Carbon;
     'episode_number',
     'season_number',
     'audio_url',
+    'audio_path',
     'apple_url',
     'spotify_url',
     'youtube_url',
@@ -60,6 +63,26 @@ class Episode extends Model
         return Attribute::make(get: function () {
             return $this->og_image ? '/storage/'.$this->og_image : null;
         });
+    }
+
+    protected function audioSourceUrl(): Attribute
+    {
+        return Attribute::make(get: function (): ?string {
+            if ($this->audio_path && Storage::disk('public')->exists($this->audio_path)) {
+                return Storage::disk('public')->url($this->audio_path);
+            }
+
+            return $this->audio_url;
+        });
+    }
+
+    public function audioFileSize(): int
+    {
+        if (! $this->audio_path || ! Storage::disk('public')->exists($this->audio_path)) {
+            return 0;
+        }
+
+        return Storage::disk('public')->size($this->audio_path);
     }
 
     protected function formattedDuration(): Attribute
