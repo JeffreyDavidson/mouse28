@@ -1,6 +1,12 @@
 @extends('layouts.app')
 
-@section('title', ($category ? \App\Models\Post::CATEGORIES[$category] ?? ucwords(str_replace('-', ' ', $category)) : 'Blog') . ' — Mouse28')
+@section('title', $pageTitle)
+@section('meta_description', $pageDescription)
+@section('og_title', $pageTitle)
+@section('og_description', $pageDescription)
+@section('og_image', '/images/hero-family.jpg')
+@section('canonical', $canonicalUrl)
+@section('robots', $robots)
 
 @section('content')
     @php

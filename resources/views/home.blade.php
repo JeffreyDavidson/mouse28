@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
 @section('title', 'Mouse28 — Disney Parks Through Different Eyes')
+@section('meta_description', 'Accessibility tips, sensory-friendly park planning, family experiences, and the Mouse28 podcast from Jeffrey and Cassie Davidson.')
+@section('og_title', 'Mouse28 — Disney Parks Through Different Eyes')
+@section('og_description', 'Accessibility tips, sensory-friendly Disney park planning, and honest family experiences from Jeffrey and Cassie Davidson.')
+@section('og_image', '/images/hero-family.jpg')
+@section('canonical', route('home'))
 
 @section('content')
     {{-- Hero Section — Split Identity --}}

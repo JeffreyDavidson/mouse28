@@ -22,6 +22,8 @@ Site search is handled by the invokable `SearchController`. It searches posts, g
 
 Public detail pages emit Schema.org JSON-LD through `StructuredData`: `BlogPosting` for posts, `Article` for guides, `PodcastEpisode` for episodes, and `BreadcrumbList` navigation for each type. JSON output is hex-escaped before it is placed in the document head.
 
+The public layout normalizes canonical and social-image URLs to absolute URLs. Landing pages provide page-specific search and social descriptions. Category archives and paginated archives use self-referencing canonicals, while text searches and alternate sort views are marked `noindex,follow` and canonicalized to the clean archive URL.
+
 ## Administration and authorization
 
 Filament is mounted at `/admin`. `User::canAccessPanel()` requires the explicit `is_admin` flag. Model policies provide the same boundary for content resources and protected record actions. Custom settings and subscriber pages also enforce administrator access.
