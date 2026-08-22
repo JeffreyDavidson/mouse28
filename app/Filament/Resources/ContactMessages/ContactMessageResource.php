@@ -5,6 +5,8 @@ namespace App\Filament\Resources\ContactMessages;
 use App\Filament\Resources\ContactMessages\Pages\ListContactMessages;
 use App\Models\ContactMessage;
 use BackedEnum;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\IconColumn;
@@ -73,17 +75,17 @@ class ContactMessageResource extends Resource
                     ->options(ContactMessage::SUBJECTS),
             ])
             ->actions([
-                \Filament\Actions\Action::make('markRead')
+                Action::make('markRead')
                     ->label('Mark Read')
                     ->icon('heroicon-o-check')
                     ->action(fn (ContactMessage $record) => $record->update(['is_read' => true]))
                     ->hidden(fn (ContactMessage $record) => $record->is_read),
-                \Filament\Actions\Action::make('reply')
+                Action::make('reply')
                     ->label('Reply')
                     ->icon('heroicon-o-paper-airplane')
                     ->url(fn (ContactMessage $record) => "mailto:{$record->email}?subject=".urlencode("Re: {$record->subject_label}"))
                     ->openUrlInNewTab(),
-                \Filament\Actions\DeleteAction::make(),
+                DeleteAction::make(),
             ])
             ->bulkActions([
                 DeleteBulkAction::make(),

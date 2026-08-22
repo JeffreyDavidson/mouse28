@@ -2,7 +2,13 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Auth\Login;
+use App\Filament\Widgets\ContentCalendar;
+use App\Filament\Widgets\InspirationWidget;
+use App\Filament\Widgets\QuickDraft;
+use App\Filament\Widgets\RecentActivity;
 use App\Filament\Widgets\StatsOverview;
+use App\Filament\Widgets\WelcomeBanner;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -29,7 +35,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandName('Mouse28')
             ->brandLogo(view('filament.brand-logo'))
             ->darkModeBrandLogo(view('filament.brand-logo'))
-            ->login(\App\Filament\Pages\Auth\Login::class)
+            ->login(Login::class)
             ->spa()
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->colors([
@@ -59,12 +65,12 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
-                \App\Filament\Widgets\WelcomeBanner::class,
+                WelcomeBanner::class,
                 StatsOverview::class,
-                \App\Filament\Widgets\RecentActivity::class,
-                \App\Filament\Widgets\QuickDraft::class,
-                \App\Filament\Widgets\ContentCalendar::class,
-                \App\Filament\Widgets\InspirationWidget::class,
+                RecentActivity::class,
+                QuickDraft::class,
+                ContentCalendar::class,
+                InspirationWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

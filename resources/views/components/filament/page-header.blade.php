@@ -4,12 +4,21 @@
     'iconTone' => 'gold',
 ])
 
-<div {{ $attributes->class([
-    'relative overflow-hidden rounded-2xl border border-mouse-gold/20 bg-linear-to-br from-mouse-navy via-mouse-navy-light to-mouse-purple p-5 sm:p-8',
-]) }}>
-    <div class="pointer-events-none absolute top-[-30%] right-[-10%] size-62.5 bg-[radial-gradient(circle,rgba(212,168,67,0.12)_0%,transparent_70%)]" aria-hidden="true"></div>
-    <span class="text-mouse-gold-light/25 pointer-events-none absolute top-[15%] right-[18%] text-xs" aria-hidden="true">✦</span>
-    <span class="text-mouse-gold-light/20 pointer-events-none absolute right-[10%] bottom-[20%] text-base" aria-hidden="true">✦</span>
+<div {{
+    $attributes->class([
+        'relative overflow-hidden rounded-2xl border border-mouse-gold/20 bg-linear-to-br from-mouse-navy via-mouse-navy-light to-mouse-purple p-5 sm:p-8',
+    ])
+}}>
+    <div
+        class="pointer-events-none absolute top-[-30%] right-[-10%] size-62.5 bg-[radial-gradient(circle,rgba(212,168,67,0.12)_0%,transparent_70%)]"
+        aria-hidden="true"
+    ></div>
+    <span class="text-mouse-gold-light/25 pointer-events-none absolute top-[15%] right-[18%] text-xs" aria-hidden="true"
+        >✦</span>
+    <span
+        class="text-mouse-gold-light/20 pointer-events-none absolute right-[10%] bottom-[20%] text-base"
+        aria-hidden="true"
+    >✦</span>
 
     <div class="relative z-1 flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
         <div class="flex items-center gap-4 sm:gap-6">
@@ -30,15 +39,11 @@
         @if (isset($stats) || isset($actions))
             <div class="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center">
                 @isset($stats)
-                    <div class="flex flex-wrap gap-3">
-                        {{ $stats }}
-                    </div>
+                    <div class="flex flex-wrap gap-3">{{ $stats }}</div>
                 @endisset
 
                 @isset($actions)
-                    <div class="flex flex-wrap gap-3">
-                        {{ $actions }}
-                    </div>
+                    <div class="flex flex-wrap gap-3">{{ $actions }}</div>
                 @endisset
             </div>
         @endif

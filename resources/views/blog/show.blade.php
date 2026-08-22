@@ -7,17 +7,21 @@
     :og-image="$post->og_image_url ?: $post->cover_image_url"
     :robots="($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow'"
 >
-
-@unless ($isPreview ?? false)
-    @push('head')
-        <x-structured-data :data="\App\Support\StructuredData::forPost($post)" />
-    @endpush
-@endunless
+    @unless ($isPreview ?? false)
+        @push('head')
+            <x-structured-data :data="\App\Support\StructuredData::forPost($post)" />
+        @endpush
+    @endunless
 
     @if ($isPreview ?? false)
-        <div role="status" class="bg-gold px-4 py-3 text-center text-sm font-semibold text-navy">Preview mode — this page is only visible to administrators.</div>
+        <div role="status" class="bg-gold text-navy px-4 py-3 text-center text-sm font-semibold">
+            Preview mode — this page is only visible to administrators.
+        </div>
     @endif
-    <div id="reading-progress" class="fixed top-16 left-0 z-40 h-[3px] w-0 bg-linear-to-r from-gold to-gold-light shadow-[0_0_8px_rgb(212_168_67/40%)] transition-[width] duration-100 ease-linear"></div>
+    <div
+        id="reading-progress"
+        class="from-gold to-gold-light fixed top-16 left-0 z-40 h-[3px] w-0 bg-linear-to-r shadow-[0_0_8px_rgb(212_168_67/40%)] transition-[width] duration-100 ease-linear"
+    ></div>
 
     @php
         $categoryStyles = [
@@ -38,27 +42,39 @@
 
     {{-- Hero Section --}}
     <section class="relative flex min-h-[420px] items-end overflow-hidden">
-        <span class="sparkle pointer-events-none absolute top-[15%] right-[12%] z-10 text-base text-gold-light/25" aria-hidden="true">✦</span>
-        <span class="sparkle-delay pointer-events-none absolute top-[30%] left-[8%] z-10 text-[0.7rem] text-gold-light/15" aria-hidden="true">✦</span>
+        <span
+            class="sparkle text-gold-light/25 pointer-events-none absolute top-[15%] right-[12%] z-10 text-base"
+            aria-hidden="true"
+        >✦</span>
+        <span
+            class="sparkle-delay text-gold-light/15 pointer-events-none absolute top-[30%] left-[8%] z-10 text-[0.7rem]"
+            aria-hidden="true"
+        >✦</span>
 
-        <div class="absolute inset-0 bg-linear-to-br from-navy via-navy-light to-navy">
-            @if($post->cover_image_url)
-                <img src="{{ $post->cover_image_url }}" alt="" aria-hidden="true" class="size-full object-cover">
+        <div class="from-navy via-navy-light to-navy absolute inset-0 bg-linear-to-br">
+            @if ($post->cover_image_url)
+                <img src="{{ $post->cover_image_url }}" alt="" aria-hidden="true" class="size-full object-cover" />
             @endif
             <div class="absolute inset-0 {{ $post->cover_image_url ? 'bg-linear-to-t from-navy/95 via-navy/70 to-navy/40' : 'bg-linear-to-t from-navy/95 via-navy/60 to-navy/30' }}"></div>
         </div>
 
         <div class="relative z-10 mx-auto w-full max-w-6xl px-4 pt-20 pb-14 sm:px-6">
             {{-- Back link --}}
-            <a href="{{ route('blog.index') }}" class="group mb-8 inline-flex min-h-11 items-center gap-1.5 text-base text-white/40 transition-colors hover:text-gold sm:text-sm">
-                <svg class="size-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            <a
+                href="{{ route('blog.index') }}"
+                class="group hover:text-gold mb-8 inline-flex min-h-11 items-center gap-1.5 text-base text-white/40 transition-colors sm:text-sm"
+            >
+                <svg class="size-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
                 Back to Blog
             </a>
 
             {{-- Meta row --}}
             <div class="mb-5 flex flex-wrap items-center gap-3">
-                @if($post->category)
-                    <a href="{{ route('blog.index', ['category' => $post->category]) }}" class="inline-flex min-h-11 items-center rounded-full border border-gold/30 bg-gold/15 px-4 py-1.5 text-xs font-bold tracking-wider text-gold uppercase backdrop-blur-sm transition-colors hover:border-gold hover:bg-gold/25">
+                @if ($post->category)
+                    <a
+                        href="{{ route('blog.index', ['category' => $post->category]) }}"
+                        class="border-gold/30 bg-gold/15 text-gold hover:border-gold hover:bg-gold/25 inline-flex min-h-11 items-center rounded-full border px-4 py-1.5 text-xs font-bold tracking-wider uppercase backdrop-blur-sm transition-colors"
+                    >
                         {{ $post->category_label }}
                     </a>
                 @endif
@@ -68,22 +84,22 @@
             </div>
 
             {{-- Title --}}
-            <h1 class="max-w-4xl font-heading text-4xl/tight font-bold text-white md:text-5xl lg:text-6xl">
+            <h1 class="font-heading max-w-4xl text-4xl/tight font-bold text-white md:text-5xl lg:text-6xl">
                 {{ $post->title }}
             </h1>
 
             {{-- Gold divider --}}
-            <div class="my-6 h-[3px] w-15 rounded-sm bg-linear-to-r from-gold to-gold-light"></div>
+            <div class="from-gold to-gold-light my-6 h-[3px] w-15 rounded-sm bg-linear-to-r"></div>
 
             {{-- Excerpt --}}
-            @if($post->excerpt)
+            @if ($post->excerpt)
                 <p class="max-w-3xl text-lg/relaxed font-light text-white/50 md:text-xl">{{ $post->excerpt }}</p>
             @endif
 
             {{-- Author + Share row --}}
             <div class="mt-8 flex items-center justify-between">
                 <div class="flex items-center gap-4">
-                    <div class="flex size-12 items-center justify-center rounded-full border-2 border-gold/20 bg-linear-to-br from-gold/30 to-purple/20 font-heading font-bold text-gold">
+                    <div class="border-gold/20 from-gold/30 to-purple/20 font-heading text-gold flex size-12 items-center justify-center rounded-full border-2 bg-linear-to-br font-bold">
                         {{ $post->author_initials }}
                     </div>
                     <div>
@@ -92,15 +108,35 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-2">
-                    <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($post->title) }}" target="_blank" rel="noopener" class="inline-flex size-11 items-center justify-center rounded-full border border-cream/15 bg-cream/5 text-cream/40 backdrop-blur-sm transition-[transform,border-color,background-color,color,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-gold-light/50 hover:bg-gold-light/10 hover:text-gold-light hover:shadow-[0_4px_12px_rgb(212_168_67/20%)]" aria-label="Share on X">
-                        <svg class="size-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    <a
+                        href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($post->title) }}"
+                        target="_blank"
+                        rel="noopener"
+                        class="border-cream/15 bg-cream/5 text-cream/40 hover:border-gold-light/50 hover:bg-gold-light/10 hover:text-gold-light inline-flex size-11 items-center justify-center rounded-full border backdrop-blur-sm transition-[transform,border-color,background-color,color,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgb(212_168_67/20%)]"
+                        aria-label="Share on X"
+                    >
+                        <svg class="size-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
                     </a>
-                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" rel="noopener" class="inline-flex size-11 items-center justify-center rounded-full border border-cream/15 bg-cream/5 text-cream/40 backdrop-blur-sm transition-[transform,border-color,background-color,color,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-gold-light/50 hover:bg-gold-light/10 hover:text-gold-light hover:shadow-[0_4px_12px_rgb(212_168_67/20%)]" aria-label="Share on Facebook">
-                        <svg class="size-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    <a
+                        href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}"
+                        target="_blank"
+                        rel="noopener"
+                        class="border-cream/15 bg-cream/5 text-cream/40 hover:border-gold-light/50 hover:bg-gold-light/10 hover:text-gold-light inline-flex size-11 items-center justify-center rounded-full border backdrop-blur-sm transition-[transform,border-color,background-color,color,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgb(212_168_67/20%)]"
+                        aria-label="Share on Facebook"
+                    >
+                        <svg class="size-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
                     </a>
-                    <button type="button" class="relative inline-flex size-11 items-center justify-center rounded-full border border-cream/15 bg-cream/5 text-cream/40 backdrop-blur-sm transition-[transform,border-color,background-color,color,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-gold-light/50 hover:bg-gold-light/10 hover:text-gold-light hover:shadow-[0_4px_12px_rgb(212_168_67/20%)]" data-copy-link aria-label="Copy link">
-                        <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-                        <span class="copy-feedback absolute -bottom-9 left-1/2 hidden -translate-x-1/2 rounded-full bg-gold px-3 py-1 text-[10px] whitespace-nowrap text-white shadow-lg" aria-live="polite">Copied!</span>
+                    <button
+                        type="button"
+                        class="border-cream/15 bg-cream/5 text-cream/40 hover:border-gold-light/50 hover:bg-gold-light/10 hover:text-gold-light relative inline-flex size-11 items-center justify-center rounded-full border backdrop-blur-sm transition-[transform,border-color,background-color,color,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgb(212_168_67/20%)]"
+                        data-copy-link
+                        aria-label="Copy link"
+                    >
+                        <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                        <span
+                            class="copy-feedback bg-gold absolute -bottom-9 left-1/2 hidden -translate-x-1/2 rounded-full px-3 py-1 text-[10px] whitespace-nowrap text-white shadow-lg"
+                            aria-live="polite"
+                        >Copied!</span>
                     </button>
                 </div>
             </div>
@@ -108,56 +144,66 @@
     </section>
 
     {{-- Content Section --}}
-    <section class="relative bg-cream py-14">
+    <section class="bg-cream relative py-14">
         {{-- Subtle decorative dots --}}
-        <div class="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-gold/20 to-transparent"></div>
+        <div class="via-gold/20 absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent to-transparent"></div>
 
         <div class="mx-auto max-w-6xl px-4 sm:px-6">
             <div class="flex flex-col gap-12 lg:flex-row">
                 {{-- Main Content --}}
                 <div class="lg:w-[66%]">
-                    <article id="article-body" data-reading-minutes="{{ $post->reading_time }}" class="relative rounded-3xl border border-navy/5 bg-white p-5 shadow-lg shadow-navy/5 sm:p-8 md:p-14">
+                    <article
+                        id="article-body"
+                        data-reading-minutes="{{ $post->reading_time }}"
+                        class="border-navy/5 shadow-navy/5 relative rounded-3xl border bg-white p-5 shadow-lg sm:p-8 md:p-14"
+                    >
                         {{-- Decorative corner accent --}}
                         <div class="absolute top-0 right-0 size-24 overflow-hidden rounded-tr-3xl">
-                            <div class="absolute -top-12 -right-12 size-24 rotate-45 bg-linear-to-bl from-gold/8 to-transparent"></div>
+                            <div class="from-gold/8 absolute -top-12 -right-12 size-24 rotate-45 bg-linear-to-bl to-transparent"></div>
                         </div>
 
-                        <div class="blog-article-content prose-navy prose prose-lg max-w-none text-[1.1rem] leading-[1.85] text-navy/80">
-                            {!! Str::markdown($post->body ?? '', [
-                                'html_input' => 'strip',
-                                'allow_unsafe_links' => false,
-                                'renderer' => [
-                                    'soft_break' => "<br />\n",
-                                ],
-                            ]) !!}
+                        <div class="blog-article-content prose-navy prose prose-lg text-navy/80 max-w-none text-[1.1rem] leading-[1.85]">
+                            {!!
+                                Str::markdown($post->body ?? '', [
+                                    'html_input' => 'strip',
+                                    'allow_unsafe_links' => false,
+                                    'renderer' => [
+                                        'soft_break' => "<br />\n",
+                                    ],
+                                ])
+                            !!}
                         </div>
 
                         {{-- End flourish --}}
-                        <div class="mt-12 flex items-center justify-center gap-3 border-t border-navy/5 pt-8">
+                        <div class="border-navy/5 mt-12 flex items-center justify-center gap-3 border-t pt-8">
                             <span class="text-gold/30">✦</span>
-                            <span class="text-lg text-gold/50">✦</span>
+                            <span class="text-gold/50 text-lg">✦</span>
                             <span class="text-gold/30">✦</span>
                         </div>
                     </article>
 
                     {{-- Author Card --}}
-                    <div class="relative mt-10 overflow-hidden rounded-3xl border border-navy/5 bg-white p-5 shadow-lg shadow-navy/5 sm:p-8 md:p-10">
-                        <div class="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-gold via-purple to-gold"></div>
+                    <div class="border-navy/5 shadow-navy/5 relative mt-10 overflow-hidden rounded-3xl border bg-white p-5 shadow-lg sm:p-8 md:p-10">
+                        <div class="from-gold via-purple to-gold absolute inset-x-0 top-0 h-1 bg-linear-to-r"></div>
                         <div class="flex flex-col items-start gap-6 sm:flex-row">
-                            <div class="flex size-20 shrink-0 items-center justify-center rounded-2xl border border-gold/15 bg-linear-to-br from-gold/25 to-purple/15 font-heading text-xl font-bold text-gold">
+                            <div class="border-gold/15 from-gold/25 to-purple/15 font-heading text-gold flex size-20 shrink-0 items-center justify-center rounded-2xl border bg-linear-to-br text-xl font-bold">
                                 {{ $post->author_initials }}
                             </div>
                             <div>
-                                <span class="text-xs font-bold tracking-widest text-gold uppercase">Written by</span>
-                                <h2 class="mt-1 font-heading text-2xl font-bold text-navy">{{ $post->author_name }}</h2>
-                                <div class="my-3 h-[3px] w-15 rounded-sm bg-linear-to-r from-gold to-gold-light"></div>
-                                <p class="text-base/relaxed text-navy/55 sm:text-sm/relaxed">
-                                    @if(Str::contains($post->author_name, '&') || (Str::contains($post->author_name, 'Jeffrey') && Str::contains($post->author_name, 'Cassie')))
-                                        The couple behind Mouse28. Over a decade as Disney passholders, navigating park life with their daughter Viola and sharing every tip, review, and memory along the way.
-                                    @elseif(Str::contains($post->author_name, 'Cassie'))
-                                        Co-host of Mouse28. Disney magic-maker, accessibility champion, and the planner behind every park day.
-                                    @elseif(Str::contains($post->author_name, 'Jeffrey'))
-                                        Co-host of Mouse28. Theme park nerd, tech enthusiast, and the voice keeping it real about Disney life.
+                                <span class="text-gold text-xs font-bold tracking-widest uppercase">Written by</span>
+                                <h2 class="font-heading text-navy mt-1 text-2xl font-bold">{{ $post->author_name }}</h2>
+                                <div class="from-gold to-gold-light my-3 h-[3px] w-15 rounded-sm bg-linear-to-r"></div>
+                                <p class="text-navy/55 text-base/relaxed sm:text-sm/relaxed">
+                                    @if (Str::contains($post->author_name, '&') || (Str::contains($post->author_name, 'Jeffrey') && Str::contains($post->author_name, 'Cassie')))
+                                        The couple behind Mouse28. Over a decade as Disney passholders, navigating park
+                                        life with their daughter Viola and sharing every tip, review, and memory along
+                                        the way.
+                                    @elseif (Str::contains($post->author_name, 'Cassie'))
+                                        Co-host of Mouse28. Disney magic-maker, accessibility champion, and the planner
+                                        behind every park day.
+                                    @elseif (Str::contains($post->author_name, 'Jeffrey'))
+                                        Co-host of Mouse28. Theme park nerd, tech enthusiast, and the voice keeping it
+                                        real about Disney life.
                                     @else
                                         Disney park explorer, accessibility advocate, and parent.
                                     @endif
@@ -167,21 +213,35 @@
                     </div>
 
                     {{-- Share This Post --}}
-                    <div class="mt-10 rounded-3xl border border-navy/5 bg-white p-5 text-center shadow-lg shadow-navy/5 sm:p-8 md:p-10">
-                        <span class="text-xs font-bold tracking-widest text-gold uppercase">Enjoyed this post?</span>
-                        <h2 class="my-2 font-heading text-xl font-bold text-navy">Share it with fellow Disney fans</h2>
-                        <p class="mb-6 text-base text-navy/40 sm:text-sm">Help others discover Mouse28</p>
+                    <div class="border-navy/5 shadow-navy/5 mt-10 rounded-3xl border bg-white p-5 text-center shadow-lg sm:p-8 md:p-10">
+                        <span class="text-gold text-xs font-bold tracking-widest uppercase">Enjoyed this post?</span>
+                        <h2 class="font-heading text-navy my-2 text-xl font-bold">Share it with fellow Disney fans</h2>
+                        <p class="text-navy/40 mb-6 text-base sm:text-sm">Help others discover Mouse28</p>
                         <div class="flex flex-wrap items-center justify-center gap-3">
-                            <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($post->title . ' — Mouse28') }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-navy/10 bg-white px-5 py-2.5 text-base font-semibold text-navy/60 transition-[transform,border-color,color,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-[#1da1f2] hover:text-[#1da1f2] hover:shadow-[0_4px_12px_rgb(26_16_64/10%)] sm:text-[0.8rem]">
-                                <svg class="size-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                            <a
+                                href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($post->title . ' — Mouse28') }}"
+                                target="_blank"
+                                rel="noopener"
+                                class="border-navy/10 text-navy/60 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border bg-white px-5 py-2.5 text-base font-semibold transition-[transform,border-color,color,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-[#1da1f2] hover:text-[#1da1f2] hover:shadow-[0_4px_12px_rgb(26_16_64/10%)] sm:text-[0.8rem]"
+                            >
+                                <svg class="size-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
                                 Share on X
                             </a>
-                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-navy/10 bg-white px-5 py-2.5 text-base font-semibold text-navy/60 transition-[transform,border-color,color,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-[#1877f2] hover:text-[#1877f2] hover:shadow-[0_4px_12px_rgb(26_16_64/10%)] sm:text-[0.8rem]">
-                                <svg class="size-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                            <a
+                                href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}"
+                                target="_blank"
+                                rel="noopener"
+                                class="border-navy/10 text-navy/60 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border bg-white px-5 py-2.5 text-base font-semibold transition-[transform,border-color,color,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-[#1877f2] hover:text-[#1877f2] hover:shadow-[0_4px_12px_rgb(26_16_64/10%)] sm:text-[0.8rem]"
+                            >
+                                <svg class="size-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
                                 Share on Facebook
                             </a>
-                            <button type="button" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-navy/10 bg-white px-5 py-2.5 text-base font-semibold text-navy/60 transition-[transform,border-color,color,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-gold hover:text-gold hover:shadow-[0_4px_12px_rgb(26_16_64/10%)] sm:text-[0.8rem]" data-copy-link>
-                                <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                            <button
+                                type="button"
+                                class="border-navy/10 text-navy/60 hover:border-gold hover:text-gold inline-flex min-h-11 items-center justify-center gap-2 rounded-full border bg-white px-5 py-2.5 text-base font-semibold transition-[transform,border-color,color,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgb(26_16_64/10%)] sm:text-[0.8rem]"
+                                data-copy-link
+                            >
+                                <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
                                 <span data-copy-label>Copy Link</span>
                                 <span class="hidden" data-copy-feedback aria-live="polite">Copied! ✓</span>
                             </button>
@@ -189,15 +249,19 @@
                     </div>
 
                     {{-- Related Episode --}}
-                    @if($post->episode)
-                        <div class="mt-8 rounded-3xl border border-navy/5 bg-white p-8 shadow-lg shadow-navy/5">
-                            <span class="text-xs font-bold tracking-widest text-gold uppercase">Related Episode</span>
+                    @if ($post->episode)
+                        <div class="border-navy/5 shadow-navy/5 mt-8 rounded-3xl border bg-white p-8 shadow-lg">
+                            <span class="text-gold text-xs font-bold tracking-widest uppercase">Related Episode</span>
                             <a href="{{ route('episodes.show', $post->episode) }}" class="group mt-4 block">
                                 <div class="flex items-center gap-5">
-                                    <span class="inline-flex size-14 shrink-0 items-center justify-center rounded-2xl border border-purple/10 bg-linear-to-br from-purple/15 to-gold/10 font-heading text-lg font-bold text-purple">{{ $post->episode->episode_number }}</span>
+                                    <span class="border-purple/10 from-purple/15 to-gold/10 font-heading text-purple inline-flex size-14 shrink-0 items-center justify-center rounded-2xl border bg-linear-to-br text-lg font-bold">{{ $post->episode->episode_number }}</span>
                                     <div>
-                                        <h2 class="font-heading text-lg font-semibold text-navy transition-colors group-hover:text-purple">{{ $post->episode->title }}</h2>
-                                        <p class="mt-1 text-base text-navy/40 transition-colors group-hover:text-gold sm:text-sm">Listen to the full episode →</p>
+                                        <h2 class="font-heading text-navy group-hover:text-purple text-lg font-semibold transition-colors">
+                                            {{ $post->episode->title }}
+                                        </h2>
+                                        <p class="text-navy/40 group-hover:text-gold mt-1 text-base transition-colors sm:text-sm">
+                                            Listen to the full episode →
+                                        </p>
                                     </div>
                                 </div>
                             </a>
@@ -205,19 +269,26 @@
                     @endif
 
                     {{-- Read Next --}}
-                    @if($recentPosts->count())
+                    @if ($recentPosts->count())
                         <div class="mt-12">
                             <div class="mb-6 flex items-center gap-4">
-                                <h2 class="font-heading text-xl font-bold text-navy">Continue Reading</h2>
-                                <div class="h-px flex-1 bg-linear-to-r from-navy/10 to-transparent"></div>
+                                <h2 class="font-heading text-navy text-xl font-bold">Continue Reading</h2>
+                                <div class="from-navy/10 h-px flex-1 bg-linear-to-r to-transparent"></div>
                             </div>
                             <div class="grid gap-6 sm:grid-cols-2">
-                                @foreach($recentPosts->take(2) as $next)
+                                @foreach ($recentPosts->take(2) as $next)
                                     @php $nextStyle = $categoryStyles[$next->category] ?? $defaultCategoryStyle; @endphp
-                                    <a href="{{ route('blog.show', $next) }}" class="group overflow-hidden rounded-2xl border border-navy/5 bg-white shadow-md shadow-navy/5 transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-xl">
+                                    <a
+                                        href="{{ route('blog.show', $next) }}"
+                                        class="group border-navy/5 shadow-navy/5 overflow-hidden rounded-2xl border bg-white shadow-md transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-xl"
+                                    >
                                         <div class="h-40 overflow-hidden">
-                                            @if($next->cover_image_url)
-                                                <img src="{{ $next->cover_image_url }}" alt="" class="size-full object-cover transition-transform duration-500 group-hover:scale-105">
+                                            @if ($next->cover_image_url)
+                                                <img
+                                                    src="{{ $next->cover_image_url }}"
+                                                    alt=""
+                                                    class="size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                                />
                                             @else
                                                 <div class="flex size-full items-center justify-center bg-linear-to-br {{ $nextStyle['surface'] }}">
                                                     <span class="text-4xl opacity-60 transition-transform duration-500 group-hover:scale-110">{{ $nextStyle['icon'] }}</span>
@@ -225,11 +296,13 @@
                                             @endif
                                         </div>
                                         <div class="p-6">
-                                            @if($next->category)
-                                                <span class="text-[10px] font-bold tracking-wider text-gold uppercase">{{ $next->category_label }}</span>
+                                            @if ($next->category)
+                                                <span class="text-gold text-[10px] font-bold tracking-wider uppercase">{{ $next->category_label }}</span>
                                             @endif
-                                            <h3 class="mt-1 line-clamp-2 font-heading text-base/snug font-semibold text-navy transition-colors group-hover:text-purple">{{ $next->title }}</h3>
-                                            <span class="mt-3 block text-xs text-navy/30">{{ $next->reading_time }} min read</span>
+                                            <h3 class="font-heading text-navy group-hover:text-purple mt-1 line-clamp-2 text-base/snug font-semibold transition-colors">
+                                                {{ $next->title }}
+                                            </h3>
+                                            <span class="text-navy/30 mt-3 block text-xs">{{ $next->reading_time }} min read</span>
                                         </div>
                                     </a>
                                 @endforeach
@@ -242,35 +315,47 @@
                 <aside class="lg:w-[34%]">
                     <div class="space-y-7 lg:sticky lg:top-[90px]">
                         {{-- Table of Contents (populated by JS) --}}
-                        <div id="toc-card" class="hidden rounded-2xl border border-navy/5 bg-white p-7 shadow-md shadow-navy/5">
+                        <div
+                            id="toc-card"
+                            class="border-navy/5 shadow-navy/5 hidden rounded-2xl border bg-white p-7 shadow-md"
+                        >
                             <div class="mb-4 flex items-center gap-3">
-                                <div class="h-[3px] w-15 rounded-sm bg-linear-to-r from-gold to-gold-light"></div>
-                                <h3 class="font-heading text-lg font-bold text-navy">In This Post</h3>
+                                <div class="from-gold to-gold-light h-[3px] w-15 rounded-sm bg-linear-to-r"></div>
+                                <h3 class="font-heading text-navy text-lg font-bold">In This Post</h3>
                             </div>
                             <nav id="toc-nav" class="space-y-0.5"></nav>
                         </div>
 
                         {{-- Recent Posts --}}
-                        @if($recentPosts->count())
-                            <div class="rounded-2xl border border-navy/5 bg-white p-7 shadow-md shadow-navy/5">
+                        @if ($recentPosts->count())
+                            <div class="border-navy/5 shadow-navy/5 rounded-2xl border bg-white p-7 shadow-md">
                                 <div class="mb-5 flex items-center gap-3">
-                                    <div class="h-[3px] w-15 rounded-sm bg-linear-to-r from-gold to-gold-light"></div>
-                                    <h3 class="font-heading text-lg font-bold text-navy">Recent Posts</h3>
+                                    <div class="from-gold to-gold-light h-[3px] w-15 rounded-sm bg-linear-to-r"></div>
+                                    <h3 class="font-heading text-navy text-lg font-bold">Recent Posts</h3>
                                 </div>
                                 <div class="space-y-4">
-                                    @foreach($recentPosts as $recent)
+                                    @foreach ($recentPosts as $recent)
                                         @php $recentStyle = $categoryStyles[$recent->category] ?? $defaultCategoryStyle; @endphp
-                                        <a href="{{ route('blog.show', $recent) }}" class="group -mx-2 flex items-start gap-4 rounded-xl p-2 transition-colors hover:bg-cream/50">
-                                            @if($recent->cover_image_url)
-                                                <img src="{{ $recent->cover_image_url }}" alt="" class="size-16 shrink-0 rounded-xl object-cover shadow-sm">
+                                        <a
+                                            href="{{ route('blog.show', $recent) }}"
+                                            class="group hover:bg-cream/50 -mx-2 flex items-start gap-4 rounded-xl p-2 transition-colors"
+                                        >
+                                            @if ($recent->cover_image_url)
+                                                <img
+                                                    src="{{ $recent->cover_image_url }}"
+                                                    alt=""
+                                                    class="size-16 shrink-0 rounded-xl object-cover shadow-sm"
+                                                />
                                             @else
                                                 <div class="flex size-16 shrink-0 items-center justify-center rounded-xl bg-linear-to-br {{ $recentStyle['surface'] }}">
                                                     <span class="text-2xl opacity-60">{{ $recentStyle['icon'] }}</span>
                                                 </div>
                                             @endif
                                             <div class="min-w-0 pt-0.5">
-                                                <h4 class="line-clamp-2 text-sm/snug font-semibold text-navy transition-colors group-hover:text-purple">{{ $recent->title }}</h4>
-                                                <span class="mt-1.5 block text-xs text-navy/35">{{ $recent->published_at->format('M j, Y') }}</span>
+                                                <h4 class="text-navy group-hover:text-purple line-clamp-2 text-sm/snug font-semibold transition-colors">
+                                                    {{ $recent->title }}
+                                                </h4>
+                                                <span class="text-navy/35 mt-1.5 block text-xs">{{ $recent->published_at->format('M j, Y') }}</span>
                                             </div>
                                         </a>
                                     @endforeach
@@ -279,18 +364,21 @@
                         @endif
 
                         {{-- Categories --}}
-                        <div class="rounded-2xl border border-navy/5 bg-white p-7 shadow-md shadow-navy/5">
+                        <div class="border-navy/5 shadow-navy/5 rounded-2xl border bg-white p-7 shadow-md">
                             <div class="mb-5 flex items-center gap-3">
-                                <div class="h-[3px] w-15 rounded-sm bg-linear-to-r from-gold to-gold-light"></div>
-                                <h3 class="font-heading text-lg font-bold text-navy">Categories</h3>
+                                <div class="from-gold to-gold-light h-[3px] w-15 rounded-sm bg-linear-to-r"></div>
+                                <h3 class="font-heading text-navy text-lg font-bold">Categories</h3>
                             </div>
                             <div class="space-y-1">
-                                @foreach(\App\Models\Post::CATEGORIES as $slug => $label)
+                                @foreach (\App\Models\Post::CATEGORIES as $slug => $label)
                                     @php $count = $categoryCounts[$slug] ?? 0; @endphp
-                                    @if($count > 0)
-                                        <a href="{{ route('blog.index', ['category' => $slug]) }}" class="group flex min-h-11 items-center justify-between rounded-xl px-3 py-2.5 transition-colors hover:bg-cream">
-                                            <span class="text-sm font-medium text-navy/65 transition-colors group-hover:text-navy">{{ $label }}</span>
-                                            <span class="rounded-full bg-gold/8 px-3 py-0.5 text-xs font-bold text-gold/70 transition-colors group-hover:bg-gold/15">{{ $count }}</span>
+                                    @if ($count > 0)
+                                        <a
+                                            href="{{ route('blog.index', ['category' => $slug]) }}"
+                                            class="group hover:bg-cream flex min-h-11 items-center justify-between rounded-xl px-3 py-2.5 transition-colors"
+                                        >
+                                            <span class="text-navy/65 group-hover:text-navy text-sm font-medium transition-colors">{{ $label }}</span>
+                                            <span class="bg-gold/8 text-gold/70 group-hover:bg-gold/15 rounded-full px-3 py-0.5 text-xs font-bold transition-colors">{{ $count }}</span>
                                         </a>
                                     @endif
                                 @endforeach
@@ -298,15 +386,20 @@
                         </div>
 
                         {{-- Podcast CTA --}}
-                        <div class="relative overflow-hidden rounded-2xl border border-white/5 bg-linear-to-br from-navy via-navy-light to-navy p-7 text-center">
-                            <div class="absolute top-1/2 left-1/2 size-32 -translate-1/2 rounded-full bg-gold/5 blur-3xl"></div>
+                        <div class="from-navy via-navy-light to-navy relative overflow-hidden rounded-2xl border border-white/5 bg-linear-to-br p-7 text-center">
+                            <div class="bg-gold/5 absolute top-1/2 left-1/2 size-32 -translate-1/2 rounded-full blur-3xl"></div>
                             <div class="relative">
                                 <div class="mx-auto mb-4 flex size-12 items-center justify-center rounded-xl border border-white/10 bg-white/10">
-                                    <svg class="size-6 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+                                    <svg class="text-gold size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
                                 </div>
-                                <h3 class="mb-2 font-heading text-lg font-bold text-white">Listen to the Podcast</h3>
-                                <p class="mb-5 text-base/relaxed text-white/40 sm:text-sm/relaxed">Disney parks, accessibility, and family stories</p>
-                                <a href="{{ route('episodes.index') }}" class="inline-block rounded-full bg-linear-to-r from-gold to-gold-light px-7 py-3 text-sm font-bold text-navy shadow-lg shadow-gold/20 transition-transform hover:-translate-y-0.5">
+                                <h3 class="font-heading mb-2 text-lg font-bold text-white">Listen to the Podcast</h3>
+                                <p class="mb-5 text-base/relaxed text-white/40 sm:text-sm/relaxed">
+                                    Disney parks, accessibility, and family stories
+                                </p>
+                                <a
+                                    href="{{ route('episodes.index') }}"
+                                    class="from-gold to-gold-light text-navy shadow-gold/20 inline-block rounded-full bg-linear-to-r px-7 py-3 text-sm font-bold shadow-lg transition-transform hover:-translate-y-0.5"
+                                >
                                     Browse Episodes
                                 </a>
                             </div>
@@ -321,7 +414,12 @@
     </section>
 
     {{-- Back to Top Button --}}
-    <button type="button" id="back-to-top" class="pointer-events-none fixed right-8 bottom-8 z-50 flex size-12 translate-y-2.5 cursor-pointer items-center justify-center rounded-full bg-linear-to-br from-gold to-gold-light text-white opacity-0 shadow-[0_4px_15px_rgb(212_168_67/30%)] transition-[transform,opacity,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgb(212_168_67/40%)]" aria-label="Back to top">
-        <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
+    <button
+        type="button"
+        id="back-to-top"
+        class="from-gold to-gold-light pointer-events-none fixed right-8 bottom-8 z-50 flex size-12 translate-y-2.5 cursor-pointer items-center justify-center rounded-full bg-linear-to-br text-white opacity-0 shadow-[0_4px_15px_rgb(212_168_67/30%)] transition-[transform,opacity,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgb(212_168_67/40%)]"
+        aria-label="Back to top"
+    >
+        <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7" /></svg>
     </button>
 </x-layouts.app>

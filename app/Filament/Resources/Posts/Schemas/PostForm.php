@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Posts\Schemas;
 
+use App\Models\Post;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
@@ -44,11 +45,11 @@ class PostForm
                             ->columnSpan(2)
                             ->unique(ignoreRecord: true),
                         Select::make('category')
-                            ->options(\App\Models\Post::CATEGORIES)
+                            ->options(Post::CATEGORIES)
                             ->required()
                             ->columnSpan(1),
                         Select::make('author')
-                            ->options(\App\Models\Post::AUTHORS)
+                            ->options(Post::AUTHORS)
                             ->required()
                             ->default('both')
                             ->columnSpan(1),

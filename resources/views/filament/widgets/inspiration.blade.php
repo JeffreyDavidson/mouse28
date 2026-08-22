@@ -9,9 +9,7 @@
         </div>
 
         <blockquote class="bg-mouse-gold/6 border-mouse-gold/40 rounded-xl border-l-3 p-4">
-            <p class="font-mouse-heading text-mouse-cream/90 text-[1.05rem]/6 italic">
-                “{{ $this->getPrompt() }}”
-            </p>
+            <p class="font-mouse-heading text-mouse-cream/90 text-[1.05rem]/6 italic">“{{ $this->getPrompt() }}”</p>
         </blockquote>
 
         <p class="font-mouse-body text-mouse-gold-light/50 mt-3 text-right text-xs">Refreshes on each visit</p>
