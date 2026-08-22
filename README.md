@@ -64,11 +64,15 @@ Published post, guide, and episode pages emit Schema.org content and breadcrumb 
 ## Development commands
 
 ```bash
+composer validate --strict --no-check-publish
+composer audit --locked --format=plain
+vendor/bin/pint --test
 composer test
 npm run build
-vendor/bin/pint
 git diff --check
 ```
+
+Run `vendor/bin/pint` to apply PHP formatting fixes.
 
 Use `composer dev` only when a long-running local server, queue listener, Vite server, and log viewer are all needed.
 
