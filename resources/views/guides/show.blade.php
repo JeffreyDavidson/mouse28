@@ -22,7 +22,7 @@
         <div class="mx-auto max-w-5xl px-4 sm:px-6">
             <a href="{{ route('guides.index') }}" class="inline-flex min-h-12 items-center text-sm text-white/60 hover:text-gold">← Back to Guides</a>
             <div class="mt-7 flex flex-wrap items-center gap-3 text-sm">
-                <span class="rounded-full border border-gold/30 bg-gold/15 px-4 py-2 font-bold tracking-wider text-gold uppercase">{{ $guide->category_label }}</span>
+                <a href="{{ route('guides.index', ['category' => $guide->category]) }}" class="inline-flex min-h-12 items-center rounded-full border border-gold/30 bg-gold/15 px-4 py-2 font-bold tracking-wider text-gold uppercase transition-colors hover:border-gold hover:bg-gold/25">{{ $guide->category_label }}</a>
                 <span class="text-white/45">{{ $guide->reading_time }} min read</span>
             </div>
             <h1 class="mt-5 max-w-4xl font-heading text-4xl/tight font-bold text-white md:text-6xl">{{ $guide->title }}</h1>

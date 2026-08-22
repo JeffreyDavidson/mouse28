@@ -18,6 +18,8 @@ The `published` model scopes require both an enabled publication flag and a non-
 
 Site search is handled by the invokable `SearchController`. It searches posts, guides, and episodes independently, limits each result group, and always begins with the models' `published` scopes so drafts and scheduled content remain private. Search result pages are marked `noindex,follow` and are not included in the sitemap.
 
+`ContentContinuation` keeps detail pages connected without exposing unpublished records. Guide recommendations prioritize the current category and fill remaining spaces with recent guides, while episode pages link to the chronologically adjacent published episodes. Article and guide category labels link back to their filtered indexes.
+
 Public detail pages emit Schema.org JSON-LD through `StructuredData`: `BlogPosting` for posts, `Article` for guides, `PodcastEpisode` for episodes, and `BreadcrumbList` navigation for each type. JSON output is hex-escaped before it is placed in the document head.
 
 ## Administration and authorization

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -54,7 +55,9 @@ class PostController extends Controller
         $categoryCounts = Post::published()->selectRaw('category, count(*) as count')->groupBy('category')->pluck('count', 'category');
 
         return view('blog.show', [
-            'post' => $post->load('episode'),
+            'post' => $post->load([
+                'episode' => fn (BelongsTo $query) => $query->published(),
+            ]),
             'recentPosts' => $recentPosts,
             'categoryCounts' => $categoryCounts,
         ]);

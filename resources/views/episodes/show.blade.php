@@ -331,6 +331,23 @@
                     </div>
                 </aside>
             </div>
+
+            @if ($previousEpisode || $nextEpisode)
+                <nav aria-label="Episode navigation" class="mt-12 grid gap-4 sm:grid-cols-2">
+                    @if ($previousEpisode)
+                        <a href="{{ route('episodes.show', $previousEpisode) }}" rel="prev" class="group flex min-h-24 flex-col justify-center rounded-2xl border border-navy/5 bg-white px-6 py-5 shadow-sm transition-[border-color,box-shadow] hover:border-purple/20 hover:shadow-lg">
+                            <span class="text-xs font-bold tracking-widest text-gold uppercase">← Previous episode</span>
+                            <span class="mt-2 font-heading text-lg font-bold text-navy transition-colors group-hover:text-purple">{{ $previousEpisode->title }}</span>
+                        </a>
+                    @endif
+                    @if ($nextEpisode)
+                        <a href="{{ route('episodes.show', $nextEpisode) }}" rel="next" class="group flex min-h-24 flex-col justify-center rounded-2xl border border-navy/5 bg-white px-6 py-5 text-right shadow-sm transition-[border-color,box-shadow] hover:border-purple/20 hover:shadow-lg sm:col-start-2">
+                            <span class="text-xs font-bold tracking-widest text-gold uppercase">Next episode →</span>
+                            <span class="mt-2 font-heading text-lg font-bold text-navy transition-colors group-hover:text-purple">{{ $nextEpisode->title }}</span>
+                        </a>
+                    @endif
+                </nav>
+            @endif
         </div>
     </section>
 @endsection

@@ -59,9 +59,9 @@
             {{-- Meta row --}}
             <div class="mb-5 flex flex-wrap items-center gap-3">
                 @if($post->category)
-                    <span class="rounded-full border border-gold/30 bg-gold/15 px-4 py-1.5 text-xs font-bold tracking-wider text-gold uppercase backdrop-blur-sm">
+                    <a href="{{ route('blog.index', ['category' => $post->category]) }}" class="inline-flex min-h-11 items-center rounded-full border border-gold/30 bg-gold/15 px-4 py-1.5 text-xs font-bold tracking-wider text-gold uppercase backdrop-blur-sm transition-colors hover:border-gold hover:bg-gold/25">
                         {{ $post->category_label }}
-                    </span>
+                    </a>
                 @endif
                 <span class="text-sm text-white/30">{{ $post->published_at?->format('F j, Y') ?? 'Not scheduled' }}</span>
                 <span class="text-white/20">·</span>

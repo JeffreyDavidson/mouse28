@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Episode;
 use App\Models\Podcast;
+use App\Support\ContentContinuation;
 
 class EpisodeController extends Controller
 {
@@ -23,6 +24,8 @@ class EpisodeController extends Controller
             'episode' => $episode,
             'podcast' => Podcast::info(),
             'relatedPosts' => $episode->posts()->published()->latest('published_at')->take(4)->get(),
+            'previousEpisode' => ContentContinuation::previousEpisode($episode),
+            'nextEpisode' => ContentContinuation::nextEpisode($episode),
         ]);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Guide;
+use App\Support\ContentContinuation;
 use Illuminate\Http\Request;
 
 class GuideController extends Controller
@@ -33,12 +34,7 @@ class GuideController extends Controller
 
         return view('guides.show', [
             'guide' => $guide,
-            'relatedGuides' => Guide::published()
-                ->whereKeyNot($guide->getKey())
-                ->where('category', $guide->category)
-                ->latest('published_at')
-                ->take(3)
-                ->get(),
+            'relatedGuides' => ContentContinuation::relatedGuides($guide),
         ]);
     }
 }
