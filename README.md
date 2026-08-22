@@ -54,6 +54,7 @@ The Filament panel is available at `/admin` to users with `is_admin = true`.
 - Guides contain durable park resources. Policy-sensitive guides should include an official source and a current `last_reviewed_at` date.
 - Episodes contain podcast metadata, audio links, show notes, and transcripts.
 - Podcast Settings owns show-level distribution metadata.
+- Show-level podcast destinations appear throughout the public site and act as fallbacks when an episode does not have a platform-specific URL. The generated podcast feed is always available as the RSS fallback.
 - Content lists show publication status and readiness reminders. Edit pages provide administrator-only draft previews.
 
 Content is publicly visible only when it is marked published and its publication date is not in the future. Community Stories and reader-submitted story publishing are intentionally outside the product scope.

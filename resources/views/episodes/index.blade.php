@@ -25,15 +25,13 @@
             <h1 class="mt-2 font-heading text-4xl font-bold text-white md:text-5xl lg:text-6xl">Listen Along</h1>
             <p class="mx-auto mt-4 max-w-xl text-lg text-white/60">Every week we bring you stories, tips, and magic from inside Disney parks, from our family to yours.</p>
             {{-- Platform subscribe badges --}}
-            <div class="mt-8 flex items-center justify-center gap-3">
-                <span class="inline-flex min-h-12 items-center gap-2 rounded-xl border border-white/10 bg-white/10 px-4 py-2.5 text-base font-semibold text-white/55 backdrop-blur-sm sm:text-sm">
-                    <svg class="size-5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.56 2.93 11.3 4.7 7.72C5.57 5.94 7.36 4.86 9.28 4.84C10.56 4.81 11.78 5.7 12.56 5.7C13.34 5.7 14.85 4.62 16.41 4.8C17.07 4.83 18.96 5.06 20.16 6.87C20.05 6.95 17.58 8.37 17.61 11.34C17.65 14.9 20.68 16.04 20.71 16.06C20.69 16.13 20.18 17.86 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"/></svg>
-                    Apple · Soon
-                </span>
-                <span class="inline-flex min-h-12 items-center gap-2 rounded-xl border border-white/10 bg-white/10 px-4 py-2.5 text-base font-semibold text-white/55 backdrop-blur-sm sm:text-sm">
-                    <svg class="size-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
-                    Spotify · Soon
-                </span>
+            <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+                @foreach ($podcast->distributionLinks() as $link)
+                    <a href="{{ $link['url'] }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-12 items-center gap-2 rounded-xl border border-white/10 bg-white/10 px-4 py-2.5 text-base font-semibold text-white/80 backdrop-blur-sm transition-colors hover:border-gold/40 hover:text-gold sm:text-sm">
+                        <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7v7m0-7L10 14M5 7v12h12v-5"/></svg>
+                        {{ $link['label'] }}
+                    </a>
+                @endforeach
             </div>
         </div>
     </section>
@@ -165,24 +163,12 @@
                                 <h3 class="font-heading text-lg font-bold text-navy">Listen On</h3>
                             </div>
                             <div class="space-y-3">
-                                <div class="flex w-full items-center gap-3 rounded-xl border border-navy/8 px-4 py-3.5 opacity-70">
-                                    <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-[#fc3c44] to-[#d42d56] shadow-sm">
-                                        <svg class="size-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.56 2.93 11.3 4.7 7.72C5.57 5.94 7.36 4.86 9.28 4.84C10.56 4.81 11.78 5.7 12.56 5.7C13.34 5.7 14.85 4.62 16.41 4.8C17.07 4.83 18.96 5.06 20.16 6.87C20.05 6.95 17.58 8.37 17.61 11.34C17.65 14.9 20.68 16.04 20.71 16.06C20.69 16.13 20.18 17.86 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z"/></svg>
-                                    </div>
-                                    <div>
-                                        <span class="block text-base font-semibold text-navy sm:text-sm">Apple Podcasts</span>
-                                        <span class="text-sm text-navy/35 sm:text-xs">Coming soon</span>
-                                    </div>
-                                </div>
-                                <div class="flex w-full items-center gap-3 rounded-xl border border-navy/8 px-4 py-3.5 opacity-70">
-                                    <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-[#1DB954] to-[#169c46] shadow-sm">
-                                        <svg class="size-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>
-                                    </div>
-                                    <div>
-                                        <span class="block text-base font-semibold text-navy sm:text-sm">Spotify</span>
-                                        <span class="text-sm text-navy/35 sm:text-xs">Coming soon</span>
-                                    </div>
-                                </div>
+                                @foreach ($podcast->distributionLinks() as $link)
+                                    <a href="{{ $link['url'] }}" target="_blank" rel="noopener noreferrer" class="group flex min-h-12 w-full items-center gap-3 rounded-xl border border-navy/8 px-4 py-3 transition-colors hover:border-purple/25 hover:bg-purple/5">
+                                        <svg class="size-5 shrink-0 text-purple" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7v7m0-7L10 14M5 7v12h12v-5"/></svg>
+                                        <span class="font-semibold text-navy transition-colors group-hover:text-purple">{{ $link['label'] }}</span>
+                                    </a>
+                                @endforeach
                             </div>
                         </div>
 
@@ -271,14 +257,9 @@
                                     Our first episode is in the works. Disney parks, accessibility, family stories, and a lot of heart. Subscribe so you're there from the very start.
                                 </p>
                                 <div class="flex items-center justify-center gap-3 md:justify-start">
-                                    <span class="inline-flex min-h-11 items-center gap-2 rounded-lg border border-cream/10 bg-cream/8 px-4 py-2 text-base font-semibold text-cream/55 sm:text-xs">
-                                        <svg class="size-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.56 2.93 11.3 4.7 7.72C5.57 5.94 7.36 4.86 9.28 4.84C10.56 4.81 11.78 5.7 12.56 5.7C13.34 5.7 14.85 4.62 16.41 4.8C17.07 4.83 18.96 5.06 20.16 6.87C20.05 6.95 17.58 8.37 17.61 11.34C17.65 14.9 20.68 16.04 20.71 16.06C20.69 16.13 20.18 17.86 18.71 19.5Z"/></svg>
-                                        Apple · Soon
-                                    </span>
-                                    <span class="inline-flex min-h-11 items-center gap-2 rounded-lg border border-cream/10 bg-cream/8 px-4 py-2 text-base font-semibold text-cream/55 sm:text-xs">
-                                        <svg class="size-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02z"/></svg>
-                                        Spotify · Soon
-                                    </span>
+                                    @foreach ($podcast->distributionLinks() as $link)
+                                        <a href="{{ $link['url'] }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center gap-2 rounded-lg border border-cream/10 bg-cream/8 px-4 py-2 text-base font-semibold text-cream/70 transition-colors hover:border-gold/30 hover:text-gold sm:text-xs">{{ $link['label'] }}</a>
+                                    @endforeach
                                 </div>
                             </div>
 

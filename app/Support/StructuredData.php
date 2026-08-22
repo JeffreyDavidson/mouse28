@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\Episode;
 use App\Models\Guide;
+use App\Models\Podcast;
 use App\Models\Post;
 use Illuminate\Support\Str;
 
@@ -60,7 +61,7 @@ class StructuredData
         return self::graph($article, 'Article', 'Guides', route('guides.index'), $guide->title, route('guides.show', $guide));
     }
 
-    public static function forEpisode(Episode $episode): array
+    public static function forEpisode(Episode $episode, ?Podcast $podcast = null): array
     {
         $podcastEpisode = [
             '@type' => 'PodcastEpisode',
@@ -71,7 +72,7 @@ class StructuredData
             'episodeNumber' => $episode->episode_number,
             'partOfSeries' => [
                 '@type' => 'PodcastSeries',
-                'name' => 'Mouse28',
+                'name' => $podcast?->name ?: 'Mouse28',
                 'url' => route('episodes.index'),
             ],
         ];

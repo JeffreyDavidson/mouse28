@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Episode;
 use App\Models\Guide;
+use App\Models\Podcast;
 use App\Models\Post;
 
 class HomeController extends Controller
@@ -16,12 +17,14 @@ class HomeController extends Controller
             ->take(6)->get();
         $latestEpisodes = Episode::published()->latest('published_at')->take(3)->get();
         $latestGuides = Guide::published()->latest('published_at')->take(4)->get();
+        $podcast = Podcast::info();
 
         return view('home', compact(
             'featuredPost',
             'latestPosts',
             'latestEpisodes',
             'latestGuides',
+            'podcast',
         ));
     }
 }

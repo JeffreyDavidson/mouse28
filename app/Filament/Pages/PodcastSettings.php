@@ -81,7 +81,8 @@ class PodcastSettings extends Page
                         TextInput::make('youtube_url')->url()->label('YouTube')
                             ->prefixIcon('heroicon-o-link'),
                         TextInput::make('rss_url')->url()->label('RSS Feed')
-                            ->prefixIcon('heroicon-o-rss'),
+                            ->prefixIcon('heroicon-o-rss')
+                            ->helperText('Leave blank to use the generated Mouse28 podcast feed.'),
                     ]),
 
                 Section::make('Social Media')
