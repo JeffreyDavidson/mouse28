@@ -42,6 +42,7 @@ The application can run locally without live third-party calls, but these featur
 - `MAIL_*` and `MAIL_ADMIN_ADDRESS` deliver contact notifications and confirmations.
 - `PODCAST_OWNER_NAME` and `PODCAST_OWNER_EMAIL` populate podcast-feed ownership metadata.
 - `FATHOM_SITE_ID` enables the optional analytics script.
+- `SENTRY_LARAVEL_DSN` enables production error reporting. Keep `SENTRY_SEND_DEFAULT_PII=false`; tracing and profiling remain disabled until their sample rates are deliberately raised above `0.0`.
 - `GUIDE_REVIEW_INTERVAL_DAYS` controls when durable guides are flagged for editorial review; it defaults to 180 days.
 
 Never commit live credentials. Keep them in the deployment environment.
@@ -68,19 +69,26 @@ composer validate --strict --no-check-publish
 composer audit --locked --format=plain
 vendor/bin/pint --test
 vendor/bin/filacheck
+composer analyse
+composer test:rector
 composer test
+composer test:browser
 npm run build
 git diff --check
 ```
 
 Run `vendor/bin/pint` to apply PHP and Blade formatting fixes. Blade formatting is enabled by default through `pint.json`.
 Run `vendor/bin/filacheck` to check Filament code for deprecated APIs and common implementation issues.
+Run `npx playwright install chromium` once before the local browser suite. Browser smoke tests also run weekly, on demand, and for release tags in GitHub Actions.
+
+Laravel Boost provides project-aware documentation and inspection tools through the committed Codex MCP configuration. Its generated Laravel, Pest, and Tailwind skills are tracked under `.agents/skills`. Laravel Pao automatically condenses supported test and analysis output when an agent runs the commands.
 
 Use `composer dev` only when a long-running local server, queue listener, Vite server, and log viewer are all needed.
 
 ## Deployment checklist
 
 - Configure the application URL, database, mail, Resend, Turnstile, podcast ownership, storage, cache, sessions, and queues.
+- Set `SENTRY_LARAVEL_DSN`, `SENTRY_ENVIRONMENT=production`, and a deploy-specific `SENTRY_RELEASE` to opt into error reporting. Leave PII disabled and choose non-zero tracing or profiling sample rates only after reviewing volume and privacy.
 - Run `php artisan migrate --force`.
 - Run `npm run build` before publishing the release artifact.
 - Ensure `public/storage` is linked when uploaded media is used.
