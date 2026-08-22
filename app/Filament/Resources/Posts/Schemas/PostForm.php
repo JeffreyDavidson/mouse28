@@ -10,7 +10,6 @@ use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
@@ -70,10 +69,8 @@ class PostForm
                         Textarea::make('excerpt')
                             ->rows(3)
                             ->maxLength(300)
-                            ->required(fn (Get $get): bool => (bool) $get('is_published'))
                             ->helperText('Short summary shown in post listings.'),
-                        MarkdownEditor::make('body')
-                            ->required(fn (Get $get): bool => (bool) $get('is_published')),
+                        MarkdownEditor::make('body'),
                     ]),
 
                 Section::make('Review & Source')
@@ -100,21 +97,25 @@ class PostForm
                             ->schema([
                                 FileUpload::make('cover_image')
                                     ->image()
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                    ->maxSize(5120)
+                                    ->imageAspectRatio('1200:630')
+                                    ->automaticallyCropImagesToAspectRatio()
+                                    ->automaticallyResizeImagesMode('cover')
+                                    ->automaticallyResizeImagesToWidth('1600')
+                                    ->automaticallyResizeImagesToHeight('840')
                                     ->disk('public')
-                                    ->directory('posts'),
+                                    ->directory('posts')
+                                    ->helperText('Landscape image (1.91:1), up to 5 MB. Uploads are cropped and resized automatically.'),
                             ]),
 
                         Section::make('Publishing')
                             ->icon('heroicon-o-rocket-launch')
-                            ->description('Published posts require an excerpt, body, and publish date. Readiness also tracks images and SEO fields.')
+                            ->description('Save the post, then use the Publish action when its content is ready.')
                             ->schema([
-                                Toggle::make('is_published')
-                                    ->label('Published')
-                                    ->live()
-                                    ->default(false),
                                 DateTimePicker::make('published_at')
                                     ->label('Publish Date')
-                                    ->required(fn (Get $get): bool => (bool) $get('is_published')),
+                                    ->helperText('Optional. Leave blank to publish immediately, or choose a future date to schedule.'),
                             ]),
                     ]),
 
@@ -133,6 +134,13 @@ class PostForm
                             ->helperText('120–160 characters recommended.'),
                         FileUpload::make('og_image')
                             ->image()
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->maxSize(5120)
+                            ->imageAspectRatio('1200:630')
+                            ->automaticallyCropImagesToAspectRatio()
+                            ->automaticallyResizeImagesMode('cover')
+                            ->automaticallyResizeImagesToWidth('1200')
+                            ->automaticallyResizeImagesToHeight('630')
                             ->disk('public')
                             ->directory('posts/og')
                             ->helperText('Custom social sharing image. Falls back to cover.'),

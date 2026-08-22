@@ -3,7 +3,7 @@
     :description="$episode->meta_description ?: Str::limit($episode->description, 160)"
     :og-title="$episode->meta_title ?: $episode->title"
     :og-description="$episode->meta_description ?: Str::limit($episode->description, 200)"
-    :og-image="$episode->og_image_url"
+    :og-image="$episode->og_image_url ?: $episode->cover_image_url"
     :robots="($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow'"
 >
     @unless ($isPreview ?? false)

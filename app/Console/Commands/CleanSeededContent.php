@@ -32,9 +32,9 @@ class CleanSeededContent extends Command
                 ->update(['episode_id' => null]);
 
             return [
-                Post::query()->whereIn('slug', self::postSlugs())->delete(),
-                Guide::query()->whereIn('slug', self::guideSlugs())->delete(),
-                Episode::query()->whereIn('slug', self::episodeSlugs())->delete(),
+                Post::query()->whereIn('slug', self::postSlugs())->forceDelete(),
+                Guide::query()->whereIn('slug', self::guideSlugs())->forceDelete(),
+                Episode::query()->whereIn('slug', self::episodeSlugs())->forceDelete(),
             ];
         });
 

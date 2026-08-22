@@ -113,6 +113,7 @@ test('episode metadata falls back to its title and description', function (): vo
     $episode = Episode::factory()->create([
         'title' => 'Trailer: Meet Mouse28',
         'description' => 'Meet Jeffrey and Cassie and learn what the Mouse28 podcast is about.',
+        'cover_image' => 'episodes/trailer-meet-mouse28.webp',
         'meta_title' => null,
         'meta_description' => null,
     ]);
@@ -120,7 +121,8 @@ test('episode metadata falls back to its title and description', function (): vo
     get(route('episodes.show', $episode))
         ->assertOk()
         ->assertSee('<title>Trailer: Meet Mouse28 — Mouse28</title>', false)
-        ->assertSee('<meta name="description" content="Meet Jeffrey and Cassie and learn what the Mouse28 podcast is about.">', false);
+        ->assertSee('<meta name="description" content="Meet Jeffrey and Cassie and learn what the Mouse28 podcast is about.">', false)
+        ->assertSee('<meta property="og:image" content="'.url('/storage/episodes/trailer-meet-mouse28.webp').'">', false);
 });
 
 test('canonical urls preserve an http application origin', function (): void {
