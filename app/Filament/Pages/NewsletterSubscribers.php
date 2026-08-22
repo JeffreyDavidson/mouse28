@@ -2,11 +2,11 @@
 
 namespace App\Filament\Pages;
 
+use App\Support\ResendAudience;
 use BackedEnum;
+use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class NewsletterSubscribers extends Page
@@ -28,53 +28,48 @@ class NewsletterSubscribers extends Page
         return auth()->user()?->is_admin === true;
     }
 
-    public function getSubscribers(): array
+    /** @return array{subscribers: list<array<string, mixed>>, error: ?string} */
+    public function getAudience(): array
     {
-        try {
-            return Cache::remember('newsletter_subscribers', 300, function () {
-                $response = Http::withToken(config('services.resend.key'))
-                    ->timeout(10)
-                    ->get($this->contactsUrl());
-
-                if ($response->successful()) {
-                    return $response->json('data', []);
-                }
-
-                return [];
-            });
-        } catch (\Throwable) {
-            return [];
-        }
+        return app(ResendAudience::class)->get();
     }
 
-    public function getErrorMessage(): ?string
+    public function refreshSubscribers(): void
     {
-        try {
-            $response = Http::withToken(config('services.resend.key'))
-                ->timeout(10)
-                ->get($this->contactsUrl());
+        $audience = app(ResendAudience::class)->refresh();
 
-            if (! $response->successful()) {
-                return 'Failed to fetch subscribers from Resend API (HTTP '.$response->status().')';
-            }
-        } catch (\Throwable) {
-            return 'Could not connect to the Resend API.';
+        $notification = Notification::make();
+
+        if ($audience['error']) {
+            $notification
+                ->danger()
+                ->title('Subscriber refresh failed')
+                ->body($audience['error']);
+        } else {
+            $notification
+                ->success()
+                ->title('Subscribers refreshed');
         }
 
-        return null;
+        $notification->send();
     }
 
     public function exportCsv(): StreamedResponse
     {
-        $subscribers = $this->getSubscribers();
+        $subscribers = $this->getAudience()['subscribers'];
 
         return response()->streamDownload(function () use ($subscribers) {
             $handle = fopen('php://output', 'w');
+
+            if ($handle === false) {
+                return;
+            }
+
             fputcsv($handle, ['Email', 'Created At']);
             foreach ($subscribers as $sub) {
                 fputcsv($handle, [
-                    $sub['email'] ?? '',
-                    $sub['created_at'] ?? '',
+                    $this->escapeCsvValue($sub['email'] ?? ''),
+                    $this->escapeCsvValue($sub['created_at'] ?? ''),
                 ]);
             }
             fclose($handle);
@@ -83,8 +78,10 @@ class NewsletterSubscribers extends Page
         ]);
     }
 
-    private function contactsUrl(): string
+    private function escapeCsvValue(mixed $value): string
     {
-        return 'https://api.resend.com/audiences/'.config('services.resend.audience_id').'/contacts';
+        $value = (string) $value;
+
+        return preg_match('/^[=+\-@\t\r]/', $value) === 1 ? "'{$value}" : $value;
     }
 }

@@ -37,7 +37,7 @@ class CleanSeededEpisodes extends Command
 
         Episode::query()
             ->whereIn('id', $seededEpisodeIds)
-            ->delete();
+            ->forceDelete();
 
         $this->info("Deleted {$count} seeded episodes.");
 

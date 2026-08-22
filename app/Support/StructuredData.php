@@ -104,7 +104,7 @@ class StructuredData
             ];
         }
 
-        $image = $episode->og_image_url ?: ($episode->cover_image ? '/storage/'.$episode->cover_image : null);
+        $image = $episode->og_image_url ?: $episode->cover_image_url;
         if ($image) {
             $podcastEpisode['image'] = url($image);
         }

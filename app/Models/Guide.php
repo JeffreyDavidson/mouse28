@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
@@ -40,7 +41,7 @@ use Illuminate\Support\Carbon;
 class Guide extends Model
 {
     /** @use HasFactory<GuideFactory> */
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     public const CATEGORIES = [
         'accessibility' => 'Accessibility',
@@ -63,6 +64,37 @@ class Guide extends Model
         $query->where(function (Builder $query): void {
             $query->whereNull('last_reviewed_at')
                 ->orWhere('last_reviewed_at', '<', today()->subDays(config('mouse28.guide_review_interval_days')));
+        });
+    }
+
+    #[Scope]
+    protected function drafts(Builder $query): void
+    {
+        $query->where('is_published', false);
+    }
+
+    #[Scope]
+    protected function scheduled(Builder $query): void
+    {
+        $query->where('is_published', true)
+            ->where('published_at', '>', now());
+    }
+
+    #[Scope]
+    protected function needsAttention(Builder $query): void
+    {
+        $query->where(function (Builder $query): void {
+            foreach (['excerpt', 'body', 'cover_image', 'source_url', 'last_reviewed_at', 'meta_title', 'meta_description'] as $column) {
+                $query->orWhereNull($column);
+
+                if ($column !== 'last_reviewed_at') {
+                    $query->orWhere($column, '');
+                }
+            }
+
+            $query->orWhere(function (Builder $query): void {
+                $query->where('is_published', true)->whereNull('published_at');
+            });
         });
     }
 

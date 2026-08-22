@@ -1,7 +1,8 @@
 <x-filament-panels::page>
     @php
-        $subscribers = $this->getSubscribers();
-        $error = $this->getErrorMessage();
+        $audience = $this->getAudience();
+        $subscribers = $audience['subscribers'];
+        $error = $audience['error'];
         $count = count($subscribers);
     @endphp
 
@@ -18,8 +19,16 @@
                 {{ $count }}</x-filament.resource-stat>
         </x-slot:stats>
 
-        @if ($count > 0)
-            <x-slot:actions>
+        <x-slot:actions>
+            <x-filament::button
+                wire:click="refreshSubscribers"
+                color="gray"
+                icon="heroicon-m-arrow-path"
+                class="min-h-12"
+            >
+                Refresh
+            </x-filament::button>
+            @if ($count > 0)
                 <x-filament::button
                     wire:click="exportCsv"
                     color="warning"
@@ -28,8 +37,8 @@
                 >
                     Export CSV
                 </x-filament::button>
-            </x-slot:actions>
-        @endif
+            @endif
+        </x-slot:actions>
     </x-filament.page-header>
 
     @if ($error)

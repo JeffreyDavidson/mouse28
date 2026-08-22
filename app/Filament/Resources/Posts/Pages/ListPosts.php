@@ -6,7 +6,9 @@ use App\Filament\Resources\Posts\PostResource;
 use App\Models\Post;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\Builder;
 
 class ListPosts extends ListRecords
 {
@@ -16,6 +18,23 @@ class ListPosts extends ListRecords
     {
         return [
             CreateAction::make(),
+        ];
+    }
+
+    public function getTabs(): array
+    {
+        return [
+            'all' => Tab::make('All'),
+            'attention' => Tab::make('Needs attention')
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->needsAttention()->select('id'))),
+            'drafts' => Tab::make('Drafts')
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->drafts()->select('id'))),
+            'scheduled' => Tab::make('Scheduled')
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->scheduled()->select('id'))),
+            'published' => Tab::make('Published')
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->published()->select('id'))),
+            'review-due' => Tab::make('Review due')
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->published()->reviewDue()->select('id'))),
         ];
     }
 

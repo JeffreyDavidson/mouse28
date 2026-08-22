@@ -13,16 +13,31 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class EpisodeResource extends Resource
 {
     protected static ?string $model = Episode::class;
+
+    protected static ?string $recordTitleAttribute = 'title';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMicrophone;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?int $navigationSort = 1;
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['title', 'slug', 'episode_number'];
+    }
+
+    public static function getRecordRouteBindingEloquentQuery(): Builder
+    {
+        return parent::getRecordRouteBindingEloquentQuery()
+            ->withoutGlobalScopes([SoftDeletingScope::class]);
+    }
 
     public static function form(Schema $schema): Schema
     {

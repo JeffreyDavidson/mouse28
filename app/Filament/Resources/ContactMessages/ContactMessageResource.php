@@ -19,11 +19,18 @@ class ContactMessageResource extends Resource
 {
     protected static ?string $model = ContactMessage::class;
 
+    protected static ?string $recordTitleAttribute = 'name';
+
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-envelope';
 
     protected static string|\UnitEnum|null $navigationGroup = 'Communication';
 
     protected static ?int $navigationSort = 1;
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['name', 'email', 'subject'];
+    }
 
     public static function getNavigationBadge(): ?string
     {

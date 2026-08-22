@@ -7,8 +7,13 @@ use App\Support\EditorialReadiness;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class EpisodesTable
 {
@@ -26,6 +31,15 @@ class EpisodesTable
                 TextColumn::make('season_number')
                     ->label('Season')
                     ->sortable(),
+                TextColumn::make('audio')
+                    ->badge()
+                    ->getStateUsing(fn (Episode $record): string => $record->audio_source_url ? 'Available' : 'Not available')
+                    ->color(fn (string $state): string => $state === 'Available' ? 'success' : 'gray'),
+                TextColumn::make('transcript')
+                    ->badge()
+                    ->formatStateUsing(fn (?string $state): string => filled($state) ? 'Available' : 'Not available')
+                    ->color(fn (?string $state): string => filled($state) ? 'success' : 'gray')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('readiness')
                     ->label('Readiness')
                     ->badge()
@@ -51,13 +65,26 @@ class EpisodesTable
                         return sprintf('%d:%02d', floor($state / 60), $state % 60);
                     }),
             ])
-            ->filters([])
+            ->filters([
+                Filter::make('missing_artwork')
+                    ->query(fn (Builder $query): Builder => $query->where(function (Builder $query): void {
+                        $query->whereNull('cover_image')->orWhere('cover_image', '');
+                    })),
+                Filter::make('missing_seo')
+                    ->query(fn (Builder $query): Builder => $query->where(function (Builder $query): void {
+                        $query->whereNull('meta_title')->orWhere('meta_title', '')
+                            ->orWhereNull('meta_description')->orWhere('meta_description', '');
+                    })),
+                TrashedFilter::make(),
+            ])
             ->recordActions([
                 EditAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    ForceDeleteBulkAction::make(),
+                    RestoreBulkAction::make(),
                 ]),
             ]);
     }

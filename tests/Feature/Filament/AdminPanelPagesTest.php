@@ -23,6 +23,8 @@ test('guest can render the admin login', function (): void {
 });
 
 test('authenticated user can render the custom admin pages', function (): void {
+    config()->set('services.resend.audience_id', 'audience-test-id');
+    config()->set('services.resend.key', 'resend-test-key');
     Http::fake([
         'https://api.resend.com/*' => Http::response(['data' => []]),
     ]);
