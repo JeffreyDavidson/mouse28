@@ -87,7 +87,7 @@ class ContactMessageResource extends Resource
                     ->openUrlInNewTab(),
                 DeleteAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 DeleteBulkAction::make(),
             ]);
     }

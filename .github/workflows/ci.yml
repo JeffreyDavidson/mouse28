@@ -53,6 +53,9 @@ jobs:
       - name: Check PHP and Blade formatting
         run: vendor/bin/pint --test
 
+      - name: Check Filament code
+        run: vendor/bin/filacheck
+
       - name: Prepare Laravel
         run: |
           cp .env.example .env
