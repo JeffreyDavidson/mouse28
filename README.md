@@ -78,7 +78,7 @@ Use `composer dev` only when a long-running local server, queue listener, Vite s
 - Ensure `public/storage` is linked when uploaded media is used.
 - Run `php artisan optimize` after environment configuration is final.
 - Confirm the scheduler and queue worker are supervised if production uses queued work.
-- Verify `/`, `/guides`, `/sitemap.xml`, both RSS feeds, contact submission, and newsletter signup.
+- Verify `/`, `/guides`, `/search?q=accessibility`, `/sitemap.xml`, both RSS feeds, contact submission, and newsletter signup.
 - Back up the database and uploaded files before each deployment.
 
 See [docs/architecture.md](docs/architecture.md) for application boundaries and [docs/content-model.md](docs/content-model.md) for editorial language.

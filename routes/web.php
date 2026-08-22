@@ -7,6 +7,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\RssController;
+use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +18,7 @@ Route::get('/guides', [GuideController::class, 'index'])->name('guides.index');
 Route::get('/guides/{guide:slug}', [GuideController::class, 'show'])->name('guides.show');
 Route::get('/episodes', [EpisodeController::class, 'index'])->name('episodes.index');
 Route::get('/episodes/{episode:slug}', [EpisodeController::class, 'show'])->name('episodes.show');
+Route::get('/search', SearchController::class)->name('search');
 Route::get('/about', fn () => view('about'))->name('about');
 Route::get('/contact', [ContactController::class, 'show'])->name('contact.show');
 Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:contact-form')->name('contact.store');

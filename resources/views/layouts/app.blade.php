@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Mouse28 — Disney Parks Through Different Eyes')</title>
     <meta name="description" content="@yield('meta_description', 'Disney parks through the eyes of a family raising a daughter with autism. Tips, accessibility guides, and stories from Jeffrey & Cassie Davidson.')">
+    <meta name="robots" content="@yield('robots', 'index,follow')">
 
     {{-- Open Graph --}}
     <meta property="og:title" content="@yield('og_title', 'Mouse28 — Disney Parks Through Different Eyes')">
@@ -57,6 +58,9 @@
                     <a href="{{ route('episodes.index') }}" @if(request()->routeIs('episodes.*')) aria-current="page" @endif class="{{ request()->routeIs('episodes.*') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-11 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold">Podcast</a>
                     <a href="{{ route('about') }}" @if(request()->routeIs('about')) aria-current="page" @endif class="{{ request()->routeIs('about') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-11 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold">About</a>
                     <a href="{{ route('contact.show') }}" @if(request()->routeIs('contact.*')) aria-current="page" @endif class="{{ request()->routeIs('contact.*') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-11 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold">Contact</a>
+                    <a href="{{ route('search') }}" @if(request()->routeIs('search')) aria-current="page" @endif class="{{ request()->routeIs('search') ? 'text-gold' : 'text-white/80' }} inline-flex size-12 items-center justify-center rounded-full transition-colors hover:bg-white/5 hover:text-gold" aria-label="Search Mouse28">
+                        <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35m1.35-5.65a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/></svg>
+                    </a>
                 </div>
 
                 {{-- Mobile menu button (animated hamburger → X) --}}
@@ -85,6 +89,7 @@
                     <a href="{{ route('episodes.index') }}" @if(request()->routeIs('episodes.*')) aria-current="page" @endif class="{{ request()->routeIs('episodes.*') ? 'text-gold bg-white/5' : 'text-white/80' }} flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium transition-colors hover:bg-white/5 hover:text-gold">Podcast</a>
                     <a href="{{ route('about') }}" @if(request()->routeIs('about')) aria-current="page" @endif class="{{ request()->routeIs('about') ? 'text-gold bg-white/5' : 'text-white/80' }} flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium transition-colors hover:bg-white/5 hover:text-gold">About</a>
                     <a href="{{ route('contact.show') }}" @if(request()->routeIs('contact.*')) aria-current="page" @endif class="{{ request()->routeIs('contact.*') ? 'text-gold bg-white/5' : 'text-white/80' }} flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium transition-colors hover:bg-white/5 hover:text-gold">Contact</a>
+                    <a href="{{ route('search') }}" @if(request()->routeIs('search')) aria-current="page" @endif class="{{ request()->routeIs('search') ? 'text-gold bg-white/5' : 'text-white/80' }} flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium transition-colors hover:bg-white/5 hover:text-gold">Search</a>
                 </div>
             </div>
         </div>
