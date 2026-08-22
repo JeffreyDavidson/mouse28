@@ -23,7 +23,7 @@
 
     <link rel="canonical" href="{{ url()->current() }}">
     <link rel="alternate" type="application/rss+xml" title="Mouse28 Blog" href="{{ route('rss.blog') }}">
-    <link rel="alternate" type="application/rss+xml" title="Mouse28 Podcast" href="{{ route('rss.podcast') }}">
+    <link rel="alternate" type="application/rss+xml" title="Mouse28 Podcast" href="{{ $podcast->rss_url ?: route('rss.podcast') }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -148,8 +148,9 @@
                         <h2 class="mb-4 font-heading text-base font-semibold tracking-wider text-white uppercase sm:text-sm">Connect</h2>
                         <div class="flex flex-col gap-1 text-base sm:text-sm">
                             <a href="{{ route('contact.show') }}" class="inline-flex min-h-11 items-center transition-colors hover:text-gold sm:min-h-6">Contact Us</a>
-                            <span class="inline-flex min-h-11 items-center text-white/35 sm:min-h-6">Apple Podcasts · Soon</span>
-                            <span class="inline-flex min-h-11 items-center text-white/35 sm:min-h-6">Spotify · Soon</span>
+                            @foreach ($podcast->distributionLinks() as $link)
+                                <a href="{{ $link['url'] }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center transition-colors hover:text-gold sm:min-h-6">{{ $link['label'] }}</a>
+                            @endforeach
                         </div>
                     </div>
                 </div>

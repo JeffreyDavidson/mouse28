@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Episode;
+use App\Models\Podcast;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
@@ -14,6 +15,7 @@ class PreviewEpisodeController extends Controller
 
         return view('episodes.show', [
             'episode' => $episode,
+            'podcast' => Podcast::info(),
             'relatedPosts' => $episode->posts()->published()->latest('published_at')->take(4)->get(),
             'isPreview' => true,
         ]);

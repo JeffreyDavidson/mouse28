@@ -274,6 +274,11 @@
                     </div>
                 </div>
             @endif
+            <div class="mt-8 flex flex-wrap items-center justify-center gap-3" aria-label="Subscribe to the Mouse28 podcast">
+                @foreach ($podcast->distributionLinks() as $link)
+                    <a href="{{ $link['url'] }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-12 items-center rounded-full border border-purple/15 bg-purple/5 px-5 py-3 text-sm font-semibold text-purple transition-colors hover:border-purple/30 hover:bg-purple/10">{{ $link['label'] }}</a>
+                @endforeach
+            </div>
         </div>
     </section>
 
@@ -388,9 +393,10 @@
                     </div>
                 </form>
             @endif
-            <div class="mt-10 flex items-center justify-center gap-6 border-t border-white/10 pt-8">
-                <span class="font-body text-base text-white/40 sm:text-sm">🎧 Apple Podcasts · Soon</span>
-                <span class="font-body text-base text-white/40 sm:text-sm">💚 Spotify · Soon</span>
+            <div class="mt-10 flex flex-wrap items-center justify-center gap-6 border-t border-white/10 pt-8">
+                @foreach ($podcast->distributionLinks() as $link)
+                    <a href="{{ $link['url'] }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-12 items-center font-body text-base text-white/55 transition-colors hover:text-gold sm:text-sm">{{ $link['label'] }}</a>
+                @endforeach
             </div>
         </div>
     </section>
