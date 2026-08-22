@@ -46,3 +46,25 @@ test('normal public responses do not receive a noindex header', function (): voi
         ->assertOk()
         ->assertHeaderMissing('X-Robots-Tag');
 });
+
+test('private and error responses cannot be stored', function (string $url, int $status): void {
+    $response = get($url)
+        ->assertStatus($status);
+
+    expect($response->headers->get('Cache-Control'))
+        ->toContain('no-store')
+        ->toContain('private');
+})->with([
+    'admin page' => [fn (): string => '/admin/login', 200],
+    'preview page' => [fn (): string => '/preview/testing', 200],
+    'error response' => [fn (): string => '/this-page-does-not-exist', 404],
+    'server error response' => [fn (): string => '/testing/security-header-error', 500],
+]);
+
+test('normal public responses remain eligible for application caching', function (): void {
+    $response = get(route('home'))
+        ->assertOk();
+
+    expect($response->headers->get('Cache-Control'))
+        ->not->toContain('no-store');
+});
