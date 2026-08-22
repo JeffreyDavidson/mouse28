@@ -22,6 +22,7 @@
         "laraveldaily/filacheck": "^1.2.4",
         "nunomaduro/collision": "^8.6",
         "pestphp/pest": "^5.1",
+        "pestphp/pest-plugin-arch": "^5.0",
         "pestphp/pest-plugin-laravel": "^5.0",
         "phpstan/extension-installer": "^1.4"
     },
