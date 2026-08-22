@@ -23,6 +23,7 @@
         "nunomaduro/collision": "^8.6",
         "pestphp/pest": "^5.1",
         "pestphp/pest-plugin-arch": "^5.0",
+        "pestphp/pest-plugin-browser": "^5.0",
         "pestphp/pest-plugin-laravel": "^5.0",
         "phpstan/extension-installer": "^1.4"
     },
@@ -53,8 +54,9 @@
         ],
         "test": [
             "@php artisan config:clear --ansi",
-            "@php artisan test"
+            "@php artisan test --exclude-testsuite=Browser"
         ],
+        "test:browser": "@php artisan test --testsuite=Browser",
         "analyse": "php -d memory_limit=2G vendor/bin/phpstan analyse --no-progress",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
