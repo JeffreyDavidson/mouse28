@@ -7,6 +7,8 @@ use App\Models\Guide;
 use App\Support\EditorialReadiness;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 
@@ -59,6 +61,8 @@ class EditGuide extends EditRecord
                 ->url(fn (): string => route('preview.guides', $this->record))
                 ->openUrlInNewTab(),
             DeleteAction::make(),
+            ForceDeleteAction::make(),
+            RestoreAction::make(),
         ];
     }
 }

@@ -32,13 +32,17 @@ Filament is mounted at `/admin`. `User::canAccessPanel()` requires the explicit 
 
 Filament global search covers posts, guides, episodes, and contact messages. The dashboard surfaces review-due counts for both sourced posts and guides so time-sensitive information returns to the editorial queue.
 
+Content and social artwork uses a 1200:630 aspect ratio. Filament restricts uploads to common web image formats, caps them at 5 MB, and crops and resizes them through its native uploader. The idempotent `content:attach-artwork` command connects bundled Mouse28 WebP artwork to the known post and episode slugs only when a record does not already have a cover.
+
+Posts, guides, and episodes use Eloquent soft deletion. Deleted content disappears from public queries immediately, while Filament administrators can filter the trash, restore records, or explicitly confirm a permanent deletion. Resource route binding includes trashed records only inside the authorized panel recovery flow.
+
 Each content edit page links to an administrator-authorized preview route. Preview pages reuse the public templates, carry a visible preview banner, emit `noindex,nofollow`, and omit structured data. Every preview is authorized through its model policy, so drafts are not exposed by knowing their URL.
 
 The migration that introduces `is_admin` promotes existing accounts because every existing account had panel access under the previous behavior. New accounts default to non-administrators.
 
 ## External integrations
 
-Newsletter subscriptions are sent to the configured Resend audience. The public endpoint is protected by a honeypot, Turnstile verification, validation, and an IP rate limit. The admin subscriber view reads from the same configured audience.
+Newsletter subscriptions are sent to the configured Resend audience. The public endpoint is protected by a honeypot, Turnstile verification, validation, and an IP rate limit. A shared `ResendAudience` reader supplies both the admin subscriber page and dashboard from one five-minute cache. The page can explicitly refresh that cache, reports provider failures separately from an empty audience, and exports spreadsheet-safe CSV values.
 
 Contact submissions use a separate Turnstile action and rate limiter, store the message, and send administrator and sender emails. Provider failures are logged without exposing submitted data or provider response bodies.
 

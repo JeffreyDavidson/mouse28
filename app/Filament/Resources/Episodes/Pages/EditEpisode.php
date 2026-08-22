@@ -7,6 +7,8 @@ use App\Models\Episode;
 use App\Support\EditorialReadiness;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Contracts\View\View;
@@ -60,6 +62,8 @@ class EditEpisode extends EditRecord
                 ->url(fn (): string => route('preview.episodes', $this->record))
                 ->openUrlInNewTab(),
             DeleteAction::make(),
+            ForceDeleteAction::make(),
+            RestoreAction::make(),
         ];
     }
 

@@ -97,8 +97,16 @@ class PostForm
                             ->schema([
                                 FileUpload::make('cover_image')
                                     ->image()
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                    ->maxSize(5120)
+                                    ->imageAspectRatio('1200:630')
+                                    ->automaticallyCropImagesToAspectRatio()
+                                    ->automaticallyResizeImagesMode('cover')
+                                    ->automaticallyResizeImagesToWidth('1600')
+                                    ->automaticallyResizeImagesToHeight('840')
                                     ->disk('public')
-                                    ->directory('posts'),
+                                    ->directory('posts')
+                                    ->helperText('Landscape image (1.91:1), up to 5 MB. Uploads are cropped and resized automatically.'),
                             ]),
 
                         Section::make('Publishing')
@@ -126,6 +134,13 @@ class PostForm
                             ->helperText('120–160 characters recommended.'),
                         FileUpload::make('og_image')
                             ->image()
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->maxSize(5120)
+                            ->imageAspectRatio('1200:630')
+                            ->automaticallyCropImagesToAspectRatio()
+                            ->automaticallyResizeImagesMode('cover')
+                            ->automaticallyResizeImagesToWidth('1200')
+                            ->automaticallyResizeImagesToHeight('630')
                             ->disk('public')
                             ->directory('posts/og')
                             ->helperText('Custom social sharing image. Falls back to cover.'),

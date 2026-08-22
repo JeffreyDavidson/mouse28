@@ -26,13 +26,13 @@ class ListEpisodes extends ListRecords
         return [
             'all' => Tab::make('All'),
             'attention' => Tab::make('Needs attention')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->needsAttention()),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('episodes.id', Episode::query()->needsAttention()->select('id'))),
             'drafts' => Tab::make('Drafts')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->drafts()),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('episodes.id', Episode::query()->drafts()->select('id'))),
             'scheduled' => Tab::make('Scheduled')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->scheduled()),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('episodes.id', Episode::query()->scheduled()->select('id'))),
             'published' => Tab::make('Published')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->published()),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('episodes.id', Episode::query()->published()->select('id'))),
         ];
     }
 

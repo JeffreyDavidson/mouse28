@@ -73,8 +73,16 @@ class EpisodeForm
                                     ->helperText('Optional fallback when the episode is hosted elsewhere.'),
                                 FileUpload::make('cover_image')
                                     ->image()
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                    ->maxSize(5120)
+                                    ->imageAspectRatio('1200:630')
+                                    ->automaticallyCropImagesToAspectRatio()
+                                    ->automaticallyResizeImagesMode('cover')
+                                    ->automaticallyResizeImagesToWidth('1600')
+                                    ->automaticallyResizeImagesToHeight('840')
                                     ->disk('public')
-                                    ->directory('episodes'),
+                                    ->directory('episodes')
+                                    ->helperText('Landscape image (1.91:1), up to 5 MB. Uploads are cropped and resized automatically.'),
                                 TextInput::make('duration_seconds')
                                     ->numeric()
                                     ->suffix('seconds')
@@ -141,6 +149,13 @@ class EpisodeForm
                                     ->helperText('120–160 characters recommended.'),
                                 FileUpload::make('og_image')
                                     ->image()
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                    ->maxSize(5120)
+                                    ->imageAspectRatio('1200:630')
+                                    ->automaticallyCropImagesToAspectRatio()
+                                    ->automaticallyResizeImagesMode('cover')
+                                    ->automaticallyResizeImagesToWidth('1200')
+                                    ->automaticallyResizeImagesToHeight('630')
                                     ->disk('public')
                                     ->directory('episodes/og')
                                     ->helperText('Custom social sharing image. Falls back to cover.'),

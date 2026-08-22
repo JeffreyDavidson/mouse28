@@ -166,15 +166,18 @@ test('filament forms explain publish requirements and edit pages offer previews'
     get(PostResource::getUrl('create'))
         ->assertOk()
         ->assertSee('use the Publish action')
-        ->assertSee('Optional for evergreen posts');
+        ->assertSee('Optional for evergreen posts')
+        ->assertSee('Landscape image (1.91:1)');
     get(GuideResource::getUrl('create'))
         ->assertOk()
-        ->assertSee('use the Publish action');
+        ->assertSee('use the Publish action')
+        ->assertSee('Landscape image (1.91:1)');
     get(EpisodeResource::getUrl('create'))
         ->assertOk()
         ->assertSee('Audio and transcripts may be added later')
         ->assertSee('Hosted MP3')
-        ->assertSee('Upload an MP3 up to 256 MB');
+        ->assertSee('Upload an MP3 up to 256 MB')
+        ->assertSee('Landscape image (1.91:1)');
 
     foreach ([
         PostResource::getUrl('edit', ['record' => $post]),
@@ -250,3 +253,25 @@ test('content resources expose useful records to global search', function (): vo
         ->and(GuideResource::getGloballySearchableAttributes())->toBe(['title', 'slug', 'category', 'author'])
         ->and(EpisodeResource::getGloballySearchableAttributes())->toBe(['title', 'slug', 'episode_number']);
 });
+
+test('deleted content leaves the public site and can be restored by an administrator', function (string $model, string $route, string $page): void {
+    $admin = User::factory()->admin()->create();
+    $record = $model::factory()->create();
+
+    $record->delete();
+
+    get(route($route, $record))->assertNotFound();
+
+    actingAs($admin);
+
+    Livewire::test($page, ['record' => $record->getRouteKey()])
+        ->callAction('restore')
+        ->assertNotified();
+
+    expect($record->refresh()->deleted_at)->toBeNull();
+    get(route($route, $record))->assertOk();
+})->with([
+    'post' => [Post::class, 'blog.show', EditPost::class],
+    'guide' => [Guide::class, 'guides.show', EditGuide::class],
+    'episode' => [Episode::class, 'episodes.show', EditEpisode::class],
+]);

@@ -84,8 +84,29 @@ class GuideForm
                     ->collapsed()
                     ->columns(2)
                     ->schema([
-                        FileUpload::make('cover_image')->image()->disk('public')->directory('guides'),
-                        FileUpload::make('og_image')->image()->disk('public')->directory('guides/og'),
+                        FileUpload::make('cover_image')
+                            ->image()
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->maxSize(5120)
+                            ->imageAspectRatio('1200:630')
+                            ->automaticallyCropImagesToAspectRatio()
+                            ->automaticallyResizeImagesMode('cover')
+                            ->automaticallyResizeImagesToWidth('1600')
+                            ->automaticallyResizeImagesToHeight('840')
+                            ->disk('public')
+                            ->directory('guides')
+                            ->helperText('Landscape image (1.91:1), up to 5 MB. Uploads are cropped and resized automatically.'),
+                        FileUpload::make('og_image')
+                            ->image()
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->maxSize(5120)
+                            ->imageAspectRatio('1200:630')
+                            ->automaticallyCropImagesToAspectRatio()
+                            ->automaticallyResizeImagesMode('cover')
+                            ->automaticallyResizeImagesToWidth('1200')
+                            ->automaticallyResizeImagesToHeight('630')
+                            ->disk('public')
+                            ->directory('guides/og'),
                         TextInput::make('meta_title')->maxLength(70),
                         Textarea::make('meta_description')->maxLength(160)->rows(2),
                     ]),

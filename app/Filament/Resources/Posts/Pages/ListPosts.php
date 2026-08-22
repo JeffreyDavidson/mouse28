@@ -26,15 +26,15 @@ class ListPosts extends ListRecords
         return [
             'all' => Tab::make('All'),
             'attention' => Tab::make('Needs attention')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->needsAttention()),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->needsAttention()->select('id'))),
             'drafts' => Tab::make('Drafts')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->drafts()),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->drafts()->select('id'))),
             'scheduled' => Tab::make('Scheduled')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->scheduled()),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->scheduled()->select('id'))),
             'published' => Tab::make('Published')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->published()),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->published()->select('id'))),
             'review-due' => Tab::make('Review due')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->published()->reviewDue()),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->published()->reviewDue()->select('id'))),
         ];
     }
 

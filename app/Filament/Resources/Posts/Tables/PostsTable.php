@@ -7,9 +7,12 @@ use App\Support\EditorialReadiness;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -85,7 +88,8 @@ class PostsTable
                             ->orWhereNull('meta_description')->orWhere('meta_description', '');
                     })),
                 Filter::make('review_due')
-                    ->query(fn (Builder $query): Builder => $query->reviewDue()),
+                    ->query(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->reviewDue()->select('id'))),
+                TrashedFilter::make(),
             ])
             ->recordActions([
                 EditAction::make(),
@@ -93,6 +97,8 @@ class PostsTable
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    ForceDeleteBulkAction::make(),
+                    RestoreBulkAction::make(),
                 ]),
             ]);
     }

@@ -36,4 +36,24 @@ class EpisodePolicy
     {
         return $user->is_admin === true;
     }
+
+    public function restore(User $user, Episode $episode): bool
+    {
+        return $user->is_admin === true;
+    }
+
+    public function restoreAny(User $user): bool
+    {
+        return $user->is_admin === true;
+    }
+
+    public function forceDelete(User $user, Episode $episode): bool
+    {
+        return $user->is_admin === true;
+    }
+
+    public function forceDeleteAny(User $user): bool
+    {
+        return $user->is_admin === true;
+    }
 }
