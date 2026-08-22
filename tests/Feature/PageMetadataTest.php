@@ -7,6 +7,7 @@ use App\Models\Guide;
 use App\Models\Podcast;
 use App\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 
 class PageMetadataTest extends TestCase
@@ -114,5 +115,22 @@ class PageMetadataTest extends TestCase
             ->assertOk()
             ->assertSee('<meta property="og:image" content="'.url('/storage/posts/social-card.jpg').'">', false)
             ->assertSee('<meta name="twitter:image" content="'.url('/storage/posts/social-card.jpg').'">', false);
+    }
+
+    public function test_canonical_urls_preserve_an_http_application_origin(): void
+    {
+        $applicationUrl = config('app.url');
+        URL::forceScheme(null);
+        URL::forceRootUrl('http://localhost');
+
+        try {
+            $response = $this->get('http://localhost/search');
+        } finally {
+            URL::forceRootUrl($applicationUrl);
+            URL::forceScheme(str_starts_with($applicationUrl, 'https://') ? 'https' : null);
+        }
+
+        $response->assertOk()
+            ->assertSee('<link rel="canonical" href="http://localhost/search">', false);
     }
 }

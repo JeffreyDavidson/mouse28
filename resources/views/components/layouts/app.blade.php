@@ -21,7 +21,7 @@
     \Laravel\Head\Facades\Head::title($title)
         ->description($description)
         ->robots($robots)
-        ->canonical($canonicalUrl)
+        ->canonical($canonicalUrl, forceHttps: Str::startsWith($canonicalUrl, 'https://'))
         ->og(
             type: $ogType,
             title: $socialTitle,
