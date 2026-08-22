@@ -154,9 +154,24 @@
                 <div class="lg:w-[66%]">
                     <article
                         id="article-body"
-                        data-reading-minutes="{{ $post->reading_time }}"
                         class="border-navy/5 shadow-navy/5 relative rounded-3xl border bg-white p-5 shadow-lg sm:p-8 md:p-14"
                     >
+                        @if ($post->last_reviewed_at)
+                            <p class="text-navy/45 mb-8 text-sm">
+                                Last reviewed {{ $post->last_reviewed_at->format('F j, Y') }}
+                            </p>
+                        @endif
+
+                        @if ($post->isReviewDue())
+                            <div
+                                role="note"
+                                class="mb-8 rounded-2xl border border-amber-500/30 bg-amber-100 px-5 py-4 text-sm/relaxed text-amber-950"
+                            >
+                                This post is due for editorial review. Disney policies and park operations can change,
+                                so confirm current details with the official source before your visit.
+                            </div>
+                        @endif
+
                         {{-- Decorative corner accent --}}
                         <div class="absolute top-0 right-0 size-24 overflow-hidden rounded-tr-3xl">
                             <div class="from-gold/8 absolute -top-12 -right-12 size-24 rotate-45 bg-linear-to-bl to-transparent"></div>
@@ -173,6 +188,20 @@
                                 ])
                             !!}
                         </div>
+
+                        @if ($post->source_url)
+                            <div class="border-navy/10 mt-10 border-t pt-6">
+                                <p class="text-navy/55 text-sm">
+                                    Policies can change. Review the official source before your visit.
+                                </p>
+                                <a
+                                    href="{{ $post->source_url }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="text-purple hover:text-navy mt-2 inline-flex min-h-12 items-center font-semibold"
+                                >View official source ↗</a>
+                            </div>
+                        @endif
 
                         {{-- End flourish --}}
                         <div class="border-navy/5 mt-12 flex items-center justify-center gap-3 border-t pt-8">

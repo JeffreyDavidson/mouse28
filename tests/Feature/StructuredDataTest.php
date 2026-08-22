@@ -14,6 +14,9 @@ test('blog posts include article and breadcrumb structured data', function (): v
     $post = Post::factory()->create([
         'title' => 'Accessible <Park> Plan',
         'cover_image' => 'posts/plan.jpg',
+        'source_url' => 'https://disneyworld.disney.go.com/guest-services/disability-access-service/',
+        'last_reviewed_at' => '2026-08-01',
+        'updated_at' => '2026-07-01',
     ]);
 
     $data = structuredData(get(route('blog.show', $post))->assertOk());
@@ -22,6 +25,8 @@ test('blog posts include article and breadcrumb structured data', function (): v
         ->and($data['@graph'][0]['@type'])->toBe('BlogPosting')
         ->and($data['@graph'][0]['headline'])->toBe($post->title)
         ->and($data['@graph'][0]['mainEntityOfPage'])->toBe(route('blog.show', $post))
+        ->and($data['@graph'][0]['citation'])->toBe($post->source_url)
+        ->and($data['@graph'][0]['dateModified'])->toStartWith('2026-08-01')
         ->and($data['@graph'][1]['@type'])->toBe('BreadcrumbList')
         ->and(array_column($data['@graph'][1]['itemListElement'], 'name'))
         ->toBe(['Home', 'Blog', $post->title]);

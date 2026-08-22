@@ -60,6 +60,20 @@ test('complete content is marked ready', function (): void {
         ->and(EditorialReadiness::summary($post))->toBe('Ready to publish.');
 });
 
+test('sourced posts require a matching official source and review date', function (): void {
+    $missingReviewDate = Post::factory()->create([
+        'source_url' => 'https://disneyworld.disney.go.com/guest-services/disability-access-service/',
+        'last_reviewed_at' => null,
+    ]);
+    $missingSource = Post::factory()->create([
+        'source_url' => null,
+        'last_reviewed_at' => today(),
+    ]);
+
+    expect(EditorialReadiness::issues($missingReviewDate))->toContain('Set the review date')
+        ->and(EditorialReadiness::issues($missingSource))->toContain('Add an official source');
+});
+
 test('administrators can preview draft content without exposing structured data', function (): void {
     $admin = User::factory()->admin()->create();
     $post = Post::factory()->draft()->create();
@@ -117,7 +131,8 @@ test('filament forms explain publish requirements and edit pages offer previews'
 
     get(PostResource::getUrl('create'))
         ->assertOk()
-        ->assertSee('Published posts require');
+        ->assertSee('Published posts require')
+        ->assertSee('Optional for evergreen posts');
     get(GuideResource::getUrl('create'))
         ->assertOk()
         ->assertSee('Published guides require');

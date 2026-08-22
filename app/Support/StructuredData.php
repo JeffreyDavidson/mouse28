@@ -12,13 +12,18 @@ class StructuredData
 {
     public static function forPost(Post $post): array
     {
+        $modifiedAt = $post->updated_at;
+        if ($post->last_reviewed_at?->gt($modifiedAt)) {
+            $modifiedAt = $post->last_reviewed_at;
+        }
+
         $article = [
             '@type' => 'BlogPosting',
             'headline' => $post->meta_title ?: $post->title,
             'description' => self::description($post->meta_description, $post->excerpt, $post->body),
             'mainEntityOfPage' => route('blog.show', $post),
             'datePublished' => $post->published_at->toAtomString(),
-            'dateModified' => $post->updated_at->toAtomString(),
+            'dateModified' => $modifiedAt->toAtomString(),
             'author' => self::person($post->author_name),
             'publisher' => self::publisher(),
             'articleSection' => $post->category_label,
@@ -26,6 +31,10 @@ class StructuredData
 
         if ($image = $post->og_image_url ?: $post->cover_image_url) {
             $article['image'] = url($image);
+        }
+
+        if ($post->source_url) {
+            $article['citation'] = $post->source_url;
         }
 
         return self::graph($article, 'BlogPosting', 'Blog', route('blog.index'), $post->title, route('blog.show', $post));
