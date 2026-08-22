@@ -131,9 +131,14 @@
                         <x-newsletter-protection honeypot-id="footer-newsletter-website" />
                         <div class="flex flex-col gap-2 sm:flex-row">
                         <label for="footer-newsletter-email" class="sr-only">Email address</label>
-                        <input id="footer-newsletter-email" type="email" name="email" value="{{ old('email') }}" placeholder="your@email.com" autocomplete="email" required class="min-h-12 min-w-0 flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-2.5 text-base text-white placeholder-white/30 transition-colors focus:border-gold/50 focus:ring-1 focus:ring-gold/30 focus:outline-none sm:text-sm">
+                        <input id="footer-newsletter-email" type="email" name="email" value="{{ $errors->newsletter->isNotEmpty() || session('newsletter_error') ? old('email') : '' }}" placeholder="your@email.com" autocomplete="email" required
+                            @error('email', 'newsletter') aria-invalid="true" aria-describedby="footer-newsletter-email-error" @enderror
+                            class="min-h-12 min-w-0 flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-2.5 text-base text-white placeholder-white/30 transition-colors focus:border-gold/50 focus:ring-1 focus:ring-gold/30 focus:outline-none sm:text-sm">
                         <button type="submit" class="min-h-12 rounded-full bg-gold px-6 py-2.5 text-base font-semibold whitespace-nowrap text-navy transition-[background-color,box-shadow] hover:bg-gold-light hover:shadow-lg hover:shadow-gold/25 sm:text-sm">Subscribe</button>
                         </div>
+                        @error('email', 'newsletter')
+                            <p id="footer-newsletter-email-error" role="alert" class="text-sm text-red-300">{{ $message }}</p>
+                        @enderror
                     </form>
                 </div>
 

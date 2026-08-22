@@ -7,6 +7,9 @@
 @section('canonical', route('contact.show'))
 
 @section('content')
+    @php
+        $contactHasFeedback = $errors->contact->isNotEmpty();
+    @endphp
     @if(session('success'))
         <section class="relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-linear-to-br from-cream via-white to-cream">
             <div class="relative z-10 px-4 text-center">
@@ -56,9 +59,9 @@
                         <form action="{{ route('contact.store') }}" method="POST" class="flex flex-col gap-6">
                             @csrf
                             <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-                            @if ($errors->has('contact_rate_limit'))
+                            @if ($errors->contact->has('contact_rate_limit'))
                                 <div role="alert" class="rounded-xl border border-red-400/25 bg-red-400/10 px-4 py-3 text-base text-red-200 sm:text-sm">
-                                    {{ $errors->first('contact_rate_limit') }}
+                                    {{ $errors->contact->first('contact_rate_limit') }}
                                 </div>
                             @endif
 
@@ -71,46 +74,46 @@
                             <div class="grid gap-5 sm:grid-cols-2">
                                 <div>
                                     <label for="name" class="mb-2 block text-base font-semibold text-gold-light sm:text-sm">Name</label>
-                                    <input type="text" id="name" name="name" required autocomplete="name" value="{{ old('name') }}" placeholder="Your name"
-                                        @error('name') aria-invalid="true" aria-describedby="name-error" @enderror
+                                    <input type="text" id="name" name="name" required autocomplete="name" value="{{ $contactHasFeedback ? old('name') : '' }}" placeholder="Your name"
+                                        @error('name', 'contact') aria-invalid="true" aria-describedby="name-error" @enderror
                                         class="min-h-12 w-full rounded-xl border border-cream/10 bg-cream/4 px-4 py-3 text-base text-cream transition-colors placeholder:text-cream/30 focus:border-gold/50 focus:bg-cream/6 focus:ring-2 focus:ring-gold/20 focus:outline-none sm:text-sm"
                                     >
-                                    @error('name') <p id="name-error" role="alert" class="mt-2 text-sm text-red-400">{{ $message }}</p> @enderror
+                                    @error('name', 'contact') <p id="name-error" role="alert" class="mt-2 text-sm text-red-400">{{ $message }}</p> @enderror
                                 </div>
                                 <div>
                                     <label for="email" class="mb-2 block text-base font-semibold text-gold-light sm:text-sm">Email</label>
-                                    <input type="email" id="email" name="email" required autocomplete="email" inputmode="email" value="{{ old('email') }}" placeholder="you@example.com"
-                                        @error('email') aria-invalid="true" aria-describedby="email-error" @enderror
+                                    <input type="email" id="email" name="email" required autocomplete="email" inputmode="email" value="{{ $contactHasFeedback ? old('email') : '' }}" placeholder="you@example.com"
+                                        @error('email', 'contact') aria-invalid="true" aria-describedby="email-error" @enderror
                                         class="min-h-12 w-full rounded-xl border border-cream/10 bg-cream/4 px-4 py-3 text-base text-cream transition-colors placeholder:text-cream/30 focus:border-gold/50 focus:bg-cream/6 focus:ring-2 focus:ring-gold/20 focus:outline-none sm:text-sm"
                                     >
-                                    @error('email') <p id="email-error" role="alert" class="mt-2 text-sm text-red-400">{{ $message }}</p> @enderror
+                                    @error('email', 'contact') <p id="email-error" role="alert" class="mt-2 text-sm text-red-400">{{ $message }}</p> @enderror
                                 </div>
                             </div>
 
                             <div>
                                 <label for="subject" class="mb-2 block text-base font-semibold text-gold-light sm:text-sm">Topic</label>
                                 <select id="subject" name="subject" required
-                                    @error('subject') aria-invalid="true" aria-describedby="subject-error" @enderror
+                                    @error('subject', 'contact') aria-invalid="true" aria-describedby="subject-error" @enderror
                                     class="contact-select min-h-12 w-full rounded-xl border border-cream/10 bg-cream/4 px-4 py-3 text-base text-cream/70 transition-colors focus:border-gold/50 focus:ring-2 focus:ring-gold/20 focus:outline-none sm:text-sm"
                                 >
                                     <option value="">Choose a topic...</option>
-                                    <option value="general" {{ old('subject') == 'general' ? 'selected' : '' }}>General Question</option>
-                                    <option value="accessibility" {{ old('subject') == 'accessibility' ? 'selected' : '' }}>Park Accessibility Question</option>
-                                    <option value="collaboration" {{ old('subject') == 'collaboration' ? 'selected' : '' }}>Collaboration / Sponsorship</option>
-                                    <option value="guest" {{ old('subject') == 'guest' ? 'selected' : '' }}>Guest on the Podcast</option>
-                                    <option value="story" {{ old('subject') == 'story' ? 'selected' : '' }}>Share Your Story</option>
-                                    <option value="other" {{ old('subject') == 'other' ? 'selected' : '' }}>Other</option>
+                                    <option value="general" @selected($contactHasFeedback && old('subject') === 'general')>General Question</option>
+                                    <option value="accessibility" @selected($contactHasFeedback && old('subject') === 'accessibility')>Park Accessibility Question</option>
+                                    <option value="collaboration" @selected($contactHasFeedback && old('subject') === 'collaboration')>Collaboration / Sponsorship</option>
+                                    <option value="guest" @selected($contactHasFeedback && old('subject') === 'guest')>Guest on the Podcast</option>
+                                    <option value="story" @selected($contactHasFeedback && old('subject') === 'story')>Share Your Story</option>
+                                    <option value="other" @selected($contactHasFeedback && old('subject') === 'other')>Other</option>
                                 </select>
-                                @error('subject') <p id="subject-error" role="alert" class="mt-2 text-sm text-red-400">{{ $message }}</p> @enderror
+                                @error('subject', 'contact') <p id="subject-error" role="alert" class="mt-2 text-sm text-red-400">{{ $message }}</p> @enderror
                             </div>
 
                             <div>
                                 <label for="message" class="mb-2 block text-base font-semibold text-gold-light sm:text-sm">Message</label>
                                 <textarea id="message" name="message" required rows="5" placeholder="What's on your mind?"
-                                    @error('message') aria-invalid="true" aria-describedby="message-error" @enderror
+                                    @error('message', 'contact') aria-invalid="true" aria-describedby="message-error" @enderror
                                     class="min-h-36 w-full resize-y rounded-xl border border-cream/10 bg-cream/4 px-4 py-3 text-base text-cream transition-colors placeholder:text-cream/30 focus:border-gold/50 focus:bg-cream/6 focus:ring-2 focus:ring-gold/20 focus:outline-none sm:text-sm"
-                                >{{ old('message') }}</textarea>
-                                @error('message') <p id="message-error" role="alert" class="mt-2 text-sm text-red-400">{{ $message }}</p> @enderror
+                                >{{ $contactHasFeedback ? old('message') : '' }}</textarea>
+                                @error('message', 'contact') <p id="message-error" role="alert" class="mt-2 text-sm text-red-400">{{ $message }}</p> @enderror
                             </div>
 
                             <div>
@@ -119,7 +122,7 @@
                                 @else
                                     <p role="alert" class="text-base text-red-200 sm:text-sm">Contact verification is temporarily unavailable. Please try again later.</p>
                                 @endif
-                                @error('cf-turnstile-response') <p id="turnstile-error" role="alert" class="mt-2 text-sm text-red-400">{{ $message }}</p> @enderror
+                                @error('cf-turnstile-response', 'contact') <p id="turnstile-error" role="alert" class="mt-2 text-sm text-red-400">{{ $message }}</p> @enderror
                             </div>
 
                             <button type="submit" class="min-h-12 w-full rounded-xl bg-linear-to-br from-gold to-gold-dark px-6 py-3 text-base font-semibold text-navy transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-lg hover:shadow-gold/30 focus-visible:outline-gold sm:text-sm">

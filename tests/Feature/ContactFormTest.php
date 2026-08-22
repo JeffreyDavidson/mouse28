@@ -79,7 +79,7 @@ class ContactFormTest extends TestCase
         $response = $this->from('/contact')->post('/contact', $this->validPayload());
 
         $response->assertRedirect('/contact')
-            ->assertSessionHasErrors('cf-turnstile-response');
+            ->assertSessionHasErrorsIn('contact', 'cf-turnstile-response');
 
         $this->assertDatabaseCount('contact_messages', 0);
         Mail::assertNothingSent();
@@ -120,7 +120,7 @@ class ContactFormTest extends TestCase
             ]));
 
             $response->assertRedirect('/contact')
-                ->assertSessionHasErrors('cf-turnstile-response');
+                ->assertSessionHasErrorsIn('contact', 'cf-turnstile-response');
 
             $this->assertDatabaseCount('contact_messages', 0);
             Mail::assertNothingSent();
@@ -135,7 +135,7 @@ class ContactFormTest extends TestCase
         $response = $this->from('/contact')->post('/contact', $this->validPayload());
 
         $response->assertRedirect('/contact')
-            ->assertSessionHasErrors('cf-turnstile-response');
+            ->assertSessionHasErrorsIn('contact', 'cf-turnstile-response');
 
         $this->assertDatabaseCount('contact_messages', 0);
         Mail::assertNothingSent();
@@ -179,7 +179,7 @@ class ContactFormTest extends TestCase
         $this->from('/contact')->post('/contact', array_merge($this->validPayload(), [
             'email' => 'dale-rate-limit@example.com',
         ]))->assertRedirect('/contact')
-            ->assertSessionHasErrors('contact_rate_limit');
+            ->assertSessionHasErrorsIn('contact', 'contact_rate_limit');
 
         $this->get('/contact')->assertOk();
     }

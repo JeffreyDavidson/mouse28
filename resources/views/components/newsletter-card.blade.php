@@ -1,4 +1,7 @@
 <div id="newsletter" class="relative overflow-hidden rounded-2xl border border-white/5 bg-linear-to-br from-navy via-navy-light to-navy p-7 text-center">
+    @php
+        $newsletterHasFeedback = $errors->newsletter->isNotEmpty() || session('newsletter_error');
+    @endphp
     <div class="absolute top-1/2 left-1/2 size-32 -translate-1/2 rounded-full bg-gold/5 blur-3xl"></div>
     <div class="relative">
         <div class="mx-auto mb-4 flex size-12 items-center justify-center rounded-xl border border-white/10 bg-white/10">
@@ -21,11 +24,11 @@
             @csrf
             <x-newsletter-protection honeypot-id="card-newsletter-website" />
             <label for="newsletter-email" class="sr-only">Email address</label>
-            <input id="newsletter-email" type="email" name="email" value="{{ old('email') }}" placeholder="your@email.com" autocomplete="email" required
-                @error('email') aria-invalid="true" aria-describedby="newsletter-email-error" @enderror
+            <input id="newsletter-email" type="email" name="email" value="{{ $newsletterHasFeedback ? old('email') : '' }}" placeholder="your@email.com" autocomplete="email" required
+                @error('email', 'newsletter') aria-invalid="true" aria-describedby="newsletter-email-error" @enderror
                 class="min-h-12 w-full rounded-xl border border-white/10 bg-white/8 px-4 py-3 text-base text-white transition-colors placeholder:text-white/25 focus:border-gold/40 focus:bg-white/12 focus:ring-2 focus:ring-gold/20 focus:outline-none sm:text-sm"
             >
-            @error('email')
+            @error('email', 'newsletter')
                 <p id="newsletter-email-error" role="alert" class="text-left text-sm text-red-200">{{ $message }}</p>
             @enderror
             <button type="submit" class="min-h-12 w-full rounded-full bg-linear-to-r from-gold to-gold-light py-3 text-base font-bold text-navy shadow-lg shadow-gold/20 transition-transform hover:-translate-y-0.5 sm:text-sm">

@@ -355,6 +355,9 @@
 
     {{-- Newsletter CTA --}}
     <section id="newsletter" class="relative overflow-hidden bg-linear-to-br from-navy via-navy-light to-navy py-16 md:py-24">
+        @php
+            $newsletterHasFeedback = $errors->newsletter->isNotEmpty() || session('newsletter_error');
+        @endphp
         <div class="pointer-events-none absolute inset-0" aria-hidden="true">
             <span class="sparkle absolute top-[20%] left-[15%] text-sm text-gold/30">✦</span>
             <span class="sparkle-delay absolute right-[20%] bottom-[25%] text-lg text-gold/20">✧</span>
@@ -377,12 +380,16 @@
                     <x-newsletter-protection honeypot-id="home-newsletter-website-error" />
                     <div class="flex flex-col gap-3 sm:flex-row">
                     <label for="home-newsletter-email-error" class="sr-only">Email address</label>
-                    <input id="home-newsletter-email-error" type="email" name="email" placeholder="your@email.com" autocomplete="email" required
+                    <input id="home-newsletter-email-error" type="email" name="email" value="{{ $newsletterHasFeedback ? old('email') : '' }}" placeholder="your@email.com" autocomplete="email" required
+                        @error('email', 'newsletter') aria-invalid="true" aria-describedby="home-newsletter-email-error-message" @enderror
                         class="newsletter-input min-h-[48px] flex-1 rounded-full border border-white/20 bg-white/10 px-5 py-3.5 font-body text-base text-white transition-[border-color,box-shadow] duration-300 placeholder:text-white/35 focus:border-gold/40 focus:ring-2 focus:ring-gold/60 focus:outline-none sm:text-sm">
                     <button type="submit" class="min-h-[48px] rounded-full bg-gold px-7 py-3.5 font-body text-base font-semibold text-navy transition-[transform,background-color,box-shadow] duration-300 hover:-translate-y-0.5 hover:scale-105 hover:bg-gold-light hover:shadow-lg hover:shadow-gold/30 active:scale-95 sm:text-sm">
                         Subscribe
                     </button>
                     </div>
+                    @error('email', 'newsletter')
+                        <p id="home-newsletter-email-error-message" role="alert" class="text-left text-sm text-red-300">{{ $message }}</p>
+                    @enderror
                 </form>
             @else
                 <form action="{{ route('newsletter.store') }}" method="POST" class="mx-auto max-w-md space-y-3">
@@ -390,12 +397,16 @@
                     <x-newsletter-protection honeypot-id="home-newsletter-website" />
                     <div class="flex flex-col gap-3 sm:flex-row">
                     <label for="home-newsletter-email" class="sr-only">Email address</label>
-                    <input id="home-newsletter-email" type="email" name="email" placeholder="your@email.com" autocomplete="email" required
+                    <input id="home-newsletter-email" type="email" name="email" value="{{ $newsletterHasFeedback ? old('email') : '' }}" placeholder="your@email.com" autocomplete="email" required
+                        @error('email', 'newsletter') aria-invalid="true" aria-describedby="home-newsletter-email-message" @enderror
                         class="newsletter-input min-h-[48px] flex-1 rounded-full border border-white/20 bg-white/10 px-5 py-3.5 font-body text-base text-white transition-[border-color,box-shadow] duration-300 placeholder:text-white/35 focus:border-gold/40 focus:ring-2 focus:ring-gold/60 focus:outline-none sm:text-sm">
                     <button type="submit" class="min-h-[48px] rounded-full bg-gold px-7 py-3.5 font-body text-base font-semibold text-navy transition-[transform,background-color,box-shadow] duration-300 hover:-translate-y-0.5 hover:scale-105 hover:bg-gold-light hover:shadow-lg hover:shadow-gold/30 active:scale-95 sm:text-sm">
                         Subscribe
                     </button>
                     </div>
+                    @error('email', 'newsletter')
+                        <p id="home-newsletter-email-message" role="alert" class="text-left text-sm text-red-300">{{ $message }}</p>
+                    @enderror
                 </form>
             @endif
             <div class="mt-10 flex flex-wrap items-center justify-center gap-6 border-t border-white/10 pt-8">
