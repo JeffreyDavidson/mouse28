@@ -1,7 +1,5 @@
 <?php
 
-namespace Tests\Feature;
-
 use App\Filament\Resources\Episodes\EpisodeResource;
 use App\Filament\Resources\Guides\GuideResource;
 use App\Filament\Resources\Posts\PostResource;
@@ -11,139 +9,129 @@ use App\Models\Post;
 use App\Models\User;
 use App\Support\EditorialReadiness;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
 
-class EditorialReadinessTest extends TestCase
-{
-    use RefreshDatabase;
+use function Pest\Laravel\actingAs;
+use function Pest\Laravel\get;
 
-    public function test_publication_status_distinguishes_drafts_schedules_and_missing_dates(): void
-    {
-        $draft = Post::factory()->draft()->create();
-        $missingDate = Post::factory()->create(['published_at' => null]);
-        $scheduled = Post::factory()->scheduled()->create();
-        $published = Post::factory()->create();
+uses(RefreshDatabase::class);
 
-        $this->assertSame('Draft', EditorialReadiness::status($draft));
-        $this->assertSame('Needs publish date', EditorialReadiness::status($missingDate));
-        $this->assertSame('Scheduled', EditorialReadiness::status($scheduled));
-        $this->assertSame('Published', EditorialReadiness::status($published));
-    }
+test('publication status distinguishes drafts schedules and missing dates', function (): void {
+    $draft = Post::factory()->draft()->create();
+    $missingDate = Post::factory()->create(['published_at' => null]);
+    $scheduled = Post::factory()->scheduled()->create();
+    $published = Post::factory()->create();
 
-    public function test_readiness_reports_actionable_issues_for_each_content_type(): void
-    {
-        $post = Post::factory()->create([
-            'cover_image' => null,
-            'meta_title' => null,
-            'meta_description' => null,
-        ]);
-        $guide = Guide::factory()->create([
-            'source_url' => null,
-            'last_reviewed_at' => null,
-        ]);
-        $episode = Episode::factory()->create([
-            'audio_url' => null,
-            'transcript' => null,
-        ]);
+    expect(EditorialReadiness::status($draft))->toBe('Draft')
+        ->and(EditorialReadiness::status($missingDate))->toBe('Needs publish date')
+        ->and(EditorialReadiness::status($scheduled))->toBe('Scheduled')
+        ->and(EditorialReadiness::status($published))->toBe('Published');
+});
 
-        $this->assertSame('3 missing', EditorialReadiness::label($post));
-        $this->assertContains('Add a cover image', EditorialReadiness::issues($post));
-        $this->assertContains('Add an official source', EditorialReadiness::issues($guide));
-        $this->assertContains('Set the review date', EditorialReadiness::issues($guide));
-        $this->assertContains('Add the audio URL', EditorialReadiness::issues($episode));
-        $this->assertContains('Add a transcript', EditorialReadiness::issues($episode));
-    }
+test('readiness reports actionable issues for each content type', function (): void {
+    $post = Post::factory()->create([
+        'cover_image' => null,
+        'meta_title' => null,
+        'meta_description' => null,
+    ]);
+    $guide = Guide::factory()->create([
+        'source_url' => null,
+        'last_reviewed_at' => null,
+    ]);
+    $episode = Episode::factory()->create([
+        'audio_url' => null,
+        'transcript' => null,
+    ]);
 
-    public function test_complete_content_is_marked_ready(): void
-    {
-        $post = Post::factory()->create([
-            'cover_image' => 'posts/complete.jpg',
-            'meta_title' => 'A complete park-planning post',
-            'meta_description' => 'A complete description for search and social sharing.',
-        ]);
+    expect(EditorialReadiness::label($post))->toBe('3 missing')
+        ->and(EditorialReadiness::issues($post))->toContain('Add a cover image')
+        ->and(EditorialReadiness::issues($guide))->toContain('Add an official source', 'Set the review date')
+        ->and(EditorialReadiness::issues($episode))->toContain('Add the audio URL', 'Add a transcript');
+});
 
-        $this->assertSame([], EditorialReadiness::issues($post));
-        $this->assertSame('Ready', EditorialReadiness::label($post));
-        $this->assertSame('Ready to publish.', EditorialReadiness::summary($post));
-    }
+test('complete content is marked ready', function (): void {
+    $post = Post::factory()->create([
+        'cover_image' => 'posts/complete.jpg',
+        'meta_title' => 'A complete park-planning post',
+        'meta_description' => 'A complete description for search and social sharing.',
+    ]);
 
-    public function test_administrators_can_preview_draft_content_without_exposing_structured_data(): void
-    {
-        $admin = User::factory()->admin()->create();
-        $post = Post::factory()->draft()->create();
-        $guide = Guide::factory()->draft()->create();
-        $episode = Episode::factory()->draft()->create();
+    expect(EditorialReadiness::issues($post))->toBeEmpty()
+        ->and(EditorialReadiness::label($post))->toBe('Ready')
+        ->and(EditorialReadiness::summary($post))->toBe('Ready to publish.');
+});
 
-        $this->actingAs($admin);
+test('administrators can preview draft content without exposing structured data', function (): void {
+    $admin = User::factory()->admin()->create();
+    $post = Post::factory()->draft()->create();
+    $guide = Guide::factory()->draft()->create();
+    $episode = Episode::factory()->draft()->create();
 
-        foreach ([
-            route('preview.posts', $post),
-            route('preview.guides', $guide),
-            route('preview.episodes', $episode),
-        ] as $url) {
-            $this->get($url)
-                ->assertOk()
-                ->assertSee('Preview mode')
-                ->assertSee('noindex,nofollow', false)
-                ->assertDontSee('application/ld+json', false);
-        }
-    }
+    actingAs($admin);
 
-    public function test_preview_routes_reject_guests_and_non_admin_users(): void
-    {
-        $post = Post::factory()->draft()->create();
-
-        $this->get(route('preview.posts', $post))->assertForbidden();
-
-        $this->actingAs(User::factory()->create())
-            ->get(route('preview.posts', $post))
-            ->assertForbidden();
-    }
-
-    public function test_filament_content_tables_show_readiness_and_missing_publish_dates(): void
-    {
-        $admin = User::factory()->admin()->create();
-        Post::factory()->create(['published_at' => null]);
-        Guide::factory()->create(['published_at' => null]);
-        Episode::factory()->create(['published_at' => null]);
-
-        $this->actingAs($admin);
-
-        foreach ([PostResource::getUrl(), GuideResource::getUrl(), EpisodeResource::getUrl()] as $url) {
-            $this->get($url)
-                ->assertOk()
-                ->assertSee('Readiness')
-                ->assertSee('Needs publish date');
-        }
-    }
-
-    public function test_filament_forms_explain_publish_requirements_and_edit_pages_offer_previews(): void
-    {
-        $admin = User::factory()->admin()->create();
-        $post = Post::factory()->draft()->create();
-        $guide = Guide::factory()->draft()->create();
-        $episode = Episode::factory()->draft()->create();
-
-        $this->actingAs($admin);
-
-        $this->get(PostResource::getUrl('create'))
+    foreach ([
+        route('preview.posts', $post),
+        route('preview.guides', $guide),
+        route('preview.episodes', $episode),
+    ] as $url) {
+        get($url)
             ->assertOk()
-            ->assertSee('Published posts require');
-        $this->get(GuideResource::getUrl('create'))
-            ->assertOk()
-            ->assertSee('Published guides require');
-        $this->get(EpisodeResource::getUrl('create'))
-            ->assertOk()
-            ->assertSee('Published episodes require');
-
-        foreach ([
-            PostResource::getUrl('edit', ['record' => $post]),
-            GuideResource::getUrl('edit', ['record' => $guide]),
-            EpisodeResource::getUrl('edit', ['record' => $episode]),
-        ] as $url) {
-            $this->get($url)
-                ->assertOk()
-                ->assertSee('Preview');
-        }
+            ->assertSee('Preview mode')
+            ->assertSee('noindex,nofollow', false)
+            ->assertDontSee('application/ld+json', false);
     }
-}
+});
+
+test('preview routes reject guests and non admin users', function (): void {
+    $post = Post::factory()->draft()->create();
+
+    get(route('preview.posts', $post))->assertForbidden();
+
+    actingAs(User::factory()->create())
+        ->get(route('preview.posts', $post))
+        ->assertForbidden();
+});
+
+test('filament content tables show readiness and missing publish dates', function (): void {
+    $admin = User::factory()->admin()->create();
+    Post::factory()->create(['published_at' => null]);
+    Guide::factory()->create(['published_at' => null]);
+    Episode::factory()->create(['published_at' => null]);
+
+    actingAs($admin);
+
+    foreach ([PostResource::getUrl(), GuideResource::getUrl(), EpisodeResource::getUrl()] as $url) {
+        get($url)
+            ->assertOk()
+            ->assertSee('Readiness')
+            ->assertSee('Needs publish date');
+    }
+});
+
+test('filament forms explain publish requirements and edit pages offer previews', function (): void {
+    $admin = User::factory()->admin()->create();
+    $post = Post::factory()->draft()->create();
+    $guide = Guide::factory()->draft()->create();
+    $episode = Episode::factory()->draft()->create();
+
+    actingAs($admin);
+
+    get(PostResource::getUrl('create'))
+        ->assertOk()
+        ->assertSee('Published posts require');
+    get(GuideResource::getUrl('create'))
+        ->assertOk()
+        ->assertSee('Published guides require');
+    get(EpisodeResource::getUrl('create'))
+        ->assertOk()
+        ->assertSee('Published episodes require');
+
+    foreach ([
+        PostResource::getUrl('edit', ['record' => $post]),
+        GuideResource::getUrl('edit', ['record' => $guide]),
+        EpisodeResource::getUrl('edit', ['record' => $episode]),
+    ] as $url) {
+        get($url)
+            ->assertOk()
+            ->assertSee('Preview');
+    }
+});
