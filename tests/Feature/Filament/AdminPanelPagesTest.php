@@ -1,7 +1,5 @@
 <?php
 
-namespace Tests\Feature\Filament;
-
 use App\Filament\Pages\NewsletterSubscribers;
 use App\Filament\Pages\PodcastSettings;
 use App\Filament\Resources\ContactMessages\ContactMessageResource;
@@ -11,80 +9,75 @@ use App\Filament\Resources\Posts\PostResource;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
-use Tests\TestCase;
 
-class AdminPanelPagesTest extends TestCase
-{
-    use RefreshDatabase;
+use function Pest\Laravel\actingAs;
+use function Pest\Laravel\get;
 
-    public function test_guest_can_render_the_admin_login(): void
-    {
-        $this->get('/admin/login')
-            ->assertOk()
-            ->assertSee('Mouse28')
-            ->assertSee('Welcome Back');
-    }
+uses(RefreshDatabase::class);
 
-    public function test_authenticated_user_can_render_the_custom_admin_pages(): void
-    {
-        Http::fake([
-            'https://api.resend.com/*' => Http::response(['data' => []]),
-        ]);
+test('guest can render the admin login', function (): void {
+    get('/admin/login')
+        ->assertOk()
+        ->assertSee('Mouse28')
+        ->assertSee('Welcome Back');
+});
 
-        $user = User::factory()->admin()->create();
+test('authenticated user can render the custom admin pages', function (): void {
+    Http::fake([
+        'https://api.resend.com/*' => Http::response(['data' => []]),
+    ]);
 
-        $this->actingAs($user)
-            ->get(NewsletterSubscribers::getUrl())
-            ->assertOk()
-            ->assertSee('Newsletter Subscribers')
-            ->assertSee('No subscribers yet');
+    $user = User::factory()->admin()->create();
 
-        $this->get(PodcastSettings::getUrl())
-            ->assertOk()
-            ->assertSee('Podcast Settings')
-            ->assertSee('Distribution Links');
-    }
+    actingAs($user)
+        ->get(NewsletterSubscribers::getUrl())
+        ->assertOk()
+        ->assertSee('Newsletter Subscribers')
+        ->assertSee('No subscribers yet');
 
-    public function test_authenticated_user_can_render_the_resource_headers_and_forms(): void
-    {
-        $user = User::factory()->admin()->create();
+    get(PodcastSettings::getUrl())
+        ->assertOk()
+        ->assertSee('Podcast Settings')
+        ->assertSee('Distribution Links');
+});
 
-        $this->actingAs($user)
-            ->get(PostResource::getUrl())
-            ->assertOk()
-            ->assertSee('Blog Posts');
+test('authenticated user can render the resource headers and forms', function (): void {
+    $user = User::factory()->admin()->create();
 
-        $this->get(PostResource::getUrl('create'))
-            ->assertOk()
-            ->assertSee('Create Post');
+    actingAs($user)
+        ->get(PostResource::getUrl())
+        ->assertOk()
+        ->assertSee('Blog Posts');
 
-        $this->get(GuideResource::getUrl())
-            ->assertOk()
-            ->assertSee('Guides');
+    get(PostResource::getUrl('create'))
+        ->assertOk()
+        ->assertSee('Create Post');
 
-        $this->get(GuideResource::getUrl('create'))
-            ->assertOk()
-            ->assertSee('Create Guide');
+    get(GuideResource::getUrl())
+        ->assertOk()
+        ->assertSee('Guides');
 
-        $this->get(EpisodeResource::getUrl())
-            ->assertOk()
-            ->assertSee('Episodes');
+    get(GuideResource::getUrl('create'))
+        ->assertOk()
+        ->assertSee('Create Guide');
 
-        $this->get(EpisodeResource::getUrl('create'))
-            ->assertOk()
-            ->assertSee('Create Episode');
+    get(EpisodeResource::getUrl())
+        ->assertOk()
+        ->assertSee('Episodes');
 
-        $this->get(ContactMessageResource::getUrl())
-            ->assertOk()
-            ->assertSee('Contact Messages');
-    }
+    get(EpisodeResource::getUrl('create'))
+        ->assertOk()
+        ->assertSee('Create Episode');
 
-    public function test_non_admin_user_cannot_access_the_admin_panel(): void
-    {
-        $user = User::factory()->create();
+    get(ContactMessageResource::getUrl())
+        ->assertOk()
+        ->assertSee('Contact Messages');
+});
 
-        $this->actingAs($user)
-            ->get('/admin')
-            ->assertForbidden();
-    }
-}
+test('non admin user cannot access the admin panel', function (): void {
+    $user = User::factory()->create();
+
+    actingAs($user)
+        ->get('/admin')
+        ->assertForbidden();
+});
