@@ -8,25 +8,39 @@ use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
-#[Description('Remove all seeded demo episodes')]
-#[Signature('episodes:clean-seeded')]
+#[Description('Remove only the known seeded demo episodes')]
+#[Signature('episodes:clean-seeded {--force : Allow demo content cleanup in production}')]
 class CleanSeededEpisodes extends Command
 {
-    public function handle(): void
+    public function handle(): int
     {
-        $count = Episode::count();
+        if (app()->isProduction() && ! $this->option('force')) {
+            $this->error('Production cleanup requires the --force option.');
+
+            return self::FAILURE;
+        }
+
+        $seededEpisodeIds = Episode::query()
+            ->whereIn('slug', CleanSeededContent::episodeSlugs())
+            ->pluck('id');
+        $count = $seededEpisodeIds->count();
 
         if ($count === 0) {
             $this->info('No episodes to delete.');
 
-            return;
+            return self::SUCCESS;
         }
 
-        // Null out episode references on posts first
-        Post::whereNotNull('episode_id')->update(['episode_id' => null]);
+        Post::query()
+            ->whereIn('episode_id', $seededEpisodeIds)
+            ->update(['episode_id' => null]);
 
-        Episode::query()->delete();
+        Episode::query()
+            ->whereIn('id', $seededEpisodeIds)
+            ->delete();
 
-        $this->info("Deleted {$count} episodes.");
+        $this->info("Deleted {$count} seeded episodes.");
+
+        return self::SUCCESS;
     }
 }

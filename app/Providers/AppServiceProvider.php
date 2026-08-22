@@ -5,7 +5,10 @@ namespace App\Providers;
 use App\Support\SafeReturnUrl;
 use App\View\Composers\PodcastComposer;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Foundation\Events\DiagnosingHealth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
@@ -26,6 +29,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Event::listen(DiagnosingHealth::class, function (): void {
+            DB::table('migrations')->limit(1)->exists();
+        });
+
         View::composer('components.layouts.app', PodcastComposer::class);
 
         if (str_starts_with((string) config('app.url'), 'https://')) {

@@ -89,6 +89,7 @@ Use `composer dev` only when a long-running local server, queue listener, Vite s
 
 - Configure the application URL, database, mail, Resend, Turnstile, podcast ownership, storage, cache, sessions, and queues.
 - Set `SENTRY_LARAVEL_DSN`, `SENTRY_ENVIRONMENT=production`, and a deploy-specific `SENTRY_RELEASE` to opt into error reporting. Leave PII disabled and choose non-zero tracing or profiling sample rates only after reviewing volume and privacy.
+- Run `php artisan app:verify-production` after loading production configuration and stop if it reports a failure.
 - Run `php artisan migrate --force`.
 - Run `npm run build` before publishing the release artifact.
 - Ensure `public/storage` is linked when uploaded media is used.
@@ -96,5 +97,6 @@ Use `composer dev` only when a long-running local server, queue listener, Vite s
 - Confirm the scheduler and queue worker are supervised if production uses queued work.
 - Verify `/`, `/guides`, `/search?q=accessibility`, `/sitemap.xml`, both RSS feeds, contact submission, and newsletter signup.
 - Back up the database and uploaded files before each deployment.
+- Use `php artisan content:clean-seeded --force` only after backups are verified and real content is ready; it removes only the known demo slugs.
 
-See [docs/architecture.md](docs/architecture.md) for application boundaries and [docs/content-model.md](docs/content-model.md) for editorial language.
+See [docs/architecture.md](docs/architecture.md) for application boundaries, [docs/content-model.md](docs/content-model.md) for editorial language, and [docs/operations.md](docs/operations.md) for the Forge deployment and rollback runbook.

@@ -8,23 +8,22 @@ use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
 #[Description('Remove seeded demo blog posts, keep real ones')]
-#[Signature('posts:clean-seeded')]
+#[Signature('posts:clean-seeded {--force : Allow demo content cleanup in production}')]
 class CleanSeededPosts extends Command
 {
-    public function handle(): void
+    public function handle(): int
     {
-        $seededSlugs = [
-            '10-quiet-spots-disney-world-kid-needs-break',
-            'how-we-applied-das-pass-what-we-wish-we-knew',
-            'why-we-go-disney-every-week',
-            'understanding-autism-disney-what-families-should-know',
-            'top-5-character-interactions-sensory-sensitive-kids',
-            'recap-epcot-kids-think-differently-ep4',
-            'meltdown-in-fantasyland-why-we-share-hard-parts',
-            'best-disney-snacks-sensory-food-issues',
-        ];
+        if (app()->isProduction() && ! $this->option('force')) {
+            $this->error('Production cleanup requires the --force option.');
 
-        $deleted = Post::whereIn('slug', $seededSlugs)->delete();
+            return self::FAILURE;
+        }
+
+        $deleted = Post::query()
+            ->whereIn('slug', CleanSeededContent::postSlugs())
+            ->delete();
         $this->info("Deleted {$deleted} seeded blog posts.");
+
+        return self::SUCCESS;
     }
 }

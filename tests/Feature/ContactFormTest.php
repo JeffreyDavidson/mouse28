@@ -23,12 +23,14 @@ beforeEach(function (): void {
 });
 
 test('contact page renders turnstile widget', function (): void {
-    get(route('contact.show'))
+    $response = get(route('contact.show'))
         ->assertOk()
         ->assertSee('https://challenges.cloudflare.com/turnstile/v0/api.js', false)
         ->assertSee('class="cf-turnstile"', false)
         ->assertSee('data-sitekey="test-site-key"', false)
         ->assertSee('data-action="contact-form"', false);
+
+    expect(substr_count((string) $response->getContent(), 'https://challenges.cloudflare.com/turnstile/v0/api.js'))->toBe(1);
 });
 
 test('valid contact submission requires successful turnstile verification', function (): void {
