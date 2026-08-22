@@ -1,14 +1,10 @@
-@extends('layouts.app')
-
-@section('title', $pageTitle)
-@section('meta_description', $pageDescription)
-@section('og_title', $pageTitle)
-@section('og_description', $pageDescription)
-@section('og_image', '/images/hero-family.jpg')
-@section('canonical', $canonicalUrl)
-@section('robots', $robots)
-
-@section('content')
+<x-layouts.app
+    :title="$pageTitle"
+    :description="$pageDescription"
+    og-image="/images/hero-family.jpg"
+    :canonical="$canonicalUrl"
+    :robots="$robots"
+>
     @php
         $categoryStyles = [
             'disney-tips' => ['accent' => 'bg-gold', 'badge' => 'bg-gold/20 text-gold', 'subtle' => 'bg-gold/10', 'text' => 'text-gold'],
@@ -293,4 +289,4 @@
             </div>{{-- end flex --}}
         </div>
     </section>
-@endsection
+</x-layouts.app>

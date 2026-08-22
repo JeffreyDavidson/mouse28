@@ -1,36 +1,51 @@
+@props([
+    'title' => 'Mouse28 — Disney Parks Through Different Eyes',
+    'description' => 'Disney parks through the eyes of a family raising a daughter with autism. Tips, accessibility guides, and stories from Jeffrey & Cassie Davidson.',
+    'robots' => 'index,follow',
+    'ogTitle' => null,
+    'ogDescription' => null,
+    'ogType' => 'website',
+    'ogImage' => null,
+    'canonical' => null,
+])
+
+@php
+    $canonicalUrl = $canonical ?: url()->current();
+    $socialTitle = $ogTitle ?: $title;
+    $socialDescription = $ogDescription ?: $description;
+    $socialImage = $ogImage ?: url('/images/logo.jpg');
+    $socialImage = Str::startsWith($socialImage, ['http://', 'https://'])
+        ? $socialImage
+        : url('/'.ltrim($socialImage, '/'));
+
+    \Laravel\Head\Facades\Head::title($title)
+        ->description($description)
+        ->robots($robots)
+        ->canonical($canonicalUrl)
+        ->og(
+            type: $ogType,
+            title: $socialTitle,
+            description: $socialDescription,
+            url: $canonicalUrl,
+            siteName: 'Mouse28',
+        )
+        ->ogImage($socialImage)
+        ->twitter(
+            card: \Laravel\Head\Enums\TwitterCard::SummaryWithLargeImage,
+            title: $socialTitle,
+            description: $socialDescription,
+            image: $socialImage,
+        )
+        ->feed(route('rss.blog'), 'Mouse28 Blog')
+        ->feed($podcast->rss_url ?: route('rss.podcast'), 'Mouse28 Podcast');
+@endphp
+
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth antialiased">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    @php
-        $canonicalUrl = html_entity_decode(trim($__env->yieldContent('canonical')), ENT_QUOTES | ENT_HTML5, 'UTF-8') ?: url()->current();
-        $socialImage = html_entity_decode(trim($__env->yieldContent('og_image')), ENT_QUOTES | ENT_HTML5, 'UTF-8') ?: url('/images/logo.jpg');
-        $socialImage = Str::startsWith($socialImage, ['http://', 'https://'])
-            ? $socialImage
-            : url('/'.ltrim($socialImage, '/'));
-    @endphp
-    <title>@yield('title', 'Mouse28 — Disney Parks Through Different Eyes')</title>
-    <meta name="description" content="@yield('meta_description', 'Disney parks through the eyes of a family raising a daughter with autism. Tips, accessibility guides, and stories from Jeffrey & Cassie Davidson.')">
-    <meta name="robots" content="@yield('robots', 'index,follow')">
-
-    {{-- Open Graph --}}
-    <meta property="og:title" content="@yield('og_title', 'Mouse28 — Disney Parks Through Different Eyes')">
-    <meta property="og:description" content="@yield('og_description', 'Disney parks through the eyes of a family raising a daughter with autism. Tips, accessibility guides, and stories.')">
-    <meta property="og:type" content="@yield('og_type', 'website')">
-    <meta property="og:url" content="{{ $canonicalUrl }}">
-    <meta property="og:image" content="{{ $socialImage }}">
-    <meta property="og:site_name" content="Mouse28">
-
-    {{-- Twitter Card --}}
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="@yield('og_title', 'Mouse28 — Disney Parks Through Different Eyes')">
-    <meta name="twitter:description" content="@yield('og_description', 'Disney parks through the eyes of a family raising a daughter with autism.')">
-    <meta name="twitter:image" content="{{ $socialImage }}">
-
-    <link rel="canonical" href="{{ $canonicalUrl }}">
-    <link rel="alternate" type="application/rss+xml" title="Mouse28 Blog" href="{{ route('rss.blog') }}">
-    <link rel="alternate" type="application/rss+xml" title="Mouse28 Podcast" href="{{ $podcast->rss_url ?: route('rss.podcast') }}">
+    @head
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -105,7 +120,7 @@
 
     {{-- Main Content --}}
     <main id="main-content" tabindex="-1" class="isolate flex-1">
-        @yield('content')
+        {{ $slot }}
     </main>
 
     {{-- Footer --}}

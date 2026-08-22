@@ -1,13 +1,10 @@
-@extends('layouts.app')
-
-@section('title', ($query ? 'Search results for “'.$query.'”' : 'Search').' — Mouse28')
-@section('meta_description', 'Search Mouse28 blog posts, accessibility guides, and podcast episodes.')
-@section('og_title', 'Search Mouse28')
-@section('og_description', 'Search Mouse28 blog posts, accessibility guides, and podcast episodes.')
-@section('robots', 'noindex,follow')
-@section('canonical', route('search'))
-
-@section('content')
+<x-layouts.app
+    :title="($query ? 'Search results for “'.$query.'”' : 'Search').' — Mouse28'"
+    description="Search Mouse28 blog posts, accessibility guides, and podcast episodes."
+    og-title="Search Mouse28"
+    robots="noindex,follow"
+    :canonical="route('search')"
+>
     <section class="bg-linear-to-br from-navy via-navy-light to-purple py-14 md:py-20">
         <div class="mx-auto max-w-4xl px-4 text-center sm:px-6">
             <span class="text-sm font-semibold tracking-[0.15em] text-gold uppercase">Explore Mouse28</span>
@@ -101,4 +98,4 @@
             @endif
         </div>
     </section>
-@endsection
+</x-layouts.app>

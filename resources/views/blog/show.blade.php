@@ -1,12 +1,12 @@
-@extends('layouts.app')
-
-@section('title', ($post->meta_title ?: $post->title) . ' — Mouse28')
-@section('meta_description', $post->meta_description ?: Str::limit($post->excerpt, 160))
-@section('og_title', $post->meta_title ?: $post->title)
-@section('og_description', $post->meta_description ?: Str::limit($post->excerpt, 200))
-@section('og_type', 'article')
-@section('robots', ($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow')
-@if($post->og_image_url ?: $post->cover_image_url) @section('og_image', $post->og_image_url ?: $post->cover_image_url) @endif
+<x-layouts.app
+    :title="($post->meta_title ?: $post->title).' — Mouse28'"
+    :description="$post->meta_description ?: Str::limit($post->excerpt, 160)"
+    :og-title="$post->meta_title ?: $post->title"
+    :og-description="$post->meta_description ?: Str::limit($post->excerpt, 200)"
+    og-type="article"
+    :og-image="$post->og_image_url ?: $post->cover_image_url"
+    :robots="($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow'"
+>
 
 @unless ($isPreview ?? false)
     @push('head')
@@ -14,7 +14,6 @@
     @endpush
 @endunless
 
-@section('content')
     @if ($isPreview ?? false)
         <div role="status" class="bg-gold px-4 py-3 text-center text-sm font-semibold text-navy">Preview mode — this page is only visible to administrators.</div>
     @endif
@@ -325,4 +324,4 @@
     <button type="button" id="back-to-top" class="pointer-events-none fixed right-8 bottom-8 z-50 flex size-12 translate-y-2.5 cursor-pointer items-center justify-center rounded-full bg-linear-to-br from-gold to-gold-light text-white opacity-0 shadow-[0_4px_15px_rgb(212_168_67/30%)] transition-[transform,opacity,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[0_6px_20px_rgb(212_168_67/40%)]" aria-label="Back to top">
         <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
     </button>
-@endsection
+</x-layouts.app>

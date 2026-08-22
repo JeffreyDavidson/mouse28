@@ -1,12 +1,9 @@
-@extends('layouts.error')
-
-@section('title', 'Page Not Found — Mouse28')
-@section('meta_description', 'The page you requested could not be found. Search Mouse28 or continue exploring our Disney park stories, guides, and podcast.')
-@section('og_title', 'Page Not Found — Mouse28')
-@section('og_description', 'Search Mouse28 or continue exploring our Disney park stories, accessibility guides, and podcast.')
-@section('robots', 'noindex,nofollow')
-
-@section('content')
+<x-layouts.error
+    title="Page Not Found — Mouse28"
+    description="The page you requested could not be found. Search Mouse28 or continue exploring our Disney park stories, guides, and podcast."
+    og-title="Page Not Found — Mouse28"
+    og-description="Search Mouse28 or continue exploring our Disney park stories, accessibility guides, and podcast."
+>
     <x-error-state code="404" eyebrow="Page not found" title="That page wandered off" message="The address may have changed, or the page may no longer be available. Search Mouse28 or choose a place to keep exploring.">
         <form action="{{ route('search') }}" method="GET" role="search" class="mx-auto mt-8 flex max-w-xl flex-col gap-3 sm:flex-row">
             <label for="not-found-search" class="sr-only">Search Mouse28</label>
@@ -21,4 +18,4 @@
             <a href="{{ route('episodes.index') }}" class="inline-flex min-h-12 items-center rounded-full border border-white/15 bg-white/8 px-6 py-3 font-semibold text-white transition-colors hover:border-gold/50 hover:text-gold">Listen to podcast</a>
         </div>
     </x-error-state>
-@endsection
+</x-layouts.error>

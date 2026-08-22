@@ -1,17 +1,29 @@
+@props([
+    'title' => 'Something Went Wrong — Mouse28',
+    'description' => 'Mouse28 could not complete this request.',
+    'ogTitle' => 'Mouse28',
+    'ogDescription' => 'Disney parks through different eyes.',
+])
+
+@php
+    \Laravel\Head\Facades\Head::title($title)
+        ->description($description)
+        ->hiddenFromRobots()
+        ->og(
+            type: \Laravel\Head\Enums\OgType::Website,
+            title: $ogTitle,
+            description: $ogDescription,
+            siteName: 'Mouse28',
+        )
+        ->ogImage(url('/images/logo.jpg'));
+@endphp
+
 <!DOCTYPE html>
 <html lang="en" class="antialiased">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Something Went Wrong — Mouse28')</title>
-    <meta name="description" content="@yield('meta_description', 'Mouse28 could not complete this request.')">
-    <meta name="robots" content="@yield('robots', 'noindex,nofollow')">
-
-    <meta property="og:title" content="@yield('og_title', 'Mouse28')">
-    <meta property="og:description" content="@yield('og_description', 'Disney parks through different eyes.')">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="{{ url('/images/logo.jpg') }}">
-    <meta property="og:site_name" content="Mouse28">
+    @head
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -36,7 +48,7 @@
     </header>
 
     <main id="main-content" tabindex="-1" class="flex flex-1 flex-col">
-        @yield('content')
+        {{ $slot }}
     </main>
 
     <footer class="border-t border-white/10 bg-navy px-4 py-6 text-center text-sm text-white/40">

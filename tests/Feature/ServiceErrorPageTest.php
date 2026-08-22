@@ -18,7 +18,7 @@ class ServiceErrorPageTest extends TestCase
         $this->get('/testing/server-error')
             ->assertStatus(500)
             ->assertSee('<title>Something Went Wrong — Mouse28</title>', false)
-            ->assertSee('<meta name="robots" content="noindex,nofollow">', false)
+            ->assertSee('<meta name="robots" content="none">', false)
             ->assertDontSee('<link rel="canonical"', false)
             ->assertSee('The magic hit a snag')
             ->assertDontSee('Sensitive database connection details');
