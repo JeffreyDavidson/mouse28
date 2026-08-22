@@ -191,3 +191,30 @@ test('guides are flagged when their editorial review is due', function (): void 
         ->assertOk()
         ->assertSee('due for editorial review');
 });
+
+test('sourced posts show their official source and flag stale reviews', function (): void {
+    config()->set('mouse28.post_review_interval_days', 180);
+
+    $currentPost = Post::factory()->create([
+        'source_url' => 'https://disneyworld.disney.go.com/guest-services/disability-access-service/',
+        'last_reviewed_at' => today()->subDays(30),
+    ]);
+    $stalePost = Post::factory()->create([
+        'source_url' => 'https://disneyworld.disney.go.com/guest-services/disability-access-service/',
+        'last_reviewed_at' => today()->subDays(181),
+    ]);
+
+    expect($currentPost->isReviewDue())->toBeFalse()
+        ->and($stalePost->isReviewDue())->toBeTrue()
+        ->and(Post::reviewDue()->pluck('id')->all())->toBe([$stalePost->id]);
+
+    get(route('blog.show', $currentPost))
+        ->assertOk()
+        ->assertSee('Last reviewed')
+        ->assertSee($currentPost->source_url, false)
+        ->assertDontSee('due for editorial review');
+
+    get(route('blog.show', $stalePost))
+        ->assertOk()
+        ->assertSee('due for editorial review');
+});

@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
 /**
+ * @property Carbon|null $last_reviewed_at
  * @property Carbon|null $published_at
  * @property-read string $author_initials
  * @property-read string $author_name
@@ -21,12 +22,15 @@ use Illuminate\Support\Carbon;
  * @property-read string|null $cover_image_url
  * @property-read string|null $og_image_url
  * @property-read int $reading_time
+ * @property-read string $review_status
  */
 #[Fillable([
     'title',
     'slug',
     'excerpt',
     'body',
+    'source_url',
+    'last_reviewed_at',
     'cover_image',
     'episode_id',
     'category',
@@ -73,6 +77,16 @@ class Post extends Model
         $query->where('is_published', true)
             ->whereNotNull('published_at')
             ->where('published_at', '<=', now());
+    }
+
+    #[Scope]
+    protected function reviewDue(Builder $query): void
+    {
+        $query->whereNotNull('source_url')
+            ->where(function (Builder $query): void {
+                $query->whereNull('last_reviewed_at')
+                    ->orWhere('last_reviewed_at', '<', today()->subDays(config('mouse28.post_review_interval_days')));
+            });
     }
 
     protected function authorName(): Attribute
@@ -147,10 +161,29 @@ class Post extends Model
         });
     }
 
+    protected function reviewStatus(): Attribute
+    {
+        return Attribute::make(get: function (): string {
+            if (blank($this->source_url)) {
+                return 'Not tracked';
+            }
+
+            return $this->isReviewDue() ? 'Review due' : 'Current';
+        });
+    }
+
+    public function isReviewDue(): bool
+    {
+        return filled($this->source_url)
+            && (! $this->last_reviewed_at
+                || $this->last_reviewed_at->lt(today()->subDays(config('mouse28.post_review_interval_days'))));
+    }
+
     protected function casts(): array
     {
         return [
             'is_published' => 'boolean',
+            'last_reviewed_at' => 'date',
             'published_at' => 'datetime',
         ];
     }

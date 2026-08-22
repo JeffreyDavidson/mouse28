@@ -36,9 +36,7 @@ function initializeBlogArticle() {
     }
 
     const progressBar = document.getElementById('reading-progress');
-    const readingIndicator = document.getElementById('reading-indicator');
     const backToTop = document.getElementById('back-to-top');
-    const readingMinutes = Number.parseInt(article.dataset.readingMinutes ?? '0', 10);
 
     const updateProgress = () => {
         const articleBounds = article.getBoundingClientRect();
@@ -50,11 +48,6 @@ function initializeBlogArticle() {
 
         if (progressBar) {
             progressBar.style.width = `${percentage}%`;
-        }
-
-        if (readingIndicator && readingMinutes > 0) {
-            const currentMinute = Math.max(1, Math.ceil((percentage / 100) * readingMinutes));
-            readingIndicator.textContent = `${currentMinute} of ${readingMinutes} min read`;
         }
 
         if (backToTop) {

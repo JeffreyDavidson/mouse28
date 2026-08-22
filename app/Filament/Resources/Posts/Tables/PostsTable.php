@@ -38,6 +38,21 @@ class PostsTable
                     ->label('Episode')
                     ->limit(30)
                     ->placeholder('—'),
+                TextColumn::make('last_reviewed_at')
+                    ->label('Reviewed')
+                    ->date()
+                    ->sortable()
+                    ->placeholder('Not tracked')
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('review_status')
+                    ->label('Review')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Current' => 'success',
+                        'Review due' => 'warning',
+                        default => 'gray',
+                    })
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('readiness')
                     ->label('Readiness')
                     ->badge()

@@ -165,10 +165,7 @@
                                 </button>
                             </div>
                         @else
-                            <p class="text-navy/40 italic">
-                                Transcript coming soon. We're working on making all episodes accessible with full text
-                                transcripts.
-                            </p>
+                            <p class="text-navy/40 italic">A transcript is not available for this episode.</p>
                         @endif
                     </div>
                 </div>
