@@ -3,11 +3,40 @@
 namespace App\Models;
 
 use Database\Factories\GuideFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property Carbon|null $last_reviewed_at
+ * @property Carbon|null $published_at
+ * @property-read string $author_name
+ * @property-read string $category_label
+ * @property-read string|null $cover_image_url
+ * @property-read string|null $og_image_url
+ * @property-read int $reading_time
+ * @property-read string $review_status
+ */
+#[Fillable([
+    'title',
+    'slug',
+    'excerpt',
+    'body',
+    'category',
+    'author',
+    'cover_image',
+    'source_url',
+    'last_reviewed_at',
+    'is_published',
+    'published_at',
+    'meta_title',
+    'meta_description',
+    'og_image',
+])]
 class Guide extends Model
 {
     /** @use HasFactory<GuideFactory> */
@@ -18,29 +47,6 @@ class Guide extends Model
         'park-strategy' => 'Park Strategy',
         'food-reviews' => 'Food & Reviews',
         'family-planning' => 'Family Planning',
-    ];
-
-    protected $fillable = [
-        'title',
-        'slug',
-        'excerpt',
-        'body',
-        'category',
-        'author',
-        'cover_image',
-        'source_url',
-        'last_reviewed_at',
-        'is_published',
-        'published_at',
-        'meta_title',
-        'meta_description',
-        'og_image',
-    ];
-
-    protected $casts = [
-        'is_published' => 'boolean',
-        'last_reviewed_at' => 'date',
-        'published_at' => 'datetime',
     ];
 
     #[Scope]
@@ -60,39 +66,60 @@ class Guide extends Model
         });
     }
 
-    public function getAuthorNameAttribute(): string
+    protected function authorName(): Attribute
     {
-        return Post::AUTHORS[$this->author] ?? 'Mouse28 Team';
+        return Attribute::make(get: function () {
+            return Post::AUTHORS[$this->author] ?? 'Mouse28 Team';
+        });
     }
 
-    public function getCategoryLabelAttribute(): string
+    protected function categoryLabel(): Attribute
     {
-        return self::CATEGORIES[$this->category] ?? str($this->category)->headline();
+        return Attribute::make(get: function () {
+            return self::CATEGORIES[$this->category] ?? str($this->category)->headline();
+        });
     }
 
-    public function getCoverImageUrlAttribute(): ?string
+    protected function coverImageUrl(): Attribute
     {
-        return $this->cover_image ? '/storage/'.$this->cover_image : null;
+        return Attribute::make(get: function () {
+            return $this->cover_image ? '/storage/'.$this->cover_image : null;
+        });
     }
 
-    public function getOgImageUrlAttribute(): ?string
+    protected function ogImageUrl(): Attribute
     {
-        return $this->og_image ? '/storage/'.$this->og_image : null;
+        return Attribute::make(get: function () {
+            return $this->og_image ? '/storage/'.$this->og_image : null;
+        });
     }
 
-    public function getReadingTimeAttribute(): int
+    protected function readingTime(): Attribute
     {
-        return max(1, (int) ceil(str_word_count(strip_tags($this->body)) / 200));
+        return Attribute::make(get: function () {
+            return max(1, (int) ceil(str_word_count(strip_tags($this->body)) / 200));
+        });
     }
 
-    public function getReviewStatusAttribute(): string
+    protected function reviewStatus(): Attribute
     {
-        return $this->isReviewDue() ? 'Review due' : 'Current';
+        return Attribute::make(get: function () {
+            return $this->isReviewDue() ? 'Review due' : 'Current';
+        });
     }
 
     public function isReviewDue(): bool
     {
         return ! $this->last_reviewed_at
             || $this->last_reviewed_at->lt(today()->subDays(config('mouse28.guide_review_interval_days')));
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'is_published' => 'boolean',
+            'last_reviewed_at' => 'date',
+            'published_at' => 'datetime',
+        ];
     }
 }

@@ -43,7 +43,7 @@ class PostsTable
                     ->badge()
                     ->getStateUsing(fn (Post $record): string => EditorialReadiness::label($record))
                     ->color(fn (Post $record): string => EditorialReadiness::color($record))
-                    ->tooltip(fn (Post $record): ?string => EditorialReadiness::summary($record)),
+                    ->tooltip(fn (Post $record): string => EditorialReadiness::summary($record)),
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()

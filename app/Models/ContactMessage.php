@@ -2,22 +2,20 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
+/** @property-read string $subject_label */
+#[Fillable([
+    'name',
+    'email',
+    'subject',
+    'message',
+    'is_read',
+])]
 class ContactMessage extends Model
 {
-    protected $fillable = [
-        'name',
-        'email',
-        'subject',
-        'message',
-        'is_read',
-    ];
-
-    protected $casts = [
-        'is_read' => 'boolean',
-    ];
-
     public const SUBJECTS = [
         'general' => 'General Question',
         'accessibility' => 'Park Accessibility',
@@ -27,8 +25,17 @@ class ContactMessage extends Model
         'other' => 'Other',
     ];
 
-    public function getSubjectLabelAttribute(): string
+    protected function subjectLabel(): Attribute
     {
-        return self::SUBJECTS[$this->subject] ?? ucfirst($this->subject);
+        return Attribute::make(get: function () {
+            return self::SUBJECTS[$this->subject] ?? ucfirst($this->subject);
+        });
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'is_read' => 'boolean',
+        ];
     }
 }

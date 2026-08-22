@@ -3,14 +3,14 @@
 namespace App\Console\Commands;
 
 use App\Models\Episode;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Description('Populate Episode 1 with rich show notes and transcript')]
+#[Signature('episodes:populate-content')]
 class PopulateEpisodeContent extends Command
 {
-    protected $signature = 'episodes:populate-content';
-
-    protected $description = 'Populate Episode 1 with rich show notes and transcript';
-
     public function handle(): void
     {
         $episode = Episode::where('slug', 'welcome-to-mouse28')->first();

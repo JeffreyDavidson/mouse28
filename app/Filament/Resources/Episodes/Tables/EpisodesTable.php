@@ -31,7 +31,7 @@ class EpisodesTable
                     ->badge()
                     ->getStateUsing(fn (Episode $record): string => EditorialReadiness::label($record))
                     ->color(fn (Episode $record): string => EditorialReadiness::color($record))
-                    ->tooltip(fn (Episode $record): ?string => EditorialReadiness::summary($record)),
+                    ->tooltip(fn (Episode $record): string => EditorialReadiness::summary($record)),
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()

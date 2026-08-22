@@ -11,17 +11,26 @@
         "laravel/framework": "^13.23",
         "laravel/head": "^0.2.1",
         "laravel/tinker": "^3.0",
-        "resend/resend-laravel": "^1.4"
+        "resend/resend-laravel": "^1.4",
+        "sentry/sentry-laravel": "^4.27"
     },
     "require-dev": {
+        "driftingly/rector-laravel": "^2.5",
         "fakerphp/faker": "^1.23",
         "jasonmccreary/double": "^0.6",
+        "larastan/larastan": "^3.10",
+        "laravel/boost": "^2.4",
         "laravel/pail": "^1.2.2",
+        "laravel/pao": "^1.1",
         "laravel/pint": "^1.30.5",
         "laraveldaily/filacheck": "^1.2.4",
         "nunomaduro/collision": "^8.6",
         "pestphp/pest": "^5.1",
-        "pestphp/pest-plugin-laravel": "^5.0"
+        "pestphp/pest-plugin-arch": "^5.0",
+        "pestphp/pest-plugin-browser": "^5.0",
+        "pestphp/pest-plugin-laravel": "^5.0",
+        "phpstan/extension-installer": "^1.4",
+        "rector/rector": "^2.6"
     },
     "autoload": {
         "psr-4": {
@@ -50,8 +59,12 @@
         ],
         "test": [
             "@php artisan config:clear --ansi",
-            "@php artisan test"
+            "@php artisan test --exclude-testsuite=Browser"
         ],
+        "test:browser": "@php artisan test --testsuite=Browser",
+        "analyse": "php -d memory_limit=2G vendor/bin/phpstan analyse --no-progress",
+        "rector": "vendor/bin/rector process",
+        "test:rector": "vendor/bin/rector process --dry-run",
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi",
@@ -84,7 +97,8 @@
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "phpstan/extension-installer": true
         }
     },
     "minimum-stability": "stable",

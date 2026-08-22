@@ -3,42 +3,44 @@
 namespace App\Models;
 
 use Database\Factories\EpisodeFactory;
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property Carbon|null $published_at
+ * @property-read string $formatted_duration
+ * @property-read string|null $og_image_url
+ */
+#[Fillable([
+    'title',
+    'slug',
+    'description',
+    'show_notes',
+    'transcript',
+    'episode_number',
+    'season_number',
+    'audio_url',
+    'apple_url',
+    'spotify_url',
+    'youtube_url',
+    'duration_seconds',
+    'cover_image',
+    'is_published',
+    'published_at',
+    'meta_title',
+    'meta_description',
+    'og_image',
+])]
 class Episode extends Model
 {
     /** @use HasFactory<EpisodeFactory> */
     use HasFactory;
-
-    protected $fillable = [
-        'title',
-        'slug',
-        'description',
-        'show_notes',
-        'transcript',
-        'episode_number',
-        'season_number',
-        'audio_url',
-        'apple_url',
-        'spotify_url',
-        'youtube_url',
-        'duration_seconds',
-        'cover_image',
-        'is_published',
-        'published_at',
-        'meta_title',
-        'meta_description',
-        'og_image',
-    ];
-
-    protected $casts = [
-        'is_published' => 'boolean',
-        'published_at' => 'datetime',
-    ];
 
     public function posts(): HasMany
     {
@@ -53,19 +55,31 @@ class Episode extends Model
             ->where('published_at', '<=', now());
     }
 
-    public function getOgImageUrlAttribute(): ?string
+    protected function ogImageUrl(): Attribute
     {
-        return $this->og_image ? '/storage/'.$this->og_image : null;
+        return Attribute::make(get: function () {
+            return $this->og_image ? '/storage/'.$this->og_image : null;
+        });
     }
 
-    public function getFormattedDurationAttribute(): string
+    protected function formattedDuration(): Attribute
     {
-        if (! $this->duration_seconds) {
-            return '';
-        }
-        $minutes = floor($this->duration_seconds / 60);
-        $seconds = $this->duration_seconds % 60;
+        return Attribute::make(get: function () {
+            if (! $this->duration_seconds) {
+                return '';
+            }
+            $minutes = floor($this->duration_seconds / 60);
+            $seconds = $this->duration_seconds % 60;
 
-        return sprintf('%d:%02d', $minutes, $seconds);
+            return sprintf('%d:%02d', $minutes, $seconds);
+        });
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'is_published' => 'boolean',
+            'published_at' => 'datetime',
+        ];
     }
 }

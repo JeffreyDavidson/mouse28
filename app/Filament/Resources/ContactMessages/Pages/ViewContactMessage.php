@@ -12,6 +12,7 @@ use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
+/** @property ContactMessage $record */
 class ViewContactMessage extends ViewRecord
 {
     protected static string $resource = ContactMessageResource::class;
