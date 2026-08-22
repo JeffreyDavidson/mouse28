@@ -50,6 +50,8 @@ Guide freshness is controlled by `GUIDE_REVIEW_INTERVAL_DAYS`, with a 180-day de
 
 The public layout provides a semantic header, primary navigation, skip link, main landmark, footer, visible focus styles, responsive controls, and reduced-motion behavior. Mobile interactive targets should remain at least 48 pixels. User-authored Markdown is rendered with embedded HTML stripped and unsafe links disabled.
 
+HTTP 404 responses use a branded recovery page with search and primary content links. Its lightweight standalone layout avoids session, database, and shared-view dependencies so route-level failures remain renderable. The page is `noindex,nofollow`, omits its canonical URL, and receives the same response for unknown routes and unpublished content so private titles are not disclosed.
+
 ## Verification
 
 Feature tests cover public visibility rules, guide pages, blog filtering, site search, editorial readiness and previews, feeds, sitemap output, contact protection, newsletter protection, and Filament access. The release checks are `composer test`, `npm run build`, and `git diff --check`.
