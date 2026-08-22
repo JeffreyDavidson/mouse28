@@ -60,6 +60,8 @@ HTTP 404, 419, 500, and 503 responses use branded recovery pages. Their lightwei
 
 Global response middleware adds `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, and a restrictive camera, geolocation, and microphone `Permissions-Policy` to public, admin, feed, and error responses. HSTS is left to the HTTPS deployment edge, and a content security policy is not declared until the public and Filament script requirements can be expressed without unsafe fallbacks.
 
+The framework health endpoint probes the migrations table, so `/up` reports failure when the configured database is unavailable or has not been migrated. The `app:verify-production` command validates required production configuration without printing secret values. Demo content cleanup is restricted to known seed slugs, runs in one database transaction, and requires an explicit `--force` flag in production.
+
 Admin, preview, and error responses also emit `X-Robots-Tag: noindex, nofollow` and `Cache-Control: no-store, private`, preventing crawlers and shared caches from retaining private or failure-specific content. The dynamic and static robots policies both disallow admin pages, authorized previews, and generated search results; the application still uses page-level robots metadata for filtered archives and other contextual indexing decisions.
 
 ## Verification

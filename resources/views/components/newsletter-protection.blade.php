@@ -4,7 +4,7 @@
 </div>
 
 @if (config('services.turnstile.site_key'))
-    @once
+    @once('turnstile-api')
         <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     @endonce
     <div class="flex justify-center">
