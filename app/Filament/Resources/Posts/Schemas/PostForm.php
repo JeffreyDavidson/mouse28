@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Posts\Schemas;
 
 use App\Models\Post;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
@@ -73,6 +74,23 @@ class PostForm
                             ->helperText('Short summary shown in post listings.'),
                         MarkdownEditor::make('body')
                             ->required(fn (Get $get): bool => (bool) $get('is_published')),
+                    ]),
+
+                Section::make('Review & Source')
+                    ->description('Optional for evergreen posts. Policy and planning posts should include both fields.')
+                    ->collapsed()
+                    ->columns(2)
+                    ->schema([
+                        TextInput::make('source_url')
+                            ->label('Official Source')
+                            ->url()
+                            ->maxLength(255)
+                            ->required(fn (Get $get): bool => filled($get('last_reviewed_at')))
+                            ->helperText('Link to the official policy or primary source.'),
+                        DatePicker::make('last_reviewed_at')
+                            ->label('Last Reviewed')
+                            ->required(fn (Get $get): bool => filled($get('source_url')))
+                            ->helperText('Sourced posts are flagged after '.config('mouse28.post_review_interval_days').' days.'),
                     ]),
 
                 Grid::make(2)

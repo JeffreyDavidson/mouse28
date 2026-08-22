@@ -66,6 +66,8 @@ class EditorialReadiness
             blank($post->excerpt) ? 'Add an excerpt' : null,
             blank($post->body) ? 'Add post content' : null,
             blank($post->cover_image) ? 'Add a cover image' : null,
+            filled($post->last_reviewed_at) && blank($post->source_url) ? 'Add an official source' : null,
+            filled($post->source_url) && blank($post->last_reviewed_at) ? 'Set the review date' : null,
             blank($post->meta_title) ? 'Add an SEO title' : null,
             blank($post->meta_description) ? 'Add an SEO description' : null,
             blank($post->published_at) ? 'Set a publish date' : null,
