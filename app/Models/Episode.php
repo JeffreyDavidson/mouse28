@@ -58,6 +58,37 @@ class Episode extends Model
             ->where('published_at', '<=', now());
     }
 
+    #[Scope]
+    protected function drafts(Builder $query): void
+    {
+        $query->where('is_published', false);
+    }
+
+    #[Scope]
+    protected function scheduled(Builder $query): void
+    {
+        $query->where('is_published', true)
+            ->where('published_at', '>', now());
+    }
+
+    #[Scope]
+    protected function needsAttention(Builder $query): void
+    {
+        $query->where(function (Builder $query): void {
+            foreach (['description', 'show_notes', 'cover_image', 'duration_seconds', 'meta_title', 'meta_description'] as $column) {
+                $query->orWhereNull($column);
+
+                if ($column !== 'duration_seconds') {
+                    $query->orWhere($column, '');
+                }
+            }
+
+            $query->orWhere(function (Builder $query): void {
+                $query->where('is_published', true)->whereNull('published_at');
+            });
+        });
+    }
+
     protected function ogImageUrl(): Attribute
     {
         return Attribute::make(get: function () {

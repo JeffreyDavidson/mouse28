@@ -60,6 +60,15 @@ class EditorialReadiness
     }
 
     /** @return list<string> */
+    public static function publishingIssues(Post|Guide|Episode $content): array
+    {
+        return array_values(array_filter(
+            self::issues($content),
+            fn (string $issue): bool => $issue !== 'Set a publish date',
+        ));
+    }
+
+    /** @return list<string> */
     private static function postIssues(Post $post): array
     {
         return array_values(array_filter([
@@ -70,7 +79,7 @@ class EditorialReadiness
             filled($post->source_url) && blank($post->last_reviewed_at) ? 'Set the review date' : null,
             blank($post->meta_title) ? 'Add an SEO title' : null,
             blank($post->meta_description) ? 'Add an SEO description' : null,
-            blank($post->published_at) ? 'Set a publish date' : null,
+            $post->is_published && blank($post->published_at) ? 'Set a publish date' : null,
         ]));
     }
 
@@ -85,7 +94,7 @@ class EditorialReadiness
             blank($guide->last_reviewed_at) ? 'Set the review date' : null,
             blank($guide->meta_title) ? 'Add an SEO title' : null,
             blank($guide->meta_description) ? 'Add an SEO description' : null,
-            blank($guide->published_at) ? 'Set a publish date' : null,
+            $guide->is_published && blank($guide->published_at) ? 'Set a publish date' : null,
         ]));
     }
 
@@ -95,13 +104,11 @@ class EditorialReadiness
         return array_values(array_filter([
             blank($episode->description) ? 'Add a description' : null,
             blank($episode->show_notes) ? 'Add show notes' : null,
-            blank($episode->transcript) ? 'Add a transcript' : null,
-            blank($episode->audio_source_url) ? 'Add audio' : null,
             blank($episode->cover_image) ? 'Add a cover image' : null,
             blank($episode->duration_seconds) ? 'Set the duration' : null,
             blank($episode->meta_title) ? 'Add an SEO title' : null,
             blank($episode->meta_description) ? 'Add an SEO description' : null,
-            blank($episode->published_at) ? 'Set a publish date' : null,
+            $episode->is_published && blank($episode->published_at) ? 'Set a publish date' : null,
         ]));
     }
 }

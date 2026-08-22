@@ -11,7 +11,6 @@ use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
@@ -58,7 +57,6 @@ class GuideForm
                     ->schema([
                         Textarea::make('excerpt')
                             ->maxLength(300)
-                            ->required(fn (Get $get): bool => (bool) $get('is_published'))
                             ->rows(3),
                         MarkdownEditor::make('body')
                             ->required(),
@@ -70,19 +68,16 @@ class GuideForm
                                 TextInput::make('source_url')
                                     ->url()
                                     ->maxLength(255)
-                                    ->required(fn (Get $get): bool => (bool) $get('is_published'))
                                     ->helperText('Link to the official policy or primary source.'),
                                 DatePicker::make('last_reviewed_at')
                                     ->label('Last Reviewed')
-                                    ->required(fn (Get $get): bool => (bool) $get('is_published'))
                                     ->helperText('Guides are flagged after '.config('mouse28.guide_review_interval_days').' days.'),
                             ]),
                         Section::make('Publishing')
-                            ->description('Published guides require an excerpt, official source, review date, and publish date.')
+                            ->description('Save the guide, then use the Publish action when its content is ready.')
                             ->schema([
-                                Toggle::make('is_published')->live()->default(false),
                                 DateTimePicker::make('published_at')
-                                    ->required(fn (Get $get): bool => (bool) $get('is_published')),
+                                    ->helperText('Optional. Leave blank to publish immediately, or choose a future date to schedule.'),
                             ]),
                     ]),
                 Section::make('Media & SEO')

@@ -7,7 +7,6 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
@@ -65,13 +64,11 @@ class EpisodeForm
                                     ->directory('episodes/audio')
                                     ->visibility('public')
                                     ->downloadable()
-                                    ->required(fn (Get $get): bool => (bool) $get('is_published') && blank($get('audio_url')))
                                     ->helperText('Upload an MP3 up to 256 MB. Hosted audio is used before an external URL.'),
                                 TextInput::make('audio_url')
                                     ->label('External Audio URL')
                                     ->url()
                                     ->maxLength(500)
-                                    ->required(fn (Get $get): bool => (bool) $get('is_published') && blank($get('audio_path')))
                                     ->prefixIcon('heroicon-o-link')
                                     ->helperText('Optional fallback when the episode is hosted elsewhere.'),
                                 FileUpload::make('cover_image')
@@ -86,15 +83,11 @@ class EpisodeForm
 
                         Section::make('Publishing')
                             ->icon('heroicon-o-rocket-launch')
-                            ->description('Published episodes require audio, a description, show notes, and a publish date. Readiness also tracks transcripts, images, duration, and SEO fields.')
+                            ->description('Save the episode, then use the Publish action when its editorial content is ready. Audio and transcripts may be added later.')
                             ->schema([
-                                Toggle::make('is_published')
-                                    ->label('Published')
-                                    ->live()
-                                    ->default(false),
                                 DateTimePicker::make('published_at')
                                     ->label('Publish Date')
-                                    ->required(fn (Get $get): bool => (bool) $get('is_published')),
+                                    ->helperText('Optional. Leave blank to publish immediately, or choose a future date to schedule.'),
                             ]),
                     ]),
 
@@ -105,10 +98,8 @@ class EpisodeForm
                         Textarea::make('description')
                             ->rows(3)
                             ->maxLength(500)
-                            ->required(fn (Get $get): bool => (bool) $get('is_published'))
                             ->helperText('Short description shown in episode listings.'),
                         RichEditor::make('show_notes')
-                            ->required(fn (Get $get): bool => (bool) $get('is_published'))
                             ->toolbarButtons([
                                 'bold', 'italic', 'link',
                                 'h2', 'h3',

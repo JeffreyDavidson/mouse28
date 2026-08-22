@@ -1,7 +1,10 @@
 <?php
 
 use App\Filament\Resources\Episodes\EpisodeResource;
+use App\Filament\Resources\Episodes\Pages\EditEpisode;
 use App\Filament\Resources\Guides\GuideResource;
+use App\Filament\Resources\Guides\Pages\EditGuide;
+use App\Filament\Resources\Posts\Pages\EditPost;
 use App\Filament\Resources\Posts\PostResource;
 use App\Models\Episode;
 use App\Models\Guide;
@@ -9,6 +12,7 @@ use App\Models\Post;
 use App\Models\User;
 use App\Support\EditorialReadiness;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -45,7 +49,37 @@ test('readiness reports actionable issues for each content type', function (): v
     expect(EditorialReadiness::label($post))->toBe('3 missing')
         ->and(EditorialReadiness::issues($post))->toContain('Add a cover image')
         ->and(EditorialReadiness::issues($guide))->toContain('Add an official source', 'Set the review date')
-        ->and(EditorialReadiness::issues($episode))->toContain('Add audio', 'Add a transcript');
+        ->and(EditorialReadiness::issues($episode))->not->toContain('Add audio', 'Add a transcript');
+});
+
+test('episode readiness does not require deferred audio or transcripts', function (): void {
+    $episode = Episode::factory()->create([
+        'audio_path' => null,
+        'audio_url' => null,
+        'transcript' => null,
+        'cover_image' => 'episodes/complete.jpg',
+        'meta_title' => 'A complete episode title',
+        'meta_description' => 'A complete episode description for search and social sharing.',
+    ]);
+
+    expect(EditorialReadiness::issues($episode))->toBeEmpty();
+});
+
+test('editorial scopes separate the content work queue', function (): void {
+    $draft = Post::factory()->draft()->create();
+    $scheduled = Post::factory()->scheduled()->create();
+    $published = Post::factory()->create([
+        'cover_image' => 'posts/complete.jpg',
+        'meta_title' => 'Complete title',
+        'meta_description' => 'Complete description',
+    ]);
+    $needsAttention = Post::factory()->create(['cover_image' => null]);
+
+    expect(Post::drafts()->pluck('id'))->toContain($draft->id)
+        ->and(Post::scheduled()->pluck('id'))->toContain($scheduled->id)
+        ->and(Post::published()->pluck('id'))->toContain($published->id, $needsAttention->id)
+        ->and(Post::needsAttention()->pluck('id'))->toContain($draft->id, $scheduled->id, $needsAttention->id)
+        ->and(Post::needsAttention()->pluck('id'))->not->toContain($published->id);
 });
 
 test('complete content is marked ready', function (): void {
@@ -131,14 +165,14 @@ test('filament forms explain publish requirements and edit pages offer previews'
 
     get(PostResource::getUrl('create'))
         ->assertOk()
-        ->assertSee('Published posts require')
+        ->assertSee('use the Publish action')
         ->assertSee('Optional for evergreen posts');
     get(GuideResource::getUrl('create'))
         ->assertOk()
-        ->assertSee('Published guides require');
+        ->assertSee('use the Publish action');
     get(EpisodeResource::getUrl('create'))
         ->assertOk()
-        ->assertSee('Published episodes require')
+        ->assertSee('Audio and transcripts may be added later')
         ->assertSee('Hosted MP3')
         ->assertSee('Upload an MP3 up to 256 MB');
 
@@ -151,4 +185,68 @@ test('filament forms explain publish requirements and edit pages offer previews'
             ->assertOk()
             ->assertSee('Preview');
     }
+});
+
+test('ready drafts can be explicitly published and unpublished', function (string $page, string $model): void {
+    $admin = User::factory()->admin()->create();
+    $record = $model::factory()->draft()->create(match ($model) {
+        Post::class => [
+            'cover_image' => 'posts/complete.jpg',
+            'meta_title' => 'Complete post title',
+            'meta_description' => 'Complete post description',
+        ],
+        Guide::class => [
+            'cover_image' => 'guides/complete.jpg',
+            'meta_title' => 'Complete guide title',
+            'meta_description' => 'Complete guide description',
+        ],
+        Episode::class => [
+            'cover_image' => 'episodes/complete.jpg',
+            'meta_title' => 'Complete episode title',
+            'meta_description' => 'Complete episode description',
+        ],
+    });
+
+    actingAs($admin);
+
+    Livewire::test($page, ['record' => $record->getRouteKey()])
+        ->callAction('publish')
+        ->assertNotified();
+
+    expect($record->refresh()->is_published)->toBeTrue()
+        ->and($record->published_at)->not->toBeNull();
+
+    Livewire::test($page, ['record' => $record->getRouteKey()])
+        ->callAction('unpublish')
+        ->assertNotified();
+
+    expect($record->refresh()->is_published)->toBeFalse();
+})->with([
+    'post' => [EditPost::class, Post::class],
+    'guide' => [EditGuide::class, Guide::class],
+    'episode' => [EditEpisode::class, Episode::class],
+]);
+
+test('publishing is blocked until editorial requirements are complete', function (): void {
+    $admin = User::factory()->admin()->create();
+    $post = Post::factory()->draft()->create([
+        'excerpt' => null,
+        'cover_image' => null,
+        'meta_title' => null,
+        'meta_description' => null,
+    ]);
+
+    actingAs($admin);
+
+    Livewire::test(EditPost::class, ['record' => $post->getRouteKey()])
+        ->callAction('publish')
+        ->assertNotified();
+
+    expect($post->refresh()->is_published)->toBeFalse();
+});
+
+test('content resources expose useful records to global search', function (): void {
+    expect(PostResource::getGloballySearchableAttributes())->toBe(['title', 'slug', 'category', 'author'])
+        ->and(GuideResource::getGloballySearchableAttributes())->toBe(['title', 'slug', 'category', 'author'])
+        ->and(EpisodeResource::getGloballySearchableAttributes())->toBe(['title', 'slug', 'episode_number']);
 });

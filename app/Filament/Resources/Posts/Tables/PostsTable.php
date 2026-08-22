@@ -8,7 +8,10 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class PostsTable
 {
@@ -69,7 +72,21 @@ class PostsTable
                     ->date()
                     ->sortable(),
             ])
-            ->filters([])
+            ->filters([
+                SelectFilter::make('category')->options(Post::CATEGORIES),
+                SelectFilter::make('author')->options(Post::AUTHORS),
+                Filter::make('missing_artwork')
+                    ->query(fn (Builder $query): Builder => $query->where(function (Builder $query): void {
+                        $query->whereNull('cover_image')->orWhere('cover_image', '');
+                    })),
+                Filter::make('missing_seo')
+                    ->query(fn (Builder $query): Builder => $query->where(function (Builder $query): void {
+                        $query->whereNull('meta_title')->orWhere('meta_title', '')
+                            ->orWhereNull('meta_description')->orWhere('meta_description', '');
+                    })),
+                Filter::make('review_due')
+                    ->query(fn (Builder $query): Builder => $query->reviewDue()),
+            ])
             ->recordActions([
                 EditAction::make(),
             ])

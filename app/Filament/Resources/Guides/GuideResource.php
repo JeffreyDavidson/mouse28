@@ -18,11 +18,18 @@ class GuideResource extends Resource
 {
     protected static ?string $model = Guide::class;
 
+    protected static ?string $recordTitleAttribute = 'title';
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBookOpen;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     protected static ?int $navigationSort = 1;
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['title', 'slug', 'category', 'author'];
+    }
 
     public static function form(Schema $schema): Schema
     {

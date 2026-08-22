@@ -28,7 +28,9 @@ The public layout normalizes canonical and social-image URLs to absolute URLs. L
 
 Filament is mounted at `/admin`. `User::canAccessPanel()` requires the explicit `is_admin` flag. Model policies provide the same boundary for content resources and protected record actions. Custom settings and subscriber pages also enforce administrator access.
 
-`EditorialReadiness` provides shared publication status and readiness rules for posts, guides, and episodes. Filament lists show missing-item counts with actionable tooltips, while forms require essential public content when the Published toggle is enabled. SEO fields, images, transcripts, guide review metadata, and similar quality signals remain visible reminders rather than universal blockers.
+`EditorialReadiness` provides shared publication status and readiness rules for posts, guides, and episodes. Filament list tabs and filters separate drafts, scheduled and published content, incomplete records, and review-due material. Editors publish and unpublish from explicit edit-page actions; publication is blocked until required editorial content, artwork, and SEO metadata are complete, and a blank publish date is filled automatically. Episode audio and transcripts are tracked as availability information but intentionally do not block publication while the original recordings are unavailable.
+
+Filament global search covers posts, guides, episodes, and contact messages. The dashboard surfaces review-due counts for both sourced posts and guides so time-sensitive information returns to the editorial queue.
 
 Each content edit page links to an administrator-authorized preview route. Preview pages reuse the public templates, carry a visible preview banner, emit `noindex,nofollow`, and omit structured data. Every preview is authorized through its model policy, so drafts are not exposed by knowing their URL.
 

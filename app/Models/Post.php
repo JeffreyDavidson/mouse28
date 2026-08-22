@@ -89,6 +89,48 @@ class Post extends Model
             });
     }
 
+    #[Scope]
+    protected function drafts(Builder $query): void
+    {
+        $query->where('is_published', false);
+    }
+
+    #[Scope]
+    protected function scheduled(Builder $query): void
+    {
+        $query->where('is_published', true)
+            ->where('published_at', '>', now());
+    }
+
+    #[Scope]
+    protected function needsAttention(Builder $query): void
+    {
+        $query->where(function (Builder $query): void {
+            $query->whereNull('excerpt')
+                ->orWhere('excerpt', '')
+                ->orWhereNull('body')
+                ->orWhere('body', '')
+                ->orWhereNull('cover_image')
+                ->orWhere('cover_image', '')
+                ->orWhereNull('meta_title')
+                ->orWhere('meta_title', '')
+                ->orWhereNull('meta_description')
+                ->orWhere('meta_description', '')
+                ->orWhere(function (Builder $query): void {
+                    $query->where('is_published', true)->whereNull('published_at');
+                })
+                ->orWhere(function (Builder $query): void {
+                    $query->whereNotNull('source_url')->whereNull('last_reviewed_at');
+                })
+                ->orWhere(function (Builder $query): void {
+                    $query->whereNotNull('last_reviewed_at')
+                        ->where(function (Builder $query): void {
+                            $query->whereNull('source_url')->orWhere('source_url', '');
+                        });
+                });
+        });
+    }
+
     protected function authorName(): Attribute
     {
         return Attribute::make(get: function () {
