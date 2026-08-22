@@ -5,13 +5,19 @@
 @section('og_title', $guide->meta_title ?: $guide->title)
 @section('og_description', $guide->meta_description ?: Str::limit($guide->excerpt, 200))
 @section('og_type', 'article')
+@section('robots', ($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow')
 @if ($guide->og_image_url ?: $guide->cover_image_url) @section('og_image', $guide->og_image_url ?: $guide->cover_image_url) @endif
 
-@push('head')
-    <x-structured-data :data="\App\Support\StructuredData::forGuide($guide)" />
-@endpush
+@unless ($isPreview ?? false)
+    @push('head')
+        <x-structured-data :data="\App\Support\StructuredData::forGuide($guide)" />
+    @endpush
+@endunless
 
 @section('content')
+    @if ($isPreview ?? false)
+        <div role="status" class="bg-gold px-4 py-3 text-center text-sm font-semibold text-navy">Preview mode — this page is only visible to administrators.</div>
+    @endif
     <section class="relative overflow-hidden bg-linear-to-br from-navy via-navy-light to-purple py-14 md:py-20">
         <div class="mx-auto max-w-5xl px-4 sm:px-6">
             <a href="{{ route('guides.index') }}" class="inline-flex min-h-12 items-center text-sm text-white/60 hover:text-gold">← Back to Guides</a>

@@ -9,26 +9,26 @@ class ContactMessagePolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->is_admin;
+        return $user->is_admin === true;
     }
 
     public function view(User $user, ContactMessage $contactMessage): bool
     {
-        return $user->is_admin;
+        return $user->is_admin === true;
     }
 
     public function update(User $user, ContactMessage $contactMessage): bool
     {
-        return $user->is_admin;
+        return $user->is_admin === true;
     }
 
     public function delete(User $user, ContactMessage $contactMessage): bool
     {
-        return $user->is_admin;
+        return $user->is_admin === true;
     }
 
     public function deleteAny(User $user): bool
     {
-        return $user->is_admin;
+        return $user->is_admin === true;
     }
 }
