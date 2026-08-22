@@ -50,7 +50,7 @@ Guide freshness is controlled by `GUIDE_REVIEW_INTERVAL_DAYS`, with a 180-day de
 
 The public layout provides a semantic header, primary navigation, skip link, main landmark, footer, visible focus styles, responsive controls, and reduced-motion behavior. Mobile interactive targets should remain at least 48 pixels. User-authored Markdown is rendered with embedded HTML stripped and unsafe links disabled.
 
-HTTP 404 responses use a branded recovery page with search and primary content links. Its lightweight standalone layout avoids session, database, and shared-view dependencies so route-level failures remain renderable. The page is `noindex,nofollow`, omits its canonical URL, and receives the same response for unknown routes and unpublished content so private titles are not disclosed.
+HTTP 404, 419, 500, and 503 responses use branded recovery pages. Their lightweight standalone layout avoids session, database, and shared-view dependencies so failures remain renderable. Error pages are `noindex,nofollow`, omit canonical URLs, and never render exception messages. Unknown routes and unpublished content receive the same 404 response so private titles are not disclosed.
 
 ## Verification
 
