@@ -4,6 +4,7 @@ use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\get;
@@ -119,6 +120,40 @@ test('sitemap and feeds are valid and exclude unpublished content', function ():
         ->assertSee('podcast@example.com');
     expect(simplexml_load_string($podcastFeed->getContent()))->not->toBeFalse();
     assertDatabaseCount('podcasts', 0);
+});
+
+test('hosted episode audio is used by the player structured data and podcast feed', function (): void {
+    Storage::fake('public');
+    Storage::disk('public')->put('episodes/audio/hosted-episode.mp3', 'hosted audio');
+
+    $episode = Episode::factory()->create([
+        'audio_path' => 'episodes/audio/hosted-episode.mp3',
+        'audio_url' => 'https://cdn.example.com/legacy-episode.mp3',
+    ]);
+    $audioUrl = Storage::disk('public')->url($episode->audio_path);
+
+    get(route('episodes.show', $episode))
+        ->assertOk()
+        ->assertSee('<source src="'.$audioUrl.'" type="audio/mpeg"', false)
+        ->assertSee('"contentUrl":"'.$audioUrl.'"', false)
+        ->assertDontSee($episode->audio_url, false);
+
+    get(route('rss.podcast'))
+        ->assertOk()
+        ->assertSee('enclosure url="'.$audioUrl.'" length="12" type="audio/mpeg"', false)
+        ->assertDontSee($episode->audio_url, false);
+});
+
+test('missing hosted audio falls back to the external episode URL', function (): void {
+    Storage::fake('public');
+
+    $episode = Episode::factory()->create([
+        'audio_path' => 'episodes/audio/missing.mp3',
+        'audio_url' => 'https://cdn.example.com/fallback-episode.mp3',
+    ]);
+
+    expect($episode->audio_source_url)->toBe($episode->audio_url)
+        ->and($episode->audioFileSize())->toBe(0);
 });
 
 test('invalid guide category falls back to all guides', function (): void {

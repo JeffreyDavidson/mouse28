@@ -88,10 +88,10 @@ class StructuredData
             $podcastEpisode['duration'] = self::duration($episode->duration_seconds);
         }
 
-        if ($episode->audio_url) {
+        if ($episode->audio_source_url) {
             $podcastEpisode['associatedMedia'] = [
                 '@type' => 'MediaObject',
-                'contentUrl' => $episode->audio_url,
+                'contentUrl' => $episode->audio_source_url,
             ];
         }
 
