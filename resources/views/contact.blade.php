@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
 @section('title', 'Contact — Mouse28')
+@section('meta_description', 'Contact Jeffrey and Cassie about Mouse28, Disney park accessibility, family travel, collaborations, or the podcast.')
+@section('og_title', 'Contact Mouse28')
+@section('og_description', 'Get in touch with Jeffrey and Cassie about Disney park accessibility, family travel, collaborations, or the Mouse28 podcast.')
+@section('canonical', route('contact.show'))
 
 @section('content')
     @if(session('success'))

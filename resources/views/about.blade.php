@@ -1,7 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'About - Mouse28')
+@section('title', 'About the Davidson Family — Mouse28')
 @section('meta_description', 'Meet the Davidsons. Jeffrey, Cassie, and Viola. Learn how our family navigates Disney parks with autism and why we started Mouse28.')
+@section('og_title', 'About the Davidson Family — Mouse28')
+@section('og_description', 'Meet Jeffrey, Cassie, and Viola and learn why their family shares Disney park accessibility experiences through Mouse28.')
+@section('og_image', '/images/meet-jeffrey-and-cassie.jpg')
+@section('canonical', route('about'))
 
 @section('content')
     {{-- Hero with sparkles --}}

@@ -15,13 +15,25 @@ class GuideController extends Controller
             $category = '';
         }
 
+        $guides = Guide::published()
+            ->when($category, fn ($query) => $query->where('category', $category))
+            ->latest('published_at')
+            ->paginate(12)
+            ->withQueryString();
+        $categoryLabel = Guide::CATEGORIES[$category] ?? null;
+        $canonicalParameters = array_filter([
+            'category' => $category ?: null,
+            'page' => $guides->currentPage() > 1 ? $guides->currentPage() : null,
+        ]);
+
         return view('guides.index', [
             'category' => $category,
-            'guides' => Guide::published()
-                ->when($category, fn ($query) => $query->where('category', $category))
-                ->latest('published_at')
-                ->paginate(12)
-                ->withQueryString(),
+            'guides' => $guides,
+            'pageTitle' => $categoryLabel ? "{$categoryLabel} Guides — Mouse28" : 'Disney Parks Guides — Mouse28',
+            'pageDescription' => $categoryLabel
+                ? "Practical Mouse28 {$categoryLabel} guides for planning informed Disney park visits."
+                : 'Practical, regularly reviewed Disney park guides for accessibility, planning, food, and family visits.',
+            'canonicalUrl' => route('guides.index', $canonicalParameters),
         ]);
     }
 

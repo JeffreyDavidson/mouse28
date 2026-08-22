@@ -10,9 +10,14 @@ class EpisodeController extends Controller
 {
     public function index()
     {
+        $episodes = Episode::published()->latest('published_at')->paginate(12);
+
         return view('episodes.index', [
-            'episodes' => Episode::published()->latest('published_at')->paginate(12),
+            'episodes' => $episodes,
             'podcast' => Podcast::info(),
+            'canonicalUrl' => route('episodes.index', array_filter([
+                'page' => $episodes->currentPage() > 1 ? $episodes->currentPage() : null,
+            ])),
         ]);
     }
 

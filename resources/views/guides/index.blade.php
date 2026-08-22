@@ -1,7 +1,11 @@
 @extends('layouts.app')
 
-@section('title', ($category ? \App\Models\Guide::CATEGORIES[$category] : 'Guides').' — Mouse28')
-@section('meta_description', 'Practical, regularly reviewed Disney park guides for accessibility, planning, food, and family visits.')
+@section('title', $pageTitle)
+@section('meta_description', $pageDescription)
+@section('og_title', $pageTitle)
+@section('og_description', $pageDescription)
+@section('og_image', '/images/hero-family.jpg')
+@section('canonical', $canonicalUrl)
 
 @section('content')
     <section class="relative overflow-hidden bg-linear-to-br from-navy via-navy-light to-purple py-16 md:py-24">

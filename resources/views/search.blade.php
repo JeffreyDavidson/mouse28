@@ -2,7 +2,10 @@
 
 @section('title', ($query ? 'Search results for “'.$query.'”' : 'Search').' — Mouse28')
 @section('meta_description', 'Search Mouse28 blog posts, accessibility guides, and podcast episodes.')
+@section('og_title', 'Search Mouse28')
+@section('og_description', 'Search Mouse28 blog posts, accessibility guides, and podcast episodes.')
 @section('robots', 'noindex,follow')
+@section('canonical', route('search'))
 
 @section('content')
     <section class="bg-linear-to-br from-navy via-navy-light to-purple py-14 md:py-20">

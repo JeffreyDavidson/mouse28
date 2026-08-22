@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Episodes — Mouse28')
+@section('title', ($podcast->name ?: 'Mouse28').' Podcast')
+@section('meta_description', $podcast->description ?: 'Disney park stories, accessibility conversations, and family experiences from the Mouse28 podcast.')
+@section('og_title', ($podcast->name ?: 'Mouse28').' Podcast')
+@section('og_description', $podcast->description ?: 'Disney park stories, accessibility conversations, and family experiences from the Mouse28 podcast.')
+@section('og_image', $podcast->cover_image ? '/storage/'.ltrim($podcast->cover_image, '/') : '/images/podcast/mouse28-cover.jpg')
+@section('canonical', $canonicalUrl)
 
 @section('content')
     <section class="relative overflow-hidden bg-linear-to-br from-navy to-navy-light py-16 md:py-24">
