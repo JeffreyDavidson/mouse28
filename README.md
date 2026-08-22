@@ -8,7 +8,7 @@ Mouse28 is a blog-first Disney parks and podcast site from Jeffrey and Cassie Da
 - Filament 5 administration panel
 - Blade, Tailwind CSS 4, Alpine.js, and Vite 7
 - SQLite locally by default
-- PHPUnit with Laravel's test runner
+- Pest 5 with Jason McCreary's Double library
 
 ## Local setup with Herd
 
