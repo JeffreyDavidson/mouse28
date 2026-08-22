@@ -5,13 +5,14 @@ namespace App\Filament\Widgets;
 use App\Models\Post;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
 use Filament\Widgets\Widget;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Contracts\HasForms;
 use Illuminate\Support\Str;
 
+/** @property-read Schema $form */
 class QuickDraft extends Widget implements HasForms
 {
     use InteractsWithForms;

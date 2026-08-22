@@ -1,92 +1,57 @@
 <x-filament-widgets::widget>
-    <div style="
-        background: rgba(45, 27, 105, 0.3);
-        border-radius: 1.25rem;
-        border: 1px solid rgba(212, 168, 67, 0.12);
-        overflow: hidden;
-    ">
-        <div style="
-            padding: 1.25rem 1.5rem;
-            border-bottom: 1px solid rgba(212, 168, 67, 0.1);
-        ">
-            <h3 style="
-                font-family: 'Playfair Display', serif;
-                font-size: 1.1rem;
-                font-weight: 700;
-                color: #f0c75e;
-                margin: 0;
-            ">Recent Activity</h3>
+    @php $activity = $this->getActivity(); @endphp
+
+    <div class="bg-mouse-navy-light/30 border-mouse-gold/15 overflow-hidden rounded-[1.25rem] border">
+        <div class="border-mouse-gold/10 border-b px-6 py-5">
+            <h3 class="font-mouse-heading text-mouse-gold-light text-lg font-bold">Recent Activity</h3>
         </div>
 
-        @php $activity = $this->getActivity(); @endphp
-
         @if (count($activity) > 0)
-            <div style="padding: 0.5rem 0;">
+            <div class="py-2">
                 @foreach ($activity as $item)
-                    <a href="{{ $item['url'] }}" style="
-                        display: flex;
-                        align-items: center;
-                        gap: 1rem;
-                        padding: 0.85rem 1.5rem;
-                        text-decoration: none;
-                        transition: background 0.2s ease;
-                    " onmouseover="this.style.background='rgba(212, 168, 67, 0.06)'" onmouseout="this.style.background='transparent'">
-                        <div style="
-                            width: 36px;
-                            height: 36px;
-                            border-radius: 0.625rem;
-                            background: {{ $item['color'] }}15;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            flex-shrink: 0;
-                        ">
+                    @php
+                        $accentClasses = match ($item['color']) {
+                            '#d4a843' => [
+                                'surface' => 'bg-mouse-gold/10',
+                                'icon' => 'text-mouse-gold',
+                            ],
+                            default => [
+                                'surface' => 'bg-mouse-purple/10',
+                                'icon' => 'text-mouse-purple-light',
+                            ],
+                        };
+                    @endphp
+                    <a
+                        href="{{ $item['url'] }}"
+                        class="hover:bg-mouse-gold/6 flex items-center gap-4 px-6 py-3.5 no-underline transition-colors"
+                    >
+                        <div class="{{ $accentClasses['surface'] }} flex size-9 shrink-0 items-center justify-center rounded-[0.625rem]">
                             <x-filament::icon
                                 icon="heroicon-o-{{ $item['icon'] }}"
-                                style="width: 18px; height: 18px; color: {{ $item['color'] }};"
+                                class="{{ $accentClasses['icon'] }} size-4.5"
                             />
                         </div>
-                        <div style="flex: 1; min-width: 0;">
-                            <div style="
-                                font-family: 'Poppins', sans-serif;
-                                font-size: 0.85rem;
-                                font-weight: 500;
-                                color: #fef9ef;
-                                white-space: nowrap;
-                                overflow: hidden;
-                                text-overflow: ellipsis;
-                            ">{{ $item['label'] }}</div>
-                            <div style="
-                                font-family: 'Poppins', sans-serif;
-                                font-size: 0.75rem;
-                                color: rgba(254, 249, 239, 0.5);
-                            ">{{ $item['type'] }}</div>
+                        <div class="min-w-0 flex-1">
+                            <p class="font-mouse-body text-mouse-cream truncate text-sm font-medium">
+                                {{ $item['label'] }}
+                            </p>
+                            <p class="font-mouse-body text-mouse-cream/50 text-xs">{{ $item['type'] }}</p>
                         </div>
-                        <div style="
-                            font-family: 'Poppins', sans-serif;
-                            font-size: 0.75rem;
-                            color: rgba(254, 249, 239, 0.5);
-                            flex-shrink: 0;
-                        ">
+                        <time
+                            class="font-mouse-body text-mouse-cream/50 shrink-0 text-xs"
+                            datetime="{{ \Carbon\Carbon::parse($item['time'])->toIso8601String() }}"
+                        >
                             {{ \Carbon\Carbon::parse($item['time'])->diffForHumans(short: true) }}
-                        </div>
+                        </time>
                     </a>
                 @endforeach
             </div>
         @else
-            <div style="
-                padding: 3rem 1.5rem;
-                text-align: center;
-            ">
-                <div style="color: rgba(212, 168, 67, 0.3); margin-bottom: 0.75rem;">
-                    <x-filament::icon icon="heroicon-o-sparkles" style="width: 40px; height: 40px; margin: 0 auto;" />
-                </div>
-                <p style="
-                    font-family: 'Poppins', sans-serif;
-                    color: rgba(254, 249, 239, 0.5);
-                    font-size: 0.85rem;
-                    margin: 0;
-                ">No activity yet. Start creating something magical!</p>
+            <div class="px-6 py-12 text-center">
+                <x-filament::icon icon="heroicon-o-sparkles" class="text-mouse-gold/30 mx-auto mb-3 size-10" />
+                <p class="font-mouse-body text-mouse-cream/50 text-sm">
+                    No activity yet. Start creating something magical!
+                </p>
             </div>
         @endif
     </div>

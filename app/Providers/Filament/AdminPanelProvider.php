@@ -2,21 +2,24 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Auth\Login;
+use App\Filament\Widgets\ContentCalendar;
+use App\Filament\Widgets\InspirationWidget;
+use App\Filament\Widgets\QuickDraft;
+use App\Filament\Widgets\RecentActivity;
 use App\Filament\Widgets\StatsOverview;
+use App\Filament\Widgets\WelcomeBanner;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
 use Filament\Navigation\NavigationGroup;
+use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
-use Filament\Support\Colors\Color;
-use Filament\Widgets\AccountWidget;
-use Illuminate\Support\HtmlString;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
@@ -32,8 +35,9 @@ class AdminPanelProvider extends PanelProvider
             ->brandName('Mouse28')
             ->brandLogo(view('filament.brand-logo'))
             ->darkModeBrandLogo(view('filament.brand-logo'))
-            ->login(\App\Filament\Pages\Auth\Login::class)
+            ->login(Login::class)
             ->spa()
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->colors([
                 'primary' => [
                     50 => '#fef9ef',
@@ -49,9 +53,6 @@ class AdminPanelProvider extends PanelProvider
                     950 => '#0a0620',
                 ],
             ])
-            ->renderHook('panels::head.end', fn () => new HtmlString(
-                '<link rel="stylesheet" href="' . asset('css/filament-custom.css') . '?v=' . filemtime(public_path('css/filament-custom.css')) . '">'
-            ))
             ->navigationGroups([
                 NavigationGroup::make('Content'),
                 NavigationGroup::make('Communication'),
@@ -64,12 +65,12 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
-                \App\Filament\Widgets\WelcomeBanner::class,
+                WelcomeBanner::class,
                 StatsOverview::class,
-                \App\Filament\Widgets\RecentActivity::class,
-                \App\Filament\Widgets\QuickDraft::class,
-                \App\Filament\Widgets\ContentCalendar::class,
-                \App\Filament\Widgets\InspirationWidget::class,
+                RecentActivity::class,
+                QuickDraft::class,
+                ContentCalendar::class,
+                InspirationWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -77,7 +78,7 @@ class AdminPanelProvider extends PanelProvider
                 StartSession::class,
                 AuthenticateSession::class,
                 ShareErrorsFromSession::class,
-                VerifyCsrfToken::class,
+                PreventRequestForgery::class,
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,

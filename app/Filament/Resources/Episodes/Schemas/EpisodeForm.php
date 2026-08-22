@@ -4,11 +4,11 @@ namespace App\Filament\Resources\Episodes\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
-use Filament\Schemas\Components\Grid;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
@@ -53,6 +53,7 @@ class EpisodeForm
                         TextInput::make('audio_url')
                             ->url()
                             ->maxLength(500)
+                            ->required(fn (Get $get): bool => (bool) $get('is_published'))
                             ->columnSpan(2)
                             ->prefixIcon('heroicon-o-link'),
                     ]),
@@ -74,12 +75,15 @@ class EpisodeForm
 
                         Section::make('Publishing')
                             ->icon('heroicon-o-rocket-launch')
+                            ->description('Published episodes require audio, a description, show notes, and a publish date. Readiness also tracks transcripts, images, duration, and SEO fields.')
                             ->schema([
                                 Toggle::make('is_published')
                                     ->label('Published')
+                                    ->live()
                                     ->default(false),
                                 DateTimePicker::make('published_at')
-                                    ->label('Publish Date'),
+                                    ->label('Publish Date')
+                                    ->required(fn (Get $get): bool => (bool) $get('is_published')),
                             ]),
                     ]),
 
@@ -90,8 +94,10 @@ class EpisodeForm
                         Textarea::make('description')
                             ->rows(3)
                             ->maxLength(500)
+                            ->required(fn (Get $get): bool => (bool) $get('is_published'))
                             ->helperText('Short description shown in episode listings.'),
                         RichEditor::make('show_notes')
+                            ->required(fn (Get $get): bool => (bool) $get('is_published'))
                             ->toolbarButtons([
                                 'bold', 'italic', 'link',
                                 'h2', 'h3',

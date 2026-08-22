@@ -17,6 +17,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 
+/** @property-read Schema $form */
 class PodcastSettings extends Page
 {
     protected string $view = 'filament.pages.podcast-settings';
@@ -31,9 +32,14 @@ class PodcastSettings extends Page
 
     public ?array $data = [];
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->is_admin === true;
+    }
+
     public function mount(): void
     {
-        $podcast = Podcast::info();
+        $podcast = Podcast::settings();
         $this->form->fill($podcast->toArray());
     }
 
@@ -76,7 +82,8 @@ class PodcastSettings extends Page
                         TextInput::make('youtube_url')->url()->label('YouTube')
                             ->prefixIcon('heroicon-o-link'),
                         TextInput::make('rss_url')->url()->label('RSS Feed')
-                            ->prefixIcon('heroicon-o-rss'),
+                            ->prefixIcon('heroicon-o-rss')
+                            ->helperText('Leave blank to use the generated Mouse28 podcast feed.'),
                     ]),
 
                 Section::make('Social Media')
@@ -103,7 +110,7 @@ class PodcastSettings extends Page
     public function save(): void
     {
         $data = $this->form->getState();
-        $podcast = Podcast::info();
+        $podcast = Podcast::settings();
         $podcast->update($data);
 
         Notification::make()

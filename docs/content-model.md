@@ -24,6 +24,8 @@ _Avoid_: guaranteed accommodation.
 A durable, structured resource page meant to stay useful over time.
 _Avoid_: post when the content should live in the guides/accessibility hub.
 
+Record an official source and review date for policy-sensitive guides. The application flags guides for review after the configured freshness interval.
+
 **Post**
 A blog article, trip report, news reaction, recap, or family-life piece.
 _Avoid_: guide when the content is timely or personal.
@@ -31,10 +33,6 @@ _Avoid_: guide when the content is timely or personal.
 **Episode**
 A podcast episode with audio, show notes, distribution metadata, and optional related posts.
 _Avoid_: podcast when referring to one installment.
-
-**Community story**
-A contributed family experience or reader-submitted story.
-_Avoid_: testimonial unless it is explicitly praising Mouse28.
 
 **Host voice**
 Jeffrey and Cassie speaking candidly as parents, not as medical or Disney policy authorities.
@@ -45,7 +43,8 @@ _Avoid_: expert voice unless citing a qualified source.
 - Episodes can have related Posts and show notes.
 - Guides form the accessibility hub and should be maintained as policy changes.
 - Trip reports can feed both Posts and Episode topics.
-- Community stories support the mission but need privacy-sensitive handling.
+
+Reader-submitted Community Stories are intentionally outside the Mouse28 product scope.
 
 ## Flagged Ambiguities
 

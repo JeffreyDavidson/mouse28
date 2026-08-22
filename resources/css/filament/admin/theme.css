@@ -1,0 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+@import './overrides.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/components/filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+
+@theme {
+    --color-mouse-navy: #1a1040;
+    --color-mouse-navy-light: #2d1b69;
+    --color-mouse-purple: #5b3e9e;
+    --color-mouse-purple-light: #7b5eb5;
+    --color-mouse-gold: #d4a843;
+    --color-mouse-gold-light: #f0c75e;
+    --color-mouse-gold-dark: #b8922e;
+    --color-mouse-cream: #fef9ef;
+    --font-mouse-body: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    --font-mouse-heading: 'Playfair Display', ui-serif, Georgia, serif;
+}

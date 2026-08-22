@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /preview/
+Disallow: /search
 
 Sitemap: https://mouse28.com/sitemap.xml

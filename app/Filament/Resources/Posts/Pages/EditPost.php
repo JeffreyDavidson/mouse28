@@ -3,10 +3,13 @@
 namespace App\Filament\Resources\Posts\Pages;
 
 use App\Filament\Resources\Posts\PostResource;
+use App\Models\Post;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Contracts\View\View;
 
+/** @property Post $record */
 class EditPost extends EditRecord
 {
     protected static string $resource = PostResource::class;
@@ -14,6 +17,11 @@ class EditPost extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('preview')
+                ->icon('heroicon-o-eye')
+                ->authorize('view')
+                ->url(fn (): string => route('preview.posts', $this->record))
+                ->openUrlInNewTab(),
             DeleteAction::make(),
         ];
     }

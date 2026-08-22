@@ -1,0 +1,379 @@
+/* Mouse28 Filament theme overrides */
+
+/* Authentication */
+.fi-simple-layout {
+    min-height: 100vh;
+    position: relative;
+    background: linear-gradient(135deg, var(--color-mouse-navy) 0%, var(--color-mouse-navy-light) 40%, #3a2370 70%, var(--color-mouse-navy) 100%) !important;
+}
+
+.fi-simple-layout::before {
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at 20% 50%, rgb(91 62 158 / 30%) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgb(212 168 67 / 15%) 0%, transparent 40%),
+        radial-gradient(ellipse at 50% 80%, rgb(45 27 105 / 40%) 0%, transparent 50%);
+    content: '';
+    pointer-events: none;
+}
+
+.fi-simple-layout::after {
+    position: absolute;
+    top: 15%;
+    right: 20%;
+    color: rgb(240 199 94 / 40%);
+    content: '✦';
+    font-size: 1.5rem;
+    animation: sparkle 3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.fi-simple-main-ctn {
+    position: relative;
+    z-index: 10;
+}
+
+.fi-simple-main {
+    border: 1px solid rgb(212 168 67 / 30%) !important;
+    border-radius: 1.5rem !important;
+    background: rgb(26 16 64 / 85%) !important;
+    box-shadow: 0 25px 60px rgb(0 0 0 / 40%), 0 0 40px rgb(91 62 158 / 15%) !important;
+    backdrop-filter: blur(20px) !important;
+}
+
+.fi-simple-header .fi-logo {
+    margin-bottom: 3rem !important;
+    border-bottom: 1px solid rgb(212 168 67 / 15%) !important;
+    padding-bottom: 2rem !important;
+    color: var(--color-mouse-gold-light) !important;
+    font-family: var(--font-mouse-heading) !important;
+}
+
+.fi-simple-header-heading {
+    color: var(--color-mouse-gold-light) !important;
+    font-family: var(--font-mouse-heading) !important;
+    font-size: 1.75rem !important;
+    font-weight: 700 !important;
+}
+
+.fi-simple-header-subheading {
+    color: rgb(254 249 239 / 70%) !important;
+}
+
+.fi-simple-main .fi-fo-field-wrp-label label {
+    color: var(--color-mouse-cream) !important;
+}
+
+.fi-simple-main .fi-input {
+    border-color: rgb(212 168 67 / 30%) !important;
+    background: rgb(45 27 105 / 50%) !important;
+    color: var(--color-mouse-cream) !important;
+}
+
+.fi-simple-main .fi-input:focus {
+    border-color: var(--color-mouse-gold) !important;
+    box-shadow: 0 0 0 2px rgb(212 168 67 / 20%) !important;
+}
+
+.fi-simple-main .fi-input::placeholder {
+    color: rgb(254 249 239 / 40%) !important;
+}
+
+.fi-simple-main .fi-btn-primary {
+    border: 0 !important;
+    background: linear-gradient(135deg, var(--color-mouse-gold), var(--color-mouse-gold-dark)) !important;
+    color: var(--color-mouse-navy) !important;
+    font-weight: 600 !important;
+    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease !important;
+}
+
+.fi-simple-main .fi-btn-primary:hover {
+    background: linear-gradient(135deg, var(--color-mouse-gold-light), var(--color-mouse-gold)) !important;
+    box-shadow: 0 4px 15px rgb(212 168 67 / 40%) !important;
+    transform: translateY(-1px) !important;
+}
+
+.fi-simple-main .fi-link {
+    color: var(--color-mouse-gold) !important;
+}
+
+.fi-simple-main .fi-link:hover {
+    color: var(--color-mouse-gold-light) !important;
+}
+
+/* Panel shell */
+.fi-sidebar {
+    border-right: 1px solid rgb(212 168 67 / 15%) !important;
+    background: linear-gradient(180deg, var(--color-mouse-navy) 0%, var(--color-mouse-navy-light) 100%) !important;
+}
+
+.fi-sidebar-header {
+    border-bottom: 1px solid rgb(212 168 67 / 15%) !important;
+}
+
+.fi-sidebar .fi-logo,
+.fi-sidebar .fi-logo span {
+    color: var(--color-mouse-gold-light) !important;
+    font-family: var(--font-mouse-heading) !important;
+    font-weight: 700 !important;
+}
+
+.fi-sidebar-item-label {
+    color: rgb(254 249 239 / 80%) !important;
+    font-family: var(--font-mouse-body) !important;
+}
+
+.fi-sidebar-item-icon {
+    color: rgb(212 168 67 / 60%) !important;
+}
+
+.fi-sidebar-item:hover,
+.fi-sidebar-item.fi-active {
+    border-radius: 0.75rem !important;
+}
+
+.fi-sidebar-item:hover {
+    background: rgb(91 62 158 / 15%) !important;
+}
+
+.fi-sidebar-item.fi-active {
+    background: rgb(91 62 158 / 30%) !important;
+}
+
+.fi-sidebar-item:hover .fi-sidebar-item-icon,
+.fi-sidebar-item:hover .fi-sidebar-item-label,
+.fi-sidebar-item.fi-active .fi-sidebar-item-icon,
+.fi-sidebar-item.fi-active .fi-sidebar-item-label {
+    color: var(--color-mouse-gold-light) !important;
+}
+
+.fi-sidebar-group-label {
+    color: rgb(212 168 67 / 50%) !important;
+    font-family: var(--font-mouse-body) !important;
+    font-size: 0.65rem !important;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase !important;
+}
+
+.fi-topbar {
+    border-bottom: 1px solid rgb(212 168 67 / 15%) !important;
+    background: var(--color-mouse-navy) !important;
+}
+
+.fi-main,
+.fi-main-ctn {
+    background: #120b2e !important;
+}
+
+.fi-body {
+    font-family: var(--font-mouse-body) !important;
+}
+
+.fi-user-menu-trigger {
+    color: rgb(254 249 239 / 80%) !important;
+}
+
+.fi-notification {
+    border-left: 4px solid var(--color-mouse-gold) !important;
+}
+
+/* Page content */
+.fi-page-heading {
+    color: var(--color-mouse-cream) !important;
+    font-family: var(--font-mouse-heading) !important;
+}
+
+.fi-page-sub-heading {
+    color: var(--color-mouse-purple-light) !important;
+}
+
+.fi-page[class*='dashboard'] .fi-page-heading,
+.fi-header-heading {
+    display: none !important;
+}
+
+.fi-section {
+    border: 1px solid rgb(212 168 67 / 12%) !important;
+    border-radius: 1rem !important;
+    background: rgb(45 27 105 / 30%) !important;
+}
+
+.fi-section-content,
+.fi-ta-content {
+    background: transparent !important;
+}
+
+.fi-section-header-heading {
+    color: var(--color-mouse-gold-light) !important;
+    font-family: var(--font-mouse-heading) !important;
+}
+
+.fi-section-header-description {
+    color: rgb(254 249 239 / 50%) !important;
+}
+
+.fi-btn-primary {
+    border: 0 !important;
+    background: linear-gradient(135deg, var(--color-mouse-purple), #3a2370) !important;
+    transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease !important;
+}
+
+.fi-btn-primary:hover {
+    background: linear-gradient(135deg, var(--color-mouse-purple-light), var(--color-mouse-purple)) !important;
+    box-shadow: 0 4px 12px rgb(91 62 158 / 30%) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Tables */
+.fi-ta-ctn {
+    overflow: visible !important;
+    border: 1px solid rgb(212 168 67 / 12%) !important;
+    border-radius: 1rem !important;
+    background: rgb(45 27 105 / 30%) !important;
+}
+
+.fi-ta-header {
+    border-radius: 1rem 1rem 0 0 !important;
+    padding: 1rem 1.5rem !important;
+    background: linear-gradient(135deg, var(--color-mouse-navy), var(--color-mouse-navy-light)) !important;
+}
+
+.fi-ta-header-heading {
+    color: var(--color-mouse-cream) !important;
+    font-family: var(--font-mouse-heading) !important;
+}
+
+.fi-ta-header-description,
+.fi-ta-header-toolbar-btn {
+    color: rgb(254 249 239 / 70%) !important;
+}
+
+.fi-ta-header .fi-input {
+    border-color: rgb(212 168 67 / 30%) !important;
+    background: rgb(254 249 239 / 10%) !important;
+    color: var(--color-mouse-cream) !important;
+}
+
+.fi-ta-header .fi-input::placeholder {
+    color: rgb(254 249 239 / 40%) !important;
+}
+
+.fi-ta-row {
+    border-color: rgb(212 168 67 / 8%) !important;
+}
+
+.fi-ta-row:hover td {
+    background: rgb(91 62 158 / 5%) !important;
+}
+
+.fi-ta-cell,
+.fi-ta-empty-state-heading {
+    color: var(--color-mouse-cream) !important;
+}
+
+.fi-ta-empty-state-description {
+    color: rgb(254 249 239 / 50%) !important;
+}
+
+.fi-ta-empty-state-icon {
+    color: rgb(212 168 67 / 30%) !important;
+}
+
+.fi-ta-pagination {
+    border-color: rgb(212 168 67 / 8%) !important;
+}
+
+.fi-ta-header-toolbar-btn:hover {
+    color: var(--color-mouse-gold-light) !important;
+}
+
+/* Forms */
+.fi-main .fi-input,
+.fi-main .fi-select-input,
+.fi-main textarea {
+    border-color: rgb(212 168 67 / 20%) !important;
+    background: rgb(26 16 64 / 50%) !important;
+    color: var(--color-mouse-cream) !important;
+}
+
+.fi-main .fi-input:focus {
+    border-color: var(--color-mouse-gold) !important;
+    box-shadow: 0 0 0 2px rgb(212 168 67 / 15%) !important;
+}
+
+.fi-main .fi-fo-field-wrp-label label,
+.fi-main .fi-field-wrp-label label,
+.fi-main label,
+.fi-main [class*='field-wrp'] label,
+.fi-body .fi-fo-field-wrp-label label,
+.fi-body label:not(.fi-sidebar label):not(.fi-topbar label),
+label.fi-fo-field-wrp-label,
+.fi-section label,
+.fi-section-content label,
+[class*='fi-fo'] label,
+[class*='fi-section'] label,
+.fi-fo-field-label,
+.fi-fo-field-label-content {
+    color: var(--color-mouse-gold) !important;
+}
+
+.fi-main .fi-fo-field-wrp-hint {
+    color: rgb(254 249 239 / 50%) !important;
+}
+
+.fi-main select,
+.fi-main select option,
+.fi-main .fi-select-input option {
+    background: var(--color-mouse-cream) !important;
+    color: var(--color-mouse-navy) !important;
+}
+
+.fi-main .fi-input-wrp select {
+    color: var(--color-mouse-cream) !important;
+}
+
+.fi-main .fi-fo-field-wrp-label + div {
+    color: rgb(254 249 239 / 70%) !important;
+}
+
+/* Navigation details */
+.fi-breadcrumbs li {
+    color: rgb(254 249 239 / 50%) !important;
+}
+
+.fi-breadcrumbs a {
+    color: rgb(254 249 239 / 70%) !important;
+}
+
+.fi-breadcrumbs a:hover {
+    color: var(--color-mouse-gold) !important;
+}
+
+@keyframes sparkle {
+    0%, 100% {
+        opacity: 0.3;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.2);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fi-simple-layout::after {
+        animation: none;
+    }
+
+    .fi-btn-primary,
+    .fi-simple-main .fi-btn-primary {
+        transition: none !important;
+    }
+
+    .fi-btn-primary:hover,
+    .fi-simple-main .fi-btn-primary:hover {
+        transform: none !important;
+    }
+}

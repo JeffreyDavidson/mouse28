@@ -3,13 +3,14 @@
 namespace App\Console\Commands;
 
 use App\Models\Post;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
+#[Description('Remove seeded demo blog posts, keep real ones')]
+#[Signature('posts:clean-seeded')]
 class CleanSeededPosts extends Command
 {
-    protected $signature = 'posts:clean-seeded';
-    protected $description = 'Remove seeded demo blog posts, keep real ones';
-
     public function handle(): void
     {
         $seededSlugs = [

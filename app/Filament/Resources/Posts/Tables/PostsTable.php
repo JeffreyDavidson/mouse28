@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Posts\Tables;
 
+use App\Models\Post;
+use App\Support\EditorialReadiness;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -20,7 +22,7 @@ class PostsTable
                     ->limit(50),
                 TextColumn::make('author')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => \App\Models\Post::AUTHORS[$state] ?? 'Team')
+                    ->formatStateUsing(fn ($state) => Post::AUTHORS[$state] ?? 'Team')
                     ->color('info'),
                 TextColumn::make('category')
                     ->badge()
@@ -36,19 +38,17 @@ class PostsTable
                     ->label('Episode')
                     ->limit(30)
                     ->placeholder('—'),
+                TextColumn::make('readiness')
+                    ->label('Readiness')
+                    ->badge()
+                    ->getStateUsing(fn (Post $record): string => EditorialReadiness::label($record))
+                    ->color(fn (Post $record): string => EditorialReadiness::color($record))
+                    ->tooltip(fn (Post $record): string => EditorialReadiness::summary($record)),
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->getStateUsing(function ($record): string {
-                        if (! $record->is_published) return 'Draft';
-                        if ($record->published_at && $record->published_at->isFuture()) return 'Scheduled';
-                        return 'Published';
-                    })
-                    ->color(fn (string $state): string => match ($state) {
-                        'Published' => 'success',
-                        'Scheduled' => 'warning',
-                        'Draft' => 'gray',
-                    }),
+                    ->getStateUsing(fn (Post $record): string => EditorialReadiness::status($record))
+                    ->color(fn (Post $record): string => EditorialReadiness::statusColor($record)),
                 TextColumn::make('published_at')
                     ->label('Published Date')
                     ->date()

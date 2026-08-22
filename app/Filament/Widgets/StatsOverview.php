@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Episode;
+use App\Models\Guide;
 use App\Models\Post;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Cache;
@@ -20,8 +21,14 @@ class StatsOverview extends Widget
     {
         try {
             return Cache::remember('newsletter_subscriber_count', 300, function () {
+                $audienceId = config('services.resend.audience_id');
+                if (! $audienceId) {
+                    return 0;
+                }
+
                 $response = Http::withToken(config('services.resend.key'))
-                    ->get('https://api.resend.com/audiences/05c28c48-d37a-4429-9fdf-6ee261c023f4/contacts');
+                    ->timeout(10)
+                    ->get("https://api.resend.com/audiences/{$audienceId}/contacts");
 
                 if ($response->successful()) {
                     return count($response->json('data', []));
@@ -38,9 +45,20 @@ class StatsOverview extends Widget
     {
         $publishedPosts = Post::where('is_published', true)->count();
         $publishedEpisodes = Episode::where('is_published', true)->count();
-        $drafts = Post::where('is_published', false)->count() + Episode::where('is_published', false)->count();
+        $publishedGuides = Guide::where('is_published', true)->count();
+        $guidesDueForReview = Guide::published()->reviewDue()->count();
+        $drafts = Post::where('is_published', false)->count()
+            + Episode::where('is_published', false)->count()
+            + Guide::where('is_published', false)->count();
 
         return [
+            [
+                'label' => 'Guides',
+                'value' => $publishedGuides,
+                'icon' => 'heroicon-o-book-open',
+                'description' => $guidesDueForReview > 0 ? "{$guidesDueForReview} need review" : 'Reviews current',
+                'color' => '#4a90a4',
+            ],
             [
                 'label' => 'Blog Posts',
                 'value' => $publishedPosts,
@@ -59,7 +77,7 @@ class StatsOverview extends Widget
                 'label' => 'Drafts',
                 'value' => $drafts,
                 'icon' => 'heroicon-o-pencil-square',
-                'description' => 'Posts & episodes',
+                'description' => 'All content',
                 'color' => '#e8a838',
             ],
             [

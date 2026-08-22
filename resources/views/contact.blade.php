@@ -1,165 +1,285 @@
-@extends('layouts.app')
-
-@section('title', 'Contact — Mouse28')
-
-@section('content')
-    @if(session('success'))
-        <section class="min-h-[70vh] flex items-center justify-center bg-gradient-to-br from-cream via-white to-cream relative overflow-hidden">
-            <div class="text-center px-4 relative z-10">
-                <div class="mx-auto mb-8 w-24 h-24 relative">
-                    <svg class="w-24 h-24" viewBox="0 0 96 96">
-                        <circle cx="48" cy="48" r="44" fill="none" stroke="#5b3e9e" stroke-width="3" opacity="0.15"/>
-                        <circle cx="48" cy="48" r="44" fill="none" stroke="#5b3e9e" stroke-width="3"
-                            stroke-dasharray="276.46" stroke-dashoffset="276.46" stroke-linecap="round"
-                            style="animation: checkCircle 0.6s ease forwards 0.2s"/>
-                        <path d="M30 50 l12 12 l24 -28" fill="none" stroke="#d4a843" stroke-width="4"
-                            stroke-linecap="round" stroke-linejoin="round"
-                            stroke-dasharray="80" stroke-dashoffset="80"
-                            style="animation: checkMark 0.4s ease forwards 0.7s"/>
+<x-layouts.app
+    title="Contact — Mouse28"
+    description="Contact Jeffrey and Cassie about Mouse28, Disney park accessibility, family travel, collaborations, or the podcast."
+    og-title="Contact Mouse28"
+    og-description="Get in touch with Jeffrey and Cassie about Disney park accessibility, family travel, collaborations, or the Mouse28 podcast."
+    :canonical="route('contact.show')"
+>
+    @php
+        $contactHasFeedback = $errors->contact->isNotEmpty();
+    @endphp
+    @if (session('success'))
+        <section class="from-cream to-cream relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-linear-to-br via-white">
+            <div class="relative z-10 px-4 text-center">
+                <div class="relative mx-auto mb-8 size-24">
+                    <svg class="size-24" viewBox="0 0 96 96">
+                        <circle cx="48" cy="48" r="44" fill="none" stroke="#5b3e9e" stroke-width="3" opacity="0.15" />
+                        <circle
+                            cx="48"
+                            cy="48"
+                            r="44"
+                            fill="none"
+                            stroke="#5b3e9e"
+                            stroke-width="3"
+                            stroke-dasharray="276.46"
+                            stroke-dashoffset="276.46"
+                            stroke-linecap="round"
+                            class="contact-check-circle"
+                        />
+                        <path
+                            d="M30 50 l12 12 l24 -28"
+                            fill="none"
+                            stroke="#d4a843"
+                            stroke-width="4"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-dasharray="80"
+                            stroke-dashoffset="80"
+                            class="contact-check-mark"
+                        />
                     </svg>
                 </div>
-                <h1 class="font-heading text-4xl md:text-5xl font-bold text-navy mb-4">Message Sent!</h1>
-                <p class="text-navy/60 text-lg max-w-md mx-auto mb-2">Thank you for reaching out. We'll get back to you within 48 hours.</p>
-                <p class="text-navy/40 text-sm mb-8">In the meantime, feel free to explore our blog and podcast.</p>
-                <div class="flex items-center justify-center gap-4">
-                    <a href="/blog" class="inline-flex items-center gap-2 bg-purple hover:bg-purple-dark text-white font-semibold px-6 py-3 rounded-full transition-all hover:shadow-lg hover:-translate-y-0.5">Read our blog</a>
-                    <a href="/episodes" class="inline-flex items-center gap-2 text-navy/60 hover:text-purple font-medium transition-colors">Listen to podcast →</a>
+                <h1 class="font-heading text-navy mb-4 text-4xl font-bold md:text-5xl">Message Sent!</h1>
+                <p class="text-navy/60 mx-auto mb-2 max-w-md text-lg">
+                    Thank you for reaching out. We'll get back to you within 48 hours.
+                </p>
+                <p class="text-navy/40 mb-8 text-sm">In the meantime, feel free to explore our blog and podcast.</p>
+                <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
+                    <a
+                        href="{{ route('blog.index') }}"
+                        class="bg-purple hover:bg-purple-dark inline-flex items-center gap-2 rounded-full px-6 py-3 font-semibold text-white transition-[transform,background-color,box-shadow] hover:-translate-y-0.5 hover:shadow-lg"
+                    >Read our blog</a>
+                    <a
+                        href="{{ route('episodes.index') }}"
+                        class="text-navy/60 hover:text-purple inline-flex items-center gap-2 font-medium transition-colors"
+                    >Listen to podcast →</a>
                 </div>
             </div>
         </section>
-        <style>
-            @keyframes checkCircle { to { stroke-dashoffset: 0; } }
-            @keyframes checkMark { to { stroke-dashoffset: 0; } }
-        </style>
     @else
         {{-- Full-width dark hero with form embedded --}}
-        <section class="bg-gradient-to-br from-navy via-navy-light to-navy relative overflow-hidden">
+        <section class="from-navy via-navy-light to-navy relative overflow-hidden bg-linear-to-br">
             {{-- Ambient glows --}}
-            <div style="position: absolute; top: -20%; right: -5%; width: 700px; height: 700px; background: radial-gradient(circle, rgba(212, 168, 67, 0.05) 0%, transparent 60%); pointer-events: none;"></div>
-            <div style="position: absolute; bottom: -30%; left: -10%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(91, 62, 158, 0.15) 0%, transparent 60%); pointer-events: none;"></div>
+            <div class="pointer-events-none absolute top-[-20%] right-[-5%] size-[700px] bg-[radial-gradient(circle,rgb(212_168_67/5%)_0%,transparent_60%)]"></div>
+            <div class="pointer-events-none absolute bottom-[-30%] left-[-10%] size-[500px] bg-[radial-gradient(circle,rgb(91_62_158/15%)_0%,transparent_60%)]"></div>
 
-            <div class="max-w-5xl mx-auto px-4 sm:px-6 py-16 md:py-24">
+            <div class="mx-auto max-w-5xl px-4 py-16 sm:px-6 md:py-24">
                 {{-- Header --}}
-                <div class="text-center mb-14">
-                    <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-1.5 mb-6">
-                        <span class="w-2 h-2 bg-gold rounded-full animate-pulse"></span>
+                <div class="mb-14 text-center">
+                    <div class="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 backdrop-blur-sm">
+                        <span class="bg-gold size-2 animate-pulse rounded-full"></span>
                         <span class="text-gold text-sm font-semibold tracking-widest uppercase">Get in Touch</span>
                     </div>
-                    <h1 class="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-white mt-2">We'd Love to Hear From You</h1>
-                    <p class="text-white/60 mt-4 max-w-xl mx-auto text-lg">Have a question about DAS, want to share your story, or just say hi? We read every message.</p>
+                    <h1 class="font-heading mt-2 text-4xl font-bold text-white md:text-5xl lg:text-6xl">
+                        We'd Love to Hear From You
+                    </h1>
+                    <p class="mx-auto mt-4 max-w-xl text-lg text-white/60">
+                        Have a question about DAS, want to share your story, or just say hi? We read every message.
+                    </p>
                 </div>
 
                 {{-- Two-column layout --}}
-                <div style="display: grid; grid-template-columns: 1fr; gap: 2.5rem;" class="lg:!grid-cols-[1fr_340px]">
+                <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_340px]">
                     {{-- Form --}}
-                    <div style="background: rgba(254, 249, 239, 0.03); border: 1px solid rgba(254, 249, 239, 0.08); border-radius: 1.5rem; padding: 2.5rem; backdrop-filter: blur(10px);">
-                        <form action="/contact" method="POST" style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div class="border-cream/10 bg-cream/3 rounded-2xl border p-5 backdrop-blur-sm sm:p-8 md:p-10">
+                        <form action="{{ route('contact.store') }}" method="POST" class="flex flex-col gap-6">
                             @csrf
                             <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-                            @if ($errors->has('contact_rate_limit'))
-                                <div role="alert" style="color: #fecaca; font-size: 0.85rem; background: rgba(248,113,113,0.12); border: 1px solid rgba(248,113,113,0.25); border-radius: 0.75rem; padding: 0.85rem 1rem;">
-                                    {{ $errors->first('contact_rate_limit') }}
+                            @if ($errors->contact->has('contact_rate_limit'))
+                                <div
+                                    role="alert"
+                                    class="rounded-xl border border-red-400/25 bg-red-400/10 px-4 py-3 text-base text-red-200 sm:text-sm"
+                                >
+                                    {{ $errors->contact->first('contact_rate_limit') }}
                                 </div>
                             @endif
 
                             <!-- Honeypot - hidden from humans, bots fill this -->
-                            <div style="position: absolute; left: -9999px; top: -9999px;" aria-hidden="true">
+                            <div class="absolute top-[-9999px] left-[-9999px]" aria-hidden="true">
                                 <label for="website_url">Website</label>
-                                <input type="text" id="website_url" name="website_url" tabindex="-1" autocomplete="off">
+                                <input
+                                    type="text"
+                                    id="website_url"
+                                    name="website_url"
+                                    tabindex="-1"
+                                    autocomplete="off"
+                                />
                             </div>
 
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem;">
+                            <div class="grid gap-5 sm:grid-cols-2">
                                 <div>
-                                    <label for="name" style="display: block; font-size: 0.75rem; font-weight: 600; color: #f0c75e; margin-bottom: 0.5rem; font-family: 'Poppins', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">Name</label>
-                                    <input type="text" id="name" name="name" required value="{{ old('name') }}" placeholder="Your name"
-                                        style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid rgba(254,249,239,0.1); background: rgba(254,249,239,0.04); color: #fef9ef; font-size: 0.9rem; font-family: 'Poppins', sans-serif; outline: none; transition: all 0.2s; box-sizing: border-box;"
-                                        onfocus="this.style.borderColor='rgba(212,168,67,0.4)';this.style.background='rgba(254,249,239,0.06)'"
-                                        onblur="this.style.borderColor='rgba(254,249,239,0.1)';this.style.background='rgba(254,249,239,0.04)'"
-                                    >
-                                    @error('name') <p style="color: #f87171; font-size: 0.75rem; margin-top: 0.4rem;">{{ $message }}</p> @enderror
+                                    <label
+                                        for="name"
+                                        class="text-gold-light mb-2 block text-base font-semibold sm:text-sm"
+                                    >Name</label>
+                                    <input
+                                        type="text"
+                                        id="name"
+                                        name="name"
+                                        required
+                                        autocomplete="name"
+                                        value="{{ $contactHasFeedback ? old('name') : '' }}"
+                                        placeholder="Your name"
+                                        @error('name', 'contact') aria-invalid="true" aria-describedby="name-error" @enderror
+                                        class="border-cream/10 bg-cream/4 text-cream placeholder:text-cream/30 focus:border-gold/50 focus:bg-cream/6 focus:ring-gold/20 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none sm:text-sm"
+                                    />
+                                    @error('name', 'contact')
+                                        <p id="name-error" role="alert" class="mt-2 text-sm text-red-400">
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
                                 </div>
                                 <div>
-                                    <label for="email" style="display: block; font-size: 0.75rem; font-weight: 600; color: #f0c75e; margin-bottom: 0.5rem; font-family: 'Poppins', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">Email</label>
-                                    <input type="email" id="email" name="email" required value="{{ old('email') }}" placeholder="you@example.com"
-                                        style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid rgba(254,249,239,0.1); background: rgba(254,249,239,0.04); color: #fef9ef; font-size: 0.9rem; font-family: 'Poppins', sans-serif; outline: none; transition: all 0.2s; box-sizing: border-box;"
-                                        onfocus="this.style.borderColor='rgba(212,168,67,0.4)';this.style.background='rgba(254,249,239,0.06)'"
-                                        onblur="this.style.borderColor='rgba(254,249,239,0.1)';this.style.background='rgba(254,249,239,0.04)'"
-                                    >
-                                    @error('email') <p style="color: #f87171; font-size: 0.75rem; margin-top: 0.4rem;">{{ $message }}</p> @enderror
+                                    <label
+                                        for="email"
+                                        class="text-gold-light mb-2 block text-base font-semibold sm:text-sm"
+                                    >Email</label>
+                                    <input
+                                        type="email"
+                                        id="email"
+                                        name="email"
+                                        required
+                                        autocomplete="email"
+                                        inputmode="email"
+                                        value="{{ $contactHasFeedback ? old('email') : '' }}"
+                                        placeholder="you@example.com"
+                                        @error('email', 'contact') aria-invalid="true" aria-describedby="email-error" @enderror
+                                        class="border-cream/10 bg-cream/4 text-cream placeholder:text-cream/30 focus:border-gold/50 focus:bg-cream/6 focus:ring-gold/20 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none sm:text-sm"
+                                    />
+                                    @error('email', 'contact')
+                                        <p id="email-error" role="alert" class="mt-2 text-sm text-red-400">
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
                                 </div>
                             </div>
 
                             <div>
-                                <label for="subject" style="display: block; font-size: 0.75rem; font-weight: 600; color: #f0c75e; margin-bottom: 0.5rem; font-family: 'Poppins', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">Topic</label>
-                                <select id="subject" name="subject" required
-                                    style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid rgba(254,249,239,0.1); background: rgba(254,249,239,0.04); color: rgba(254,249,239,0.7); font-size: 0.9rem; font-family: 'Poppins', sans-serif; outline: none; transition: all 0.2s; box-sizing: border-box; -webkit-appearance: none; appearance: none; background-image: url('data:image/svg+xml,<svg width=&quot;12&quot; height=&quot;8&quot; viewBox=&quot;0 0 12 8&quot; fill=&quot;none&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;><path d=&quot;M1 1.5L6 6.5L11 1.5&quot; stroke=&quot;rgba(254,249,239,0.4)&quot; stroke-width=&quot;1.5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;/></svg>'); background-repeat: no-repeat; background-position: right 1rem center;"
-                                    onfocus="this.style.borderColor='rgba(212,168,67,0.4)'"
-                                    onblur="this.style.borderColor='rgba(254,249,239,0.1)'"
+                                <label
+                                    for="subject"
+                                    class="text-gold-light mb-2 block text-base font-semibold sm:text-sm"
+                                >Topic</label>
+                                <select
+                                    id="subject"
+                                    name="subject"
+                                    required
+                                    @error('subject', 'contact') aria-invalid="true" aria-describedby="subject-error" @enderror
+                                    class="contact-select border-cream/10 bg-cream/4 text-cream/70 focus:border-gold/50 focus:ring-gold/20 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none sm:text-sm"
                                 >
-                                    <option value="" style="background: #1a1040;">Choose a topic...</option>
-                                    <option value="general" {{ old('subject') == 'general' ? 'selected' : '' }} style="background: #1a1040;">General Question</option>
-                                    <option value="accessibility" {{ old('subject') == 'accessibility' ? 'selected' : '' }} style="background: #1a1040;">Park Accessibility Question</option>
-                                    <option value="collaboration" {{ old('subject') == 'collaboration' ? 'selected' : '' }} style="background: #1a1040;">Collaboration / Sponsorship</option>
-                                    <option value="guest" {{ old('subject') == 'guest' ? 'selected' : '' }} style="background: #1a1040;">Guest on the Podcast</option>
-                                    <option value="story" {{ old('subject') == 'story' ? 'selected' : '' }} style="background: #1a1040;">Share Your Story</option>
-                                    <option value="other" {{ old('subject') == 'other' ? 'selected' : '' }} style="background: #1a1040;">Other</option>
+                                    <option value="">Choose a topic...</option>
+                                    <option
+                                        value="general"
+                                        @selected($contactHasFeedback && old('subject') === 'general')
+                                    >
+                                        General Question
+                                    </option>
+                                    <option
+                                        value="accessibility"
+                                        @selected($contactHasFeedback && old('subject') === 'accessibility')
+                                    >
+                                        Park Accessibility Question
+                                    </option>
+                                    <option
+                                        value="collaboration"
+                                        @selected($contactHasFeedback && old('subject') === 'collaboration')
+                                    >
+                                        Collaboration / Sponsorship
+                                    </option>
+                                    <option value="guest" @selected($contactHasFeedback && old('subject') === 'guest')>
+                                        Guest on the Podcast
+                                    </option>
+                                    <option value="story" @selected($contactHasFeedback && old('subject') === 'story')>
+                                        Share Your Story
+                                    </option>
+                                    <option value="other" @selected($contactHasFeedback && old('subject') === 'other')>
+                                        Other
+                                    </option>
                                 </select>
-                                @error('subject') <p style="color: #f87171; font-size: 0.75rem; margin-top: 0.4rem;">{{ $message }}</p> @enderror
+                                @error('subject', 'contact')
+                                    <p id="subject-error" role="alert" class="mt-2 text-sm text-red-400">
+                                        {{ $message }}
+                                    </p>
+                                @enderror
                             </div>
 
                             <div>
-                                <label for="message" style="display: block; font-size: 0.75rem; font-weight: 600; color: #f0c75e; margin-bottom: 0.5rem; font-family: 'Poppins', sans-serif; text-transform: uppercase; letter-spacing: 0.05em;">Message</label>
-                                <textarea id="message" name="message" required rows="5" placeholder="What's on your mind?"
-                                    style="width: 100%; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid rgba(254,249,239,0.1); background: rgba(254,249,239,0.04); color: #fef9ef; font-size: 0.9rem; font-family: 'Poppins', sans-serif; outline: none; transition: all 0.2s; resize: vertical; box-sizing: border-box; min-height: 140px;"
-                                    onfocus="this.style.borderColor='rgba(212,168,67,0.4)';this.style.background='rgba(254,249,239,0.06)'"
-                                    onblur="this.style.borderColor='rgba(254,249,239,0.1)';this.style.background='rgba(254,249,239,0.04)'"
-                                >{{ old('message') }}</textarea>
-                                @error('message') <p style="color: #f87171; font-size: 0.75rem; margin-top: 0.4rem;">{{ $message }}</p> @enderror
+                                <label
+                                    for="message"
+                                    class="text-gold-light mb-2 block text-base font-semibold sm:text-sm"
+                                >Message</label>
+                                <textarea
+                                    id="message"
+                                    name="message"
+                                    required
+                                    rows="5"
+                                    placeholder="What's on your mind?"
+                                    @error('message', 'contact') aria-invalid="true" aria-describedby="message-error" @enderror
+                                    class="border-cream/10 bg-cream/4 text-cream placeholder:text-cream/30 focus:border-gold/50 focus:bg-cream/6 focus:ring-gold/20 min-h-36 w-full resize-y rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none sm:text-sm"
+                                >{{ $contactHasFeedback ? old('message') : '' }}</textarea>
+                                @error('message', 'contact')
+                                    <p id="message-error" role="alert" class="mt-2 text-sm text-red-400">
+                                        {{ $message }}
+                                    </p>
+                                @enderror
                             </div>
 
                             <div>
                                 @if (config('services.turnstile.site_key'))
-                                    <div class="cf-turnstile" data-sitekey="{{ config('services.turnstile.site_key') }}" data-action="{{ config('services.turnstile.action', 'contact-form') }}" data-theme="dark"></div>
+                                    <div
+                                        class="cf-turnstile"
+                                        data-sitekey="{{ config('services.turnstile.site_key') }}"
+                                        data-action="{{ config('services.turnstile.contact_action') }}"
+                                        data-theme="dark"
+                                    ></div>
                                 @else
-                                    <p role="alert" style="color: #fecaca; font-size: 0.75rem; margin-top: 0.4rem;">Contact verification is temporarily unavailable. Please try again later.</p>
+                                    <p role="alert" class="text-base text-red-200 sm:text-sm">
+                                        Contact verification is temporarily unavailable. Please try again later.
+                                    </p>
                                 @endif
-                                @error('cf-turnstile-response') <p id="turnstile-error" role="alert" style="color: #f87171; font-size: 0.75rem; margin-top: 0.4rem;">{{ $message }}</p> @enderror
+                                @error('cf-turnstile-response', 'contact')
+                                    <p id="turnstile-error" role="alert" class="mt-2 text-sm text-red-400">
+                                        {{ $message }}
+                                    </p>
+                                @enderror
                             </div>
 
-                            <button type="submit" style="
-                                width: 100%; padding: 0.85rem 1.5rem; border-radius: 0.75rem; border: none; cursor: pointer;
-                                background: linear-gradient(135deg, #d4a843, #b8922e); color: #1a1040;
-                                font-size: 0.9rem; font-weight: 700; font-family: 'Poppins', sans-serif;
-                                transition: all 0.2s; letter-spacing: 0.02em;
-                            " onmouseenter="this.style.transform='translateY(-1px)';this.style.boxShadow='0 8px 25px rgba(212,168,67,0.3)'" onmouseleave="this.style.transform='translateY(0)';this.style.boxShadow='none'">
+                            <button
+                                type="submit"
+                                class="from-gold to-gold-dark text-navy hover:shadow-gold/30 focus-visible:outline-gold min-h-12 w-full rounded-xl bg-linear-to-br px-6 py-3 text-base font-semibold transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-lg sm:text-sm"
+                            >
                                 Send Message
                             </button>
                         </form>
                     </div>
 
                     {{-- Sidebar --}}
-                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                    <div class="flex flex-col gap-6">
                         {{-- Email card --}}
-                        <div style="background: rgba(254,249,239,0.04); border: 1px solid rgba(254,249,239,0.08); border-radius: 1rem; padding: 1.5rem;">
-                            <div style="display: flex; align-items: center; gap: 0.85rem; margin-bottom: 1.25rem;">
-                                <div style="width: 40px; height: 40px; border-radius: 0.6rem; background: rgba(212,168,67,0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                                    <svg style="width: 18px; height: 18px; color: #f0c75e;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        <div class="border-cream/8 bg-cream/4 rounded-2xl border p-6">
+                            <div class="mb-5 flex items-center gap-[0.85rem]">
+                                <div class="bg-gold/12 flex size-10 shrink-0 items-center justify-center rounded-[0.6rem]">
+                                    <svg class="text-gold-light size-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                                 </div>
-                                <div>
-                                    <a href="mailto:mouse28podcast@gmail.com" style="color: #fef9ef; font-weight: 600; font-size: 0.9rem; font-family: 'Poppins', sans-serif; text-decoration: none;">mouse28podcast@gmail.com</a>
-                                    <p style="color: rgba(254,249,239,0.35); font-size: 0.75rem; font-family: 'Poppins', sans-serif;">We read every message</p>
+                                <div class="min-w-0">
+                                    <a
+                                        href="mailto:mouse28podcast@gmail.com"
+                                        class="text-cream inline-flex min-h-11 items-center text-base font-semibold break-all sm:min-h-6 sm:text-sm"
+                                    >mouse28podcast@gmail.com</a>
+                                    <p class="text-cream/35 mt-1 text-base sm:text-sm">We read every message</p>
                                 </div>
                             </div>
-                            <div style="display: flex; align-items: center; gap: 0.5rem; background: rgba(254,249,239,0.04); border-radius: 0.6rem; padding: 0.65rem 0.85rem;">
-                                <svg style="width: 14px; height: 14px; color: #f0c75e; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                <p style="color: rgba(254,249,239,0.5); font-size: 0.8rem; font-family: 'Poppins', sans-serif;">Typically within <strong style="color: rgba(254,249,239,0.8);">48 hours</strong></p>
+                            <div class="bg-cream/4 flex items-center gap-2 rounded-[0.6rem] px-[0.85rem] py-[0.65rem]">
+                                <svg class="text-gold-light size-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <p class="text-cream/50 text-base sm:text-sm">
+                                    Typically within <strong class="text-cream/80">48 hours</strong>
+                                </p>
                             </div>
                         </div>
 
                         {{-- Topics we love --}}
-                        <div style="background: rgba(254,249,239,0.04); border: 1px solid rgba(254,249,239,0.08); border-radius: 1rem; padding: 1.5rem;">
-                            <h3 class="font-heading" style="font-size: 1rem; font-weight: 700; color: #fef9ef; margin-bottom: 1rem;">We Love Hearing About</h3>
-                            <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div class="border-cream/8 bg-cream/4 rounded-2xl border p-6">
+                            <h2 class="font-heading text-cream mb-4 text-base font-bold">We Love Hearing About</h2>
+                            <div class="flex flex-col gap-3">
                                 @php
                                     $topics = [
                                         ['icon' => 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z', 'text' => 'Your park accessibility experiences'],
@@ -168,24 +288,30 @@
                                         ['icon' => 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z', 'text' => 'Collaboration & partnerships'],
                                     ];
                                 @endphp
-                                @foreach($topics as $topic)
-                                    <div style="display: flex; align-items: center; gap: 0.65rem;">
-                                        <svg style="width: 14px; height: 14px; color: rgba(212,168,67,0.6); flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="{{ $topic['icon'] }}"/></svg>
-                                        <span style="color: rgba(254,249,239,0.55); font-size: 0.8rem; font-family: 'Poppins', sans-serif;">{{ $topic['text'] }}</span>
+                                @foreach ($topics as $topic)
+                                    <div class="flex items-center gap-[0.65rem]">
+                                        <svg class="text-gold/60 size-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="{{ $topic['icon'] }}" /></svg>
+                                        <span class="text-cream/55 text-base sm:text-sm">{{ $topic['text'] }}</span>
                                     </div>
                                 @endforeach
                             </div>
                         </div>
 
                         {{-- Quick links --}}
-                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-                            <a href="/blog" style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1rem; border-radius: 0.75rem; background: rgba(254,249,239,0.03); border: 1px solid rgba(254,249,239,0.06); text-decoration: none; transition: all 0.2s;" onmouseenter="this.style.background='rgba(254,249,239,0.06)';this.style.borderColor='rgba(212,168,67,0.15)'" onmouseleave="this.style.background='rgba(254,249,239,0.03)';this.style.borderColor='rgba(254,249,239,0.06)'">
-                                <span style="color: #f0c75e; font-size: 0.8rem; font-weight: 600; font-family: 'Poppins', sans-serif;">Read the Blog</span>
-                                <svg style="width: 14px; height: 14px; color: rgba(254,249,239,0.25);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        <div class="flex flex-col gap-2">
+                            <a
+                                href="{{ route('blog.index') }}"
+                                class="border-cream/6 bg-cream/3 hover:border-gold/15 hover:bg-cream/6 flex min-h-12 items-center justify-between rounded-xl border px-4 py-3 transition-colors"
+                            >
+                                <span class="text-gold-light text-base font-semibold sm:text-sm">Read the Blog</span>
+                                <svg class="text-cream/25 size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                             </a>
-                            <a href="/episodes" style="display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1rem; border-radius: 0.75rem; background: rgba(254,249,239,0.03); border: 1px solid rgba(254,249,239,0.06); text-decoration: none; transition: all 0.2s;" onmouseenter="this.style.background='rgba(254,249,239,0.06)';this.style.borderColor='rgba(212,168,67,0.15)'" onmouseleave="this.style.background='rgba(254,249,239,0.03)';this.style.borderColor='rgba(254,249,239,0.06)'">
-                                <span style="color: #f0c75e; font-size: 0.8rem; font-weight: 600; font-family: 'Poppins', sans-serif;">Listen to the Podcast</span>
-                                <svg style="width: 14px; height: 14px; color: rgba(254,249,239,0.25);" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                            <a
+                                href="{{ route('episodes.index') }}"
+                                class="border-cream/6 bg-cream/3 hover:border-gold/15 hover:bg-cream/6 flex min-h-12 items-center justify-between rounded-xl border px-4 py-3 transition-colors"
+                            >
+                                <span class="text-gold-light text-base font-semibold sm:text-sm">Listen to the Podcast</span>
+                                <svg class="text-cream/25 size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                             </a>
                         </div>
                     </div>
@@ -193,10 +319,4 @@
             </div>
         </section>
     @endif
-
-    <style>
-        @media (min-width: 1024px) {
-            .lg\:\!grid-cols-\[1fr_340px\] { grid-template-columns: 1fr 340px !important; }
-        }
-    </style>
-@endsection
+</x-layouts.app>

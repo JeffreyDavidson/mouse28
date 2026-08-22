@@ -4,7 +4,6 @@ namespace App\Filament\Pages;
 
 use BackedEnum;
 use Filament\Pages\Page;
-use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -24,12 +23,18 @@ class NewsletterSubscribers extends Page
 
     protected static ?string $title = 'Newsletter Subscribers';
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->is_admin === true;
+    }
+
     public function getSubscribers(): array
     {
         try {
             return Cache::remember('newsletter_subscribers', 300, function () {
                 $response = Http::withToken(config('services.resend.key'))
-                    ->get('https://api.resend.com/audiences/05c28c48-d37a-4429-9fdf-6ee261c023f4/contacts');
+                    ->timeout(10)
+                    ->get($this->contactsUrl());
 
                 if ($response->successful()) {
                     return $response->json('data', []);
@@ -37,7 +42,7 @@ class NewsletterSubscribers extends Page
 
                 return [];
             });
-        } catch (\Exception $e) {
+        } catch (\Throwable) {
             return [];
         }
     }
@@ -46,13 +51,14 @@ class NewsletterSubscribers extends Page
     {
         try {
             $response = Http::withToken(config('services.resend.key'))
-                ->get('https://api.resend.com/audiences/05c28c48-d37a-4429-9fdf-6ee261c023f4/contacts');
+                ->timeout(10)
+                ->get($this->contactsUrl());
 
-            if (!$response->successful()) {
-                return 'Failed to fetch subscribers from Resend API (HTTP ' . $response->status() . ')';
+            if (! $response->successful()) {
+                return 'Failed to fetch subscribers from Resend API (HTTP '.$response->status().')';
             }
-        } catch (\Exception $e) {
-            return 'Could not connect to Resend API: ' . $e->getMessage();
+        } catch (\Throwable) {
+            return 'Could not connect to the Resend API.';
         }
 
         return null;
@@ -72,8 +78,13 @@ class NewsletterSubscribers extends Page
                 ]);
             }
             fclose($handle);
-        }, 'newsletter-subscribers-' . now()->format('Y-m-d') . '.csv', [
+        }, 'newsletter-subscribers-'.now()->format('Y-m-d').'.csv', [
             'Content-Type' => 'text/csv',
         ]);
+    }
+
+    private function contactsUrl(): string
+    {
+        return 'https://api.resend.com/audiences/'.config('services.resend.audience_id').'/contacts';
     }
 }

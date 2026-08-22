@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Posts\Schemas;
 
-use App\Models\Episode;
+use App\Models\Post;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
@@ -45,11 +45,11 @@ class PostForm
                             ->columnSpan(2)
                             ->unique(ignoreRecord: true),
                         Select::make('category')
-                            ->options(\App\Models\Post::CATEGORIES)
+                            ->options(Post::CATEGORIES)
                             ->required()
                             ->columnSpan(1),
                         Select::make('author')
-                            ->options(\App\Models\Post::AUTHORS)
+                            ->options(Post::AUTHORS)
                             ->required()
                             ->default('both')
                             ->columnSpan(1),
@@ -69,8 +69,10 @@ class PostForm
                         Textarea::make('excerpt')
                             ->rows(3)
                             ->maxLength(300)
+                            ->required(fn (Get $get): bool => (bool) $get('is_published'))
                             ->helperText('Short summary shown in post listings.'),
-                        MarkdownEditor::make('body'),
+                        MarkdownEditor::make('body')
+                            ->required(fn (Get $get): bool => (bool) $get('is_published')),
                     ]),
 
                 Grid::make(2)
@@ -86,12 +88,15 @@ class PostForm
 
                         Section::make('Publishing')
                             ->icon('heroicon-o-rocket-launch')
+                            ->description('Published posts require an excerpt, body, and publish date. Readiness also tracks images and SEO fields.')
                             ->schema([
                                 Toggle::make('is_published')
                                     ->label('Published')
+                                    ->live()
                                     ->default(false),
                                 DateTimePicker::make('published_at')
-                                    ->label('Publish Date'),
+                                    ->label('Publish Date')
+                                    ->required(fn (Get $get): bool => (bool) $get('is_published')),
                             ]),
                     ]),
 
