@@ -74,7 +74,8 @@
                         We'd Love to Hear From You
                     </h1>
                     <p class="mx-auto mt-4 max-w-xl text-lg text-white/60">
-                        Have a question about DAS, want to share your story, or just say hi? We read every message.
+                        Have a question about DAS, planning a Disney trip, or just want to say hi? We read every
+                        message.
                     </p>
                 </div>
 
@@ -196,9 +197,6 @@
                                     <option value="guest" @selected($contactHasFeedback && old('subject') === 'guest')>
                                         Guest on the Podcast
                                     </option>
-                                    <option value="story" @selected($contactHasFeedback && old('subject') === 'story')>
-                                        Share Your Story
-                                    </option>
                                     <option value="other" @selected($contactHasFeedback && old('subject') === 'other')>
                                         Other
                                     </option>
@@ -291,7 +289,7 @@
                                 @php
                                     $topics = [
                                         ['icon' => 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z', 'text' => 'Your park accessibility experiences'],
-                                        ['icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z', 'text' => 'Family Disney stories'],
+                                        ['icon' => 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z', 'text' => 'Disney trip planning questions'],
                                         ['icon' => 'M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z', 'text' => 'Podcast guest ideas'],
                                         ['icon' => 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z', 'text' => 'Collaboration & partnerships'],
                                     ];
