@@ -95,11 +95,16 @@
 
                             <div class="relative z-10 flex flex-col items-center gap-6 sm:flex-row">
                                 {{-- Episode artwork/number --}}
-                                <div class="from-purple to-gold flex size-24 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br shadow-lg">
-                                    <div class="text-center">
-                                        <span class="block text-[10px] font-bold tracking-wider text-white/60 uppercase">EP</span>
-                                        <span class="font-heading text-3xl font-bold text-white">{{ $episode->episode_number }}</span>
-                                    </div>
+                                <div class="size-24 shrink-0 overflow-hidden rounded-2xl shadow-lg">
+                                    <img
+                                        src="{{ $episode->cover_image_url ?: '/images/podcast/mouse28-cover.jpg' }}"
+                                        alt="{{ $episode->title }} podcast artwork"
+                                        width="3000"
+                                        height="3000"
+                                        loading="lazy"
+                                        decoding="async"
+                                        class="size-full object-cover"
+                                    />
                                 </div>
 
                                 <div class="w-full flex-1">
@@ -372,6 +377,8 @@
                                                 <img
                                                     src="{{ $post->cover_image_url }}"
                                                     alt="{{ $post->title }}"
+                                                    loading="lazy"
+                                                    decoding="async"
                                                     class="size-16 shrink-0 rounded-xl object-cover"
                                                 />
                                             @else

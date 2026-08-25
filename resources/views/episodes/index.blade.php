@@ -107,9 +107,6 @@
                                                         @endif
                                                     </div>
                                                 </div>
-                                                {{-- Subtle corner accent --}}
-                                                <div class="absolute top-2 left-2 size-5 rounded-tl-md border-t-2 border-l-2 border-white/10"></div>
-                                                <div class="absolute right-2 bottom-2 size-5 rounded-br-md border-r-2 border-b-2 border-white/10"></div>
                                             </div>
 
                                             <div class="min-w-0 flex-1 p-5 sm:p-6">
