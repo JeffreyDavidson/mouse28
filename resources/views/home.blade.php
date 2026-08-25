@@ -155,7 +155,7 @@
                     @foreach ($latestPosts as $post)
                         <a
                             href="{{ route('blog.show', $post) }}"
-                            class="group post-card border-navy/5 relative overflow-hidden rounded-2xl border bg-white shadow-sm hover:-translate-y-2 hover:shadow-xl"
+                            class="group post-card border-navy/5 relative overflow-hidden rounded-xl border bg-white shadow-sm hover:-translate-y-1 hover:shadow-lg"
                             data-animate
                             data-stagger="{{ $loop->index }}"
                         >
@@ -165,6 +165,8 @@
                                         src="{{ $post->cover_image_url }}"
                                         alt="{{ $post->title }}"
                                         class="card-img h-52 w-full object-cover"
+                                        loading="lazy"
+                                        decoding="async"
                                     />
                                     <div class="card-overlay from-purple/20 absolute inset-0 bg-linear-to-t to-transparent"></div>
                                 @else
@@ -225,7 +227,7 @@
                     @foreach ($latestGuides as $guide)
                         <a
                             href="{{ route('guides.show', $guide) }}"
-                            class="group border-navy/5 rounded-3xl border bg-white p-7 shadow-sm transition-[transform,box-shadow] hover:-translate-y-1 hover:shadow-xl"
+                            class="group border-navy/5 rounded-2xl border bg-white p-7 shadow-sm transition-[transform,box-shadow] hover:-translate-y-1 hover:shadow-lg"
                         >
                             <span class="text-gold text-xs font-bold tracking-widest uppercase">{{ $guide->category_label }}</span>
                             <h3 class="font-heading text-navy group-hover:text-purple mt-3 text-2xl font-bold transition-colors">
@@ -243,7 +245,7 @@
                     @foreach (\App\Models\Guide::CATEGORIES as $slug => $label)
                         <a
                             href="{{ route('guides.index', ['category' => $slug]) }}"
-                            class="group border-navy/5 rounded-3xl border bg-white p-7 shadow-sm transition-[transform,box-shadow] hover:-translate-y-1 hover:shadow-xl"
+                            class="group border-navy/5 rounded-2xl border bg-white p-7 shadow-sm transition-[transform,box-shadow] hover:-translate-y-1 hover:shadow-lg"
                         >
                             <h3 class="font-heading text-navy group-hover:text-purple text-2xl font-bold transition-colors">
                                 {{ $label }}
@@ -267,9 +269,20 @@
     <section class="relative bg-white py-16 md:py-24">
         <div class="mx-auto max-w-4xl px-4 sm:px-6">
             <div class="mb-12 flex items-end justify-between" data-animate>
-                <div>
-                    <span class="font-body text-purple/65 text-sm font-semibold tracking-[0.15em] uppercase">🎙️ Also Listen</span>
-                    <h2 class="font-heading text-navy mt-2 text-3xl font-bold md:text-4xl">From the Podcast</h2>
+                <div class="flex items-center gap-4">
+                    <img
+                        src="/images/podcast/mouse28-cover.jpg"
+                        alt=""
+                        width="64"
+                        height="64"
+                        loading="lazy"
+                        decoding="async"
+                        class="size-14 rounded-xl object-cover shadow-sm"
+                    />
+                    <div>
+                        <span class="font-body text-purple/65 text-sm font-semibold tracking-[0.15em] uppercase">🎙️ Also Listen</span>
+                        <h2 class="font-heading text-navy mt-2 text-3xl font-bold md:text-4xl">From the Podcast</h2>
+                    </div>
                 </div>
                 <a
                     href="{{ route('episodes.index') }}"
@@ -326,12 +339,16 @@
                     <div class="relative flex flex-wrap items-center gap-10">
                         {{-- Waveform visual --}}
                         <div class="shrink-0">
-                            <div class="from-gold to-gold-dark flex size-[100px] items-center justify-center rounded-[1.25rem] bg-linear-to-br shadow-[0_10px_30px_rgb(212_168_67/25%)]">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#1a1040" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
-                                    <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-                                    <line x1="12" x2="12" y1="19" y2="22" />
-                                </svg>
+                            <div class="size-[100px] overflow-hidden rounded-[1.25rem] shadow-[0_10px_30px_rgb(212_168_67/25%)]">
+                                <img
+                                    src="/images/podcast/mouse28-cover.jpg"
+                                    alt="Mouse28 podcast artwork"
+                                    width="3000"
+                                    height="3000"
+                                    loading="lazy"
+                                    decoding="async"
+                                    class="size-full object-cover"
+                                />
                             </div>
                         </div>
 
@@ -385,8 +402,6 @@
                                 class="aspect-4/5 h-auto w-full object-cover"
                             />
                         </div>
-                        {{-- Decorative corner accent --}}
-                        <div class="border-gold/25 absolute -right-3 -bottom-3 hidden size-24 rounded-br-2xl border-r-2 border-b-2 md:block"></div>
                     </div>
                 </div>
 

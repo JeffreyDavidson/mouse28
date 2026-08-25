@@ -34,9 +34,15 @@
             @if ($guides->isNotEmpty())
                 <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     @foreach ($guides as $guide)
-                        <article class="border-navy/5 flex flex-col overflow-hidden rounded-3xl border bg-white shadow-sm transition-[transform,box-shadow] hover:-translate-y-1 hover:shadow-xl">
+                        <article class="border-navy/5 flex flex-col overflow-hidden rounded-2xl border bg-white shadow-sm transition-[transform,box-shadow] hover:-translate-y-1 hover:shadow-lg">
                             @if ($guide->cover_image_url)
-                                <img src="{{ $guide->cover_image_url }}" alt="" class="h-52 w-full object-cover" />
+                                <img
+                                    src="{{ $guide->cover_image_url }}"
+                                    alt=""
+                                    loading="lazy"
+                                    decoding="async"
+                                    class="h-52 w-full object-cover"
+                                />
                             @else
                                 <div
                                     class="from-purple/15 to-gold/15 flex h-40 items-center justify-center bg-linear-to-br"

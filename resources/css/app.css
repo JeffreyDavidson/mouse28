@@ -1,6 +1,78 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
 
+@font-face {
+    font-family: 'Playfair Display';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/mouse28/playfair-latin.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Playfair Display';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('/fonts/mouse28/playfair-latin.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Playfair Display';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/fonts/mouse28/playfair-latin.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Playfair Display';
+    font-style: normal;
+    font-weight: 800;
+    font-display: swap;
+    src: url('/fonts/mouse28/playfair-latin.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src: url('/fonts/mouse28/poppins-300.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/fonts/mouse28/poppins-400.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('/fonts/mouse28/poppins-500.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('/fonts/mouse28/poppins-600.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/fonts/mouse28/poppins-700.woff2') format('woff2');
+}
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
@@ -26,6 +98,7 @@
 @layer base {
     body {
         font-family: var(--font-body);
+        text-rendering: optimizeLegibility;
     }
 
     h1,
@@ -62,6 +135,12 @@
             animation-iteration-count: 1 !important;
             scroll-behavior: auto !important;
             transition-duration: 0.01ms !important;
+        }
+
+        [data-animate],
+        .js-animate [data-animate] {
+            opacity: 1 !important;
+            transform: none !important;
         }
     }
 
@@ -685,8 +764,8 @@
         border-bottom: 2px solid rgb(212 168 67 / 20%);
         padding-bottom: 0.5rem;
         color: var(--color-navy);
-        font-family: var(--font-body);
-        font-size: 1.35rem;
+        font-family: var(--font-heading);
+        font-size: 1.5rem;
         font-weight: 700;
     }
 
@@ -700,8 +779,8 @@
         gap: 0.5rem;
         margin: 1.75rem 0 0.6rem;
         color: var(--color-navy);
-        font-family: var(--font-body);
-        font-size: 1.1rem;
+        font-family: var(--font-heading);
+        font-size: 1.2rem;
         font-weight: 700;
     }
 
