@@ -36,7 +36,13 @@
                     @foreach ($guides as $guide)
                         <article class="border-navy/5 flex flex-col overflow-hidden rounded-2xl border bg-white shadow-sm transition-[transform,box-shadow] hover:-translate-y-1 hover:shadow-lg">
                             @if ($guide->cover_image_url)
-                                <img src="{{ $guide->cover_image_url }}" alt="" loading="lazy" decoding="async" class="h-52 w-full object-cover" />
+                                <img
+                                    src="{{ $guide->cover_image_url }}"
+                                    alt=""
+                                    loading="lazy"
+                                    decoding="async"
+                                    class="h-52 w-full object-cover"
+                                />
                             @else
                                 <div
                                     class="from-purple/15 to-gold/15 flex h-40 items-center justify-center bg-linear-to-br"

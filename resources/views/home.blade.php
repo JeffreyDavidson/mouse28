@@ -280,8 +280,8 @@
                         class="size-14 rounded-xl object-cover shadow-sm"
                     />
                     <div>
-                    <span class="font-body text-purple/65 text-sm font-semibold tracking-[0.15em] uppercase">🎙️ Also Listen</span>
-                    <h2 class="font-heading text-navy mt-2 text-3xl font-bold md:text-4xl">From the Podcast</h2>
+                        <span class="font-body text-purple/65 text-sm font-semibold tracking-[0.15em] uppercase">🎙️ Also Listen</span>
+                        <h2 class="font-heading text-navy mt-2 text-3xl font-bold md:text-4xl">From the Podcast</h2>
                     </div>
                 </div>
                 <a
