@@ -53,7 +53,15 @@
 
         <div class="from-navy via-navy-light to-navy absolute inset-0 bg-linear-to-br">
             @if ($post->cover_image_url)
-                <img src="{{ $post->cover_image_url }}" alt="" aria-hidden="true" class="size-full object-cover" />
+                <img
+                    src="{{ $post->cover_image_url }}"
+                    alt=""
+                    aria-hidden="true"
+                    loading="eager"
+                    fetchpriority="high"
+                    decoding="async"
+                    class="size-full object-cover"
+                />
             @endif
             <div class="absolute inset-0 {{ $post->cover_image_url ? 'bg-linear-to-t from-navy/95 via-navy/70 to-navy/40' : 'bg-linear-to-t from-navy/95 via-navy/60 to-navy/30' }}"></div>
         </div>

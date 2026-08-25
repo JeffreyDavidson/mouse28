@@ -201,6 +201,10 @@
                             <img
                                 src="/images/jeffrey.jpg"
                                 alt="Jeffrey Davidson at Epcot's Japan Pavilion"
+                                width="2048"
+                                height="2048"
+                                loading="lazy"
+                                decoding="async"
                                 class="absolute inset-0 size-full object-cover object-top"
                             />
                             {{-- Name overlay at bottom --}}
@@ -280,6 +284,10 @@
                             <img
                                 src="/images/cassie.jpg"
                                 alt="Cassie Davidson at Magic Kingdom's Winnie the Pooh"
+                                width="2048"
+                                height="2048"
+                                loading="lazy"
+                                decoding="async"
                                 class="absolute inset-0 size-full object-cover object-top"
                             />
                             {{-- Name overlay at bottom --}}
