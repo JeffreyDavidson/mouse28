@@ -76,7 +76,12 @@
             class="bg-navy/95 border-b border-white/10 backdrop-blur-sm"
             aria-label="Primary navigation"
             x-data="{ open: false }"
-            @keydown.escape.window="open = false"
+            @keydown.escape.window="
+                if (open) {
+                    open = false;
+                    $nextTick(() => $refs.mobileNavigationToggle.focus());
+                }
+            "
         >
             <div class="mx-auto max-w-6xl px-4 sm:px-6">
                 <div class="flex h-20 items-center justify-between">
@@ -129,6 +134,7 @@
                     {{-- Mobile menu button (animated hamburger → X) --}}
                     <button
                         type="button"
+                        x-ref="mobileNavigationToggle"
                         @click="open = ! open"
                         :aria-expanded="open.toString()"
                         aria-controls="mobile-navigation"

@@ -67,11 +67,53 @@ function undersizedMobileControlsScript(): string
         JS;
 }
 
+function missingFocusIndicatorsScript(): string
+{
+    return <<<'JS'
+        (() => {
+            const focusableElements = document.querySelectorAll([
+                'a[href]',
+                'button:not([disabled])',
+                'input:not([disabled]):not([type="hidden"])',
+                'select:not([disabled])',
+                'textarea:not([disabled])',
+                'summary',
+                'audio[controls]',
+                '[tabindex]:not([tabindex="-1"])',
+            ].join(','));
+
+            return [...focusableElements].filter((element) => {
+                const bounds = element.getBoundingClientRect();
+
+                if (element.closest('[aria-hidden="true"]') || bounds.width === 0 || bounds.height === 0) {
+                    return false;
+                }
+
+                element.focus();
+
+                const styles = window.getComputedStyle(element);
+                const hasOutline = styles.outlineStyle !== 'none'
+                    && styles.outlineColor !== 'rgba(0, 0, 0, 0)'
+                    && Number.parseFloat(styles.outlineWidth) > 0;
+                const hasBoxShadow = styles.boxShadow !== 'none';
+
+                return ! hasOutline && ! hasBoxShadow;
+            }).map((element) => {
+                const identity = element.id ? `#${element.id}` : element.textContent.trim().replace(/\s+/g, ' ').slice(0, 30);
+
+                return `${element.tagName.toLowerCase()}${identity}`;
+            }).join('|');
+        })()
+        JS;
+}
+
 test('public page renders without JavaScript errors', function (string $path, string $content): void {
     visit($path)
         ->assertSee($content)
         ->assertScript('document.querySelectorAll(\'svg:not([aria-hidden="true"]):not([aria-label]):not([aria-labelledby]):not(:has(title))\').length', 0)
         ->assertScript(exposedDecorativeGlyphCountScript(), 0)
+        ->assertScript('document.querySelectorAll(\'[tabindex]:not([tabindex="0"]):not([tabindex="-1"])\').length', 0)
+        ->assertScript(missingFocusIndicatorsScript(), '')
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 })->with([
@@ -100,6 +142,8 @@ test('published content detail pages have no accessibility issues', function ():
     $pages->assertNoAccessibilityIssues()
         ->assertScript('document.querySelectorAll(\'svg:not([aria-hidden="true"]):not([aria-label]):not([aria-labelledby]):not(:has(title))\').length', 0)
         ->assertScript(exposedDecorativeGlyphCountScript(), 0)
+        ->assertScript('document.querySelectorAll(\'[tabindex]:not([tabindex="0"]):not([tabindex="-1"])\').length', 0)
+        ->assertScript(missingFocusIndicatorsScript(), '')
         ->assertNoJavaScriptErrors();
 
     [, $episodePage] = $pages;
@@ -119,6 +163,72 @@ test('mobile navigation opens and remains usable', function (): void {
         ->click('[aria-label="Close navigation menu"]')
         ->assertScript('getComputedStyle(document.querySelector("#mobile-navigation")).display', 'none')
         ->assertScript('document.querySelector("[aria-controls=mobile-navigation]").ariaExpanded', 'false')
+        ->assertNoJavaScriptErrors();
+});
+
+test('keyboard users can skip directly to the main content', function (): void {
+    visit(route('home'))
+        ->keys('html > body', 'Tab')
+        ->assertScript('document.activeElement.textContent.trim()', 'Skip to content')
+        ->assertScript('getComputedStyle(document.activeElement).outlineStyle === "none"', false)
+        ->keys(':focus', 'Enter')
+        ->assertScript('document.activeElement.id', 'main-content')
+        ->keys(':focus', 'Tab')
+        ->assertScript('document.activeElement.textContent.trim()', 'Read Our Blog')
+        ->assertNoJavaScriptErrors();
+});
+
+test('mobile navigation restores focus when closed with the keyboard', function (): void {
+    visit(route('home'))
+        ->on()
+        ->mobile()
+        ->keys('html > body', 'Tab')
+        ->keys(':focus', 'Tab')
+        ->keys(':focus', 'Tab')
+        ->assertScript('document.activeElement.getAttribute("aria-label")', 'Open navigation menu')
+        ->keys(':focus', 'Enter')
+        ->assertScript('document.querySelector("[aria-controls=mobile-navigation]").ariaExpanded', 'true')
+        ->assertVisible('#mobile-navigation')
+        ->keys(':focus', 'Tab')
+        ->assertScript('document.activeElement.textContent.trim()', 'Home')
+        ->keys(':focus', 'Escape')
+        ->assertScript('getComputedStyle(document.querySelector("#mobile-navigation")).display', 'none')
+        ->assertScript('document.activeElement.getAttribute("aria-label")', 'Open navigation menu')
+        ->assertNoJavaScriptErrors();
+});
+
+test('search transcript and contact validation work from the keyboard', function (): void {
+    $post = Post::factory()->create([
+        'title' => 'Accessible Park Planning',
+        'body' => 'Practical accessible planning advice for a Disney parks visit.',
+    ]);
+    $episode = Episode::factory()->create([
+        'audio_url' => 'https://cdn.example.com/accessible-episode.mp3',
+    ]);
+
+    visit(route('search'))
+        ->fill('#site-search', 'Accessible Park')
+        ->keys('#site-search', 'Enter')
+        ->assertQueryStringHas('q', 'Accessible Park')
+        ->assertSee($post->title)
+        ->assertNoJavaScriptErrors();
+
+    visit(route('episodes.show', $episode))
+        ->keys('[aria-controls="episode-transcript"]', 'Space')
+        ->assertScript('document.querySelector("[aria-controls=episode-transcript]").ariaExpanded', 'true')
+        ->assertSee('Collapse Transcript')
+        ->assertNoJavaScriptErrors();
+
+    visit(route('contact.show'))
+        ->keys('#name', 'Tab')
+        ->assertScript('document.activeElement.id', 'email')
+        ->keys(':focus', 'Tab')
+        ->assertScript('document.activeElement.id', 'subject')
+        ->keys(':focus', 'Tab')
+        ->assertScript('document.activeElement.id', 'message')
+        ->keys('form[action$="/contact"] button[type="submit"]', 'Enter')
+        ->assertScript('document.activeElement.id', 'name')
+        ->assertScript('document.activeElement.matches(":invalid")')
         ->assertNoJavaScriptErrors();
 });
 
@@ -154,6 +264,8 @@ test('public pages remain usable at mobile widths', function (): void {
         ->resize(320, 812)
         ->assertScript(horizontalOverflowCountScript(), 0)
         ->assertScript(undersizedMobileControlsScript(), '')
+        ->assertScript('document.querySelectorAll(\'[tabindex]:not([tabindex="0"]):not([tabindex="-1"])\').length', 0)
+        ->assertScript(missingFocusIndicatorsScript(), '')
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 });
@@ -222,8 +334,23 @@ test('article navigation respects reduced motion preferences', function (): void
             };
         JS);
 
-    $page->click('[data-blog-toc-link][href="#section-0"]')
+    $page->keys('[data-blog-toc-link][href="#section-0"]', 'Enter')
         ->assertScript('window.articleScrollBehavior', 'auto');
+
+    $page->script(<<<'JS'
+        Object.defineProperty(navigator, 'clipboard', {
+            configurable: true,
+            value: {
+                writeText: async (value) => {
+                    window.copiedArticleUrl = value;
+                },
+            },
+        });
+    JS);
+
+    $page->keys('[data-copy-link][aria-label="Copy link"]', 'Enter')
+        ->assertScript('window.copiedArticleUrl', route('blog.show', $post))
+        ->assertScript('document.querySelector("[data-copy-link][aria-label=\\"Copy link\\"] .copy-feedback").classList.contains("hidden")', false);
 
     $page->script(<<<'JS'
         window.scrollTo = function (options) {
