@@ -19,7 +19,7 @@
         </div>
     @endif
     <section class="from-navy via-navy-light to-purple relative overflow-hidden bg-linear-to-br py-14 md:py-20">
-        <div class="mx-auto max-w-5xl px-4 sm:px-6">
+        <div class="mx-auto max-w-5xl px-4 wrap-anywhere sm:px-6">
             <a
                 href="{{ route('guides.index') }}"
                 class="hover:text-gold inline-flex min-h-12 items-center text-sm text-white/60"
@@ -60,7 +60,7 @@
             @endif
 
             <article class="border-navy/5 shadow-navy/5 rounded-3xl border bg-white p-6 shadow-lg sm:p-10 md:p-14">
-                <div class="blog-article-content prose-navy prose prose-lg text-navy/80 max-w-none text-[1.1rem] leading-[1.85]">
+                <div class="blog-article-content prose-navy prose prose-lg text-navy/80 max-w-none text-[1.1rem] leading-[1.85] wrap-anywhere">
                     {!! Str::markdown($guide->body, ['html_input' => 'strip', 'allow_unsafe_links' => false]) !!}
                 </div>
 
@@ -88,7 +88,7 @@
                         @foreach ($relatedGuides as $relatedGuide)
                             <a
                                 href="{{ route('guides.show', $relatedGuide) }}"
-                                class="border-navy/5 font-heading text-navy hover:text-purple rounded-2xl border bg-white p-5 text-lg font-bold shadow-sm"
+                                class="border-navy/5 font-heading text-navy hover:text-purple rounded-2xl border bg-white p-5 text-lg font-bold wrap-anywhere shadow-sm"
                             >{{ $relatedGuide->title }}</a>
                         @endforeach
                     </div>

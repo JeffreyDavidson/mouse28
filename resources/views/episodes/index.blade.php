@@ -57,7 +57,7 @@
         <div class="mx-auto max-w-6xl px-4 sm:px-6">
             @if ($episodes->count())
                 <div class="flex flex-col gap-10 lg:flex-row">
-                    <div class="lg:w-[66%]">
+                    <div class="min-w-0 lg:w-[66%]">
                         {{-- Group by season if available --}}
                         @php
                             $grouped = $episodes->getCollection()->groupBy(fn ($ep) => $ep->season_number ?? 0);
@@ -109,7 +109,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="min-w-0 flex-1 p-5 sm:p-6">
+                                            <div class="min-w-0 flex-1 p-5 wrap-anywhere sm:p-6">
                                                 <div class="mb-2 flex flex-wrap items-center gap-3">
                                                     <span class="text-navy/65 text-xs font-medium">{{ $episode->published_at->format('M j, Y') }}</span>
                                                     @if ($episode->duration_seconds)

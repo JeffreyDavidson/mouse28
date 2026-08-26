@@ -105,7 +105,7 @@
                         </div>
 
                         {{-- Right: Content --}}
-                        <div class="flex flex-1 flex-col justify-center p-8 md:p-10 lg:p-12">
+                        <div class="flex min-w-0 flex-1 flex-col justify-center p-8 wrap-anywhere md:p-10 lg:p-12">
                             <div class="mb-5 flex flex-wrap items-center gap-3">
                                 <span class="bg-gold/20 text-gold rounded-full px-3 py-1 text-[10px] font-bold tracking-wider uppercase">Featured</span>
                                 @if ($featuredPost->category)
@@ -189,7 +189,7 @@
                                     <span class="bg-navy/80 font-body absolute top-3 left-3 rounded-full px-3 py-1 text-xs font-bold tracking-wider text-white uppercase backdrop-blur-sm">{{ $post->category_label }}</span>
                                 @endif
                             </div>
-                            <div class="p-6">
+                            <div class="p-6 wrap-anywhere">
                                 <div class="mb-3 flex items-center justify-between">
                                     <span class="font-body text-navy/65 text-xs">{{ $post->published_at->format('M j, Y') }}</span>
                                     <span class="font-body text-navy/65 text-xs">{{ $post->reading_time }} min read</span>
@@ -238,7 +238,7 @@
                     @foreach ($latestGuides as $guide)
                         <a
                             href="{{ route('guides.show', $guide) }}"
-                            class="group border-navy/5 rounded-2xl border bg-white p-7 shadow-sm transition-[transform,box-shadow] hover:-translate-y-1 hover:shadow-lg"
+                            class="group border-navy/5 rounded-2xl border bg-white p-7 wrap-anywhere shadow-sm transition-[transform,box-shadow] hover:-translate-y-1 hover:shadow-lg"
                         >
                             <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">{{ $guide->category_label }}</span>
                             <h3 class="font-heading text-navy group-hover:text-purple mt-3 text-2xl font-bold transition-colors">
@@ -317,7 +317,7 @@
                                 <span class="font-body text-purple text-sm font-bold transition-opacity group-hover:opacity-0">{{ $episode->episode_number }}</span>
                                 <svg aria-hidden="true" class="text-purple absolute size-5 opacity-0 transition-opacity group-hover:opacity-100" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
                             </div>
-                            <div class="min-w-0 flex-1">
+                            <div class="min-w-0 flex-1 wrap-anywhere">
                                 <h3 class="font-heading text-navy group-hover:text-purple line-clamp-2 text-base font-semibold transition-colors">
                                     {{ $episode->title }}
                                 </h3>

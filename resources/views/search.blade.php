@@ -6,7 +6,7 @@
     :canonical="route('search')"
 >
     <section class="from-navy via-navy-light to-purple bg-linear-to-br py-14 md:py-20">
-        <div class="mx-auto max-w-4xl px-4 text-center sm:px-6">
+        <div class="mx-auto max-w-4xl px-4 text-center wrap-anywhere sm:px-6">
             <span class="text-gold text-sm font-semibold tracking-[0.15em] uppercase">Explore Mouse28</span>
             <h1 class="font-heading mt-3 text-4xl font-bold text-white md:text-6xl">Search</h1>
             <form
@@ -40,7 +40,7 @@
     </section>
 
     <section class="bg-cream py-12 md:py-16">
-        <div class="mx-auto max-w-5xl px-4 sm:px-6">
+        <div class="mx-auto max-w-5xl px-4 wrap-anywhere sm:px-6">
             @if ($query === '')
                 <div class="border-navy/5 rounded-3xl border bg-white px-6 py-14 text-center shadow-sm">
                     <h2 class="font-heading text-navy text-3xl font-bold">What can we help you find?</h2>
