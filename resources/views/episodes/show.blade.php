@@ -20,7 +20,7 @@
     <section class="from-navy to-navy-light relative overflow-hidden bg-linear-to-br py-16 md:py-24">
         {{-- Waveform background --}}
         <div class="pointer-events-none absolute inset-0 opacity-[0.07]">
-            <svg class="absolute bottom-0 left-0 h-32 w-full text-white" viewBox="0 0 1200 120" preserveAspectRatio="none" fill="none" stroke="currentColor">
+            <svg class="absolute bottom-0 left-0 h-32 w-full text-white" viewBox="0 0 1200 120" preserveAspectRatio="none" fill="none" stroke="currentColor" aria-hidden="true">
                 <g stroke="white" stroke-width="2">
                     @for ($i = 0; $i < 60; $i++)
                         <line
