@@ -110,12 +110,15 @@
                                 </div>
 
                                 <div class="w-full flex-1">
-                                    <p class="mb-1 text-xs tracking-wider text-white/50 uppercase">Now Playing</p>
+                                    <p class="mb-1 text-xs tracking-wider text-white/50 uppercase">
+                                        Listen to this episode
+                                    </p>
                                     <p class="font-heading mb-3 text-lg font-semibold text-white">
                                         {{ $episode->title }}
                                     </p>
                                     <audio
                                         controls
+                                        aria-label="Play {{ $episode->title }}"
                                         class="[&::-webkit-media-controls-panel]:rounded-xl [&::-webkit-media-controls-panel]:bg-white/10 w-full"
                                         preload="metadata"
                                     >
@@ -151,6 +154,7 @@
                         @if ($episode->transcript)
                             <div x-data="{ expanded: false }">
                                 <div
+                                    id="episode-transcript"
                                     class="episode-transcript-content max-h-[600px]"
                                     :class="{ 'max-h-none': expanded }"
                                 >
@@ -162,6 +166,8 @@
                                 <button
                                     type="button"
                                     @click="expanded = ! expanded"
+                                    :aria-expanded="expanded.toString()"
+                                    aria-controls="episode-transcript"
                                     class="border-navy/10 text-gold-ink hover:border-gold hover:bg-gold/5 mt-4 min-h-12 w-full rounded-xl border py-3 text-center text-sm font-semibold transition-colors"
                                 >
                                     <span
@@ -248,7 +254,7 @@
                                         href="{{ $appleUrl }}"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        class="group border-navy/8 hover:border-navy/20 hover:bg-navy/[0.03] flex w-full items-center gap-3 rounded-xl border px-4 py-3.5 transition-colors"
+                                        class="group border-navy/8 hover:border-navy/20 hover:bg-navy/[0.03] flex min-h-12 w-full items-center gap-3 rounded-xl border px-4 py-3.5 transition-colors"
                                     >
                                         <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-[#fc3c44] to-[#d42d56] shadow-sm">
                                             <svg class="size-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.56 2.93 11.3 4.7 7.72C5.57 5.94 7.36 4.86 9.28 4.84C10.56 4.81 11.78 5.7 12.56 5.7C13.34 5.7 14.85 4.62 16.41 4.8C17.07 4.83 18.96 5.06 20.16 6.87C20.05 6.95 17.58 8.37 17.61 11.34C17.65 14.9 20.68 16.04 20.71 16.06C20.69 16.13 20.18 17.86 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z" /></svg>
@@ -265,7 +271,7 @@
                                         href="{{ $spotifyUrl }}"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        class="group border-navy/8 hover:border-navy/20 hover:bg-navy/[0.03] flex w-full items-center gap-3 rounded-xl border px-4 py-3.5 transition-colors"
+                                        class="group border-navy/8 hover:border-navy/20 hover:bg-navy/[0.03] flex min-h-12 w-full items-center gap-3 rounded-xl border px-4 py-3.5 transition-colors"
                                     >
                                         <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-[#1DB954] to-[#169c46] shadow-sm">
                                             <svg class="size-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" /></svg>
@@ -282,7 +288,7 @@
                                         href="{{ $youtubeUrl }}"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        class="group border-navy/8 hover:border-navy/20 hover:bg-navy/3 flex w-full items-center gap-3 rounded-xl border px-4 py-3.5 transition-colors"
+                                        class="group border-navy/8 hover:border-navy/20 hover:bg-navy/3 flex min-h-12 w-full items-center gap-3 rounded-xl border px-4 py-3.5 transition-colors"
                                     >
                                         <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-[#FF0000] to-[#cc0000] shadow-sm">
                                             <svg class="size-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
@@ -298,7 +304,7 @@
                                     href="{{ route('rss.podcast') }}"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    class="group border-navy/8 hover:border-navy/20 hover:bg-navy/3 flex w-full items-center gap-3 rounded-xl border px-4 py-3.5 transition-colors"
+                                    class="group border-navy/8 hover:border-navy/20 hover:bg-navy/3 flex min-h-12 w-full items-center gap-3 rounded-xl border px-4 py-3.5 transition-colors"
                                 >
                                     <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-orange-500 to-orange-600 shadow-sm">
                                         <svg class="size-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5a14 14 0 0 1 14 14M5 11a8 8 0 0 1 8 8M5 19h.01" /></svg>
@@ -323,7 +329,7 @@
                                     href="https://twitter.com/intent/tweet?text={{ urlencode($episode->title . ' — Mouse28 Podcast') }}&url={{ urlencode(route('episodes.show', $episode)) }}"
                                     target="_blank"
                                     rel="noopener"
-                                    class="group border-navy/8 hover:border-navy/20 hover:bg-navy/3 flex w-full items-center gap-3 rounded-xl border px-4 py-3.5 transition-colors"
+                                    class="group border-navy/8 hover:border-navy/20 hover:bg-navy/3 flex min-h-12 w-full items-center gap-3 rounded-xl border px-4 py-3.5 transition-colors"
                                 >
                                     <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-black shadow-sm">
                                         <svg class="size-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
@@ -335,7 +341,7 @@
                                     href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(route('episodes.show', $episode)) }}"
                                     target="_blank"
                                     rel="noopener"
-                                    class="group border-navy/8 hover:border-navy/20 hover:bg-navy/3 flex w-full items-center gap-3 rounded-xl border px-4 py-3.5 transition-colors"
+                                    class="group border-navy/8 hover:border-navy/20 hover:bg-navy/3 flex min-h-12 w-full items-center gap-3 rounded-xl border px-4 py-3.5 transition-colors"
                                 >
                                     <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#1877F2] shadow-sm">
                                         <svg class="size-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
@@ -346,7 +352,7 @@
                                 <button
                                     type="button"
                                     data-copy-link
-                                    class="group border-navy/8 hover:border-navy/20 hover:bg-navy/3 flex w-full items-center gap-3 rounded-xl border px-4 py-3.5 text-left transition-colors"
+                                    class="group border-navy/8 hover:border-navy/20 hover:bg-navy/3 flex min-h-12 w-full items-center gap-3 rounded-xl border px-4 py-3.5 text-left transition-colors"
                                 >
                                     <div class="from-purple to-navy flex size-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br shadow-sm">
                                         <svg class="size-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
