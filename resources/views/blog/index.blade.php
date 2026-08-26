@@ -286,7 +286,7 @@
                                     class="group flex min-h-12 items-center justify-between rounded-xl px-3 py-2.5 transition-colors {{ !$category ? 'bg-gold/10' : 'hover:bg-cream' }}"
                                 >
                                     <span class="text-sm font-medium {{ !$category ? 'text-gold-ink font-semibold' : 'text-navy/65 group-hover:text-navy' }} transition-colors">All Posts</span>
-                                    <span class="rounded-full bg-gold/8 px-3 py-0.5 text-xs font-bold text-gold-ink">{{ $posts->total() }}</span>
+                                    <span class="bg-gold/8 text-gold-ink rounded-full px-3 py-0.5 text-xs font-bold">{{ $posts->total() }}</span>
                                 </a>
                                 @foreach (\App\Models\Post::CATEGORIES as $slug => $label)
                                     @continue(! in_array($slug, $usedCategories))

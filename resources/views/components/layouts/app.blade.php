@@ -215,54 +215,54 @@
                 @if ($showFooterNewsletter)
                     {{-- Newsletter (left side) --}}
                     <div class="shrink-0 lg:max-w-md">
-                    <h2 class="font-heading mb-2 text-base font-semibold tracking-wider text-white uppercase sm:text-sm">
-                        Stay in the Loop
-                    </h2>
-                    <p class="mb-4 text-base text-white/50 sm:text-sm">
-                        New posts, episodes, and park tips straight to your inbox.
-                    </p>
-                    @if (session('newsletter_success'))
-                        <div
-                            role="status"
-                            class="border-gold/30 bg-gold/10 text-gold mb-3 rounded-xl border px-5 py-2.5 text-center text-base font-medium sm:text-sm"
-                        >
-                            You're in! We'll keep you posted.
-                        </div>
-                    @elseif (session('newsletter_error'))
-                        <p role="alert" class="mb-3 text-base text-red-300 sm:text-sm">
-                            {{ session('newsletter_error') }}
+                        <h2 class="font-heading mb-2 text-base font-semibold tracking-wider text-white uppercase sm:text-sm">
+                            Stay in the Loop
+                        </h2>
+                        <p class="mb-4 text-base text-white/50 sm:text-sm">
+                            New posts, episodes, and park tips straight to your inbox.
                         </p>
-                    @endif
-                    <form action="{{ route('newsletter.store') }}" method="POST" class="flex flex-col gap-2">
-                        @csrf
-                        <x-newsletter-protection honeypot-id="footer-newsletter-website" />
-                        <div class="flex flex-col gap-2 sm:flex-row">
-                            <label for="footer-newsletter-email" class="sr-only">Email address</label>
-                            <input
-                                id="footer-newsletter-email"
-                                type="email"
-                                name="email"
-                                value="{{ $errors->newsletter->isNotEmpty() || session('newsletter_error') ? old('email') : '' }}"
-                                placeholder="your@email.com"
-                                autocomplete="email"
-                                required
-                                @error('email', 'newsletter') aria-invalid="true" aria-describedby="footer-newsletter-email-error" @enderror
-                                class="focus:border-gold/50 focus:ring-gold/30 min-h-12 min-w-0 flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-2.5 text-base text-white placeholder-white/60 transition-colors focus:ring-1 focus:outline-none sm:text-sm"
-                            />
-                            <button
-                                type="submit"
-                                class="bg-gold text-navy hover:bg-gold-light hover:shadow-gold/25 min-h-12 rounded-full px-6 py-2.5 text-base font-semibold whitespace-nowrap transition-[background-color,box-shadow] hover:shadow-lg sm:text-sm"
+                        @if (session('newsletter_success'))
+                            <div
+                                role="status"
+                                class="border-gold/30 bg-gold/10 text-gold mb-3 rounded-xl border px-5 py-2.5 text-center text-base font-medium sm:text-sm"
                             >
-                                Subscribe
-                            </button>
-                        </div>
-                        @error('email', 'newsletter')
-                            <p id="footer-newsletter-email-error" role="alert" class="text-sm text-red-300">
-                                {{ $message }}
+                                You're in! We'll keep you posted.
+                            </div>
+                        @elseif (session('newsletter_error'))
+                            <p role="alert" class="mb-3 text-base text-red-300 sm:text-sm">
+                                {{ session('newsletter_error') }}
                             </p>
-                        @enderror
-                        <p class="text-xs text-white/60">We use your email to send Mouse28 updates.</p>
-                    </form>
+                        @endif
+                        <form action="{{ route('newsletter.store') }}" method="POST" class="flex flex-col gap-2">
+                            @csrf
+                            <x-newsletter-protection honeypot-id="footer-newsletter-website" />
+                            <div class="flex flex-col gap-2 sm:flex-row">
+                                <label for="footer-newsletter-email" class="sr-only">Email address</label>
+                                <input
+                                    id="footer-newsletter-email"
+                                    type="email"
+                                    name="email"
+                                    value="{{ $errors->newsletter->isNotEmpty() || session('newsletter_error') ? old('email') : '' }}"
+                                    placeholder="your@email.com"
+                                    autocomplete="email"
+                                    required
+                                    @error('email', 'newsletter') aria-invalid="true" aria-describedby="footer-newsletter-email-error" @enderror
+                                    class="focus:border-gold/50 focus:ring-gold/30 min-h-12 min-w-0 flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-2.5 text-base text-white placeholder-white/60 transition-colors focus:ring-1 focus:outline-none sm:text-sm"
+                                />
+                                <button
+                                    type="submit"
+                                    class="bg-gold text-navy hover:bg-gold-light hover:shadow-gold/25 min-h-12 rounded-full px-6 py-2.5 text-base font-semibold whitespace-nowrap transition-[background-color,box-shadow] hover:shadow-lg sm:text-sm"
+                                >
+                                    Subscribe
+                                </button>
+                            </div>
+                            @error('email', 'newsletter')
+                                <p id="footer-newsletter-email-error" role="alert" class="text-sm text-red-300">
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                            <p class="text-xs text-white/60">We use your email to send Mouse28 updates.</p>
+                        </form>
                     </div>
                 @endif
 
