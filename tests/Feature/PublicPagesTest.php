@@ -32,6 +32,19 @@ test('homepage uses one newsletter form and responsive hero artwork', function (
     expect(substr_count($response->getContent(), 'action="'.route('newsletter.store').'"'))->toBe(1);
 });
 
+test('homepage defers the below-fold featured post image', function (): void {
+    Post::factory()->create([
+        'cover_image' => 'posts/featured.webp',
+    ]);
+
+    $response = get(route('home'))
+        ->assertOk();
+
+    expect($response->getContent())->toMatch(
+        '/<img[^>]*src="\/storage\/posts\/featured\.webp"[^>]*loading="lazy"[^>]*decoding="async"[^>]*>/',
+    );
+});
+
 test('public forms use readable placeholder text colors', function (): void {
     Post::factory()->create();
 
