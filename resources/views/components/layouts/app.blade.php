@@ -134,7 +134,9 @@
                     {{-- Mobile menu button (animated hamburger → X) --}}
                     <button
                         type="button"
+                        hidden
                         x-ref="mobileNavigationToggle"
+                        x-init="$el.hidden = false"
                         @click="open = ! open"
                         :aria-expanded="open.toString()"
                         aria-controls="mobile-navigation"
@@ -155,6 +157,38 @@
                         ></span>
                     </button>
                 </div>
+
+                <noscript>
+                    <div
+                        id="no-script-navigation"
+                        class="mt-2 flex flex-wrap gap-1 border-t border-white/10 pt-4 pb-5 md:hidden"
+                    >
+                        <a
+                            href="{{ route('home') }}"
+                            class="inline-flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium text-white/80"
+                        >Home</a>
+                        <a
+                            href="{{ route('blog.index') }}"
+                            class="inline-flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium text-white/80"
+                        >Blog</a>
+                        <a
+                            href="{{ route('episodes.index') }}"
+                            class="inline-flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium text-white/80"
+                        >Podcast</a>
+                        <a
+                            href="{{ route('about') }}"
+                            class="inline-flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium text-white/80"
+                        >About</a>
+                        <a
+                            href="{{ route('contact.show') }}"
+                            class="inline-flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium text-white/80"
+                        >Contact</a>
+                        <a
+                            href="{{ route('search') }}"
+                            class="inline-flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium text-white/80"
+                        >Search</a>
+                    </div>
+                </noscript>
 
                 {{-- Mobile Nav (slide-down) --}}
                 <div
