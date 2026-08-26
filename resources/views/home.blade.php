@@ -11,8 +11,9 @@
         {{-- Left: Text --}}
         <div class="hero-split-text">
             <div class="pointer-events-none absolute right-[-20%] bottom-[-30%] size-[400px] bg-[radial-gradient(circle,rgb(212_168_67/6%)_0%,transparent_60%)]"></div>
-            <span class="sparkle text-gold/25 absolute top-[15%] left-[10%] text-[10px]">✦</span>
-            <span class="sparkle-delay text-gold/15 absolute right-[15%] bottom-[20%] text-sm">✧</span>
+            <span class="sparkle text-gold/25 absolute top-[15%] left-[10%] text-[10px]" aria-hidden="true">✦</span>
+            <span class="sparkle-delay text-gold/15 absolute right-[15%] bottom-[20%] text-sm" aria-hidden="true"
+                >✧</span>
 
             <div class="relative z-10 ml-auto max-w-lg">
                 <div class="border-gold/30 mb-6 inline-flex items-center gap-2 rounded-full border px-4 py-[0.35rem]">
@@ -41,7 +42,7 @@
                         href="{{ route('episodes.index') }}"
                         class="font-body text-cream/60 hover:text-gold inline-flex min-h-12 items-center gap-2 text-base font-medium transition-colors duration-200 sm:text-sm"
                     >
-                        <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
+                        <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
                         Listen to the podcast
                     </a>
                 </div>
@@ -97,7 +98,7 @@
                             @else
                                 <div class="from-purple/40 to-navy absolute inset-0 flex items-center justify-center bg-linear-to-br">
                                     <div class="flex size-20 items-center justify-center rounded-2xl border border-white/10 bg-white/10">
-                                        <svg class="text-gold/60 size-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
+                                        <svg aria-hidden="true" class="text-gold/60 size-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
                                     </div>
                                 </div>
                             @endif
@@ -134,7 +135,7 @@
                                 </div>
                                 <span class="text-gold hidden items-center gap-1.5 text-sm font-semibold transition-[gap] group-hover:gap-2.5 sm:inline-flex">
                                     Read Article
-                                    <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                    <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                                 </span>
                             </div>
                         </div>
@@ -158,7 +159,7 @@
                         class="font-body text-purple hover:text-navy hidden items-center gap-1 text-sm font-semibold transition-colors sm:inline-flex"
                     >
                         View all
-                        <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                        <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                     </a>
                 </div>
                 <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -181,7 +182,7 @@
                                     <div class="card-overlay from-purple/20 absolute inset-0 bg-linear-to-t to-transparent"></div>
                                 @else
                                     <div class="from-purple/10 to-gold/10 flex h-52 w-full items-center justify-center bg-linear-to-br">
-                                        <span class="text-3xl">✨</span>
+                                        <span class="text-3xl" aria-hidden="true">✨</span>
                                     </div>
                                 @endif
                                 @if ($post->category)
@@ -290,7 +291,7 @@
                         class="size-14 rounded-xl object-cover shadow-sm"
                     />
                     <div>
-                        <span class="font-body text-purple/65 text-sm font-semibold tracking-[0.15em] uppercase">🎙️ Also Listen</span>
+                        <span class="font-body text-purple/65 text-sm font-semibold tracking-[0.15em] uppercase"><span aria-hidden="true">🎙️</span> Also Listen</span>
                         <h2 class="font-heading text-navy mt-2 text-3xl font-bold md:text-4xl">From the Podcast</h2>
                     </div>
                 </div>
@@ -299,7 +300,7 @@
                     class="font-body text-purple hover:text-navy hidden items-center gap-1 text-sm font-semibold transition-colors sm:inline-flex"
                 >
                     All episodes
-                    <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                    <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                 </a>
             </div>
 
@@ -314,7 +315,7 @@
                         >
                             <div class="bg-purple/10 group-hover:bg-purple/20 relative flex size-12 shrink-0 items-center justify-center rounded-full transition-colors">
                                 <span class="font-body text-purple text-sm font-bold transition-opacity group-hover:opacity-0">{{ $episode->episode_number }}</span>
-                                <svg class="text-purple absolute size-5 opacity-0 transition-opacity group-hover:opacity-100" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                                <svg aria-hidden="true" class="text-purple absolute size-5 opacity-0 transition-opacity group-hover:opacity-100" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
                             </div>
                             <div class="min-w-0 flex-1">
                                 <h3 class="font-heading text-navy group-hover:text-purple line-clamp-2 text-base font-semibold transition-colors">
@@ -328,7 +329,7 @@
                                     @endif
                                 </p>
                             </div>
-                            <svg class="text-navy/25 group-hover:text-purple size-5 shrink-0 transition-[transform,color] group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                            <svg aria-hidden="true" class="text-navy/25 group-hover:text-purple size-5 shrink-0 transition-[transform,color] group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                         </a>
                     @endforeach
                 </div>
@@ -439,7 +440,7 @@
                             class="bg-navy font-body hover:bg-navy-light inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold text-white transition-[transform,background-color,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-lg"
                         >
                             Our Full Story
-                            <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                            <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                         </a>
                         <a
                             href="{{ route('contact.show') }}"
@@ -519,7 +520,9 @@
             </p>
             @if (session('newsletter_success'))
                 <div class="mx-auto max-w-md rounded-xl border border-green-400/30 bg-green-500/20 px-6 py-4">
-                    <p class="font-body text-sm text-green-300">✨ You're subscribed! We'll send you the good stuff.</p>
+                    <p class="font-body text-sm text-green-300">
+                        <span aria-hidden="true">✨</span> You're subscribed! We'll send you the good stuff.
+                    </p>
                 </div>
             @elseif (session('newsletter_error'))
                 <div class="mx-auto mb-4 max-w-md rounded-xl border border-red-400/30 bg-red-500/20 px-6 py-4">

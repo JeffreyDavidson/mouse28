@@ -12,7 +12,7 @@
         <section class="from-cream to-cream relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-linear-to-br via-white">
             <div class="relative z-10 px-4 text-center">
                 <div class="relative mx-auto mb-8 size-24">
-                    <svg class="size-24" viewBox="0 0 96 96">
+                    <svg aria-hidden="true" class="size-24" viewBox="0 0 96 96">
                         <circle cx="48" cy="48" r="44" fill="none" stroke="#5b3e9e" stroke-width="3" opacity="0.15" />
                         <circle
                             cx="48"
@@ -265,7 +265,7 @@
                         <div class="border-cream/8 bg-cream/4 rounded-2xl border p-6">
                             <div class="mb-5 flex items-center gap-[0.85rem]">
                                 <div class="bg-gold/12 flex size-10 shrink-0 items-center justify-center rounded-[0.6rem]">
-                                    <svg class="text-gold-light size-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                                    <svg aria-hidden="true" class="text-gold-light size-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                                 </div>
                                 <div class="min-w-0">
                                     <a
@@ -276,7 +276,7 @@
                                 </div>
                             </div>
                             <div class="bg-cream/4 flex items-center gap-2 rounded-[0.6rem] px-[0.85rem] py-[0.65rem]">
-                                <svg class="text-gold-light size-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <svg aria-hidden="true" class="text-gold-light size-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                 <p class="text-cream/60 text-base sm:text-sm">
                                     Typically within <strong class="text-cream/80">48 hours</strong>
                                 </p>
@@ -297,7 +297,7 @@
                                 @endphp
                                 @foreach ($topics as $topic)
                                     <div class="flex items-center gap-[0.65rem]">
-                                        <svg class="text-gold/60 size-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="{{ $topic['icon'] }}" /></svg>
+                                        <svg aria-hidden="true" class="text-gold/60 size-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="{{ $topic['icon'] }}" /></svg>
                                         <span class="text-cream/55 text-base sm:text-sm">{{ $topic['text'] }}</span>
                                     </div>
                                 @endforeach
@@ -311,14 +311,14 @@
                                 class="border-cream/6 bg-cream/3 hover:border-gold/15 hover:bg-cream/6 flex min-h-12 items-center justify-between rounded-xl border px-4 py-3 transition-colors"
                             >
                                 <span class="text-gold-light text-base font-semibold sm:text-sm">Read the Blog</span>
-                                <svg class="text-cream/25 size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                <svg aria-hidden="true" class="text-cream/25 size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                             </a>
                             <a
                                 href="{{ route('episodes.index') }}"
                                 class="border-cream/6 bg-cream/3 hover:border-gold/15 hover:bg-cream/6 flex min-h-12 items-center justify-between rounded-xl border px-4 py-3 transition-colors"
                             >
                                 <span class="text-gold-light text-base font-semibold sm:text-sm">Listen to the Podcast</span>
-                                <svg class="text-cream/25 size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                <svg aria-hidden="true" class="text-cream/25 size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                             </a>
                         </div>
                     </div>

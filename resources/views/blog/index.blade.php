@@ -99,7 +99,7 @@
                                             </div>
                                             <span class="text-gold hidden items-center gap-1.5 text-sm font-semibold transition-[gap] group-hover:gap-2.5 sm:inline-flex">
                                                 Read Article
-                                                <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                                <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                                             </span>
                                         </div>
                                     </div>
@@ -142,7 +142,7 @@
                                             </div>
                                             <span class="inline-flex items-center gap-1 text-xs font-semibold transition-[gap] group-hover:gap-2 {{ $postStyle['text'] }}">
                                                 Read
-                                                <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                                <svg aria-hidden="true" class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                                             </span>
                                         </div>
                                     </a>
@@ -159,7 +159,7 @@
                                         class="from-gold to-gold-light text-navy hover:shadow-gold/25 inline-flex items-center gap-2 rounded-full bg-linear-to-r px-8 py-3 text-sm font-semibold transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-lg"
                                     >
                                         Load More Stories
-                                        <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                                        <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                                     </a>
                                 @endif
                             </div>
@@ -201,7 +201,7 @@
                                         href="{{ route('blog.index') }}"
                                         class="border-gold/25 bg-gold/15 text-gold inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-xs font-semibold transition-transform hover:-translate-y-0.5"
                                     >
-                                        <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                                        <svg aria-hidden="true" class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
                                         View all posts
                                     </a>
                                 @endif
@@ -224,7 +224,7 @@
                                 @if ($category)
                                     <input type="hidden" name="category" value="{{ $category }}" />
                                 @endif
-                                <svg class="text-navy/25 absolute top-1/2 left-4 size-4 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                                <svg aria-hidden="true" class="text-navy/25 absolute top-1/2 left-4 size-4 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                                 <label for="blog-search" class="sr-only">Search blog posts</label>
                                 <input
                                     id="blog-search"
@@ -240,7 +240,7 @@
                                         class="text-navy/65 hover:text-gold absolute top-1/2 right-0 flex size-12 -translate-y-1/2 items-center justify-center transition-colors"
                                         aria-label="Clear search"
                                     >
-                                        <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                        <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                                     </a>
                                 @endif
                             </form>
@@ -329,7 +329,7 @@
                             <div class="bg-gold/5 absolute top-1/2 left-1/2 size-32 -translate-1/2 rounded-full blur-3xl"></div>
                             <div class="relative">
                                 <div class="mx-auto mb-4 flex size-12 items-center justify-center rounded-xl border border-white/10 bg-white/10">
-                                    <svg class="text-gold size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
+                                    <svg aria-hidden="true" class="text-gold size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
                                 </div>
                                 <h3 class="font-heading mb-2 text-lg font-bold text-white">Listen to the Podcast</h3>
                                 <p class="mb-5 text-base/relaxed text-white/60 sm:text-sm/relaxed">

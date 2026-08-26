@@ -39,7 +39,7 @@
                 href="{{ route('episodes.index') }}"
                 class="hover:text-gold mb-6 inline-flex min-h-12 items-center gap-1 text-base text-white/50 transition-colors sm:text-sm"
             >
-                <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
                 All Episodes
             </a>
 
@@ -55,7 +55,7 @@
                 @endif
                 @if ($episode->duration_seconds)
                     <span class="flex items-center gap-1 text-sm text-white/60">
-                        <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        <svg aria-hidden="true" class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         {{ $episode->formatted_duration }}
                     </span>
                 @endif
@@ -80,7 +80,7 @@
                         <div class="from-navy to-navy-light relative mb-10 overflow-hidden rounded-2xl bg-linear-to-r p-6 shadow-xl md:p-8">
                             {{-- Decorative waveform behind player --}}
                             <div class="pointer-events-none absolute inset-0 opacity-[0.07]">
-                                <svg class="absolute bottom-0 left-0 h-32 w-full text-white" viewBox="0 0 1200 120" preserveAspectRatio="none" fill="none" stroke="currentColor">
+                                <svg aria-hidden="true" class="absolute bottom-0 left-0 h-32 w-full text-white" viewBox="0 0 1200 120" preserveAspectRatio="none" fill="none" stroke="currentColor">
                                     <g stroke="white" stroke-width="2">
                                         @for ($i = 0; $i < 60; $i++)
                                             <line
@@ -135,7 +135,7 @@
                         <div class="border-navy/5 mb-8 rounded-2xl border bg-white p-8 shadow-sm md:p-10">
                             <div class="mb-8 flex items-center gap-3">
                                 <div class="bg-purple/10 flex size-10 items-center justify-center rounded-xl">
-                                    <svg class="text-purple size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                    <svg aria-hidden="true" class="text-purple size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                                 </div>
                                 <h2 class="font-heading text-navy text-2xl font-bold">Show Notes</h2>
                             </div>
@@ -147,7 +147,7 @@
                     <div class="border-navy/5 mb-8 rounded-2xl border bg-white p-8 shadow-sm md:p-10">
                         <div class="mb-8 flex items-center gap-3">
                             <div class="bg-gold/10 flex size-10 items-center justify-center rounded-xl">
-                                <svg class="text-gold-ink size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+                                <svg aria-hidden="true" class="text-gold-ink size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
                             </div>
                             <h2 class="font-heading text-navy text-2xl font-bold">Transcript</h2>
                         </div>
@@ -174,7 +174,7 @@
                                         x-text="expanded ? 'Collapse Transcript' : 'Read Full Transcript'"
                                         class="inline-flex items-center gap-1.5"
                                     >Read Full Transcript</span>
-                                    <svg :class="expanded ? 'rotate-180' : ''" class="ml-1 inline-block size-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                                    <svg aria-hidden="true" :class="expanded ? 'rotate-180' : ''" class="ml-1 inline-block size-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                                 </button>
                             </div>
                         @else
@@ -209,7 +209,7 @@
                                 @if ($episode->season_number)
                                     <div class="border-navy/5 flex justify-between border-b py-3">
                                         <dt class="text-navy/65 flex items-center gap-2">
-                                            <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                                            <svg aria-hidden="true" class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                                             Season
                                         </dt>
                                         <dd class="text-navy font-semibold">{{ $episode->season_number }}</dd>
@@ -218,7 +218,7 @@
                                 @if ($episode->duration_seconds)
                                     <div class="border-navy/5 flex justify-between border-b py-3">
                                         <dt class="text-navy/65 flex items-center gap-2">
-                                            <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                            <svg aria-hidden="true" class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                             Duration
                                         </dt>
                                         <dd class="text-navy font-semibold">{{ $episode->formatted_duration }}</dd>
@@ -226,7 +226,7 @@
                                 @endif
                                 <div class="flex justify-between py-3">
                                     <dt class="text-navy/65 flex items-center gap-2">
-                                        <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                        <svg aria-hidden="true" class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                                         Published
                                     </dt>
                                     <dd class="text-navy font-semibold">
@@ -257,13 +257,13 @@
                                         class="group border-navy/8 hover:border-navy/20 hover:bg-navy/[0.03] flex min-h-12 w-full items-center gap-3 rounded-xl border px-4 py-3.5 transition-colors"
                                     >
                                         <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-[#fc3c44] to-[#d42d56] shadow-sm">
-                                            <svg class="size-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.56 2.93 11.3 4.7 7.72C5.57 5.94 7.36 4.86 9.28 4.84C10.56 4.81 11.78 5.7 12.56 5.7C13.34 5.7 14.85 4.62 16.41 4.8C17.07 4.83 18.96 5.06 20.16 6.87C20.05 6.95 17.58 8.37 17.61 11.34C17.65 14.9 20.68 16.04 20.71 16.06C20.69 16.13 20.18 17.86 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z" /></svg>
+                                            <svg aria-hidden="true" class="size-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.1 22C7.79 22.05 6.8 20.68 5.96 19.47C4.25 16.56 2.93 11.3 4.7 7.72C5.57 5.94 7.36 4.86 9.28 4.84C10.56 4.81 11.78 5.7 12.56 5.7C13.34 5.7 14.85 4.62 16.41 4.8C17.07 4.83 18.96 5.06 20.16 6.87C20.05 6.95 17.58 8.37 17.61 11.34C17.65 14.9 20.68 16.04 20.71 16.06C20.69 16.13 20.18 17.86 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z" /></svg>
                                         </div>
                                         <div>
                                             <span class="text-navy group-hover:text-purple block text-base font-semibold transition-colors sm:text-sm">Apple Podcasts</span>
                                             <span class="text-navy/65 text-sm sm:text-xs">{{ $episode->apple_url ? 'Listen to this episode' : 'Visit the show' }}</span>
                                         </div>
-                                        <svg class="text-navy/20 group-hover:text-purple/50 ml-auto size-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                        <svg aria-hidden="true" class="text-navy/20 group-hover:text-purple/50 ml-auto size-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                                     </a>
                                 @endif
                                 @if ($spotifyUrl)
@@ -274,13 +274,13 @@
                                         class="group border-navy/8 hover:border-navy/20 hover:bg-navy/[0.03] flex min-h-12 w-full items-center gap-3 rounded-xl border px-4 py-3.5 transition-colors"
                                     >
                                         <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-[#1DB954] to-[#169c46] shadow-sm">
-                                            <svg class="size-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" /></svg>
+                                            <svg aria-hidden="true" class="size-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z" /></svg>
                                         </div>
                                         <div>
                                             <span class="text-navy group-hover:text-purple block text-base font-semibold transition-colors sm:text-sm">Spotify</span>
                                             <span class="text-navy/65 text-sm sm:text-xs">{{ $episode->spotify_url ? 'Listen to this episode' : 'Visit the show' }}</span>
                                         </div>
-                                        <svg class="text-navy/20 group-hover:text-purple/50 ml-auto size-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                        <svg aria-hidden="true" class="text-navy/20 group-hover:text-purple/50 ml-auto size-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                                     </a>
                                 @endif
                                 @if ($youtubeUrl)
@@ -291,13 +291,13 @@
                                         class="group border-navy/8 hover:border-navy/20 hover:bg-navy/3 flex min-h-12 w-full items-center gap-3 rounded-xl border px-4 py-3.5 transition-colors"
                                     >
                                         <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-[#FF0000] to-[#cc0000] shadow-sm">
-                                            <svg class="size-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
+                                            <svg aria-hidden="true" class="size-5 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" /></svg>
                                         </div>
                                         <div>
                                             <span class="text-navy group-hover:text-purple block text-sm font-semibold transition-colors">YouTube</span>
                                             <span class="text-navy/65 text-xs">{{ $episode->youtube_url ? 'Watch this episode' : 'Visit the channel' }}</span>
                                         </div>
-                                        <svg class="text-navy/20 group-hover:text-purple/50 ml-auto size-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                        <svg aria-hidden="true" class="text-navy/20 group-hover:text-purple/50 ml-auto size-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                                     </a>
                                 @endif
                                 <a
@@ -313,7 +313,7 @@
                                         <span class="text-navy group-hover:text-purple block text-sm font-semibold transition-colors">RSS Feed</span>
                                         <span class="text-navy/65 text-xs">Subscribe in another podcast app</span>
                                     </div>
-                                    <svg class="text-navy/20 group-hover:text-purple/50 ml-auto size-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                    <svg aria-hidden="true" class="text-navy/20 group-hover:text-purple/50 ml-auto size-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                                 </a>
                             </div>
                         </div>
@@ -332,10 +332,10 @@
                                     class="group border-navy/8 hover:border-navy/20 hover:bg-navy/3 flex min-h-12 w-full items-center gap-3 rounded-xl border px-4 py-3.5 transition-colors"
                                 >
                                     <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-black shadow-sm">
-                                        <svg class="size-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+                                        <svg aria-hidden="true" class="size-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
                                     </div>
                                     <span class="text-navy group-hover:text-purple text-sm font-semibold transition-colors">Post on X</span>
-                                    <svg class="text-navy/20 group-hover:text-purple/50 ml-auto size-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                    <svg aria-hidden="true" class="text-navy/20 group-hover:text-purple/50 ml-auto size-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                                 </a>
                                 <a
                                     href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(route('episodes.show', $episode)) }}"
@@ -344,10 +344,10 @@
                                     class="group border-navy/8 hover:border-navy/20 hover:bg-navy/3 flex min-h-12 w-full items-center gap-3 rounded-xl border px-4 py-3.5 transition-colors"
                                 >
                                     <div class="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#1877F2] shadow-sm">
-                                        <svg class="size-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
+                                        <svg aria-hidden="true" class="size-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
                                     </div>
                                     <span class="text-navy group-hover:text-purple text-sm font-semibold transition-colors">Share on Facebook</span>
-                                    <svg class="text-navy/20 group-hover:text-purple/50 ml-auto size-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                    <svg aria-hidden="true" class="text-navy/20 group-hover:text-purple/50 ml-auto size-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                                 </a>
                                 <button
                                     type="button"
@@ -355,7 +355,7 @@
                                     class="group border-navy/8 hover:border-navy/20 hover:bg-navy/3 flex min-h-12 w-full items-center gap-3 rounded-xl border px-4 py-3.5 text-left transition-colors"
                                 >
                                     <div class="from-purple to-navy flex size-9 shrink-0 items-center justify-center rounded-lg bg-linear-to-br shadow-sm">
-                                        <svg class="size-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                                        <svg aria-hidden="true" class="size-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
                                     </div>
                                     <span
                                         data-copy-label
@@ -366,7 +366,7 @@
                                         class="text-purple hidden text-sm font-semibold"
                                         aria-live="polite"
                                     >Copied!</span>
-                                    <svg class="text-navy/20 group-hover:text-purple/50 ml-auto size-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                    <svg aria-hidden="true" class="text-navy/20 group-hover:text-purple/50 ml-auto size-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                                 </button>
                             </div>
                         </div>
@@ -391,7 +391,7 @@
                                                 />
                                             @else
                                                 <div class="from-purple/10 to-gold/10 flex size-16 shrink-0 items-center justify-center rounded-xl bg-linear-to-br">
-                                                    <svg class="text-purple/40 size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
+                                                    <svg aria-hidden="true" class="text-purple/40 size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" /></svg>
                                                 </div>
                                             @endif
                                             <div class="min-w-0 flex-1">
@@ -411,7 +411,7 @@
                             <div class="bg-gold/5 absolute top-1/2 left-1/2 size-32 -translate-1/2 rounded-full blur-3xl"></div>
                             <div class="relative">
                                 <div class="mx-auto mb-4 flex size-12 items-center justify-center rounded-xl border border-white/10 bg-white/10">
-                                    <svg class="text-gold size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
+                                    <svg aria-hidden="true" class="text-gold size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
                                 </div>
                                 <h3 class="font-heading mb-2 text-lg font-bold text-white">More Episodes</h3>
                                 <p class="mb-5 text-base/relaxed text-white/60 sm:text-sm/relaxed">
