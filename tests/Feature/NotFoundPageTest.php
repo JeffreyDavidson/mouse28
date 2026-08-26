@@ -18,7 +18,9 @@ test('unknown urls render the branded recovery page', function (): void {
         ->assertSee(route('search'), false)
         ->assertSee(route('blog.index'), false)
         ->assertSee(route('guides.index'), false)
-        ->assertSee(route('episodes.index'), false);
+        ->assertSee(route('episodes.index'), false)
+        ->assertSee('placeholder:text-navy/60', false)
+        ->assertDontSee('placeholder:text-navy/35', false);
 });
 
 test('hidden content uses the same recovery page without revealing its title', function (): void {

@@ -32,6 +32,23 @@ test('homepage uses one newsletter form and responsive hero artwork', function (
     expect(substr_count($response->getContent(), 'action="'.route('newsletter.store').'"'))->toBe(1);
 });
 
+test('public forms use readable placeholder text colors', function (): void {
+    Post::factory()->create();
+
+    get(route('blog.index'))
+        ->assertOk()
+        ->assertSee('placeholder:text-navy/60', false)
+        ->assertSee('placeholder:text-white/60', false)
+        ->assertDontSee('placeholder:text-navy/25', false)
+        ->assertDontSee('placeholder:text-white/25', false)
+        ->assertDontSee('placeholder-white/', false);
+
+    get(route('contact.show'))
+        ->assertOk()
+        ->assertSee('placeholder:text-cream/60', false)
+        ->assertDontSee('placeholder:text-cream/30', false);
+});
+
 test('published post detail page renders', function (): void {
     $post = Post::query()->create([
         'title' => 'An Accessible Day at the Parks',
