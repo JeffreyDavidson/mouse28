@@ -43,7 +43,7 @@
                 <p class="text-navy/60 mx-auto mb-2 max-w-md text-lg">
                     Thank you for reaching out. We'll get back to you within 48 hours.
                 </p>
-                <p class="text-navy/40 mb-8 text-sm">In the meantime, feel free to explore our blog and podcast.</p>
+                <p class="text-navy/65 mb-8 text-sm">In the meantime, feel free to explore our blog and podcast.</p>
                 <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
                     <a
                         href="{{ route('blog.index') }}"
@@ -269,15 +269,15 @@
                                 </div>
                                 <div class="min-w-0">
                                     <a
-                                        href="mailto:mouse28podcast@gmail.com"
-                                        class="text-cream inline-flex min-h-11 items-center text-base font-semibold break-all sm:min-h-6 sm:text-sm"
-                                    >mouse28podcast@gmail.com</a>
-                                    <p class="text-cream/35 mt-1 text-base sm:text-sm">We read every message</p>
+                                        href="mailto:{{ $contactEmail }}"
+                                        class="text-cream inline-flex min-h-12 items-center text-base font-semibold break-all sm:min-h-6 sm:text-sm"
+                                    >{{ $contactEmail }}</a>
+                                    <p class="text-cream/60 mt-1 text-base sm:text-sm">We read every message</p>
                                 </div>
                             </div>
                             <div class="bg-cream/4 flex items-center gap-2 rounded-[0.6rem] px-[0.85rem] py-[0.65rem]">
                                 <svg class="text-gold-light size-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                <p class="text-cream/50 text-base sm:text-sm">
+                                <p class="text-cream/60 text-base sm:text-sm">
                                     Typically within <strong class="text-cream/80">48 hours</strong>
                                 </p>
                             </div>

@@ -52,7 +52,7 @@
                                 </div>
                             @endif
                             <div class="flex flex-1 flex-col p-6">
-                                <span class="text-gold text-xs font-bold tracking-widest uppercase">{{ $guide->category_label }}</span>
+                                <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">{{ $guide->category_label }}</span>
                                 <h2 class="font-heading text-navy mt-3 text-2xl font-bold">
                                     <a
                                         href="{{ route('guides.show', $guide) }}"
@@ -60,10 +60,10 @@
                                     >{{ $guide->title }}</a>
                                 </h2>
                                 @if ($guide->excerpt)
-                                    <p class="text-navy/55 mt-3 flex-1 text-base/relaxed">{{ $guide->excerpt }}</p>
+                                    <p class="text-navy/65 mt-3 flex-1 text-base/relaxed">{{ $guide->excerpt }}</p>
                                 @endif
                                 <div class="border-navy/5 mt-5 flex items-center justify-between border-t pt-4 text-sm">
-                                    <span class="text-navy/40">{{ $guide->reading_time }} min read</span>
+                                    <span class="text-navy/65">{{ $guide->reading_time }} min read</span>
                                     <a
                                         href="{{ route('guides.show', $guide) }}"
                                         class="text-purple inline-flex min-h-12 items-center font-semibold"
@@ -80,7 +80,7 @@
             @else
                 <div class="border-navy/5 rounded-3xl border bg-white px-6 py-16 text-center shadow-sm">
                     <h2 class="font-heading text-navy text-3xl font-bold">Guides are on the way</h2>
-                    <p class="text-navy/55 mx-auto mt-3 max-w-xl text-base/relaxed">
+                    <p class="text-navy/65 mx-auto mt-3 max-w-xl text-base/relaxed">
                         We are reviewing our park notes and sources so every published guide is useful and current.
                     </p>
                 </div>

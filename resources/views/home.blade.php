@@ -4,6 +4,7 @@
     og-description="Accessibility tips, sensory-friendly Disney park planning, and honest family experiences from Jeffrey and Cassie Davidson."
     og-image="/images/hero-family.jpg"
     :canonical="route('home')"
+    :show-footer-newsletter="false"
 >
     {{-- Hero Section — Split Identity --}}
     <section class="hero-split">
@@ -24,7 +25,7 @@
                     <span class="text-gold">Different Eyes</span>
                 </h1>
 
-                <p class="font-body text-cream/50 mb-8 text-base/7">
+                <p class="font-body text-cream/60 mb-8 text-base/7">
                     Accessibility tips, sensory-friendly recommendations, and real stories from a family who visits
                     Disney every single week with our autistic daughter.
                 </p>
@@ -38,7 +39,7 @@
                     </a>
                     <a
                         href="{{ route('episodes.index') }}"
-                        class="font-body text-cream/45 hover:text-gold inline-flex min-h-12 items-center gap-2 text-base font-medium transition-colors duration-200 sm:text-sm"
+                        class="font-body text-cream/60 hover:text-gold inline-flex min-h-12 items-center gap-2 text-base font-medium transition-colors duration-200 sm:text-sm"
                     >
                         <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
                         Listen to the podcast
@@ -49,13 +50,20 @@
 
         {{-- Right: Photo --}}
         <div class="hero-split-photo">
-            <img
-                src="/images/hero-family.webp"
-                alt="Jeffrey and Cassie Davidson on Kilimanjaro Safaris at Disney's Animal Kingdom"
-                width="2048"
-                height="2048"
-                fetchpriority="high"
-            />
+            <picture>
+                <source
+                    type="image/webp"
+                    srcset="/images/hero-family-640.webp 640w, /images/hero-family-1024.webp 1024w, /images/hero-family.webp 1600w"
+                    sizes="(min-width: 768px) 50vw, 100vw"
+                />
+                <img
+                    src="/images/hero-family.webp"
+                    alt="Jeffrey and Cassie Davidson on Kilimanjaro Safaris at Disney's Animal Kingdom"
+                    width="1600"
+                    height="1600"
+                    fetchpriority="high"
+                />
+            </picture>
             <div class="from-navy/30 absolute inset-x-0 bottom-0 z-1 h-20 bg-linear-to-t to-transparent"></div>
         </div>
     </section>
@@ -68,7 +76,7 @@
         <section class="bg-cream py-16 md:py-24" data-animate>
             <div class="mx-auto max-w-5xl px-4 sm:px-6">
                 <div class="mb-10 text-center">
-                    <span class="font-body text-gold text-sm font-semibold tracking-[0.15em] uppercase">Latest from the Blog</span>
+                    <span class="font-body text-gold-ink text-sm font-semibold tracking-[0.15em] uppercase">Latest from the Blog</span>
                 </div>
                 <a
                     href="{{ route('blog.show', $featuredPost) }}"
@@ -100,7 +108,7 @@
                                 @if ($featuredPost->category)
                                     <span class="rounded-full bg-white/10 px-3 py-1 text-[10px] font-bold tracking-wider text-white/70 uppercase">{{ $featuredPost->category_label }}</span>
                                 @endif
-                                <span class="text-xs text-white/30">{{ $featuredPost->reading_time }} min read</span>
+                                <span class="text-xs text-white/60">{{ $featuredPost->reading_time }} min read</span>
                             </div>
                             <h2 class="font-heading group-hover:text-gold mb-4 text-2xl/snug font-bold text-white transition-colors duration-300 md:text-3xl lg:text-4xl">
                                 {{ $featuredPost->title }}
@@ -117,7 +125,7 @@
                                     </div>
                                     <div>
                                         <p class="text-sm font-semibold text-white">{{ $featuredPost->author_name }}</p>
-                                        <p class="text-xs text-white/40">
+                                        <p class="text-xs text-white/60">
                                             {{ $featuredPost->published_at->format('F j, Y') }}
                                         </p>
                                     </div>
@@ -140,7 +148,7 @@
             <div class="mx-auto max-w-6xl px-4 sm:px-6">
                 <div class="mb-12 flex items-end justify-between" data-animate>
                     <div>
-                        <span class="font-body text-gold text-sm font-semibold tracking-[0.15em] uppercase">Latest Stories</span>
+                        <span class="font-body text-gold-ink text-sm font-semibold tracking-[0.15em] uppercase">Latest Stories</span>
                         <h2 class="font-heading text-navy mt-2 text-3xl font-bold md:text-4xl">From the Blog</h2>
                     </div>
                     <a
@@ -180,8 +188,8 @@
                             </div>
                             <div class="p-6">
                                 <div class="mb-3 flex items-center justify-between">
-                                    <span class="font-body text-navy/40 text-xs">{{ $post->published_at->format('M j, Y') }}</span>
-                                    <span class="font-body text-navy/40 text-xs">{{ $post->reading_time }} min read</span>
+                                    <span class="font-body text-navy/65 text-xs">{{ $post->published_at->format('M j, Y') }}</span>
+                                    <span class="font-body text-navy/65 text-xs">{{ $post->reading_time }} min read</span>
                                 </div>
                                 <h3 class="font-heading text-navy group-hover:text-purple mb-2 text-xl/snug font-bold transition-colors duration-200">
                                     {{ $post->title }}
@@ -195,7 +203,7 @@
                                     <div class="bg-purple/10 text-purple flex size-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold">
                                         {{ $post->author_initials }}
                                     </div>
-                                    <span class="font-body text-navy/40 text-xs font-medium">{{ $post->author_name }}</span>
+                                    <span class="font-body text-navy/65 text-xs font-medium">{{ $post->author_name }}</span>
                                 </div>
                             </div>
                         </a>
@@ -215,9 +223,9 @@
     <section class="bg-cream py-16 md:py-24">
         <div class="mx-auto max-w-5xl px-4 sm:px-6">
             <div class="mb-12 text-center" data-animate>
-                <span class="font-body text-gold text-sm font-semibold tracking-[0.15em] uppercase">Plan With Confidence</span>
+                <span class="font-body text-gold-ink text-sm font-semibold tracking-[0.15em] uppercase">Plan With Confidence</span>
                 <h2 class="font-heading text-navy mt-2 text-3xl font-bold md:text-4xl">Your Guide to the Parks</h2>
-                <p class="text-navy/50 mx-auto mt-4 max-w-2xl text-base/relaxed">
+                <p class="text-navy/65 mx-auto mt-4 max-w-2xl text-base/relaxed">
                     Practical, regularly reviewed guidance for more comfortable and accessible Disney park days.
                 </p>
             </div>
@@ -229,12 +237,12 @@
                             href="{{ route('guides.show', $guide) }}"
                             class="group border-navy/5 rounded-2xl border bg-white p-7 shadow-sm transition-[transform,box-shadow] hover:-translate-y-1 hover:shadow-lg"
                         >
-                            <span class="text-gold text-xs font-bold tracking-widest uppercase">{{ $guide->category_label }}</span>
+                            <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">{{ $guide->category_label }}</span>
                             <h3 class="font-heading text-navy group-hover:text-purple mt-3 text-2xl font-bold transition-colors">
                                 {{ $guide->title }}
                             </h3>
                             @if ($guide->excerpt)
-                                <p class="text-navy/55 mt-3 text-base/relaxed">{{ $guide->excerpt }}</p>
+                                <p class="text-navy/65 mt-3 text-base/relaxed">{{ $guide->excerpt }}</p>
                             @endif
                             <span class="text-purple mt-5 inline-flex min-h-12 items-center text-sm font-semibold">Read guide →</span>
                         </a>
@@ -250,7 +258,7 @@
                             <h3 class="font-heading text-navy group-hover:text-purple text-2xl font-bold transition-colors">
                                 {{ $label }}
                             </h3>
-                            <span class="text-gold mt-4 inline-flex min-h-12 items-center text-sm font-semibold">Explore guides →</span>
+                            <span class="text-gold-ink mt-4 inline-flex min-h-12 items-center text-sm font-semibold">Explore guides →</span>
                         </a>
                     @endforeach
                 </div>
@@ -310,7 +318,7 @@
                                 <h3 class="font-heading text-navy group-hover:text-purple line-clamp-2 text-base font-semibold transition-colors">
                                     {{ $episode->title }}
                                 </h3>
-                                <p class="font-body text-navy/40 mt-0.5 text-sm">
+                                <p class="font-body text-navy/65 mt-0.5 text-sm">
                                     {{ $episode->published_at->format('M j, Y') }}
                                     @if ($episode->duration_seconds)
                                         <span class="mx-1.5">·</span
@@ -354,7 +362,7 @@
 
                         <div class="min-w-60 flex-1">
                             <h3 class="font-heading text-cream mb-2 text-2xl font-bold">Episode One Is Coming</h3>
-                            <p class="font-body text-cream/50 mb-5 text-[0.95rem] leading-[1.7]">
+                            <p class="font-body text-cream/60 mb-5 text-[0.95rem] leading-[1.7]">
                                 Jeffrey &amp; Cassie are recording their first episode, an intro to who they are, why
                                 they started Mouse28, and what to expect from the show.
                             </p>
@@ -407,7 +415,7 @@
 
                 {{-- Text --}}
                 <div class="flex-1">
-                    <span class="font-body text-gold text-sm font-semibold tracking-[0.15em] uppercase">The Family Behind Mouse28</span>
+                    <span class="font-body text-gold-ink text-sm font-semibold tracking-[0.15em] uppercase">The Family Behind Mouse28</span>
                     <h2 class="font-heading text-navy mt-2 mb-4 text-3xl font-bold md:text-4xl">
                         Meet Jeffrey & Cassie
                     </h2>
@@ -448,14 +456,14 @@
         <div class="via-gold/20 h-px bg-linear-to-r from-transparent to-transparent"></div>
         <div class="mx-auto max-w-5xl px-4 py-18 sm:px-6">
             <div class="mb-10 text-center">
-                <span class="font-body text-gold text-[0.7rem] font-semibold tracking-[0.15em] uppercase">The Family Behind Mouse28</span>
+                <span class="font-body text-gold-ink text-[0.7rem] font-semibold tracking-[0.15em] uppercase">The Family Behind Mouse28</span>
             </div>
             <div class="grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-8">
                 <div class="text-center">
                     <div class="font-heading text-navy text-[clamp(2.5rem,5vw,3.5rem)] leading-none font-extrabold">
                         20
                     </div>
-                    <p class="font-body text-navy/45 mt-2 text-base/6 sm:text-[0.8rem]/6">
+                    <p class="font-body text-navy/65 mt-2 text-base/6 sm:text-[0.8rem]/6">
                         Minutes from<br />the Magic Kingdom
                     </p>
                 </div>
@@ -463,15 +471,15 @@
                     <div class="font-heading text-navy text-[clamp(2.5rem,5vw,3.5rem)] leading-none font-extrabold">
                         2
                     </div>
-                    <p class="font-body text-navy/45 mt-2 text-base/6 sm:text-[0.8rem]/6">
+                    <p class="font-body text-navy/65 mt-2 text-base/6 sm:text-[0.8rem]/6">
                         Voices, one mic,<br />zero filter
                     </p>
                 </div>
                 <div class="text-center">
-                    <div class="font-heading text-gold text-[clamp(2.5rem,5vw,3.5rem)] leading-none font-extrabold">
+                    <div class="font-heading text-gold-ink text-[clamp(2.5rem,5vw,3.5rem)] leading-none font-extrabold">
                         52
                     </div>
-                    <p class="font-body text-navy/45 mt-2 text-base/6 sm:text-[0.8rem]/6">
+                    <p class="font-body text-navy/65 mt-2 text-base/6 sm:text-[0.8rem]/6">
                         Park days a year<br />(at least)
                     </p>
                 </div>
@@ -479,7 +487,7 @@
                     <div class="font-heading text-navy text-[clamp(2.5rem,5vw,3.5rem)] leading-none font-extrabold">
                         ∞
                     </div>
-                    <p class="font-body text-navy/45 mt-2 text-base/6 sm:text-[0.8rem]/6">
+                    <p class="font-body text-navy/65 mt-2 text-base/6 sm:text-[0.8rem]/6">
                         Buckets of maple popcorn<br />(and counting)
                     </p>
                 </div>
@@ -529,7 +537,7 @@
                             autocomplete="email"
                             required
                             @error('email', 'newsletter') aria-invalid="true" aria-describedby="home-newsletter-email-error-message" @enderror
-                            class="newsletter-input font-body focus:border-gold/40 focus:ring-gold/60 min-h-[48px] flex-1 rounded-full border border-white/20 bg-white/10 px-5 py-3.5 text-base text-white transition-[border-color,box-shadow] duration-300 placeholder:text-white/35 focus:ring-2 focus:outline-none sm:text-sm"
+                            class="newsletter-input font-body focus:border-gold/40 focus:ring-gold/60 min-h-[48px] flex-1 rounded-full border border-white/20 bg-white/10 px-5 py-3.5 text-base text-white transition-[border-color,box-shadow] duration-300 placeholder:text-white/60 focus:ring-2 focus:outline-none sm:text-sm"
                         />
                         <button
                             type="submit"
@@ -559,7 +567,7 @@
                             autocomplete="email"
                             required
                             @error('email', 'newsletter') aria-invalid="true" aria-describedby="home-newsletter-email-message" @enderror
-                            class="newsletter-input font-body focus:border-gold/40 focus:ring-gold/60 min-h-[48px] flex-1 rounded-full border border-white/20 bg-white/10 px-5 py-3.5 text-base text-white transition-[border-color,box-shadow] duration-300 placeholder:text-white/35 focus:ring-2 focus:outline-none sm:text-sm"
+                            class="newsletter-input font-body focus:border-gold/40 focus:ring-gold/60 min-h-[48px] flex-1 rounded-full border border-white/20 bg-white/10 px-5 py-3.5 text-base text-white transition-[border-color,box-shadow] duration-300 placeholder:text-white/60 focus:ring-2 focus:outline-none sm:text-sm"
                         />
                         <button
                             type="submit"
@@ -575,6 +583,7 @@
                     @enderror
                 </form>
             @endif
+            <p class="mt-3 text-sm text-white/60">We use your email to send Mouse28 updates.</p>
             <div class="mt-10 flex flex-wrap items-center justify-center gap-6 border-t border-white/10 pt-8">
                 @foreach ($podcast->distributionLinks() as $link)
                     <a

@@ -87,6 +87,7 @@
     --color-gold: #d4a843;
     --color-gold-light: #f0c75e;
     --color-gold-dark: #b8922e;
+    --color-gold-ink: #805e10;
     --color-cream: #fef9ef;
     --color-cream-dark: #f5efe0;
 
@@ -119,8 +120,9 @@
     }
 
     :focus-visible {
-        outline: 2px solid var(--color-gold-light);
+        outline: 3px solid var(--color-navy);
         outline-offset: 3px;
+        box-shadow: 0 0 0 5px var(--color-gold-light);
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -128,19 +130,23 @@
             scroll-behavior: auto;
         }
 
-        *,
-        *::before,
-        *::after {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            scroll-behavior: auto !important;
-            transition-duration: 0.01ms !important;
+        main,
+        .sparkle,
+        .sparkle-delay,
+        .sparkle-delay-2,
+        .cta-primary,
+        .blog-featured-wrapper::before,
+        .episodes-waveform-bar,
+        .contact-check-circle,
+        .contact-check-mark {
+            animation: none !important;
         }
 
         [data-animate],
         .js-animate [data-animate] {
             opacity: 1 !important;
             transform: none !important;
+            transition: none !important;
         }
     }
 
@@ -484,8 +490,8 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-width: 2.25rem;
-        height: 2.25rem;
+        min-width: 3rem;
+        height: 3rem;
         border-radius: 9999px;
         padding: 0 0.75rem;
         font-size: 0.875rem;
@@ -708,8 +714,8 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-width: 2.25rem;
-        height: 2.25rem;
+        min-width: 3rem;
+        height: 3rem;
         border-radius: 9999px;
         padding: 0 0.75rem;
         font-size: 0.875rem;
@@ -955,20 +961,5 @@
 @keyframes contact-check-mark {
     to {
         stroke-dashoffset: 0;
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    html {
-        scroll-behavior: auto;
-    }
-
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        scroll-behavior: auto !important;
-        transition-duration: 0.01ms !important;
     }
 }

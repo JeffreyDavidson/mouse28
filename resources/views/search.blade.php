@@ -23,7 +23,7 @@
                     value="{{ $query }}"
                     maxlength="100"
                     placeholder="Try “sensory breaks” or “DAS”"
-                    class="text-navy placeholder:text-navy/35 focus:border-gold focus:ring-gold/40 min-h-12 flex-1 rounded-full border border-white/15 bg-white px-5 py-3 text-base shadow-lg focus:ring-2 focus:outline-none"
+                    class="text-navy placeholder:text-navy/65 focus:border-gold focus:ring-gold/40 min-h-12 flex-1 rounded-full border border-white/15 bg-white px-5 py-3 text-base shadow-lg focus:ring-2 focus:outline-none"
                 />
                 <button
                     type="submit"
@@ -43,14 +43,14 @@
             @if ($query === '')
                 <div class="border-navy/5 rounded-3xl border bg-white px-6 py-14 text-center shadow-sm">
                     <h2 class="font-heading text-navy text-3xl font-bold">What can we help you find?</h2>
-                    <p class="text-navy/55 mx-auto mt-3 max-w-xl text-base/relaxed">
+                    <p class="text-navy/65 mx-auto mt-3 max-w-xl text-base/relaxed">
                         Search our family stories, practical park guides, and podcast conversations.
                     </p>
                 </div>
             @elseif ($resultCount === 0)
                 <div role="status" class="border-navy/5 rounded-3xl border bg-white px-6 py-14 text-center shadow-sm">
                     <h2 class="font-heading text-navy text-3xl font-bold">No results for “{{ $query }}”</h2>
-                    <p class="text-navy/55 mx-auto mt-3 max-w-xl text-base/relaxed">
+                    <p class="text-navy/65 mx-auto mt-3 max-w-xl text-base/relaxed">
                         Try a broader phrase, or browse the blog, guides, and podcast directly.
                     </p>
                     <div class="mt-7 flex flex-wrap justify-center gap-3">
@@ -69,7 +69,7 @@
                     </div>
                 </div>
             @else
-                <p role="status" class="text-navy/55 mb-10 text-center text-sm">
+                <p role="status" class="text-navy/65 mb-10 text-center text-sm">
                     Showing {{ $resultCount }} {{ Str::plural('result', $resultCount) }} for “{{ $query }}”
                 </p>
 
@@ -80,12 +80,12 @@
                                 <h2 id="post-results-heading" class="font-heading text-navy text-3xl font-bold">
                                     Blog posts
                                 </h2>
-                                <span class="text-navy/40 text-sm">{{ $posts->count() }} found</span>
+                                <span class="text-navy/65 text-sm">{{ $posts->count() }} found</span>
                             </div>
                             <div class="grid gap-4 md:grid-cols-2">
                                 @foreach ($posts as $post)
                                     <article class="border-navy/5 rounded-2xl border bg-white p-6 shadow-sm">
-                                        <span class="text-gold text-xs font-bold tracking-widest uppercase">{{ $post->category_label }}</span>
+                                        <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">{{ $post->category_label }}</span>
                                         <h3 class="font-heading text-navy mt-2 text-2xl font-bold">
                                             <a
                                                 href="{{ route('blog.show', $post) }}"
@@ -93,7 +93,7 @@
                                             >{{ $post->title }}</a>
                                         </h3>
                                         @if ($post->excerpt)
-                                            <p class="text-navy/55 mt-3 text-sm/relaxed">
+                                            <p class="text-navy/65 mt-3 text-sm/relaxed">
                                                 {{ Str::limit($post->excerpt, 150) }}
                                             </p>
                                         @endif
@@ -109,12 +109,12 @@
                                 <h2 id="guide-results-heading" class="font-heading text-navy text-3xl font-bold">
                                     Guides
                                 </h2>
-                                <span class="text-navy/40 text-sm">{{ $guides->count() }} found</span>
+                                <span class="text-navy/65 text-sm">{{ $guides->count() }} found</span>
                             </div>
                             <div class="grid gap-4 md:grid-cols-2">
                                 @foreach ($guides as $guide)
                                     <article class="border-navy/5 rounded-2xl border bg-white p-6 shadow-sm">
-                                        <span class="text-gold text-xs font-bold tracking-widest uppercase">{{ $guide->category_label }}</span>
+                                        <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">{{ $guide->category_label }}</span>
                                         <h3 class="font-heading text-navy mt-2 text-2xl font-bold">
                                             <a
                                                 href="{{ route('guides.show', $guide) }}"
@@ -122,7 +122,7 @@
                                             >{{ $guide->title }}</a>
                                         </h3>
                                         @if ($guide->excerpt)
-                                            <p class="text-navy/55 mt-3 text-sm/relaxed">
+                                            <p class="text-navy/65 mt-3 text-sm/relaxed">
                                                 {{ Str::limit($guide->excerpt, 150) }}
                                             </p>
                                         @endif
@@ -138,12 +138,12 @@
                                 <h2 id="episode-results-heading" class="font-heading text-navy text-3xl font-bold">
                                     Podcast episodes
                                 </h2>
-                                <span class="text-navy/40 text-sm">{{ $episodes->count() }} found</span>
+                                <span class="text-navy/65 text-sm">{{ $episodes->count() }} found</span>
                             </div>
                             <div class="grid gap-4 md:grid-cols-2">
                                 @foreach ($episodes as $episode)
                                     <article class="border-navy/5 rounded-2xl border bg-white p-6 shadow-sm">
-                                        <span class="text-gold text-xs font-bold tracking-widest uppercase">Episode {{ $episode->episode_number }}</span>
+                                        <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">Episode {{ $episode->episode_number }}</span>
                                         <h3 class="font-heading text-navy mt-2 text-2xl font-bold">
                                             <a
                                                 href="{{ route('episodes.show', $episode) }}"
@@ -151,7 +151,7 @@
                                             >{{ $episode->title }}</a>
                                         </h3>
                                         @if ($episode->description)
-                                            <p class="text-navy/55 mt-3 text-sm/relaxed">
+                                            <p class="text-navy/65 mt-3 text-sm/relaxed">
                                                 {{ Str::limit($episode->description, 150) }}
                                             </p>
                                         @endif

@@ -29,7 +29,7 @@
                     href="{{ route('guides.index', ['category' => $guide->category]) }}"
                     class="border-gold/30 bg-gold/15 text-gold hover:border-gold hover:bg-gold/25 inline-flex min-h-12 items-center rounded-full border px-4 py-2 font-bold tracking-wider uppercase transition-colors"
                 >{{ $guide->category_label }}</a>
-                <span class="text-white/45">{{ $guide->reading_time }} min read</span>
+                <span class="text-white/60">{{ $guide->reading_time }} min read</span>
             </div>
             <h1 class="font-heading mt-5 max-w-4xl text-4xl/tight font-bold text-white md:text-6xl">
                 {{ $guide->title }}
@@ -66,7 +66,7 @@
 
                 @if ($guide->source_url)
                     <div class="border-navy/10 mt-10 border-t pt-6">
-                        <p class="text-navy/55 text-sm">
+                        <p class="text-navy/65 text-sm">
                             Policies can change. Review the official source before your visit.
                         </p>
                         <a

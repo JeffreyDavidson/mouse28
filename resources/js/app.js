@@ -54,11 +54,15 @@ function initializeBlogArticle() {
             const isVisible = window.scrollY > 500;
 
             backToTop.classList.toggle('pointer-events-none', !isVisible);
+            backToTop.classList.toggle('invisible', !isVisible);
             backToTop.classList.toggle('translate-y-2.5', !isVisible);
             backToTop.classList.toggle('opacity-0', !isVisible);
             backToTop.classList.toggle('pointer-events-auto', isVisible);
+            backToTop.classList.toggle('visible', isVisible);
             backToTop.classList.toggle('translate-y-0', isVisible);
             backToTop.classList.toggle('opacity-100', isVisible);
+            backToTop.setAttribute('aria-hidden', isVisible ? 'false' : 'true');
+            backToTop.tabIndex = isVisible ? 0 : -1;
         }
     };
 

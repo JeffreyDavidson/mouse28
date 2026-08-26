@@ -22,6 +22,16 @@ test('public index pages render', function (string $route, string $content): voi
     'contact' => ['contact.show', 'Get in Touch'],
 ]);
 
+test('homepage uses one newsletter form and responsive hero artwork', function (): void {
+    $response = get(route('home'))
+        ->assertOk()
+        ->assertSee('/images/hero-family-640.webp 640w', false)
+        ->assertSee('/images/hero-family-1024.webp 1024w', false)
+        ->assertSee('We use your email to send Mouse28 updates.');
+
+    expect(substr_count($response->getContent(), 'action="'.route('newsletter.store').'"'))->toBe(1);
+});
+
 test('published post detail page renders', function (): void {
     $post = Post::query()->create([
         'title' => 'An Accessible Day at the Parks',
@@ -37,7 +47,10 @@ test('published post detail page renders', function (): void {
     get(route('blog.show', $post))
         ->assertOk()
         ->assertSee($post->title)
-        ->assertSee('Start with a flexible plan', false);
+        ->assertSee('Start with a flexible plan', false)
+        ->assertSee('id="back-to-top"', false)
+        ->assertSee('aria-hidden="true"', false)
+        ->assertSee('tabindex="-1"', false);
 });
 
 test('published episode detail page renders', function (): void {
