@@ -153,6 +153,7 @@
                 <div
                     id="mobile-navigation"
                     x-show="open"
+                    :aria-hidden="open ? 'false' : 'true'"
                     @click.outside="open = false"
                     x-transition:enter="transition ease-out duration-200"
                     x-transition:enter-start="opacity-0 -translate-y-2"
