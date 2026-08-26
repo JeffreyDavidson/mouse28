@@ -67,7 +67,9 @@ test('published post detail page renders', function (): void {
         ->assertSee('Start with a flexible plan', false)
         ->assertSee('id="back-to-top"', false)
         ->assertSee('aria-hidden="true"', false)
-        ->assertSee('tabindex="-1"', false);
+        ->assertSee('tabindex="-1"', false)
+        ->assertSee('inline-flex size-12 items-center justify-center rounded-full', false)
+        ->assertDontSee('inline-flex size-11', false);
 });
 
 test('published episode detail page renders', function (): void {
