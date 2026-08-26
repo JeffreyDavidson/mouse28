@@ -155,6 +155,7 @@
                             <div x-data="{ expanded: false }">
                                 <div
                                     id="episode-transcript"
+                                    tabindex="0"
                                     class="episode-transcript-content max-h-[600px] wrap-anywhere"
                                     :class="{ 'max-h-none': expanded }"
                                 >

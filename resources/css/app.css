@@ -123,7 +123,16 @@
 
     @media (prefers-reduced-motion: reduce) {
         html {
-            scroll-behavior: auto;
+            scroll-behavior: auto !important;
+        }
+
+        *,
+        *::before,
+        *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-delay: 0ms !important;
+            transition-duration: 0.01ms !important;
         }
 
         main,
@@ -143,6 +152,13 @@
             opacity: 1 !important;
             transform: none !important;
             transition: none !important;
+        }
+    }
+
+    @media (forced-colors: active) {
+        :focus-visible {
+            outline: 3px solid CanvasText !important;
+            outline-offset: 3px;
         }
     }
 
