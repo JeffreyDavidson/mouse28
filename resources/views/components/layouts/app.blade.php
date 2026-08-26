@@ -319,7 +319,9 @@
             {{-- Bottom bar --}}
             <div class="mt-8 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row">
                 <p class="text-base text-white/60 sm:text-sm">&copy; {{ date('Y') }} Mouse28. All rights reserved.</p>
-                <p class="text-base text-white/60 sm:text-sm">Made with ✨ from Infinity Digital</p>
+                <p class="text-base text-white/60 sm:text-sm">
+                    Made with <span aria-hidden="true">✨</span> from Infinity Digital
+                </p>
             </div>
         </div>
     </footer>

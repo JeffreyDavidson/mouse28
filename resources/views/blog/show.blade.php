@@ -72,7 +72,7 @@
                 href="{{ route('blog.index') }}"
                 class="group hover:text-gold mb-8 inline-flex min-h-12 items-center gap-1.5 text-base text-white/60 transition-colors sm:text-sm"
             >
-                <svg class="size-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                <svg aria-hidden="true" class="size-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
                 Back to Blog
             </a>
 
@@ -123,7 +123,7 @@
                         class="border-cream/15 bg-cream/5 text-cream/60 hover:border-gold-light/50 hover:bg-gold-light/10 hover:text-gold-light inline-flex size-12 items-center justify-center rounded-full border backdrop-blur-sm transition-[transform,border-color,background-color,color,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgb(212_168_67/20%)]"
                         aria-label="Share on X"
                     >
-                        <svg class="size-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+                        <svg aria-hidden="true" class="size-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
                     </a>
                     <a
                         href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}"
@@ -132,7 +132,7 @@
                         class="border-cream/15 bg-cream/5 text-cream/60 hover:border-gold-light/50 hover:bg-gold-light/10 hover:text-gold-light inline-flex size-12 items-center justify-center rounded-full border backdrop-blur-sm transition-[transform,border-color,background-color,color,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgb(212_168_67/20%)]"
                         aria-label="Share on Facebook"
                     >
-                        <svg class="size-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
+                        <svg aria-hidden="true" class="size-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
                     </a>
                     <button
                         type="button"
@@ -140,7 +140,7 @@
                         data-copy-link
                         aria-label="Copy link"
                     >
-                        <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                        <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
                         <span
                             class="copy-feedback bg-gold absolute -bottom-9 left-1/2 hidden -translate-x-1/2 rounded-full px-3 py-1 text-[10px] whitespace-nowrap text-white shadow-lg"
                             aria-live="polite"
@@ -212,7 +212,10 @@
                         @endif
 
                         {{-- End flourish --}}
-                        <div class="border-navy/5 mt-12 flex items-center justify-center gap-3 border-t pt-8">
+                        <div
+                            class="border-navy/5 mt-12 flex items-center justify-center gap-3 border-t pt-8"
+                            aria-hidden="true"
+                        >
                             <span class="text-gold/30">✦</span>
                             <span class="text-gold/50 text-lg">✦</span>
                             <span class="text-gold/30">✦</span>
@@ -261,7 +264,7 @@
                                 rel="noopener"
                                 class="border-navy/10 text-navy/60 inline-flex min-h-12 items-center justify-center gap-2 rounded-full border bg-white px-5 py-2.5 text-base font-semibold transition-[transform,border-color,color,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-[#1da1f2] hover:text-[#1da1f2] hover:shadow-[0_4px_12px_rgb(26_16_64/10%)] sm:text-[0.8rem]"
                             >
-                                <svg class="size-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+                                <svg aria-hidden="true" class="size-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
                                 Share on X
                             </a>
                             <a
@@ -270,7 +273,7 @@
                                 rel="noopener"
                                 class="border-navy/10 text-navy/60 inline-flex min-h-12 items-center justify-center gap-2 rounded-full border bg-white px-5 py-2.5 text-base font-semibold transition-[transform,border-color,color,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-[#1877f2] hover:text-[#1877f2] hover:shadow-[0_4px_12px_rgb(26_16_64/10%)] sm:text-[0.8rem]"
                             >
-                                <svg class="size-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
+                                <svg aria-hidden="true" class="size-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" /></svg>
                                 Share on Facebook
                             </a>
                             <button
@@ -278,7 +281,7 @@
                                 class="border-navy/10 text-navy/60 hover:border-gold hover:text-gold inline-flex min-h-12 items-center justify-center gap-2 rounded-full border bg-white px-5 py-2.5 text-base font-semibold transition-[transform,border-color,color,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgb(26_16_64/10%)] sm:text-[0.8rem]"
                                 data-copy-link
                             >
-                                <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
+                                <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
                                 <span data-copy-label>Copy Link</span>
                                 <span class="hidden" data-copy-feedback aria-live="polite">Copied! ✓</span>
                             </button>
@@ -330,7 +333,10 @@
                                                 />
                                             @else
                                                 <div class="flex size-full items-center justify-center bg-linear-to-br {{ $nextStyle['surface'] }}">
-                                                    <span class="text-4xl opacity-60 transition-transform duration-500 group-hover:scale-110">{{ $nextStyle['icon'] }}</span>
+                                                    <span
+                                                        class="text-4xl opacity-60 transition-transform duration-500 group-hover:scale-110"
+                                                        aria-hidden="true"
+                                                    >{{ $nextStyle['icon'] }}</span>
                                                 </div>
                                             @endif
                                         </div>
@@ -389,7 +395,10 @@
                                                 />
                                             @else
                                                 <div class="flex size-16 shrink-0 items-center justify-center rounded-xl bg-linear-to-br {{ $recentStyle['surface'] }}">
-                                                    <span class="text-2xl opacity-60">{{ $recentStyle['icon'] }}</span>
+                                                    <span
+                                                        class="text-2xl opacity-60"
+                                                        aria-hidden="true"
+                                                    >{{ $recentStyle['icon'] }}</span>
                                                 </div>
                                             @endif
                                             <div class="min-w-0 pt-0.5">
@@ -431,7 +440,7 @@
                             <div class="bg-gold/5 absolute top-1/2 left-1/2 size-32 -translate-1/2 rounded-full blur-3xl"></div>
                             <div class="relative">
                                 <div class="mx-auto mb-4 flex size-12 items-center justify-center rounded-xl border border-white/10 bg-white/10">
-                                    <svg class="text-gold size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
+                                    <svg aria-hidden="true" class="text-gold size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
                                 </div>
                                 <h3 class="font-heading mb-2 text-lg font-bold text-white">Listen to the Podcast</h3>
                                 <p class="mb-5 text-base/relaxed text-white/60 sm:text-sm/relaxed">
@@ -463,6 +472,6 @@
         aria-hidden="true"
         tabindex="-1"
     >
-        <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7" /></svg>
+        <svg aria-hidden="true" class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7" /></svg>
     </button>
 </x-layouts.app>

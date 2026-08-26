@@ -4,9 +4,32 @@ use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
 
+function exposedDecorativeGlyphCountScript(): string
+{
+    return <<<'JS'
+        (() => {
+            const glyphs = ['✦', '✧', '✨', '🎙️', '🍽️', '🛍️'];
+            const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+            let count = 0;
+
+            while (walker.nextNode()) {
+                const parent = walker.currentNode.parentElement;
+
+                if (! parent?.closest('[aria-hidden="true"]') && glyphs.some((glyph) => walker.currentNode.textContent.includes(glyph))) {
+                    count++;
+                }
+            }
+
+            return count;
+        })()
+        JS;
+}
+
 test('public page renders without JavaScript errors', function (string $path, string $content): void {
     visit($path)
         ->assertSee($content)
+        ->assertScript('document.querySelectorAll(\'svg:not([aria-hidden="true"]):not([aria-label]):not([aria-labelledby]):not(:has(title))\').length', 0)
+        ->assertScript(exposedDecorativeGlyphCountScript(), 0)
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 })->with([
@@ -32,6 +55,8 @@ test('published content detail pages have no accessibility issues', function ():
     ]);
 
     $pages->assertNoAccessibilityIssues()
+        ->assertScript('document.querySelectorAll(\'svg:not([aria-hidden="true"]):not([aria-label]):not([aria-labelledby]):not(:has(title))\').length', 0)
+        ->assertScript(exposedDecorativeGlyphCountScript(), 0)
         ->assertNoJavaScriptErrors();
 
     [, $episodePage] = $pages;
