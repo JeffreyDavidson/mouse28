@@ -236,6 +236,7 @@
                                         data-sitekey="{{ config('services.turnstile.site_key') }}"
                                         data-action="{{ config('services.turnstile.contact_action') }}"
                                         data-theme="dark"
+                                        data-appearance="interaction-only"
                                     ></div>
                                 @else
                                     <p role="alert" class="text-base text-red-200 sm:text-sm">
