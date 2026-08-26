@@ -45,14 +45,10 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1a1040" />
+    <link rel="preload" href="/fonts/mouse28/poppins-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/mouse28/playfair-latin.woff2" as="font" type="font/woff2" crossorigin />
     @head
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet"
-    />
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('styles')
@@ -136,7 +132,7 @@
                         :aria-expanded="open.toString()"
                         aria-controls="mobile-navigation"
                         class="hover:text-gold relative -mr-3 size-12 text-white/80 transition-colors md:hidden"
-                        aria-label="Toggle navigation menu"
+                        :aria-label="open ? 'Close navigation menu' : 'Open navigation menu'"
                     >
                         <span
                             class="hamburger-line absolute left-3 h-0.5 w-6 origin-center rounded bg-current"
@@ -157,6 +153,7 @@
                 <div
                     id="mobile-navigation"
                     x-show="open"
+                    :aria-hidden="open ? 'false' : 'true'"
                     @click.outside="open = false"
                     x-transition:enter="transition ease-out duration-200"
                     x-transition:enter-start="opacity-0 -translate-y-2"

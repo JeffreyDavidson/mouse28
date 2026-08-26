@@ -107,9 +107,6 @@
                                                         @endif
                                                     </div>
                                                 </div>
-                                                {{-- Subtle corner accent --}}
-                                                <div class="absolute top-2 left-2 size-5 rounded-tl-md border-t-2 border-l-2 border-white/10"></div>
-                                                <div class="absolute right-2 bottom-2 size-5 rounded-br-md border-r-2 border-b-2 border-white/10"></div>
                                             </div>
 
                                             <div class="min-w-0 flex-1 p-5 sm:p-6">
@@ -127,7 +124,7 @@
                                                         <span class="text-navy/40 text-xs">S{{ $episode->season_number }}E{{ $episode->episode_number }}</span>
                                                     @endif
                                                 </div>
-                                                <h2 class="font-heading text-navy group-hover:text-purple mb-2 text-xl font-semibold transition-colors">
+                                                <h2 class="font-heading text-navy group-hover:text-purple mb-2 line-clamp-2 text-xl font-semibold transition-colors">
                                                     {{ $episode->title }}
                                                 </h2>
                                                 <p class="text-navy/60 line-clamp-2 text-base/relaxed sm:text-sm/relaxed">

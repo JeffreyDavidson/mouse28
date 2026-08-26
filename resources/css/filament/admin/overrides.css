@@ -195,7 +195,7 @@
 
 .fi-section {
     border: 1px solid rgb(212 168 67 / 12%) !important;
-    border-radius: 1rem !important;
+    border-radius: 0.75rem !important;
     background: rgb(45 27 105 / 30%) !important;
 }
 
@@ -229,7 +229,7 @@
 .fi-ta-ctn {
     overflow: visible !important;
     border: 1px solid rgb(212 168 67 / 12%) !important;
-    border-radius: 1rem !important;
+    border-radius: 0.75rem !important;
     background: rgb(45 27 105 / 30%) !important;
 }
 

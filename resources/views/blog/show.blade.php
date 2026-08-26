@@ -33,7 +33,7 @@
             'disney-news' => ['surface' => 'from-orange-600/15 to-orange-400/10', 'icon' => '📰'],
             'food-reviews' => ['surface' => 'from-amber-600/15 to-amber-400/10', 'icon' => '🍽️'],
             'resort-reviews' => ['surface' => 'from-teal-600/15 to-teal-300/10', 'icon' => '🏨'],
-            'disney-plus' => ['surface' => 'from-indigo-600/15 to-indigo-400/10', 'icon' => '📺'],
+            'disney-plus' => ['surface' => 'from-purple/15 to-purple-light/10', 'icon' => '📺'],
             'merchandise' => ['surface' => 'from-rose-600/15 to-rose-400/10', 'icon' => '🛍️'],
             'general' => ['surface' => 'from-slate-600/15 to-slate-400/10', 'icon' => '✨'],
         ];
@@ -53,7 +53,15 @@
 
         <div class="from-navy via-navy-light to-navy absolute inset-0 bg-linear-to-br">
             @if ($post->cover_image_url)
-                <img src="{{ $post->cover_image_url }}" alt="" aria-hidden="true" class="size-full object-cover" />
+                <img
+                    src="{{ $post->cover_image_url }}"
+                    alt=""
+                    aria-hidden="true"
+                    loading="eager"
+                    fetchpriority="high"
+                    decoding="async"
+                    class="size-full object-cover"
+                />
             @endif
             <div class="absolute inset-0 {{ $post->cover_image_url ? 'bg-linear-to-t from-navy/95 via-navy/70 to-navy/40' : 'bg-linear-to-t from-navy/95 via-navy/60 to-navy/30' }}"></div>
         </div>
@@ -177,7 +185,7 @@
                             <div class="from-gold/8 absolute -top-12 -right-12 size-24 rotate-45 bg-linear-to-bl to-transparent"></div>
                         </div>
 
-                        <div class="blog-article-content prose-navy prose prose-lg text-navy/80 max-w-none text-[1.1rem] leading-[1.85]">
+                        <div class="blog-article-content prose-navy prose text-navy/80 max-w-[68ch] text-[1.0625rem] leading-[1.8]">
                             {!!
                                 Str::markdown($post->body ?? '', [
                                     'html_input' => 'strip',
@@ -316,6 +324,8 @@
                                                 <img
                                                     src="{{ $next->cover_image_url }}"
                                                     alt=""
+                                                    loading="lazy"
+                                                    decoding="async"
                                                     class="size-full object-cover transition-transform duration-500 group-hover:scale-105"
                                                 />
                                             @else
@@ -373,6 +383,8 @@
                                                 <img
                                                     src="{{ $recent->cover_image_url }}"
                                                     alt=""
+                                                    loading="lazy"
+                                                    decoding="async"
                                                     class="size-16 shrink-0 rounded-xl object-cover shadow-sm"
                                                 />
                                             @else

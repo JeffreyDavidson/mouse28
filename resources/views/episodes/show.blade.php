@@ -20,7 +20,7 @@
     <section class="from-navy to-navy-light relative overflow-hidden bg-linear-to-br py-16 md:py-24">
         {{-- Waveform background --}}
         <div class="pointer-events-none absolute inset-0 opacity-[0.07]">
-            <svg class="absolute bottom-0 left-0 h-32 w-full text-white" viewBox="0 0 1200 120" preserveAspectRatio="none" fill="none" stroke="currentColor">
+            <svg class="absolute bottom-0 left-0 h-32 w-full text-white" viewBox="0 0 1200 120" preserveAspectRatio="none" fill="none" stroke="currentColor" aria-hidden="true">
                 <g stroke="white" stroke-width="2">
                     @for ($i = 0; $i < 60; $i++)
                         <line
@@ -61,7 +61,9 @@
                 @endif
                 <span class="text-sm text-white/40">{{ $episode->published_at?->format('F j, Y') ?? 'Not scheduled' }}</span>
             </div>
-            <h1 class="font-heading text-4xl font-bold text-white md:text-5xl lg:text-6xl">{{ $episode->title }}</h1>
+            <h1 class="font-heading max-w-4xl text-4xl font-bold break-words text-white md:text-5xl lg:text-6xl">
+                {{ $episode->title }}
+            </h1>
             @if ($episode->description)
                 <p class="mt-4 max-w-3xl text-lg/relaxed text-white/60">{{ $episode->description }}</p>
             @endif
@@ -95,11 +97,16 @@
 
                             <div class="relative z-10 flex flex-col items-center gap-6 sm:flex-row">
                                 {{-- Episode artwork/number --}}
-                                <div class="from-purple to-gold flex size-24 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br shadow-lg">
-                                    <div class="text-center">
-                                        <span class="block text-[10px] font-bold tracking-wider text-white/60 uppercase">EP</span>
-                                        <span class="font-heading text-3xl font-bold text-white">{{ $episode->episode_number }}</span>
-                                    </div>
+                                <div class="size-24 shrink-0 overflow-hidden rounded-2xl shadow-lg">
+                                    <img
+                                        src="{{ $episode->cover_image_url ?: '/images/podcast/mouse28-cover.webp' }}"
+                                        alt="{{ $episode->title }} podcast artwork"
+                                        width="3000"
+                                        height="3000"
+                                        loading="lazy"
+                                        decoding="async"
+                                        class="size-full object-cover"
+                                    />
                                 </div>
 
                                 <div class="w-full flex-1">
@@ -372,6 +379,8 @@
                                                 <img
                                                     src="{{ $post->cover_image_url }}"
                                                     alt="{{ $post->title }}"
+                                                    loading="lazy"
+                                                    decoding="async"
                                                     class="size-16 shrink-0 rounded-xl object-cover"
                                                 />
                                             @else
