@@ -232,7 +232,7 @@
                                     name="q"
                                     value="{{ request('q') }}"
                                     placeholder="Search posts..."
-                                    class="border-navy/10 text-navy placeholder:text-navy/25 focus:border-gold focus:ring-gold/20 min-h-12 w-full rounded-xl border py-3 pr-12 pl-11 text-base transition-[border-color,box-shadow] outline-none focus:ring-2 sm:text-sm"
+                                    class="border-navy/10 text-navy placeholder:text-navy/60 focus:border-gold focus:ring-gold/20 min-h-12 w-full rounded-xl border py-3 pr-12 pl-11 text-base transition-[border-color,box-shadow] outline-none focus:ring-2 sm:text-sm"
                                 />
                                 @if (request('q'))
                                     <a
