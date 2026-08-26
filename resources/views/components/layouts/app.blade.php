@@ -129,7 +129,7 @@
                         :aria-expanded="open.toString()"
                         aria-controls="mobile-navigation"
                         class="hover:text-gold relative -mr-3 size-12 text-white/80 transition-colors md:hidden"
-                        aria-label="Toggle navigation menu"
+                        :aria-label="open ? 'Close navigation menu' : 'Open navigation menu'"
                     >
                         <span
                             class="hamburger-line absolute left-3 h-0.5 w-6 origin-center rounded bg-current"

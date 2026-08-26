@@ -19,7 +19,7 @@ test('mobile navigation opens and remains usable', function (): void {
     visit('/')
         ->on()
         ->mobile()
-        ->click('[aria-label="Toggle navigation menu"]')
+        ->click('[aria-label="Open navigation menu"]')
         ->assertVisible('#mobile-navigation')
         ->assertNoJavaScriptErrors();
 });
