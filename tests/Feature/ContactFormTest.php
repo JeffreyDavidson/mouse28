@@ -30,6 +30,7 @@ test('contact page renders turnstile widget', function (): void {
         ->assertSee('class="cf-turnstile"', false)
         ->assertSee('data-sitekey="test-site-key"', false)
         ->assertSee('data-action="contact-form"', false)
+        ->assertSee('data-appearance="interaction-only"', false)
         ->assertDontSee('Share Your Story')
         ->assertDontSee('Family Disney stories')
         ->assertDontSee('value="story"', false);
