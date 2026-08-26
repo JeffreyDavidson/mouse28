@@ -21,6 +21,7 @@ test('public landing pages have specific search and social metadata', function (
     get(route('home'))
         ->assertOk()
         ->assertSee('<meta name="description" content="Accessibility tips, sensory-friendly park planning, family experiences, and the Mouse28 podcast from Jeffrey and Cassie Davidson.">', false)
+        ->assertSee('<meta name="theme-color" content="#1a1040" />', false)
         ->assertSee('<meta property="og:image" content="'.url('/images/hero-family.jpg').'">', false);
 
     get(route('blog.index'))
