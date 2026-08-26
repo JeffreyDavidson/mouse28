@@ -307,7 +307,7 @@
                                 <svg class="text-purple absolute size-5 opacity-0 transition-opacity group-hover:opacity-100" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
                             </div>
                             <div class="min-w-0 flex-1">
-                                <h3 class="font-heading text-navy group-hover:text-purple truncate text-base font-semibold transition-colors">
+                                <h3 class="font-heading text-navy group-hover:text-purple line-clamp-2 text-base font-semibold transition-colors">
                                     {{ $episode->title }}
                                 </h3>
                                 <p class="font-body text-navy/40 mt-0.5 text-sm">

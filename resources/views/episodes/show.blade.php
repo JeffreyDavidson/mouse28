@@ -61,7 +61,9 @@
                 @endif
                 <span class="text-sm text-white/40">{{ $episode->published_at?->format('F j, Y') ?? 'Not scheduled' }}</span>
             </div>
-            <h1 class="font-heading text-4xl font-bold text-white md:text-5xl lg:text-6xl">{{ $episode->title }}</h1>
+            <h1 class="font-heading max-w-4xl text-4xl font-bold break-words text-white md:text-5xl lg:text-6xl">
+                {{ $episode->title }}
+            </h1>
             @if ($episode->description)
                 <p class="mt-4 max-w-3xl text-lg/relaxed text-white/60">{{ $episode->description }}</p>
             @endif
