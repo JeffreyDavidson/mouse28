@@ -99,7 +99,7 @@
                                 {{-- Episode artwork/number --}}
                                 <div class="size-24 shrink-0 overflow-hidden rounded-2xl shadow-lg">
                                     <img
-                                        src="{{ $episode->cover_image_url ?: '/images/podcast/mouse28-cover.jpg' }}"
+                                        src="{{ $episode->cover_image_url ?: '/images/podcast/mouse28-cover.webp' }}"
                                         alt="{{ $episode->title }} podcast artwork"
                                         width="3000"
                                         height="3000"

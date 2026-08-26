@@ -50,7 +50,7 @@
         {{-- Right: Photo --}}
         <div class="hero-split-photo">
             <img
-                src="/images/hero-family.jpg"
+                src="/images/hero-family.webp"
                 alt="Jeffrey and Cassie Davidson on Kilimanjaro Safaris at Disney's Animal Kingdom"
                 width="2048"
                 height="2048"
@@ -271,7 +271,7 @@
             <div class="mb-12 flex items-end justify-between" data-animate>
                 <div class="flex items-center gap-4">
                     <img
-                        src="/images/podcast/mouse28-cover.jpg"
+                        src="/images/podcast/mouse28-cover.webp"
                         alt=""
                         width="64"
                         height="64"
@@ -341,7 +341,7 @@
                         <div class="shrink-0">
                             <div class="size-[100px] overflow-hidden rounded-[1.25rem] shadow-[0_10px_30px_rgb(212_168_67/25%)]">
                                 <img
-                                    src="/images/podcast/mouse28-cover.jpg"
+                                    src="/images/podcast/mouse28-cover.webp"
                                     alt="Mouse28 podcast artwork"
                                     width="3000"
                                     height="3000"
@@ -393,7 +393,7 @@
                     <div class="relative">
                         <div class="border-gold/20 overflow-hidden rounded-2xl border-[3px] shadow-xl">
                             <img
-                                src="/images/meet-jeffrey-and-cassie.jpg"
+                                src="/images/meet-jeffrey-and-cassie.webp"
                                 alt="Jeffrey and Cassie Davidson at Disney"
                                 width="1024"
                                 height="1536"

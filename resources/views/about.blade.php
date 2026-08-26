@@ -199,7 +199,7 @@
                     <div class="relative md:col-span-5">
                         <div class="relative aspect-3/4 overflow-hidden rounded-2xl">
                             <img
-                                src="/images/jeffrey.jpg"
+                                src="/images/jeffrey.webp"
                                 alt="Jeffrey Davidson at Epcot's Japan Pavilion"
                                 width="2048"
                                 height="2048"
@@ -282,7 +282,7 @@
                     <div class="relative order-1 md:order-2 md:col-span-5">
                         <div class="relative aspect-3/4 overflow-hidden rounded-2xl">
                             <img
-                                src="/images/cassie.jpg"
+                                src="/images/cassie.webp"
                                 alt="Cassie Davidson at Magic Kingdom's Winnie the Pooh"
                                 width="2048"
                                 height="2048"
