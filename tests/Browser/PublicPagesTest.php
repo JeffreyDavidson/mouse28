@@ -5,6 +5,7 @@ use App\Models\Post;
 test('public page renders without JavaScript errors', function (string $path, string $content): void {
     visit($path)
         ->assertSee($content)
+        ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 })->with([
     'home' => ['/', 'Disney Parks'],
