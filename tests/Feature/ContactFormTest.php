@@ -3,6 +3,7 @@
 use App\Mail\ContactFormConfirmation;
 use App\Mail\ContactFormSubmitted;
 use App\Models\ContactMessage;
+use App\Models\Podcast;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
@@ -37,6 +38,19 @@ test('contact page renders turnstile widget', function (): void {
 
     expect(substr_count((string) $response->getContent(), 'https://challenges.cloudflare.com/turnstile/v0/api.js'))->toBe(1);
     expect(ContactMessage::SUBJECTS)->not->toHaveKey('story');
+});
+
+test('contact page uses the configured podcast email address', function (): void {
+    Podcast::query()->create([
+        'name' => 'Mouse28',
+        'email' => 'hello@mouse28.test',
+    ]);
+
+    get(route('contact.show'))
+        ->assertOk()
+        ->assertSee('href="mailto:hello@mouse28.test"', false)
+        ->assertSee('hello@mouse28.test')
+        ->assertDontSee('mouse28podcast@gmail.com');
 });
 
 test('valid contact submission requires successful turnstile verification', function (): void {

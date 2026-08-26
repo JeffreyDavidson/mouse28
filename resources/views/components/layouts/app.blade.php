@@ -7,6 +7,7 @@
     'ogType' => 'website',
     'ogImage' => null,
     'canonical' => null,
+    'showFooterNewsletter' => true,
 ])
 
 @php
@@ -93,27 +94,27 @@
                         <a
                             href="{{ route('home') }}"
                             @if (request()->routeIs('home')) aria-current="page" @endif
-                            class="{{ request()->routeIs('home') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-11 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold"
+                            class="{{ request()->routeIs('home') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-12 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold"
                         >Home</a>
                         <a
                             href="{{ route('blog.index') }}"
                             @if (request()->routeIs('blog.*')) aria-current="page" @endif
-                            class="{{ request()->routeIs('blog.*') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-11 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold"
+                            class="{{ request()->routeIs('blog.*') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-12 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold"
                         >Blog</a>
                         <a
                             href="{{ route('episodes.index') }}"
                             @if (request()->routeIs('episodes.*')) aria-current="page" @endif
-                            class="{{ request()->routeIs('episodes.*') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-11 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold"
+                            class="{{ request()->routeIs('episodes.*') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-12 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold"
                         >Podcast</a>
                         <a
                             href="{{ route('about') }}"
                             @if (request()->routeIs('about')) aria-current="page" @endif
-                            class="{{ request()->routeIs('about') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-11 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold"
+                            class="{{ request()->routeIs('about') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-12 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold"
                         >About</a>
                         <a
                             href="{{ route('contact.show') }}"
                             @if (request()->routeIs('contact.*')) aria-current="page" @endif
-                            class="{{ request()->routeIs('contact.*') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-11 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold"
+                            class="{{ request()->routeIs('contact.*') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-12 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold"
                         >Contact</a>
                         <a
                             href="{{ route('search') }}"
@@ -211,8 +212,9 @@
 
         <div class="mx-auto max-w-6xl px-4 pt-16 pb-8 sm:px-6">
             <div class="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
-                {{-- Newsletter (left side) --}}
-                <div class="shrink-0 lg:max-w-md">
+                @if ($showFooterNewsletter)
+                    {{-- Newsletter (left side) --}}
+                    <div class="shrink-0 lg:max-w-md">
                     <h2 class="font-heading mb-2 text-base font-semibold tracking-wider text-white uppercase sm:text-sm">
                         Stay in the Loop
                     </h2>
@@ -245,7 +247,7 @@
                                 autocomplete="email"
                                 required
                                 @error('email', 'newsletter') aria-invalid="true" aria-describedby="footer-newsletter-email-error" @enderror
-                                class="focus:border-gold/50 focus:ring-gold/30 min-h-12 min-w-0 flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-2.5 text-base text-white placeholder-white/30 transition-colors focus:ring-1 focus:outline-none sm:text-sm"
+                                class="focus:border-gold/50 focus:ring-gold/30 min-h-12 min-w-0 flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-2.5 text-base text-white placeholder-white/60 transition-colors focus:ring-1 focus:outline-none sm:text-sm"
                             />
                             <button
                                 type="submit"
@@ -259,8 +261,10 @@
                                 {{ $message }}
                             </p>
                         @enderror
+                        <p class="text-xs text-white/60">We use your email to send Mouse28 updates.</p>
                     </form>
-                </div>
+                    </div>
+                @endif
 
                 {{-- Links (right side) --}}
                 <div class="flex flex-wrap gap-x-16 gap-y-8">
@@ -272,19 +276,19 @@
                         <div class="flex flex-col gap-1 text-base sm:text-sm">
                             <a
                                 href="{{ route('blog.index') }}"
-                                class="hover:text-gold inline-flex min-h-11 items-center transition-colors sm:min-h-6"
+                                class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
                             >Blog</a>
                             <a
                                 href="{{ route('guides.index') }}"
-                                class="hover:text-gold inline-flex min-h-11 items-center transition-colors sm:min-h-6"
+                                class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
                             >Guides</a>
                             <a
                                 href="{{ route('episodes.index') }}"
-                                class="hover:text-gold inline-flex min-h-11 items-center transition-colors sm:min-h-6"
+                                class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
                             >Podcast</a>
                             <a
                                 href="{{ route('about') }}"
-                                class="hover:text-gold inline-flex min-h-11 items-center transition-colors sm:min-h-6"
+                                class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
                             >About Us</a>
                         </div>
                     </div>
@@ -297,14 +301,14 @@
                         <div class="flex flex-col gap-1 text-base sm:text-sm">
                             <a
                                 href="{{ route('contact.show') }}"
-                                class="hover:text-gold inline-flex min-h-11 items-center transition-colors sm:min-h-6"
+                                class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
                             >Contact Us</a>
                             @foreach ($podcast->distributionLinks() as $link)
                                 <a
                                     href="{{ $link['url'] }}"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    class="hover:text-gold inline-flex min-h-11 items-center transition-colors sm:min-h-6"
+                                    class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
                                 >{{ $link['label'] }}</a>
                             @endforeach
                         </div>
@@ -314,8 +318,8 @@
 
             {{-- Bottom bar --}}
             <div class="mt-8 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row">
-                <p class="text-base text-white/40 sm:text-sm">&copy; {{ date('Y') }} Mouse28. All rights reserved.</p>
-                <p class="text-base text-white/40 sm:text-sm">Made with ✨ from Infinity Digital</p>
+                <p class="text-base text-white/60 sm:text-sm">&copy; {{ date('Y') }} Mouse28. All rights reserved.</p>
+                <p class="text-base text-white/60 sm:text-sm">Made with ✨ from Infinity Digital</p>
             </div>
         </div>
     </footer>

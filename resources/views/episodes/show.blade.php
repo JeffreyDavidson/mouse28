@@ -37,7 +37,7 @@
         <div class="relative z-10 mx-auto max-w-4xl px-4 sm:px-6">
             <a
                 href="{{ route('episodes.index') }}"
-                class="hover:text-gold mb-6 inline-flex min-h-11 items-center gap-1 text-base text-white/50 transition-colors sm:text-sm"
+                class="hover:text-gold mb-6 inline-flex min-h-12 items-center gap-1 text-base text-white/50 transition-colors sm:text-sm"
             >
                 <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
                 All Episodes
@@ -54,12 +54,12 @@
                     <span class="rounded-full bg-white/10 px-3 py-1 text-sm text-white/70">Season {{ $episode->season_number }}</span>
                 @endif
                 @if ($episode->duration_seconds)
-                    <span class="flex items-center gap-1 text-sm text-white/40">
+                    <span class="flex items-center gap-1 text-sm text-white/60">
                         <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                         {{ $episode->formatted_duration }}
                     </span>
                 @endif
-                <span class="text-sm text-white/40">{{ $episode->published_at?->format('F j, Y') ?? 'Not scheduled' }}</span>
+                <span class="text-sm text-white/60">{{ $episode->published_at?->format('F j, Y') ?? 'Not scheduled' }}</span>
             </div>
             <h1 class="font-heading max-w-4xl text-4xl font-bold break-words text-white md:text-5xl lg:text-6xl">
                 {{ $episode->title }}
@@ -144,7 +144,7 @@
                     <div class="border-navy/5 mb-8 rounded-2xl border bg-white p-8 shadow-sm md:p-10">
                         <div class="mb-8 flex items-center gap-3">
                             <div class="bg-gold/10 flex size-10 items-center justify-center rounded-xl">
-                                <svg class="text-gold size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+                                <svg class="text-gold-ink size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
                             </div>
                             <h2 class="font-heading text-navy text-2xl font-bold">Transcript</h2>
                         </div>
@@ -162,7 +162,7 @@
                                 <button
                                     type="button"
                                     @click="expanded = ! expanded"
-                                    class="border-navy/10 text-gold hover:border-gold hover:bg-gold/5 mt-4 w-full rounded-xl border py-3 text-center text-sm font-semibold transition-colors"
+                                    class="border-navy/10 text-gold-ink hover:border-gold hover:bg-gold/5 mt-4 min-h-12 w-full rounded-xl border py-3 text-center text-sm font-semibold transition-colors"
                                 >
                                     <span
                                         x-text="expanded ? 'Collapse Transcript' : 'Read Full Transcript'"
@@ -172,7 +172,7 @@
                                 </button>
                             </div>
                         @else
-                            <p class="text-navy/40 italic">A transcript is not available for this episode.</p>
+                            <p class="text-navy/65 italic">A transcript is not available for this episode.</p>
                         @endif
                     </div>
                 </div>
@@ -196,13 +196,13 @@
                                 </div>
                                 <div class="min-w-0">
                                     <span class="font-heading text-navy block truncate text-sm font-bold">{{ $episode->title }}</span>
-                                    <span class="text-navy/40 text-xs">{{ $episode->published_at?->format('F j, Y') ?? 'Not scheduled' }}</span>
+                                    <span class="text-navy/65 text-xs">{{ $episode->published_at?->format('F j, Y') ?? 'Not scheduled' }}</span>
                                 </div>
                             </div>
                             <dl class="space-y-0 text-sm">
                                 @if ($episode->season_number)
                                     <div class="border-navy/5 flex justify-between border-b py-3">
-                                        <dt class="text-navy/45 flex items-center gap-2">
+                                        <dt class="text-navy/65 flex items-center gap-2">
                                             <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
                                             Season
                                         </dt>
@@ -211,7 +211,7 @@
                                 @endif
                                 @if ($episode->duration_seconds)
                                     <div class="border-navy/5 flex justify-between border-b py-3">
-                                        <dt class="text-navy/45 flex items-center gap-2">
+                                        <dt class="text-navy/65 flex items-center gap-2">
                                             <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                                             Duration
                                         </dt>
@@ -219,7 +219,7 @@
                                     </div>
                                 @endif
                                 <div class="flex justify-between py-3">
-                                    <dt class="text-navy/45 flex items-center gap-2">
+                                    <dt class="text-navy/65 flex items-center gap-2">
                                         <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                                         Published
                                     </dt>
@@ -255,7 +255,7 @@
                                         </div>
                                         <div>
                                             <span class="text-navy group-hover:text-purple block text-base font-semibold transition-colors sm:text-sm">Apple Podcasts</span>
-                                            <span class="text-navy/35 text-sm sm:text-xs">{{ $episode->apple_url ? 'Listen to this episode' : 'Visit the show' }}</span>
+                                            <span class="text-navy/65 text-sm sm:text-xs">{{ $episode->apple_url ? 'Listen to this episode' : 'Visit the show' }}</span>
                                         </div>
                                         <svg class="text-navy/20 group-hover:text-purple/50 ml-auto size-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                                     </a>
@@ -272,7 +272,7 @@
                                         </div>
                                         <div>
                                             <span class="text-navy group-hover:text-purple block text-base font-semibold transition-colors sm:text-sm">Spotify</span>
-                                            <span class="text-navy/35 text-sm sm:text-xs">{{ $episode->spotify_url ? 'Listen to this episode' : 'Visit the show' }}</span>
+                                            <span class="text-navy/65 text-sm sm:text-xs">{{ $episode->spotify_url ? 'Listen to this episode' : 'Visit the show' }}</span>
                                         </div>
                                         <svg class="text-navy/20 group-hover:text-purple/50 ml-auto size-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                                     </a>
@@ -289,7 +289,7 @@
                                         </div>
                                         <div>
                                             <span class="text-navy group-hover:text-purple block text-sm font-semibold transition-colors">YouTube</span>
-                                            <span class="text-navy/35 text-xs">{{ $episode->youtube_url ? 'Watch this episode' : 'Visit the channel' }}</span>
+                                            <span class="text-navy/65 text-xs">{{ $episode->youtube_url ? 'Watch this episode' : 'Visit the channel' }}</span>
                                         </div>
                                         <svg class="text-navy/20 group-hover:text-purple/50 ml-auto size-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                                     </a>
@@ -305,7 +305,7 @@
                                     </div>
                                     <div>
                                         <span class="text-navy group-hover:text-purple block text-sm font-semibold transition-colors">RSS Feed</span>
-                                        <span class="text-navy/35 text-xs">Subscribe in another podcast app</span>
+                                        <span class="text-navy/65 text-xs">Subscribe in another podcast app</span>
                                     </div>
                                     <svg class="text-navy/20 group-hover:text-purple/50 ml-auto size-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                                 </a>
@@ -392,7 +392,7 @@
                                                 <h4 class="font-heading text-navy group-hover:text-purple line-clamp-2 text-sm font-semibold transition-colors">
                                                     {{ $post->title }}
                                                 </h4>
-                                                <span class="text-navy/35 mt-1 block text-xs">{{ $post->published_at->format('M j, Y') }}</span>
+                                                <span class="text-navy/65 mt-1 block text-xs">{{ $post->published_at->format('M j, Y') }}</span>
                                             </div>
                                         </a>
                                     @endforeach
@@ -408,7 +408,7 @@
                                     <svg class="text-gold size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
                                 </div>
                                 <h3 class="font-heading mb-2 text-lg font-bold text-white">More Episodes</h3>
-                                <p class="mb-5 text-base/relaxed text-white/40 sm:text-sm/relaxed">
+                                <p class="mb-5 text-base/relaxed text-white/60 sm:text-sm/relaxed">
                                     Browse all episodes from Mouse28
                                 </p>
                                 <a
@@ -434,7 +434,7 @@
                             rel="prev"
                             class="group border-navy/5 hover:border-purple/20 flex min-h-24 flex-col justify-center rounded-2xl border bg-white px-6 py-5 shadow-sm transition-[border-color,box-shadow] hover:shadow-lg"
                         >
-                            <span class="text-gold text-xs font-bold tracking-widest uppercase">← Previous episode</span>
+                            <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">← Previous episode</span>
                             <span class="font-heading text-navy group-hover:text-purple mt-2 text-lg font-bold transition-colors">{{ $previousEpisode->title }}</span>
                         </a>
                     @endif
@@ -444,7 +444,7 @@
                             rel="next"
                             class="group border-navy/5 hover:border-purple/20 flex min-h-24 flex-col justify-center rounded-2xl border bg-white px-6 py-5 text-right shadow-sm transition-[border-color,box-shadow] hover:shadow-lg sm:col-start-2"
                         >
-                            <span class="text-gold text-xs font-bold tracking-widest uppercase">Next episode →</span>
+                            <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">Next episode →</span>
                             <span class="font-heading text-navy group-hover:text-purple mt-2 text-lg font-bold transition-colors">{{ $nextEpisode->title }}</span>
                         </a>
                     @endif

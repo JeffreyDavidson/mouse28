@@ -5,14 +5,18 @@ namespace App\Http\Controllers;
 use App\Actions\SendContactEmails;
 use App\Http\Requests\StoreContactRequest;
 use App\Models\ContactMessage;
+use App\Models\Podcast;
 use App\Support\Turnstile;
 use Illuminate\Validation\ValidationException;
+use Illuminate\View\View;
 
 class ContactController extends Controller
 {
-    public function show()
+    public function show(): View
     {
-        return view('contact');
+        return view('contact', [
+            'contactEmail' => Podcast::info()->email ?: config('mail.admin_address', 'mouse28podcast@gmail.com'),
+        ]);
     }
 
     public function store(StoreContactRequest $request, Turnstile $turnstile, SendContactEmails $sendContactEmails)

@@ -56,9 +56,9 @@
     {{-- Timeline Story --}}
     <section class="bg-cream py-16 md:py-24">
         <div class="mx-auto mb-14 max-w-4xl px-4 text-center sm:px-6">
-            <span class="text-gold text-sm font-semibold tracking-widest uppercase">Our Journey</span>
+            <span class="text-gold-ink text-sm font-semibold tracking-widest uppercase">Our Journey</span>
             <h2 class="font-heading text-navy mt-3 text-3xl font-bold md:text-4xl">How We Got Here</h2>
-            <p class="font-body text-navy/50 mx-auto mt-4 max-w-lg leading-relaxed">
+            <p class="font-body text-navy/65 mx-auto mt-4 max-w-lg leading-relaxed">
                 From first-time park visitors to weekly regulars, here's the story behind Mouse28.
             </p>
         </div>
@@ -66,7 +66,7 @@
             {{-- Section: Meet the Davidsons --}}
             <div class="border-gold/30 relative border-l-2 pb-16 pl-8 md:pl-12">
                 <div class="bg-gold ring-cream absolute top-0 left-0 size-4 translate-x-[-9px] rounded-full ring-4"></div>
-                <span class="text-gold text-xs font-semibold tracking-widest uppercase">Chapter One</span>
+                <span class="text-gold-ink text-xs font-semibold tracking-widest uppercase">Chapter One</span>
                 <h2 class="font-heading text-navy mt-2 mb-5 text-2xl font-bold md:text-3xl">Meet the Davidsons</h2>
                 <div class="text-navy/70 space-y-4 leading-relaxed">
                     <p>
@@ -86,7 +86,7 @@
             {{-- Section: Viola's World --}}
             <div class="border-gold/30 relative border-l-2 pb-16 pl-8 md:pl-12">
                 <div class="bg-gold ring-cream absolute top-0 left-0 size-4 translate-x-[-9px] rounded-full ring-4"></div>
-                <span class="text-gold text-xs font-semibold tracking-widest uppercase">Chapter Two</span>
+                <span class="text-gold-ink text-xs font-semibold tracking-widest uppercase">Chapter Two</span>
                 <h2 class="font-heading text-navy mt-2 mb-5 text-2xl font-bold md:text-3xl">Viola's World</h2>
                 <div class="text-navy/70 space-y-4 leading-relaxed">
                     <p>
@@ -112,7 +112,7 @@
             {{-- Section: Why Mouse28 --}}
             <div class="border-gold/30 relative border-l-2 pb-16 pl-8 md:pl-12">
                 <div class="bg-gold ring-cream absolute top-0 left-0 size-4 translate-x-[-9px] rounded-full ring-4"></div>
-                <span class="text-gold text-xs font-semibold tracking-widest uppercase">Chapter Three</span>
+                <span class="text-gold-ink text-xs font-semibold tracking-widest uppercase">Chapter Three</span>
                 <h2 class="font-heading text-navy mt-2 mb-5 text-2xl font-bold md:text-3xl">Why Mouse28?</h2>
                 <div class="text-navy/70 space-y-4 leading-relaxed">
                     <p>
@@ -188,7 +188,7 @@
             <div class="mb-16 text-center">
                 <span class="border-purple/20 bg-purple/5 font-body text-purple mb-4 inline-block rounded-full border px-6 py-2 text-xs font-semibold tracking-[0.25em] uppercase">Your Hosts</span>
                 <h2 class="font-heading text-navy mt-3 text-3xl font-bold md:text-5xl">
-                    The Voices Behind<br /><span class="text-gold italic">Mouse28</span>
+                    The Voices Behind<br /><span class="text-gold-ink italic">Mouse28</span>
                 </h2>
             </div>
 
