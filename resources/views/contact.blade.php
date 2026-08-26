@@ -7,6 +7,7 @@
 >
     @php
         $contactHasFeedback = $errors->contact->isNotEmpty();
+        $firstContactError = $errors->contact->keys()[0] ?? null;
     @endphp
     @if (session('success'))
         <section class="from-cream to-cream relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-linear-to-br via-white">
@@ -130,6 +131,7 @@
                                         value="{{ $contactHasFeedback ? old('name') : '' }}"
                                         placeholder="Your name"
                                         @error('name', 'contact') aria-invalid="true" aria-describedby="name-error" @enderror
+                                        @if ($firstContactError === 'name') autofocus @endif
                                         class="border-cream/10 bg-cream/4 text-cream placeholder:text-cream/60 focus:border-gold/50 focus:bg-cream/6 focus:ring-gold/20 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none sm:text-sm"
                                     />
                                     @error('name', 'contact')
@@ -153,6 +155,7 @@
                                         value="{{ $contactHasFeedback ? old('email') : '' }}"
                                         placeholder="you@example.com"
                                         @error('email', 'contact') aria-invalid="true" aria-describedby="email-error" @enderror
+                                        @if ($firstContactError === 'email') autofocus @endif
                                         class="border-cream/10 bg-cream/4 text-cream placeholder:text-cream/60 focus:border-gold/50 focus:bg-cream/6 focus:ring-gold/20 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none sm:text-sm"
                                     />
                                     @error('email', 'contact')
@@ -173,6 +176,7 @@
                                     name="subject"
                                     required
                                     @error('subject', 'contact') aria-invalid="true" aria-describedby="subject-error" @enderror
+                                    @if ($firstContactError === 'subject') autofocus @endif
                                     class="contact-select border-cream/10 bg-cream/4 text-cream/70 focus:border-gold/50 focus:ring-gold/20 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none sm:text-sm"
                                 >
                                     <option value="">Choose a topic...</option>
@@ -220,6 +224,7 @@
                                     rows="5"
                                     placeholder="What's on your mind?"
                                     @error('message', 'contact') aria-invalid="true" aria-describedby="message-error" @enderror
+                                    @if ($firstContactError === 'message') autofocus @endif
                                     class="border-cream/10 bg-cream/4 text-cream placeholder:text-cream/60 focus:border-gold/50 focus:bg-cream/6 focus:ring-gold/20 min-h-36 w-full resize-y rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none sm:text-sm"
                                 >{{ $contactHasFeedback ? old('message') : '' }}</textarea>
                                 @error('message', 'contact')

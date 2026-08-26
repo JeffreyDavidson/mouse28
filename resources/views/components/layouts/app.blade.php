@@ -253,6 +253,7 @@
                                     autocomplete="email"
                                     required
                                     @error('email', 'newsletter') aria-invalid="true" aria-describedby="footer-newsletter-email-error" @enderror
+                                    @error('email', 'newsletter') autofocus @enderror
                                     class="focus:border-gold/50 focus:ring-gold/30 min-h-12 min-w-0 flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-2.5 text-base text-white transition-colors placeholder:text-white/60 focus:ring-1 focus:outline-none sm:text-sm"
                                 />
                                 <button

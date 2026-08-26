@@ -137,5 +137,12 @@ function initializeBlogArticle() {
     updateTableOfContents();
 }
 
+function focusFirstInvalidField() {
+    window.addEventListener('pageshow', () => {
+        document.querySelector('[aria-invalid="true"]')?.focus();
+    });
+}
+
 initializeCopyLinks();
 initializeBlogArticle();
+focusFirstInvalidField();

@@ -519,13 +519,19 @@
                 New posts, podcast episodes, and park tips straight to your inbox. No spam, just pixie dust.
             </p>
             @if (session('newsletter_success'))
-                <div class="mx-auto max-w-md rounded-xl border border-green-400/30 bg-green-500/20 px-6 py-4">
+                <div
+                    role="status"
+                    class="mx-auto max-w-md rounded-xl border border-green-400/30 bg-green-500/20 px-6 py-4"
+                >
                     <p class="font-body text-sm text-green-300">
                         <span aria-hidden="true">✨</span> You're subscribed! We'll send you the good stuff.
                     </p>
                 </div>
             @elseif (session('newsletter_error'))
-                <div class="mx-auto mb-4 max-w-md rounded-xl border border-red-400/30 bg-red-500/20 px-6 py-4">
+                <div
+                    role="alert"
+                    class="mx-auto mb-4 max-w-md rounded-xl border border-red-400/30 bg-red-500/20 px-6 py-4"
+                >
                     <p class="font-body text-sm text-red-300">{{ session('newsletter_error') }}</p>
                 </div>
                 <form action="{{ route('newsletter.store') }}" method="POST" class="mx-auto max-w-md space-y-3">
@@ -542,6 +548,7 @@
                             autocomplete="email"
                             required
                             @error('email', 'newsletter') aria-invalid="true" aria-describedby="home-newsletter-email-error-message" @enderror
+                            @error('email', 'newsletter') autofocus @enderror
                             class="newsletter-input font-body focus:border-gold/40 focus:ring-gold/60 min-h-[48px] flex-1 rounded-full border border-white/20 bg-white/10 px-5 py-3.5 text-base text-white transition-[border-color,box-shadow] duration-300 placeholder:text-white/60 focus:ring-2 focus:outline-none sm:text-sm"
                         />
                         <button
@@ -572,6 +579,7 @@
                             autocomplete="email"
                             required
                             @error('email', 'newsletter') aria-invalid="true" aria-describedby="home-newsletter-email-message" @enderror
+                            @error('email', 'newsletter') autofocus @enderror
                             class="newsletter-input font-body focus:border-gold/40 focus:ring-gold/60 min-h-[48px] flex-1 rounded-full border border-white/20 bg-white/10 px-5 py-3.5 text-base text-white transition-[border-color,box-shadow] duration-300 placeholder:text-white/60 focus:ring-2 focus:outline-none sm:text-sm"
                         />
                         <button

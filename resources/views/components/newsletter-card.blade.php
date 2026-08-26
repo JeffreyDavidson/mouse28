@@ -44,6 +44,7 @@
                 autocomplete="email"
                 required
                 @error('email', 'newsletter') aria-invalid="true" aria-describedby="newsletter-email-error" @enderror
+                @error('email', 'newsletter') autofocus @enderror
                 class="focus:border-gold/40 focus:ring-gold/20 min-h-12 w-full rounded-xl border border-white/10 bg-white/8 px-4 py-3 text-base text-white transition-colors placeholder:text-white/60 focus:bg-white/12 focus:ring-2 focus:outline-none sm:text-sm"
             />
             @error('email', 'newsletter')

@@ -17,4 +17,14 @@ class SearchRequest extends FormRequest
             'q' => ['nullable', 'string', 'max:100'],
         ];
     }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'q.max' => 'Search terms may not be longer than 100 characters.',
+        ];
+    }
 }
