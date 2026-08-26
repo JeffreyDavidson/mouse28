@@ -63,6 +63,7 @@ test('published episode detail page renders', function (): void {
         'episode_number' => 1,
         'season_number' => 1,
         'duration_seconds' => 1800,
+        'audio_url' => 'https://cdn.example.com/planning-a-sensory-friendly-visit.mp3',
         'is_published' => true,
         'published_at' => now()->subDay(),
     ]);
@@ -70,7 +71,19 @@ test('published episode detail page renders', function (): void {
     get(route('episodes.show', $episode))
         ->assertOk()
         ->assertSee($episode->title)
-        ->assertSee('Our favorite planning strategies', false);
+        ->assertSee('Our favorite planning strategies', false)
+        ->assertSee('Listen to this episode')
+        ->assertDontSee('Now Playing')
+        ->assertSee('aria-label="Play Planning a Sensory-Friendly Visit"', false)
+        ->assertSee('id="episode-transcript"', false)
+        ->assertSee('aria-controls="episode-transcript"', false)
+        ->assertSee(':aria-expanded="expanded.toString()"', false);
+});
+
+test('empty podcast page hides its decorative player preview from assistive technology', function (): void {
+    get(route('episodes.index'))
+        ->assertOk()
+        ->assertSee('id="podcast-player-preview" class="hidden md:block" aria-hidden="true"', false);
 });
 
 test('podcast pages describe episodes without audio as details instead of playable media', function (): void {

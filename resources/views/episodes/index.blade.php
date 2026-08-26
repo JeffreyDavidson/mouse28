@@ -312,7 +312,7 @@
                             </div>
 
                             {{-- Right: Faux player --}}
-                            <div class="hidden md:block">
+                            <div id="podcast-player-preview" class="hidden md:block" aria-hidden="true">
                                 <div class="border-gold/12 bg-navy/60 rounded-3xl border p-8 shadow-2xl shadow-black/30 backdrop-blur-[10px]">
                                     {{-- Episode header --}}
                                     <div class="mb-6 flex items-center gap-4">
