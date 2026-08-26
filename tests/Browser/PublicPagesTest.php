@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Episode;
+use App\Models\Guide;
 use App\Models\Post;
 
 test('public page renders without JavaScript errors', function (string $path, string $content): void {
@@ -15,6 +17,29 @@ test('public page renders without JavaScript errors', function (string $path, st
     'about' => ['/about', 'About'],
     'contact' => ['/contact', 'Contact'],
 ]);
+
+test('published content detail pages have no accessibility issues', function (): void {
+    $post = Post::factory()->create();
+    $episode = Episode::factory()->create([
+        'audio_url' => 'https://cdn.example.com/accessible-episode.mp3',
+    ]);
+    $guide = Guide::factory()->create();
+
+    $pages = visit([
+        route('blog.show', $post),
+        route('episodes.show', $episode),
+        route('guides.show', $guide),
+    ]);
+
+    $pages->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors();
+
+    [, $episodePage] = $pages;
+
+    $episodePage->click('Read Full Transcript')
+        ->assertScript('document.querySelector("[aria-controls=episode-transcript]").ariaExpanded', 'true')
+        ->assertNoAccessibilityIssues();
+});
 
 test('mobile navigation opens and remains usable', function (): void {
     visit('/')
