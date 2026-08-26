@@ -35,6 +35,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandName('Mouse28')
             ->brandLogo(view('filament.brand-logo'))
             ->darkModeBrandLogo(view('filament.brand-logo'))
+            ->darkMode(isForced: true)
             ->login(Login::class)
             ->spa()
             ->viteTheme('resources/css/filament/admin/theme.css')

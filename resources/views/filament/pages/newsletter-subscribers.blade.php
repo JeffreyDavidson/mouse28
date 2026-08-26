@@ -62,7 +62,7 @@
             </svg>
             <h3 class="font-mouse-heading text-mouse-cream text-xl font-bold">No subscribers yet</h3>
             <p class="font-mouse-body text-mouse-cream/50 mt-2 text-sm">
-                Share your newsletter signup link to start growing your audience ✨
+                Share your newsletter signup link to start growing your audience <span aria-hidden="true">✨</span>
             </p>
         </div>
     @elseif ($count > 0)

@@ -17,7 +17,7 @@
         <div class="relative z-1 flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
                 <h2 class="font-mouse-heading text-mouse-gold-light mb-2 text-2xl font-bold sm:text-[1.75rem]">
-                    Welcome back, {{ auth()->user()->name }} ✨
+                    Welcome back, {{ auth()->user()->name }} <span aria-hidden="true">✨</span>
                 </h2>
                 <p class="font-mouse-body text-mouse-cream/70 text-base sm:text-sm">
                     @php
