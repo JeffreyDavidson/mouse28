@@ -22,6 +22,7 @@ test('newsletter forms render bot protection', function (): void {
     get(route('home'))
         ->assertOk()
         ->assertSee('data-action="newsletter"', false)
+        ->assertSee('data-appearance="interaction-only"', false)
         ->assertSee('name="website_url"', false);
 });
 

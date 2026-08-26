@@ -13,6 +13,7 @@
             data-sitekey="{{ config('services.turnstile.site_key') }}"
             data-action="{{ config('services.turnstile.newsletter_action') }}"
             data-theme="dark"
+            data-appearance="interaction-only"
         ></div>
     </div>
 @endif
