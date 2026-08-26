@@ -124,7 +124,7 @@
                                                         <span class="text-navy/40 text-xs">S{{ $episode->season_number }}E{{ $episode->episode_number }}</span>
                                                     @endif
                                                 </div>
-                                                <h2 class="font-heading text-navy group-hover:text-purple mb-2 text-xl font-semibold transition-colors">
+                                                <h2 class="font-heading text-navy group-hover:text-purple mb-2 line-clamp-2 text-xl font-semibold transition-colors">
                                                     {{ $episode->title }}
                                                 </h2>
                                                 <p class="text-navy/60 line-clamp-2 text-base/relaxed sm:text-sm/relaxed">
