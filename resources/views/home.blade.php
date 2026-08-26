@@ -89,6 +89,8 @@
                                 <img
                                     src="{{ $featuredPost->cover_image_url }}"
                                     alt="{{ $featuredPost->title }}"
+                                    loading="lazy"
+                                    decoding="async"
                                     class="absolute inset-0 size-full object-cover transition-transform duration-700 group-hover:scale-105"
                                 />
                                 <div class="md:to-navy/40 absolute inset-y-0 right-0 left-1/2 md:bg-linear-to-r md:from-transparent md:via-transparent"></div>
