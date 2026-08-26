@@ -23,6 +23,7 @@
                     value="{{ $query }}"
                     maxlength="100"
                     placeholder="Try “sensory breaks” or “DAS”"
+                    @error('q') aria-invalid="true" aria-describedby="site-search-error" autofocus @enderror
                     class="text-navy placeholder:text-navy/65 focus:border-gold focus:ring-gold/40 min-h-12 flex-1 rounded-full border border-white/15 bg-white px-5 py-3 text-base shadow-lg focus:ring-2 focus:outline-none"
                 />
                 <button
@@ -33,7 +34,7 @@
                 </button>
             </form>
             @error('q')
-                <p role="alert" class="mt-3 text-sm text-red-200">{{ $message }}</p>
+                <p id="site-search-error" role="alert" class="mt-3 text-sm text-red-200">{{ $message }}</p>
             @enderror
         </div>
     </section>

@@ -199,7 +199,7 @@
                                 @if (request('q') || $category)
                                     <a
                                         href="{{ route('blog.index') }}"
-                                        class="border-gold/25 bg-gold/15 text-gold inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-xs font-semibold transition-transform hover:-translate-y-0.5"
+                                        class="border-gold/25 bg-gold/15 text-gold inline-flex min-h-12 items-center gap-2 rounded-lg border px-4 py-2 text-xs font-semibold transition-transform hover:-translate-y-0.5"
                                     >
                                         <svg aria-hidden="true" class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
                                         View all posts

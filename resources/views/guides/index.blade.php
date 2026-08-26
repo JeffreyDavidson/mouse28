@@ -79,10 +79,23 @@
                 @endif
             @else
                 <div class="border-navy/5 rounded-3xl border bg-white px-6 py-16 text-center shadow-sm">
-                    <h2 class="font-heading text-navy text-3xl font-bold">Guides are on the way</h2>
-                    <p class="text-navy/65 mx-auto mt-3 max-w-xl text-base/relaxed">
-                        We are reviewing our park notes and sources so every published guide is useful and current.
-                    </p>
+                    @if ($category)
+                        <h2 class="font-heading text-navy text-3xl font-bold">
+                            No {{ \App\Models\Guide::CATEGORIES[$category] ?? 'matching' }} guides yet
+                        </h2>
+                        <p class="text-navy/65 mx-auto mt-3 max-w-xl text-base/relaxed">
+                            Try another category or browse all of our guides.
+                        </p>
+                        <a
+                            href="{{ route('guides.index') }}"
+                            class="bg-navy hover:bg-purple mt-7 inline-flex min-h-12 items-center rounded-full px-5 py-3 font-semibold text-white"
+                        >View all guides</a>
+                    @else
+                        <h2 class="font-heading text-navy text-3xl font-bold">Guides are on the way</h2>
+                        <p class="text-navy/65 mx-auto mt-3 max-w-xl text-base/relaxed">
+                            We are reviewing our park notes and sources so every published guide is useful and current.
+                        </p>
+                    @endif
                 </div>
             @endif
         </div>
