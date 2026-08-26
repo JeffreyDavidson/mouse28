@@ -37,6 +37,9 @@ function initializeBlogArticle() {
 
     const progressBar = document.getElementById('reading-progress');
     const backToTop = document.getElementById('back-to-top');
+    const preferredScrollBehavior = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 'auto'
+        : 'smooth';
 
     const updateProgress = () => {
         const articleBounds = article.getBoundingClientRect();
@@ -71,7 +74,7 @@ function initializeBlogArticle() {
     updateProgress();
 
     backToTop?.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: preferredScrollBehavior() });
     });
 
     const content = article.querySelector('.blog-article-content');
@@ -101,7 +104,10 @@ function initializeBlogArticle() {
         link.className = `block border-l-2 border-navy/8 py-1.5 leading-[1.4] text-navy/50 no-underline transition-colors duration-200 hover:border-gold hover:text-gold ${heading.tagName === 'H3' ? 'pl-8 text-xs' : 'pl-4 text-[0.8rem]'}`;
         link.addEventListener('click', (event) => {
             event.preventDefault();
-            heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            heading.scrollIntoView({
+                behavior: preferredScrollBehavior(),
+                block: 'start',
+            });
         });
         tocNav.appendChild(link);
     });
