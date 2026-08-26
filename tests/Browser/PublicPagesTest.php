@@ -25,6 +25,48 @@ function exposedDecorativeGlyphCountScript(): string
         JS;
 }
 
+function horizontalOverflowCountScript(): string
+{
+    return <<<'JS'
+        (() => document.documentElement.scrollWidth > document.documentElement.clientWidth ? 1 : 0)()
+        JS;
+}
+
+function undersizedMobileControlsScript(): string
+{
+    return <<<'JS'
+        (() => {
+            const controls = document.querySelectorAll([
+                'button',
+                'input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"])',
+                'select',
+                'textarea',
+                'summary',
+                'a[href]',
+            ].join(','));
+
+            return [...controls].filter((control) => {
+                const styles = window.getComputedStyle(control);
+                const bounds = control.getBoundingClientRect();
+                const isInlineLink = control.matches('a[href]') && styles.display === 'inline';
+
+                return ! isInlineLink
+                    && ! control.closest('[aria-hidden="true"]')
+                    && styles.display !== 'none'
+                    && styles.visibility !== 'hidden'
+                    && bounds.width > 0
+                    && bounds.height > 0
+                    && (bounds.width < 44 || bounds.height < 44);
+            }).map((control) => {
+                const bounds = control.getBoundingClientRect();
+                const identity = control.id ? `#${control.id}` : control.textContent.trim().replace(/\s+/g, ' ').slice(0, 30);
+
+                return `${control.tagName.toLowerCase()}${identity} (${Math.round(bounds.width)}x${Math.round(bounds.height)})`;
+            }).join('|');
+        })()
+        JS;
+}
+
 test('public page renders without JavaScript errors', function (string $path, string $content): void {
     visit($path)
         ->assertSee($content)
@@ -39,6 +81,7 @@ test('public page renders without JavaScript errors', function (string $path, st
     'podcast' => ['/episodes', 'Podcast'],
     'about' => ['/about', 'About'],
     'contact' => ['/contact', 'Contact'],
+    'search' => ['/search', 'Search'],
 ]);
 
 test('published content detail pages have no accessibility issues', function (): void {
@@ -72,6 +115,75 @@ test('mobile navigation opens and remains usable', function (): void {
         ->mobile()
         ->click('[aria-label="Open navigation menu"]')
         ->assertVisible('#mobile-navigation')
+        ->assertScript('document.querySelector("[aria-controls=mobile-navigation]").ariaExpanded', 'true')
+        ->click('[aria-label="Close navigation menu"]')
+        ->assertScript('getComputedStyle(document.querySelector("#mobile-navigation")).display', 'none')
+        ->assertScript('document.querySelector("[aria-controls=mobile-navigation]").ariaExpanded', 'false')
+        ->assertNoJavaScriptErrors();
+});
+
+test('public pages remain usable at mobile widths', function (): void {
+    $post = Post::factory()->create([
+        'title' => 'Accessible Park Planning',
+        'body' => "## Planning the day\n\nStart with a flexible plan.\n\n## Finding quiet spaces\n\nTake sensory breaks when needed.",
+    ]);
+    $episode = Episode::factory()->create([
+        'title' => 'Accessible Disney Travel',
+        'description' => 'A conversation about accessible Disney travel.',
+        'audio_url' => 'https://cdn.example.com/accessible-episode.mp3',
+    ]);
+    $guide = Guide::factory()->create([
+        'title' => 'Accessible Parks Guide',
+        'excerpt' => 'An accessible guide for planning a parks visit.',
+    ]);
+
+    visit([
+        route('home'),
+        route('blog.index'),
+        route('guides.index'),
+        route('episodes.index'),
+        route('about'),
+        route('contact.show'),
+        route('search', ['q' => 'accessible']),
+        route('blog.show', $post),
+        route('episodes.show', $episode),
+        route('guides.show', $guide),
+    ])
+        ->on()
+        ->mobile()
+        ->resize(320, 812)
+        ->assertScript(horizontalOverflowCountScript(), 0)
+        ->assertScript(undersizedMobileControlsScript(), '')
+        ->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors();
+});
+
+test('mobile search and transcript controls remain usable', function (): void {
+    $post = Post::factory()->create([
+        'title' => 'Accessible Park Planning',
+        'body' => 'Practical accessible planning advice for a Disney parks visit.',
+    ]);
+    $episode = Episode::factory()->create([
+        'audio_url' => 'https://cdn.example.com/accessible-episode.mp3',
+    ]);
+
+    visit(route('search'))
+        ->on()
+        ->mobile()
+        ->resize(320, 812)
+        ->fill('#site-search', 'Accessible Park')
+        ->click('form[role="search"] button[type="submit"]')
+        ->assertQueryStringHas('q', 'Accessible Park')
+        ->assertSee($post->title)
+        ->assertNoJavaScriptErrors();
+
+    visit(route('episodes.show', $episode))
+        ->on()
+        ->mobile()
+        ->resize(320, 812)
+        ->click('Read Full Transcript')
+        ->assertScript('document.querySelector("[aria-controls=episode-transcript]").ariaExpanded', 'true')
+        ->assertSee('Collapse Transcript')
         ->assertNoJavaScriptErrors();
 });
 
