@@ -66,7 +66,7 @@
             <div class="absolute inset-0 {{ $post->cover_image_url ? 'bg-linear-to-t from-navy/95 via-navy/70 to-navy/40' : 'bg-linear-to-t from-navy/95 via-navy/60 to-navy/30' }}"></div>
         </div>
 
-        <div class="relative z-10 mx-auto w-full max-w-6xl px-4 pt-20 pb-14 sm:px-6">
+        <div class="relative z-10 mx-auto w-full max-w-6xl px-4 pt-20 pb-14 wrap-anywhere sm:px-6">
             {{-- Back link --}}
             <a
                 href="{{ route('blog.index') }}"
@@ -159,7 +159,7 @@
         <div class="mx-auto max-w-6xl px-4 sm:px-6">
             <div class="flex flex-col gap-12 lg:flex-row">
                 {{-- Main Content --}}
-                <div class="lg:w-[66%]">
+                <div class="min-w-0 lg:w-[66%]">
                     <article
                         id="article-body"
                         class="border-navy/5 shadow-navy/5 relative rounded-3xl border bg-white p-5 shadow-lg sm:p-8 md:p-14"
@@ -185,7 +185,7 @@
                             <div class="from-gold/8 absolute -top-12 -right-12 size-24 rotate-45 bg-linear-to-bl to-transparent"></div>
                         </div>
 
-                        <div class="blog-article-content prose-navy prose text-navy/80 max-w-[68ch] text-[1.0625rem] leading-[1.8]">
+                        <div class="blog-article-content prose-navy prose text-navy/80 max-w-[68ch] text-[1.0625rem] leading-[1.8] wrap-anywhere">
                             {!!
                                 Str::markdown($post->body ?? '', [
                                     'html_input' => 'strip',

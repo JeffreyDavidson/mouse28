@@ -34,7 +34,7 @@
             @if ($guides->isNotEmpty())
                 <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     @foreach ($guides as $guide)
-                        <article class="border-navy/5 flex flex-col overflow-hidden rounded-2xl border bg-white shadow-sm transition-[transform,box-shadow] hover:-translate-y-1 hover:shadow-lg">
+                        <article class="border-navy/5 flex min-w-0 flex-col overflow-hidden rounded-2xl border bg-white shadow-sm transition-[transform,box-shadow] hover:-translate-y-1 hover:shadow-lg">
                             @if ($guide->cover_image_url)
                                 <img
                                     src="{{ $guide->cover_image_url }}"
@@ -51,7 +51,7 @@
                                     <span class="text-5xl">✦</span>
                                 </div>
                             @endif
-                            <div class="flex flex-1 flex-col p-6">
+                            <div class="flex min-w-0 flex-1 flex-col p-6 wrap-anywhere">
                                 <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">{{ $guide->category_label }}</span>
                                 <h2 class="font-heading text-navy mt-3 text-2xl font-bold">
                                     <a
@@ -75,7 +75,7 @@
                 </div>
 
                 @if ($guides->hasPages())
-                    <div class="mt-12">{{ $guides->links() }}</div>
+                    <div class="blog-pagination mt-12 flex justify-center">{{ $guides->links() }}</div>
                 @endif
             @else
                 <div class="border-navy/5 rounded-3xl border bg-white px-6 py-16 text-center shadow-sm">

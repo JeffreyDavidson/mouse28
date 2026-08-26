@@ -34,7 +34,7 @@
                 </g>
             </svg>
         </div>
-        <div class="relative z-10 mx-auto max-w-4xl px-4 sm:px-6">
+        <div class="relative z-10 mx-auto max-w-4xl px-4 wrap-anywhere sm:px-6">
             <a
                 href="{{ route('episodes.index') }}"
                 class="hover:text-gold mb-6 inline-flex min-h-12 items-center gap-1 text-base text-white/50 transition-colors sm:text-sm"
@@ -74,7 +74,7 @@
         <div class="mx-auto max-w-6xl px-4 sm:px-6">
             <div class="flex flex-col gap-10 lg:flex-row">
                 {{-- Main Content --}}
-                <div class="lg:w-[66%]">
+                <div class="min-w-0 lg:w-[66%]">
                     {{-- Custom Audio Player Card --}}
                     @if ($episode->audio_source_url)
                         <div class="from-navy to-navy-light relative mb-10 overflow-hidden rounded-2xl bg-linear-to-r p-6 shadow-xl md:p-8">
@@ -109,7 +109,7 @@
                                     />
                                 </div>
 
-                                <div class="w-full flex-1">
+                                <div class="w-full min-w-0 flex-1 wrap-anywhere">
                                     <p class="mb-1 text-xs tracking-wider text-white/50 uppercase">
                                         Listen to this episode
                                     </p>
@@ -139,7 +139,7 @@
                                 </div>
                                 <h2 class="font-heading text-navy text-2xl font-bold">Show Notes</h2>
                             </div>
-                            <div class="episode-show-notes-content">{!! $episode->show_notes !!}</div>
+                            <div class="episode-show-notes-content wrap-anywhere">{!! $episode->show_notes !!}</div>
                         </div>
                     @endif
 
@@ -155,7 +155,7 @@
                             <div x-data="{ expanded: false }">
                                 <div
                                     id="episode-transcript"
-                                    class="episode-transcript-content max-h-[600px]"
+                                    class="episode-transcript-content max-h-[600px] wrap-anywhere"
                                     :class="{ 'max-h-none': expanded }"
                                 >
                                     {!! $episode->transcript !!}
@@ -438,7 +438,7 @@
                         <a
                             href="{{ route('episodes.show', $previousEpisode) }}"
                             rel="prev"
-                            class="group border-navy/5 hover:border-purple/20 flex min-h-24 flex-col justify-center rounded-2xl border bg-white px-6 py-5 shadow-sm transition-[border-color,box-shadow] hover:shadow-lg"
+                            class="group border-navy/5 hover:border-purple/20 flex min-h-24 flex-col justify-center rounded-2xl border bg-white px-6 py-5 wrap-anywhere shadow-sm transition-[border-color,box-shadow] hover:shadow-lg"
                         >
                             <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">← Previous episode</span>
                             <span class="font-heading text-navy group-hover:text-purple mt-2 text-lg font-bold transition-colors">{{ $previousEpisode->title }}</span>
@@ -448,7 +448,7 @@
                         <a
                             href="{{ route('episodes.show', $nextEpisode) }}"
                             rel="next"
-                            class="group border-navy/5 hover:border-purple/20 flex min-h-24 flex-col justify-center rounded-2xl border bg-white px-6 py-5 text-right shadow-sm transition-[border-color,box-shadow] hover:shadow-lg sm:col-start-2"
+                            class="group border-navy/5 hover:border-purple/20 flex min-h-24 flex-col justify-center rounded-2xl border bg-white px-6 py-5 text-right wrap-anywhere shadow-sm transition-[border-color,box-shadow] hover:shadow-lg sm:col-start-2"
                         >
                             <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">Next episode →</span>
                             <span class="font-heading text-navy group-hover:text-purple mt-2 text-lg font-bold transition-colors">{{ $nextEpisode->title }}</span>

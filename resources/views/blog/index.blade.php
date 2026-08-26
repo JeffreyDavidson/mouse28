@@ -43,7 +43,7 @@
         <div class="relative mx-auto max-w-6xl px-4 sm:px-6">
             <div class="flex flex-col gap-10 lg:flex-row">
                 {{-- Main Content --}}
-                <div class="lg:w-[66%]">
+                <div class="min-w-0 lg:w-[66%]">
                     @if ($posts->count())
                         @php
                             $featured = $posts->first();
@@ -61,7 +61,7 @@
                                     href="{{ route('blog.show', $featured) }}"
                                     class="blog-featured-card-border group block transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-2xl"
                                 >
-                                    <div class="relative p-5 pt-20 sm:p-8 sm:pt-20 md:p-10 md:pt-16 lg:p-12">
+                                    <div class="relative p-5 pt-20 wrap-anywhere sm:p-8 sm:pt-20 md:p-10 md:pt-16 lg:p-12">
                                         {{-- Category + read time --}}
                                         <div class="mb-5 flex items-center gap-3 md:pl-20">
                                             @if ($featured->category)
@@ -116,7 +116,7 @@
                                     @php $postStyle = $categoryStyles[$post->category] ?? $defaultCategoryStyle; @endphp
                                     <a
                                         href="{{ route('blog.show', $post) }}"
-                                        class="blog-post-card group border-navy/5 relative block rounded-2xl border bg-white p-5 shadow-sm sm:p-7"
+                                        class="blog-post-card group border-navy/5 relative block rounded-2xl border bg-white p-5 wrap-anywhere shadow-sm sm:p-7"
                                     >
                                         {{-- Top accent bar on hover --}}
                                         <div class="blog-accent-bar absolute inset-x-0 top-0 h-1 rounded-t-2xl {{ $postStyle['accent'] }}"></div>
