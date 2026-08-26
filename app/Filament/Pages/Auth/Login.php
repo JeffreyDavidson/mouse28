@@ -13,6 +13,6 @@ class Login extends BaseLogin
 
     public function getSubHeading(): ?string
     {
-        return 'Sign in to continue telling your story ✨';
+        return 'Sign in to continue telling your story';
     }
 }
