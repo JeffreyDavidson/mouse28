@@ -8,7 +8,7 @@
     {{-- Hero with sparkles --}}
     <section class="from-navy to-navy-light relative overflow-hidden bg-linear-to-br py-16 md:py-24">
         {{-- Sparkles --}}
-        <div class="pointer-events-none absolute inset-0">
+        <div class="pointer-events-none absolute inset-0" aria-hidden="true">
             <div class="sparkle text-gold/60 absolute top-12 left-[15%] text-lg">✦</div>
             <div class="sparkle-delay text-gold/40 absolute top-20 right-[20%] text-sm">✦</div>
             <div class="sparkle-delay-2 text-gold/50 absolute bottom-16 left-[30%] text-xl">✦</div>
@@ -56,9 +56,9 @@
     {{-- Timeline Story --}}
     <section class="bg-cream py-16 md:py-24">
         <div class="mx-auto mb-14 max-w-4xl px-4 text-center sm:px-6">
-            <span class="text-gold text-sm font-semibold tracking-widest uppercase">Our Journey</span>
+            <span class="text-gold-ink text-sm font-semibold tracking-widest uppercase">Our Journey</span>
             <h2 class="font-heading text-navy mt-3 text-3xl font-bold md:text-4xl">How We Got Here</h2>
-            <p class="font-body text-navy/50 mx-auto mt-4 max-w-lg leading-relaxed">
+            <p class="font-body text-navy/65 mx-auto mt-4 max-w-lg leading-relaxed">
                 From first-time park visitors to weekly regulars, here's the story behind Mouse28.
             </p>
         </div>
@@ -66,7 +66,7 @@
             {{-- Section: Meet the Davidsons --}}
             <div class="border-gold/30 relative border-l-2 pb-16 pl-8 md:pl-12">
                 <div class="bg-gold ring-cream absolute top-0 left-0 size-4 translate-x-[-9px] rounded-full ring-4"></div>
-                <span class="text-gold text-xs font-semibold tracking-widest uppercase">Chapter One</span>
+                <span class="text-gold-ink text-xs font-semibold tracking-widest uppercase">Chapter One</span>
                 <h2 class="font-heading text-navy mt-2 mb-5 text-2xl font-bold md:text-3xl">Meet the Davidsons</h2>
                 <div class="text-navy/70 space-y-4 leading-relaxed">
                     <p>
@@ -86,7 +86,7 @@
             {{-- Section: Viola's World --}}
             <div class="border-gold/30 relative border-l-2 pb-16 pl-8 md:pl-12">
                 <div class="bg-gold ring-cream absolute top-0 left-0 size-4 translate-x-[-9px] rounded-full ring-4"></div>
-                <span class="text-gold text-xs font-semibold tracking-widest uppercase">Chapter Two</span>
+                <span class="text-gold-ink text-xs font-semibold tracking-widest uppercase">Chapter Two</span>
                 <h2 class="font-heading text-navy mt-2 mb-5 text-2xl font-bold md:text-3xl">Viola's World</h2>
                 <div class="text-navy/70 space-y-4 leading-relaxed">
                     <p>
@@ -112,7 +112,7 @@
             {{-- Section: Why Mouse28 --}}
             <div class="border-gold/30 relative border-l-2 pb-16 pl-8 md:pl-12">
                 <div class="bg-gold ring-cream absolute top-0 left-0 size-4 translate-x-[-9px] rounded-full ring-4"></div>
-                <span class="text-gold text-xs font-semibold tracking-widest uppercase">Chapter Three</span>
+                <span class="text-gold-ink text-xs font-semibold tracking-widest uppercase">Chapter Three</span>
                 <h2 class="font-heading text-navy mt-2 mb-5 text-2xl font-bold md:text-3xl">Why Mouse28?</h2>
                 <div class="text-navy/70 space-y-4 leading-relaxed">
                     <p>
@@ -158,7 +158,7 @@
             <div class="grid gap-12 md:grid-cols-2 md:gap-16">
                 <!-- Quote 1 -->
                 <div class="relative">
-                    <svg class="text-gold/30 mb-4 size-10" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983z" /></svg>
+                    <svg aria-hidden="true" class="text-gold/30 mb-4 size-10" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983z" /></svg>
                     <p class="font-heading mb-6 text-xl/relaxed text-white/85 italic md:text-2xl">
                         Viola experiences the parks in ways we never would have noticed on our own. She's taught us that
                         slowing down and paying attention is where the real magic lives.
@@ -168,7 +168,7 @@
 
                 <!-- Quote 2 -->
                 <div class="relative">
-                    <svg class="text-purple/40 mb-4 size-10" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983z" /></svg>
+                    <svg aria-hidden="true" class="text-purple/40 mb-4 size-10" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983z" /></svg>
                     <p class="font-heading mb-6 text-xl/relaxed text-white/85 italic md:text-2xl">
                         We realized we had years of hard-won knowledge about navigating Disney parks with a child who
                         experiences the world differently.
@@ -188,7 +188,7 @@
             <div class="mb-16 text-center">
                 <span class="border-purple/20 bg-purple/5 font-body text-purple mb-4 inline-block rounded-full border px-6 py-2 text-xs font-semibold tracking-[0.25em] uppercase">Your Hosts</span>
                 <h2 class="font-heading text-navy mt-3 text-3xl font-bold md:text-5xl">
-                    The Voices Behind<br /><span class="text-gold italic">Mouse28</span>
+                    The Voices Behind<br /><span class="text-gold-ink italic">Mouse28</span>
                 </h2>
             </div>
 
@@ -246,7 +246,7 @@
             {{-- Divider --}}
             <div class="mb-16 flex items-center justify-center gap-4 md:mb-24">
                 <div class="to-gold/30 h-px max-w-[100px] flex-1 bg-linear-to-r from-transparent"></div>
-                <svg class="text-gold/40 size-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
+                <svg aria-hidden="true" class="text-gold/40 size-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" /></svg>
                 <div class="from-gold/30 h-px max-w-[100px] flex-1 bg-linear-to-r to-transparent"></div>
             </div>
 

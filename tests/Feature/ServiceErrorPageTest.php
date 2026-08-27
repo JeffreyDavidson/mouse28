@@ -15,6 +15,7 @@ test('unexpected errors render a safe branded response', function (): void {
         ->assertSee('<title>Something Went Wrong — Mouse28</title>', false)
         ->assertSee('<meta name="robots" content="none">', false)
         ->assertDontSee('<link rel="canonical"', false)
+        ->assertDontSee('fonts.googleapis.com', false)
         ->assertSee('The magic hit a snag')
         ->assertDontSee('Sensitive database connection details');
 });

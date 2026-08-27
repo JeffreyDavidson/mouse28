@@ -19,7 +19,9 @@ test('guest can render the admin login', function (): void {
     get('/admin/login')
         ->assertOk()
         ->assertSee('Mouse28')
-        ->assertSee('Welcome Back');
+        ->assertSee('Welcome Back')
+        ->assertSee('Sign in to continue telling your story')
+        ->assertDontSee('✨');
 });
 
 test('authenticated user can render the custom admin pages', function (): void {
@@ -35,7 +37,8 @@ test('authenticated user can render the custom admin pages', function (): void {
         ->get(NewsletterSubscribers::getUrl())
         ->assertOk()
         ->assertSee('Newsletter Subscribers')
-        ->assertSee('No subscribers yet');
+        ->assertSee('No subscribers yet')
+        ->assertSee('audience <span aria-hidden="true">✨</span>', false);
 
     get(PodcastSettings::getUrl())
         ->assertOk()

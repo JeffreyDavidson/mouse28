@@ -22,6 +22,46 @@ test('public index pages render', function (string $route, string $content): voi
     'contact' => ['contact.show', 'Get in Touch'],
 ]);
 
+test('homepage uses one newsletter form and responsive hero artwork', function (): void {
+    $response = get(route('home'))
+        ->assertOk()
+        ->assertSee('/images/hero-family-640.webp 640w', false)
+        ->assertSee('/images/hero-family-1024.webp 1024w', false)
+        ->assertSee('We use your email to send Mouse28 updates.');
+
+    expect(substr_count($response->getContent(), 'action="'.route('newsletter.store').'"'))->toBe(1);
+});
+
+test('homepage defers the below-fold featured post image', function (): void {
+    Post::factory()->create([
+        'cover_image' => 'posts/featured.webp',
+    ]);
+
+    $response = get(route('home'))
+        ->assertOk();
+
+    expect($response->getContent())->toMatch(
+        '/<img[^>]*src="\/storage\/posts\/featured\.webp"[^>]*loading="lazy"[^>]*decoding="async"[^>]*>/',
+    );
+});
+
+test('public forms use readable placeholder text colors', function (): void {
+    Post::factory()->create();
+
+    get(route('blog.index'))
+        ->assertOk()
+        ->assertSee('placeholder:text-navy/60', false)
+        ->assertSee('placeholder:text-white/60', false)
+        ->assertDontSee('placeholder:text-navy/25', false)
+        ->assertDontSee('placeholder:text-white/25', false)
+        ->assertDontSee('placeholder-white/', false);
+
+    get(route('contact.show'))
+        ->assertOk()
+        ->assertSee('placeholder:text-cream/60', false)
+        ->assertDontSee('placeholder:text-cream/30', false);
+});
+
 test('published post detail page renders', function (): void {
     $post = Post::query()->create([
         'title' => 'An Accessible Day at the Parks',
@@ -37,7 +77,12 @@ test('published post detail page renders', function (): void {
     get(route('blog.show', $post))
         ->assertOk()
         ->assertSee($post->title)
-        ->assertSee('Start with a flexible plan', false);
+        ->assertSee('Start with a flexible plan', false)
+        ->assertSee('id="back-to-top"', false)
+        ->assertSee('aria-hidden="true"', false)
+        ->assertSee('tabindex="-1"', false)
+        ->assertSee('inline-flex size-12 items-center justify-center rounded-full', false)
+        ->assertDontSee('inline-flex size-11', false);
 });
 
 test('published episode detail page renders', function (): void {
@@ -50,6 +95,7 @@ test('published episode detail page renders', function (): void {
         'episode_number' => 1,
         'season_number' => 1,
         'duration_seconds' => 1800,
+        'audio_url' => 'https://cdn.example.com/planning-a-sensory-friendly-visit.mp3',
         'is_published' => true,
         'published_at' => now()->subDay(),
     ]);
@@ -57,7 +103,19 @@ test('published episode detail page renders', function (): void {
     get(route('episodes.show', $episode))
         ->assertOk()
         ->assertSee($episode->title)
-        ->assertSee('Our favorite planning strategies', false);
+        ->assertSee('Our favorite planning strategies', false)
+        ->assertSee('Listen to this episode')
+        ->assertDontSee('Now Playing')
+        ->assertSee('aria-label="Play Planning a Sensory-Friendly Visit"', false)
+        ->assertSee('id="episode-transcript"', false)
+        ->assertSee('aria-controls="episode-transcript"', false)
+        ->assertSee(':aria-expanded="expanded.toString()"', false);
+});
+
+test('empty podcast page hides its decorative player preview from assistive technology', function (): void {
+    get(route('episodes.index'))
+        ->assertOk()
+        ->assertSee('id="podcast-player-preview" class="hidden md:block" aria-hidden="true"', false);
 });
 
 test('podcast pages describe episodes without audio as details instead of playable media', function (): void {

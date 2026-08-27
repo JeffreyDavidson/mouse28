@@ -1,4 +1,3 @@
-import './bootstrap';
 import Alpine from 'alpinejs';
 
 window.Alpine = Alpine;
@@ -37,6 +36,9 @@ function initializeBlogArticle() {
 
     const progressBar = document.getElementById('reading-progress');
     const backToTop = document.getElementById('back-to-top');
+    const preferredScrollBehavior = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 'auto'
+        : 'smooth';
 
     const updateProgress = () => {
         const articleBounds = article.getBoundingClientRect();
@@ -54,11 +56,15 @@ function initializeBlogArticle() {
             const isVisible = window.scrollY > 500;
 
             backToTop.classList.toggle('pointer-events-none', !isVisible);
+            backToTop.classList.toggle('invisible', !isVisible);
             backToTop.classList.toggle('translate-y-2.5', !isVisible);
             backToTop.classList.toggle('opacity-0', !isVisible);
             backToTop.classList.toggle('pointer-events-auto', isVisible);
+            backToTop.classList.toggle('visible', isVisible);
             backToTop.classList.toggle('translate-y-0', isVisible);
             backToTop.classList.toggle('opacity-100', isVisible);
+            backToTop.setAttribute('aria-hidden', isVisible ? 'false' : 'true');
+            backToTop.tabIndex = isVisible ? 0 : -1;
         }
     };
 
@@ -67,7 +73,7 @@ function initializeBlogArticle() {
     updateProgress();
 
     backToTop?.addEventListener('click', () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: preferredScrollBehavior() });
     });
 
     const content = article.querySelector('.blog-article-content');
@@ -94,10 +100,13 @@ function initializeBlogArticle() {
         link.href = `#${id}`;
         link.textContent = heading.textContent;
         link.dataset.blogTocLink = '';
-        link.className = `block border-l-2 border-navy/8 py-1.5 leading-[1.4] text-navy/50 no-underline transition-colors duration-200 hover:border-gold hover:text-gold ${heading.tagName === 'H3' ? 'pl-8 text-xs' : 'pl-4 text-[0.8rem]'}`;
+        link.className = `flex min-h-12 items-center border-l-2 border-navy/8 py-2 leading-[1.4] text-navy/65 no-underline transition-colors duration-200 hover:border-gold hover:text-gold-ink ${heading.tagName === 'H3' ? 'pl-8 text-xs' : 'pl-4 text-[0.8rem]'}`;
         link.addEventListener('click', (event) => {
             event.preventDefault();
-            heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            heading.scrollIntoView({
+                behavior: preferredScrollBehavior(),
+                block: 'start',
+            });
         });
         tocNav.appendChild(link);
     });
@@ -116,9 +125,9 @@ function initializeBlogArticle() {
             const isActive = index === currentHeading;
 
             link.classList.toggle('border-navy/8', !isActive);
-            link.classList.toggle('text-navy/50', !isActive);
+            link.classList.toggle('text-navy/65', !isActive);
             link.classList.toggle('border-gold', isActive);
-            link.classList.toggle('text-gold', isActive);
+            link.classList.toggle('text-gold-ink', isActive);
             link.classList.toggle('font-semibold', isActive);
         });
     };
@@ -127,5 +136,12 @@ function initializeBlogArticle() {
     updateTableOfContents();
 }
 
+function focusFirstInvalidField() {
+    window.addEventListener('pageshow', () => {
+        document.querySelector('[aria-invalid="true"]')?.focus();
+    });
+}
+
 initializeCopyLinks();
 initializeBlogArticle();
+focusFirstInvalidField();

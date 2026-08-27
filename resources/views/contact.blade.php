@@ -7,12 +7,13 @@
 >
     @php
         $contactHasFeedback = $errors->contact->isNotEmpty();
+        $firstContactError = $errors->contact->keys()[0] ?? null;
     @endphp
     @if (session('success'))
         <section class="from-cream to-cream relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-linear-to-br via-white">
             <div class="relative z-10 px-4 text-center">
                 <div class="relative mx-auto mb-8 size-24">
-                    <svg class="size-24" viewBox="0 0 96 96">
+                    <svg aria-hidden="true" class="size-24" viewBox="0 0 96 96">
                         <circle cx="48" cy="48" r="44" fill="none" stroke="#5b3e9e" stroke-width="3" opacity="0.15" />
                         <circle
                             cx="48"
@@ -43,7 +44,7 @@
                 <p class="text-navy/60 mx-auto mb-2 max-w-md text-lg">
                     Thank you for reaching out. We'll get back to you within 48 hours.
                 </p>
-                <p class="text-navy/40 mb-8 text-sm">In the meantime, feel free to explore our blog and podcast.</p>
+                <p class="text-navy/65 mb-8 text-sm">In the meantime, feel free to explore our blog and podcast.</p>
                 <div class="flex flex-col items-center justify-center gap-4 sm:flex-row">
                     <a
                         href="{{ route('blog.index') }}"
@@ -130,7 +131,8 @@
                                         value="{{ $contactHasFeedback ? old('name') : '' }}"
                                         placeholder="Your name"
                                         @error('name', 'contact') aria-invalid="true" aria-describedby="name-error" @enderror
-                                        class="border-cream/10 bg-cream/4 text-cream placeholder:text-cream/30 focus:border-gold/50 focus:bg-cream/6 focus:ring-gold/20 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none sm:text-sm"
+                                        @if ($firstContactError === 'name') autofocus @endif
+                                        class="border-cream/10 bg-cream/4 text-cream placeholder:text-cream/60 focus:border-gold/50 focus:bg-cream/6 focus:ring-gold/20 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none sm:text-sm"
                                     />
                                     @error('name', 'contact')
                                         <p id="name-error" role="alert" class="mt-2 text-sm text-red-400">
@@ -153,7 +155,8 @@
                                         value="{{ $contactHasFeedback ? old('email') : '' }}"
                                         placeholder="you@example.com"
                                         @error('email', 'contact') aria-invalid="true" aria-describedby="email-error" @enderror
-                                        class="border-cream/10 bg-cream/4 text-cream placeholder:text-cream/30 focus:border-gold/50 focus:bg-cream/6 focus:ring-gold/20 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none sm:text-sm"
+                                        @if ($firstContactError === 'email') autofocus @endif
+                                        class="border-cream/10 bg-cream/4 text-cream placeholder:text-cream/60 focus:border-gold/50 focus:bg-cream/6 focus:ring-gold/20 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none sm:text-sm"
                                     />
                                     @error('email', 'contact')
                                         <p id="email-error" role="alert" class="mt-2 text-sm text-red-400">
@@ -173,6 +176,7 @@
                                     name="subject"
                                     required
                                     @error('subject', 'contact') aria-invalid="true" aria-describedby="subject-error" @enderror
+                                    @if ($firstContactError === 'subject') autofocus @endif
                                     class="contact-select border-cream/10 bg-cream/4 text-cream/70 focus:border-gold/50 focus:ring-gold/20 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none sm:text-sm"
                                 >
                                     <option value="">Choose a topic...</option>
@@ -220,7 +224,8 @@
                                     rows="5"
                                     placeholder="What's on your mind?"
                                     @error('message', 'contact') aria-invalid="true" aria-describedby="message-error" @enderror
-                                    class="border-cream/10 bg-cream/4 text-cream placeholder:text-cream/30 focus:border-gold/50 focus:bg-cream/6 focus:ring-gold/20 min-h-36 w-full resize-y rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none sm:text-sm"
+                                    @if ($firstContactError === 'message') autofocus @endif
+                                    class="border-cream/10 bg-cream/4 text-cream placeholder:text-cream/60 focus:border-gold/50 focus:bg-cream/6 focus:ring-gold/20 min-h-36 w-full resize-y rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none sm:text-sm"
                                 >{{ $contactHasFeedback ? old('message') : '' }}</textarea>
                                 @error('message', 'contact')
                                     <p id="message-error" role="alert" class="mt-2 text-sm text-red-400">
@@ -236,6 +241,7 @@
                                         data-sitekey="{{ config('services.turnstile.site_key') }}"
                                         data-action="{{ config('services.turnstile.contact_action') }}"
                                         data-theme="dark"
+                                        data-appearance="interaction-only"
                                     ></div>
                                 @else
                                     <p role="alert" class="text-base text-red-200 sm:text-sm">
@@ -264,19 +270,19 @@
                         <div class="border-cream/8 bg-cream/4 rounded-2xl border p-6">
                             <div class="mb-5 flex items-center gap-[0.85rem]">
                                 <div class="bg-gold/12 flex size-10 shrink-0 items-center justify-center rounded-[0.6rem]">
-                                    <svg class="text-gold-light size-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                                    <svg aria-hidden="true" class="text-gold-light size-[18px]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                                 </div>
                                 <div class="min-w-0">
                                     <a
-                                        href="mailto:mouse28podcast@gmail.com"
-                                        class="text-cream inline-flex min-h-11 items-center text-base font-semibold break-all sm:min-h-6 sm:text-sm"
-                                    >mouse28podcast@gmail.com</a>
-                                    <p class="text-cream/35 mt-1 text-base sm:text-sm">We read every message</p>
+                                        href="mailto:{{ $contactEmail }}"
+                                        class="text-cream inline-flex min-h-12 items-center text-base font-semibold break-all sm:min-h-6 sm:text-sm"
+                                    >{{ $contactEmail }}</a>
+                                    <p class="text-cream/60 mt-1 text-base sm:text-sm">We read every message</p>
                                 </div>
                             </div>
                             <div class="bg-cream/4 flex items-center gap-2 rounded-[0.6rem] px-[0.85rem] py-[0.65rem]">
-                                <svg class="text-gold-light size-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                                <p class="text-cream/50 text-base sm:text-sm">
+                                <svg aria-hidden="true" class="text-gold-light size-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                <p class="text-cream/60 text-base sm:text-sm">
                                     Typically within <strong class="text-cream/80">48 hours</strong>
                                 </p>
                             </div>
@@ -296,7 +302,7 @@
                                 @endphp
                                 @foreach ($topics as $topic)
                                     <div class="flex items-center gap-[0.65rem]">
-                                        <svg class="text-gold/60 size-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="{{ $topic['icon'] }}" /></svg>
+                                        <svg aria-hidden="true" class="text-gold/60 size-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="{{ $topic['icon'] }}" /></svg>
                                         <span class="text-cream/55 text-base sm:text-sm">{{ $topic['text'] }}</span>
                                     </div>
                                 @endforeach
@@ -310,14 +316,14 @@
                                 class="border-cream/6 bg-cream/3 hover:border-gold/15 hover:bg-cream/6 flex min-h-12 items-center justify-between rounded-xl border px-4 py-3 transition-colors"
                             >
                                 <span class="text-gold-light text-base font-semibold sm:text-sm">Read the Blog</span>
-                                <svg class="text-cream/25 size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                <svg aria-hidden="true" class="text-cream/25 size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                             </a>
                             <a
                                 href="{{ route('episodes.index') }}"
                                 class="border-cream/6 bg-cream/3 hover:border-gold/15 hover:bg-cream/6 flex min-h-12 items-center justify-between rounded-xl border px-4 py-3 transition-colors"
                             >
                                 <span class="text-gold-light text-base font-semibold sm:text-sm">Listen to the Podcast</span>
-                                <svg class="text-cream/25 size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                <svg aria-hidden="true" class="text-cream/25 size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                             </a>
                         </div>
                     </div>

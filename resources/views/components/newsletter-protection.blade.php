@@ -1,4 +1,4 @@
-<div class="absolute top-auto -left-[10000px] h-px w-px overflow-hidden" aria-hidden="true">
+<div class="sr-only" aria-hidden="true">
     <label for="{{ $honeypotId }}">Website</label>
     <input id="{{ $honeypotId }}" type="text" name="website_url" tabindex="-1" autocomplete="off" />
 </div>
@@ -13,6 +13,7 @@
             data-sitekey="{{ config('services.turnstile.site_key') }}"
             data-action="{{ config('services.turnstile.newsletter_action') }}"
             data-theme="dark"
+            data-appearance="interaction-only"
         ></div>
     </div>
 @endif

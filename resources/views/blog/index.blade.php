@@ -7,19 +7,19 @@
 >
     @php
         $categoryStyles = [
-            'disney-tips' => ['accent' => 'bg-gold', 'badge' => 'bg-gold/20 text-gold', 'subtle' => 'bg-gold/10', 'text' => 'text-gold'],
-            'park-accessibility' => ['accent' => 'bg-purple-light', 'badge' => 'bg-purple-light/20 text-purple-light', 'subtle' => 'bg-purple-light/10', 'text' => 'text-purple-light'],
-            'episode-recap' => ['accent' => 'bg-green-500', 'badge' => 'bg-green-500/20 text-green-500', 'subtle' => 'bg-green-500/10', 'text' => 'text-green-500'],
-            'family-life' => ['accent' => 'bg-blue-500', 'badge' => 'bg-blue-500/20 text-blue-500', 'subtle' => 'bg-blue-500/10', 'text' => 'text-blue-500'],
-            'autism-awareness' => ['accent' => 'bg-pink-500', 'badge' => 'bg-pink-500/20 text-pink-500', 'subtle' => 'bg-pink-500/10', 'text' => 'text-pink-500'],
-            'disney-news' => ['accent' => 'bg-orange-500', 'badge' => 'bg-orange-500/20 text-orange-500', 'subtle' => 'bg-orange-500/10', 'text' => 'text-orange-500'],
-            'food-reviews' => ['accent' => 'bg-amber-500', 'badge' => 'bg-amber-500/20 text-amber-500', 'subtle' => 'bg-amber-500/10', 'text' => 'text-amber-500'],
-            'resort-reviews' => ['accent' => 'bg-teal-500', 'badge' => 'bg-teal-500/20 text-teal-500', 'subtle' => 'bg-teal-500/10', 'text' => 'text-teal-500'],
-            'disney-plus' => ['accent' => 'bg-indigo-500', 'badge' => 'bg-indigo-500/20 text-indigo-500', 'subtle' => 'bg-indigo-500/10', 'text' => 'text-indigo-500'],
-            'merchandise' => ['accent' => 'bg-rose-500', 'badge' => 'bg-rose-500/20 text-rose-500', 'subtle' => 'bg-rose-500/10', 'text' => 'text-rose-500'],
-            'general' => ['accent' => 'bg-[#4a90a4]', 'badge' => 'bg-[#4a90a4]/20 text-[#4a90a4]', 'subtle' => 'bg-[#4a90a4]/10', 'text' => 'text-[#4a90a4]'],
+            'disney-tips' => ['accent' => 'bg-gold', 'badge' => 'bg-gold text-navy', 'subtle' => 'bg-gold/10', 'text' => 'text-gold-ink'],
+            'park-accessibility' => ['accent' => 'bg-purple-light', 'badge' => 'bg-purple-light text-white', 'subtle' => 'bg-purple-light/10', 'text' => 'text-purple'],
+            'episode-recap' => ['accent' => 'bg-green-700', 'badge' => 'bg-green-700 text-white', 'subtle' => 'bg-green-700/10', 'text' => 'text-green-700'],
+            'family-life' => ['accent' => 'bg-blue-700', 'badge' => 'bg-blue-700 text-white', 'subtle' => 'bg-blue-700/10', 'text' => 'text-blue-700'],
+            'autism-awareness' => ['accent' => 'bg-pink-700', 'badge' => 'bg-pink-700 text-white', 'subtle' => 'bg-pink-700/10', 'text' => 'text-pink-700'],
+            'disney-news' => ['accent' => 'bg-orange-700', 'badge' => 'bg-orange-700 text-white', 'subtle' => 'bg-orange-700/10', 'text' => 'text-orange-700'],
+            'food-reviews' => ['accent' => 'bg-amber-800', 'badge' => 'bg-amber-800 text-white', 'subtle' => 'bg-amber-800/10', 'text' => 'text-amber-800'],
+            'resort-reviews' => ['accent' => 'bg-teal-700', 'badge' => 'bg-teal-700 text-white', 'subtle' => 'bg-teal-700/10', 'text' => 'text-teal-700'],
+            'disney-plus' => ['accent' => 'bg-indigo-700', 'badge' => 'bg-indigo-700 text-white', 'subtle' => 'bg-indigo-700/10', 'text' => 'text-indigo-700'],
+            'merchandise' => ['accent' => 'bg-rose-700', 'badge' => 'bg-rose-700 text-white', 'subtle' => 'bg-rose-700/10', 'text' => 'text-rose-700'],
+            'general' => ['accent' => 'bg-[#2f6878]', 'badge' => 'bg-[#2f6878] text-white', 'subtle' => 'bg-[#2f6878]/10', 'text' => 'text-[#2f6878]'],
         ];
-        $defaultCategoryStyle = ['accent' => 'bg-purple', 'badge' => 'bg-purple/20 text-purple', 'subtle' => 'bg-purple/10', 'text' => 'text-purple'];
+        $defaultCategoryStyle = ['accent' => 'bg-purple', 'badge' => 'bg-purple text-white', 'subtle' => 'bg-purple/10', 'text' => 'text-purple'];
     @endphp
 
     {{-- Hero --}}
@@ -43,7 +43,7 @@
         <div class="relative mx-auto max-w-6xl px-4 sm:px-6">
             <div class="flex flex-col gap-10 lg:flex-row">
                 {{-- Main Content --}}
-                <div class="lg:w-[66%]">
+                <div class="min-w-0 lg:w-[66%]">
                     @if ($posts->count())
                         @php
                             $featured = $posts->first();
@@ -61,13 +61,13 @@
                                     href="{{ route('blog.show', $featured) }}"
                                     class="blog-featured-card-border group block transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-2xl"
                                 >
-                                    <div class="relative p-5 pt-20 sm:p-8 sm:pt-20 md:p-10 md:pt-16 lg:p-12">
+                                    <div class="relative p-5 pt-20 wrap-anywhere sm:p-8 sm:pt-20 md:p-10 md:pt-16 lg:p-12">
                                         {{-- Category + read time --}}
                                         <div class="mb-5 flex items-center gap-3 md:pl-20">
                                             @if ($featured->category)
                                                 <span class="rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase {{ $featuredStyle['badge'] }}">{{ $featured->category_label }}</span>
                                             @endif
-                                            <span class="text-xs text-white/30">{{ $featured->reading_time }} min read</span>
+                                            <span class="text-xs text-white/60">{{ $featured->reading_time }} min read</span>
                                         </div>
 
                                         {{-- Title --}}
@@ -92,14 +92,14 @@
                                                     <p class="text-sm font-semibold text-white">
                                                         {{ $featured->author_name }}
                                                     </p>
-                                                    <p class="text-xs text-white/40">
+                                                    <p class="text-xs text-white/60">
                                                         {{ $featured->published_at->format('F j, Y') }}
                                                     </p>
                                                 </div>
                                             </div>
                                             <span class="text-gold hidden items-center gap-1.5 text-sm font-semibold transition-[gap] group-hover:gap-2.5 sm:inline-flex">
                                                 Read Article
-                                                <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                                <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                                             </span>
                                         </div>
                                     </div>
@@ -116,7 +116,7 @@
                                     @php $postStyle = $categoryStyles[$post->category] ?? $defaultCategoryStyle; @endphp
                                     <a
                                         href="{{ route('blog.show', $post) }}"
-                                        class="blog-post-card group border-navy/5 relative block rounded-2xl border bg-white p-5 shadow-sm sm:p-7"
+                                        class="blog-post-card group border-navy/5 relative block rounded-2xl border bg-white p-5 wrap-anywhere shadow-sm sm:p-7"
                                     >
                                         {{-- Top accent bar on hover --}}
                                         <div class="blog-accent-bar absolute inset-x-0 top-0 h-1 rounded-t-2xl {{ $postStyle['accent'] }}"></div>
@@ -130,7 +130,7 @@
                                             {{ $post->title }}
                                         </h3>
                                         @if ($post->excerpt)
-                                            <p class="text-navy/45 mt-2 line-clamp-3 text-base/relaxed sm:text-sm/relaxed">
+                                            <p class="text-navy/65 mt-2 line-clamp-3 text-base/relaxed sm:text-sm/relaxed">
                                                 {{ $post->excerpt }}
                                             </p>
                                         @endif
@@ -138,11 +138,11 @@
                                             <div class="flex flex-wrap items-center gap-2">
                                                 <span class="text-navy/60 text-xs font-medium">{{ $post->author_name }}</span>
                                                 <span class="text-navy/20">·</span>
-                                                <span class="text-navy/30 text-xs">{{ $post->published_at->format('M j, Y') }}</span>
+                                                <span class="text-navy/65 text-xs">{{ $post->published_at->format('M j, Y') }}</span>
                                             </div>
                                             <span class="inline-flex items-center gap-1 text-xs font-semibold transition-[gap] group-hover:gap-2 {{ $postStyle['text'] }}">
                                                 Read
-                                                <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                                                <svg aria-hidden="true" class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                                             </span>
                                         </div>
                                     </a>
@@ -159,7 +159,7 @@
                                         class="from-gold to-gold-light text-navy hover:shadow-gold/25 inline-flex items-center gap-2 rounded-full bg-linear-to-r px-8 py-3 text-sm font-semibold transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-lg"
                                     >
                                         Load More Stories
-                                        <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                                        <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
                                     </a>
                                 @endif
                             </div>
@@ -186,7 +186,7 @@
                                         We're putting pen to paper
                                     @endif
                                 </h2>
-                                <p class="text-cream/50 mb-6 text-[0.9rem]/[1.8]">
+                                <p class="text-cream/60 mb-6 text-[0.9rem]/[1.8]">
                                     @if (request('q'))
                                         Try a different search term or browse all posts.
                                     @elseif ($category)
@@ -199,9 +199,9 @@
                                 @if (request('q') || $category)
                                     <a
                                         href="{{ route('blog.index') }}"
-                                        class="border-gold/25 bg-gold/15 text-gold inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-xs font-semibold transition-transform hover:-translate-y-0.5"
+                                        class="border-gold/25 bg-gold/15 text-gold inline-flex min-h-12 items-center gap-2 rounded-lg border px-4 py-2 text-xs font-semibold transition-transform hover:-translate-y-0.5"
                                     >
-                                        <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                                        <svg aria-hidden="true" class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
                                         View all posts
                                     </a>
                                 @endif
@@ -224,7 +224,7 @@
                                 @if ($category)
                                     <input type="hidden" name="category" value="{{ $category }}" />
                                 @endif
-                                <svg class="text-navy/25 absolute top-1/2 left-4 size-4 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                                <svg aria-hidden="true" class="text-navy/25 absolute top-1/2 left-4 size-4 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                                 <label for="blog-search" class="sr-only">Search blog posts</label>
                                 <input
                                     id="blog-search"
@@ -232,20 +232,20 @@
                                     name="q"
                                     value="{{ request('q') }}"
                                     placeholder="Search posts..."
-                                    class="border-navy/10 text-navy placeholder:text-navy/25 focus:border-gold focus:ring-gold/20 min-h-12 w-full rounded-xl border py-3 pr-12 pl-11 text-base transition-[border-color,box-shadow] outline-none focus:ring-2 sm:text-sm"
+                                    class="border-navy/10 text-navy placeholder:text-navy/60 focus:border-gold focus:ring-gold/20 min-h-12 w-full rounded-xl border py-3 pr-12 pl-11 text-base transition-[border-color,box-shadow] outline-none focus:ring-2 sm:text-sm"
                                 />
                                 @if (request('q'))
                                     <a
                                         href="{{ route('blog.index', array_filter(['category' => $category])) }}"
-                                        class="text-navy/30 hover:text-gold absolute top-1/2 right-0 flex size-12 -translate-y-1/2 items-center justify-center transition-colors"
+                                        class="text-navy/65 hover:text-gold absolute top-1/2 right-0 flex size-12 -translate-y-1/2 items-center justify-center transition-colors"
                                         aria-label="Clear search"
                                     >
-                                        <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                        <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                                     </a>
                                 @endif
                             </form>
                             @if (request('q'))
-                                <p class="text-navy/40 mt-2 text-xs">
+                                <p class="text-navy/65 mt-2 text-xs">
                                     {{ $posts->total() }} {{ Str::plural('result', $posts->total()) }} for "<span
                                         class="text-gold font-semibold"
                                         >{{ request('q') }}</span
@@ -264,11 +264,11 @@
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="from-purple/8 to-navy/5 rounded-xl bg-linear-to-br p-4 text-center">
                                         <span class="font-heading text-navy block text-3xl font-bold">{{ $posts->total() }}</span>
-                                        <span class="text-navy/45 mt-1 block text-xs font-medium tracking-wider uppercase">{{ Str::plural('Post', $posts->total()) }}</span>
+                                        <span class="text-navy/65 mt-1 block text-xs font-medium tracking-wider uppercase">{{ Str::plural('Post', $posts->total()) }}</span>
                                     </div>
                                     <div class="from-gold/8 to-gold/3 rounded-xl bg-linear-to-br p-4 text-center">
                                         <span class="font-heading text-navy block text-3xl font-bold">{{ count($usedCategories) }}</span>
-                                        <span class="text-navy/45 mt-1 block text-xs font-medium tracking-wider uppercase">{{ Str::plural('Category', count($usedCategories)) }}</span>
+                                        <span class="text-navy/65 mt-1 block text-xs font-medium tracking-wider uppercase">{{ Str::plural('Category', count($usedCategories)) }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -283,17 +283,17 @@
                             <div class="space-y-1">
                                 <a
                                     href="{{ route('blog.index') }}"
-                                    class="group flex min-h-11 items-center justify-between rounded-xl px-3 py-2.5 transition-colors {{ !$category ? 'bg-gold/10' : 'hover:bg-cream' }}"
+                                    class="group flex min-h-12 items-center justify-between rounded-xl px-3 py-2.5 transition-colors {{ !$category ? 'bg-gold/10' : 'hover:bg-cream' }}"
                                 >
-                                    <span class="text-sm font-medium {{ !$category ? 'text-gold font-semibold' : 'text-navy/65 group-hover:text-navy' }} transition-colors">All Posts</span>
-                                    <span class="rounded-full bg-gold/8 px-3 py-0.5 text-xs font-bold {{ !$category ? 'text-gold' : 'text-gold/70' }}">{{ $posts->total() }}</span>
+                                    <span class="text-sm font-medium {{ !$category ? 'text-gold-ink font-semibold' : 'text-navy/65 group-hover:text-navy' }} transition-colors">All Posts</span>
+                                    <span class="bg-gold/8 text-gold-ink rounded-full px-3 py-0.5 text-xs font-bold">{{ $posts->total() }}</span>
                                 </a>
                                 @foreach (\App\Models\Post::CATEGORIES as $slug => $label)
                                     @continue(! in_array($slug, $usedCategories))
                                     @php $categoryStyle = $categoryStyles[$slug] ?? $defaultCategoryStyle; @endphp
                                     <a
                                         href="{{ route('blog.index', ['category' => $slug]) }}"
-                                        class="group flex min-h-11 items-center justify-between rounded-xl px-3 py-2.5 transition-colors {{ $category === $slug ? $categoryStyle['subtle'] : 'hover:bg-cream' }}"
+                                        class="group flex min-h-12 items-center justify-between rounded-xl px-3 py-2.5 transition-colors {{ $category === $slug ? $categoryStyle['subtle'] : 'hover:bg-cream' }}"
                                     >
                                         <span class="text-sm font-medium transition-colors {{ $category === $slug ? 'font-semibold '.$categoryStyle['text'] : 'text-navy/65 group-hover:text-navy' }}">{{ $label }}</span>
                                         <span class="rounded-full px-3 py-0.5 text-xs font-bold {{ $categoryStyle['subtle'] }} {{ $categoryStyle['text'] }}">{{ $categoryCounts[$slug] ?? 0 }}</span>
@@ -311,13 +311,13 @@
                             <div class="border-navy/10 flex overflow-hidden rounded-xl border">
                                 <a
                                     href="{{ request()->fullUrlWithQuery(['sort' => 'newest']) }}"
-                                    class="flex min-h-11 flex-1 items-center justify-center py-2.5 text-base font-semibold transition-colors sm:text-xs {{ ($sort ?? 'newest') === 'newest' ? 'bg-gold/15 text-gold' : 'text-navy/40 hover:text-navy/60' }}"
+                                    class="flex min-h-12 flex-1 items-center justify-center py-2.5 text-base font-semibold transition-colors sm:text-xs {{ ($sort ?? 'newest') === 'newest' ? 'bg-gold/15 text-gold-ink' : 'text-navy/65 hover:text-navy' }}"
                                 >
                                     Newest
                                 </a>
                                 <a
                                     href="{{ request()->fullUrlWithQuery(['sort' => 'oldest']) }}"
-                                    class="flex min-h-11 flex-1 items-center justify-center border-l border-navy/10 py-2.5 text-base font-semibold transition-colors sm:text-xs {{ ($sort ?? 'newest') === 'oldest' ? 'bg-gold/15 text-gold' : 'text-navy/40 hover:text-navy/60' }}"
+                                    class="flex min-h-12 flex-1 items-center justify-center border-l border-navy/10 py-2.5 text-base font-semibold transition-colors sm:text-xs {{ ($sort ?? 'newest') === 'oldest' ? 'bg-gold/15 text-gold-ink' : 'text-navy/65 hover:text-navy' }}"
                                 >
                                     Oldest
                                 </a>
@@ -329,10 +329,10 @@
                             <div class="bg-gold/5 absolute top-1/2 left-1/2 size-32 -translate-1/2 rounded-full blur-3xl"></div>
                             <div class="relative">
                                 <div class="mx-auto mb-4 flex size-12 items-center justify-center rounded-xl border border-white/10 bg-white/10">
-                                    <svg class="text-gold size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
+                                    <svg aria-hidden="true" class="text-gold size-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
                                 </div>
                                 <h3 class="font-heading mb-2 text-lg font-bold text-white">Listen to the Podcast</h3>
-                                <p class="mb-5 text-base/relaxed text-white/40 sm:text-sm/relaxed">
+                                <p class="mb-5 text-base/relaxed text-white/60 sm:text-sm/relaxed">
                                     Disney parks, accessibility, and family stories
                                 </p>
                                 <a

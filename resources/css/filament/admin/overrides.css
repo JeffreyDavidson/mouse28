@@ -128,23 +128,23 @@
     color: rgb(212 168 67 / 60%) !important;
 }
 
-.fi-sidebar-item:hover,
-.fi-sidebar-item.fi-active {
+.fi-sidebar-item-btn:hover,
+.fi-sidebar-item-btn[aria-current='page'] {
     border-radius: 0.75rem !important;
 }
 
-.fi-sidebar-item:hover {
+.fi-sidebar-item-btn:hover {
     background: rgb(91 62 158 / 15%) !important;
 }
 
-.fi-sidebar-item.fi-active {
+.fi-sidebar-item-btn[aria-current='page'] {
     background: rgb(91 62 158 / 30%) !important;
 }
 
-.fi-sidebar-item:hover .fi-sidebar-item-icon,
-.fi-sidebar-item:hover .fi-sidebar-item-label,
-.fi-sidebar-item.fi-active .fi-sidebar-item-icon,
-.fi-sidebar-item.fi-active .fi-sidebar-item-label {
+.fi-sidebar-item-btn:hover .fi-sidebar-item-icon,
+.fi-sidebar-item-btn:hover .fi-sidebar-item-label,
+.fi-sidebar-item-btn[aria-current='page'] .fi-sidebar-item-icon,
+.fi-sidebar-item-btn[aria-current='page'] .fi-sidebar-item-label {
     color: var(--color-mouse-gold-light) !important;
 }
 
@@ -172,10 +172,6 @@
 
 .fi-user-menu-trigger {
     color: rgb(254 249 239 / 80%) !important;
-}
-
-.fi-notification {
-    border-left: 4px solid var(--color-mouse-gold) !important;
 }
 
 /* Page content */
@@ -272,6 +268,14 @@
     color: var(--color-mouse-cream) !important;
 }
 
+.fi-ta-cell .fi-ta-text {
+    color: var(--color-mouse-cream) !important;
+}
+
+.fi-ta-ctn .fi-link {
+    color: var(--color-mouse-gold-light) !important;
+}
+
 .fi-ta-empty-state-description {
     color: rgb(254 249 239 / 50%) !important;
 }
@@ -282,6 +286,11 @@
 
 .fi-ta-pagination {
     border-color: rgb(212 168 67 / 8%) !important;
+}
+
+.fi-pagination-overview,
+.fi-pagination .fi-input-wrp-label {
+    color: rgb(254 249 239 / 70%) !important;
 }
 
 .fi-ta-header-toolbar-btn:hover {
@@ -295,6 +304,16 @@
     border-color: rgb(212 168 67 / 20%) !important;
     background: rgb(26 16 64 / 50%) !important;
     color: var(--color-mouse-cream) !important;
+}
+
+.fi-main .fi-input-wrp {
+    background: rgb(26 16 64 / 50%) !important;
+}
+
+.fi-main .fi-input::placeholder,
+.fi-main textarea::placeholder {
+    color: rgb(254 249 239 / 65%) !important;
+    opacity: 1;
 }
 
 .fi-main .fi-input:focus {
@@ -320,6 +339,10 @@ label.fi-fo-field-wrp-label,
 
 .fi-main .fi-fo-field-wrp-hint {
     color: rgb(254 249 239 / 50%) !important;
+}
+
+.fi-main .fi-fo-field .fi-sc-text {
+    color: rgb(254 249 239 / 70%) !important;
 }
 
 .fi-main select,

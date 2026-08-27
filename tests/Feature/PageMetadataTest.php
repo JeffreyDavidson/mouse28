@@ -103,13 +103,16 @@ test('invalid blog filters do not create indexable archive variants', function (
 
 test('relative content images become absolute social image urls', function (): void {
     $post = Post::factory()->create([
+        'title' => 'Accessible Disney Planning',
         'og_image' => 'posts/social-card.jpg',
     ]);
 
     get(route('blog.show', $post))
         ->assertOk()
         ->assertSee('<meta property="og:image" content="'.url('/storage/posts/social-card.jpg').'">', false)
-        ->assertSee('<meta name="twitter:image" content="'.url('/storage/posts/social-card.jpg').'">', false);
+        ->assertSee('<meta property="og:image:alt" content="Accessible Disney Planning">', false)
+        ->assertSee('<meta name="twitter:image" content="'.url('/storage/posts/social-card.jpg').'">', false)
+        ->assertSee('<meta name="twitter:image:alt" content="Accessible Disney Planning">', false);
 });
 
 test('episode metadata falls back to its title and description', function (): void {

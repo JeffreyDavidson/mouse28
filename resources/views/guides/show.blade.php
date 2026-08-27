@@ -19,7 +19,7 @@
         </div>
     @endif
     <section class="from-navy via-navy-light to-purple relative overflow-hidden bg-linear-to-br py-14 md:py-20">
-        <div class="mx-auto max-w-5xl px-4 sm:px-6">
+        <div class="mx-auto max-w-5xl px-4 wrap-anywhere sm:px-6">
             <a
                 href="{{ route('guides.index') }}"
                 class="hover:text-gold inline-flex min-h-12 items-center text-sm text-white/60"
@@ -29,7 +29,7 @@
                     href="{{ route('guides.index', ['category' => $guide->category]) }}"
                     class="border-gold/30 bg-gold/15 text-gold hover:border-gold hover:bg-gold/25 inline-flex min-h-12 items-center rounded-full border px-4 py-2 font-bold tracking-wider uppercase transition-colors"
                 >{{ $guide->category_label }}</a>
-                <span class="text-white/45">{{ $guide->reading_time }} min read</span>
+                <span class="text-white/60">{{ $guide->reading_time }} min read</span>
             </div>
             <h1 class="font-heading mt-5 max-w-4xl text-4xl/tight font-bold text-white md:text-6xl">
                 {{ $guide->title }}
@@ -60,13 +60,13 @@
             @endif
 
             <article class="border-navy/5 shadow-navy/5 rounded-3xl border bg-white p-6 shadow-lg sm:p-10 md:p-14">
-                <div class="blog-article-content prose-navy prose prose-lg text-navy/80 max-w-none text-[1.1rem] leading-[1.85]">
+                <div class="blog-article-content prose-navy prose prose-lg text-navy/80 max-w-none text-[1.1rem] leading-[1.85] wrap-anywhere">
                     {!! Str::markdown($guide->body, ['html_input' => 'strip', 'allow_unsafe_links' => false]) !!}
                 </div>
 
                 @if ($guide->source_url)
                     <div class="border-navy/10 mt-10 border-t pt-6">
-                        <p class="text-navy/55 text-sm">
+                        <p class="text-navy/65 text-sm">
                             Policies can change. Review the official source before your visit.
                         </p>
                         <a
@@ -80,7 +80,7 @@
             </article>
 
             @if ($relatedGuides->isNotEmpty())
-                <section class="mt-12" aria-labelledby="related-guides-heading">
+                <section class="mt-12" aria-labelledby="related-guides-heading" data-print-hidden>
                     <h2 id="related-guides-heading" class="font-heading text-navy text-3xl font-bold">
                         Related guides
                     </h2>
@@ -88,7 +88,7 @@
                         @foreach ($relatedGuides as $relatedGuide)
                             <a
                                 href="{{ route('guides.show', $relatedGuide) }}"
-                                class="border-navy/5 font-heading text-navy hover:text-purple rounded-2xl border bg-white p-5 text-lg font-bold shadow-sm"
+                                class="border-navy/5 font-heading text-navy hover:text-purple rounded-2xl border bg-white p-5 text-lg font-bold wrap-anywhere shadow-sm"
                             >{{ $relatedGuide->title }}</a>
                         @endforeach
                     </div>
