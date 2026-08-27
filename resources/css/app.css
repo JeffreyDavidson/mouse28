@@ -963,3 +963,95 @@
         stroke-dashoffset: 0;
     }
 }
+
+@media print {
+    @page {
+        margin: 0.75in;
+    }
+
+    html {
+        font-size: 11pt;
+        scroll-behavior: auto;
+    }
+
+    body,
+    main,
+    main section,
+    main article {
+        background: white !important;
+        color: black !important;
+    }
+
+    header,
+    footer,
+    form,
+    button,
+    audio,
+    #reading-progress,
+    #back-to-top,
+    [data-print-hidden],
+    main [aria-hidden='true'] {
+        display: none !important;
+    }
+
+    main section {
+        min-height: 0 !important;
+        padding-block: 0.5rem !important;
+    }
+
+    main article {
+        border: 0 !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+
+    main h1,
+    main h2,
+    main h3,
+    main p,
+    main li,
+    main span {
+        color: black !important;
+    }
+
+    main h1,
+    main h2,
+    main h3 {
+        break-after: avoid;
+        page-break-after: avoid;
+    }
+
+    main p,
+    main li,
+    main blockquote {
+        orphans: 3;
+        widows: 3;
+    }
+
+    main img,
+    main blockquote,
+    main pre,
+    main table {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+
+    .blog-article-content {
+        max-width: none !important;
+        overflow: visible !important;
+        color: black !important;
+        font-size: 11pt !important;
+        line-height: 1.55 !important;
+    }
+
+    .blog-article-content a {
+        color: black !important;
+        text-decoration: underline;
+    }
+
+    .blog-article-content a[href^='http']::after {
+        content: ' (' attr(href) ')';
+        font-size: 0.8em;
+        overflow-wrap: anywhere;
+    }
+}

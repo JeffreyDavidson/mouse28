@@ -51,7 +51,7 @@
             aria-hidden="true"
         >✦</span>
 
-        <div class="from-navy via-navy-light to-navy absolute inset-0 bg-linear-to-br">
+        <div class="from-navy via-navy-light to-navy absolute inset-0 bg-linear-to-br" data-print-hidden>
             @if ($post->cover_image_url)
                 <img
                     src="{{ $post->cover_image_url }}"
@@ -115,7 +115,7 @@
                         <p class="text-xs text-white/60">Mouse28</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2" data-print-hidden>
                     <a
                         href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($post->title) }}"
                         target="_blank"
@@ -253,7 +253,10 @@
                     </div>
 
                     {{-- Share This Post --}}
-                    <div class="border-navy/5 shadow-navy/5 mt-10 rounded-3xl border bg-white p-5 text-center shadow-lg sm:p-8 md:p-10">
+                    <div
+                        class="border-navy/5 shadow-navy/5 mt-10 rounded-3xl border bg-white p-5 text-center shadow-lg sm:p-8 md:p-10"
+                        data-print-hidden
+                    >
                         <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">Enjoyed this post?</span>
                         <h2 class="font-heading text-navy my-2 text-xl font-bold">Share it with fellow Disney fans</h2>
                         <p class="text-navy/65 mb-6 text-base sm:text-sm">Help others discover Mouse28</p>
@@ -290,7 +293,10 @@
 
                     {{-- Related Episode --}}
                     @if ($post->episode)
-                        <div class="border-navy/5 shadow-navy/5 mt-8 rounded-3xl border bg-white p-8 shadow-lg">
+                        <div
+                            class="border-navy/5 shadow-navy/5 mt-8 rounded-3xl border bg-white p-8 shadow-lg"
+                            data-print-hidden
+                        >
                             <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">Related Episode</span>
                             <a href="{{ route('episodes.show', $post->episode) }}" class="group mt-4 block">
                                 <div class="flex items-center gap-5">
@@ -310,7 +316,7 @@
 
                     {{-- Read Next --}}
                     @if ($recentPosts->count())
-                        <div class="mt-12">
+                        <div class="mt-12" data-print-hidden>
                             <div class="mb-6 flex items-center gap-4">
                                 <h2 class="font-heading text-navy text-xl font-bold">Continue Reading</h2>
                                 <div class="from-navy/10 h-px flex-1 bg-linear-to-r to-transparent"></div>
@@ -357,7 +363,7 @@
                 </div>
 
                 {{-- Sidebar --}}
-                <aside class="lg:w-[34%]">
+                <aside class="lg:w-[34%]" data-print-hidden>
                     <div class="space-y-7 lg:sticky lg:top-[90px]">
                         {{-- Table of Contents (populated by JS) --}}
                         <div
