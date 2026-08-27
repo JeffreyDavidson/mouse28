@@ -80,7 +80,7 @@
             </article>
 
             @if ($relatedGuides->isNotEmpty())
-                <section class="mt-12" aria-labelledby="related-guides-heading">
+                <section class="mt-12" aria-labelledby="related-guides-heading" data-print-hidden>
                     <h2 id="related-guides-heading" class="font-heading text-navy text-3xl font-bold">
                         Related guides
                     </h2>

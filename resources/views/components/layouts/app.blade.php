@@ -30,13 +30,13 @@
             url: $canonicalUrl,
             siteName: 'Mouse28',
         )
-        ->ogImage($socialImage)
+        ->ogImage($socialImage, alt: $socialTitle)
         ->twitter(
             card: \Laravel\Head\Enums\TwitterCard::SummaryWithLargeImage,
             title: $socialTitle,
             description: $socialDescription,
-            image: $socialImage,
         )
+        ->twitterImage($socialImage, alt: $socialTitle)
         ->feed(route('rss.blog'), 'Mouse28 Blog')
         ->feed(route('rss.podcast'), 'Mouse28 Podcast');
 @endphp
