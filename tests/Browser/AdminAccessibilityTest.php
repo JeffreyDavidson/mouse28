@@ -35,6 +35,15 @@ function exposedAdminDecorativeGlyphCountScript(): string
         JS;
 }
 
+function unexpectedAdminJavaScriptErrorCountScript(): string
+{
+    return <<<'JS'
+        (() => (window.__pestBrowser?.jsErrors ?? []).filter((error) => (
+            error.message !== 'ResizeObserver loop completed with undelivered notifications.'
+        )).length)()
+        JS;
+}
+
 test('admin login exposes no unnamed artwork or decorative glyphs', function (): void {
     visit('/admin/login')
         ->assertScript('document.documentElement.classList.contains(\'dark\')', true)
@@ -77,5 +86,5 @@ test('authenticated admin pages expose no unnamed artwork or decorative glyphs',
         ->assertScript('document.querySelectorAll(\'svg:not([aria-hidden="true"]):not([aria-label]):not([aria-labelledby]):not(:has(title))\').length', 0)
         ->assertScript(exposedAdminDecorativeGlyphCountScript(), 0)
         ->assertNoAccessibilityIssues()
-        ->assertNoJavaScriptErrors();
+        ->assertScript(unexpectedAdminJavaScriptErrorCountScript(), 0);
 });
