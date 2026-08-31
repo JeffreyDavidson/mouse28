@@ -17,6 +17,7 @@ class AttachContentArtwork extends Command
 {
     /** @var array<string, string> */
     private const POST_ARTWORK = [
+        'welcome-to-mouse-28' => 'posts/welcome-to-mouse-28.webp',
         'our-disney-park-bag-essentials' => 'posts/our-disney-park-bag-essentials.webp',
         'disney-dining-with-a-picky-eater' => 'posts/disney-dining-with-a-picky-eater.webp',
         'the-ride-that-surprised-us' => 'posts/the-ride-that-surprised-us.webp',
