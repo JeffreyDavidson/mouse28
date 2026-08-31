@@ -12,6 +12,7 @@ test('bundled artwork is attached without replacing existing uploads', function 
     Storage::fake('public');
 
     $artwork = [
+        'posts/welcome-to-mouse-28.webp',
         'posts/our-disney-park-bag-essentials.webp',
         'posts/disney-dining-with-a-picky-eater.webp',
         'posts/the-ride-that-surprised-us.webp',
@@ -21,6 +22,10 @@ test('bundled artwork is attached without replacing existing uploads', function 
         'episodes/meet-jeffrey-and-cassie-our-disney-story.webp',
     ];
 
+    $welcomePost = Post::factory()->create([
+        'slug' => 'welcome-to-mouse-28',
+        'cover_image' => null,
+    ]);
     $post = Post::factory()->create([
         'slug' => 'our-disney-park-bag-essentials',
         'cover_image' => null,
@@ -36,7 +41,8 @@ test('bundled artwork is attached without replacing existing uploads', function 
         Storage::disk('public')->assertExists($path);
     }
 
-    expect($post->refresh()->cover_image)->toBe('posts/our-disney-park-bag-essentials.webp')
+    expect($welcomePost->refresh()->cover_image)->toBe('posts/welcome-to-mouse-28.webp')
+        ->and($post->refresh()->cover_image)->toBe('posts/our-disney-park-bag-essentials.webp')
         ->and($episode->refresh()->cover_image)->toBe('episodes/custom-upload.webp');
 
     expect($this->artisan('content:attach-artwork'))->toBe(Command::SUCCESS);

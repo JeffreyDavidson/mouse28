@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mouse28 Blog Artwork"
+  short_description: "Create consistent Mouse28 blog cover artwork"
+  default_prompt: "Use $mouse28-blog-artwork to create a cover for this Mouse28 blog post."
