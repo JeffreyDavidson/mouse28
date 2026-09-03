@@ -8,15 +8,6 @@
     :dispatch-layout="true"
 >
     @php
-        $storyArtwork = [
-            '/storage/posts/our-disney-park-bag-essentials.webp',
-            '/storage/posts/the-ride-that-surprised-us.webp',
-            '/storage/posts/disney-dining-with-a-picky-eater.webp',
-        ];
-        $guideArtwork = [
-            '/storage/posts/a-first-timers-guide-to-disney-world-with-a-sensory-sensitive-child.webp',
-            '/storage/posts/what-is-das-and-how-it-changed-our-disney-visits.webp',
-        ];
         $dispatchWaypoints = ['Welcome', 'Stories', 'Planning', 'Listen', 'Meet us', 'Stay in the loop'];
     @endphp
 
@@ -120,42 +111,40 @@
                                     {{ $featuredPost->title }}
                                 </p>
                             </div>
-                            <div class="overflow-hidden rounded-lg">
-                                <img
-                                    src="{{ $featuredPost->cover_image_url ?: '/storage/posts/welcome-to-mouse-28.webp' }}"
-                                    alt=""
-                                    width="1024"
-                                    height="768"
-                                    loading="lazy"
-                                    decoding="async"
-                                    class="aspect-[5/4] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02] md:aspect-square"
-                                />
-                            </div>
+                            @if ($featuredPost->cover_image_url)
+                                <div class="overflow-hidden rounded-lg">
+                                    <img
+                                        src="{{ $featuredPost->cover_image_url }}"
+                                        alt=""
+                                        width="1024"
+                                        height="768"
+                                        loading="lazy"
+                                        decoding="async"
+                                        class="aspect-[5/4] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02] md:aspect-square"
+                                    />
+                                </div>
+                            @else
+                                <div class="from-purple/15 to-gold/25 text-navy flex aspect-[5/4] items-center justify-center rounded-lg bg-linear-to-br p-8 text-center md:aspect-square">
+                                    <span class="font-heading text-4xl [font-weight:680] tracking-[-0.03em]">Mouse28</span>
+                                </div>
+                            @endif
                         </a>
                     @else
-                        <a
-                            href="{{ route('blog.index') }}"
-                            class="dispatch-feature-book group block"
-                            aria-label="Welcome to Mouse28. Read the blog."
-                        >
+                        <div class="dispatch-feature-book">
                             <div class="dispatch-book-title">
-                                <p class="text-purple text-base font-semibold sm:text-sm">Start here</p>
+                                <p class="text-purple text-base font-semibold sm:text-sm">From the blog</p>
                                 <p class="font-heading text-navy mt-2 text-3xl [font-weight:620] tracking-[-0.02em] text-balance">
-                                    Welcome to Mouse28
+                                    Our first dispatch is being prepared.
                                 </p>
                             </div>
-                            <div class="overflow-hidden rounded-lg">
-                                <img
-                                    src="/storage/posts/welcome-to-mouse-28.webp"
-                                    alt=""
-                                    width="1024"
-                                    height="768"
-                                    loading="lazy"
-                                    decoding="async"
-                                    class="aspect-[5/4] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02] md:aspect-square"
-                                />
+                            <div class="from-purple/15 to-gold/25 text-navy flex aspect-[5/4] flex-col items-center justify-center rounded-lg bg-linear-to-br p-8 text-center md:aspect-square">
+                                <span class="font-heading text-4xl [font-weight:680] tracking-[-0.03em]">Mouse28</span>
+                                <a
+                                    href="{{ route('blog.index') }}"
+                                    class="text-purple decoration-gold/70 hover:text-navy mt-4 inline-flex min-h-12 items-center text-base font-semibold underline underline-offset-8 sm:text-sm"
+                                >Visit the blog</a>
                             </div>
-                        </a>
+                        </div>
                     @endif
                 </div>
                 <div class="dispatch-latest-sheet relative z-10 p-5 pt-7 sm:p-7 md:ml-4 md:pl-14 lg:p-8 lg:pl-16">
@@ -174,15 +163,21 @@
                                 href="{{ route('blog.show', $post) }}"
                                 class="dispatch-story-card group flex h-full flex-col overflow-hidden"
                             >
-                                <img
-                                    src="{{ $post->cover_image_url ?: $storyArtwork[$loop->index] }}"
-                                    alt=""
-                                    width="1024"
-                                    height="768"
-                                    class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]"
-                                    loading="lazy"
-                                    decoding="async"
-                                />
+                                @if ($post->cover_image_url)
+                                    <img
+                                        src="{{ $post->cover_image_url }}"
+                                        alt=""
+                                        width="1024"
+                                        height="768"
+                                        class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]"
+                                        loading="lazy"
+                                        decoding="async"
+                                    />
+                                @else
+                                    <div class="from-purple/15 to-gold/25 text-navy flex aspect-[4/3] items-center justify-center bg-linear-to-br p-5 text-center">
+                                        <span class="font-heading text-2xl [font-weight:680] tracking-[-0.03em]">Mouse28</span>
+                                    </div>
+                                @endif
                                 <div class="flex flex-1 flex-col p-3">
                                     <p class="text-purple text-sm font-semibold sm:text-xs">
                                         {{ $post->category_label }}
@@ -196,23 +191,14 @@
                                 </div>
                             </a>
                         @empty
-                            @foreach (['Accessibility planning', 'Sensory-friendly park days', 'Honest family stories'] as $story)
-                                <a href="{{ route('blog.index') }}" class="dispatch-story-card group overflow-hidden"
-                                    ><img
-                                        src="{{ $storyArtwork[$loop->index] }}"
-                                        alt=""
-                                        width="1024"
-                                        height="768"
-                                        class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]"
-                                        loading="lazy"
-                                        decoding="async"
-                                    />
-                                    <div class="p-3">
-                                        <h3 class="font-heading text-navy group-hover:text-purple text-lg [font-weight:560] tracking-[-0.012em]">
-                                            {{ $story }}
-                                        </h3>
-                                    </div></a>
-                            @endforeach
+                            <div class="border-gold/35 bg-cream/70 col-span-full rounded-xl border p-6 text-center sm:p-8">
+                                <p class="font-heading text-navy text-2xl [font-weight:620] tracking-[-0.02em]">
+                                    More stories are on the way.
+                                </p>
+                                <p class="text-navy/70 mx-auto mt-2 max-w-lg text-base/7 sm:text-[0.9375rem]/6">
+                                    We are preparing practical park notes and honest family stories for this space.
+                                </p>
+                            </div>
                         @endforelse
                     </div>
                     <a
@@ -245,14 +231,9 @@
                             <a
                                 href="{{ route('guides.show', $guide) }}"
                                 class="dispatch-guide-card group overflow-hidden"
-                                ><img
-                                    src="{{ $guide->cover_image_url ?: $guideArtwork[$loop->index] }}"
-                                    alt=""
-                                    width="1024"
-                                    height="768"
-                                    class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]"
-                                    loading="lazy"
-                                    decoding="async" />
+                                ><x-guide-artwork
+                                    :guide="$guide"
+                                    class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]" />
                                 <div class="p-5">
                                     <p class="text-purple text-sm font-semibold sm:text-xs">Guide</p>
                                     <h3 class="font-heading text-navy group-hover:text-purple mt-1 text-2xl [font-weight:580] tracking-[-0.015em] text-balance">
@@ -265,29 +246,14 @@
                                     @endif</div
                             ></a>
                         @empty
-                            @foreach (array_slice(\App\Models\Guide::CATEGORIES, 0, 2, true) as $slug => $label)
-                                <a
-                                    href="{{ route('guides.index', ['category' => $slug]) }}"
-                                    class="dispatch-guide-card group overflow-hidden"
-                                    ><img
-                                        src="{{ $guideArtwork[$loop->index] }}"
-                                        alt=""
-                                        width="1024"
-                                        height="768"
-                                        class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]"
-                                        loading="lazy"
-                                        decoding="async"
-                                    />
-                                    <div class="p-5">
-                                        <p class="text-purple text-sm font-semibold sm:text-xs">Guide</p>
-                                        <h3 class="font-heading text-navy group-hover:text-purple mt-1 text-2xl [font-weight:580] tracking-[-0.015em] text-balance">
-                                            {{ $label }}
-                                        </h3>
-                                        <p class="text-navy/70 mt-3 text-base/7 sm:text-[0.9375rem]/6">
-                                            Explore practical planning help for your next park day.
-                                        </p>
-                                    </div></a>
-                            @endforeach
+                            <div class="border-gold/35 bg-cream/70 col-span-full flex min-h-64 flex-col items-center justify-center rounded-xl border p-6 text-center sm:p-8">
+                                <p class="font-heading text-navy text-2xl [font-weight:620] tracking-[-0.02em]">
+                                    The guidebook is being assembled.
+                                </p>
+                                <p class="text-navy/70 mx-auto mt-2 max-w-lg text-base/7 sm:text-[0.9375rem]/6">
+                                    Reviewed accessibility and planning guides will appear here as they are published.
+                                </p>
+                            </div>
                         @endforelse
                     </div>
                 </div>

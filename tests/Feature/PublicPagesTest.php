@@ -141,10 +141,46 @@ test('homepage uses one newsletter form and responsive hero artwork', function (
         ->assertSee('data-dispatch-stop="Meet us"', false)
         ->assertSee('data-dispatch-stop="Stay in the loop"', false)
         ->assertDontSee('data-animate', false)
-        ->assertSee('/storage/posts/welcome-to-mouse-28.webp', false)
+        ->assertSee('Our first dispatch is being prepared.')
+        ->assertDontSee('/storage/posts/welcome-to-mouse-28.webp', false)
         ->assertSee('We use your email to send Mouse28 updates.');
 
     expect(substr_count($response->getContent(), 'action="'.route('newsletter.store').'"'))->toBe(1);
+});
+
+test('homepage only presents published content as stories and guides', function (): void {
+    $featuredPost = Post::factory()->create([
+        'title' => 'A Real Featured Dispatch',
+        'cover_image' => null,
+        'published_at' => now()->subHour(),
+    ]);
+    $latestPost = Post::factory()->create([
+        'title' => 'A Real Latest Dispatch',
+        'cover_image' => null,
+        'published_at' => now()->subDay(),
+    ]);
+    $draftPost = Post::factory()->draft()->create([
+        'title' => 'A Private Draft Dispatch',
+    ]);
+    $guide = Guide::factory()->create([
+        'title' => 'A Real Planning Guide',
+        'category' => 'accessibility',
+        'cover_image' => null,
+    ]);
+
+    get(route('home'))
+        ->assertOk()
+        ->assertSee($featuredPost->title)
+        ->assertSee($latestPost->title)
+        ->assertSee($guide->title)
+        ->assertSee('/images/guides/accessibility.webp', false)
+        ->assertDontSee($draftPost->title)
+        ->assertDontSee('Accessibility planning')
+        ->assertDontSee('Sensory-friendly park days')
+        ->assertDontSee('Honest family stories')
+        ->assertDontSee('/storage/posts/our-disney-park-bag-essentials.webp', false)
+        ->assertDontSee('/storage/posts/the-ride-that-surprised-us.webp', false)
+        ->assertDontSee('/storage/posts/disney-dining-with-a-picky-eater.webp', false);
 });
 
 test('homepage defers the below-fold featured post image', function (): void {
