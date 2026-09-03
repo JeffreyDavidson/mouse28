@@ -159,11 +159,40 @@ test('public content archive cannot be imported in production', function (): voi
         'podcast' => null,
     ], JSON_THROW_ON_ERROR));
     app()->detectEnvironment(fn (): string => 'production');
+    config()->set('app.url', 'https://mouse28.com');
 
-    $exitCode = Artisan::call('content:import-public', ['path' => $archivePath]);
+    $exitCode = Artisan::call('content:import-public', [
+        'path' => $archivePath,
+        '--staging' => true,
+    ]);
 
     expect($exitCode)->toBe(Command::FAILURE)
         ->and(Artisan::output())->toContain('Public content cannot be imported into production.');
+
+    File::delete($archivePath);
+});
+
+test('public content archive requires an explicit staging override on the staging hostname', function (): void {
+    $archivePath = storage_path('framework/testing/public-content-staging.json');
+    File::put($archivePath, json_encode([
+        'version' => 1,
+        'exported_at' => now()->toAtomString(),
+        'posts' => [],
+        'episodes' => [],
+        'guides' => [],
+        'podcast' => null,
+    ], JSON_THROW_ON_ERROR));
+    app()->detectEnvironment(fn (): string => 'production');
+    config()->set('app.url', 'http://staging.mouse28.com');
+
+    $refusedExitCode = Artisan::call('content:import-public', ['path' => $archivePath]);
+    $allowedExitCode = Artisan::call('content:import-public', [
+        'path' => $archivePath,
+        '--staging' => true,
+    ]);
+
+    expect($refusedExitCode)->toBe(Command::FAILURE)
+        ->and($allowedExitCode)->toBe(Command::SUCCESS);
 
     File::delete($archivePath);
 });
