@@ -23,7 +23,7 @@ test('public landing pages have specific search and social metadata', function (
         ->assertSee('<meta name="description" content="Accessibility tips, sensory-friendly park planning, family experiences, and the Mouse28 podcast from Jeffrey and Cassie Davidson.">', false)
         ->assertSee('<meta name="theme-color" content="#1a1040" />', false)
         ->assertSee('<link rel="preload" href="/fonts/mouse28/poppins-400.woff2" as="font" type="font/woff2" crossorigin />', false)
-        ->assertSee('<link rel="preload" href="/fonts/mouse28/playfair-latin.woff2" as="font" type="font/woff2" crossorigin />', false)
+        ->assertSee('<link rel="preload" href="/fonts/mouse28/besley-latin.woff2" as="font" type="font/woff2" crossorigin />', false)
         ->assertSee('<meta property="og:image" content="'.url('/images/hero-family.jpg').'">', false);
 
     get(route('blog.index'))

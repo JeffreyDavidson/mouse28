@@ -5,6 +5,7 @@
     :og-description="$episode->meta_description ?: Str::limit($episode->description, 200)"
     :og-image="$episode->og_image_url ?: $episode->cover_image_url"
     :robots="($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow'"
+    :dispatch-layout="true"
 >
     @unless ($isPreview ?? false)
         @push('head')
@@ -17,7 +18,7 @@
             Preview mode — this page is only visible to administrators.
         </div>
     @endif
-    <section class="from-navy to-navy-light relative overflow-hidden bg-linear-to-br py-16 md:py-24">
+    <section class="dispatch-page-hero dispatch-podcast-hero from-navy to-navy-light relative overflow-hidden bg-linear-to-br py-16 md:py-24">
         {{-- Waveform background --}}
         <div class="pointer-events-none absolute inset-0 opacity-[0.07]">
             <svg class="absolute bottom-0 left-0 h-32 w-full text-white" viewBox="0 0 1200 120" preserveAspectRatio="none" fill="none" stroke="currentColor" aria-hidden="true">
@@ -34,7 +35,7 @@
                 </g>
             </svg>
         </div>
-        <div class="relative z-10 mx-auto max-w-4xl px-4 wrap-anywhere sm:px-6">
+        <div class="dispatch-page-heading relative z-10 mx-auto max-w-[86rem] px-4 wrap-anywhere sm:px-6">
             <a
                 href="{{ route('episodes.index') }}"
                 class="hover:text-gold mb-6 inline-flex min-h-12 items-center gap-1 text-base text-white/50 transition-colors sm:text-sm"
@@ -44,12 +45,10 @@
             </a>
 
             <div class="border-gold/30 mt-4 mb-5 inline-flex items-center gap-2 rounded-full border px-4 py-1.5">
-                <span class="bg-gold size-2 animate-pulse rounded-full"></span>
                 <span class="font-body text-gold text-xs font-semibold tracking-[0.15em] uppercase">Episode {{ $episode->episode_number }}</span>
             </div>
 
-            <div class="mb-4 flex items-center gap-3">
-                <span class="bg-gold/20 text-gold rounded-full px-4 py-1 text-sm font-bold backdrop-blur-sm">Episode {{ $episode->episode_number }}</span>
+            <div class="mb-4 flex flex-wrap items-center gap-3" data-episode-meta>
                 @if ($episode->season_number)
                     <span class="rounded-full bg-white/10 px-3 py-1 text-sm text-white/70">Season {{ $episode->season_number }}</span>
                 @endif
@@ -70,7 +69,7 @@
         </div>
     </section>
 
-    <section class="bg-cream py-16">
+    <section class="dispatch-page-field bg-cream py-16">
         <div class="mx-auto max-w-6xl px-4 sm:px-6">
             <div class="flex flex-col gap-10 lg:flex-row">
                 {{-- Main Content --}}
@@ -439,7 +438,7 @@
                         <a
                             href="{{ route('episodes.show', $previousEpisode) }}"
                             rel="prev"
-                            class="group border-navy/5 hover:border-purple/20 flex min-h-24 flex-col justify-center rounded-2xl border bg-white px-6 py-5 wrap-anywhere shadow-sm transition-[border-color,box-shadow] hover:shadow-lg"
+                            class="dispatch-interactive-card group border-navy/5 hover:border-purple/20 flex min-h-24 flex-col justify-center rounded-2xl border bg-white px-6 py-5 wrap-anywhere shadow-sm"
                         >
                             <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">← Previous episode</span>
                             <span class="font-heading text-navy group-hover:text-purple mt-2 text-lg font-bold transition-colors">{{ $previousEpisode->title }}</span>
@@ -449,7 +448,7 @@
                         <a
                             href="{{ route('episodes.show', $nextEpisode) }}"
                             rel="next"
-                            class="group border-navy/5 hover:border-purple/20 flex min-h-24 flex-col justify-center rounded-2xl border bg-white px-6 py-5 text-right wrap-anywhere shadow-sm transition-[border-color,box-shadow] hover:shadow-lg sm:col-start-2"
+                            class="dispatch-interactive-card group border-navy/5 hover:border-purple/20 flex min-h-24 flex-col justify-center rounded-2xl border bg-white px-6 py-5 text-right wrap-anywhere shadow-sm sm:col-start-2"
                         >
                             <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">Next episode →</span>
                             <span class="font-heading text-navy group-hover:text-purple mt-2 text-lg font-bold transition-colors">{{ $nextEpisode->title }}</span>

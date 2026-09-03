@@ -1,5 +1,5 @@
 @props([
-    'title' => 'Something Went Wrong — Mouse28',
+    'title' => 'Something Went Wrong | Mouse28',
     'description' => 'Mouse28 could not complete this request.',
     'ogTitle' => 'Mouse28',
     'ogDescription' => 'Disney parks through different eyes.',
@@ -19,7 +19,7 @@
 @endphp
 
 <!DOCTYPE html>
-<html lang="en" class="antialiased">
+<html lang="en" class="scroll-smooth antialiased">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -35,16 +35,18 @@
         Skip to content
     </a>
 
-    <header class="bg-navy/95 border-b border-white/10">
+    <header class="dispatch-cloth border-gold/25 border-b">
         <nav
             aria-label="Recovery navigation"
-            class="mx-auto flex min-h-20 max-w-6xl items-center justify-between gap-6 px-4 sm:px-6"
+            class="mx-auto flex min-h-20 max-w-[86rem] items-center justify-between gap-6 px-4 sm:px-6"
         >
             <a
                 href="{{ route('home') }}"
                 aria-label="Mouse28 homepage"
-                class="font-heading hover:text-gold inline-flex min-h-12 items-center text-2xl font-bold text-white transition-colors"
-            >Mouse<span class="text-gold">28</span></a>
+                class="group inline-flex min-h-12 items-center py-2"
+            >
+                <x-brand-wordmark />
+            </a>
             <div class="hidden items-center gap-6 sm:flex">
                 <a
                     href="{{ route('blog.index') }}"
@@ -64,8 +66,16 @@
 
     <main id="main-content" tabindex="-1" class="flex flex-1 flex-col">{{ $slot }}</main>
 
-    <footer class="bg-navy border-t border-white/10 px-4 py-6 text-center text-sm text-white/60">
-        &copy; {{ date('Y') }} Mouse28
+    <footer class="bg-navy border-gold/25 border-t px-4 py-6 text-center text-sm text-white/60">
+        <a href="{{ route('home') }}" aria-label="Mouse28 homepage" class="inline-flex min-h-12 items-center">
+            <x-brand-wordmark compact />
+        </a>
     </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+            document.documentElement.classList.add('js-dispatch-errors');
+        });
+    </script>
 </body>
 </html>

@@ -6,6 +6,7 @@
     og-type="article"
     :og-image="$post->og_image_url ?: $post->cover_image_url"
     :robots="($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow'"
+    :dispatch-layout="true"
 >
     @unless ($isPreview ?? false)
         @push('head')
@@ -41,7 +42,7 @@
     @endphp
 
     {{-- Hero Section --}}
-    <section class="relative flex min-h-[420px] items-end overflow-hidden">
+    <section class="dispatch-article-hero relative flex min-h-[420px] items-end overflow-hidden">
         <span
             class="sparkle text-gold-light/25 pointer-events-none absolute top-[15%] right-[12%] z-10 text-base"
             aria-hidden="true"
@@ -152,7 +153,7 @@
     </section>
 
     {{-- Content Section --}}
-    <section class="bg-cream relative py-14">
+    <section class="dispatch-page-field bg-cream relative py-14">
         {{-- Subtle decorative dots --}}
         <div class="via-gold/20 absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent to-transparent"></div>
 
@@ -162,7 +163,7 @@
                 <div class="min-w-0 lg:w-[66%]">
                     <article
                         id="article-body"
-                        class="border-navy/5 shadow-navy/5 relative rounded-3xl border bg-white p-5 shadow-lg sm:p-8 md:p-14"
+                        class="dispatch-reader-sheet border-navy/5 shadow-navy/5 relative rounded-3xl border bg-white p-5 shadow-lg sm:p-8 md:p-14"
                     >
                         @if ($post->last_reviewed_at)
                             <p class="text-navy/65 mb-8 text-sm">
@@ -326,7 +327,7 @@
                                     @php $nextStyle = $categoryStyles[$next->category] ?? $defaultCategoryStyle; @endphp
                                     <a
                                         href="{{ route('blog.show', $next) }}"
-                                        class="group border-navy/5 shadow-navy/5 overflow-hidden rounded-2xl border bg-white shadow-md transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-xl"
+                                        class="dispatch-interactive-card group border-navy/5 shadow-navy/5 overflow-hidden rounded-2xl border bg-white shadow-md"
                                     >
                                         <div class="h-40 overflow-hidden">
                                             @if ($next->cover_image_url)
@@ -379,7 +380,10 @@
 
                         {{-- Recent Posts --}}
                         @if ($recentPosts->count())
-                            <div class="border-navy/5 shadow-navy/5 rounded-2xl border bg-white p-7 shadow-md">
+                            <div
+                                class="border-navy/5 shadow-navy/5 hidden rounded-2xl border bg-white p-7 shadow-md lg:block"
+                                data-article-secondary="recent-posts"
+                            >
                                 <div class="mb-5 flex items-center gap-3">
                                     <div class="from-gold to-gold-light h-[3px] w-15 rounded-sm bg-linear-to-r"></div>
                                     <h3 class="font-heading text-navy text-lg font-bold">Recent Posts</h3>
@@ -420,7 +424,10 @@
                         @endif
 
                         {{-- Categories --}}
-                        <div class="border-navy/5 shadow-navy/5 rounded-2xl border bg-white p-7 shadow-md">
+                        <div
+                            class="border-navy/5 shadow-navy/5 hidden rounded-2xl border bg-white p-7 shadow-md lg:block"
+                            data-article-secondary="categories"
+                        >
                             <div class="mb-5 flex items-center gap-3">
                                 <div class="from-gold to-gold-light h-[3px] w-15 rounded-sm bg-linear-to-r"></div>
                                 <h3 class="font-heading text-navy text-lg font-bold">Categories</h3>

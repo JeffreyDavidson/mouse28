@@ -4,9 +4,10 @@
     og-description="Meet Jeffrey, Cassie, and Viola and learn why their family shares Disney park accessibility experiences through Mouse28."
     og-image="/images/meet-jeffrey-and-cassie.jpg"
     :canonical="route('about')"
+    :dispatch-layout="true"
 >
     {{-- Hero with sparkles --}}
-    <section class="from-navy to-navy-light relative overflow-hidden bg-linear-to-br py-16 md:py-24">
+    <section class="dispatch-page-hero from-navy to-navy-light relative overflow-hidden bg-linear-to-br py-16 md:py-24">
         {{-- Sparkles --}}
         <div class="pointer-events-none absolute inset-0" aria-hidden="true">
             <div class="sparkle text-gold/60 absolute top-12 left-[15%] text-lg">✦</div>
@@ -17,12 +18,8 @@
             <div class="sparkle-delay-2 text-gold/40 absolute top-16 right-[40%]">✦</div>
         </div>
 
-        <div class="relative z-10 mx-auto max-w-6xl px-4 text-center sm:px-6">
-            <div class="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 backdrop-blur-sm">
-                <span class="bg-gold size-2 animate-pulse rounded-full"></span>
-                <span class="text-gold text-sm font-semibold tracking-widest uppercase">About Us</span>
-            </div>
-            <h1 class="font-heading mt-2 text-4xl font-bold text-white md:text-5xl lg:text-6xl">Our Story</h1>
+        <div class="dispatch-page-heading relative z-10 mx-auto max-w-[86rem] px-4 sm:px-6">
+            <h1 class="font-heading text-4xl font-bold text-white md:text-5xl lg:text-6xl">Our Story</h1>
             <p class="mx-auto mt-4 max-w-xl text-lg text-white/60">
                 How a family, a little girl, and a whole lot of Disney magic became something worth sharing.
             </p>
@@ -35,7 +32,7 @@
             <div class="grid grid-cols-2 gap-6 text-center md:grid-cols-4">
                 <div>
                     <div class="font-heading text-gold text-4xl font-bold md:text-5xl">150+</div>
-                    <div class="mt-1.5 text-sm text-white/50">Weekly Visits</div>
+                    <div class="mt-1.5 text-sm text-white/50">Park Visits</div>
                 </div>
                 <div>
                     <div class="font-heading text-gold text-4xl font-bold md:text-5xl">4</div>
@@ -54,7 +51,7 @@
     </section>
 
     {{-- Timeline Story --}}
-    <section class="bg-cream py-16 md:py-24">
+    <section class="dispatch-page-field bg-cream py-16 md:py-24">
         <div class="mx-auto mb-14 max-w-4xl px-4 text-center sm:px-6">
             <span class="text-gold-ink text-sm font-semibold tracking-widest uppercase">Our Journey</span>
             <h2 class="font-heading text-navy mt-3 text-3xl font-bold md:text-4xl">How We Got Here</h2>
@@ -180,7 +177,7 @@
     </section>
 
     {{-- Your Hosts --}}
-    <section class="bg-cream relative overflow-hidden py-16 md:py-24">
+    <section class="dispatch-page-field bg-cream relative overflow-hidden py-16 md:py-24">
         {{-- Subtle background pattern --}}
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,#1a1040_1px,transparent_0)] bg-size-[32px_32px] opacity-[0.02]"></div>
 

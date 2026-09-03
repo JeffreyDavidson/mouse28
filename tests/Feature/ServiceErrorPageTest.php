@@ -12,11 +12,13 @@ test('unexpected errors render a safe branded response', function (): void {
 
     get('/testing/server-error')
         ->assertStatus(500)
-        ->assertSee('<title>Something Went Wrong — Mouse28</title>', false)
+        ->assertSee('<title>Something Went Wrong | Mouse28</title>', false)
         ->assertSee('<meta name="robots" content="none">', false)
         ->assertDontSee('<link rel="canonical"', false)
         ->assertDontSee('fonts.googleapis.com', false)
         ->assertSee('The magic hit a snag')
+        ->assertSee('dispatch-error-marker', false)
+        ->assertSee('data-brand-wordmark', false)
         ->assertDontSee('Sensitive database connection details');
 });
 
@@ -25,8 +27,9 @@ test('maintenance responses offer a safe retry path', function (): void {
 
     get('/testing/maintenance')
         ->assertStatus(503)
-        ->assertSee('<title>We’ll Be Right Back — Mouse28</title>', false)
+        ->assertSee('<title>We’ll Be Right Back | Mouse28</title>', false)
         ->assertSee('We’re making a little magic')
+        ->assertSee('dispatch-error-sheet', false)
         ->assertSee('/testing/maintenance', false)
         ->assertDontSee('Private maintenance details');
 });
@@ -36,8 +39,9 @@ test('expired sessions explain how to recover', function (): void {
 
     get('/testing/expired-session')
         ->assertStatus(419)
-        ->assertSee('<title>Page Expired — Mouse28</title>', false)
+        ->assertSee('<title>Page Expired | Mouse28</title>', false)
         ->assertSee('Your session took a break')
+        ->assertSee('dispatch-error-recovery', false)
         ->assertSee(route('contact.show'), false)
         ->assertDontSee('Private session details');
 });

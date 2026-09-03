@@ -3,18 +3,18 @@
     :description="$pageDescription"
     og-image="/images/hero-family.jpg"
     :canonical="$canonicalUrl"
+    :dispatch-layout="true"
 >
-    <section class="from-navy via-navy-light to-purple relative overflow-hidden bg-linear-to-br py-16 md:py-24">
-        <div class="mx-auto max-w-6xl px-4 text-center sm:px-6">
-            <span class="text-gold text-sm font-semibold tracking-[0.15em] uppercase">Plan With Confidence</span>
-            <h1 class="font-heading mt-3 text-4xl font-bold text-white md:text-6xl">Park Guides</h1>
+    <section class="dispatch-page-hero from-navy via-navy-light to-purple relative overflow-hidden bg-linear-to-br py-16 md:py-24">
+        <div class="dispatch-page-heading mx-auto max-w-[86rem] px-4 sm:px-6">
+            <h1 class="font-heading text-4xl font-bold text-white md:text-6xl">Park Guides</h1>
             <p class="mx-auto mt-5 max-w-2xl text-lg/relaxed text-white/65">
                 Clear, experience-based guidance for accessible and enjoyable Disney park days.
             </p>
         </div>
     </section>
 
-    <section class="bg-cream py-12 md:py-16">
+    <section class="dispatch-page-field bg-cream py-12 md:py-16">
         <div class="mx-auto max-w-6xl px-4 sm:px-6">
             <nav aria-label="Guide categories" class="mb-10 flex flex-wrap justify-center gap-3">
                 <a
@@ -34,42 +34,29 @@
             @if ($guides->isNotEmpty())
                 <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     @foreach ($guides as $guide)
-                        <article class="border-navy/5 flex min-w-0 flex-col overflow-hidden rounded-2xl border bg-white shadow-sm transition-[transform,box-shadow] hover:-translate-y-1 hover:shadow-lg">
-                            @if ($guide->cover_image_url)
-                                <img
-                                    src="{{ $guide->cover_image_url }}"
-                                    alt=""
-                                    loading="lazy"
-                                    decoding="async"
-                                    class="h-52 w-full object-cover"
+                        <article class="min-w-0">
+                            <a
+                                href="{{ route('guides.show', $guide) }}"
+                                class="dispatch-interactive-card group border-navy/5 flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border bg-white shadow-sm"
+                            >
+                                <x-guide-artwork
+                                    :guide="$guide"
+                                    class="h-52 w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
                                 />
-                            @else
-                                <div
-                                    class="from-purple/15 to-gold/15 flex h-40 items-center justify-center bg-linear-to-br"
-                                    aria-hidden="true"
-                                >
-                                    <span class="text-5xl">✦</span>
+                                <div class="flex min-w-0 flex-1 flex-col p-6 wrap-anywhere">
+                                    <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">{{ $guide->category_label }}</span>
+                                    <h2 class="font-heading text-navy group-hover:text-purple mt-3 text-2xl font-bold transition-colors">
+                                        {{ $guide->title }}
+                                    </h2>
+                                    @if ($guide->excerpt)
+                                        <p class="text-navy/65 mt-3 flex-1 text-base/relaxed">{{ $guide->excerpt }}</p>
+                                    @endif
+                                    <div class="border-navy/5 mt-5 flex items-center justify-between border-t pt-4 text-sm">
+                                        <span class="text-navy/65">{{ $guide->reading_time }} min read</span>
+                                        <span class="text-purple inline-flex min-h-12 items-center font-semibold">Read guide →</span>
+                                    </div>
                                 </div>
-                            @endif
-                            <div class="flex min-w-0 flex-1 flex-col p-6 wrap-anywhere">
-                                <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">{{ $guide->category_label }}</span>
-                                <h2 class="font-heading text-navy mt-3 text-2xl font-bold">
-                                    <a
-                                        href="{{ route('guides.show', $guide) }}"
-                                        class="hover:text-purple inline-flex min-h-12 items-center"
-                                    >{{ $guide->title }}</a>
-                                </h2>
-                                @if ($guide->excerpt)
-                                    <p class="text-navy/65 mt-3 flex-1 text-base/relaxed">{{ $guide->excerpt }}</p>
-                                @endif
-                                <div class="border-navy/5 mt-5 flex items-center justify-between border-t pt-4 text-sm">
-                                    <span class="text-navy/65">{{ $guide->reading_time }} min read</span>
-                                    <a
-                                        href="{{ route('guides.show', $guide) }}"
-                                        class="text-purple inline-flex min-h-12 items-center font-semibold"
-                                    >Read guide →</a>
-                                </div>
-                            </div>
+                            </a>
                         </article>
                     @endforeach
                 </div>
