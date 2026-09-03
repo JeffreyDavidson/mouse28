@@ -1,0 +1,5 @@
+interface:
+  display_name: "Mouse28 Visual Fidelity"
+  short_description: "Match Mouse28 pages faithfully to approved comps"
+  brand_color: "#1A1040"
+  default_prompt: "Use $mouse28-visual-fidelity to implement this Mouse28 page faithfully from the approved visual reference."

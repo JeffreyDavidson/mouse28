@@ -63,7 +63,7 @@ reader-submitted story collection, moderation, or public story pages.
 - Gold: `#d4a843`
 - Cream: `#fef9ef`
 - Dark cream: `#f5efe0`
-- Heading font: Playfair Display
+- Heading font: Besley
 - Body font: Poppins
 
 Preserve semantic HTML, keyboard access, visible focus states, readable color

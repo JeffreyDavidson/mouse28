@@ -4,13 +4,14 @@
     og-title="Contact Mouse28"
     og-description="Get in touch with Jeffrey and Cassie about Disney park accessibility, family travel, collaborations, or the Mouse28 podcast."
     :canonical="route('contact.show')"
+    :dispatch-layout="true"
 >
     @php
         $contactHasFeedback = $errors->contact->isNotEmpty();
         $firstContactError = $errors->contact->keys()[0] ?? null;
     @endphp
     @if (session('success'))
-        <section class="from-cream to-cream relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-linear-to-br via-white">
+        <section class="dispatch-page-field from-cream to-cream relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-linear-to-br via-white">
             <div class="relative z-10 px-4 text-center">
                 <div class="relative mx-auto mb-8 size-24">
                     <svg aria-hidden="true" class="size-24" viewBox="0 0 96 96">
@@ -59,19 +60,15 @@
         </section>
     @else
         {{-- Full-width dark hero with form embedded --}}
-        <section class="from-navy via-navy-light to-navy relative overflow-hidden bg-linear-to-br">
+        <section class="dispatch-correspondence-page from-navy via-navy-light to-navy relative overflow-hidden bg-linear-to-br">
             {{-- Ambient glows --}}
             <div class="pointer-events-none absolute top-[-20%] right-[-5%] size-[700px] bg-[radial-gradient(circle,rgb(212_168_67/5%)_0%,transparent_60%)]"></div>
             <div class="pointer-events-none absolute bottom-[-30%] left-[-10%] size-[500px] bg-[radial-gradient(circle,rgb(91_62_158/15%)_0%,transparent_60%)]"></div>
 
             <div class="mx-auto max-w-5xl px-4 py-16 sm:px-6 md:py-24">
                 {{-- Header --}}
-                <div class="mb-14 text-center">
-                    <div class="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 backdrop-blur-sm">
-                        <span class="bg-gold size-2 animate-pulse rounded-full"></span>
-                        <span class="text-gold text-sm font-semibold tracking-widest uppercase">Get in Touch</span>
-                    </div>
-                    <h1 class="font-heading mt-2 text-4xl font-bold text-white md:text-5xl lg:text-6xl">
+                <div class="dispatch-page-heading mb-14">
+                    <h1 class="font-heading text-4xl font-bold text-white md:text-5xl lg:text-6xl">
                         We'd Love to Hear From You
                     </h1>
                     <p class="mx-auto mt-4 max-w-xl text-lg text-white/60">
@@ -83,7 +80,7 @@
                 {{-- Two-column layout --}}
                 <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_340px]">
                     {{-- Form --}}
-                    <div class="border-cream/10 bg-cream/3 rounded-2xl border p-5 backdrop-blur-sm sm:p-8 md:p-10">
+                    <div class="dispatch-letter-form border-cream/10 bg-cream/3 rounded-2xl border p-5 backdrop-blur-sm sm:p-8 md:p-10">
                         <form action="{{ route('contact.store') }}" method="POST" class="flex flex-col gap-6">
                             @csrf
                             @if (config('services.turnstile.site_key'))

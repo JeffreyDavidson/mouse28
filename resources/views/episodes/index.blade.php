@@ -3,8 +3,9 @@
     :description="$podcast->description ?: 'Disney park stories, accessibility conversations, and family experiences from the Mouse28 podcast.'"
     :og-image="$podcast->cover_image ? '/storage/'.ltrim($podcast->cover_image, '/') : '/images/podcast/mouse28-cover.jpg'"
     :canonical="$canonicalUrl"
+    :dispatch-layout="true"
 >
-    <section class="from-navy to-navy-light relative overflow-hidden bg-linear-to-br py-16 md:py-24">
+    <section class="dispatch-page-hero dispatch-podcast-hero from-navy to-navy-light relative overflow-hidden bg-linear-to-br py-16 md:py-24">
         {{-- Waveform SVG decoration --}}
         <div class="pointer-events-none absolute inset-0 opacity-[0.07]">
             <svg aria-hidden="true" class="absolute bottom-0 left-0 h-32 w-full text-white" viewBox="0 0 1200 120" preserveAspectRatio="none" fill="none" stroke="currentColor">
@@ -27,17 +28,13 @@
                 <polygon points="50,35 50,85 90,60" fill="white" />
             </svg>
         </div>
-        <div class="relative z-10 mx-auto max-w-6xl px-4 text-center sm:px-6">
-            <div class="mb-6 inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 backdrop-blur-sm">
-                <span class="bg-gold size-2 animate-pulse rounded-full"></span>
-                <span class="text-gold text-sm font-semibold tracking-widest uppercase">Podcast</span>
-            </div>
-            <h1 class="font-heading mt-2 text-4xl font-bold text-white md:text-5xl lg:text-6xl">The Mouse28 Podcast</h1>
+        <div class="dispatch-page-heading relative z-10 mx-auto max-w-[86rem] px-4 sm:px-6">
+            <h1 class="font-heading text-4xl font-bold text-white md:text-5xl lg:text-6xl">The Mouse28 Podcast</h1>
             <p class="mx-auto mt-4 max-w-xl text-lg text-white/60">
                 Explore stories, tips, and family experiences from inside Disney parks.
             </p>
             {{-- Platform subscribe badges --}}
-            <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <div class="mt-8 flex flex-wrap items-center gap-3">
                 @foreach ($podcast->distributionLinks() as $link)
                     <a
                         href="{{ $link['url'] }}"
@@ -53,7 +50,7 @@
         </div>
     </section>
 
-    <section class="bg-cream py-16">
+    <section class="dispatch-page-field bg-cream py-16">
         <div class="mx-auto max-w-6xl px-4 sm:px-6">
             @if ($episodes->count())
                 <div class="flex flex-col gap-10 lg:flex-row">
@@ -87,7 +84,7 @@
                                 @foreach ($seasonEpisodes as $episode)
                                     <a
                                         href="{{ route('episodes.show', $episode) }}"
-                                        class="group border-navy/5 hover:border-purple/20 block overflow-hidden rounded-2xl border bg-white shadow-sm transition-[transform,border-color,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-xl"
+                                        class="dispatch-interactive-card group border-navy/5 hover:border-purple/20 block overflow-hidden rounded-2xl border bg-white shadow-sm"
                                     >
                                         <div class="flex flex-col sm:flex-row">
                                             {{-- Episode badge with play button --}}

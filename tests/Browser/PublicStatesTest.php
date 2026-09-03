@@ -208,6 +208,8 @@ test('branded recovery pages remain accessible and actionable', function (): voi
     $pages->assertScript(stateHorizontalOverflowCountScript(), 0)
         ->assertScript(stateUndersizedControlsScript(), '')
         ->assertScript(stateMissingFocusIndicatorsScript(), '')
+        ->assertScript('document.documentElement.classList.contains("js-dispatch-errors")', true)
+        ->assertScript('getComputedStyle(document.querySelector("h1")).fontFamily.includes("Besley")', true)
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 
@@ -215,7 +217,11 @@ test('branded recovery pages remain accessible and actionable', function (): voi
 
     $notFound->assertSee('That page wandered off')
         ->assertSee('Search Mouse28')
-        ->assertSee('Go home');
+        ->assertSee('Go home')
+        ->assertScript(
+            'getComputedStyle(document.querySelector(".dispatch-error-secondary")).color',
+            'rgb(26, 16, 64)',
+        );
     $expired->assertSee('Your session took a break')
         ->assertSee('Return to contact')
         ->assertDontSee('Private session details');
