@@ -162,7 +162,9 @@ class PublicContentArchive
 
         $paths = collect(['episodes', 'posts', 'guides'])
             ->flatMap(fn (string $contentType) => collect($archive[$contentType])->flatMap(
-                fn (array $attributes): array => Arr::only($attributes, ['audio_path', 'cover_image', 'og_image']),
+                fn (array $attributes): array => array_values(
+                    Arr::only($attributes, ['audio_path', 'cover_image', 'og_image']),
+                ),
             ))
             ->when(
                 is_array($archive['podcast']),

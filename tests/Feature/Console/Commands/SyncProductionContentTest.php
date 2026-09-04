@@ -30,18 +30,30 @@ test('production public content and referenced media can be synced locally', fun
             'episode_number' => 1,
             'published_at' => now()->subDay()->toAtomString(),
         ]],
-        'posts' => [[
-            'title' => 'Production Post',
-            'slug' => 'production-post',
-            'excerpt' => 'Published on production.',
-            'body' => '<p>Production body.</p>',
-            'cover_image' => 'posts/production-post.webp',
-            'category' => 'disney-tips',
-            'author' => 'both',
-            'episode_slug' => 'production-episode',
-            'published_at' => now()->subDay()->toAtomString(),
-            'og_image' => 'posts/production-post-social.webp',
-        ]],
+        'posts' => [
+            [
+                'title' => 'Production Post',
+                'slug' => 'production-post',
+                'excerpt' => 'Published on production.',
+                'body' => '<p>Production body.</p>',
+                'cover_image' => 'posts/production-post.webp',
+                'category' => 'disney-tips',
+                'author' => 'both',
+                'episode_slug' => 'production-episode',
+                'published_at' => now()->subDay()->toAtomString(),
+                'og_image' => 'posts/production-post-social.webp',
+            ],
+            [
+                'title' => 'Second Production Post',
+                'slug' => 'second-production-post',
+                'excerpt' => 'Also published on production.',
+                'body' => '<p>Second production body.</p>',
+                'cover_image' => 'posts/second-production-post.webp',
+                'category' => 'family-experiences',
+                'author' => 'both',
+                'published_at' => now()->subHours(2)->toAtomString(),
+            ],
+        ],
     ]);
     $transferredMedia = [];
 
@@ -83,6 +95,7 @@ test('production public content and referenced media can be synced locally', fun
         ->and($transferredMedia)->toBe([
             'posts/production-post-social.webp',
             'posts/production-post.webp',
+            'posts/second-production-post.webp',
         ])
         ->and(Artisan::output())->toContain('Local drafts were preserved.');
 
