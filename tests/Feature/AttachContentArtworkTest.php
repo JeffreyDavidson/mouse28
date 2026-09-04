@@ -18,6 +18,10 @@ test('bundled artwork is attached without replacing existing uploads', function 
         'posts/the-ride-that-surprised-us.webp',
         'posts/what-is-das-and-how-it-changed-our-disney-visits.webp',
         'posts/a-first-timers-guide-to-disney-world-with-a-sensory-sensitive-child.webp',
+        'posts/recap-epcot-kids-think-differently-ep4.webp',
+        'posts/top-5-character-interactions-sensory-sensitive-kids.webp',
+        'posts/10-quiet-spots-disney-world-kid-needs-break.webp',
+        'posts/understanding-autism-disney-what-families-should-know.webp',
         'episodes/trailer-meet-mouse28.webp',
         'episodes/meet-jeffrey-and-cassie-our-disney-story.webp',
     ];
@@ -29,6 +33,17 @@ test('bundled artwork is attached without replacing existing uploads', function 
     $post = Post::factory()->create([
         'slug' => 'our-disney-park-bag-essentials',
         'cover_image' => null,
+    ]);
+    $homepagePosts = collect([
+        'recap-epcot-kids-think-differently-ep4',
+        'top-5-character-interactions-sensory-sensitive-kids',
+        '10-quiet-spots-disney-world-kid-needs-break',
+        'understanding-autism-disney-what-families-should-know',
+    ])->mapWithKeys(fn (string $slug): array => [
+        $slug => Post::factory()->create([
+            'slug' => $slug,
+            'cover_image' => null,
+        ]),
     ]);
     $episode = Episode::factory()->create([
         'slug' => 'trailer-meet-mouse28',
@@ -44,6 +59,10 @@ test('bundled artwork is attached without replacing existing uploads', function 
     expect($welcomePost->refresh()->cover_image)->toBe('posts/welcome-to-mouse-28.webp')
         ->and($post->refresh()->cover_image)->toBe('posts/our-disney-park-bag-essentials.webp')
         ->and($episode->refresh()->cover_image)->toBe('episodes/custom-upload.webp');
+
+    $homepagePosts->each(
+        fn (Post $post, string $slug) => expect($post->refresh()->cover_image)->toBe("posts/{$slug}.webp"),
+    );
 
     expect($this->artisan('content:attach-artwork'))->toBe(Command::SUCCESS);
 });

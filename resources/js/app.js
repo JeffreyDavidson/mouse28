@@ -13,6 +13,9 @@ function initializeCopyLinks() {
             try {
                 await navigator.clipboard.writeText(window.location.href);
 
+                if (feedback) {
+                    feedback.textContent = 'Copied!';
+                }
                 feedback?.classList.remove('hidden');
                 label?.classList.add('hidden');
 
@@ -21,6 +24,17 @@ function initializeCopyLinks() {
                     label?.classList.remove('hidden');
                 }, 1500);
             } catch (error) {
+                if (feedback) {
+                    feedback.textContent = "Couldn't copy. Use your browser's address bar.";
+                }
+                feedback?.classList.remove('hidden');
+                label?.classList.add('hidden');
+
+                window.setTimeout(() => {
+                    feedback?.classList.add('hidden');
+                    label?.classList.remove('hidden');
+                }, 4000);
+
                 console.error('Unable to copy the page link.', error);
             }
         });

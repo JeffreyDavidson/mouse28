@@ -80,186 +80,208 @@
                 {{-- Two-column layout --}}
                 <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_340px]">
                     {{-- Form --}}
-                    <div class="dispatch-letter-form border-cream/10 bg-cream/3 rounded-2xl border p-5 backdrop-blur-sm sm:p-8 md:p-10">
-                        <form action="{{ route('contact.store') }}" method="POST" class="flex flex-col gap-6">
-                            @csrf
-                            @if (config('services.turnstile.site_key'))
-                                @once('turnstile-api')
-                                    <script
-                                        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-                                        async
-                                        defer
-                                    ></script>
-                                @endonce
-                            @endif
-                            @if ($errors->contact->has('contact_rate_limit'))
-                                <div
-                                    role="alert"
-                                    class="rounded-xl border border-red-400/25 bg-red-400/10 px-4 py-3 text-base text-red-200 sm:text-sm"
-                                >
-                                    {{ $errors->contact->first('contact_rate_limit') }}
-                                </div>
-                            @endif
+                    @if ($contactFormAvailable)
+                        <div class="dispatch-letter-form border-cream/10 bg-cream/3 rounded-2xl border p-5 backdrop-blur-sm sm:p-8 md:p-10">
+                            <form action="{{ route('contact.store') }}" method="POST" class="flex flex-col gap-6">
+                                @csrf
+                                @if (config('services.turnstile.site_key'))
+                                    @once('turnstile-api')
+                                        <script
+                                            src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+                                            async
+                                            defer
+                                        ></script>
+                                    @endonce
+                                @endif
+                                @if ($errors->contact->has('contact_rate_limit'))
+                                    <div
+                                        role="alert"
+                                        class="rounded-xl border border-red-400/25 bg-red-400/10 px-4 py-3 text-base text-red-200 sm:text-sm"
+                                    >
+                                        {{ $errors->contact->first('contact_rate_limit') }}
+                                    </div>
+                                @endif
 
-                            <!-- Honeypot - hidden from humans, bots fill this -->
-                            <div class="absolute top-[-9999px] left-[-9999px]" aria-hidden="true">
-                                <label for="website_url">Website</label>
-                                <input
-                                    type="text"
-                                    id="website_url"
-                                    name="website_url"
-                                    tabindex="-1"
-                                    autocomplete="off"
-                                />
-                            </div>
-
-                            <div class="grid gap-5 sm:grid-cols-2">
-                                <div>
-                                    <label
-                                        for="name"
-                                        class="text-gold-light mb-2 block text-base font-semibold sm:text-sm"
-                                    >Name</label>
+                                <!-- Honeypot - hidden from humans, bots fill this -->
+                                <div class="absolute top-[-9999px] left-[-9999px]" aria-hidden="true">
+                                    <label for="website_url">Website</label>
                                     <input
                                         type="text"
-                                        id="name"
-                                        name="name"
-                                        required
-                                        autocomplete="name"
-                                        value="{{ $contactHasFeedback ? old('name') : '' }}"
-                                        placeholder="Your name"
-                                        @error('name', 'contact') aria-invalid="true" aria-describedby="name-error" @enderror
-                                        @if ($firstContactError === 'name') autofocus @endif
-                                        class="border-cream/10 bg-cream/4 text-cream placeholder:text-cream/60 focus:border-gold/50 focus:bg-cream/6 focus:ring-gold/20 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none sm:text-sm"
+                                        id="website_url"
+                                        name="website_url"
+                                        tabindex="-1"
+                                        autocomplete="off"
                                     />
-                                    @error('name', 'contact')
-                                        <p id="name-error" role="alert" class="mt-2 text-sm text-red-400">
-                                            {{ $message }}
-                                        </p>
-                                    @enderror
                                 </div>
+
+                                <div class="grid gap-5 sm:grid-cols-2">
+                                    <div>
+                                        <label
+                                            for="name"
+                                            class="text-gold-light mb-2 block text-base font-semibold sm:text-sm"
+                                        >Name</label>
+                                        <input
+                                            type="text"
+                                            id="name"
+                                            name="name"
+                                            required
+                                            autocomplete="name"
+                                            value="{{ $contactHasFeedback ? old('name') : '' }}"
+                                            placeholder="Your name"
+                                            @error('name', 'contact') aria-invalid="true" aria-describedby="name-error" @enderror
+                                            @if ($firstContactError === 'name') autofocus @endif
+                                            class="border-cream/10 bg-cream/4 text-cream placeholder:text-cream/60 focus:border-gold/50 focus:bg-cream/6 focus:ring-gold/20 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none sm:text-sm"
+                                        />
+                                        @error('name', 'contact')
+                                            <p id="name-error" role="alert" class="mt-2 text-sm text-red-400">
+                                                {{ $message }}
+                                            </p>
+                                        @enderror
+                                    </div>
+                                    <div>
+                                        <label
+                                            for="email"
+                                            class="text-gold-light mb-2 block text-base font-semibold sm:text-sm"
+                                        >Email</label>
+                                        <input
+                                            type="email"
+                                            id="email"
+                                            name="email"
+                                            required
+                                            autocomplete="email"
+                                            inputmode="email"
+                                            value="{{ $contactHasFeedback ? old('email') : '' }}"
+                                            placeholder="you@example.com"
+                                            @error('email', 'contact') aria-invalid="true" aria-describedby="email-error" @enderror
+                                            @if ($firstContactError === 'email') autofocus @endif
+                                            class="border-cream/10 bg-cream/4 text-cream placeholder:text-cream/60 focus:border-gold/50 focus:bg-cream/6 focus:ring-gold/20 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none sm:text-sm"
+                                        />
+                                        @error('email', 'contact')
+                                            <p id="email-error" role="alert" class="mt-2 text-sm text-red-400">
+                                                {{ $message }}
+                                            </p>
+                                        @enderror
+                                    </div>
+                                </div>
+
                                 <div>
                                     <label
-                                        for="email"
+                                        for="subject"
                                         class="text-gold-light mb-2 block text-base font-semibold sm:text-sm"
-                                    >Email</label>
-                                    <input
-                                        type="email"
-                                        id="email"
-                                        name="email"
+                                    >Topic</label>
+                                    <select
+                                        id="subject"
+                                        name="subject"
                                         required
-                                        autocomplete="email"
-                                        inputmode="email"
-                                        value="{{ $contactHasFeedback ? old('email') : '' }}"
-                                        placeholder="you@example.com"
-                                        @error('email', 'contact') aria-invalid="true" aria-describedby="email-error" @enderror
-                                        @if ($firstContactError === 'email') autofocus @endif
-                                        class="border-cream/10 bg-cream/4 text-cream placeholder:text-cream/60 focus:border-gold/50 focus:bg-cream/6 focus:ring-gold/20 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none sm:text-sm"
-                                    />
-                                    @error('email', 'contact')
-                                        <p id="email-error" role="alert" class="mt-2 text-sm text-red-400">
+                                        @error('subject', 'contact') aria-invalid="true" aria-describedby="subject-error" @enderror
+                                        @if ($firstContactError === 'subject') autofocus @endif
+                                        class="contact-select border-cream/10 bg-cream/4 text-cream/70 focus:border-gold/50 focus:ring-gold/20 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none sm:text-sm"
+                                    >
+                                        <option value="">Choose a topic...</option>
+                                        <option
+                                            value="general"
+                                            @selected($contactHasFeedback && old('subject') === 'general')
+                                        >
+                                            General Question
+                                        </option>
+                                        <option
+                                            value="accessibility"
+                                            @selected($contactHasFeedback && old('subject') === 'accessibility')
+                                        >
+                                            Park Accessibility Question
+                                        </option>
+                                        <option
+                                            value="collaboration"
+                                            @selected($contactHasFeedback && old('subject') === 'collaboration')
+                                        >
+                                            Collaboration / Sponsorship
+                                        </option>
+                                        <option
+                                            value="guest"
+                                            @selected($contactHasFeedback && old('subject') === 'guest')
+                                        >
+                                            Guest on the Podcast
+                                        </option>
+                                        <option
+                                            value="other"
+                                            @selected($contactHasFeedback && old('subject') === 'other')
+                                        >
+                                            Other
+                                        </option>
+                                    </select>
+                                    @error('subject', 'contact')
+                                        <p id="subject-error" role="alert" class="mt-2 text-sm text-red-400">
                                             {{ $message }}
                                         </p>
                                     @enderror
                                 </div>
-                            </div>
 
-                            <div>
-                                <label
-                                    for="subject"
-                                    class="text-gold-light mb-2 block text-base font-semibold sm:text-sm"
-                                >Topic</label>
-                                <select
-                                    id="subject"
-                                    name="subject"
-                                    required
-                                    @error('subject', 'contact') aria-invalid="true" aria-describedby="subject-error" @enderror
-                                    @if ($firstContactError === 'subject') autofocus @endif
-                                    class="contact-select border-cream/10 bg-cream/4 text-cream/70 focus:border-gold/50 focus:ring-gold/20 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none sm:text-sm"
+                                <div>
+                                    <label
+                                        for="message"
+                                        class="text-gold-light mb-2 block text-base font-semibold sm:text-sm"
+                                    >Message</label>
+                                    <textarea
+                                        id="message"
+                                        name="message"
+                                        required
+                                        rows="5"
+                                        placeholder="What's on your mind?"
+                                        @error('message', 'contact') aria-invalid="true" aria-describedby="message-error" @enderror
+                                        @if ($firstContactError === 'message') autofocus @endif
+                                        class="border-cream/10 bg-cream/4 text-cream placeholder:text-cream/60 focus:border-gold/50 focus:bg-cream/6 focus:ring-gold/20 min-h-36 w-full resize-y rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none sm:text-sm"
+                                    >{{ $contactHasFeedback ? old('message') : '' }}</textarea>
+                                    @error('message', 'contact')
+                                        <p id="message-error" role="alert" class="mt-2 text-sm text-red-400">
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    @if (config('services.turnstile.site_key'))
+                                        <div
+                                            class="cf-turnstile"
+                                            data-sitekey="{{ config('services.turnstile.site_key') }}"
+                                            data-action="{{ config('services.turnstile.contact_action') }}"
+                                            data-theme="dark"
+                                            data-appearance="interaction-only"
+                                        ></div>
+                                    @else
+                                        <p role="alert" class="text-base text-red-200 sm:text-sm">
+                                            Contact verification is temporarily unavailable. Please try again later.
+                                        </p>
+                                    @endif
+                                    @error('cf-turnstile-response', 'contact')
+                                        <p id="turnstile-error" role="alert" class="mt-2 text-sm text-red-400">
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    class="from-gold to-gold-dark text-navy hover:shadow-gold/30 focus-visible:outline-gold min-h-12 w-full rounded-xl bg-linear-to-br px-6 py-3 text-base font-semibold transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-lg sm:text-sm"
                                 >
-                                    <option value="">Choose a topic...</option>
-                                    <option
-                                        value="general"
-                                        @selected($contactHasFeedback && old('subject') === 'general')
-                                    >
-                                        General Question
-                                    </option>
-                                    <option
-                                        value="accessibility"
-                                        @selected($contactHasFeedback && old('subject') === 'accessibility')
-                                    >
-                                        Park Accessibility Question
-                                    </option>
-                                    <option
-                                        value="collaboration"
-                                        @selected($contactHasFeedback && old('subject') === 'collaboration')
-                                    >
-                                        Collaboration / Sponsorship
-                                    </option>
-                                    <option value="guest" @selected($contactHasFeedback && old('subject') === 'guest')>
-                                        Guest on the Podcast
-                                    </option>
-                                    <option value="other" @selected($contactHasFeedback && old('subject') === 'other')>
-                                        Other
-                                    </option>
-                                </select>
-                                @error('subject', 'contact')
-                                    <p id="subject-error" role="alert" class="mt-2 text-sm text-red-400">
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                <label
-                                    for="message"
-                                    class="text-gold-light mb-2 block text-base font-semibold sm:text-sm"
-                                >Message</label>
-                                <textarea
-                                    id="message"
-                                    name="message"
-                                    required
-                                    rows="5"
-                                    placeholder="What's on your mind?"
-                                    @error('message', 'contact') aria-invalid="true" aria-describedby="message-error" @enderror
-                                    @if ($firstContactError === 'message') autofocus @endif
-                                    class="border-cream/10 bg-cream/4 text-cream placeholder:text-cream/60 focus:border-gold/50 focus:bg-cream/6 focus:ring-gold/20 min-h-36 w-full resize-y rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none sm:text-sm"
-                                >{{ $contactHasFeedback ? old('message') : '' }}</textarea>
-                                @error('message', 'contact')
-                                    <p id="message-error" role="alert" class="mt-2 text-sm text-red-400">
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
-
-                            <div>
-                                @if (config('services.turnstile.site_key'))
-                                    <div
-                                        class="cf-turnstile"
-                                        data-sitekey="{{ config('services.turnstile.site_key') }}"
-                                        data-action="{{ config('services.turnstile.contact_action') }}"
-                                        data-theme="dark"
-                                        data-appearance="interaction-only"
-                                    ></div>
-                                @else
-                                    <p role="alert" class="text-base text-red-200 sm:text-sm">
-                                        Contact verification is temporarily unavailable. Please try again later.
-                                    </p>
-                                @endif
-                                @error('cf-turnstile-response', 'contact')
-                                    <p id="turnstile-error" role="alert" class="mt-2 text-sm text-red-400">
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
-
-                            <button
-                                type="submit"
-                                class="from-gold to-gold-dark text-navy hover:shadow-gold/30 focus-visible:outline-gold min-h-12 w-full rounded-xl bg-linear-to-br px-6 py-3 text-base font-semibold transition-[transform,box-shadow] hover:-translate-y-0.5 hover:shadow-lg sm:text-sm"
-                            >
-                                Send Message
-                            </button>
-                        </form>
-                    </div>
+                                    Send Message
+                                </button>
+                            </form>
+                        </div>
+                    @else
+                        <div class="dispatch-letter-form border-cream/10 bg-cream/3 flex min-h-80 flex-col justify-center rounded-2xl border p-7 backdrop-blur-sm sm:p-10">
+                            <p class="text-gold-light text-xs font-bold tracking-[0.16em] uppercase">A direct route</p>
+                            <h2 class="font-heading text-cream mt-3 text-3xl font-bold">Email us instead</h2>
+                            <p class="text-cream/65 mt-4 max-w-xl text-base/7">
+                                The secure contact form is temporarily unavailable. You can still reach Jeffrey and
+                                Cassie directly.
+                            </p>
+                            <a
+                                href="mailto:{{ $contactEmail }}"
+                                class="from-gold to-gold-dark text-navy mt-7 inline-flex min-h-12 w-fit items-center rounded-xl bg-linear-to-br px-6 py-3 text-base font-semibold break-all"
+                            >{{ $contactEmail }}</a>
+                            <p class="text-cream/50 mt-4 text-sm">We usually reply within 48 hours.</p>
+                        </div>
+                    @endif
 
                     {{-- Sidebar --}}
                     <div class="flex flex-col gap-6">

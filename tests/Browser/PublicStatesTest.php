@@ -61,7 +61,7 @@ function stateMissingFocusIndicatorsScript(): string
             return [...focusableElements].filter((element) => {
                 const bounds = element.getBoundingClientRect();
 
-                if (element.closest('[aria-hidden="true"]') || bounds.width === 0 || bounds.height === 0) {
+                if (element.closest('[aria-hidden="true"], details:not([open])') || bounds.width === 0 || bounds.height === 0) {
                     return false;
                 }
 
@@ -133,22 +133,10 @@ test('search validation identifies and focuses the invalid query', function (): 
         ->assertNoJavaScriptErrors();
 });
 
-test('contact validation preserves input and focuses the first invalid field', function (): void {
-    $page = visit(route('contact.show'));
-
-    $page->script('document.querySelector(\'form[action$="/contact"]\').noValidate = true');
-
-    $page->fill('#name', 'Dale Cooper')
-        ->fill('#email', 'not-an-email')
-        ->select('#subject', 'general')
-        ->keys('form[action$="/contact"] button[type="submit"]', 'Enter')
-        ->assertSee('The email field must be a valid email address.')
-        ->assertSee('The message field is required.')
-        ->assertValue('#name', 'Dale Cooper')
-        ->assertValue('#email', 'not-an-email')
-        ->assertAttribute('#email', 'aria-invalid', 'true')
-        ->assertAttribute('#email', 'aria-describedby', 'email-error')
-        ->assertScript('document.activeElement.id', 'email')
+test('contact page offers an actionable email route when verification is unavailable', function (): void {
+    visit(route('contact.show'))
+        ->assertSee('Email us instead')
+        ->assertVisible('.dispatch-letter-form a[href^="mailto:"]')
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 });

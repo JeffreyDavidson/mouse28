@@ -16,6 +16,8 @@ class ContactController extends Controller
     {
         return view('contact', [
             'contactEmail' => Podcast::info()->email ?: config('mail.admin_address', 'mouse28podcast@gmail.com'),
+            'contactFormAvailable' => filled(config('services.turnstile.site_key'))
+                && filled(config('services.turnstile.secret_key')),
         ]);
     }
 

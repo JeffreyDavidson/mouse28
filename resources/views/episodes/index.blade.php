@@ -4,6 +4,7 @@
     :og-image="$podcast->cover_image ? '/storage/'.ltrim($podcast->cover_image, '/') : '/images/podcast/mouse28-cover.jpg'"
     :canonical="$canonicalUrl"
     :dispatch-layout="true"
+    :show-footer-newsletter="$episodes->isEmpty()"
 >
     <section class="dispatch-page-hero dispatch-podcast-hero from-navy to-navy-light relative overflow-hidden bg-linear-to-br py-16 md:py-24">
         {{-- Waveform SVG decoration --}}

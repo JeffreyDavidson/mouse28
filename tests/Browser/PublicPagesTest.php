@@ -85,7 +85,7 @@ function missingFocusIndicatorsScript(): string
             return [...focusableElements].filter((element) => {
                 const bounds = element.getBoundingClientRect();
 
-                if (element.closest('[aria-hidden="true"]') || bounds.width === 0 || bounds.height === 0) {
+                if (element.closest('[aria-hidden="true"], details:not([open])') || bounds.width === 0 || bounds.height === 0) {
                     return false;
                 }
 
@@ -294,7 +294,7 @@ test('mobile navigation restores focus when closed with the keyboard', function 
         ->assertNoJavaScriptErrors();
 });
 
-test('search transcript and contact validation work from the keyboard', function (): void {
+test('search and transcript controls work from the keyboard and unavailable contact remains actionable', function (): void {
     $post = Post::factory()->create([
         'title' => 'Accessible Park Planning',
         'body' => 'Practical accessible planning advice for a Disney parks visit.',
@@ -318,15 +318,8 @@ test('search transcript and contact validation work from the keyboard', function
         ->assertNoJavaScriptErrors();
 
     visit(route('contact.show'))
-        ->keys('#name', 'Tab')
-        ->assertScript('document.activeElement.id', 'email')
-        ->keys(':focus', 'Tab')
-        ->assertScript('document.activeElement.id', 'subject')
-        ->keys(':focus', 'Tab')
-        ->assertScript('document.activeElement.id', 'message')
-        ->keys('form[action$="/contact"] button[type="submit"]', 'Enter')
-        ->assertScript('document.activeElement.id', 'name')
-        ->assertScript('document.activeElement.matches(":invalid")')
+        ->assertSee('Email us instead')
+        ->assertVisible('.dispatch-letter-form a[href^="mailto:"]')
         ->assertNoJavaScriptErrors();
 });
 
