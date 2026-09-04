@@ -38,6 +38,9 @@ function activatePrintMediaScript(): string
 }
 
 test('public reading and form surfaces work across supported browsers', function (): void {
+    config()->set('services.turnstile.site_key', '1x00000000000000000000AA');
+    config()->set('services.turnstile.secret_key', '1x0000000000000000000000000000000AA');
+
     $post = Post::factory()->create([
         'title' => 'Cross-Browser Park Planning',
         'body' => "## Arrival\n\nPlan a flexible arrival.\n\n## Sensory breaks\n\nSchedule time to reset.",
