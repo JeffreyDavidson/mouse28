@@ -5,6 +5,7 @@
     :canonical="$canonicalUrl"
     :robots="$robots"
     :dispatch-layout="true"
+    :show-footer-newsletter="! ($hasAnyPosts || request('q') || $category)"
 >
     @php
         $categoryStyles = [
@@ -38,9 +39,75 @@
         <div class="absolute inset-0 bg-[radial-gradient(#1a1040_1px,transparent_1px)] bg-size-[24px_24px] opacity-[0.02]"></div>
 
         <div class="relative mx-auto max-w-6xl px-4 sm:px-6">
+            @if ($hasAnyPosts || request('q') || $category)
+                <details data-blog-filters class="border-navy/8 mb-8 rounded-2xl border bg-white shadow-sm lg:hidden">
+                    <summary class="text-navy flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 px-5 py-4 font-semibold">
+                        <span>Search and filter stories</span>
+                        <svg aria-hidden="true" class="text-purple [[open]>&]:rotate-180 size-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                    </summary>
+                    <div class="border-navy/8 space-y-6 border-t p-5">
+                        <form action="{{ route('blog.index') }}" method="GET">
+                            @if ($category)
+                                <input type="hidden" name="category" value="{{ $category }}" />
+                            @endif
+                            <label for="blog-search-mobile" class="text-navy mb-2 block text-sm font-semibold"
+                                >Search stories</label>
+                            <div class="relative">
+                                <svg aria-hidden="true" class="text-navy/25 absolute top-1/2 left-4 size-4 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                                <input
+                                    id="blog-search-mobile"
+                                    type="search"
+                                    name="q"
+                                    value="{{ request('q') }}"
+                                    placeholder="Search posts..."
+                                    class="border-navy/10 text-navy placeholder:text-navy/60 focus:border-gold focus:ring-gold/20 focus-visible:outline-gold min-h-12 w-full rounded-xl border py-3 pr-4 pl-11 text-base outline-none focus:shadow-[0_0_0_3px_rgb(212_168_67/55%)] focus:ring-2 focus-visible:outline-2 focus-visible:outline-offset-2"
+                                />
+                            </div>
+                        </form>
+                        <div>
+                            <p class="text-navy mb-2 text-sm font-semibold">Categories</p>
+                            <div class="flex flex-wrap gap-2">
+                                <a
+                                    href="{{ route('blog.index') }}"
+                                    class="focus-visible:outline-gold inline-flex min-h-11 items-center rounded-full px-4 py-2 text-sm font-semibold focus:shadow-[0_0_0_3px_rgb(212_168_67/55%)] focus-visible:outline-2 focus-visible:outline-offset-2 {{ ! $category ? 'bg-gold text-navy' : 'bg-cream-dark text-navy' }}"
+                                >All</a>
+                                @foreach (\App\Models\Post::CATEGORIES as $slug => $label)
+                                    @continue(! in_array($slug, $usedCategories))
+                                    <a
+                                        href="{{ route('blog.index', ['category' => $slug]) }}"
+                                        class="focus-visible:outline-gold inline-flex min-h-11 items-center rounded-full px-4 py-2 text-sm font-semibold focus:shadow-[0_0_0_3px_rgb(212_168_67/55%)] focus-visible:outline-2 focus-visible:outline-offset-2 {{ $category === $slug ? 'bg-gold text-navy' : 'bg-cream-dark text-navy' }}"
+                                    >{{ $label }}</a>
+                                @endforeach
+                            </div>
+                        </div>
+                        <form action="{{ route('blog.index') }}" method="GET">
+                            @if ($category)
+                                <input type="hidden" name="category" value="{{ $category }}" />
+                            @endif
+                            @if (request('q'))
+                                <input type="hidden" name="q" value="{{ request('q') }}" />
+                            @endif
+                            <label for="blog-sort-mobile" class="text-navy mb-2 block text-sm font-semibold"
+                                >Sort stories</label>
+                            <select
+                                id="blog-sort-mobile"
+                                name="sort"
+                                onchange="this.form.submit()"
+                                class="border-navy/10 text-navy focus:border-gold focus:ring-gold/20 focus-visible:outline-gold min-h-12 w-full rounded-xl border bg-white px-4 py-3 text-base outline-none focus:shadow-[0_0_0_3px_rgb(212_168_67/55%)] focus:ring-2 focus-visible:outline-2 focus-visible:outline-offset-2"
+                            >
+                                <option value="newest" @selected($sort === 'newest')>Newest first</option>
+                                <option value="oldest" @selected($sort === 'oldest')>Oldest first</option>
+                            </select>
+                        </form>
+                    </div>
+                </details>
+            @endif
             <div class="flex flex-col gap-10 lg:flex-row">
                 {{-- Main Content --}}
-                <div class="min-w-0 {{ $hasAnyPosts || request('q') || $category ? 'lg:w-[66%]' : 'mx-auto w-full max-w-4xl' }}">
+                <div
+                    data-blog-results
+                    class="min-w-0 {{ $hasAnyPosts || request('q') || $category ? 'lg:w-[66%]' : 'mx-auto w-full max-w-4xl' }}"
+                >
                     @if ($posts->count())
                         @php
                             $featured = $posts->first();
@@ -232,7 +299,7 @@
                     <aside class="lg:w-[34%]">
                         <div class="space-y-6 lg:sticky lg:top-[90px]">
                             {{-- Search --}}
-                            <div class="border-navy/5 rounded-2xl border bg-white p-6 shadow-sm">
+                            <div class="border-navy/5 hidden rounded-2xl border bg-white p-6 shadow-sm lg:block">
                                 <div class="mb-5 flex items-center gap-3">
                                     <div class="from-gold to-gold-light h-[3px] w-10 rounded-sm bg-linear-to-r"></div>
                                     <h3 class="font-heading text-navy text-lg font-bold">Search</h3>
@@ -292,7 +359,7 @@
                             @endif
 
                             {{-- Categories --}}
-                            <div class="border-navy/5 rounded-2xl border bg-white p-6 shadow-sm">
+                            <div class="border-navy/5 hidden rounded-2xl border bg-white p-6 shadow-sm lg:block">
                                 <div class="mb-5 flex items-center gap-3">
                                     <div class="from-gold to-gold-light h-[3px] w-10 rounded-sm bg-linear-to-r"></div>
                                     <h3 class="font-heading text-navy text-lg font-bold">Categories</h3>
@@ -320,7 +387,7 @@
                             </div>
 
                             {{-- Sort --}}
-                            <div class="border-navy/5 rounded-2xl border bg-white p-6 shadow-sm">
+                            <div class="border-navy/5 hidden rounded-2xl border bg-white p-6 shadow-sm lg:block">
                                 <div class="mb-5 flex items-center gap-3">
                                     <div class="from-gold to-gold-light h-[3px] w-10 rounded-sm bg-linear-to-r"></div>
                                     <h3 class="font-heading text-navy text-lg font-bold">Sort By</h3>

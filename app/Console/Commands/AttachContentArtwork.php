@@ -23,6 +23,10 @@ class AttachContentArtwork extends Command
         'the-ride-that-surprised-us' => 'posts/the-ride-that-surprised-us.webp',
         'what-is-das-and-how-it-changed-our-disney-visits' => 'posts/what-is-das-and-how-it-changed-our-disney-visits.webp',
         'a-first-timers-guide-to-disney-world-with-a-sensory-sensitive-child' => 'posts/a-first-timers-guide-to-disney-world-with-a-sensory-sensitive-child.webp',
+        'recap-epcot-kids-think-differently-ep4' => 'posts/recap-epcot-kids-think-differently-ep4.webp',
+        'top-5-character-interactions-sensory-sensitive-kids' => 'posts/top-5-character-interactions-sensory-sensitive-kids.webp',
+        '10-quiet-spots-disney-world-kid-needs-break' => 'posts/10-quiet-spots-disney-world-kid-needs-break.webp',
+        'understanding-autism-disney-what-families-should-know' => 'posts/understanding-autism-disney-what-families-should-know.webp',
     ];
 
     /** @var array<string, string> */

@@ -3,6 +3,11 @@
 return [
     'production_url' => env('MOUSE28_PRODUCTION_URL', 'https://mouse28.com'),
 
+    'production_sync' => [
+        'ssh_host' => env('MOUSE28_PRODUCTION_SSH_HOST', 'cold-moon'),
+        'site_path' => env('MOUSE28_PRODUCTION_SITE_PATH', '/home/forge/mouse28.com/current'),
+    ],
+
     'content_artwork_path' => resource_path('content-artwork'),
 
     'guide_review_interval_days' => (int) env('GUIDE_REVIEW_INTERVAL_DAYS', 180),

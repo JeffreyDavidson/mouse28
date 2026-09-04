@@ -183,6 +183,52 @@ test('homepage only presents published content as stories and guides', function 
         ->assertDontSee('/storage/posts/disney-dining-with-a-picky-eater.webp', false);
 });
 
+test('homepage turns an empty guide shelf into useful planning stories', function (): void {
+    $planningPost = Post::factory()->create([
+        'title' => 'Plan a Calmer Park Morning',
+        'category' => 'park-accessibility',
+        'cover_image' => null,
+        'published_at' => now()->subDay(),
+    ]);
+    $draftPlanningPost = Post::factory()->draft()->create([
+        'title' => 'Private Planning Notes',
+        'category' => 'disney-tips',
+    ]);
+
+    get(route('home'))
+        ->assertOk()
+        ->assertSee('Start planning with these stories')
+        ->assertSee('Explore planning stories')
+        ->assertSee($planningPost->title)
+        ->assertSee('data-post-artwork-fallback', false)
+        ->assertDontSee('Browse all guides')
+        ->assertDontSee($draftPlanningPost->title);
+});
+
+test('public content pages present one newsletter signup', function (): void {
+    $post = Post::factory()->create();
+    $episode = Episode::factory()->create();
+
+    foreach ([
+        route('blog.index'),
+        route('blog.show', $post),
+        route('episodes.index'),
+        route('episodes.show', $episode),
+    ] as $url) {
+        $response = get($url)->assertOk();
+
+        expect(substr_count($response->getContent(), 'action="'.route('newsletter.store').'"'))->toBe(1);
+    }
+});
+
+test('blog discovery controls precede results in the document order', function (): void {
+    $post = Post::factory()->create();
+
+    get(route('blog.index'))
+        ->assertOk()
+        ->assertSeeInOrder(['data-blog-filters', 'data-blog-results', $post->title]);
+});
+
 test('homepage defers the below-fold featured post image', function (): void {
     Post::factory()->create([
         'cover_image' => 'posts/featured.webp',
@@ -198,6 +244,8 @@ test('homepage defers the below-fold featured post image', function (): void {
 
 test('public forms use readable placeholder text colors', function (): void {
     Post::factory()->create();
+    config()->set('services.turnstile.site_key', 'test-site-key');
+    config()->set('services.turnstile.secret_key', 'test-secret-key');
 
     get(route('blog.index'))
         ->assertOk()
@@ -258,9 +306,28 @@ test('published episode detail page renders', function (): void {
         ->assertSee('Listen to this episode')
         ->assertDontSee('Now Playing')
         ->assertSee('aria-label="Play Planning a Sensory-Friendly Visit"', false)
+        ->assertSee('data-episode-layout="rich"', false)
         ->assertSee('id="episode-transcript"', false)
         ->assertSee('aria-controls="episode-transcript"', false)
         ->assertSee(':aria-expanded="expanded.toString()"', false);
+});
+
+test('sparse episode detail pages use a compact continuation layout', function (): void {
+    $episode = Episode::factory()->create([
+        'audio_url' => null,
+        'audio_path' => null,
+        'show_notes' => '<p>Coming soon.</p>',
+        'transcript' => null,
+    ]);
+    $previousEpisode = Episode::factory()->create([
+        'published_at' => $episode->published_at->subDay(),
+    ]);
+
+    get(route('episodes.show', $episode))
+        ->assertOk()
+        ->assertSee('data-episode-layout="sparse"', false)
+        ->assertSee('data-episode-continuation="compact"', false)
+        ->assertSee($previousEpisode->title);
 });
 
 test('empty podcast page hides its decorative player preview from assistive technology', function (): void {

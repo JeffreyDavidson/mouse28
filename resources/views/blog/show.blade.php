@@ -7,6 +7,7 @@
     :og-image="$post->og_image_url ?: $post->cover_image_url"
     :robots="($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow'"
     :dispatch-layout="true"
+    :show-footer-newsletter="false"
 >
     @unless ($isPreview ?? false)
         @push('head')
@@ -144,7 +145,9 @@
                         <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
                         <span
                             class="copy-feedback bg-gold absolute -bottom-9 left-1/2 hidden -translate-x-1/2 rounded-full px-3 py-1 text-[10px] whitespace-nowrap text-white shadow-lg"
+                            role="status"
                             aria-live="polite"
+                            aria-atomic="true"
                         >Copied!</span>
                     </button>
                 </div>
@@ -287,7 +290,13 @@
                             >
                                 <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
                                 <span data-copy-label>Copy Link</span>
-                                <span class="hidden" data-copy-feedback aria-live="polite">Copied! ✓</span>
+                                <span
+                                    class="hidden"
+                                    data-copy-feedback
+                                    role="status"
+                                    aria-live="polite"
+                                    aria-atomic="true"
+                                >Copied!</span>
                             </button>
                         </div>
                     </div>

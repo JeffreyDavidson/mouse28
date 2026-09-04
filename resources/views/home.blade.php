@@ -111,23 +111,12 @@
                                     {{ $featuredPost->title }}
                                 </p>
                             </div>
-                            @if ($featuredPost->cover_image_url)
-                                <div class="overflow-hidden rounded-lg">
-                                    <img
-                                        src="{{ $featuredPost->cover_image_url }}"
-                                        alt=""
-                                        width="1024"
-                                        height="768"
-                                        loading="lazy"
-                                        decoding="async"
-                                        class="aspect-[5/4] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02] md:aspect-square"
-                                    />
-                                </div>
-                            @else
-                                <div class="from-purple/15 to-gold/25 text-navy flex aspect-[5/4] items-center justify-center rounded-lg bg-linear-to-br p-8 text-center md:aspect-square">
-                                    <span class="font-heading text-4xl [font-weight:680] tracking-[-0.03em]">Mouse28</span>
-                                </div>
-                            @endif
+                            <div class="overflow-hidden rounded-lg">
+                                <x-post-artwork
+                                    :post="$featuredPost"
+                                    class="aspect-[5/4] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02] md:aspect-square"
+                                />
+                            </div>
                         </a>
                     @else
                         <div class="dispatch-feature-book">
@@ -163,21 +152,11 @@
                                 href="{{ route('blog.show', $post) }}"
                                 class="dispatch-story-card group flex h-full flex-col overflow-hidden"
                             >
-                                @if ($post->cover_image_url)
-                                    <img
-                                        src="{{ $post->cover_image_url }}"
-                                        alt=""
-                                        width="1024"
-                                        height="768"
-                                        class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]"
-                                        loading="lazy"
-                                        decoding="async"
-                                    />
-                                @else
-                                    <div class="from-purple/15 to-gold/25 text-navy flex aspect-[4/3] items-center justify-center bg-linear-to-br p-5 text-center">
-                                        <span class="font-heading text-2xl [font-weight:680] tracking-[-0.03em]">Mouse28</span>
-                                    </div>
-                                @endif
+                                <x-post-artwork
+                                    :post="$post"
+                                    :compact="true"
+                                    class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]"
+                                />
                                 <div class="flex flex-1 flex-col p-3">
                                     <p class="text-purple text-sm font-semibold sm:text-xs">
                                         {{ $post->category_label }}
@@ -220,10 +199,17 @@
                         <p class="text-navy/70 mt-4 max-w-[40ch] text-base/7 text-pretty sm:text-[0.9375rem]/6">
                             Practical, regularly reviewed guidance for more comfortable and accessible Disney park days.
                         </p>
-                        <a
-                            href="{{ route('guides.index') }}"
-                            class="dispatch-button bg-gold text-navy hover:bg-gold-light mt-6 inline-flex min-h-12 w-fit items-center px-6 py-3 text-base font-semibold sm:text-sm"
-                        >Browse all guides</a>
+                        @if ($latestGuides->isNotEmpty())
+                            <a
+                                href="{{ route('guides.index') }}"
+                                class="dispatch-button bg-gold text-navy hover:bg-gold-light mt-6 inline-flex min-h-12 w-fit items-center px-6 py-3 text-base font-semibold sm:text-sm"
+                            >Browse all guides</a>
+                        @else
+                            <a
+                                href="{{ route('blog.index') }}"
+                                class="dispatch-button bg-gold text-navy hover:bg-gold-light mt-6 inline-flex min-h-12 w-fit items-center px-6 py-3 text-base font-semibold sm:text-sm"
+                            >Explore planning stories</a>
+                        @endif
                         <div class="dispatch-map-trail mt-7" aria-hidden="true"></div>
                     </div>
                     <div class="grid gap-4 p-4 sm:grid-cols-2 sm:p-6">
@@ -246,13 +232,46 @@
                                     @endif</div
                             ></a>
                         @empty
-                            <div class="border-gold/35 bg-cream/70 col-span-full flex min-h-64 flex-col items-center justify-center rounded-xl border p-6 text-center sm:p-8">
-                                <p class="font-heading text-navy text-2xl [font-weight:620] tracking-[-0.02em]">
-                                    The guidebook is being assembled.
-                                </p>
-                                <p class="text-navy/70 mx-auto mt-2 max-w-lg text-base/7 sm:text-[0.9375rem]/6">
-                                    Reviewed accessibility and planning guides will appear here as they are published.
-                                </p>
+                            <div class="col-span-full">
+                                <div class="mb-4 flex items-end justify-between gap-4 px-1">
+                                    <div>
+                                        <p class="text-purple text-xs font-bold tracking-[0.16em] uppercase">
+                                            While the guidebook grows
+                                        </p>
+                                        <h3 class="font-heading text-navy mt-1 text-2xl [font-weight:620] tracking-[-0.02em]">
+                                            Start planning with these stories
+                                        </h3>
+                                    </div>
+                                </div>
+                                @if ($planningPosts->isNotEmpty())
+                                    <div class="grid gap-4 sm:grid-cols-2">
+                                        @foreach ($planningPosts as $post)
+                                            <a
+                                                href="{{ route('blog.show', $post) }}"
+                                                class="dispatch-guide-card group overflow-hidden"
+                                            >
+                                                <x-post-artwork
+                                                    :post="$post"
+                                                    class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]"
+                                                />
+                                                <div class="p-5">
+                                                    <p class="text-purple text-xs font-semibold">
+                                                        {{ $post->category_label }}
+                                                    </p>
+                                                    <p class="font-heading text-navy group-hover:text-purple mt-1 text-xl [font-weight:580] tracking-[-0.015em] text-balance">
+                                                        {{ $post->title }}
+                                                    </p>
+                                                </div>
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <div class="border-gold/35 bg-cream/70 flex min-h-52 flex-col items-center justify-center rounded-xl border p-6 text-center sm:p-8">
+                                        <p class="text-navy/70 max-w-lg text-base/7">
+                                            Our first planning stories and reviewed guides are being prepared.
+                                        </p>
+                                    </div>
+                                @endif
                             </div>
                         @endforelse
                     </div>

@@ -53,6 +53,20 @@ test('contact page uses the configured podcast email address', function (): void
         ->assertDontSee('mouse28podcast@gmail.com');
 });
 
+test('contact page offers email instead of an unusable form when verification is unavailable', function (string $missingKey): void {
+    config()->set("services.turnstile.{$missingKey}");
+
+    get(route('contact.show'))
+        ->assertOk()
+        ->assertSee('Email us instead')
+        ->assertSee('href="mailto:mouse28podcast@gmail.com"', false)
+        ->assertDontSee('action="'.route('contact.store').'"', false)
+        ->assertDontSee('data-action="contact-form"', false);
+})->with([
+    'missing site key' => 'site_key',
+    'missing secret key' => 'secret_key',
+]);
+
 test('valid contact submission requires successful turnstile verification', function (): void {
     Mail::fake();
 
