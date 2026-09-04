@@ -10,25 +10,12 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Finder\SplFileInfo;
 
 #[Signature('content:attach-artwork')]
 #[Description('Attach the bundled Mouse28 artwork to matching content without replacing uploads')]
 class AttachContentArtwork extends Command
 {
-    /** @var array<string, string> */
-    private const POST_ARTWORK = [
-        'welcome-to-mouse-28' => 'posts/welcome-to-mouse-28.webp',
-        'our-disney-park-bag-essentials' => 'posts/our-disney-park-bag-essentials.webp',
-        'disney-dining-with-a-picky-eater' => 'posts/disney-dining-with-a-picky-eater.webp',
-        'the-ride-that-surprised-us' => 'posts/the-ride-that-surprised-us.webp',
-        'what-is-das-and-how-it-changed-our-disney-visits' => 'posts/what-is-das-and-how-it-changed-our-disney-visits.webp',
-        'a-first-timers-guide-to-disney-world-with-a-sensory-sensitive-child' => 'posts/a-first-timers-guide-to-disney-world-with-a-sensory-sensitive-child.webp',
-        'recap-epcot-kids-think-differently-ep4' => 'posts/recap-epcot-kids-think-differently-ep4.webp',
-        'top-5-character-interactions-sensory-sensitive-kids' => 'posts/top-5-character-interactions-sensory-sensitive-kids.webp',
-        '10-quiet-spots-disney-world-kid-needs-break' => 'posts/10-quiet-spots-disney-world-kid-needs-break.webp',
-        'understanding-autism-disney-what-families-should-know' => 'posts/understanding-autism-disney-what-families-should-know.webp',
-    ];
-
     /** @var array<string, string> */
     private const EPISODE_ARTWORK = [
         'trailer-meet-mouse28' => 'episodes/trailer-meet-mouse28.webp',
@@ -37,8 +24,16 @@ class AttachContentArtwork extends Command
 
     public function handle(): int
     {
-        $artwork = [...self::POST_ARTWORK, ...self::EPISODE_ARTWORK];
         $sourceDirectory = (string) config('mouse28.content_artwork_path');
+
+        if (! File::isDirectory("{$sourceDirectory}/posts")) {
+            $this->error("Bundled post artwork directory is missing: {$sourceDirectory}/posts");
+
+            return self::FAILURE;
+        }
+
+        $postArtwork = $this->postArtwork($sourceDirectory);
+        $artwork = [...$postArtwork, ...self::EPISODE_ARTWORK];
         $missingFiles = collect($artwork)->reject(
             fn (string $path): bool => File::isFile("{$sourceDirectory}/{$path}"),
         );
@@ -57,12 +52,23 @@ class AttachContentArtwork extends Command
             return Storage::disk('public')->put($path, File::get("{$sourceDirectory}/{$path}")) ? 1 : 0;
         });
 
-        $updated = $this->attach(Post::query(), self::POST_ARTWORK)
+        $updated = $this->attach(Post::query(), $postArtwork)
             + $this->attach(Episode::query(), self::EPISODE_ARTWORK);
 
         $this->info("Copied {$copied} artwork files and attached artwork to {$updated} content records.");
 
         return self::SUCCESS;
+    }
+
+    /** @return array<string, string> */
+    private function postArtwork(string $sourceDirectory): array
+    {
+        return collect(File::files("{$sourceDirectory}/posts"))
+            ->filter(fn (SplFileInfo $file): bool => $file->getExtension() === 'webp')
+            ->mapWithKeys(fn (SplFileInfo $file): array => [
+                $file->getBasename('.webp') => "posts/{$file->getFilename()}",
+            ])
+            ->all();
     }
 
     /**

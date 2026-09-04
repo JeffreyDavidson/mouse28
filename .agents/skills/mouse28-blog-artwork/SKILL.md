@@ -10,9 +10,10 @@ Create an original cover that feels native to Mouse28's established artwork coll
 ## Establish the Brief
 
 - Read the actual post content, title, excerpt, and slug from the repository or supplied source. Do not invent editorial details when the source is available.
+- Confirm the post is genuine editorial content intended for publication. Do not generate a final cover for demo, seed, or placeholder content unless the user explicitly requests it.
 - Inspect at least three relevant covers in `resources/content-artwork/posts/` with an image-viewing tool. Treat the current collection as the living style reference.
 - Choose one clear visual story or metaphor from the post. Vary subject matter and composition across covers instead of repeating a stock family-at-the-park scene.
-- If the request is only for a concept or preview, stop before changing repository files.
+- If the request is only for a concept or preview, stop before changing active artwork. Preserve a concept under `resources/content-artwork/concepts/` only when the user asks to keep it.
 
 ## Visual Language
 
@@ -52,10 +53,10 @@ Use the exact blog post slug for `POST_SLUG`. Inspect the converted WebP and ver
 
 When the user wants a repository-ready cover rather than only a preview:
 
-- Add the slug and `posts/<slug>.webp` path to `POST_ARTWORK` in `app/Console/Commands/AttachContentArtwork.php`.
-- Extend `tests/Feature/AttachContentArtworkTest.php` so the file is copied and attached to the matching post.
+- Save the approved WebP directly as `resources/content-artwork/posts/<slug>.webp`. The attachment command discovers direct WebP files in that directory and matches each filename to the post slug; no PHP registry edit is needed.
+- Keep drafts, alternatives, and unassigned concepts outside the `posts` directory so the command cannot attach them.
 - Preserve the command's existing rule that user-uploaded artwork is never replaced.
-- Follow the project's Laravel and Pest skills for PHP and test changes.
+- Follow the project's Laravel and Pest skills if the attachment behavior itself needs to change.
 - Do not upload the image, run the attachment command against production, deploy, commit, push, or merge unless the user separately authorizes that action.
 
 Run the focused verification:
