@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Episode;
 use App\Models\Post;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -18,7 +19,17 @@ test('production public content and referenced media can be synced locally', fun
 
     $stalePost = Post::factory()->create(['slug' => 'stale-published-post']);
     $localDraft = Post::factory()->draft()->create(['slug' => 'local-draft']);
+    $localEpisode = Episode::factory()->create([
+        'slug' => 'local-placeholder-episode',
+        'episode_number' => 1,
+    ]);
     $archive = publicContentArchive([
+        'episodes' => [[
+            'title' => 'Production Episode',
+            'slug' => 'production-episode',
+            'episode_number' => 1,
+            'published_at' => now()->subDay()->toAtomString(),
+        ]],
         'posts' => [[
             'title' => 'Production Post',
             'slug' => 'production-post',
@@ -27,6 +38,7 @@ test('production public content and referenced media can be synced locally', fun
             'cover_image' => 'posts/production-post.webp',
             'category' => 'disney-tips',
             'author' => 'both',
+            'episode_slug' => 'production-episode',
             'published_at' => now()->subDay()->toAtomString(),
             'og_image' => 'posts/production-post-social.webp',
         ]],
@@ -63,6 +75,11 @@ test('production public content and referenced media can be synced locally', fun
         ->and(Post::query()->whereKey($stalePost)->exists())->toBeFalse()
         ->and(Post::withTrashed()->find($stalePost->id)?->trashed())->toBeTrue()
         ->and($localDraft->fresh())->not->toBeNull()
+        ->and(Episode::query()->count())->toBe(1)
+        ->and(Episode::query()->firstOrFail()->id)->toBe($localEpisode->id)
+        ->and(Episode::query()->firstOrFail()->slug)->toBe('production-episode')
+        ->and(Post::query()->where('slug', 'production-post')->firstOrFail()->episode?->slug)
+        ->toBe('production-episode')
         ->and($transferredMedia)->toBe([
             'posts/production-post-social.webp',
             'posts/production-post.webp',

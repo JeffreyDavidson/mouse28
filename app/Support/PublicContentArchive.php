@@ -228,7 +228,7 @@ class PublicContentArchive
     /** @param array<string, mixed> $attributes */
     private function importEpisode(array $attributes): void
     {
-        $episode = Episode::withTrashed()->firstOrNew(['slug' => $attributes['slug']]);
+        $episode = Episode::withTrashed()->firstOrNew(['episode_number' => $attributes['episode_number']]);
 
         if ($episode->trashed()) {
             $episode->restore();
