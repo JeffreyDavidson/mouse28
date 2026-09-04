@@ -6,6 +6,7 @@
     og-type="article"
     :og-image="$guide->og_image_url ?: $guide->cover_image_url"
     :robots="($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow'"
+    :dispatch-layout="true"
 >
     @unless ($isPreview ?? false)
         @push('head')
@@ -18,8 +19,15 @@
             Preview mode — this page is only visible to administrators.
         </div>
     @endif
-    <section class="from-navy via-navy-light to-purple relative overflow-hidden bg-linear-to-br py-14 md:py-20">
-        <div class="mx-auto max-w-5xl px-4 wrap-anywhere sm:px-6">
+    <section class="dispatch-page-hero from-navy via-navy-light to-purple relative overflow-hidden bg-linear-to-br py-14 md:py-20">
+        <x-guide-artwork
+            :guide="$guide"
+            loading="eager"
+            fetchpriority="high"
+            class="absolute inset-0 size-full object-cover opacity-40"
+        />
+        <div class="from-navy/95 via-navy/78 to-purple/65 absolute inset-0 bg-linear-to-r"></div>
+        <div class="dispatch-page-heading relative z-10 mx-auto max-w-[86rem] px-4 wrap-anywhere sm:px-6">
             <a
                 href="{{ route('guides.index') }}"
                 class="hover:text-gold inline-flex min-h-12 items-center text-sm text-white/60"
@@ -40,7 +48,7 @@
         </div>
     </section>
 
-    <section class="bg-cream py-12 md:py-16">
+    <section class="dispatch-page-field bg-cream py-12 md:py-16">
         <div class="mx-auto max-w-4xl px-4 sm:px-6">
             <div class="border-gold/20 bg-gold/10 text-navy/65 mb-6 flex flex-col gap-2 rounded-2xl border px-5 py-4 text-sm sm:flex-row sm:items-center sm:justify-between">
                 <span>Written by {{ $guide->author_name }}</span>
@@ -59,7 +67,7 @@
                 </div>
             @endif
 
-            <article class="border-navy/5 shadow-navy/5 rounded-3xl border bg-white p-6 shadow-lg sm:p-10 md:p-14">
+            <article class="dispatch-reader-sheet border-navy/5 shadow-navy/5 rounded-3xl border bg-white p-6 shadow-lg sm:p-10 md:p-14">
                 <div class="blog-article-content prose-navy prose prose-lg text-navy/80 max-w-none text-[1.1rem] leading-[1.85] wrap-anywhere">
                     {!! Str::markdown($guide->body, ['html_input' => 'strip', 'allow_unsafe_links' => false]) !!}
                 </div>
@@ -88,8 +96,14 @@
                         @foreach ($relatedGuides as $relatedGuide)
                             <a
                                 href="{{ route('guides.show', $relatedGuide) }}"
-                                class="border-navy/5 font-heading text-navy hover:text-purple rounded-2xl border bg-white p-5 text-lg font-bold wrap-anywhere shadow-sm"
-                            >{{ $relatedGuide->title }}</a>
+                                class="dispatch-interactive-card group border-navy/5 text-navy hover:text-purple overflow-hidden rounded-2xl border bg-white shadow-sm"
+                            >
+                                <x-guide-artwork
+                                    :guide="$relatedGuide"
+                                    class="h-28 w-full object-cover transition-transform duration-500 group-hover:scale-[1.035]"
+                                />
+                                <span class="font-heading block p-5 text-lg font-bold wrap-anywhere">{{ $relatedGuide->title }}</span>
+                            </a>
                         @endforeach
                     </div>
                 </section>

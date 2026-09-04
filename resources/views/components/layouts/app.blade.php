@@ -1,5 +1,5 @@
 @props([
-    'title' => 'Mouse28 — Disney Parks Through Different Eyes',
+    'title' => 'Mouse28 | Disney Parks Through Different Eyes',
     'description' => 'Disney parks through the eyes of a family raising a daughter with autism. Tips, accessibility guides, and stories from Jeffrey & Cassie Davidson.',
     'robots' => 'index,follow',
     'ogTitle' => null,
@@ -8,6 +8,7 @@
     'ogImage' => null,
     'canonical' => null,
     'showFooterNewsletter' => true,
+    'dispatchLayout' => false,
 ])
 
 @php
@@ -48,7 +49,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#1a1040" />
     <link rel="preload" href="/fonts/mouse28/poppins-400.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="/fonts/mouse28/playfair-latin.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/mouse28/besley-latin.woff2" as="font" type="font/woff2" crossorigin />
     @head
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -73,7 +74,7 @@
     {{-- Navigation --}}
     <header class="sticky top-0 z-50">
         <nav
-            class="bg-navy/95 border-b border-white/10 backdrop-blur-sm"
+            class="dispatch-cloth border-gold/25 border-b"
             aria-label="Primary navigation"
             x-data="{ open: false }"
             @keydown.escape.window="
@@ -83,15 +84,15 @@
                 }
             "
         >
-            <div class="mx-auto max-w-6xl px-4 sm:px-6">
-                <div class="flex h-20 items-center justify-between">
+            <div class="{{ $dispatchLayout ? 'max-w-[86rem]' : 'max-w-6xl' }} mx-auto px-4 sm:px-6">
+                <div class="flex {{ $dispatchLayout ? 'h-20' : 'h-16' }} items-center justify-between">
                     {{-- Logo --}}
                     <a
                         href="{{ route('home') }}"
                         aria-label="Mouse28 homepage"
-                        class="group inline-flex min-h-12 items-center tracking-tight"
+                        class="group inline-flex min-h-12 items-center py-2"
                     >
-                        <span class="font-heading group-hover:text-gold text-2xl font-bold text-white transition-colors">Mouse<span class="text-gold">28</span></span>
+                        <x-brand-wordmark :compact="! $dispatchLayout" />
                     </a>
 
                     {{-- Desktop Nav --}}
@@ -99,32 +100,32 @@
                         <a
                             href="{{ route('home') }}"
                             @if (request()->routeIs('home')) aria-current="page" @endif
-                            class="{{ request()->routeIs('home') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-12 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold"
+                            class="dispatch-nav-link inline-flex min-h-12 items-center text-sm font-medium tracking-wide"
                         >Home</a>
                         <a
                             href="{{ route('blog.index') }}"
                             @if (request()->routeIs('blog.*')) aria-current="page" @endif
-                            class="{{ request()->routeIs('blog.*') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-12 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold"
+                            class="dispatch-nav-link inline-flex min-h-12 items-center text-sm font-medium tracking-wide"
                         >Blog</a>
                         <a
                             href="{{ route('episodes.index') }}"
                             @if (request()->routeIs('episodes.*')) aria-current="page" @endif
-                            class="{{ request()->routeIs('episodes.*') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-12 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold"
+                            class="dispatch-nav-link inline-flex min-h-12 items-center text-sm font-medium tracking-wide"
                         >Podcast</a>
                         <a
                             href="{{ route('about') }}"
                             @if (request()->routeIs('about')) aria-current="page" @endif
-                            class="{{ request()->routeIs('about') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-12 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold"
+                            class="dispatch-nav-link inline-flex min-h-12 items-center text-sm font-medium tracking-wide"
                         >About</a>
                         <a
                             href="{{ route('contact.show') }}"
                             @if (request()->routeIs('contact.*')) aria-current="page" @endif
-                            class="{{ request()->routeIs('contact.*') ? 'text-gold nav-link-active' : 'text-white/80' }} inline-flex min-h-12 items-center text-sm font-medium tracking-wide transition-colors hover:text-gold"
+                            class="dispatch-nav-link inline-flex min-h-12 items-center text-sm font-medium tracking-wide"
                         >Contact</a>
                         <a
                             href="{{ route('search') }}"
                             @if (request()->routeIs('search')) aria-current="page" @endif
-                            class="{{ request()->routeIs('search') ? 'text-gold' : 'text-white/80' }} inline-flex size-12 items-center justify-center rounded-full transition-colors hover:bg-white/5 hover:text-gold"
+                            class="dispatch-nav-search inline-flex size-12 items-center justify-center rounded-full"
                             aria-label="Search Mouse28"
                         >
                             <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35m1.35-5.65a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" /></svg>
@@ -250,121 +251,194 @@
         {{-- Decorative gold gradient top border --}}
         <div class="from-gold-dark via-gold-light to-gold-dark absolute inset-x-0 top-0 h-1 bg-linear-to-r"></div>
 
-        <div class="mx-auto max-w-6xl px-4 pt-16 pb-8 sm:px-6">
-            <div class="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
-                @if ($showFooterNewsletter)
-                    {{-- Newsletter (left side) --}}
-                    <div class="shrink-0 lg:max-w-md">
-                        <h2 class="font-heading mb-2 text-base font-semibold tracking-wider text-white uppercase sm:text-sm">
-                            Stay in the Loop
-                        </h2>
-                        <p class="mb-4 text-base text-white/50 sm:text-sm">
-                            New posts, episodes, and park tips straight to your inbox.
+        @if ($dispatchLayout && ! $showFooterNewsletter)
+            <div class="mx-auto max-w-[86rem] px-4 py-6 sm:px-6">
+                <div class="flex flex-col items-center justify-between gap-5 lg:flex-row">
+                    <a
+                        href="{{ route('home') }}"
+                        aria-label="Mouse28 homepage"
+                        class="inline-flex min-h-12 items-center"
+                    >
+                        <x-brand-wordmark compact />
+                    </a>
+                    <nav
+                        aria-label="Footer navigation"
+                        class="flex flex-wrap justify-center gap-x-8 gap-y-1 text-base sm:text-sm"
+                    >
+                        <a
+                            href="{{ route('home') }}"
+                            class="hover:text-gold inline-flex min-h-12 min-w-11 items-center justify-center font-normal transition-colors sm:min-h-8"
+                        >Home</a>
+                        <a
+                            href="{{ route('blog.index') }}"
+                            class="hover:text-gold inline-flex min-h-12 min-w-11 items-center justify-center font-normal transition-colors sm:min-h-8"
+                        >Blog</a>
+                        <a
+                            href="{{ route('episodes.index') }}"
+                            class="hover:text-gold inline-flex min-h-12 min-w-11 items-center justify-center font-normal transition-colors sm:min-h-8"
+                        >Podcast</a>
+                        <a
+                            href="{{ route('about') }}"
+                            class="hover:text-gold inline-flex min-h-12 min-w-11 items-center justify-center font-normal transition-colors sm:min-h-8"
+                        >About</a>
+                        <a
+                            href="{{ route('contact.show') }}"
+                            class="hover:text-gold inline-flex min-h-12 min-w-11 items-center justify-center font-normal transition-colors sm:min-h-8"
+                        >Contact</a>
+                        @foreach ($podcast->distributionLinks() as $link)
+                            <a
+                                href="{{ $link['url'] }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="hover:text-gold inline-flex min-h-12 min-w-11 items-center justify-center font-normal transition-colors sm:min-h-8"
+                            >{{ $link['label'] }}</a>
+                        @endforeach
+                    </nav>
+                    <p class="text-cream/60 text-base sm:text-sm">
+                        &copy; {{ date('Y') }} Mouse28. All rights reserved.
+                    </p>
+                </div>
+            </div>
+        @else
+            <div class="mx-auto max-w-6xl px-4 pt-10 pb-7 sm:px-6">
+                <div class="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
+                    <div class="max-w-xs">
+                        <a
+                            href="{{ route('home') }}"
+                            aria-label="Mouse28 homepage"
+                            class="group inline-flex min-h-12 items-center"
+                        >
+                            <x-brand-wordmark compact />
+                        </a>
+                        <p class="text-cream/60 mt-2 text-base/7 text-pretty sm:text-sm/6">
+                            Disney parks through the eyes of a family that plans for accessibility, sensory needs, and
+                            real life.
                         </p>
-                        @if (session('newsletter_success'))
-                            <div
-                                role="status"
-                                class="border-gold/30 bg-gold/10 text-gold mb-3 rounded-xl border px-5 py-2.5 text-center text-base font-medium sm:text-sm"
-                            >
-                                You're in! We'll keep you posted.
-                            </div>
-                        @elseif (session('newsletter_error'))
-                            <p role="alert" class="mb-3 text-base text-red-300 sm:text-sm">
-                                {{ session('newsletter_error') }}
+                    </div>
+                    @if ($showFooterNewsletter)
+                        {{-- Newsletter (left side) --}}
+                        <div class="shrink-0 lg:max-w-md">
+                            <h2 class="font-heading mb-2 text-base font-semibold tracking-wider text-white uppercase sm:text-sm">
+                                Stay in the Loop
+                            </h2>
+                            <p class="mb-4 text-base text-white/50 sm:text-sm">
+                                New posts, episodes, and park tips straight to your inbox.
                             </p>
-                        @endif
-                        <form action="{{ route('newsletter.store') }}" method="POST" class="flex flex-col gap-2">
-                            @csrf
-                            <x-newsletter-protection honeypot-id="footer-newsletter-website" />
-                            <div class="flex flex-col gap-2 sm:flex-row">
-                                <label for="footer-newsletter-email" class="sr-only">Email address</label>
-                                <input
-                                    id="footer-newsletter-email"
-                                    type="email"
-                                    name="email"
-                                    value="{{ $errors->newsletter->isNotEmpty() || session('newsletter_error') ? old('email') : '' }}"
-                                    placeholder="your@email.com"
-                                    autocomplete="email"
-                                    required
-                                    @error('email', 'newsletter') aria-invalid="true" aria-describedby="footer-newsletter-email-error" @enderror
-                                    @error('email', 'newsletter') autofocus @enderror
-                                    class="focus:border-gold/50 focus:ring-gold/30 min-h-12 min-w-0 flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-2.5 text-base text-white transition-colors placeholder:text-white/60 focus:ring-1 focus:outline-none sm:text-sm"
-                                />
-                                <button
-                                    type="submit"
-                                    class="bg-gold text-navy hover:bg-gold-light hover:shadow-gold/25 min-h-12 rounded-full px-6 py-2.5 text-base font-semibold whitespace-nowrap transition-[background-color,box-shadow] hover:shadow-lg sm:text-sm"
+                            @if (session('newsletter_success'))
+                                <div
+                                    role="status"
+                                    class="border-gold/30 bg-gold/10 text-gold mb-3 rounded-xl border px-5 py-2.5 text-center text-base font-medium sm:text-sm"
                                 >
-                                    Subscribe
-                                </button>
-                            </div>
-                            @error('email', 'newsletter')
-                                <p id="footer-newsletter-email-error" role="alert" class="text-sm text-red-300">
-                                    {{ $message }}
+                                    You're in! We'll keep you posted.
+                                </div>
+                            @elseif (session('newsletter_error'))
+                                <p role="alert" class="mb-3 text-base text-red-300 sm:text-sm">
+                                    {{ session('newsletter_error') }}
                                 </p>
-                            @enderror
-                            <p class="text-xs text-white/60">We use your email to send Mouse28 updates.</p>
-                        </form>
-                    </div>
-                @endif
-
-                {{-- Links (right side) --}}
-                <div class="flex flex-wrap gap-x-16 gap-y-8">
-                    {{-- Explore --}}
-                    <div>
-                        <h2 class="font-heading mb-4 text-base font-semibold tracking-wider text-white uppercase sm:text-sm">
-                            Explore
-                        </h2>
-                        <div class="flex flex-col gap-1 text-base sm:text-sm">
-                            <a
-                                href="{{ route('blog.index') }}"
-                                class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
-                            >Blog</a>
-                            <a
-                                href="{{ route('guides.index') }}"
-                                class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
-                            >Guides</a>
-                            <a
-                                href="{{ route('episodes.index') }}"
-                                class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
-                            >Podcast</a>
-                            <a
-                                href="{{ route('about') }}"
-                                class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
-                            >About Us</a>
+                            @endif
+                            <form action="{{ route('newsletter.store') }}" method="POST" class="flex flex-col gap-2">
+                                @csrf
+                                <x-newsletter-protection honeypot-id="footer-newsletter-website" />
+                                <div class="flex flex-col gap-2 sm:flex-row">
+                                    <label for="footer-newsletter-email" class="sr-only">Email address</label>
+                                    <input
+                                        id="footer-newsletter-email"
+                                        type="email"
+                                        name="email"
+                                        value="{{ $errors->newsletter->isNotEmpty() || session('newsletter_error') ? old('email') : '' }}"
+                                        placeholder="your@email.com"
+                                        autocomplete="email"
+                                        required
+                                        @error('email', 'newsletter') aria-invalid="true" aria-describedby="footer-newsletter-email-error" @enderror
+                                        @error('email', 'newsletter') autofocus @enderror
+                                        class="focus:border-gold/50 focus:ring-gold/30 min-h-12 min-w-0 flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-2.5 text-base text-white transition-colors placeholder:text-white/60 focus:ring-1 focus:outline-none sm:text-sm"
+                                    />
+                                    <button
+                                        type="submit"
+                                        class="bg-gold text-navy hover:bg-gold-light hover:shadow-gold/25 min-h-12 rounded-full px-6 py-2.5 text-base font-semibold whitespace-nowrap transition-[background-color,box-shadow] hover:shadow-lg sm:text-sm"
+                                    >
+                                        Subscribe
+                                    </button>
+                                </div>
+                                @error('email', 'newsletter')
+                                    <p id="footer-newsletter-email-error" role="alert" class="text-sm text-red-300">
+                                        {{ $message }}
+                                    </p>
+                                @enderror
+                                <p class="text-xs text-white/60">We use your email to send Mouse28 updates.</p>
+                            </form>
                         </div>
-                    </div>
+                    @endif
 
-                    {{-- Connect --}}
-                    <div>
-                        <h2 class="font-heading mb-4 text-base font-semibold tracking-wider text-white uppercase sm:text-sm">
-                            Connect
-                        </h2>
-                        <div class="flex flex-col gap-1 text-base sm:text-sm">
-                            <a
-                                href="{{ route('contact.show') }}"
-                                class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
-                            >Contact Us</a>
-                            @foreach ($podcast->distributionLinks() as $link)
+                    {{-- Links (right side) --}}
+                    <div class="flex flex-wrap gap-x-16 gap-y-8">
+                        {{-- Explore --}}
+                        <div>
+                            <h2 class="font-heading mb-4 text-base font-semibold tracking-wider text-white uppercase sm:text-sm">
+                                Explore
+                            </h2>
+                            <div class="flex flex-col gap-1 text-base sm:text-sm">
                                 <a
-                                    href="{{ $link['url'] }}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                    href="{{ route('blog.index') }}"
                                     class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
-                                >{{ $link['label'] }}</a>
-                            @endforeach
+                                >Blog</a>
+                                <a
+                                    href="{{ route('guides.index') }}"
+                                    class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
+                                >Guides</a>
+                                <a
+                                    href="{{ route('episodes.index') }}"
+                                    class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
+                                >Podcast</a>
+                                <a
+                                    href="{{ route('about') }}"
+                                    class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
+                                >About Us</a>
+                            </div>
+                        </div>
+
+                        {{-- Connect --}}
+                        <div>
+                            <h2 class="font-heading mb-4 text-base font-semibold tracking-wider text-white uppercase sm:text-sm">
+                                Connect
+                            </h2>
+                            <div class="flex flex-col gap-1 text-base sm:text-sm">
+                                <a
+                                    href="{{ route('contact.show') }}"
+                                    class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
+                                >Contact Us</a>
+                                @foreach ($podcast->distributionLinks() as $link)
+                                    <a
+                                        href="{{ $link['url'] }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
+                                    >{{ $link['label'] }}</a>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
 
-            {{-- Bottom bar --}}
-            <div class="mt-8 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row">
-                <p class="text-base text-white/60 sm:text-sm">&copy; {{ date('Y') }} Mouse28. All rights reserved.</p>
-                <p class="text-base text-white/60 sm:text-sm">
-                    Made with <span aria-hidden="true">✨</span> from Infinity Digital
-                </p>
+                {{-- Bottom bar --}}
+                <div class="mt-8 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row">
+                    <p class="text-base text-white/60 sm:text-sm">
+                        &copy; {{ date('Y') }} Mouse28. All rights reserved.
+                    </p>
+                    <p class="text-base text-white/60 sm:text-sm">
+                        Made with <span aria-hidden="true">✨</span> from Infinity Digital
+                    </p>
+                </div>
             </div>
-        </div>
+        @endif
     </footer>
+    @if ($dispatchLayout)
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+                document.documentElement.classList.add('js-dispatch-pages');
+            });
+        </script>
+    @endif
 </body>
 </html>

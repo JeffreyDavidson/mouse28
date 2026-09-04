@@ -6,6 +6,11 @@ use function Pest\Laravel\from;
 
 uses(RefreshDatabase::class);
 
+beforeEach(function (): void {
+    config()->set('services.turnstile.site_key', 'test-site-key');
+    config()->set('services.turnstile.secret_key', 'test-secret-key');
+});
+
 test('contact errors and old input stay out of the newsletter form', function (): void {
     $response = from(route('contact.show'))
         ->followingRedirects()

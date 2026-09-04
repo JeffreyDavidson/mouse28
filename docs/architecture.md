@@ -34,6 +34,8 @@ Filament global search covers posts, guides, episodes, and contact messages. The
 
 Content and social artwork uses a 1200:630 aspect ratio. Filament restricts uploads to common web image formats, caps them at 5 MB, and crops and resizes them through its native uploader. The idempotent `content:attach-artwork` command connects bundled Mouse28 WebP artwork to the known post and episode slugs only when a record does not already have a cover.
 
+Production is the source of truth for published editorial content. `PublicContentArchive` exports only published posts, guides, episodes, and public podcast display metadata; its sync mode reconciles those records by slug while preserving local drafts and scheduled content. The local-only `content:sync-production` command retrieves that archive over SSH, validates every referenced public-storage path, transfers only those cover, social, and hosted-audio files, and refuses to run in production. Users, subscribers, contact submissions, credentials, and environment-specific podcast email remain outside the archive.
+
 Posts, guides, and episodes use Eloquent soft deletion. Deleted content disappears from public queries immediately, while Filament administrators can filter the trash, restore records, or explicitly confirm a permanent deletion. Resource route binding includes trashed records only inside the authorized panel recovery flow.
 
 Each content edit page links to an administrator-authorized preview route. Preview pages reuse the public templates, carry a visible preview banner, emit `noindex,nofollow`, and omit structured data. Every preview is authorized through its model policy, so drafts are not exposed by knowing their URL.

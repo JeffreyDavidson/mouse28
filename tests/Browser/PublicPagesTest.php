@@ -85,7 +85,7 @@ function missingFocusIndicatorsScript(): string
             return [...focusableElements].filter((element) => {
                 const bounds = element.getBoundingClientRect();
 
-                if (element.closest('[aria-hidden="true"]') || bounds.width === 0 || bounds.height === 0) {
+                if (element.closest('[aria-hidden="true"], details:not([open])') || bounds.width === 0 || bounds.height === 0) {
                     return false;
                 }
 
@@ -126,6 +126,90 @@ test('public page renders without JavaScript errors', function (string $path, st
     'search' => ['/search', 'Search'],
 ]);
 
+test('homepage loads its editorial type and folio motion', function (): void {
+    $page = visit(route('home'));
+
+    $page
+        ->assertScript('document.fonts.check("16px Besley")', true)
+        ->assertScript('getComputedStyle(document.querySelector("h1")).fontFamily.includes("Besley")', true)
+        ->assertScript('document.documentElement.classList.contains("js-dispatch-motion")', true)
+        ->assertScript('document.documentElement.classList.contains("js-dispatch-journey")', true)
+        ->assertScript('document.querySelectorAll("[data-dispatch-waypoint]").length', 6)
+        ->assertScript('document.querySelector("[data-dispatch-journey]").dataset.currentStop', 'Welcome')
+        ->assertScript('getComputedStyle(document.querySelector("[data-dispatch-motion=hero-paper]")).animationName', 'dispatch-paper-settle')
+        ->assertNoJavaScriptErrors();
+
+    $page->script('window.scrollTo(0, document.documentElement.scrollHeight)');
+
+    $page
+        ->assertScript('document.querySelector("[data-dispatch-journey]").dataset.currentStop', 'Stay in the loop')
+        ->assertScript('Number.parseFloat(getComputedStyle(document.querySelector("[data-dispatch-journey]")).getPropertyValue("--dispatch-route-progress")) > 0.95', true)
+        ->assertNoJavaScriptErrors();
+});
+
+test('interior pages load the shared dispatch typography and arrival motion', function (): void {
+    $pages = visit([
+        route('blog.index'),
+        route('guides.index'),
+        route('episodes.index'),
+        route('about'),
+        route('contact.show'),
+        route('search'),
+    ]);
+
+    $pages
+        ->assertScript('document.fonts.check("16px Besley")', true)
+        ->assertScript('getComputedStyle(document.querySelector("h1")).fontFamily.includes("Besley")', true)
+        ->assertScript('document.documentElement.classList.contains("js-dispatch-pages")', true)
+        ->assertNoJavaScriptErrors();
+});
+
+test('polished discovery and guide artwork remain usable on mobile', function (): void {
+    $guide = Guide::factory()->create([
+        'category' => 'accessibility',
+        'cover_image' => null,
+    ]);
+    $post = Post::factory()->create();
+    Post::factory()->create();
+
+    visit(route('search'))
+        ->on()
+        ->mobile()
+        ->resize(320, 812)
+        ->assertSee('Start somewhere inspiring')
+        ->assertScript(horizontalOverflowCountScript(), 0)
+        ->assertScript(undersizedMobileControlsScript(), '')
+        ->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors();
+
+    $guidesPage = visit(route('guides.index'))
+        ->on()
+        ->mobile()
+        ->resize(320, 812)
+        ->assertSee($guide->title)
+        ->assertScript('document.querySelector("[data-guide-artwork]").complete', true)
+        ->assertScript('document.querySelector("[data-guide-artwork]").naturalWidth > 0', true)
+        ->assertScript(horizontalOverflowCountScript(), 0)
+        ->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors();
+
+    $guidesPage->script('window.scrollTo(0, document.documentElement.scrollHeight)');
+
+    $guidesPage
+        ->assertScript('[...document.querySelectorAll("[data-guide-artwork]")].every((image) => image.complete && image.naturalWidth > 0)', true)
+        ->assertNoJavaScriptErrors();
+
+    visit(route('blog.show', $post))
+        ->on()
+        ->mobile()
+        ->resize(320, 812)
+        ->assertScript('getComputedStyle(document.querySelector("[data-article-secondary=recent-posts]")).display', 'none')
+        ->assertScript('getComputedStyle(document.querySelector("[data-article-secondary=categories]")).display', 'none')
+        ->assertScript(horizontalOverflowCountScript(), 0)
+        ->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors();
+});
+
 test('published content detail pages have no accessibility issues', function (): void {
     $post = Post::factory()->create();
     $episode = Episode::factory()->create([
@@ -133,22 +217,22 @@ test('published content detail pages have no accessibility issues', function ():
     ]);
     $guide = Guide::factory()->create();
 
-    $pages = visit([
-        route('blog.show', $post),
-        route('episodes.show', $episode),
-        route('guides.show', $guide),
-    ]);
+    foreach ([
+        'post' => route('blog.show', $post),
+        'episode' => route('episodes.show', $episode),
+        'guide' => route('guides.show', $guide),
+    ] as $url) {
+        visit($url)
+            ->assertNoAccessibilityIssues()
+            ->assertScript('document.querySelectorAll(\'svg:not([aria-hidden="true"]):not([aria-label]):not([aria-labelledby]):not(:has(title))\').length', 0)
+            ->assertScript(exposedDecorativeGlyphCountScript(), 0)
+            ->assertScript('document.querySelectorAll(\'[tabindex]:not([tabindex="0"]):not([tabindex="-1"])\').length', 0)
+            ->assertScript(missingFocusIndicatorsScript(), '')
+            ->assertNoJavaScriptErrors();
+    }
 
-    $pages->assertNoAccessibilityIssues()
-        ->assertScript('document.querySelectorAll(\'svg:not([aria-hidden="true"]):not([aria-label]):not([aria-labelledby]):not(:has(title))\').length', 0)
-        ->assertScript(exposedDecorativeGlyphCountScript(), 0)
-        ->assertScript('document.querySelectorAll(\'[tabindex]:not([tabindex="0"]):not([tabindex="-1"])\').length', 0)
-        ->assertScript(missingFocusIndicatorsScript(), '')
-        ->assertNoJavaScriptErrors();
-
-    [, $episodePage] = $pages;
-
-    $episodePage->click('Read Full Transcript')
+    visit(route('episodes.show', $episode))
+        ->click('Read Full Transcript')
         ->assertScript('document.querySelector("[aria-controls=episode-transcript]").ariaExpanded', 'true')
         ->assertNoAccessibilityIssues();
 });
@@ -166,6 +250,19 @@ test('mobile navigation opens and remains usable', function (): void {
         ->assertNoJavaScriptErrors();
 });
 
+test('desktop navigation identifies only the current destination', function (): void {
+    visit(route('about'))
+        ->assertScript('document.querySelectorAll(".dispatch-nav-link[aria-current=page]").length', 1)
+        ->assertScript('document.querySelector(".dispatch-nav-link[aria-current=page]").textContent.trim()', 'About')
+        ->assertScript('document.querySelector(".dispatch-nav-link[href*=blog]").hasAttribute("aria-current")', false)
+        ->assertNoJavaScriptErrors();
+
+    visit(route('blog.index'))
+        ->assertScript('document.querySelectorAll(".dispatch-nav-link[aria-current=page]").length', 1)
+        ->assertScript('document.querySelector(".dispatch-nav-link[aria-current=page]").textContent.trim()', 'Blog')
+        ->assertNoJavaScriptErrors();
+});
+
 test('keyboard users can skip directly to the main content', function (): void {
     visit(route('home'))
         ->keys('html > body', 'Tab')
@@ -174,7 +271,7 @@ test('keyboard users can skip directly to the main content', function (): void {
         ->keys(':focus', 'Enter')
         ->assertScript('document.activeElement.id', 'main-content')
         ->keys(':focus', 'Tab')
-        ->assertScript('document.activeElement.textContent.trim()', 'Read Our Blog')
+        ->assertScript('document.activeElement.textContent.trim()', 'Read the Blog')
         ->assertNoJavaScriptErrors();
 });
 
@@ -197,7 +294,7 @@ test('mobile navigation restores focus when closed with the keyboard', function 
         ->assertNoJavaScriptErrors();
 });
 
-test('search transcript and contact validation work from the keyboard', function (): void {
+test('search and transcript controls work from the keyboard and unavailable contact remains actionable', function (): void {
     $post = Post::factory()->create([
         'title' => 'Accessible Park Planning',
         'body' => 'Practical accessible planning advice for a Disney parks visit.',
@@ -211,6 +308,7 @@ test('search transcript and contact validation work from the keyboard', function
         ->keys('#site-search', 'Enter')
         ->assertQueryStringHas('q', 'Accessible Park')
         ->assertSee($post->title)
+        ->assertScript('document.querySelector(".dispatch-interactive-card").tagName', 'A')
         ->assertNoJavaScriptErrors();
 
     visit(route('episodes.show', $episode))
@@ -220,15 +318,8 @@ test('search transcript and contact validation work from the keyboard', function
         ->assertNoJavaScriptErrors();
 
     visit(route('contact.show'))
-        ->keys('#name', 'Tab')
-        ->assertScript('document.activeElement.id', 'email')
-        ->keys(':focus', 'Tab')
-        ->assertScript('document.activeElement.id', 'subject')
-        ->keys(':focus', 'Tab')
-        ->assertScript('document.activeElement.id', 'message')
-        ->keys('form[action$="/contact"] button[type="submit"]', 'Enter')
-        ->assertScript('document.activeElement.id', 'name')
-        ->assertScript('document.activeElement.matches(":invalid")')
+        ->assertSee('Email us instead')
+        ->assertVisible('.dispatch-letter-form a[href^="mailto:"]')
         ->assertNoJavaScriptErrors();
 });
 

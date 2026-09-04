@@ -17,6 +17,13 @@ class HomeController extends Controller
             ->take(6)->get();
         $latestEpisodes = Episode::published()->latest('published_at')->take(3)->get();
         $latestGuides = Guide::published()->latest('published_at')->take(4)->get();
+        $planningPosts = $latestGuides->isEmpty()
+            ? Post::published()
+                ->whereIn('category', ['park-accessibility', 'disney-tips', 'autism-awareness'])
+                ->latest('published_at')
+                ->take(2)
+                ->get()
+            : collect();
         $podcast = Podcast::info();
 
         return view('home', compact(
@@ -24,6 +31,7 @@ class HomeController extends Controller
             'latestPosts',
             'latestEpisodes',
             'latestGuides',
+            'planningPosts',
             'podcast',
         ));
     }

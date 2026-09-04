@@ -4,11 +4,11 @@
     og-title="Search Mouse28"
     robots="noindex,follow"
     :canonical="route('search')"
+    :dispatch-layout="true"
 >
-    <section class="from-navy via-navy-light to-purple bg-linear-to-br py-14 md:py-20">
-        <div class="mx-auto max-w-4xl px-4 text-center wrap-anywhere sm:px-6">
-            <span class="text-gold text-sm font-semibold tracking-[0.15em] uppercase">Explore Mouse28</span>
-            <h1 class="font-heading mt-3 text-4xl font-bold text-white md:text-6xl">Search</h1>
+    <section class="dispatch-page-hero from-navy via-navy-light to-purple relative overflow-hidden bg-linear-to-br py-16 md:py-24">
+        <div class="dispatch-page-heading mx-auto max-w-[86rem] px-4 wrap-anywhere sm:px-6">
+            <h1 class="font-heading text-4xl font-bold text-white md:text-6xl">Search</h1>
             <form
                 action="{{ route('search') }}"
                 method="GET"
@@ -39,14 +39,49 @@
         </div>
     </section>
 
-    <section class="bg-cream py-12 md:py-16">
+    <section class="dispatch-page-field bg-cream py-12 md:py-16">
         <div class="mx-auto max-w-5xl px-4 wrap-anywhere sm:px-6">
             @if ($query === '')
-                <div class="border-navy/5 rounded-3xl border bg-white px-6 py-14 text-center shadow-sm">
-                    <h2 class="font-heading text-navy text-3xl font-bold">What can we help you find?</h2>
-                    <p class="text-navy/65 mx-auto mt-3 max-w-xl text-base/relaxed">
-                        Search our family stories, practical park guides, and podcast conversations.
-                    </p>
+                <div class="border-navy/5 rounded-3xl border bg-white px-6 py-10 shadow-sm sm:px-10 sm:py-12">
+                    <div class="text-center">
+                        <h2 class="font-heading text-navy text-3xl font-bold">What can we help you find?</h2>
+                        <p class="text-navy/65 mx-auto mt-3 max-w-xl text-base/relaxed">
+                            Search our family stories, practical park guides, and podcast conversations.
+                        </p>
+                    </div>
+
+                    <div class="mt-9 grid gap-4 text-left md:grid-cols-[1.2fr_0.8fr]" aria-label="Explore Mouse28">
+                        <a
+                            href="{{ route('blog.index') }}"
+                            class="dispatch-interactive-card group from-navy to-navy-light relative flex min-h-64 flex-col justify-end overflow-hidden rounded-2xl bg-linear-to-br p-7 text-white md:row-span-2"
+                        >
+                            <span class="text-gold text-sm font-semibold">Start somewhere inspiring</span>
+                            <h3 class="font-heading mt-2 max-w-md text-3xl font-bold">
+                                Stories from park days that taught us something.
+                            </h3>
+                            <span class="text-gold mt-5 inline-flex min-h-12 items-center font-semibold">Browse the blog →</span>
+                        </a>
+                        <a
+                            href="{{ route('guides.index') }}"
+                            class="dispatch-interactive-card group border-navy/8 bg-cream hover:border-purple/25 flex min-h-30 items-center justify-between gap-5 rounded-2xl border p-6"
+                        >
+                            <span>
+                                <strong class="font-heading text-navy block text-xl">Browse practical guides</strong>
+                                <span class="text-navy/65 mt-1 block text-base/relaxed sm:text-sm/relaxed">Plan calmer, more accessible park days.</span>
+                            </span>
+                            <span class="text-purple text-xl" aria-hidden="true">→</span>
+                        </a>
+                        <a
+                            href="{{ route('episodes.index') }}"
+                            class="dispatch-interactive-card group border-navy/8 bg-cream hover:border-purple/25 flex min-h-30 items-center justify-between gap-5 rounded-2xl border p-6"
+                        >
+                            <span>
+                                <strong class="font-heading text-navy block text-xl">Listen to the podcast</strong>
+                                <span class="text-navy/65 mt-1 block text-base/relaxed sm:text-sm/relaxed">Hear the conversations behind the advice.</span>
+                            </span>
+                            <span class="text-purple text-xl" aria-hidden="true">→</span>
+                        </a>
+                    </div>
                 </div>
             @elseif ($resultCount === 0)
                 <div role="status" class="border-navy/5 rounded-3xl border bg-white px-6 py-14 text-center shadow-sm">
@@ -85,20 +120,20 @@
                             </div>
                             <div class="grid gap-4 md:grid-cols-2">
                                 @foreach ($posts as $post)
-                                    <article class="border-navy/5 rounded-2xl border bg-white p-6 shadow-sm">
+                                    <a
+                                        href="{{ route('blog.show', $post) }}"
+                                        class="dispatch-interactive-card group border-navy/5 block rounded-2xl border bg-white p-6 shadow-sm"
+                                    >
                                         <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">{{ $post->category_label }}</span>
-                                        <h3 class="font-heading text-navy mt-2 text-2xl font-bold">
-                                            <a
-                                                href="{{ route('blog.show', $post) }}"
-                                                class="hover:text-purple"
-                                            >{{ $post->title }}</a>
+                                        <h3 class="font-heading text-navy group-hover:text-purple mt-2 text-2xl font-bold transition-colors">
+                                            {{ $post->title }}
                                         </h3>
                                         @if ($post->excerpt)
                                             <p class="text-navy/65 mt-3 text-sm/relaxed">
                                                 {{ Str::limit($post->excerpt, 150) }}
                                             </p>
                                         @endif
-                                    </article>
+                                    </a>
                                 @endforeach
                             </div>
                         </section>
@@ -114,20 +149,20 @@
                             </div>
                             <div class="grid gap-4 md:grid-cols-2">
                                 @foreach ($guides as $guide)
-                                    <article class="border-navy/5 rounded-2xl border bg-white p-6 shadow-sm">
+                                    <a
+                                        href="{{ route('guides.show', $guide) }}"
+                                        class="dispatch-interactive-card group border-navy/5 block rounded-2xl border bg-white p-6 shadow-sm"
+                                    >
                                         <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">{{ $guide->category_label }}</span>
-                                        <h3 class="font-heading text-navy mt-2 text-2xl font-bold">
-                                            <a
-                                                href="{{ route('guides.show', $guide) }}"
-                                                class="hover:text-purple"
-                                            >{{ $guide->title }}</a>
+                                        <h3 class="font-heading text-navy group-hover:text-purple mt-2 text-2xl font-bold transition-colors">
+                                            {{ $guide->title }}
                                         </h3>
                                         @if ($guide->excerpt)
                                             <p class="text-navy/65 mt-3 text-sm/relaxed">
                                                 {{ Str::limit($guide->excerpt, 150) }}
                                             </p>
                                         @endif
-                                    </article>
+                                    </a>
                                 @endforeach
                             </div>
                         </section>
@@ -143,20 +178,20 @@
                             </div>
                             <div class="grid gap-4 md:grid-cols-2">
                                 @foreach ($episodes as $episode)
-                                    <article class="border-navy/5 rounded-2xl border bg-white p-6 shadow-sm">
+                                    <a
+                                        href="{{ route('episodes.show', $episode) }}"
+                                        class="dispatch-interactive-card group border-navy/5 block rounded-2xl border bg-white p-6 shadow-sm"
+                                    >
                                         <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">Episode {{ $episode->episode_number }}</span>
-                                        <h3 class="font-heading text-navy mt-2 text-2xl font-bold">
-                                            <a
-                                                href="{{ route('episodes.show', $episode) }}"
-                                                class="hover:text-purple"
-                                            >{{ $episode->title }}</a>
+                                        <h3 class="font-heading text-navy group-hover:text-purple mt-2 text-2xl font-bold transition-colors">
+                                            {{ $episode->title }}
                                         </h3>
                                         @if ($episode->description)
                                             <p class="text-navy/65 mt-3 text-sm/relaxed">
                                                 {{ Str::limit($episode->description, 150) }}
                                             </p>
                                         @endif
-                                    </article>
+                                    </a>
                                 @endforeach
                             </div>
                         </section>

@@ -61,7 +61,7 @@ function stateMissingFocusIndicatorsScript(): string
             return [...focusableElements].filter((element) => {
                 const bounds = element.getBoundingClientRect();
 
-                if (element.closest('[aria-hidden="true"]') || bounds.width === 0 || bounds.height === 0) {
+                if (element.closest('[aria-hidden="true"], details:not([open])') || bounds.width === 0 || bounds.height === 0) {
                     return false;
                 }
 
@@ -133,22 +133,10 @@ test('search validation identifies and focuses the invalid query', function (): 
         ->assertNoJavaScriptErrors();
 });
 
-test('contact validation preserves input and focuses the first invalid field', function (): void {
-    $page = visit(route('contact.show'));
-
-    $page->script('document.querySelector(\'form[action$="/contact"]\').noValidate = true');
-
-    $page->fill('#name', 'Dale Cooper')
-        ->fill('#email', 'not-an-email')
-        ->select('#subject', 'general')
-        ->keys('form[action$="/contact"] button[type="submit"]', 'Enter')
-        ->assertSee('The email field must be a valid email address.')
-        ->assertSee('The message field is required.')
-        ->assertValue('#name', 'Dale Cooper')
-        ->assertValue('#email', 'not-an-email')
-        ->assertAttribute('#email', 'aria-invalid', 'true')
-        ->assertAttribute('#email', 'aria-describedby', 'email-error')
-        ->assertScript('document.activeElement.id', 'email')
+test('contact page offers an actionable email route when verification is unavailable', function (): void {
+    visit(route('contact.show'))
+        ->assertSee('Email us instead')
+        ->assertVisible('.dispatch-letter-form a[href^="mailto:"]')
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 });
@@ -208,6 +196,8 @@ test('branded recovery pages remain accessible and actionable', function (): voi
     $pages->assertScript(stateHorizontalOverflowCountScript(), 0)
         ->assertScript(stateUndersizedControlsScript(), '')
         ->assertScript(stateMissingFocusIndicatorsScript(), '')
+        ->assertScript('document.documentElement.classList.contains("js-dispatch-errors")', true)
+        ->assertScript('getComputedStyle(document.querySelector("h1")).fontFamily.includes("Besley")', true)
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 
@@ -215,7 +205,11 @@ test('branded recovery pages remain accessible and actionable', function (): voi
 
     $notFound->assertSee('That page wandered off')
         ->assertSee('Search Mouse28')
-        ->assertSee('Go home');
+        ->assertSee('Go home')
+        ->assertScript(
+            'getComputedStyle(document.querySelector(".dispatch-error-secondary")).color',
+            'rgb(26, 16, 64)',
+        );
     $expired->assertSee('Your session took a break')
         ->assertSee('Return to contact')
         ->assertDontSee('Private session details');

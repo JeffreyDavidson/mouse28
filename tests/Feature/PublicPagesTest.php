@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Episode;
+use App\Models\Guide;
 use App\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
@@ -19,17 +20,213 @@ test('public index pages render', function (string $route, string $content): voi
     'blog' => ['blog.index', 'Blog'],
     'guides' => ['guides.index', 'Park Guides'],
     'podcast' => ['episodes.index', 'The Mouse28 Podcast'],
-    'contact' => ['contact.show', 'Get in Touch'],
+    'contact' => ['contact.show', 'Hear From You'],
 ]);
+
+test('public index and utility pages use the dispatch editorial system', function (string $route, string $marker): void {
+    get(route($route))
+        ->assertOk()
+        ->assertSee('data-brand-wordmark', false)
+        ->assertSee($marker, false)
+        ->assertSee('js-dispatch-pages', false);
+})->with([
+    'blog archive' => ['blog.index', 'dispatch-page-hero'],
+    'guide archive' => ['guides.index', 'dispatch-page-field'],
+    'podcast archive' => ['episodes.index', 'dispatch-podcast-hero'],
+    'about' => ['about', 'dispatch-page-heading'],
+    'contact' => ['contact.show', 'dispatch-letter-form'],
+    'search' => ['search', 'dispatch-page-field'],
+]);
+
+test('primary navigation uses one consistent active-page treatment', function (): void {
+    $aboutPage = get(route('about'))
+        ->assertOk()
+        ->assertSee('dispatch-nav-link', false)
+        ->assertDontSee('nav-link-active', false);
+
+    expect($aboutPage->getContent())
+        ->toContain('href="'.route('about').'"')
+        ->toContain('aria-current="page"')
+        ->and(substr_count($aboutPage->getContent(), 'class="dispatch-nav-link'))
+        ->toBe(5);
+});
+
+test('public reading pages use dispatch reading surfaces', function (): void {
+    $post = Post::factory()->create();
+    $guide = Guide::factory()->create();
+    $episode = Episode::factory()->create();
+
+    get(route('blog.show', $post))
+        ->assertOk()
+        ->assertSee('dispatch-article-hero', false)
+        ->assertSee('dispatch-reader-sheet', false);
+
+    get(route('guides.show', $guide))
+        ->assertOk()
+        ->assertSee('dispatch-page-hero', false)
+        ->assertSee('dispatch-reader-sheet', false)
+        ->assertSee('/images/guides/'.$guide->category.'.webp', false);
+
+    get(route('episodes.show', $episode))
+        ->assertOk()
+        ->assertSee('dispatch-podcast-hero', false)
+        ->assertSee('dispatch-page-field', false);
+});
+
+test('guide pages use category artwork when an editor has not uploaded a cover', function (): void {
+    $guide = Guide::factory()->create([
+        'category' => 'accessibility',
+        'cover_image' => null,
+    ]);
+
+    get(route('guides.index'))
+        ->assertOk()
+        ->assertSee('/images/guides/accessibility.webp', false)
+        ->assertSee('data-guide-artwork', false);
+
+    get(route('guides.show', $guide))
+        ->assertOk()
+        ->assertSee('/images/guides/accessibility.webp', false)
+        ->assertSee('fetchpriority="high"', false);
+});
+
+test('empty discovery states offer useful paths forward', function (): void {
+    get(route('blog.index'))
+        ->assertOk()
+        ->assertSee('Keep exploring')
+        ->assertSee(route('guides.index'), false)
+        ->assertSee(route('episodes.index'), false);
+
+    get(route('search'))
+        ->assertOk()
+        ->assertSee('Start somewhere inspiring')
+        ->assertSee('Browse practical guides')
+        ->assertSee('Listen to the podcast');
+});
+
+test('about and episode pages use concise public-facing labels', function (): void {
+    $episode = Episode::factory()->create([
+        'episode_number' => 28,
+    ]);
+
+    get(route('about'))
+        ->assertOk()
+        ->assertSee('Park Visits')
+        ->assertDontSee('Weekly Visits');
+
+    get(route('episodes.show', $episode))
+        ->assertOk()
+        ->assertDontSee('animate-pulse', false)
+        ->assertSee('data-episode-meta', false);
+});
 
 test('homepage uses one newsletter form and responsive hero artwork', function (): void {
     $response = get(route('home'))
         ->assertOk()
         ->assertSee('/images/hero-family-640.webp 640w', false)
         ->assertSee('/images/hero-family-1024.webp 1024w', false)
+        ->assertSee('dispatch-cloth', false)
+        ->assertSee('dispatch-feature-book', false)
+        ->assertSee('dispatch-latest-sheet', false)
+        ->assertSee('dispatch-guide-spread', false)
+        ->assertSee('dispatch-podcast-panel', false)
+        ->assertSee('data-brand-wordmark', false)
+        ->assertSee('data-dispatch-motion="hero-paper"', false)
+        ->assertSee('data-dispatch-motion="hero-photo"', false)
+        ->assertSee('data-dispatch-reveal="story-folio"', false)
+        ->assertSee('data-dispatch-journey', false)
+        ->assertSee('data-dispatch-stop="Stories"', false)
+        ->assertSee('data-dispatch-stop="Planning"', false)
+        ->assertSee('data-dispatch-stop="Listen"', false)
+        ->assertSee('data-dispatch-stop="Meet us"', false)
+        ->assertSee('data-dispatch-stop="Stay in the loop"', false)
+        ->assertDontSee('data-animate', false)
+        ->assertSee('Our first dispatch is being prepared.')
+        ->assertDontSee('/storage/posts/welcome-to-mouse-28.webp', false)
         ->assertSee('We use your email to send Mouse28 updates.');
 
     expect(substr_count($response->getContent(), 'action="'.route('newsletter.store').'"'))->toBe(1);
+});
+
+test('homepage only presents published content as stories and guides', function (): void {
+    $featuredPost = Post::factory()->create([
+        'title' => 'A Real Featured Dispatch',
+        'cover_image' => null,
+        'published_at' => now()->subHour(),
+    ]);
+    $latestPost = Post::factory()->create([
+        'title' => 'A Real Latest Dispatch',
+        'cover_image' => null,
+        'published_at' => now()->subDay(),
+    ]);
+    $draftPost = Post::factory()->draft()->create([
+        'title' => 'A Private Draft Dispatch',
+    ]);
+    $guide = Guide::factory()->create([
+        'title' => 'A Real Planning Guide',
+        'category' => 'accessibility',
+        'cover_image' => null,
+    ]);
+
+    get(route('home'))
+        ->assertOk()
+        ->assertSee($featuredPost->title)
+        ->assertSee($latestPost->title)
+        ->assertSee($guide->title)
+        ->assertSee('/images/guides/accessibility.webp', false)
+        ->assertDontSee($draftPost->title)
+        ->assertDontSee('Accessibility planning')
+        ->assertDontSee('Sensory-friendly park days')
+        ->assertDontSee('Honest family stories')
+        ->assertDontSee('/storage/posts/our-disney-park-bag-essentials.webp', false)
+        ->assertDontSee('/storage/posts/the-ride-that-surprised-us.webp', false)
+        ->assertDontSee('/storage/posts/disney-dining-with-a-picky-eater.webp', false);
+});
+
+test('homepage turns an empty guide shelf into useful planning stories', function (): void {
+    $planningPost = Post::factory()->create([
+        'title' => 'Plan a Calmer Park Morning',
+        'category' => 'park-accessibility',
+        'cover_image' => null,
+        'published_at' => now()->subDay(),
+    ]);
+    $draftPlanningPost = Post::factory()->draft()->create([
+        'title' => 'Private Planning Notes',
+        'category' => 'disney-tips',
+    ]);
+
+    get(route('home'))
+        ->assertOk()
+        ->assertSee('Start planning with these stories')
+        ->assertSee('Explore planning stories')
+        ->assertSee($planningPost->title)
+        ->assertSee('data-post-artwork-fallback', false)
+        ->assertDontSee('Browse all guides')
+        ->assertDontSee($draftPlanningPost->title);
+});
+
+test('public content pages present one newsletter signup', function (): void {
+    $post = Post::factory()->create();
+    $episode = Episode::factory()->create();
+
+    foreach ([
+        route('blog.index'),
+        route('blog.show', $post),
+        route('episodes.index'),
+        route('episodes.show', $episode),
+    ] as $url) {
+        $response = get($url)->assertOk();
+
+        expect(substr_count($response->getContent(), 'action="'.route('newsletter.store').'"'))->toBe(1);
+    }
+});
+
+test('blog discovery controls precede results in the document order', function (): void {
+    $post = Post::factory()->create();
+
+    get(route('blog.index'))
+        ->assertOk()
+        ->assertSeeInOrder(['data-blog-filters', 'data-blog-results', $post->title]);
 });
 
 test('homepage defers the below-fold featured post image', function (): void {
@@ -47,6 +244,8 @@ test('homepage defers the below-fold featured post image', function (): void {
 
 test('public forms use readable placeholder text colors', function (): void {
     Post::factory()->create();
+    config()->set('services.turnstile.site_key', 'test-site-key');
+    config()->set('services.turnstile.secret_key', 'test-secret-key');
 
     get(route('blog.index'))
         ->assertOk()
@@ -107,9 +306,28 @@ test('published episode detail page renders', function (): void {
         ->assertSee('Listen to this episode')
         ->assertDontSee('Now Playing')
         ->assertSee('aria-label="Play Planning a Sensory-Friendly Visit"', false)
+        ->assertSee('data-episode-layout="rich"', false)
         ->assertSee('id="episode-transcript"', false)
         ->assertSee('aria-controls="episode-transcript"', false)
         ->assertSee(':aria-expanded="expanded.toString()"', false);
+});
+
+test('sparse episode detail pages use a compact continuation layout', function (): void {
+    $episode = Episode::factory()->create([
+        'audio_url' => null,
+        'audio_path' => null,
+        'show_notes' => '<p>Coming soon.</p>',
+        'transcript' => null,
+    ]);
+    $previousEpisode = Episode::factory()->create([
+        'published_at' => $episode->published_at->subDay(),
+    ]);
+
+    get(route('episodes.show', $episode))
+        ->assertOk()
+        ->assertSee('data-episode-layout="sparse"', false)
+        ->assertSee('data-episode-continuation="compact"', false)
+        ->assertSee($previousEpisode->title);
 });
 
 test('empty podcast page hides its decorative player preview from assistive technology', function (): void {

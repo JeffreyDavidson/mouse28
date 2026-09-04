@@ -5,6 +5,8 @@
     :og-description="$episode->meta_description ?: Str::limit($episode->description, 200)"
     :og-image="$episode->og_image_url ?: $episode->cover_image_url"
     :robots="($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow'"
+    :dispatch-layout="true"
+    :show-footer-newsletter="false"
 >
     @unless ($isPreview ?? false)
         @push('head')
@@ -17,7 +19,13 @@
             Preview mode — this page is only visible to administrators.
         </div>
     @endif
-    <section class="from-navy to-navy-light relative overflow-hidden bg-linear-to-br py-16 md:py-24">
+    @php
+        $showNotesLength = Str::of(strip_tags($episode->show_notes ?? ''))->squish()->length();
+        $isSparseEpisode = blank($episode->audio_source_url)
+            && blank($episode->transcript)
+            && $showNotesLength < 160;
+    @endphp
+    <section class="dispatch-page-hero dispatch-podcast-hero from-navy to-navy-light relative overflow-hidden bg-linear-to-br py-16 md:py-24">
         {{-- Waveform background --}}
         <div class="pointer-events-none absolute inset-0 opacity-[0.07]">
             <svg class="absolute bottom-0 left-0 h-32 w-full text-white" viewBox="0 0 1200 120" preserveAspectRatio="none" fill="none" stroke="currentColor" aria-hidden="true">
@@ -34,7 +42,7 @@
                 </g>
             </svg>
         </div>
-        <div class="relative z-10 mx-auto max-w-4xl px-4 wrap-anywhere sm:px-6">
+        <div class="dispatch-page-heading relative z-10 mx-auto max-w-[86rem] px-4 wrap-anywhere sm:px-6">
             <a
                 href="{{ route('episodes.index') }}"
                 class="hover:text-gold mb-6 inline-flex min-h-12 items-center gap-1 text-base text-white/50 transition-colors sm:text-sm"
@@ -44,12 +52,10 @@
             </a>
 
             <div class="border-gold/30 mt-4 mb-5 inline-flex items-center gap-2 rounded-full border px-4 py-1.5">
-                <span class="bg-gold size-2 animate-pulse rounded-full"></span>
                 <span class="font-body text-gold text-xs font-semibold tracking-[0.15em] uppercase">Episode {{ $episode->episode_number }}</span>
             </div>
 
-            <div class="mb-4 flex items-center gap-3">
-                <span class="bg-gold/20 text-gold rounded-full px-4 py-1 text-sm font-bold backdrop-blur-sm">Episode {{ $episode->episode_number }}</span>
+            <div class="mb-4 flex flex-wrap items-center gap-3" data-episode-meta>
                 @if ($episode->season_number)
                     <span class="rounded-full bg-white/10 px-3 py-1 text-sm text-white/70">Season {{ $episode->season_number }}</span>
                 @endif
@@ -70,11 +76,14 @@
         </div>
     </section>
 
-    <section class="bg-cream py-16">
+    <section class="dispatch-page-field bg-cream py-16">
         <div class="mx-auto max-w-6xl px-4 sm:px-6">
-            <div class="flex flex-col gap-10 lg:flex-row">
+            <div
+                data-episode-layout="{{ $isSparseEpisode ? 'sparse' : 'rich' }}"
+                class="grid gap-10 {{ $isSparseEpisode ? 'lg:grid-cols-3 lg:items-start lg:gap-6' : 'lg:grid-cols-[minmax(0,2fr)_minmax(18rem,1fr)]' }}"
+            >
                 {{-- Main Content --}}
-                <div class="min-w-0 lg:w-[66%]">
+                <div class="min-w-0 {{ $isSparseEpisode ? 'lg:contents' : '' }}">
                     {{-- Custom Audio Player Card --}}
                     @if ($episode->audio_source_url)
                         <div class="from-navy to-navy-light relative mb-10 overflow-hidden rounded-2xl bg-linear-to-r p-6 shadow-xl md:p-8">
@@ -132,7 +141,7 @@
 
                     {{-- Show Notes --}}
                     @if ($episode->show_notes)
-                        <div class="border-navy/5 mb-8 rounded-2xl border bg-white p-8 shadow-sm md:p-10">
+                        <div class="border-navy/5 mb-8 rounded-2xl border bg-white p-8 shadow-sm md:p-10 {{ $isSparseEpisode ? 'lg:mb-0' : '' }}">
                             <div class="mb-8 flex items-center gap-3">
                                 <div class="bg-purple/10 flex size-10 items-center justify-center rounded-xl">
                                     <svg aria-hidden="true" class="text-purple size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
@@ -144,49 +153,51 @@
                     @endif
 
                     {{-- Transcript --}}
-                    <div class="border-navy/5 mb-8 rounded-2xl border bg-white p-8 shadow-sm md:p-10">
-                        <div class="mb-8 flex items-center gap-3">
-                            <div class="bg-gold/10 flex size-10 items-center justify-center rounded-xl">
-                                <svg aria-hidden="true" class="text-gold-ink size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+                    @if ($episode->transcript || ! $isSparseEpisode)
+                        <div class="border-navy/5 mb-8 rounded-2xl border bg-white p-8 shadow-sm md:p-10">
+                            <div class="mb-8 flex items-center gap-3">
+                                <div class="bg-gold/10 flex size-10 items-center justify-center rounded-xl">
+                                    <svg aria-hidden="true" class="text-gold-ink size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+                                </div>
+                                <h2 class="font-heading text-navy text-2xl font-bold">Transcript</h2>
                             </div>
-                            <h2 class="font-heading text-navy text-2xl font-bold">Transcript</h2>
+                            @if ($episode->transcript)
+                                <div x-data="{ expanded: false }">
+                                    <div
+                                        id="episode-transcript"
+                                        tabindex="0"
+                                        class="episode-transcript-content max-h-[600px] wrap-anywhere"
+                                        :class="{ 'max-h-none': expanded }"
+                                    >
+                                        {!! $episode->transcript !!}
+                                    </div>
+                                    <div class="relative" x-show="! expanded" x-cloak>
+                                        <div class="pointer-events-none absolute inset-x-0 bottom-full h-20 bg-linear-to-t from-white to-transparent"></div>
+                                    </div>
+                                    <button
+                                        type="button"
+                                        @click="expanded = ! expanded"
+                                        :aria-expanded="expanded.toString()"
+                                        aria-controls="episode-transcript"
+                                        class="border-navy/10 text-gold-ink hover:border-gold hover:bg-gold/5 mt-4 min-h-12 w-full rounded-xl border py-3 text-center text-sm font-semibold transition-colors"
+                                    >
+                                        <span
+                                            x-text="expanded ? 'Collapse Transcript' : 'Read Full Transcript'"
+                                            class="inline-flex items-center gap-1.5"
+                                        >Read Full Transcript</span>
+                                        <svg aria-hidden="true" :class="expanded ? 'rotate-180' : ''" class="ml-1 inline-block size-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                                    </button>
+                                </div>
+                            @else
+                                <p class="text-navy/65 italic">A transcript is not available for this episode.</p>
+                            @endif
                         </div>
-                        @if ($episode->transcript)
-                            <div x-data="{ expanded: false }">
-                                <div
-                                    id="episode-transcript"
-                                    tabindex="0"
-                                    class="episode-transcript-content max-h-[600px] wrap-anywhere"
-                                    :class="{ 'max-h-none': expanded }"
-                                >
-                                    {!! $episode->transcript !!}
-                                </div>
-                                <div class="relative" x-show="! expanded" x-cloak>
-                                    <div class="pointer-events-none absolute inset-x-0 bottom-full h-20 bg-linear-to-t from-white to-transparent"></div>
-                                </div>
-                                <button
-                                    type="button"
-                                    @click="expanded = ! expanded"
-                                    :aria-expanded="expanded.toString()"
-                                    aria-controls="episode-transcript"
-                                    class="border-navy/10 text-gold-ink hover:border-gold hover:bg-gold/5 mt-4 min-h-12 w-full rounded-xl border py-3 text-center text-sm font-semibold transition-colors"
-                                >
-                                    <span
-                                        x-text="expanded ? 'Collapse Transcript' : 'Read Full Transcript'"
-                                        class="inline-flex items-center gap-1.5"
-                                    >Read Full Transcript</span>
-                                    <svg aria-hidden="true" :class="expanded ? 'rotate-180' : ''" class="ml-1 inline-block size-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-                                </button>
-                            </div>
-                        @else
-                            <p class="text-navy/65 italic">A transcript is not available for this episode.</p>
-                        @endif
-                    </div>
+                    @endif
                 </div>
 
                 {{-- Sidebar --}}
-                <aside class="lg:w-[34%]">
-                    <div class="space-y-6 lg:sticky lg:top-[90px]">
+                <aside class="{{ $isSparseEpisode ? 'lg:contents' : '' }}">
+                    <div class="{{ $isSparseEpisode ? 'grid gap-6 sm:grid-cols-2 lg:contents' : 'space-y-6 lg:sticky lg:top-[90px]' }}">
                         {{-- Episode Info --}}
                         <div class="border-navy/5 rounded-2xl border bg-white p-6 shadow-sm">
                             <div class="mb-5 flex items-center gap-3">
@@ -365,7 +376,9 @@
                                     <span
                                         data-copy-feedback
                                         class="text-purple hidden text-sm font-semibold"
+                                        role="status"
                                         aria-live="polite"
+                                        aria-atomic="true"
                                     >Copied!</span>
                                     <svg aria-hidden="true" class="text-navy/20 group-hover:text-purple/50 ml-auto size-4 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                                 </button>
@@ -431,32 +444,19 @@
                         <x-newsletter-card subtitle="New episodes & Disney tips delivered to your inbox" />
                     </div>
                 </aside>
+
+                @if ($isSparseEpisode)
+                    <x-episode-continuation
+                        :previous-episode="$previousEpisode"
+                        :next-episode="$nextEpisode"
+                        :compact="true"
+                    />
+                @endif
             </div>
 
-            @if ($previousEpisode || $nextEpisode)
-                <nav aria-label="Episode navigation" class="mt-12 grid gap-4 sm:grid-cols-2">
-                    @if ($previousEpisode)
-                        <a
-                            href="{{ route('episodes.show', $previousEpisode) }}"
-                            rel="prev"
-                            class="group border-navy/5 hover:border-purple/20 flex min-h-24 flex-col justify-center rounded-2xl border bg-white px-6 py-5 wrap-anywhere shadow-sm transition-[border-color,box-shadow] hover:shadow-lg"
-                        >
-                            <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">← Previous episode</span>
-                            <span class="font-heading text-navy group-hover:text-purple mt-2 text-lg font-bold transition-colors">{{ $previousEpisode->title }}</span>
-                        </a>
-                    @endif
-                    @if ($nextEpisode)
-                        <a
-                            href="{{ route('episodes.show', $nextEpisode) }}"
-                            rel="next"
-                            class="group border-navy/5 hover:border-purple/20 flex min-h-24 flex-col justify-center rounded-2xl border bg-white px-6 py-5 text-right wrap-anywhere shadow-sm transition-[border-color,box-shadow] hover:shadow-lg sm:col-start-2"
-                        >
-                            <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">Next episode →</span>
-                            <span class="font-heading text-navy group-hover:text-purple mt-2 text-lg font-bold transition-colors">{{ $nextEpisode->title }}</span>
-                        </a>
-                    @endif
-                </nav>
-            @endif
+            @unless ($isSparseEpisode)
+                <x-episode-continuation :previous-episode="$previousEpisode" :next-episode="$nextEpisode" />
+            @endunless
         </div>
     </section>
 </x-layouts.app>
