@@ -6,6 +6,7 @@ use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Podcast;
 use App\Models\Post;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
@@ -139,9 +140,53 @@ class PublicContentArchive
      */
     public function import(array $archive): array
     {
+        return $this->persist($archive);
+    }
+
+    /**
+     * @param  array<string, mixed>  $archive
+     * @return array{posts: int, guides: int, episodes: int, podcast: int, removed_posts: int, removed_guides: int, removed_episodes: int}
+     */
+    public function sync(array $archive): array
+    {
+        return $this->persist($archive, prunePublished: true);
+    }
+
+    /**
+     * @param  array<string, mixed>  $archive
+     * @return list<string>
+     */
+    public function mediaPaths(array $archive): array
+    {
         $this->validate($archive);
 
-        return DB::transaction(function () use ($archive): array {
+        $paths = collect(['episodes', 'posts', 'guides'])
+            ->flatMap(fn (string $contentType) => collect($archive[$contentType])->flatMap(
+                fn (array $attributes): array => Arr::only($attributes, ['audio_path', 'cover_image', 'og_image']),
+            ))
+            ->when(
+                is_array($archive['podcast']),
+                fn ($paths) => $paths->push($archive['podcast']['cover_image'] ?? null),
+            )
+            ->filter(fn (mixed $path): bool => filled($path))
+            ->map(fn (mixed $path): string => $this->validateMediaPath($path))
+            ->unique()
+            ->sort()
+            ->values()
+            ->all();
+
+        return $paths;
+    }
+
+    /**
+     * @param  array<string, mixed>  $archive
+     * @return array{posts: int, guides: int, episodes: int, podcast: int, removed_posts?: int, removed_guides?: int, removed_episodes?: int}
+     */
+    private function persist(array $archive, bool $prunePublished = false): array
+    {
+        $this->validate($archive);
+
+        return DB::transaction(function () use ($archive, $prunePublished): array {
             foreach ($archive['episodes'] as $attributes) {
                 $this->importEpisode($attributes);
             }
@@ -160,11 +205,22 @@ class PublicContentArchive
                 $podcast->save();
             }
 
-            return [
+            $counts = [
                 'posts' => count($archive['posts']),
                 'guides' => count($archive['guides']),
                 'episodes' => count($archive['episodes']),
                 'podcast' => is_array($archive['podcast']) ? 1 : 0,
+            ];
+
+            if (! $prunePublished) {
+                return $counts;
+            }
+
+            return [
+                ...$counts,
+                'removed_posts' => $this->prunePublished(Post::query(), $archive['posts']),
+                'removed_guides' => $this->prunePublished(Guide::query(), $archive['guides']),
+                'removed_episodes' => $this->prunePublished(Episode::query(), $archive['episodes']),
             ];
         });
     }
@@ -228,6 +284,33 @@ class PublicContentArchive
     private function attributes(Model $model, array $fields): array
     {
         return Arr::only($model->getAttributes(), $fields);
+    }
+
+    /**
+     * @param  Builder<Post>|Builder<Guide>|Builder<Episode>  $query
+     * @param  list<array<string, mixed>>  $records
+     */
+    private function prunePublished(Builder $query, array $records): int
+    {
+        $slugs = collect($records)->pluck('slug')->all();
+
+        return $query
+            ->published()
+            ->when($slugs !== [], fn ($query) => $query->whereNotIn('slug', $slugs))
+            ->delete();
+    }
+
+    private function validateMediaPath(mixed $path): string
+    {
+        if (! is_string($path)
+            || str_starts_with($path, '/')
+            || str_contains($path, '\\')
+            || preg_match('/[\x00-\x1F\x7F]/', $path) === 1
+            || in_array('..', explode('/', $path), true)) {
+            throw new InvalidArgumentException('The public content archive contains an unsafe media path.');
+        }
+
+        return $path;
     }
 
     /** @param array<string, mixed> $archive */
