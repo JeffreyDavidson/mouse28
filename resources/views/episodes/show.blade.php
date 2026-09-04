@@ -196,7 +196,7 @@
                 </div>
 
                 {{-- Sidebar --}}
-                <aside class="{{ $isSparseEpisode ? 'lg:contents' : '' }}">
+                <aside class="min-w-0 {{ $isSparseEpisode ? 'lg:contents' : '' }}">
                     <div class="{{ $isSparseEpisode ? 'grid gap-6 sm:grid-cols-2 lg:contents' : 'space-y-6 lg:sticky lg:top-[90px]' }}">
                         {{-- Episode Info --}}
                         <div class="border-navy/5 rounded-2xl border bg-white p-6 shadow-sm">
