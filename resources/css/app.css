@@ -1237,8 +1237,7 @@
         box-shadow: 0 0.4rem 1rem rgb(26 16 64 / 14%);
     }
 
-    .dispatch-page-hero,
-    .dispatch-correspondence-page {
+    .dispatch-page-hero {
         background-color: var(--color-navy);
         background-image:
             radial-gradient(circle at 84% 18%, rgb(91 62 158 / 28%), transparent 24rem),
@@ -1474,29 +1473,6 @@
     .dispatch-article-hero {
         border-bottom: 1px solid rgb(212 168 67 / 34%);
         box-shadow: 0 1.5rem 4rem rgb(5 2 21 / 24%);
-    }
-
-    .dispatch-correspondence-page {
-        min-height: calc(100dvh - 5rem);
-    }
-
-    .dispatch-letter-form {
-        position: relative;
-        box-shadow: 0 2rem 5rem rgb(5 2 21 / 36%);
-        outline: 1px solid rgb(212 168 67 / 18%);
-        outline-offset: -1px;
-    }
-
-    .dispatch-letter-form::before {
-        position: absolute;
-        top: -1rem;
-        right: 2rem;
-        width: 1.6rem;
-        height: 4.5rem;
-        border: 3px solid rgb(212 168 67 / 72%);
-        border-radius: 9999px;
-        content: '';
-        rotate: 12deg;
     }
 
     .dispatch-error-stage {

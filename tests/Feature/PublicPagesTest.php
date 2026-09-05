@@ -20,7 +20,7 @@ test('public index pages render', function (string $route, string $content): voi
     'blog' => ['blog.index', 'Blog'],
     'guides' => ['guides.index', 'Park Guides'],
     'podcast' => ['episodes.index', 'The Mouse28 Podcast'],
-    'contact' => ['contact.show', 'Hear From You'],
+    'contact' => ['contact.show', 'Send us a note'],
 ]);
 
 test('about and contact pages avoid em dashes in their copy', function (string $route): void {
@@ -290,8 +290,8 @@ test('public forms use readable placeholder text colors', function (): void {
 
     get(route('contact.show'))
         ->assertOk()
-        ->assertSee('placeholder:text-cream/60', false)
-        ->assertDontSee('placeholder:text-cream/30', false);
+        ->assertSee('placeholder:text-navy/65', false)
+        ->assertDontSee('placeholder:text-navy/30', false);
 });
 
 test('published post detail page renders', function (): void {

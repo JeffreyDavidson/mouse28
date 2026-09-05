@@ -309,7 +309,7 @@ test('search and transcript controls work from the keyboard and unavailable cont
         ->assertNoJavaScriptErrors();
 
     visit(route('contact.show'))
-        ->assertSee('Email us instead')
+        ->assertSee('Email us directly')
         ->assertVisible('.dispatch-letter-form a[href^="mailto:"]')
         ->assertNoJavaScriptErrors();
 });

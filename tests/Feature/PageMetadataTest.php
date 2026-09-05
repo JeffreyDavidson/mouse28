@@ -43,7 +43,7 @@ test('public landing pages have specific search and social metadata', function (
 
     get(route('about'))
         ->assertOk()
-        ->assertSee('<meta property="og:title" content="About the Davidson Family — Mouse28">', false);
+        ->assertSee('<meta property="og:title" content="About the Davidson Family | Mouse28">', false);
 
     get(route('contact.show'))
         ->assertOk()
