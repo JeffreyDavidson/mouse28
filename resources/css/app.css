@@ -631,15 +631,12 @@
         font-size: 4em;
         font-weight: 700;
         line-height: 0.75;
-        text-shadow: 2px 2px 0 rgb(212 168 67 / 10%);
     }
 
     .blog-article-content blockquote {
         margin: 2rem 0;
-        border-left: 4px solid var(--color-gold);
-        border-radius: 0 1rem 1rem 0;
-        background: linear-gradient(135deg, rgb(212 168 67 / 5%), rgb(91 62 158 / 3%));
-        padding: 1.5rem 2rem;
+        border-block: 1px solid rgb(212 168 67 / 38%);
+        padding: 1.5rem 0;
         color: var(--color-navy-light);
         font-style: italic;
     }
@@ -721,24 +718,11 @@
     }
 
     .episode-show-notes-content h3 {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
         margin: 1.75rem 0 0.6rem;
         color: var(--color-navy);
         font-family: var(--font-heading);
         font-size: 1.2rem;
         font-weight: 700;
-    }
-
-    .episode-show-notes-content h3::before {
-        display: inline-block;
-        flex-shrink: 0;
-        width: 4px;
-        height: 1.1rem;
-        border-radius: 2px;
-        background: linear-gradient(180deg, var(--color-gold), var(--color-gold-light));
-        content: '';
     }
 
     .episode-show-notes-content p {
@@ -798,10 +782,8 @@
 
     .episode-show-notes-content blockquote {
         margin: 1.5rem 0;
-        border-left: 4px solid var(--color-gold);
-        border-radius: 0 0.75rem 0.75rem 0;
-        background: linear-gradient(135deg, rgb(212 168 67 / 8%), rgb(123 94 181 / 5%));
-        padding: 1.25rem 1.5rem;
+        border-block: 1px solid rgb(212 168 67 / 38%);
+        padding: 1.25rem 0;
     }
 
     .episode-show-notes-content blockquote p {
@@ -853,11 +835,6 @@
         font-size: 1rem;
         font-weight: 700;
         letter-spacing: 0.01em;
-    }
-
-    .episode-transcript-content p:has(strong:first-child) {
-        border-left: 3px solid transparent;
-        padding-left: calc(0.85rem + 3px);
     }
 
     .episode-transcript-content p em {
@@ -1419,6 +1396,35 @@
 
     .podcast-track a:active {
         translate: 0.05rem 0;
+    }
+
+    .editorial-detail-hero,
+    .episode-detail-hero {
+        isolation: isolate;
+        border-bottom: 1px solid rgb(212 168 67 / 32%);
+        background-image:
+            radial-gradient(circle at 82% 18%, rgb(91 62 158 / 32%), transparent 26rem),
+            linear-gradient(108deg, transparent 0 62%, rgb(255 255 255 / 2%) 62% 63%, transparent 63% 100%);
+    }
+
+    .editorial-detail-hero::before,
+    .episode-detail-hero::before {
+        position: absolute;
+        z-index: -1;
+        right: -7rem;
+        bottom: -5rem;
+        width: min(48rem, 72vw);
+        height: 15rem;
+        border-top: 2px dashed rgb(212 168 67 / 24%);
+        border-radius: 50%;
+        content: '';
+        rotate: -7deg;
+    }
+
+    .editorial-detail-artwork {
+        box-shadow: 0 2rem 5rem rgb(5 2 21 / 42%);
+        outline: 1px solid rgb(212 168 67 / 26%);
+        outline-offset: -1px;
     }
 
     @media (min-width: 48rem) {

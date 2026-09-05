@@ -36,7 +36,7 @@
                     />
                 </div>
 
-                <div class="max-w-3xl">
+                <div class="max-w-3xl min-w-0 wrap-anywhere">
                     <h1 class="font-heading text-5xl [font-weight:680] tracking-[-0.025em] text-balance sm:text-6xl">
                         The Mouse28 Podcast
                     </h1>
@@ -103,7 +103,7 @@
                         </p>
                     </div>
 
-                    <div class="podcast-ledger">
+                    <div class="podcast-ledger min-w-0 wrap-anywhere">
                         @foreach ($groupedEpisodes as $season => $seasonEpisodes)
                             <section class="{{ ! $loop->first ? 'mt-14' : '' }}" aria-labelledby="season-{{ $season }}">
                                 <div class="border-gold/45 flex flex-wrap items-baseline justify-between gap-3 border-b pb-4">
@@ -123,7 +123,7 @@
                                         <article class="podcast-track group">
                                             <a
                                                 href="{{ route('episodes.show', $episode) }}"
-                                                class="grid min-h-40 gap-5 py-7 sm:grid-cols-[5rem_minmax(0,1fr)_auto] sm:items-center sm:gap-7"
+                                                class="grid min-h-40 min-w-0 gap-5 py-7 sm:grid-cols-[5rem_minmax(0,1fr)_auto] sm:items-center sm:gap-7"
                                             >
                                                 <div class="text-purple font-heading text-4xl [font-weight:680] tabular-nums sm:text-center">
                                                     {{ str_pad((string) $episode->episode_number, 2, '0', STR_PAD_LEFT) }}

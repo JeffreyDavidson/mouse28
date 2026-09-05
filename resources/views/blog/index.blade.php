@@ -81,7 +81,7 @@
             <div class="mx-auto max-w-[86rem] px-4 sm:px-6">
                 @if ($hasAnyPosts || request('q') || $category)
                     <div data-blog-filters class="border-navy/15 border-y py-6">
-                        <div class="grid gap-6 lg:grid-cols-[minmax(15rem,1fr)_2fr_auto] lg:items-end">
+                        <div class="grid min-w-0 gap-6 lg:grid-cols-[minmax(15rem,1fr)_2fr_auto] lg:items-end">
                             <form action="{{ route('blog.index') }}" method="GET">
                                 @if ($category)
                                     <input type="hidden" name="category" value="{{ $category }}" />
@@ -113,7 +113,7 @@
                                 </div>
                             </form>
 
-                            <nav aria-label="Blog categories">
+                            <nav aria-label="Blog categories" class="min-w-0">
                                 <p class="text-navy mb-2 text-sm font-semibold">Browse by topic</p>
                                 <div class="flex gap-2 overflow-x-auto pb-1">
                                     <a
@@ -175,6 +175,7 @@
                                     <article class="editorial-story group min-w-0">
                                         <a
                                             href="{{ route('blog.show', $post) }}"
+                                            aria-label="Read {{ $post->title }}"
                                             class="block overflow-hidden rounded-xl"
                                         >
                                             <x-post-artwork

@@ -126,24 +126,16 @@ test('public page renders without JavaScript errors', function (string $path, st
     'search' => ['/search', 'Search'],
 ]);
 
-test('homepage loads its editorial type and folio motion', function (): void {
+test('homepage loads its editorial type without the journey tracker', function (): void {
     $page = visit(route('home'));
 
     $page
         ->assertScript('document.fonts.check("16px Besley")', true)
         ->assertScript('getComputedStyle(document.querySelector("h1")).fontFamily.includes("Besley")', true)
         ->assertScript('document.documentElement.classList.contains("js-dispatch-motion")', true)
-        ->assertScript('document.documentElement.classList.contains("js-dispatch-journey")', true)
-        ->assertScript('document.querySelectorAll("[data-dispatch-waypoint]").length', 6)
-        ->assertScript('document.querySelector("[data-dispatch-journey]").dataset.currentStop', 'Welcome')
+        ->assertScript('document.documentElement.classList.contains("js-dispatch-journey")', false)
+        ->assertScript('document.querySelector("[data-dispatch-journey]")', null)
         ->assertScript('getComputedStyle(document.querySelector("[data-dispatch-motion=hero-paper]")).animationName', 'dispatch-paper-settle')
-        ->assertNoJavaScriptErrors();
-
-    $page->script('window.scrollTo(0, document.documentElement.scrollHeight)');
-
-    $page
-        ->assertScript('document.querySelector("[data-dispatch-journey]").dataset.currentStop', 'Stay in the loop')
-        ->assertScript('Number.parseFloat(getComputedStyle(document.querySelector("[data-dispatch-journey]")).getPropertyValue("--dispatch-route-progress")) > 0.95', true)
         ->assertNoJavaScriptErrors();
 });
 
@@ -203,8 +195,7 @@ test('polished discovery and guide artwork remain usable on mobile', function ()
         ->on()
         ->mobile()
         ->resize(320, 812)
-        ->assertScript('getComputedStyle(document.querySelector("[data-article-secondary=recent-posts]")).display', 'none')
-        ->assertScript('getComputedStyle(document.querySelector("[data-article-secondary=categories]")).display', 'none')
+        ->assertScript('document.querySelector("[data-article-secondary]")', null)
         ->assertScript(horizontalOverflowCountScript(), 0)
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();

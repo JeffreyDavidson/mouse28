@@ -58,8 +58,8 @@ test('public reading pages use dispatch reading surfaces', function (): void {
 
     get(route('blog.show', $post))
         ->assertOk()
-        ->assertSee('dispatch-article-hero', false)
-        ->assertSee('dispatch-reader-sheet', false);
+        ->assertSee('editorial-detail-hero', false)
+        ->assertSee('editorial-reading-column', false);
 
     get(route('guides.show', $guide))
         ->assertOk()
@@ -69,7 +69,7 @@ test('public reading pages use dispatch reading surfaces', function (): void {
 
     get(route('episodes.show', $episode))
         ->assertOk()
-        ->assertSee('dispatch-podcast-hero', false)
+        ->assertSee('episode-detail-hero', false)
         ->assertSee('dispatch-page-field', false);
 });
 
@@ -295,6 +295,8 @@ test('published post detail page renders', function (): void {
         ->assertOk()
         ->assertSee($post->title)
         ->assertSee('Start with a flexible plan', false)
+        ->assertSee('editorial-reading-column', false)
+        ->assertDontSee('data-article-secondary', false)
         ->assertSee('id="back-to-top"', false)
         ->assertSee('aria-hidden="true"', false)
         ->assertSee('tabindex="-1"', false)
@@ -321,6 +323,7 @@ test('published episode detail page renders', function (): void {
         ->assertOk()
         ->assertSee($episode->title)
         ->assertSee('Our favorite planning strategies', false)
+        ->assertSee('episode-detail-hero', false)
         ->assertSee('Listen to this episode')
         ->assertDontSee('Now Playing')
         ->assertSee('aria-label="Play Planning a Sensory-Friendly Visit"', false)
