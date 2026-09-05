@@ -12,6 +12,11 @@ Mouse28 is hosted on Laravel Forge. Use a separate staging site for deployment v
 
 Never copy live credentials into the repository, deployment logs, or local documentation.
 
+Staging runs with `APP_ENV=production` so production safeguards stay active. Set
+`APP_URL` and `MOUSE28_PRODUCTION_URL` to `https://staging.mouse28.com`, set
+`MOUSE28_DEPLOYMENT_ENVIRONMENT=staging`, and use matching isolated Nightwatch
+and Sentry environments before running `php artisan app:verify-production`.
+
 ## Syncing public content locally
 
 Run `php artisan content:sync-production` from the local Mouse28 checkout to replace local published posts, guides, episodes, podcast display metadata, and their referenced public media with the current production versions. The command uses the `cold-moon` SSH alias and `/home/forge/mouse28.com/current` site path by default; override them with `MOUSE28_PRODUCTION_SSH_HOST` and `MOUSE28_PRODUCTION_SITE_PATH` when the Forge target changes.
