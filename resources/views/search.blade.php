@@ -1,6 +1,8 @@
 <x-layouts.app
     :title="($query ? 'Search results for “'.$query.'”' : 'Search').' | Mouse28'"
-    description="Search Mouse28 blog posts, accessibility guides, and podcast episodes."
+    :description="config('mouse28.guides_enabled')
+        ? 'Search Mouse28 blog posts, accessibility guides, and podcast episodes.'
+        : 'Search Mouse28 blog posts and podcast episodes.'"
     og-title="Search Mouse28"
     robots="noindex,follow"
     :canonical="route('search')"
@@ -15,7 +17,9 @@
                 role="search"
                 class="mx-auto mt-8 flex max-w-2xl flex-col gap-3 sm:flex-row"
             >
-                <label for="site-search" class="sr-only">Search posts, guides, and podcast episodes</label>
+                <label for="site-search" class="sr-only">
+                    {{ config('mouse28.guides_enabled') ? 'Search posts, guides, and podcast episodes' : 'Search posts and podcast episodes' }}
+                </label>
                 <input
                     id="site-search"
                     type="search"
@@ -46,14 +50,17 @@
                     <div class="text-center">
                         <h2 class="font-heading text-navy text-3xl font-bold">What can we help you find?</h2>
                         <p class="text-navy/65 mx-auto mt-3 max-w-xl text-base/relaxed">
-                            Search our family stories, practical park guides, and podcast conversations.
+                            {{ config('mouse28.guides_enabled') ? 'Search our family stories, practical park guides, and podcast conversations.' : 'Search our family stories and podcast conversations.' }}
                         </p>
                     </div>
 
-                    <div class="mt-9 grid gap-4 text-left md:grid-cols-[1.2fr_0.8fr]" aria-label="Explore Mouse28">
+                    <div
+                        class="mt-9 grid gap-4 text-left {{ config('mouse28.guides_enabled') ? 'md:grid-cols-[1.2fr_0.8fr]' : 'md:grid-cols-2' }}"
+                        aria-label="Explore Mouse28"
+                    >
                         <a
                             href="{{ route('blog.index') }}"
-                            class="dispatch-interactive-card group from-navy to-navy-light relative flex min-h-64 flex-col justify-end overflow-hidden rounded-2xl bg-linear-to-br p-7 text-white md:row-span-2"
+                            class="dispatch-interactive-card group from-navy to-navy-light relative flex min-h-64 flex-col justify-end overflow-hidden rounded-2xl bg-linear-to-br p-7 text-white {{ config('mouse28.guides_enabled') ? 'md:row-span-2' : '' }}"
                         >
                             <span class="text-gold text-sm font-semibold">Start somewhere inspiring</span>
                             <h3 class="font-heading mt-2 max-w-md text-3xl font-bold">
@@ -61,16 +68,18 @@
                             </h3>
                             <span class="text-gold mt-5 inline-flex min-h-12 items-center font-semibold">Browse the blog →</span>
                         </a>
-                        <a
-                            href="{{ route('guides.index') }}"
-                            class="dispatch-interactive-card group border-navy/8 bg-cream hover:border-purple/25 flex min-h-30 items-center justify-between gap-5 rounded-2xl border p-6"
-                        >
-                            <span>
-                                <strong class="font-heading text-navy block text-xl">Browse practical guides</strong>
-                                <span class="text-navy/65 mt-1 block text-base/relaxed sm:text-sm/relaxed">Plan calmer, more accessible park days.</span>
-                            </span>
-                            <span class="text-purple text-xl" aria-hidden="true">→</span>
-                        </a>
+                        @if (config('mouse28.guides_enabled'))
+                            <a
+                                href="{{ route('guides.index') }}"
+                                class="dispatch-interactive-card group border-navy/8 bg-cream hover:border-purple/25 flex min-h-30 items-center justify-between gap-5 rounded-2xl border p-6"
+                            >
+                                <span>
+                                    <strong class="font-heading text-navy block text-xl">Browse practical guides</strong>
+                                    <span class="text-navy/65 mt-1 block text-base/relaxed sm:text-sm/relaxed">Plan calmer, more accessible park days.</span>
+                                </span>
+                                <span class="text-purple text-xl" aria-hidden="true">→</span>
+                            </a>
+                        @endif
                         <a
                             href="{{ route('episodes.index') }}"
                             class="dispatch-interactive-card group border-navy/8 bg-cream hover:border-purple/25 flex min-h-30 items-center justify-between gap-5 rounded-2xl border p-6"
@@ -87,17 +96,19 @@
                 <div role="status" class="border-navy/5 rounded-3xl border bg-white px-6 py-14 text-center shadow-sm">
                     <h2 class="font-heading text-navy text-3xl font-bold">No results for “{{ $query }}”</h2>
                     <p class="text-navy/65 mx-auto mt-3 max-w-xl text-base/relaxed">
-                        Try a broader phrase, or browse the blog, guides, and podcast directly.
+                        {{ config('mouse28.guides_enabled') ? 'Try a broader phrase, or browse the blog, guides, and podcast directly.' : 'Try a broader phrase, or browse the blog and podcast directly.' }}
                     </p>
                     <div class="mt-7 flex flex-wrap justify-center gap-3">
                         <a
                             href="{{ route('blog.index') }}"
                             class="bg-navy hover:bg-purple inline-flex min-h-12 items-center rounded-full px-5 py-3 font-semibold text-white"
                         >Browse blog</a>
-                        <a
-                            href="{{ route('guides.index') }}"
-                            class="border-navy/10 text-navy hover:border-purple/30 inline-flex min-h-12 items-center rounded-full border bg-white px-5 py-3 font-semibold"
-                        >Browse guides</a>
+                        @if (config('mouse28.guides_enabled'))
+                            <a
+                                href="{{ route('guides.index') }}"
+                                class="border-navy/10 text-navy hover:border-purple/30 inline-flex min-h-12 items-center rounded-full border bg-white px-5 py-3 font-semibold"
+                            >Browse guides</a>
+                        @endif
                         <a
                             href="{{ route('episodes.index') }}"
                             class="border-navy/10 text-navy hover:border-purple/30 inline-flex min-h-12 items-center rounded-full border bg-white px-5 py-3 font-semibold"

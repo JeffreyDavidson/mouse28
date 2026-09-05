@@ -10,6 +10,8 @@ return [
 
     'content_artwork_path' => resource_path('content-artwork'),
 
+    'guides_enabled' => env('GUIDES_ENABLED', false),
+
     'guide_review_interval_days' => (int) env('GUIDE_REVIEW_INTERVAL_DAYS', 180),
 
     'post_review_interval_days' => (int) env('POST_REVIEW_INTERVAL_DAYS', 180),

@@ -160,100 +160,103 @@
             </div>
         </section>
 
-        <section class="relative z-10 px-4 pb-5 sm:px-6 md:-mt-4">
-            <div class="dispatch-guide-shell relative isolate mx-auto max-w-[86rem]">
-                <div class="dispatch-guide-spread grid overflow-hidden md:grid-cols-[7fr_13fr]">
-                    <div class="dispatch-paper-map border-navy/10 relative flex flex-col justify-center border-b p-7 sm:p-9 md:border-r md:border-b-0 lg:p-11">
-                        <h2 class="font-heading text-navy max-w-[9ch] text-3xl [font-weight:640] tracking-[-0.02em] text-balance sm:text-4xl">
-                            Your Guide to the Parks
-                        </h2>
-                        <p class="text-navy/70 mt-4 max-w-[40ch] text-base/7 text-pretty sm:text-[0.9375rem]/6">
-                            Practical, regularly reviewed guidance for more comfortable and accessible Disney park days.
-                        </p>
-                        @if ($latestGuides->isNotEmpty())
-                            <a
-                                href="{{ route('guides.index') }}"
-                                class="dispatch-button bg-gold text-navy hover:bg-gold-light mt-6 inline-flex min-h-12 w-fit items-center px-6 py-3 text-base font-semibold sm:text-sm"
-                            >Browse all guides</a>
-                        @else
-                            <a
-                                href="{{ route('blog.index') }}"
-                                class="dispatch-button bg-gold text-navy hover:bg-gold-light mt-6 inline-flex min-h-12 w-fit items-center px-6 py-3 text-base font-semibold sm:text-sm"
-                            >Explore planning stories</a>
-                        @endif
-                        <div class="dispatch-map-trail mt-7" aria-hidden="true"></div>
-                    </div>
-                    <div class="grid gap-4 p-4 sm:grid-cols-2 sm:p-6">
-                        @forelse ($latestGuides->take(2) as $guide)
-                            <a
-                                href="{{ route('guides.show', $guide) }}"
-                                class="dispatch-guide-card group overflow-hidden"
-                                ><x-guide-artwork
-                                    :guide="$guide"
-                                    class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]" />
-                                <div class="p-5">
-                                    <p class="text-purple text-sm font-semibold sm:text-xs">Guide</p>
-                                    <h3 class="font-heading text-navy group-hover:text-purple mt-1 text-2xl [font-weight:580] tracking-[-0.015em] text-balance">
-                                        {{ $guide->title }}
-                                    </h3>
-                                    @if ($guide->excerpt)
-                                        <p class="text-navy/70 mt-3 line-clamp-2 text-base/7 text-pretty sm:text-[0.9375rem]/6">
-                                            {{ $guide->excerpt }}
-                                        </p>
-                                    @endif</div
-                            ></a>
-                        @empty
-                            <div class="col-span-full">
-                                <div class="mb-4 flex items-end justify-between gap-4 px-1">
-                                    <div>
-                                        <p class="text-purple text-xs font-bold tracking-[0.16em] uppercase">
-                                            While the guidebook grows
-                                        </p>
-                                        <h3 class="font-heading text-navy mt-1 text-2xl [font-weight:620] tracking-[-0.02em]">
-                                            Start planning with these stories
+        @if (config('mouse28.guides_enabled'))
+            <section class="relative z-10 px-4 pb-5 sm:px-6 md:-mt-4">
+                <div class="dispatch-guide-shell relative isolate mx-auto max-w-[86rem]">
+                    <div class="dispatch-guide-spread grid overflow-hidden md:grid-cols-[7fr_13fr]">
+                        <div class="dispatch-paper-map border-navy/10 relative flex flex-col justify-center border-b p-7 sm:p-9 md:border-r md:border-b-0 lg:p-11">
+                            <h2 class="font-heading text-navy max-w-[9ch] text-3xl [font-weight:640] tracking-[-0.02em] text-balance sm:text-4xl">
+                                Your Guide to the Parks
+                            </h2>
+                            <p class="text-navy/70 mt-4 max-w-[40ch] text-base/7 text-pretty sm:text-[0.9375rem]/6">
+                                Practical, regularly reviewed guidance for more comfortable and accessible Disney park
+                                days.
+                            </p>
+                            @if ($latestGuides->isNotEmpty())
+                                <a
+                                    href="{{ route('guides.index') }}"
+                                    class="dispatch-button bg-gold text-navy hover:bg-gold-light mt-6 inline-flex min-h-12 w-fit items-center px-6 py-3 text-base font-semibold sm:text-sm"
+                                >Browse all guides</a>
+                            @else
+                                <a
+                                    href="{{ route('blog.index') }}"
+                                    class="dispatch-button bg-gold text-navy hover:bg-gold-light mt-6 inline-flex min-h-12 w-fit items-center px-6 py-3 text-base font-semibold sm:text-sm"
+                                >Explore planning stories</a>
+                            @endif
+                            <div class="dispatch-map-trail mt-7" aria-hidden="true"></div>
+                        </div>
+                        <div class="grid gap-4 p-4 sm:grid-cols-2 sm:p-6">
+                            @forelse ($latestGuides->take(2) as $guide)
+                                <a
+                                    href="{{ route('guides.show', $guide) }}"
+                                    class="dispatch-guide-card group overflow-hidden"
+                                    ><x-guide-artwork
+                                        :guide="$guide"
+                                        class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]" />
+                                    <div class="p-5">
+                                        <p class="text-purple text-sm font-semibold sm:text-xs">Guide</p>
+                                        <h3 class="font-heading text-navy group-hover:text-purple mt-1 text-2xl [font-weight:580] tracking-[-0.015em] text-balance">
+                                            {{ $guide->title }}
                                         </h3>
+                                        @if ($guide->excerpt)
+                                            <p class="text-navy/70 mt-3 line-clamp-2 text-base/7 text-pretty sm:text-[0.9375rem]/6">
+                                                {{ $guide->excerpt }}
+                                            </p>
+                                        @endif</div
+                                ></a>
+                            @empty
+                                <div class="col-span-full">
+                                    <div class="mb-4 flex items-end justify-between gap-4 px-1">
+                                        <div>
+                                            <p class="text-purple text-xs font-bold tracking-[0.16em] uppercase">
+                                                While the guidebook grows
+                                            </p>
+                                            <h3 class="font-heading text-navy mt-1 text-2xl [font-weight:620] tracking-[-0.02em]">
+                                                Start planning with these stories
+                                            </h3>
+                                        </div>
                                     </div>
+                                    @if ($planningPosts->isNotEmpty())
+                                        <div class="grid gap-4 sm:grid-cols-2">
+                                            @foreach ($planningPosts as $post)
+                                                <a
+                                                    href="{{ route('blog.show', $post) }}"
+                                                    class="dispatch-guide-card group overflow-hidden"
+                                                >
+                                                    <x-post-artwork
+                                                        :post="$post"
+                                                        class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]"
+                                                    />
+                                                    <div class="p-5">
+                                                        <p class="text-purple text-xs font-semibold">
+                                                            {{ $post->category_label }}
+                                                        </p>
+                                                        <p class="font-heading text-navy group-hover:text-purple mt-1 text-xl [font-weight:580] tracking-[-0.015em] text-balance">
+                                                            {{ $post->title }}
+                                                        </p>
+                                                    </div>
+                                                </a>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <div class="border-gold/35 bg-cream/70 flex min-h-52 flex-col items-center justify-center rounded-xl border p-6 text-center sm:p-8">
+                                            <p class="text-navy/70 max-w-lg text-base/7">
+                                                Our first planning stories and reviewed guides are being prepared.
+                                            </p>
+                                        </div>
+                                    @endif
                                 </div>
-                                @if ($planningPosts->isNotEmpty())
-                                    <div class="grid gap-4 sm:grid-cols-2">
-                                        @foreach ($planningPosts as $post)
-                                            <a
-                                                href="{{ route('blog.show', $post) }}"
-                                                class="dispatch-guide-card group overflow-hidden"
-                                            >
-                                                <x-post-artwork
-                                                    :post="$post"
-                                                    class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]"
-                                                />
-                                                <div class="p-5">
-                                                    <p class="text-purple text-xs font-semibold">
-                                                        {{ $post->category_label }}
-                                                    </p>
-                                                    <p class="font-heading text-navy group-hover:text-purple mt-1 text-xl [font-weight:580] tracking-[-0.015em] text-balance">
-                                                        {{ $post->title }}
-                                                    </p>
-                                                </div>
-                                            </a>
-                                        @endforeach
-                                    </div>
-                                @else
-                                    <div class="border-gold/35 bg-cream/70 flex min-h-52 flex-col items-center justify-center rounded-xl border p-6 text-center sm:p-8">
-                                        <p class="text-navy/70 max-w-lg text-base/7">
-                                            Our first planning stories and reviewed guides are being prepared.
-                                        </p>
-                                    </div>
-                                @endif
-                            </div>
-                        @endforelse
+                            @endforelse
+                        </div>
+                    </div>
+                    <div class="absolute top-10 -right-3 z-[-1] hidden flex-col gap-2 md:flex" aria-hidden="true">
+                        <span class="dispatch-guide-tab bg-purple">Accessibility</span>
+                        <span class="dispatch-guide-tab bg-gold text-navy">Sensory</span>
+                        <span class="dispatch-guide-tab bg-purple-dark">Family</span>
                     </div>
                 </div>
-                <div class="absolute top-10 -right-3 z-[-1] hidden flex-col gap-2 md:flex" aria-hidden="true">
-                    <span class="dispatch-guide-tab bg-purple">Accessibility</span>
-                    <span class="dispatch-guide-tab bg-gold text-navy">Sensory</span>
-                    <span class="dispatch-guide-tab bg-purple-dark">Family</span>
-                </div>
-            </div>
-        </section>
+            </section>
+        @endif
 
         <section class="relative z-10 px-4 pb-5 sm:px-6">
             <div class="dispatch-podcast-panel mx-auto max-w-[86rem] p-6 sm:p-6">

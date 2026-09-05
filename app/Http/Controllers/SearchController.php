@@ -30,15 +30,17 @@ class SearchController extends Controller
                 ->take(6)
                 ->get();
 
-            $guides = Guide::published()
-                ->where(function (Builder $builder) use ($query): void {
-                    $builder->where('title', 'like', "%{$query}%")
-                        ->orWhere('excerpt', 'like', "%{$query}%")
-                        ->orWhere('body', 'like', "%{$query}%");
-                })
-                ->latest('published_at')
-                ->take(6)
-                ->get();
+            if (config('mouse28.guides_enabled')) {
+                $guides = Guide::published()
+                    ->where(function (Builder $builder) use ($query): void {
+                        $builder->where('title', 'like', "%{$query}%")
+                            ->orWhere('excerpt', 'like', "%{$query}%")
+                            ->orWhere('body', 'like', "%{$query}%");
+                    })
+                    ->latest('published_at')
+                    ->take(6)
+                    ->get();
+            }
 
             $episodes = Episode::published()
                 ->where(function (Builder $builder) use ($query): void {
