@@ -6,7 +6,6 @@ use App\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;
 
-use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\get;
 
 uses(RefreshDatabase::class);
@@ -90,13 +89,9 @@ test('homepage uses the documented content order without community stories', fun
         ->assertDontSee('Community Stories');
 });
 
-test('sitemap and feeds are valid and exclude unpublished content', function (): void {
-    config()->set('podcast.owner_name', 'Mouse28 Owner');
-    config()->set('podcast.owner_email', 'podcast@example.com');
-
+test('sitemap and first party blog feed are valid and exclude unpublished content', function (): void {
     $post = Post::factory()->create();
     $draftPost = Post::factory()->draft()->create();
-    $episode = Episode::factory()->create(['audio_url' => 'https://cdn.example.com/episode.mp3']);
     $guide = Guide::factory()->create();
     Guide::factory()->draft()->create();
 
@@ -114,15 +109,12 @@ test('sitemap and feeds are valid and exclude unpublished content', function ():
         ->assertDontSee($draftPost->title);
     expect(simplexml_load_string($blogFeed->getContent()))->not->toBeFalse();
 
-    $podcastFeed = get(route('rss.podcast'))
-        ->assertOk()
-        ->assertSee($episode->title)
-        ->assertSee('podcast@example.com');
-    expect(simplexml_load_string($podcastFeed->getContent()))->not->toBeFalse();
-    assertDatabaseCount('podcasts', 0);
+    get(route('rss.podcast'))
+        ->assertRedirect(config('podcast.rss_url'))
+        ->assertStatus(301);
 });
 
-test('hosted episode audio is used by the player structured data and podcast feed', function (): void {
+test('legacy hosted episode audio remains available to structured data without rendering a second player', function (): void {
     Storage::fake('public');
     Storage::disk('public')->put('episodes/audio/hosted-episode.mp3', 'hosted audio');
 
@@ -134,13 +126,8 @@ test('hosted episode audio is used by the player structured data and podcast fee
 
     get(route('episodes.show', $episode))
         ->assertOk()
-        ->assertSee('<source src="'.$audioUrl.'" type="audio/mpeg"', false)
         ->assertSee('"contentUrl":"'.$audioUrl.'"', false)
-        ->assertDontSee($episode->audio_url, false);
-
-    get(route('rss.podcast'))
-        ->assertOk()
-        ->assertSee('enclosure url="'.$audioUrl.'" length="12" type="audio/mpeg"', false)
+        ->assertDontSee('<audio', false)
         ->assertDontSee($episode->audio_url, false);
 });
 

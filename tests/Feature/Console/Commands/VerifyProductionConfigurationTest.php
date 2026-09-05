@@ -23,8 +23,7 @@ beforeEach(function (): void {
         'services.turnstile.site_key' => 'turnstile-site-key',
         'services.turnstile.secret_key' => 'turnstile-secret-key',
         'services.turnstile.allowed_hostnames' => ['mouse28.com', 'www.mouse28.com'],
-        'podcast.owner_name' => 'Mouse28',
-        'podcast.owner_email' => 'podcast@mouse28.com',
+        'podcast.rss_url' => 'https://feeds.transistor.fm/mouse28',
         'sentry.dsn' => null,
         'sentry.send_default_pii' => false,
     ]);
@@ -52,7 +51,7 @@ test('unsafe production configuration reports every failure without exposing val
         'services.turnstile.site_key' => null,
         'services.turnstile.secret_key' => null,
         'services.turnstile.allowed_hostnames' => ['localhost'],
-        'podcast.owner_email' => 'podcast@example.com',
+        'podcast.rss_url' => 'https://example.com/mouse28.xml',
         'sentry.send_default_pii' => true,
     ]);
 
@@ -71,7 +70,7 @@ test('unsafe production configuration reports every failure without exposing val
             'RESEND_API_KEY must be configured.',
             'TURNSTILE_SECRET_KEY must be configured.',
             'TURNSTILE_ALLOWED_HOSTNAMES must include the canonical host.',
-            'PODCAST_OWNER_EMAIL must use a production address.',
+            'PODCAST_RSS_URL must use a Transistor feed URL.',
             'SENTRY_SEND_DEFAULT_PII must be false.',
         )
         ->not->toContain('admin@example.test');

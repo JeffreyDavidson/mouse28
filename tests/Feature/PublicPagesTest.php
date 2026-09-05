@@ -4,7 +4,6 @@ use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\get;
 
@@ -369,7 +368,7 @@ test('published episode detail page renders', function (): void {
         'episode_number' => 1,
         'season_number' => 1,
         'duration_seconds' => 1800,
-        'audio_url' => 'https://cdn.example.com/planning-a-sensory-friendly-visit.mp3',
+        'transistor_url' => 'https://share.transistor.fm/s/428d650c',
         'is_published' => true,
         'published_at' => now()->subDay(),
     ]);
@@ -381,7 +380,7 @@ test('published episode detail page renders', function (): void {
         ->assertSee('episode-detail-hero', false)
         ->assertSee('Listen to this episode')
         ->assertDontSee('Now Playing')
-        ->assertSee('aria-label="Play Planning a Sensory-Friendly Visit"', false)
+        ->assertSee('title="Listen to Planning a Sensory-Friendly Visit"', false)
         ->assertSee('data-episode-layout="rich"', false)
         ->assertSee('id="episode-transcript"', false)
         ->assertSee('aria-controls="episode-transcript"', false)
@@ -446,12 +445,9 @@ test('podcast pages describe episodes without audio as details instead of playab
         ->assertDontSee('Transcript coming soon');
 });
 
-test('podcast index identifies episodes with hosted audio as playable', function (): void {
-    Storage::fake('public');
-    Storage::disk('public')->put('episodes/audio/available.mp3', 'audio');
-
+test('podcast index identifies episodes with a Transistor player as playable', function (): void {
     Episode::factory()->create([
-        'audio_path' => 'episodes/audio/available.mp3',
+        'transistor_url' => 'https://share.transistor.fm/s/428d650c',
     ]);
 
     get(route('episodes.index'))

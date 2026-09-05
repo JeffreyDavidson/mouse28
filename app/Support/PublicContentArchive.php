@@ -24,6 +24,7 @@ class PublicContentArchive
         'transcript',
         'episode_number',
         'season_number',
+        'transistor_url',
         'audio_url',
         'audio_path',
         'apple_url',

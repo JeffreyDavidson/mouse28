@@ -56,21 +56,13 @@ class EpisodeForm
                         Section::make('Media')
                             ->icon('heroicon-o-photo')
                             ->schema([
-                                FileUpload::make('audio_path')
-                                    ->label('Hosted MP3')
-                                    ->acceptedFileTypes(['audio/mpeg'])
-                                    ->maxSize(262144)
-                                    ->disk('public')
-                                    ->directory('episodes/audio')
-                                    ->visibility('public')
-                                    ->downloadable()
-                                    ->helperText('Upload an MP3 up to 256 MB. Hosted audio is used before an external URL.'),
-                                TextInput::make('audio_url')
-                                    ->label('External Audio URL')
+                                TextInput::make('transistor_url')
+                                    ->label('Transistor Episode URL')
                                     ->url()
                                     ->maxLength(500)
+                                    ->rules(['regex:/\Ahttps:\/\/share\.transistor\.fm\/s\/[a-zA-Z0-9]+\/?\z/'])
                                     ->prefixIcon('heroicon-o-link')
-                                    ->helperText('Optional fallback when the episode is hosted elsewhere.'),
+                                    ->helperText('Paste the episode share URL, such as https://share.transistor.fm/s/428d650c. Mouse28 builds the embedded player from it.'),
                                 FileUpload::make('cover_image')
                                     ->image()
                                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
@@ -91,7 +83,7 @@ class EpisodeForm
 
                         Section::make('Publishing')
                             ->icon('heroicon-o-rocket-launch')
-                            ->description('Save the episode, then use the Publish action when its editorial content is ready. Audio and transcripts may be added later.')
+                            ->description('Save the episode, then use the Publish action when its editorial content is ready. Transcripts may be added later.')
                             ->schema([
                                 DateTimePicker::make('published_at')
                                     ->label('Publish Date')
