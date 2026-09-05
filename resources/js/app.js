@@ -156,6 +156,184 @@ function focusFirstInvalidField() {
     });
 }
 
+function initializeBlogDiscovery() {
+    if (!document.querySelector('[data-blog-browser]')) {
+        return;
+    }
+
+    let activeRequest;
+    let searchTimer;
+    const status = document.createElement('p');
+
+    status.className = 'sr-only';
+    status.setAttribute('role', 'status');
+    status.setAttribute('aria-live', 'polite');
+    document.body.appendChild(status);
+
+    const updateMetadata = (blogBrowser) => {
+        document.title = blogBrowser.dataset.pageTitle;
+
+        [
+            ['meta[name="description"]', 'content', blogBrowser.dataset.pageDescription],
+            ['meta[name="robots"]', 'content', blogBrowser.dataset.robots],
+            ['meta[property="og:title"]', 'content', blogBrowser.dataset.pageTitle],
+            ['meta[property="og:description"]', 'content', blogBrowser.dataset.pageDescription],
+            ['meta[property="og:url"]', 'content', blogBrowser.dataset.canonicalUrl],
+            ['meta[name="twitter:title"]', 'content', blogBrowser.dataset.pageTitle],
+            ['meta[name="twitter:description"]', 'content', blogBrowser.dataset.pageDescription],
+            ['link[rel="canonical"]', 'href', blogBrowser.dataset.canonicalUrl],
+        ].forEach(([selector, attribute, value]) => {
+            if (value) {
+                document.querySelector(selector)?.setAttribute(attribute, value);
+            }
+        });
+    };
+
+    const navigate = async (destination, { history = 'push', focus = 'filter' } = {}) => {
+        const currentBlogBrowser = document.querySelector('[data-blog-browser]');
+
+        if (!currentBlogBrowser) {
+            window.location.assign(destination);
+
+            return;
+        }
+
+        activeRequest?.abort();
+
+        const request = new AbortController();
+        const currentFilterTop = currentBlogBrowser.querySelector('[data-blog-filters]')?.getBoundingClientRect().top;
+
+        activeRequest = request;
+        currentBlogBrowser.setAttribute('aria-busy', 'true');
+        currentBlogBrowser.classList.add('pointer-events-none', 'opacity-60');
+        status.textContent = 'Updating stories…';
+
+        try {
+            const response = await fetch(destination, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                signal: request.signal,
+            });
+
+            if (!response.ok) {
+                throw new Error(`Blog request failed with status ${response.status}.`);
+            }
+
+            const template = document.createElement('template');
+            template.innerHTML = (await response.text()).trim();
+
+            const nextBlogBrowser = template.content.querySelector('[data-blog-browser]');
+
+            if (!nextBlogBrowser) {
+                throw new Error('Blog response did not include the discovery region.');
+            }
+
+            currentBlogBrowser.replaceWith(nextBlogBrowser);
+            updateMetadata(nextBlogBrowser);
+
+            const nextFilterTop = nextBlogBrowser.querySelector('[data-blog-filters]')?.getBoundingClientRect().top;
+
+            if (currentFilterTop !== undefined && nextFilterTop !== undefined) {
+                window.scrollBy(0, nextFilterTop - currentFilterTop);
+            }
+
+            if (history === 'push') {
+                window.history.pushState({ blog: true }, '', destination);
+            }
+
+            if (focus === 'search') {
+                const search = nextBlogBrowser.querySelector('[data-blog-live-search]');
+
+                search?.focus({ preventScroll: true });
+                search?.setSelectionRange(search.value.length, search.value.length);
+            }
+
+            if (focus === 'filter') {
+                const activeFilter = nextBlogBrowser.querySelector('[data-blog-filter-link][aria-current="page"]');
+
+                activeFilter?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+                activeFilter?.focus({ preventScroll: true });
+            }
+
+            status.textContent = nextBlogBrowser.dataset.blogAnnouncement || 'Stories updated.';
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                return;
+            }
+
+            window.location.assign(destination);
+        } finally {
+            if (activeRequest === request) {
+                const blogBrowser = document.querySelector('[data-blog-browser]');
+
+                blogBrowser?.setAttribute('aria-busy', 'false');
+                blogBrowser?.classList.remove('pointer-events-none', 'opacity-60');
+                activeRequest = undefined;
+            }
+        }
+    };
+
+    const searchUrl = (form) => {
+        const url = new URL(form.action, window.location.href);
+        const parameters = new URLSearchParams(new FormData(form));
+
+        for (const [key, value] of [...parameters]) {
+            if (String(value).trim() === '') {
+                parameters.delete(key);
+            }
+        }
+
+        url.search = parameters.toString();
+
+        return url;
+    };
+
+    document.addEventListener('click', (event) => {
+        if (!(event.target instanceof Element)) {
+            return;
+        }
+
+        const link = event.target.closest('[data-blog-navigation-link]');
+
+        if (!link || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+            return;
+        }
+
+        event.preventDefault();
+        window.clearTimeout(searchTimer);
+        navigate(link.href);
+    });
+
+    document.addEventListener('submit', (event) => {
+        if (!(event.target instanceof HTMLFormElement) || !event.target.matches('[data-blog-search-form]')) {
+            return;
+        }
+
+        event.preventDefault();
+        window.clearTimeout(searchTimer);
+        navigate(searchUrl(event.target), { focus: 'search' });
+    });
+
+    document.addEventListener('input', (event) => {
+        if (!(event.target instanceof HTMLInputElement) || !event.target.matches('[data-blog-live-search]')) {
+            return;
+        }
+
+        window.clearTimeout(searchTimer);
+        searchTimer = window.setTimeout(() => {
+            navigate(searchUrl(event.target.form), { focus: 'search' });
+        }, 300);
+    });
+
+    window.addEventListener('popstate', () => {
+        if (document.querySelector('[data-blog-browser]')) {
+            navigate(window.location.href, { history: 'none', focus: null });
+        }
+    });
+}
+
 initializeCopyLinks();
 initializeBlogArticle();
 focusFirstInvalidField();
+initializeBlogDiscovery();
