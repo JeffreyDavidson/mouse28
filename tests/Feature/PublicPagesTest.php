@@ -16,7 +16,7 @@ test('public index pages render', function (string $route, string $content): voi
         ->assertSee($content);
 })->with([
     'home' => ['home', 'Mouse28'],
-    'about' => ['about', 'Our Story'],
+    'about' => ['about', 'Disney looks different'],
     'blog' => ['blog.index', 'Blog'],
     'guides' => ['guides.index', 'Park Guides'],
     'podcast' => ['episodes.index', 'The Mouse28 Podcast'],
@@ -33,7 +33,7 @@ test('public index and utility pages use the dispatch editorial system', functio
     'blog archive' => ['blog.index', 'data-editorial-blog'],
     'guide archive' => ['guides.index', 'dispatch-page-field'],
     'podcast archive' => ['episodes.index', 'data-podcast-archive'],
-    'about' => ['about', 'dispatch-page-heading'],
+    'about' => ['about', 'data-about-editorial'],
     'contact' => ['contact.show', 'dispatch-letter-form'],
     'search' => ['search', 'dispatch-page-field'],
 ]);
