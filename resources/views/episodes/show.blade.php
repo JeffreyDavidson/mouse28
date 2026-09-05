@@ -29,7 +29,7 @@
 
     @php
         $showNotesLength = Str::of(strip_tags($episode->show_notes ?? ''))->squish()->length();
-        $isSparseEpisode = blank($episode->audio_source_url)
+        $isSparseEpisode = blank($episode->transistor_embed_url)
             && blank($episode->transcript)
             && $showNotesLength < 160;
         $coverImage = $episode->cover_image_url
@@ -80,13 +80,25 @@
                     <p class="text-cream/72 mt-6 max-w-3xl text-lg/8 text-pretty">{{ $episode->description }}</p>
                 @endif
 
-                @if ($episode->audio_source_url)
+                @if ($episode->transistor_embed_url)
                     <div class="border-gold/30 mt-8 border-y py-6">
                         <h2 class="font-heading text-xl [font-weight:620]">Listen to this episode</h2>
-                        <audio controls aria-label="Play {{ $episode->title }}" class="mt-4 w-full" preload="metadata">
-                            <source src="{{ $episode->audio_source_url }}" type="audio/mpeg" />
-                            Your browser does not support the audio element.
-                        </audio>
+                        <div class="mt-4 overflow-hidden rounded-xl bg-white">
+                            <iframe
+                                src="{{ $episode->transistor_embed_url }}"
+                                title="Listen to {{ $episode->title }}"
+                                width="100%"
+                                height="180"
+                                scrolling="no"
+                                class="block w-full border-0"
+                            ></iframe>
+                        </div>
+                        <a
+                            href="{{ $episode->transistor_url }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-gold hover:text-cream mt-3 inline-flex min-h-12 items-center text-sm font-semibold underline underline-offset-8"
+                        >Open the player in a new tab</a>
                     </div>
                 @endif
 
@@ -125,7 +137,7 @@
                         </a>
                     @endif
                     <a
-                        href="{{ route('rss.podcast') }}"
+                        href="{{ config('podcast.rss_url') }}"
                         target="_blank"
                         rel="noopener noreferrer"
                         class="text-gold hover:text-cream inline-flex min-h-12 flex-col justify-center"

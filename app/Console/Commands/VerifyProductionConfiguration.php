@@ -34,8 +34,7 @@ class VerifyProductionConfiguration extends Command
             [$this->isConfigured(config('services.turnstile.site_key')), 'TURNSTILE_SITE_KEY must be configured.'],
             [$this->isConfigured(config('services.turnstile.secret_key')), 'TURNSTILE_SECRET_KEY must be configured.'],
             [$this->allowsCanonicalHost(config('services.turnstile.allowed_hostnames'), $canonicalUrl), 'TURNSTILE_ALLOWED_HOSTNAMES must include the canonical host.'],
-            [$this->isConfigured(config('podcast.owner_name')), 'PODCAST_OWNER_NAME must be configured.'],
-            [$this->isProductionEmail(config('podcast.owner_email')), 'PODCAST_OWNER_EMAIL must use a production address.'],
+            [$this->isTransistorFeedUrl(config('podcast.rss_url')), 'PODCAST_RSS_URL must use a Transistor feed URL.'],
             [config('sentry.send_default_pii') === false, 'SENTRY_SEND_DEFAULT_PII must be false.'],
             [! $sentryEnabled || config('sentry.environment') === 'production', 'SENTRY_ENVIRONMENT must be production when Sentry is enabled.'],
             [! $sentryEnabled || $this->isConfigured(config('sentry.release')), 'SENTRY_RELEASE must be configured when Sentry is enabled.'],
@@ -90,6 +89,14 @@ class VerifyProductionConfiguration extends Command
             && filter_var($email, FILTER_VALIDATE_EMAIL) !== false
             && ! str_ends_with($email, '@example.com')
             && ! str_ends_with($email, '@example.test');
+    }
+
+    private function isTransistorFeedUrl(mixed $url): bool
+    {
+        return is_string($url)
+            && parse_url($url, PHP_URL_SCHEME) === 'https'
+            && parse_url($url, PHP_URL_HOST) === 'feeds.transistor.fm'
+            && filled(trim((string) parse_url($url, PHP_URL_PATH), '/'));
     }
 
     private function allowsCanonicalHost(mixed $allowedHostnames, mixed $canonicalUrl): bool

@@ -72,6 +72,7 @@ test('public content archive can be imported without replacing environment-speci
             'transcript' => '<p>Public transcript.</p>',
             'episode_number' => 28,
             'season_number' => 1,
+            'transistor_url' => 'https://share.transistor.fm/s/428d650c',
             'audio_url' => null,
             'audio_path' => null,
             'apple_url' => null,
@@ -137,6 +138,7 @@ test('public content archive can be imported without replacing environment-speci
     expect($exitCode)->toBe(Command::SUCCESS)
         ->and($repeatExitCode)->toBe(Command::SUCCESS)
         ->and(Post::query()->where('slug', 'synced-post')->firstOrFail()->episode?->slug)->toBe('synced-episode')
+        ->and(Episode::query()->where('slug', 'synced-episode')->firstOrFail()->transistor_url)->toBe('https://share.transistor.fm/s/428d650c')
         ->and(Guide::query()->where('slug', 'synced-guide')->firstOrFail()->is_published)->toBeTrue()
         ->and(Podcast::query()->firstOrFail()->name)->toBe('Synced Mouse28')
         ->and(Podcast::query()->firstOrFail()->email)->toBe('staging@example.com')

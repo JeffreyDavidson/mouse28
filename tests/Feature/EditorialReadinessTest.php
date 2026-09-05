@@ -174,9 +174,10 @@ test('filament forms explain publish requirements and edit pages offer previews'
         ->assertSee('Landscape image (1.91:1)');
     get(EpisodeResource::getUrl('create'))
         ->assertOk()
-        ->assertSee('Audio and transcripts may be added later')
-        ->assertSee('Hosted MP3')
-        ->assertSee('Upload an MP3 up to 256 MB')
+        ->assertSee('Transistor Episode URL')
+        ->assertSee('share.transistor.fm/s/')
+        ->assertDontSee('Hosted MP3')
+        ->assertDontSee('External Audio URL')
         ->assertSee('Landscape image (1.91:1)');
 
     foreach ([

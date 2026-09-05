@@ -39,7 +39,7 @@
         )
         ->twitterImage($socialImage, alt: $socialTitle)
         ->feed(route('rss.blog'), 'Mouse28 Blog')
-        ->feed(route('rss.podcast'), 'Mouse28 Podcast');
+        ->feed(config('podcast.rss_url'), 'Mouse28 Podcast');
 @endphp
 
 <!DOCTYPE html>
