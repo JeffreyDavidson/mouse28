@@ -15,36 +15,38 @@
     -->
     <div data-about-editorial>
         <header class="bg-navy text-cream px-4 pt-5 pb-10 sm:px-6 sm:pt-8 sm:pb-14 lg:pt-10 lg:pb-20">
-            <div class="relative mx-auto max-w-[86rem]">
-                <figure class="relative overflow-hidden rounded-xl">
-                    <picture>
-                        <source
-                            srcset="/images/hero-family-640.webp 640w, /images/hero-family-1024.webp 1024w, /images/hero-family.webp 2048w"
-                            sizes="(min-width: 1400px) 1376px, calc(100vw - 2rem)"
-                            type="image/webp"
-                        />
-                        <img
-                            src="/images/hero-family.jpg"
-                            alt="Jeffrey and Cassie enjoying the Kilimanjaro Safaris at Disney's Animal Kingdom"
-                            width="2048"
-                            height="1536"
-                            fetchpriority="high"
-                            class="aspect-[5/4] w-full object-cover object-center sm:aspect-[16/9] lg:aspect-[16/8]"
-                        />
-                    </picture>
-                    <figcaption class="bg-navy/85 text-cream/75 absolute right-4 bottom-4 hidden px-4 py-2 text-sm backdrop-blur-sm sm:block">
-                        Kilimanjaro Safaris at Disney's Animal Kingdom
-                    </figcaption>
-                </figure>
-
-                <div class="bg-navy relative z-10 -mt-1 max-w-4xl px-1 pt-8 wrap-anywhere sm:-mt-20 sm:ml-6 sm:px-8 sm:pt-8 sm:pb-2 lg:-mt-40 lg:ml-10 lg:max-w-5xl lg:px-10 lg:pt-10">
-                    <h1 class="font-heading text-cream text-[2.75rem]/[1.02] [font-weight:680] tracking-[-0.03em] text-balance sm:text-6xl">
+            <div class="mx-auto max-w-[86rem]">
+                <div class="grid gap-6 pb-8 sm:pb-10 lg:grid-cols-[8fr_4fr] lg:items-end lg:gap-16">
+                    <h1 class="font-heading text-cream max-w-[18ch] text-[2.75rem]/[1.02] [font-weight:680] tracking-[-0.03em] text-balance sm:text-6xl lg:text-7xl">
                         Disney looks different through our family's eyes.
                     </h1>
-                    <p class="text-cream/75 mt-5 max-w-2xl text-lg/8 text-pretty">
+                    <p class="text-cream/75 max-w-xl text-lg/8 text-pretty lg:pb-1">
                         We're Jeffrey and Cassie—the parents, park regulars, and voices behind Mouse28.
                     </p>
                 </div>
+
+                <figure>
+                    <div class="overflow-hidden rounded-xl">
+                        <picture>
+                            <source
+                                srcset="/images/hero-family-640.webp 640w, /images/hero-family-1024.webp 1024w, /images/hero-family.webp 2048w"
+                                sizes="(min-width: 1400px) 1376px, calc(100vw - 2rem)"
+                                type="image/webp"
+                            />
+                            <img
+                                src="/images/hero-family.jpg"
+                                alt="Jeffrey and Cassie enjoying the Kilimanjaro Safaris at Disney's Animal Kingdom"
+                                width="2048"
+                                height="1536"
+                                fetchpriority="high"
+                                class="aspect-[5/4] w-full object-cover object-center sm:aspect-[16/9] lg:aspect-[16/7]"
+                            />
+                        </picture>
+                    </div>
+                    <figcaption class="text-cream/60 mt-3 text-right text-sm">
+                        Kilimanjaro Safaris at Disney's Animal Kingdom
+                    </figcaption>
+                </figure>
             </div>
         </header>
 
