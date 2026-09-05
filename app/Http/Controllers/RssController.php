@@ -17,7 +17,7 @@ class RssController extends Controller
         $xml .= '<channel>';
         $xml .= '<title>Mouse28 Blog</title>';
         $xml .= '<link>'.url('/blog').'</link>';
-        $xml .= '<description>Disney parks through the eyes of a family raising a daughter with autism. Tips, accessibility guides, and stories.</description>';
+        $xml .= '<description>Disney parks through the eyes of a family raising a daughter with autism. Practical tips and stories.</description>';
         $xml .= '<language>en-us</language>';
         $xml .= '<atom:link href="'.url('/rss/blog').'" rel="self" type="application/rss+xml"/>';
         $xml .= '<image><url>'.url('/images/logo.jpg').'</url><title>Mouse28</title><link>'.url('/').'</link></image>';

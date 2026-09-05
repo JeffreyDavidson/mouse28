@@ -23,6 +23,38 @@ test('public index pages render', function (string $route, string $content): voi
     'contact' => ['contact.show', 'Send us a note'],
 ]);
 
+test('guides stay hidden from the public site when the feature is disabled', function (): void {
+    config()->set('mouse28.guides_enabled', false);
+
+    $guide = Guide::factory()->create([
+        'title' => 'A Guide That Is Not Ready Yet',
+        'slug' => 'a-guide-that-is-not-ready-yet',
+    ]);
+
+    get(route('guides.index'))->assertNotFound();
+    get(route('guides.show', $guide))->assertNotFound();
+
+    foreach ([route('home'), route('blog.index'), route('search'), '/missing-page'] as $url) {
+        get($url)
+            ->assertDontSee(route('guides.index'), false)
+            ->assertDontSee('Browse practical guides');
+    }
+
+    get(route('home'))
+        ->assertOk()
+        ->assertDontSee($guide->title)
+        ->assertDontSee('dispatch-guide-spread', false);
+
+    get(route('search', ['q' => 'not ready yet']))
+        ->assertOk()
+        ->assertSee('No results')
+        ->assertDontSee($guide->title);
+
+    get(route('sitemap'))
+        ->assertOk()
+        ->assertDontSee('/guides', false);
+});
+
 test('public landing pages avoid em dashes in their copy and metadata', function (string $route): void {
     get(route($route))
         ->assertOk()

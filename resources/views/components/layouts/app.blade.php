@@ -1,6 +1,6 @@
 @props([
     'title' => 'Mouse28 | Disney Parks Through Different Eyes',
-    'description' => 'Disney parks through the eyes of a family raising a daughter with autism. Tips, accessibility guides, and stories from Jeffrey & Cassie Davidson.',
+    'description' => 'Disney parks through the eyes of a family raising a daughter with autism. Practical tips and stories from Jeffrey & Cassie Davidson.',
     'robots' => 'index,follow',
     'ogTitle' => null,
     'ogDescription' => null,
@@ -382,10 +382,12 @@
                                     href="{{ route('blog.index') }}"
                                     class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
                                 >Blog</a>
-                                <a
-                                    href="{{ route('guides.index') }}"
-                                    class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
-                                >Guides</a>
+                                @if (config('mouse28.guides_enabled'))
+                                    <a
+                                        href="{{ route('guides.index') }}"
+                                        class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
+                                    >Guides</a>
+                                @endif
                                 <a
                                     href="{{ route('episodes.index') }}"
                                     class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"

@@ -4,7 +4,7 @@
 
 Public routes are defined in `routes/web.php` and rendered with Blade through the shared `layouts.app` layout. Tailwind, Alpine, and public JavaScript are delivered by the existing Vite entry points.
 
-The homepage is assembled by `HomeController` in this order: hero, featured post, latest posts, guides, podcast, about, and newsletter. Community Stories are intentionally not part of the application.
+The homepage is assembled by `HomeController` in this order: hero, featured post, latest posts, podcast, about, and newsletter. Community Stories are intentionally not part of the application.
 
 ## Content boundaries
 
@@ -16,7 +16,9 @@ The homepage is assembled by `HomeController` in this order: hero, featured post
 
 The `published` model scopes require both an enabled publication flag and a non-future publication date. Public detail controllers enforce the same rule so direct URLs cannot expose drafts or scheduled content.
 
-Site search is handled by the invokable `SearchController`. It searches posts, guides, and episodes independently, limits each result group, and always begins with the models' `published` scopes so drafts and scheduled content remain private. Search result pages are marked `noindex,follow` and are not included in the sitemap.
+Site search is handled by the invokable `SearchController`. It searches posts and episodes independently, limits each result group, and always begins with the models' `published` scopes so drafts and scheduled content remain private. Search result pages are marked `noindex,follow` and are not included in the sitemap.
+
+Guides are retained as a dormant feature. `GUIDES_ENABLED` defaults to `false`; while disabled, guide archives and detail routes return 404 responses and guides are omitted from the homepage, shared navigation, search, and sitemap. Filament management and authorized preview routes remain available so the editorial library can be prepared before the public launch.
 
 `ContentContinuation` keeps detail pages connected without exposing unpublished records. Guide recommendations prioritize the current category and fill remaining spaces with recent guides, while episode pages link to the chronologically adjacent published episodes. Article and guide category labels link back to their filtered indexes.
 

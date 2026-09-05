@@ -1,8 +1,8 @@
 <x-layouts.error
     title="Page Not Found | Mouse28"
-    description="The page you requested could not be found. Search Mouse28 or continue exploring our Disney park stories, guides, and podcast."
+    description="The page you requested could not be found. Search Mouse28 or continue exploring our Disney park stories and podcast."
     og-title="Page Not Found | Mouse28"
-    og-description="Search Mouse28 or continue exploring our Disney park stories, accessibility guides, and podcast."
+    og-description="Search Mouse28 or continue exploring our Disney park stories and podcast."
 >
     <x-error-state
         code="404"
@@ -21,7 +21,7 @@
                 type="search"
                 name="q"
                 maxlength="100"
-                placeholder="Search posts, guides, and episodes"
+                placeholder="Search posts and episodes"
                 class="text-navy placeholder:text-navy/60 focus:border-gold focus:ring-gold/40 min-h-12 min-w-0 flex-1 rounded-full border border-white/15 bg-white px-5 py-3 text-base shadow-lg focus:ring-2 focus:outline-none"
             />
             <button
@@ -41,10 +41,12 @@
                 href="{{ route('blog.index') }}"
                 class="dispatch-error-secondary inline-flex min-h-12 items-center rounded-full px-6 py-3 font-semibold transition-colors"
             >Browse blog</a>
-            <a
-                href="{{ route('guides.index') }}"
-                class="dispatch-error-secondary inline-flex min-h-12 items-center rounded-full px-6 py-3 font-semibold transition-colors"
-            >Explore guides</a>
+            @if (config('mouse28.guides_enabled'))
+                <a
+                    href="{{ route('guides.index') }}"
+                    class="dispatch-error-secondary inline-flex min-h-12 items-center rounded-full px-6 py-3 font-semibold transition-colors"
+                >Explore guides</a>
+            @endif
             <a
                 href="{{ route('episodes.index') }}"
                 class="dispatch-error-secondary inline-flex min-h-12 items-center rounded-full px-6 py-3 font-semibold transition-colors"
