@@ -52,10 +52,12 @@
                     href="{{ route('blog.index') }}"
                     class="hover:text-gold inline-flex min-h-12 items-center text-sm font-medium text-white/75 transition-colors"
                 >Blog</a>
-                <a
-                    href="{{ route('guides.index') }}"
-                    class="hover:text-gold inline-flex min-h-12 items-center text-sm font-medium text-white/75 transition-colors"
-                >Guides</a>
+                @if (config('mouse28.guides_enabled'))
+                    <a
+                        href="{{ route('guides.index') }}"
+                        class="hover:text-gold inline-flex min-h-12 items-center text-sm font-medium text-white/75 transition-colors"
+                    >Guides</a>
+                @endif
                 <a
                     href="{{ route('episodes.index') }}"
                     class="hover:text-gold inline-flex min-h-12 items-center text-sm font-medium text-white/75 transition-colors"

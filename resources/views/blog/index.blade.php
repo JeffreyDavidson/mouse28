@@ -32,7 +32,7 @@
                         Blog
                     </h1>
                     <p class="text-cream/75 mt-4 max-w-xl text-base/7 text-pretty sm:text-lg/8">
-                        Disney tips, park guides, and honest stories from our family to yours.
+                        Disney tips, practical planning, and honest stories from our family to yours.
                     </p>
                 </div>
 
@@ -237,10 +237,12 @@
                                         class="text-gold inline-flex min-h-12 items-center font-semibold underline underline-offset-8"
                                     >View all posts</a>
                                 @else
-                                    <a
-                                        href="{{ route('guides.index') }}"
-                                        class="text-gold inline-flex min-h-12 items-center font-semibold underline underline-offset-8"
-                                    >Park guides</a>
+                                    @if (config('mouse28.guides_enabled'))
+                                        <a
+                                            href="{{ route('guides.index') }}"
+                                            class="text-gold inline-flex min-h-12 items-center font-semibold underline underline-offset-8"
+                                        >Park guides</a>
+                                    @endif
                                     <a
                                         href="{{ route('episodes.index') }}"
                                         class="text-gold inline-flex min-h-12 items-center font-semibold underline underline-offset-8"

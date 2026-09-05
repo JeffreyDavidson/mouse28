@@ -16,8 +16,10 @@ class HomeController extends Controller
             ->when($featuredPost, fn ($q) => $q->where('id', '!=', $featuredPost->id))
             ->take(6)->get();
         $latestEpisodes = Episode::published()->latest('published_at')->take(3)->get();
-        $latestGuides = Guide::published()->latest('published_at')->take(4)->get();
-        $planningPosts = $latestGuides->isEmpty()
+        $latestGuides = config('mouse28.guides_enabled')
+            ? Guide::published()->latest('published_at')->take(4)->get()
+            : collect();
+        $planningPosts = config('mouse28.guides_enabled') && $latestGuides->isEmpty()
             ? Post::published()
                 ->whereIn('category', ['park-accessibility', 'disney-tips', 'autism-awareness'])
                 ->latest('published_at')

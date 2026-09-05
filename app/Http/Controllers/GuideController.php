@@ -10,6 +10,8 @@ class GuideController extends Controller
 {
     public function index(Request $request)
     {
+        abort_unless(config('mouse28.guides_enabled'), 404);
+
         $category = $request->string('category')->toString();
         if (! array_key_exists($category, Guide::CATEGORIES)) {
             $category = '';
@@ -39,6 +41,8 @@ class GuideController extends Controller
 
     public function show(Guide $guide)
     {
+        abort_unless(config('mouse28.guides_enabled'), 404);
+
         abort_unless(
             $guide->is_published && $guide->published_at?->isPast(),
             404,

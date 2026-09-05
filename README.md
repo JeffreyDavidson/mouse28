@@ -43,6 +43,7 @@ The application can run locally without live third-party calls, but these featur
 - `PODCAST_OWNER_NAME` and `PODCAST_OWNER_EMAIL` populate podcast-feed ownership metadata.
 - `FATHOM_SITE_ID` enables the optional analytics script.
 - `SENTRY_LARAVEL_DSN` enables production error reporting. Keep `SENTRY_SEND_DEFAULT_PII=false`; tracing and profiling remain disabled until their sample rates are deliberately raised above `0.0`.
+- `GUIDES_ENABLED` controls public guide routes and discovery. It defaults to `false` while the guide library is being prepared.
 - `GUIDE_REVIEW_INTERVAL_DAYS` controls when durable guides are flagged for editorial review; it defaults to 180 days.
 
 Never commit live credentials. Keep them in the deployment environment.
@@ -102,7 +103,7 @@ Dependabot vulnerability alerts remain enabled. CI audits the locked Composer an
 - Ensure `public/storage` is linked when uploaded media is used.
 - Run `php artisan optimize` after environment configuration is final.
 - Confirm the scheduler and queue worker are supervised if production uses queued work.
-- Verify `/`, `/guides`, `/search?q=accessibility`, `/sitemap.xml`, both RSS feeds, contact submission, and newsletter signup.
+- Verify `/`, `/search?q=accessibility`, `/sitemap.xml`, both RSS feeds, contact submission, and newsletter signup. When `GUIDES_ENABLED=true`, also verify `/guides`.
 - Back up the database and uploaded files before each deployment.
 - Use `php artisan content:clean-seeded --force` only after backups are verified and real content is ready; it removes only the known demo slugs.
 
