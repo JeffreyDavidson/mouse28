@@ -30,9 +30,9 @@ test('public index and utility pages use the dispatch editorial system', functio
         ->assertSee($marker, false)
         ->assertSee('js-dispatch-pages', false);
 })->with([
-    'blog archive' => ['blog.index', 'dispatch-page-hero'],
+    'blog archive' => ['blog.index', 'data-editorial-blog'],
     'guide archive' => ['guides.index', 'dispatch-page-field'],
-    'podcast archive' => ['episodes.index', 'dispatch-podcast-hero'],
+    'podcast archive' => ['episodes.index', 'data-podcast-archive'],
     'about' => ['about', 'dispatch-page-heading'],
     'contact' => ['contact.show', 'dispatch-letter-form'],
     'search' => ['search', 'dispatch-page-field'],
@@ -93,7 +93,6 @@ test('guide pages use category artwork when an editor has not uploaded a cover',
 test('empty discovery states offer useful paths forward', function (): void {
     get(route('blog.index'))
         ->assertOk()
-        ->assertSee('Keep exploring')
         ->assertSee(route('guides.index'), false)
         ->assertSee(route('episodes.index'), false);
 
@@ -134,12 +133,8 @@ test('homepage uses one newsletter form and responsive hero artwork', function (
         ->assertSee('data-dispatch-motion="hero-paper"', false)
         ->assertSee('data-dispatch-motion="hero-photo"', false)
         ->assertSee('data-dispatch-reveal="story-folio"', false)
-        ->assertSee('data-dispatch-journey', false)
-        ->assertSee('data-dispatch-stop="Stories"', false)
-        ->assertSee('data-dispatch-stop="Planning"', false)
-        ->assertSee('data-dispatch-stop="Listen"', false)
-        ->assertSee('data-dispatch-stop="Meet us"', false)
-        ->assertSee('data-dispatch-stop="Stay in the loop"', false)
+        ->assertDontSee('data-dispatch-journey', false)
+        ->assertDontSee('data-dispatch-stop', false)
         ->assertDontSee('data-animate', false)
         ->assertSee('Our first dispatch is being prepared.')
         ->assertDontSee('/storage/posts/welcome-to-mouse-28.webp', false)
@@ -222,11 +217,33 @@ test('public content pages present one newsletter signup', function (): void {
 });
 
 test('blog discovery controls precede results in the document order', function (): void {
-    $post = Post::factory()->create();
+    Post::factory()->create([
+        'title' => 'Featured Story',
+        'published_at' => now()->subHour(),
+    ]);
+    $post = Post::factory()->create([
+        'title' => 'Archive Story',
+        'published_at' => now()->subDay(),
+    ]);
 
     get(route('blog.index'))
         ->assertOk()
         ->assertSeeInOrder(['data-blog-filters', 'data-blog-results', $post->title]);
+});
+
+test('blog index uses an artwork led archive without dashboard widgets', function (): void {
+    Post::factory()->count(3)->create([
+        'cover_image' => null,
+    ]);
+
+    get(route('blog.index'))
+        ->assertOk()
+        ->assertSee('data-editorial-blog', false)
+        ->assertSee('editorial-feature', false)
+        ->assertSee('editorial-story-grid', false)
+        ->assertSee('data-post-artwork', false)
+        ->assertDontSee('Blog Stats')
+        ->assertDontSee('Categories</h3>', false);
 });
 
 test('homepage defers the below-fold featured post image', function (): void {
@@ -330,10 +347,26 @@ test('sparse episode detail pages use a compact continuation layout', function (
         ->assertSee($previousEpisode->title);
 });
 
-test('empty podcast page hides its decorative player preview from assistive technology', function (): void {
+test('empty podcast page uses a truthful show introduction without a decorative player', function (): void {
     get(route('episodes.index'))
         ->assertOk()
-        ->assertSee('id="podcast-player-preview" class="hidden md:block" aria-hidden="true"', false);
+        ->assertSee("We're warming up the mics", false)
+        ->assertDontSee('podcast-player-preview', false);
+});
+
+test('podcast index leads with the show and uses a season tracklist', function (): void {
+    Episode::factory()->count(2)->create([
+        'season_number' => 1,
+    ]);
+
+    get(route('episodes.index'))
+        ->assertOk()
+        ->assertSee('data-podcast-archive', false)
+        ->assertSee('podcast-cover-frame', false)
+        ->assertSee('podcast-ledger', false)
+        ->assertSee('Episode archive')
+        ->assertDontSee('Show Stats')
+        ->assertDontSee('Latest Episode</h3>', false);
 });
 
 test('podcast pages describe episodes without audio as details instead of playable media', function (): void {
