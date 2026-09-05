@@ -1,5 +1,5 @@
 <x-layouts.app
-    title="About the Davidson Family — Mouse28"
+    title="About the Davidson Family | Mouse28"
     description="Meet Jeffrey and Cassie Davidson and learn why their family shares Disney park accessibility experiences through Mouse28."
     og-description="Meet Jeffrey and Cassie Davidson and learn why their family shares Disney park accessibility experiences through Mouse28."
     og-image="/images/hero-family.jpg"
@@ -21,7 +21,7 @@
                         Disney looks different through our family's eyes.
                     </h1>
                     <p class="text-cream/75 max-w-xl text-lg/8 text-pretty lg:pb-1">
-                        We're Jeffrey and Cassie—the parents, park regulars, and voices behind Mouse28.
+                        We're Jeffrey and Cassie, the parents, park regulars, and voices behind Mouse28.
                     </p>
                 </div>
 
@@ -88,7 +88,7 @@
                             <p>
                                 Viola is autistic. Like many parents, we spent time learning what helps her thrive, what
                                 overwhelms her, and how to make unfamiliar environments more manageable. Disney became
-                                one of the places that works for her—not perfectly, but meaningfully.
+                                one of the places that works for her. Not perfectly, but meaningfully.
                             </p>
                             <p>
                                 We have navigated meltdowns in Tomorrowland, sensory overload in gift shops, and days
@@ -174,7 +174,7 @@
                             <p class="text-purple mt-2 font-semibold">Dad, software engineer, and Disney strategist</p>
                             <div class="text-navy/70 mt-6 max-w-[62ch] space-y-4 text-base/7 text-pretty">
                                 <p>
-                                    Jeffrey is the planner and podcast editor—the person mapping a park route,
+                                    Jeffrey is the planner and podcast editor, the person mapping a park route,
                                     researching the details, and asking whether there is time for one more ride.
                                 </p>
                                 <p>

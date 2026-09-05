@@ -23,6 +23,15 @@ test('public index pages render', function (string $route, string $content): voi
     'contact' => ['contact.show', 'Hear From You'],
 ]);
 
+test('about and contact pages avoid em dashes in their copy', function (string $route): void {
+    get(route($route))
+        ->assertOk()
+        ->assertDontSee('—');
+})->with([
+    'about' => ['about'],
+    'contact' => ['contact.show'],
+]);
+
 test('public index and utility pages use the dispatch editorial system', function (string $route, string $marker): void {
     get(route($route))
         ->assertOk()
