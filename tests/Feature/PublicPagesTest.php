@@ -241,6 +241,7 @@ test('blog index uses an artwork led archive without dashboard widgets', functio
         ->assertSee('data-editorial-blog', false)
         ->assertSee('editorial-feature', false)
         ->assertSee('editorial-story-grid', false)
+        ->assertSee('data-equal-width-stories', false)
         ->assertSee('data-post-artwork', false)
         ->assertDontSee('Blog Stats')
         ->assertDontSee('Categories</h3>', false);

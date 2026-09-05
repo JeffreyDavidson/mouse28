@@ -170,7 +170,7 @@
                         </div>
 
                         @if ($archivePosts->count())
-                            <div class="editorial-story-grid">
+                            <div class="editorial-story-grid" data-equal-width-stories>
                                 @foreach ($archivePosts as $post)
                                     <article class="editorial-story group min-w-0">
                                         <a
