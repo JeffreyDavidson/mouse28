@@ -103,15 +103,21 @@ test('empty discovery states offer useful paths forward', function (): void {
         ->assertSee('Listen to the podcast');
 });
 
-test('about and episode pages use concise public-facing labels', function (): void {
+test('about page uses an editorial family story with separate host profiles', function (): void {
+    get(route('about'))
+        ->assertOk()
+        ->assertSee('data-about-editorial', false)
+        ->assertSee('Jeffrey Davidson')
+        ->assertSee('Cassie Davidson')
+        ->assertDontSee('Park Visits')
+        ->assertDontSee('Chapter One')
+        ->assertDontSee('8 years old');
+});
+
+test('episode pages use concise public-facing labels', function (): void {
     $episode = Episode::factory()->create([
         'episode_number' => 28,
     ]);
-
-    get(route('about'))
-        ->assertOk()
-        ->assertSee('Park Visits')
-        ->assertDontSee('Weekly Visits');
 
     get(route('episodes.show', $episode))
         ->assertOk()
