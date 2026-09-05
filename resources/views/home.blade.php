@@ -7,33 +7,8 @@
     :show-footer-newsletter="false"
     :dispatch-layout="true"
 >
-    @php
-        $dispatchWaypoints = ['Welcome', 'Stories', 'Planning', 'Listen', 'Meet us', 'Stay in the loop'];
-    @endphp
-
     <div class="dispatch-cloth overflow-hidden">
-        <div class="dispatch-journey" data-dispatch-journey aria-hidden="true">
-            <svg class="dispatch-journey-map" viewBox="0 0 40 1000" preserveAspectRatio="none" aria-hidden="true">
-                <path
-                    class="dispatch-journey-track"
-                    d="M20 0 C5 90 35 160 18 245 S7 390 24 475 S35 620 14 710 S6 850 22 1000"
-                    pathLength="1"
-                />
-                <path
-                    class="dispatch-journey-progress"
-                    data-dispatch-route-path
-                    d="M20 0 C5 90 35 160 18 245 S7 390 24 475 S35 620 14 710 S6 850 22 1000"
-                    pathLength="1"
-                />
-            </svg>
-            @foreach ($dispatchWaypoints as $waypoint)
-                <span class="dispatch-journey-waypoint" data-dispatch-waypoint="{{ $waypoint }}"></span>
-            @endforeach
-            <span class="dispatch-journey-pin"></span>
-            <span class="dispatch-journey-label" data-dispatch-journey-label>{{ $dispatchWaypoints[0] }}</span>
-        </div>
-
-        <section class="dispatch-hero relative px-4 pt-6 sm:px-6 sm:pt-8" data-dispatch-stop="Welcome">
+        <section class="dispatch-hero relative px-4 pt-6 sm:px-6 sm:pt-8">
             <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
                 <div class="dispatch-route-line absolute top-10 left-[4%] h-24 w-52 rotate-6"></div>
                 <div class="dispatch-route-line absolute right-[3%] bottom-4 h-28 w-64 -rotate-8"></div>
@@ -91,11 +66,7 @@
             </div>
         </section>
 
-        <section
-            class="dispatch-blog-cluster relative z-10 px-4 pb-5 sm:px-6"
-            data-dispatch-reveal="story-folio"
-            data-dispatch-stop="Stories"
-        >
+        <section class="dispatch-blog-cluster relative z-10 px-4 pb-5 sm:px-6" data-dispatch-reveal="story-folio">
             <div class="mx-auto grid max-w-[86rem] items-start md:grid-cols-[8fr_12fr]">
                 <div class="relative z-20 mx-auto w-[82%] max-w-sm md:mx-0 md:w-[82%] md:max-w-none md:translate-x-40 md:-translate-y-8 md:-rotate-2">
                     <span class="sr-only">Latest from the Blog</span>
@@ -189,7 +160,7 @@
             </div>
         </section>
 
-        <section class="relative z-10 px-4 pb-5 sm:px-6 md:-mt-4" data-dispatch-stop="Planning">
+        <section class="relative z-10 px-4 pb-5 sm:px-6 md:-mt-4">
             <div class="dispatch-guide-shell relative isolate mx-auto max-w-[86rem]">
                 <div class="dispatch-guide-spread grid overflow-hidden md:grid-cols-[7fr_13fr]">
                     <div class="dispatch-paper-map border-navy/10 relative flex flex-col justify-center border-b p-7 sm:p-9 md:border-r md:border-b-0 lg:p-11">
@@ -284,7 +255,7 @@
             </div>
         </section>
 
-        <section class="relative z-10 px-4 pb-5 sm:px-6" data-dispatch-stop="Listen">
+        <section class="relative z-10 px-4 pb-5 sm:px-6">
             <div class="dispatch-podcast-panel mx-auto max-w-[86rem] p-6 sm:p-6">
                 <div class="border-cream/15 flex items-center justify-between gap-5 border-b pb-4">
                     <h2 class="font-heading text-cream text-3xl [font-weight:640] tracking-[-0.02em] text-balance sm:text-4xl">
@@ -367,7 +338,7 @@
             </div>
         </section>
 
-        <section class="relative z-10 px-4 pb-5 sm:px-6" data-dispatch-stop="Meet us">
+        <section class="relative z-10 px-4 pb-5 sm:px-6">
             <div class="dispatch-about-sheet mx-auto grid max-w-[86rem] items-center gap-7 p-5 sm:p-7 md:grid-cols-[8fr_12fr] md:gap-10 lg:p-8">
                 <div class="dispatch-photo-stack relative mx-auto w-full max-w-lg md:mx-0">
                     <img
@@ -414,11 +385,7 @@
             </div>
         </section>
 
-        <section
-            id="newsletter"
-            class="relative z-20 px-4 pb-10 sm:px-6 sm:pb-14 md:-mt-16"
-            data-dispatch-stop="Stay in the loop"
-        >
+        <section id="newsletter" class="relative z-20 px-4 pb-10 sm:px-6 sm:pb-14 md:-mt-16">
             @php($newsletterHasFeedback = $errors->newsletter->isNotEmpty() || session('newsletter_error'))
             <div class="dispatch-envelope relative mx-auto max-w-[82rem] overflow-hidden p-6 sm:p-8 md:min-h-64">
                 <div class="relative z-10 grid items-center gap-6 md:grid-cols-[8fr_12fr]">
@@ -493,99 +460,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            const journey = document.querySelector('[data-dispatch-journey]');
-            const stops = [...document.querySelectorAll('[data-dispatch-stop]')];
-            const waypoints = [...document.querySelectorAll('[data-dispatch-waypoint]')];
-            const journeyLabel = document.querySelector('[data-dispatch-journey-label]');
-            const journeyPath = document.querySelector('[data-dispatch-route-path]');
-
-            if (journey && journeyPath && stops.length === waypoints.length) {
-                document.documentElement.classList.add('js-dispatch-journey');
-
-                let stopPositions = [];
-                let ticking = false;
-
-                const measureJourney = () => {
-                    const maximumScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-                    const routeLength = journeyPath.getTotalLength();
-                    const routeWidth = journeyPath.ownerSVGElement.viewBox.baseVal.width;
-
-                    stopPositions = stops.map((stop, index) => {
-                        const documentTop = stop.getBoundingClientRect().top + window.scrollY;
-                        const activationScroll = Math.min(
-                            maximumScroll,
-                            Math.max(0, documentTop - window.innerHeight * 0.42),
-                        );
-                        const position = activationScroll / maximumScroll;
-                        const routePoint = journeyPath.getPointAtLength(position * routeLength);
-
-                        waypoints[index].style.setProperty(
-                            '--dispatch-waypoint-position',
-                            `${(position * 100).toFixed(2)}%`,
-                        );
-                        waypoints[index].style.setProperty(
-                            '--dispatch-waypoint-x',
-                            `${((routePoint.x / routeWidth) * journey.clientWidth).toFixed(1)}px`,
-                        );
-
-                        return {
-                            activationScroll,
-                            label: stop.dataset.dispatchStop,
-                        };
-                    });
-                };
-
-                const updateJourney = () => {
-                    const maximumScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-                    const progress = prefersReducedMotion
-                        ? 1
-                        : Math.min(1, Math.max(0, window.scrollY / maximumScroll));
-                    const routeLength = journeyPath.getTotalLength();
-                    const routePoint = journeyPath.getPointAtLength(progress * routeLength);
-                    const routeViewBox = journeyPath.ownerSVGElement.viewBox.baseVal;
-                    const routeOffset = (routePoint.y / routeViewBox.height) * journey.clientHeight;
-                    const routeX = (routePoint.x / routeViewBox.width) * journey.clientWidth;
-                    let activeIndex = 0;
-
-                    stopPositions.forEach((stopPosition, index) => {
-                        if (window.scrollY >= stopPosition.activationScroll) activeIndex = index;
-                    });
-
-                    journey.style.setProperty('--dispatch-route-progress', progress.toFixed(4));
-                    journey.style.setProperty('--dispatch-route-offset', `${routeOffset.toFixed(1)}px`);
-                    journey.style.setProperty('--dispatch-route-x', `${routeX.toFixed(1)}px`);
-                    journey.dataset.currentStop = stopPositions[activeIndex]?.label ?? '';
-
-                    waypoints.forEach((waypoint, index) => {
-                        waypoint.classList.toggle('is-passed', prefersReducedMotion || index <= activeIndex);
-                        waypoint.classList.toggle('is-active', !prefersReducedMotion && index === activeIndex);
-                    });
-
-                    if (journeyLabel) journeyLabel.textContent = stopPositions[activeIndex]?.label ?? '';
-                    ticking = false;
-                };
-
-                const refreshJourney = () => {
-                    measureJourney();
-                    updateJourney();
-                };
-
-                refreshJourney();
-
-                if (!prefersReducedMotion) {
-                    window.addEventListener(
-                        'scroll',
-                        () => {
-                            if (ticking) return;
-                            ticking = true;
-                            window.requestAnimationFrame(updateJourney);
-                        },
-                        { passive: true },
-                    );
-                }
-
-                window.addEventListener('resize', refreshJourney, { passive: true });
-            }
 
             if (prefersReducedMotion) return;
 

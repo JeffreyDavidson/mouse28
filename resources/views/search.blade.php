@@ -1,5 +1,5 @@
 <x-layouts.app
-    :title="($query ? 'Search results for “'.$query.'”' : 'Search').' — Mouse28'"
+    :title="($query ? 'Search results for “'.$query.'”' : 'Search').' | Mouse28'"
     description="Search Mouse28 blog posts, accessibility guides, and podcast episodes."
     og-title="Search Mouse28"
     robots="noindex,follow"

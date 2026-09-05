@@ -58,7 +58,7 @@ test('contact page offers email instead of an unusable form when verification is
 
     get(route('contact.show'))
         ->assertOk()
-        ->assertSee('Email us instead')
+        ->assertSee('Email us directly')
         ->assertSee('href="mailto:mouse28podcast@gmail.com"', false)
         ->assertDontSee('action="'.route('contact.store').'"', false)
         ->assertDontSee('data-action="contact-form"', false);
