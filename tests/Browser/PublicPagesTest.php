@@ -254,6 +254,45 @@ test('desktop navigation identifies only the current destination', function (): 
         ->assertNoJavaScriptErrors();
 });
 
+test('blog topics and search update without reloading the page', function (): void {
+    $accessiblePost = Post::factory()->create([
+        'title' => 'A quiet entrance plan',
+        'category' => 'park-accessibility',
+    ]);
+    $diningPost = Post::factory()->create([
+        'title' => 'A family dining review',
+        'category' => 'food-reviews',
+    ]);
+
+    $page = visit(route('blog.index'));
+
+    $page->script("window.blogNavigationMarker = 'preserved'");
+
+    $page
+        ->click('a[data-blog-filter-link][href*="park-accessibility"]')
+        ->assertQueryStringHas('category', 'park-accessibility')
+        ->assertSee($accessiblePost->title)
+        ->assertDontSee($diningPost->title)
+        ->assertScript('window.blogNavigationMarker', 'preserved')
+        ->fill('#blog-search', 'quiet entrance')
+        ->assertQueryStringHas('q', 'quiet entrance')
+        ->assertSee($accessiblePost->title)
+        ->assertScript('document.activeElement.id', 'blog-search')
+        ->assertScript('window.blogNavigationMarker', 'preserved')
+        ->assertScript('document.querySelector("[data-blog-browser]").ariaBusy', 'false')
+        ->script('window.blogFilterTop = document.querySelector("[data-blog-filters]").getBoundingClientRect().top');
+
+    $page
+        ->click('a[data-blog-filter-link][href$="/blog"]')
+        ->assertQueryStringMissing('category')
+        ->assertQueryStringMissing('q')
+        ->assertSee($accessiblePost->title)
+        ->assertSee($diningPost->title)
+        ->assertScript('Math.abs(document.querySelector("[data-blog-filters]").getBoundingClientRect().top - window.blogFilterTop) < 2', true)
+        ->assertScript('window.blogNavigationMarker', 'preserved')
+        ->assertNoJavaScriptErrors();
+});
+
 test('keyboard users can skip directly to the main content', function (): void {
     visit(route('home'))
         ->keys('html > body', 'Tab')

@@ -24,7 +24,17 @@
         $archivePosts = $featuredPost ? $posts->skip(1) : $posts;
     @endphp
 
-    <div data-editorial-blog>
+    <div
+        data-editorial-blog
+        data-blog-browser
+        data-page-title="{{ $pageTitle }}"
+        data-page-description="{{ $pageDescription }}"
+        data-canonical-url="{{ $canonicalUrl }}"
+        data-robots="{{ $robots }}"
+        data-blog-announcement="{{ $posts->total() }} {{ Str::plural('story', $posts->total()) }} shown"
+        aria-busy="false"
+        class="transition-opacity duration-200 motion-reduce:transition-none"
+    >
         <section class="editorial-index-hero bg-navy text-cream relative overflow-hidden">
             <div class="relative mx-auto max-w-[86rem] px-4 py-12 sm:px-6 sm:py-16 lg:py-20">
                 <div class="max-w-2xl">
@@ -82,7 +92,7 @@
                 @if ($hasAnyPosts || request('q') || $category)
                     <div data-blog-filters class="border-navy/15 border-y py-6">
                         <div class="grid min-w-0 gap-6 lg:grid-cols-[minmax(15rem,1fr)_2fr_auto] lg:items-end">
-                            <form action="{{ route('blog.index') }}" method="GET">
+                            <form action="{{ route('blog.index') }}" method="GET" data-blog-search-form>
                                 @if ($category)
                                     <input type="hidden" name="category" value="{{ $category }}" />
                                 @endif
@@ -98,12 +108,14 @@
                                         type="search"
                                         name="q"
                                         value="{{ request('q') }}"
+                                        data-blog-live-search
                                         placeholder="Search posts..."
-                                        class="border-navy/15 bg-cream text-navy placeholder:text-navy/60 focus:border-purple focus:ring-purple/20 min-h-12 w-full rounded-xl border py-3 pr-12 pl-11 text-base outline-none focus:ring-2"
+                                        class="border-navy/15 bg-cream text-navy placeholder:text-navy/60 focus:border-purple focus:ring-purple/20 min-h-12 w-full appearance-none rounded-xl border py-3 pr-12 pl-11 text-base outline-none focus:ring-2"
                                     />
                                     @if (request('q'))
                                         <a
                                             href="{{ route('blog.index', array_filter(['category' => $category, 'sort' => $sort !== 'newest' ? $sort : null])) }}"
+                                            data-blog-navigation-link
                                             class="text-navy/65 hover:text-purple absolute top-1/2 right-0 flex size-12 -translate-y-1/2 items-center justify-center"
                                             aria-label="Clear search"
                                         >
@@ -118,12 +130,18 @@
                                 <div class="flex gap-2 overflow-x-auto pb-1">
                                     <a
                                         href="{{ route('blog.index') }}"
+                                        data-blog-navigation-link
+                                        data-blog-filter-link
+                                        @if (! $category) aria-current="page" @endif
                                         class="inline-flex min-h-12 shrink-0 items-center rounded-full px-4 py-2 text-sm font-semibold {{ ! $category ? 'bg-navy text-cream' : 'border-navy/15 text-navy hover:border-purple border' }}"
                                     >All stories</a>
                                     @foreach (\App\Models\Post::CATEGORIES as $slug => $label)
                                         @continue(! in_array($slug, $usedCategories))
                                         <a
                                             href="{{ route('blog.index', ['category' => $slug]) }}"
+                                            data-blog-navigation-link
+                                            data-blog-filter-link
+                                            @if ($category === $slug) aria-current="page" @endif
                                             class="inline-flex min-h-12 shrink-0 items-center rounded-full px-4 py-2 text-sm font-semibold {{ $category === $slug ? 'bg-navy text-cream' : 'border-navy/15 text-navy hover:border-purple border' }}"
                                         >{{ $label }}</a>
                                     @endforeach
@@ -234,6 +252,7 @@
                                 @if (request('q') || $category)
                                     <a
                                         href="{{ route('blog.index') }}"
+                                        data-blog-navigation-link
                                         class="text-gold inline-flex min-h-12 items-center font-semibold underline underline-offset-8"
                                     >View all posts</a>
                                 @else
