@@ -1458,16 +1458,8 @@
         translate: 0 0.08rem;
     }
 
-    .dispatch-reader-sheet::before {
-        position: absolute;
-        top: -0.8rem;
-        left: 50%;
-        width: 7rem;
-        height: 2rem;
-        background: rgb(212 168 67 / 28%);
-        content: '';
-        rotate: -1deg;
-        translate: -50% 0;
+    .dispatch-reader-sheet {
+        outline: none;
     }
 
     .dispatch-article-hero {

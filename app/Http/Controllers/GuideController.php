@@ -29,7 +29,7 @@ class GuideController extends Controller
         return view('guides.index', [
             'category' => $category,
             'guides' => $guides,
-            'pageTitle' => $categoryLabel ? "{$categoryLabel} Guides — Mouse28" : 'Disney Parks Guides — Mouse28',
+            'pageTitle' => $categoryLabel ? "{$categoryLabel} Guides | Mouse28" : 'Disney Parks Guides | Mouse28',
             'pageDescription' => $categoryLabel
                 ? "Practical Mouse28 {$categoryLabel} guides for planning informed Disney park visits."
                 : 'Practical, regularly reviewed Disney park guides for accessibility, planning, food, and family visits.',

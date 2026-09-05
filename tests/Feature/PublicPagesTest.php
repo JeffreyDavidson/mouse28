@@ -18,7 +18,7 @@ test('public index pages render', function (string $route, string $content): voi
     'home' => ['home', 'Mouse28'],
     'about' => ['about', 'Disney looks different'],
     'blog' => ['blog.index', 'Blog'],
-    'guides' => ['guides.index', 'Park Guides'],
+    'guides' => ['guides.index', 'Park guides.'],
     'podcast' => ['episodes.index', 'The Mouse28 Podcast'],
     'contact' => ['contact.show', 'Send us a note'],
 ]);
@@ -40,7 +40,7 @@ test('public index and utility pages use the dispatch editorial system', functio
         ->assertSee('js-dispatch-pages', false);
 })->with([
     'blog archive' => ['blog.index', 'data-editorial-blog'],
-    'guide archive' => ['guides.index', 'dispatch-page-field'],
+    'guide archive' => ['guides.index', 'data-guide-archive'],
     'podcast archive' => ['episodes.index', 'data-podcast-archive'],
     'about' => ['about', 'data-about-editorial'],
     'contact' => ['contact.show', 'dispatch-letter-form'],
@@ -72,8 +72,10 @@ test('public reading pages use dispatch reading surfaces', function (): void {
 
     get(route('guides.show', $guide))
         ->assertOk()
-        ->assertSee('dispatch-page-hero', false)
+        ->assertSee('data-guide-detail', false)
         ->assertSee('dispatch-reader-sheet', false)
+        ->assertSee('guide-reading-column', false)
+        ->assertDontSee('—')
         ->assertSee('/images/guides/'.$guide->category.'.webp', false);
 
     get(route('episodes.show', $episode))
