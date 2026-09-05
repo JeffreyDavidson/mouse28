@@ -135,7 +135,7 @@ test('search validation identifies and focuses the invalid query', function (): 
 
 test('contact page offers an actionable email route when verification is unavailable', function (): void {
     visit(route('contact.show'))
-        ->assertSee('Email us instead')
+        ->assertSee('Email us directly')
         ->assertVisible('.dispatch-letter-form a[href^="mailto:"]')
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();

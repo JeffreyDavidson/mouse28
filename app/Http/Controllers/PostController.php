@@ -46,7 +46,7 @@ class PostController extends Controller
             'hasAnyPosts' => $hasAnyPosts,
             'usedCategories' => $usedCategories,
             'categoryCounts' => $categoryCounts,
-            'pageTitle' => $categoryLabel ? "{$categoryLabel} — Mouse28" : 'Disney Parks Blog — Mouse28',
+            'pageTitle' => $categoryLabel ? "{$categoryLabel} | Mouse28" : 'Disney Parks Blog | Mouse28',
             'pageDescription' => $categoryLabel
                 ? "Mouse28 {$categoryLabel} articles, family experiences, and practical Disney park takeaways."
                 : 'Disney park accessibility tips, trip reports, family experiences, news, and practical planning from Jeffrey and Cassie Davidson.',
