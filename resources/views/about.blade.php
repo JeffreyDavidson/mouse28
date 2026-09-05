@@ -70,7 +70,7 @@
             </section>
 
             <section class="mx-auto max-w-[86rem] px-4 pb-16 sm:px-6 sm:pb-20 lg:pb-28">
-                <div class="grid overflow-hidden rounded-xl bg-white lg:grid-cols-[5fr_7fr]">
+                <div class="grid grid-cols-1 overflow-hidden rounded-xl bg-white lg:grid-cols-[5fr_7fr]">
                     <img
                         src="/images/meet-jeffrey-and-cassie.webp"
                         alt="Jeffrey and Cassie Davidson at Disney's Hollywood Studios"
@@ -143,7 +143,7 @@
                 </div>
             </section>
 
-            <section class="bg-dark-cream border-navy/10 border-t" aria-labelledby="voices-heading">
+            <section class="bg-dark-cream border-navy/10 overflow-x-clip border-t" aria-labelledby="voices-heading">
                 <div class="mx-auto max-w-[86rem] px-4 py-16 sm:px-6 sm:py-20 lg:py-28">
                     <div class="max-w-4xl">
                         <h2

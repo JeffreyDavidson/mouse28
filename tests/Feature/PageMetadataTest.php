@@ -28,7 +28,7 @@ test('public landing pages have specific search and social metadata', function (
 
     get(route('blog.index'))
         ->assertOk()
-        ->assertSee('<meta property="og:title" content="Disney Parks Blog — Mouse28">', false)
+        ->assertSee('<meta property="og:title" content="Disney Parks Blog | Mouse28">', false)
         ->assertSee('<meta property="og:url" content="'.route('blog.index').'">', false);
 
     get(route('guides.index'))
@@ -96,7 +96,7 @@ test('invalid blog filters do not create indexable archive variants', function (
         'sort' => 'not-a-sort',
     ]))
         ->assertOk()
-        ->assertSee('<title>Disney Parks Blog — Mouse28</title>', false)
+        ->assertSee('<title>Disney Parks Blog | Mouse28</title>', false)
         ->assertSee('<meta name="robots" content="index,follow">', false)
         ->assertSee('<link rel="canonical" href="'.route('blog.index').'">', false);
 });
@@ -126,7 +126,7 @@ test('episode metadata falls back to its title and description', function (): vo
 
     get(route('episodes.show', $episode))
         ->assertOk()
-        ->assertSee('<title>Trailer: Meet Mouse28 — Mouse28</title>', false)
+        ->assertSee('<title>Trailer: Meet Mouse28 | Mouse28</title>', false)
         ->assertSee('<meta name="description" content="Meet Jeffrey and Cassie and learn what the Mouse28 podcast is about.">', false)
         ->assertSee('<meta property="og:image" content="'.url('/storage/episodes/trailer-meet-mouse28.webp').'">', false);
 });

@@ -1,5 +1,5 @@
 <x-layouts.app
-    :title="($episode->meta_title ?: $episode->title).' — Mouse28'"
+    :title="($episode->meta_title ?: $episode->title).' | Mouse28'"
     :description="$episode->meta_description ?: Str::limit($episode->description, 160)"
     :og-title="$episode->meta_title ?: $episode->title"
     :og-description="$episode->meta_description ?: Str::limit($episode->description, 200)"
@@ -23,7 +23,7 @@
 
     @if ($isPreview ?? false)
         <div role="status" class="bg-gold text-navy px-4 py-3 text-center text-sm font-semibold">
-            Preview mode — this page is only visible to administrators.
+            Preview mode. This page is only visible to administrators.
         </div>
     @endif
 
@@ -210,7 +210,7 @@
                 <h2 id="share-episode" class="font-heading text-navy text-xl [font-weight:620]">Share this episode</h2>
                 <div class="mt-3 flex flex-wrap gap-x-5 gap-y-2">
                     <a
-                        href="https://twitter.com/intent/tweet?text={{ urlencode($episode->title . ' — Mouse28 Podcast') }}&url={{ urlencode(route('episodes.show', $episode)) }}"
+                        href="https://twitter.com/intent/tweet?text={{ urlencode($episode->title . ' | Mouse28 Podcast') }}&url={{ urlencode(route('episodes.show', $episode)) }}"
                         target="_blank"
                         rel="noopener"
                         class="text-purple inline-flex min-h-12 items-center underline underline-offset-8"

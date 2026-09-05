@@ -1,5 +1,5 @@
 <x-layouts.app
-    :title="($post->meta_title ?: $post->title).' — Mouse28'"
+    :title="($post->meta_title ?: $post->title).' | Mouse28'"
     :description="$post->meta_description ?: Str::limit($post->excerpt, 160)"
     :og-title="$post->meta_title ?: $post->title"
     :og-description="$post->meta_description ?: Str::limit($post->excerpt, 200)"
@@ -24,7 +24,7 @@
 
     @if ($isPreview ?? false)
         <div role="status" class="bg-gold text-navy px-4 py-3 text-center text-sm font-semibold">
-            Preview mode — this page is only visible to administrators.
+            Preview mode. This page is only visible to administrators.
         </div>
     @endif
 
@@ -217,7 +217,7 @@
             <div class="mt-12 flex flex-wrap items-center gap-5" data-print-hidden>
                 <span class="text-navy font-semibold">Share this story</span>
                 <a
-                    href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($post->title . ' — Mouse28') }}"
+                    href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($post->title . ' | Mouse28') }}"
                     target="_blank"
                     rel="noopener"
                     class="text-purple inline-flex min-h-12 items-center underline underline-offset-8"

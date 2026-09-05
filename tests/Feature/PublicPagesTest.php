@@ -23,13 +23,17 @@ test('public index pages render', function (string $route, string $content): voi
     'contact' => ['contact.show', 'Send us a note'],
 ]);
 
-test('about and contact pages avoid em dashes in their copy', function (string $route): void {
+test('public landing pages avoid em dashes in their copy and metadata', function (string $route): void {
     get(route($route))
         ->assertOk()
         ->assertDontSee('—');
 })->with([
     'about' => ['about'],
     'contact' => ['contact.show'],
+    'blog' => ['blog.index'],
+    'guides' => ['guides.index'],
+    'podcast' => ['episodes.index'],
+    'search' => ['search'],
 ]);
 
 test('public index and utility pages use the dispatch editorial system', function (string $route, string $marker): void {
@@ -68,7 +72,8 @@ test('public reading pages use dispatch reading surfaces', function (): void {
     get(route('blog.show', $post))
         ->assertOk()
         ->assertSee('editorial-detail-hero', false)
-        ->assertSee('editorial-reading-column', false);
+        ->assertSee('editorial-reading-column', false)
+        ->assertDontSee('—');
 
     get(route('guides.show', $guide))
         ->assertOk()
@@ -81,7 +86,8 @@ test('public reading pages use dispatch reading surfaces', function (): void {
     get(route('episodes.show', $episode))
         ->assertOk()
         ->assertSee('episode-detail-hero', false)
-        ->assertSee('dispatch-page-field', false);
+        ->assertSee('dispatch-page-field', false)
+        ->assertDontSee('—');
 });
 
 test('guide pages use category artwork when an editor has not uploaded a cover', function (): void {
