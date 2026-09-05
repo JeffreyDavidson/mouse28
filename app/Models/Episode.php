@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Storage;
  * @property-read string|null $cover_image_url
  * @property-read string $formatted_duration
  * @property-read string|null $og_image_url
+ * @property-read string|null $transistor_embed_url
  */
 #[Fillable([
     'title',
@@ -29,6 +30,7 @@ use Illuminate\Support\Facades\Storage;
     'transcript',
     'episode_number',
     'season_number',
+    'transistor_url',
     'audio_url',
     'audio_path',
     'apple_url',
@@ -113,6 +115,23 @@ class Episode extends Model
             }
 
             return $this->audio_url;
+        });
+    }
+
+    protected function transistorEmbedUrl(): Attribute
+    {
+        return Attribute::make(get: function (): ?string {
+            if (! is_string($this->transistor_url)) {
+                return null;
+            }
+
+            $matches = [];
+
+            if (preg_match('/\Ahttps:\/\/share\.transistor\.fm\/s\/([a-zA-Z0-9]+)\/?\z/', $this->transistor_url, $matches) !== 1) {
+                return null;
+            }
+
+            return "https://share.transistor.fm/e/{$matches[1]}";
         });
     }
 

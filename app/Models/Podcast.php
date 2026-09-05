@@ -41,7 +41,7 @@ class Podcast extends Model
             $this->apple_url ? ['label' => 'Apple Podcasts', 'url' => $this->apple_url] : null,
             $this->spotify_url ? ['label' => 'Spotify', 'url' => $this->spotify_url] : null,
             $this->youtube_url ? ['label' => 'YouTube', 'url' => $this->youtube_url] : null,
-            ['label' => 'RSS Feed', 'url' => route('rss.podcast')],
+            ['label' => 'RSS Feed', 'url' => (string) config('podcast.rss_url')],
         ]));
     }
 }

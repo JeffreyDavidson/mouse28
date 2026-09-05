@@ -62,7 +62,7 @@
                             <a
                                 href="{{ route('episodes.show', $latestEpisode) }}"
                                 class="bg-gold text-navy hover:bg-gold-light mt-5 inline-flex min-h-12 items-center rounded-full px-6 py-3 font-semibold transition-colors"
-                            >{{ $latestEpisode->audio_source_url ? 'Listen now' : 'Episode details' }}</a>
+                            >{{ $latestEpisode->transistor_embed_url ? 'Listen now' : 'Episode details' }}</a>
                         </div>
                     @else
                         <div class="border-gold/35 mt-8 border-y py-6">
@@ -143,7 +143,7 @@
                                                     </p>
                                                 </div>
                                                 <span class="text-purple decoration-gold/70 inline-flex min-h-12 shrink-0 items-center font-semibold underline underline-offset-8">
-                                                    {{ $episode->audio_source_url ? 'Listen now' : 'Episode details' }}
+                                                    {{ $episode->transistor_embed_url ? 'Listen now' : 'Episode details' }}
                                                 </span>
                                             </a>
                                         </article>

@@ -1,7 +1,5 @@
 <?php
 
 return [
-    'author' => env('PODCAST_AUTHOR', 'Jeffrey & Cassie Davidson'),
-    'owner_name' => env('PODCAST_OWNER_NAME', 'Jeffrey Davidson'),
-    'owner_email' => env('PODCAST_OWNER_EMAIL', env('MAIL_FROM_ADDRESS')),
+    'rss_url' => env('PODCAST_RSS_URL', 'https://feeds.transistor.fm/mouse28'),
 ];

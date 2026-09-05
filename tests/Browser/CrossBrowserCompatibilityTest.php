@@ -50,7 +50,7 @@ test('public reading and form surfaces work across supported browsers', function
     ]);
     $episode = Episode::factory()->create([
         'title' => 'Cross-Browser Podcast Episode',
-        'audio_url' => 'https://cdn.example.com/cross-browser.mp3',
+        'transistor_url' => 'https://share.transistor.fm/s/428d650c',
     ]);
 
     foreach ([
@@ -75,8 +75,8 @@ test('public reading and form surfaces work across supported browsers', function
         ->assertScript('document.querySelector("#subject").disabled', false);
 
     visit(route('episodes.show', $episode))
-        ->assertScript('document.querySelector("audio").controls', true)
-        ->assertScript('document.querySelector("audio").preload', 'metadata');
+        ->assertScript('document.querySelector("iframe").src', 'https://share.transistor.fm/e/428d650c')
+        ->assertScript('document.querySelector("iframe").height', '180');
 
     visit(route('blog.show', $post))
         ->assertScript('getComputedStyle(document.querySelector("header")).position', 'sticky')

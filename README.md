@@ -40,7 +40,7 @@ The application can run locally without live third-party calls, but these featur
 - `RESEND_API_KEY` and `RESEND_AUDIENCE_ID` power newsletter signup and the subscriber dashboard.
 - `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` protect contact and newsletter forms. `TURNSTILE_ALLOWED_HOSTNAMES` must contain the exact production and local hostnames.
 - `MAIL_*` and `MAIL_ADMIN_ADDRESS` deliver contact notifications and confirmations.
-- `PODCAST_OWNER_NAME` and `PODCAST_OWNER_EMAIL` populate podcast-feed ownership metadata.
+- `PODCAST_RSS_URL` identifies the canonical Transistor feed. It defaults to the Mouse28 feed.
 - `FATHOM_SITE_ID` enables the optional analytics script.
 - `SENTRY_LARAVEL_DSN` enables production error reporting. Keep `SENTRY_SEND_DEFAULT_PII=false`; tracing and profiling remain disabled until their sample rates are deliberately raised above `0.0`.
 - `GUIDES_ENABLED` controls public guide routes and discovery. It defaults to `false` while the guide library is being prepared.
@@ -54,9 +54,9 @@ The Filament panel is available at `/admin` to users with `is_admin = true`.
 
 - Posts contain news, trip reports, recaps, and family writing.
 - Guides contain durable park resources. Policy-sensitive guides should include an official source and a current `last_reviewed_at` date.
-- Episodes contain podcast metadata, audio links, show notes, and transcripts.
+- Episodes contain podcast metadata, a Transistor share URL, show notes, and transcripts. Upload the episode audio to Transistor rather than the website.
 - Podcast Settings owns show-level distribution metadata.
-- Show-level podcast destinations appear throughout the public site and act as fallbacks when an episode does not have a platform-specific URL. The generated podcast feed is always available as the RSS fallback.
+- Show-level podcast destinations appear throughout the public site and act as fallbacks when an episode does not have a platform-specific URL. Transistor owns the canonical RSS feed and embedded episode players; the legacy `/rss/podcast` URL permanently redirects there.
 - Content lists show publication status and readiness reminders. Edit pages provide administrator-only draft previews.
 
 Content is publicly visible only when it is marked published and its publication date is not in the future. Community Stories and reader-submitted story publishing are intentionally outside the product scope.
@@ -95,7 +95,7 @@ Dependabot vulnerability alerts remain enabled. CI audits the locked Composer an
 
 ## Deployment checklist
 
-- Configure the application URL, database, mail, Resend, Turnstile, podcast ownership, storage, cache, sessions, and queues.
+- Configure the application URL, database, mail, Resend, Turnstile, Transistor podcast feed, storage, cache, sessions, and queues.
 - Set `SENTRY_LARAVEL_DSN`, `SENTRY_ENVIRONMENT=production`, and a deploy-specific `SENTRY_RELEASE` to opt into error reporting. Leave PII disabled and choose non-zero tracing or profiling sample rates only after reviewing volume and privacy.
 - Run `php artisan app:verify-production` after loading production configuration and stop if it reports a failure.
 - Run `php artisan migrate --force`.

@@ -31,9 +31,10 @@ class EpisodesTable
                 TextColumn::make('season_number')
                     ->label('Season')
                     ->sortable(),
-                TextColumn::make('audio')
+                TextColumn::make('transistor_url')
+                    ->label('Player')
                     ->badge()
-                    ->getStateUsing(fn (Episode $record): string => $record->audio_source_url ? 'Available' : 'Not available')
+                    ->getStateUsing(fn (Episode $record): string => $record->transistor_embed_url ? 'Available' : 'Not available')
                     ->color(fn (string $state): string => $state === 'Available' ? 'success' : 'gray'),
                 TextColumn::make('transcript')
                     ->badge()
