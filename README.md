@@ -4,7 +4,7 @@ Mouse28 is a blog-first Disney parks and podcast site from Jeffrey and Cassie Da
 
 ## Stack
 
-- PHP 8.4 and Laravel 13
+- PHP 8.5 and Laravel 13
 - Filament 5 administration panel
 - Blade, Tailwind CSS 4, Alpine.js, and Vite 7
 - SQLite locally by default
