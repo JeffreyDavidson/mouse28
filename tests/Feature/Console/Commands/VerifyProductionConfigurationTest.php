@@ -24,7 +24,15 @@ beforeEach(function (): void {
         'services.turnstile.secret_key' => 'turnstile-secret-key',
         'services.turnstile.allowed_hostnames' => ['mouse28.com', 'www.mouse28.com'],
         'podcast.rss_url' => 'https://feeds.transistor.fm/mouse28',
-        'sentry.dsn' => null,
+        'nightwatch.enabled' => true,
+        'nightwatch.token' => 'nightwatch-production-token',
+        'nightwatch.capture_request_payload' => false,
+        'nightwatch.sampling.requests' => 0.1,
+        'sentry.dsn' => 'https://public-key@example.ingest.sentry.io/123',
+        'sentry.environment' => 'production',
+        'sentry.release' => 'production-release',
+        'sentry.traces_sample_rate' => 0.0,
+        'sentry.profiles_sample_rate' => 0.0,
         'sentry.send_default_pii' => false,
     ]);
 });
@@ -52,6 +60,15 @@ test('unsafe production configuration reports every failure without exposing val
         'services.turnstile.secret_key' => null,
         'services.turnstile.allowed_hostnames' => ['localhost'],
         'podcast.rss_url' => 'https://example.com/mouse28.xml',
+        'nightwatch.enabled' => false,
+        'nightwatch.token' => null,
+        'nightwatch.capture_request_payload' => true,
+        'nightwatch.sampling.requests' => 1.0,
+        'sentry.dsn' => null,
+        'sentry.environment' => null,
+        'sentry.release' => null,
+        'sentry.traces_sample_rate' => 0.1,
+        'sentry.profiles_sample_rate' => 0.1,
         'sentry.send_default_pii' => true,
     ]);
 
@@ -71,14 +88,24 @@ test('unsafe production configuration reports every failure without exposing val
             'TURNSTILE_SECRET_KEY must be configured.',
             'TURNSTILE_ALLOWED_HOSTNAMES must include the canonical host.',
             'PODCAST_RSS_URL must use a Transistor feed URL.',
+            'NIGHTWATCH_ENABLED must be true.',
+            'NIGHTWATCH_TOKEN must be configured.',
+            'NIGHTWATCH_CAPTURE_REQUEST_PAYLOAD must be false.',
+            'NIGHTWATCH_REQUEST_SAMPLE_RATE must be greater than 0 and no more than 0.1.',
+            'SENTRY_LARAVEL_DSN must be configured.',
             'SENTRY_SEND_DEFAULT_PII must be false.',
+            'SENTRY_ENVIRONMENT must be production.',
+            'SENTRY_RELEASE must be configured.',
+            'SENTRY_TRACES_SAMPLE_RATE must be 0.0 until tracing is deliberately enabled.',
+            'SENTRY_PROFILES_SAMPLE_RATE must be 0.0 until profiling is deliberately enabled.',
         )
         ->not->toContain('admin@example.test');
 });
 
-test('enabled Sentry requires production environment and a release identifier', function (): void {
+test('observability credentials are never exposed in verification output', function (): void {
     config()->set([
-        'sentry.dsn' => 'https://public-key@example.ingest.sentry.io/123',
+        'nightwatch.token' => 'private-nightwatch-token',
+        'sentry.dsn' => 'https://private-public-key@example.ingest.sentry.io/123',
         'sentry.environment' => 'staging',
         'sentry.release' => null,
     ]);
@@ -88,8 +115,11 @@ test('enabled Sentry requires production environment and a release identifier', 
 
     expect($exitCode)->toBe(Command::FAILURE)
         ->and($output)->toContain(
-            'SENTRY_ENVIRONMENT must be production when Sentry is enabled.',
-            'SENTRY_RELEASE must be configured when Sentry is enabled.',
+            'SENTRY_ENVIRONMENT must be production.',
+            'SENTRY_RELEASE must be configured.',
         )
-        ->not->toContain('public-key');
+        ->not->toContain(
+            'private-nightwatch-token',
+            'private-public-key',
+        );
 });

@@ -12,7 +12,6 @@ class VerifyProductionConfiguration extends Command
 {
     public function handle(): int
     {
-        $sentryEnabled = $this->isConfigured(config('sentry.dsn'));
         $appUrl = config('app.url');
         $canonicalUrl = config('mouse28.production_url');
 
@@ -35,9 +34,16 @@ class VerifyProductionConfiguration extends Command
             [$this->isConfigured(config('services.turnstile.secret_key')), 'TURNSTILE_SECRET_KEY must be configured.'],
             [$this->allowsCanonicalHost(config('services.turnstile.allowed_hostnames'), $canonicalUrl), 'TURNSTILE_ALLOWED_HOSTNAMES must include the canonical host.'],
             [$this->isTransistorFeedUrl(config('podcast.rss_url')), 'PODCAST_RSS_URL must use a Transistor feed URL.'],
+            [config('nightwatch.enabled') === true, 'NIGHTWATCH_ENABLED must be true.'],
+            [$this->isConfigured(config('nightwatch.token')), 'NIGHTWATCH_TOKEN must be configured.'],
+            [config('nightwatch.capture_request_payload') === false, 'NIGHTWATCH_CAPTURE_REQUEST_PAYLOAD must be false.'],
+            [$this->usesConservativeRequestSampling(config('nightwatch.sampling.requests')), 'NIGHTWATCH_REQUEST_SAMPLE_RATE must be greater than 0 and no more than 0.1.'],
+            [$this->isConfigured(config('sentry.dsn')), 'SENTRY_LARAVEL_DSN must be configured.'],
             [config('sentry.send_default_pii') === false, 'SENTRY_SEND_DEFAULT_PII must be false.'],
-            [! $sentryEnabled || config('sentry.environment') === 'production', 'SENTRY_ENVIRONMENT must be production when Sentry is enabled.'],
-            [! $sentryEnabled || $this->isConfigured(config('sentry.release')), 'SENTRY_RELEASE must be configured when Sentry is enabled.'],
+            [config('sentry.environment') === 'production', 'SENTRY_ENVIRONMENT must be production.'],
+            [$this->isConfigured(config('sentry.release')), 'SENTRY_RELEASE must be configured.'],
+            [config('sentry.traces_sample_rate') === 0.0, 'SENTRY_TRACES_SAMPLE_RATE must be 0.0 until tracing is deliberately enabled.'],
+            [config('sentry.profiles_sample_rate') === 0.0, 'SENTRY_PROFILES_SAMPLE_RATE must be 0.0 until profiling is deliberately enabled.'],
         ];
 
         $failures = array_map(
@@ -108,5 +114,12 @@ class VerifyProductionConfiguration extends Command
         $canonicalHost = parse_url($canonicalUrl, PHP_URL_HOST);
 
         return is_string($canonicalHost) && in_array($canonicalHost, $allowedHostnames, true);
+    }
+
+    private function usesConservativeRequestSampling(mixed $sampleRate): bool
+    {
+        return is_numeric($sampleRate)
+            && (float) $sampleRate > 0.0
+            && (float) $sampleRate <= 0.1;
     }
 }
