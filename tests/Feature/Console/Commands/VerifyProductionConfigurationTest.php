@@ -10,6 +10,7 @@ beforeEach(function (): void {
         'app.url' => 'https://mouse28.com',
         'app.key' => 'base64:production-key',
         'mouse28.production_url' => 'https://mouse28.com',
+        'mouse28.deployment_environment' => 'production',
         'session.secure' => true,
         'session.driver' => 'database',
         'cache.default' => 'database',
@@ -38,6 +39,22 @@ beforeEach(function (): void {
 });
 
 test('safe production configuration passes', function (): void {
+    $exitCode = Artisan::call('app:verify-production');
+
+    expect($exitCode)->toBe(Command::SUCCESS)
+        ->and(Artisan::output())->toContain('Production configuration is ready.');
+});
+
+test('safe staging configuration passes with isolated observability', function (): void {
+    config()->set([
+        'app.url' => 'https://staging.mouse28.com',
+        'mouse28.production_url' => 'https://staging.mouse28.com',
+        'mouse28.deployment_environment' => 'staging',
+        'services.turnstile.allowed_hostnames' => ['staging.mouse28.com'],
+        'sentry.environment' => 'staging',
+        'sentry.release' => 'staging-release',
+    ]);
+
     $exitCode = Artisan::call('app:verify-production');
 
     expect($exitCode)->toBe(Command::SUCCESS)
@@ -94,7 +111,7 @@ test('unsafe production configuration reports every failure without exposing val
             'NIGHTWATCH_REQUEST_SAMPLE_RATE must be greater than 0 and no more than 0.1.',
             'SENTRY_LARAVEL_DSN must be configured.',
             'SENTRY_SEND_DEFAULT_PII must be false.',
-            'SENTRY_ENVIRONMENT must be production.',
+            'SENTRY_ENVIRONMENT must match MOUSE28_DEPLOYMENT_ENVIRONMENT.',
             'SENTRY_RELEASE must be configured.',
             'SENTRY_TRACES_SAMPLE_RATE must be 0.0 until tracing is deliberately enabled.',
             'SENTRY_PROFILES_SAMPLE_RATE must be 0.0 until profiling is deliberately enabled.',
@@ -115,7 +132,7 @@ test('observability credentials are never exposed in verification output', funct
 
     expect($exitCode)->toBe(Command::FAILURE)
         ->and($output)->toContain(
-            'SENTRY_ENVIRONMENT must be production.',
+            'SENTRY_ENVIRONMENT must match MOUSE28_DEPLOYMENT_ENVIRONMENT.',
             'SENTRY_RELEASE must be configured.',
         )
         ->not->toContain(

@@ -14,6 +14,7 @@ class VerifyProductionConfiguration extends Command
     {
         $appUrl = config('app.url');
         $canonicalUrl = config('mouse28.production_url');
+        $deploymentEnvironment = config('mouse28.deployment_environment');
 
         $checks = [
             [config('app.env') === 'production', 'APP_ENV must be production.'],
@@ -40,7 +41,8 @@ class VerifyProductionConfiguration extends Command
             [$this->usesConservativeRequestSampling(config('nightwatch.sampling.requests')), 'NIGHTWATCH_REQUEST_SAMPLE_RATE must be greater than 0 and no more than 0.1.'],
             [$this->isConfigured(config('sentry.dsn')), 'SENTRY_LARAVEL_DSN must be configured.'],
             [config('sentry.send_default_pii') === false, 'SENTRY_SEND_DEFAULT_PII must be false.'],
-            [config('sentry.environment') === 'production', 'SENTRY_ENVIRONMENT must be production.'],
+            [$this->isDeploymentEnvironment($deploymentEnvironment), 'MOUSE28_DEPLOYMENT_ENVIRONMENT must be production or staging.'],
+            [config('sentry.environment') === $deploymentEnvironment, 'SENTRY_ENVIRONMENT must match MOUSE28_DEPLOYMENT_ENVIRONMENT.'],
             [$this->isConfigured(config('sentry.release')), 'SENTRY_RELEASE must be configured.'],
             [config('sentry.traces_sample_rate') === 0.0, 'SENTRY_TRACES_SAMPLE_RATE must be 0.0 until tracing is deliberately enabled.'],
             [config('sentry.profiles_sample_rate') === 0.0, 'SENTRY_PROFILES_SAMPLE_RATE must be 0.0 until profiling is deliberately enabled.'],
@@ -77,6 +79,11 @@ class VerifyProductionConfiguration extends Command
     private function isConfigured(mixed $value): bool
     {
         return is_string($value) && trim($value) !== '';
+    }
+
+    private function isDeploymentEnvironment(mixed $environment): bool
+    {
+        return is_string($environment) && in_array($environment, ['production', 'staging'], true);
     }
 
     private function usesPersistentDriver(mixed $driver): bool
