@@ -751,6 +751,13 @@
         border-bottom: 0;
     }
 
+    .episode-show-notes-content ul li > p {
+        margin: 0;
+        color: inherit;
+        font-size: inherit;
+        line-height: inherit;
+    }
+
     .episode-show-notes-content ul li::before {
         position: absolute;
         top: 1rem;

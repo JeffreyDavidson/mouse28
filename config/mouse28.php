@@ -3,6 +3,8 @@
 return [
     'production_url' => env('MOUSE28_PRODUCTION_URL', 'https://mouse28.com'),
 
+    'deployment_environment' => env('MOUSE28_DEPLOYMENT_ENVIRONMENT', 'production'),
+
     'production_sync' => [
         'ssh_host' => env('MOUSE28_PRODUCTION_SSH_HOST', 'cold-moon'),
         'site_path' => env('MOUSE28_PRODUCTION_SITE_PATH', '/home/forge/mouse28.com/current'),

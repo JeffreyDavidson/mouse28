@@ -228,6 +228,18 @@ test('published content detail pages have no accessibility issues', function ():
         ->assertNoAccessibilityIssues();
 });
 
+test('episode show note list paragraphs keep a compact reading rhythm', function (): void {
+    $episode = Episode::factory()->create([
+        'show_notes' => '<h3>In this episode</h3><ul><li><p>Planning sensory breaks</p></li><li><p>Choosing comfortable attractions</p></li></ul>',
+    ]);
+
+    visit(route('episodes.show', $episode))
+        ->assertScript('getComputedStyle(document.querySelector(".episode-show-notes-content li > p")).marginTop', '0px')
+        ->assertScript('getComputedStyle(document.querySelector(".episode-show-notes-content li > p")).marginBottom', '0px')
+        ->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors();
+});
+
 test('mobile navigation opens and remains usable', function (): void {
     visit('/')
         ->on()
@@ -251,6 +263,45 @@ test('desktop navigation identifies only the current destination', function (): 
     visit(route('blog.index'))
         ->assertScript('document.querySelectorAll(".dispatch-nav-link[aria-current=page]").length', 1)
         ->assertScript('document.querySelector(".dispatch-nav-link[aria-current=page]").textContent.trim()', 'Blog')
+        ->assertNoJavaScriptErrors();
+});
+
+test('blog topics and search update without reloading the page', function (): void {
+    $accessiblePost = Post::factory()->create([
+        'title' => 'A quiet entrance plan',
+        'category' => 'park-accessibility',
+    ]);
+    $diningPost = Post::factory()->create([
+        'title' => 'A family dining review',
+        'category' => 'food-reviews',
+    ]);
+
+    $page = visit(route('blog.index'));
+
+    $page->script("window.blogNavigationMarker = 'preserved'");
+
+    $page
+        ->click('a[data-blog-filter-link][href*="park-accessibility"]')
+        ->assertQueryStringHas('category', 'park-accessibility')
+        ->assertSee($accessiblePost->title)
+        ->assertDontSee($diningPost->title)
+        ->assertScript('window.blogNavigationMarker', 'preserved')
+        ->fill('#blog-search', 'quiet entrance')
+        ->assertQueryStringHas('q', 'quiet entrance')
+        ->assertSee($accessiblePost->title)
+        ->assertScript('document.activeElement.id', 'blog-search')
+        ->assertScript('window.blogNavigationMarker', 'preserved')
+        ->assertScript('document.querySelector("[data-blog-browser]").ariaBusy', 'false')
+        ->script('window.blogFilterTop = document.querySelector("[data-blog-filters]").getBoundingClientRect().top');
+
+    $page
+        ->click('a[data-blog-filter-link][href$="/blog"]')
+        ->assertQueryStringMissing('category')
+        ->assertQueryStringMissing('q')
+        ->assertSee($accessiblePost->title)
+        ->assertSee($diningPost->title)
+        ->assertScript('Math.abs(document.querySelector("[data-blog-filters]").getBoundingClientRect().top - window.blogFilterTop) < 2', true)
+        ->assertScript('window.blogNavigationMarker', 'preserved')
         ->assertNoJavaScriptErrors();
 });
 
