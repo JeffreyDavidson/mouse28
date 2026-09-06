@@ -41,8 +41,8 @@ class ListPosts extends ListRecords
     public function getHeader(): ?View
     {
         $total = Post::count();
-        $published = Post::where('is_published', true)->count();
-        $drafts = Post::where('is_published', false)->count();
+        $published = Post::published()->count();
+        $drafts = Post::drafts()->count();
 
         return view('filament.resources.posts.header', [
             'total' => $total,

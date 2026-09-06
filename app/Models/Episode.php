@@ -20,7 +20,10 @@ use Illuminate\Support\Carbon;
  * @property-read string|null $og_image_url
  * @property-read string|null $transistor_embed_url
  *
+ * @method static Builder<static> drafts()
+ * @method static Builder<static> needsAttention()
  * @method static Builder<static> published()
+ * @method static Builder<static> scheduled()
  */
 #[Fillable([
     'title',

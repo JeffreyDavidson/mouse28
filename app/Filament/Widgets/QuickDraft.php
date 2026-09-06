@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Enums\ContentAuthor;
 use App\Models\Post;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -35,6 +36,7 @@ class QuickDraft extends Widget implements HasForms
                     ->placeholder('Post title...'),
                 Textarea::make('notes')
                     ->rows(3)
+                    ->maxLength(300)
                     ->placeholder('Quick notes or ideas...'),
             ])
             ->statePath('data');
@@ -44,11 +46,12 @@ class QuickDraft extends Widget implements HasForms
     {
         $state = $this->form->getState();
 
-        Post::create([
+        Post::query()->create([
             'title' => $state['title'],
-            'slug' => Str::slug($state['title']),
+            'slug' => $this->uniqueSlug($state['title']),
             'excerpt' => $state['notes'] ?? null,
-            'author' => 'both',
+            'body' => $state['notes'] ?? '',
+            'author' => ContentAuthor::Both,
             'is_published' => false,
         ]);
 
@@ -59,5 +62,19 @@ class QuickDraft extends Widget implements HasForms
             ->title('Draft saved!')
             ->success()
             ->send();
+    }
+
+    private function uniqueSlug(string $title): string
+    {
+        $baseSlug = Str::slug($title) ?: 'draft';
+        $slug = $baseSlug;
+        $suffix = 2;
+
+        while (Post::withTrashed()->where('slug', $slug)->exists()) {
+            $slug = "{$baseSlug}-{$suffix}";
+            $suffix++;
+        }
+
+        return $slug;
     }
 }

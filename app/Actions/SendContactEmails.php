@@ -21,7 +21,10 @@ class SendContactEmails
                 ->to($recipients)
                 ->send(new ContactFormSubmitted($contactMessage));
         } catch (Throwable $exception) {
-            Log::error('Failed to send contact notification: '.$exception->getMessage());
+            Log::error('Failed to send contact notification.', [
+                'contact_message_id' => $contactMessage->getKey(),
+                'exception' => $exception::class,
+            ]);
         }
 
         try {
@@ -29,7 +32,10 @@ class SendContactEmails
                 ->to($contactMessage->email)
                 ->send(new ContactFormConfirmation($contactMessage));
         } catch (Throwable $exception) {
-            Log::error('Failed to send contact confirmation: '.$exception->getMessage());
+            Log::error('Failed to send contact confirmation.', [
+                'contact_message_id' => $contactMessage->getKey(),
+                'exception' => $exception::class,
+            ]);
         }
     }
 }

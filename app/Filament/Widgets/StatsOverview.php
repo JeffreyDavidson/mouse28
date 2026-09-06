@@ -18,9 +18,9 @@ class StatsOverview extends Widget
 
     public function getStats(): array
     {
-        $publishedPosts = Post::where('is_published', true)->count();
-        $publishedEpisodes = Episode::where('is_published', true)->count();
-        $publishedGuides = Guide::where('is_published', true)->count();
+        $publishedPosts = Post::published()->count();
+        $publishedEpisodes = Episode::published()->count();
+        $publishedGuides = Guide::published()->count();
         $guidesDueForReview = Guide::published()->reviewDue()->count();
         $postsDueForReview = Post::published()->reviewDue()->count();
         $drafts = Post::where('is_published', false)->count()

@@ -29,7 +29,11 @@ use Illuminate\Support\Str;
  * @property-read int $reading_time
  * @property-read string $review_status
  *
+ * @method static Builder<static> drafts()
+ * @method static Builder<static> needsAttention()
  * @method static Builder<static> published()
+ * @method static Builder<static> reviewDue()
+ * @method static Builder<static> scheduled()
  */
 #[Fillable([
     'title',

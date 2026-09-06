@@ -5,7 +5,6 @@ namespace App\ViewModels;
 use App\Enums\PostCategory;
 use App\Models\Episode;
 use App\Models\Guide;
-use App\Models\Podcast;
 use App\Models\Post;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -17,8 +16,7 @@ class HomeViewModel
      *     latestPosts: Collection<int, Post>,
      *     latestEpisodes: Collection<int, Episode>,
      *     latestGuides: Collection<int, Guide>,
-     *     planningPosts: Collection<int, Post>,
-     *     podcast: Podcast
+     *     planningPosts: Collection<int, Post>
      * }
      */
     public function data(): array
@@ -46,7 +44,6 @@ class HomeViewModel
             'latestEpisodes' => $latestEpisodes,
             'latestGuides' => $latestGuides,
             'planningPosts' => $planningPosts,
-            'podcast' => Podcast::info(),
         ];
     }
 }

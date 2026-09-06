@@ -39,8 +39,8 @@ class ListEpisodes extends ListRecords
     public function getHeader(): ?View
     {
         $total = Episode::count();
-        $published = Episode::where('is_published', true)->count();
-        $drafts = Episode::where('is_published', false)->count();
+        $published = Episode::published()->count();
+        $drafts = Episode::drafts()->count();
 
         return view('filament.resources.episodes.header', [
             'total' => $total,

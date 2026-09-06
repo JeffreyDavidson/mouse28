@@ -20,10 +20,10 @@ class Podcast extends Model
 {
     public static function info(): self
     {
-        return self::query()->first() ?? new self([
+        return once(fn (): self => self::query()->first() ?? new self([
             'name' => 'Mouse28',
             'description' => 'Disney parks through the lens of raising a daughter with autism.',
-        ]);
+        ]));
     }
 
     public static function settings(): self
