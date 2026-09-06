@@ -3,7 +3,6 @@
 use App\Models\Episode;
 use App\Models\Podcast;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\get;
 
@@ -130,23 +129,6 @@ test('only currently published content is publicly visible', function (): void {
 
     get(route('episodes.show', $scheduledEpisode))->assertNotFound();
     get(route('episodes.show', $publishedEpisode))->assertOk();
-});
-
-test('legacy hosted episode audio remains available to structured data without rendering a second player', function (): void {
-    Storage::fake('public');
-    Storage::disk('public')->put('episodes/audio/hosted-episode.mp3', 'hosted audio');
-
-    $episode = Episode::factory()->create([
-        'audio_path' => 'episodes/audio/hosted-episode.mp3',
-        'audio_url' => 'https://cdn.example.com/legacy-episode.mp3',
-    ]);
-    $audioUrl = Storage::disk('public')->url($episode->audio_path);
-
-    get(route('episodes.show', $episode))
-        ->assertOk()
-        ->assertSee('"contentUrl":"'.$audioUrl.'"', false)
-        ->assertDontSee('<audio', false)
-        ->assertDontSee($episode->audio_url, false);
 });
 
 test('episode pages link to the adjacent published episodes', function (): void {

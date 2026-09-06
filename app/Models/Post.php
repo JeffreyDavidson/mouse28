@@ -22,7 +22,6 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $published_at
  * @property-read string $author_initials
  * @property-read string $author_name
- * @property-read string $category_color
  * @property-read string $category_label
  * @property-read string|null $cover_image_url
  * @property-read string|null $og_image_url
@@ -153,26 +152,6 @@ class Post extends Model
     {
         return Attribute::make(get: function () {
             return $this->og_image ? '/storage/'.$this->og_image : null;
-        });
-    }
-
-    protected function categoryColor(): Attribute
-    {
-        return Attribute::make(get: function () {
-            return match ($this->category) {
-                PostCategory::DisneyTips => 'bg-gold/20 text-gold',
-                PostCategory::ParkAccessibility => 'bg-purple/20 text-purple',
-                PostCategory::EpisodeRecap => 'bg-emerald-500/20 text-emerald-600',
-                PostCategory::FamilyLife => 'bg-blue-500/20 text-blue-600',
-                PostCategory::AutismAwareness => 'bg-pink-500/20 text-pink-600',
-                PostCategory::DisneyNews => 'bg-orange-500/20 text-orange-600',
-                PostCategory::FoodReviews => 'bg-amber-500/20 text-amber-600',
-                PostCategory::ResortReviews => 'bg-teal-500/20 text-teal-600',
-                PostCategory::DisneyPlus => 'bg-indigo-500/20 text-indigo-600',
-                PostCategory::Merchandise => 'bg-rose-500/20 text-rose-600',
-                PostCategory::General => 'bg-slate-500/20 text-slate-600',
-                default => 'bg-navy/10 text-navy',
-            };
         });
     }
 
