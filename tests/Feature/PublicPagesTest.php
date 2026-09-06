@@ -3,6 +3,8 @@
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
+use Dom\HTMLDocument;
+use Dom\XPath;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Laravel\get;
@@ -82,17 +84,20 @@ test('public index and utility pages use the dispatch editorial system', functio
     'search' => ['search', 'dispatch-page-field'],
 ]);
 
-test('primary navigation uses one consistent active-page treatment', function (): void {
-    $aboutPage = get(route('about'))
-        ->assertOk()
-        ->assertSee('dispatch-nav-link', false)
-        ->assertDontSee('nav-link-active', false);
+test('primary navigation identifies only the current destination', function (): void {
+    foreach (['about' => 'About', 'blog.index' => 'Blog'] as $route => $label) {
+        $response = get(route($route));
 
-    expect($aboutPage->getContent())
-        ->toContain('href="'.route('about').'"')
-        ->toContain('aria-current="page"')
-        ->and(substr_count($aboutPage->getContent(), 'class="dispatch-nav-link'))
-        ->toBe(5);
+        $response->assertOk();
+
+        $document = HTMLDocument::createFromString($response->getContent(), LIBXML_NOERROR);
+        $xpath = new XPath($document);
+        $links = $xpath->query('//*[local-name()="a"][contains(concat(" ", normalize-space(@class), " "), " dispatch-nav-link ") and @aria-current="page"]');
+
+        expect($links)->toHaveCount(1)
+            ->and(trim($links->item(0)->textContent))->toBe($label)
+            ->and($links->item(0)->getAttribute('href'))->toBe(route($route));
+    }
 });
 
 test('public reading pages use dispatch reading surfaces', function (): void {
@@ -338,7 +343,7 @@ test('published post detail page renders', function (): void {
         'title' => 'An Accessible Day at the Parks',
         'slug' => 'accessible-day-at-the-parks',
         'excerpt' => 'A practical guide for planning a comfortable park day.',
-        'body' => 'Start with a flexible plan and make room for sensory breaks.',
+        'body' => 'Start with a flexible plan. '.str_repeat('accessible park planning ', 198),
         'category' => 'park-accessibility',
         'author' => 'jeffrey',
         'is_published' => true,
@@ -348,6 +353,8 @@ test('published post detail page renders', function (): void {
     get(route('blog.show', $post))
         ->assertOk()
         ->assertSee($post->title)
+        ->assertSee('3 min read')
+        ->assertDontSee('1 of 3 min read')
         ->assertSee('Start with a flexible plan', false)
         ->assertSee('editorial-reading-column', false)
         ->assertDontSee('data-article-secondary', false)

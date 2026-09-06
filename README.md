@@ -82,7 +82,7 @@ git diff --check
 
 Run `vendor/bin/pint` to apply PHP and Blade formatting fixes. Blade formatting is enabled by default through `pint.json` and requires the locked Prettier, Blade, and Tailwind formatting packages.
 Run `vendor/bin/filacheck` to check Filament code for deprecated APIs and common implementation issues.
-Run `npx playwright install chromium` once before the local browser suite. Browser smoke tests also run weekly, on demand, and for release tags in GitHub Actions.
+Run `npx playwright install chromium` once before the local browser suite. A focused `browser-smoke` group runs in pull-request and main-branch CI. The full Chromium browser suite runs weekly, on demand, and for release tags; the `browser-compatibility` group checks reading, print presentation, and key interactions in Firefox and WebKit.
 
 `composer test` runs the feature and architecture suites; browser tests use the separate `composer test:browser` command. Rector uses its default parallel processing. Agent sandboxes must allow the local sockets used by Rector and Pest.
 

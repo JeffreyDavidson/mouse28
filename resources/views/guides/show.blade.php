@@ -46,7 +46,7 @@
                     <div class="border-gold/40 text-cream/70 mt-8 flex flex-wrap gap-x-5 gap-y-2 border-t pt-5 text-sm">
                         <a
                             href="{{ route('guides.index', ['category' => $guide->category]) }}"
-                            class="text-gold hover:text-gold-light inline-flex min-h-11 items-center font-semibold transition-colors"
+                            class="text-gold hover:text-gold-light inline-flex min-h-12 items-center font-semibold transition-colors"
                         >{{ $guide->category_label }}</a>
                         <span>{{ $guide->reading_time }} min read</span>
                     </div>

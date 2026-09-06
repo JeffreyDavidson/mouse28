@@ -3,39 +3,12 @@
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
+use Pest\Browser\Playwright\Playwright;
+use Symfony\Component\Process\Process;
+
+use function Pest\Laravel\get;
 
 pest()->browser()->timeout(10000);
-
-function crossBrowserHorizontalOverflowScript(): string
-{
-    return 'document.documentElement.scrollWidth > document.documentElement.clientWidth ? 1 : 0';
-}
-
-function activatePrintMediaScript(): string
-{
-    return <<<'JS'
-        (() => {
-            let activatedRules = 0;
-
-            const activateRules = (rules) => {
-                [...rules].forEach((rule) => {
-                    if (rule.media?.mediaText?.split(',').some((medium) => medium.trim() === 'print')) {
-                        rule.media.mediaText = 'all';
-                        activatedRules++;
-                    }
-
-                    if (rule.cssRules) {
-                        activateRules(rule.cssRules);
-                    }
-                });
-            };
-
-            [...document.styleSheets].forEach((styleSheet) => activateRules(styleSheet.cssRules));
-
-            return activatedRules;
-        })()
-        JS;
-}
 
 test('public reading and form surfaces work across supported browsers', function (): void {
     config()->set('services.turnstile.site_key', '1x00000000000000000000AA');
@@ -66,7 +39,7 @@ test('public reading and form surfaces work across supported browsers', function
         visit($url)
             ->resize(1280, 900)
             ->assertSee($content)
-            ->assertScript(crossBrowserHorizontalOverflowScript(), 0)
+            ->assertScript($this->horizontalOverflowScript(), 0)
             ->assertNoJavaScriptErrors();
     }
 
@@ -81,7 +54,7 @@ test('public reading and form surfaces work across supported browsers', function
     visit(route('blog.show', $post))
         ->assertScript('getComputedStyle(document.querySelector("header")).position', 'sticky')
         ->assertScript('getComputedStyle(document.querySelector("#back-to-top")).position', 'fixed');
-});
+})->group('browser-compatibility');
 
 test('articles and guides provide a focused print presentation', function (): void {
     $externalUrl = 'https://example.com/accessible-planning';
@@ -94,24 +67,24 @@ test('articles and guides provide a focused print presentation', function (): vo
         'body' => "## Before You Go\n\nRead the [official planning details]({$externalUrl}).",
     ]);
 
+    $pages = [];
+
     foreach ([route('blog.show', $post), route('guides.show', $guide)] as $url) {
-        $page = visit($url);
+        $response = get($url);
 
-        $page->assertScript(activatePrintMediaScript(), 1)
-            ->assertScript('getComputedStyle(document.querySelector("header")).display', 'none')
-            ->assertScript('getComputedStyle(document.querySelector("footer")).display', 'none')
-            ->assertScript('[...document.querySelectorAll("[data-print-hidden]")].every((element) => getComputedStyle(element).display === "none")', true)
-            ->assertScript('getComputedStyle(document.querySelector(".blog-article-content")).maxWidth', 'none')
-            ->assertScript(
-                <<<'JS'
-                    (() => {
-                        const content = getComputedStyle(document.querySelector('.blog-article-content a'), '::after').content;
-
-                        return content.includes('https://example.com/accessible-planning') || content.includes('attr(href)');
-                    })()
-                    JS,
-                true,
-            )
-            ->assertNoJavaScriptErrors();
+        $response->assertOk();
+        $pages[] = $response->getContent();
     }
-});
+
+    // Pest 5.0 has no print-media API; use the installed Playwright library on the rendered pages.
+    $process = new Process(['node', base_path('tests/Browser/print-media.mjs')], base_path());
+    $process->setInput(json_encode([
+        'browser' => Playwright::defaultBrowserType()->toPlaywrightName(),
+        'pages' => $pages,
+        'publicPath' => public_path(),
+    ], JSON_THROW_ON_ERROR));
+    $process->setTimeout(60);
+    $process->run();
+
+    expect($process->isSuccessful())->toBeTrue($process->getErrorOutput());
+})->group('browser-compatibility');

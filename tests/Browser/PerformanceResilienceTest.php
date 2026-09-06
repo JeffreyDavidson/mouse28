@@ -46,7 +46,7 @@ test('core mobile navigation and search work without JavaScript', function (): v
         ->keys('#site-search', 'Enter')
         ->assertQueryStringHas('q', 'accessible parks')
         ->assertSee('No results for');
-});
+})->group('browser-smoke');
 
 test('failed optional artwork preserves content and its reserved layout', function (): void {
     $post = Post::factory()->create([
