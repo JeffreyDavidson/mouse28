@@ -1,0 +1,33 @@
+<?php
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+use function Pest\Laravel\from;
+
+uses(RefreshDatabase::class);
+
+beforeEach(function (): void {
+    config()->set('services.turnstile.site_key', 'test-site-key');
+    config()->set('services.turnstile.secret_key', 'test-secret-key');
+});
+
+test('contact errors and old input stay out of the newsletter form', function (): void {
+    $response = from(route('contact.show'))
+        ->followingRedirects()
+        ->post(route('contact.store'), [
+            'name' => 'Dale Cooper',
+            'email' => 'not-an-email',
+            'subject' => 'general',
+            'message' => 'Please help with this park question.',
+            'cf-turnstile-response' => 'unused-token',
+        ])
+        ->assertOk();
+
+    expect($response->getContent())
+        ->toMatch('/<input\s+type="email"\s+id="email"\s+name="email"\s+required\s+autocomplete="email"\s+inputmode="email"\s+value="not-an-email"/')
+        ->toMatch('/<input\s+id="footer-newsletter-email"\s+type="email"\s+name="email"\s+value=""/');
+
+    $response
+        ->assertSee('aria-describedby="email-error"', false)
+        ->assertDontSee('aria-describedby="newsletter-email-error"', false);
+});
