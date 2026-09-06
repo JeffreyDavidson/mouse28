@@ -7,10 +7,11 @@ use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Podcast;
 use App\Models\Post;
+use Illuminate\View\View;
 
 class HomeController
 {
-    public function index()
+    public function index(): View
     {
         $featuredPost = Post::published()->latest('published_at')->first();
         $latestPosts = Post::published()->latest('published_at')
@@ -29,13 +30,13 @@ class HomeController
             : collect();
         $podcast = Podcast::info();
 
-        return view('home', compact(
-            'featuredPost',
-            'latestPosts',
-            'latestEpisodes',
-            'latestGuides',
-            'planningPosts',
-            'podcast',
-        ));
+        return view('home', [
+            'featuredPost' => $featuredPost,
+            'latestPosts' => $latestPosts,
+            'latestEpisodes' => $latestEpisodes,
+            'latestGuides' => $latestGuides,
+            'planningPosts' => $planningPosts,
+            'podcast' => $podcast,
+        ]);
     }
 }

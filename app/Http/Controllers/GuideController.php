@@ -6,10 +6,11 @@ use App\Enums\GuideCategory;
 use App\Models\Guide;
 use App\Support\ContentContinuation;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class GuideController
 {
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         abort_unless(config('mouse28.guides_enabled'), 404);
 
@@ -38,7 +39,7 @@ class GuideController
         ]);
     }
 
-    public function show(Guide $guide)
+    public function show(Guide $guide): View
     {
         abort_unless(config('mouse28.guides_enabled'), 404);
 

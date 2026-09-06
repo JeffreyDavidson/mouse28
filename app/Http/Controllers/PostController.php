@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Enums\PostCategory;
 use App\Models\Post;
+use App\Support\ContentContinuation;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class PostController
 {
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $categoryEnum = PostCategory::tryFrom($request->string('category')->toString());
         $category = $categoryEnum->value ?? '';
@@ -56,28 +58,9 @@ class PostController
         ]);
     }
 
-    public function show(Post $post)
+    public function show(Post $post): View
     {
         abort_unless($post->is_published && $post->published_at?->isPast(), 404);
-
-        // Prioritize same-category posts, then fill with others
-        $sameCategoryPosts = Post::published()
-            ->where('id', '!=', $post->id)
-            ->where('category', $post->category)
-            ->latest('published_at')
-            ->take(5)
-            ->get();
-
-        $recentPosts = $sameCategoryPosts->count() >= 5
-            ? $sameCategoryPosts
-            : $sameCategoryPosts->merge(
-                Post::published()
-                    ->where('id', '!=', $post->id)
-                    ->whereNotIn('id', $sameCategoryPosts->pluck('id'))
-                    ->latest('published_at')
-                    ->take(5 - $sameCategoryPosts->count())
-                    ->get()
-            );
         $categoryCounts = Post::published()->selectRaw('category, count(*) as count')->groupBy('category')->pluck('count', 'category');
 
         return view('blog.show', [
@@ -87,7 +70,7 @@ class PostController
                     ->whereNotNull('published_at')
                     ->where('published_at', '<=', now()),
             ]),
-            'recentPosts' => $recentPosts,
+            'recentPosts' => ContentContinuation::relatedPosts($post),
             'categoryCounts' => $categoryCounts,
         ]);
     }

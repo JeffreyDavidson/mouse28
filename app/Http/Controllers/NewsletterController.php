@@ -5,13 +5,15 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreNewsletterRequest;
 use App\Support\SafeReturnUrl;
 use App\Support\Turnstile;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class NewsletterController
 {
-    public function store(StoreNewsletterRequest $request, Turnstile $turnstile)
+    public function store(StoreNewsletterRequest $request, Turnstile $turnstile): JsonResponse|RedirectResponse
     {
         if ($request->filled('website_url')) {
             return $this->successResponse($request);
@@ -57,7 +59,7 @@ class NewsletterController
         }
     }
 
-    private function successResponse(StoreNewsletterRequest $request)
+    private function successResponse(StoreNewsletterRequest $request): JsonResponse|RedirectResponse
     {
         if ($request->expectsJson()) {
             return response()->json(['success' => true]);
@@ -66,7 +68,7 @@ class NewsletterController
         return redirect($this->redirectUrl($request))->with('newsletter_success', true);
     }
 
-    private function errorResponse(StoreNewsletterRequest $request, int $status)
+    private function errorResponse(StoreNewsletterRequest $request, int $status): JsonResponse|RedirectResponse
     {
         if ($request->expectsJson()) {
             return response()->json(['error' => 'Something went wrong.'], $status);

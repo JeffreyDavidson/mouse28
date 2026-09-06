@@ -7,10 +7,11 @@ use App\Models\Podcast;
 use App\Models\Post;
 use App\Support\ContentContinuation;
 use App\Support\PodcastLinks;
+use Illuminate\View\View;
 
 class EpisodeController
 {
-    public function index()
+    public function index(): View
     {
         $episodes = Episode::published()->latest('published_at')->paginate(12);
 
@@ -26,7 +27,7 @@ class EpisodeController
         ]);
     }
 
-    public function show(Episode $episode)
+    public function show(Episode $episode): View
     {
         abort_unless($episode->is_published && $episode->published_at?->isPast(), 404);
 

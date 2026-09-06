@@ -3,6 +3,7 @@
 use App\Enums\GuideCategory;
 use App\Models\Episode;
 use App\Models\Guide;
+use App\Models\Post;
 use App\Support\ContentContinuation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -10,6 +11,28 @@ uses(RefreshDatabase::class);
 
 beforeEach(function (): void {
     $this->freezeSecond();
+});
+
+test('related posts prioritize category and fill remaining slots with recent posts', function (): void {
+    $current = Post::factory()->create(['category' => 'park-accessibility']);
+    $olderMatch = Post::factory()->create([
+        'category' => 'park-accessibility',
+        'published_at' => now()->subDays(4),
+    ]);
+    $newerMatch = Post::factory()->create([
+        'category' => 'park-accessibility',
+        'published_at' => now()->subDays(3),
+    ]);
+    $fallback = Post::factory()->create([
+        'category' => 'food-reviews',
+        'published_at' => now()->subDay(),
+    ]);
+    Post::factory()->draft()->create(['category' => 'park-accessibility']);
+    Post::factory()->scheduled()->create(['category' => 'park-accessibility']);
+
+    $related = ContentContinuation::relatedPosts($current, 3);
+
+    expect($related->modelKeys())->toBe([$newerMatch->id, $olderMatch->id, $fallback->id]);
 });
 
 test('related guides prioritize category and respect the requested limit', function (int $limit): void {
