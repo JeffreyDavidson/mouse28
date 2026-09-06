@@ -84,3 +84,9 @@ jobs:
 
       - name: Build assets
         run: npm run build
+
+      - name: Install Chromium for browser regressions
+        run: npx playwright install --with-deps chromium
+
+      - name: Run focused browser regressions
+        run: php artisan test --compact --testsuite=Browser --group=browser-smoke

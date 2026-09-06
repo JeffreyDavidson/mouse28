@@ -5,52 +5,10 @@ use App\Models\Guide;
 use App\Models\Post;
 use Illuminate\Support\Facades\Storage;
 
-function contentHorizontalOverflowScript(): string
-{
-    return <<<'JS'
-        (() => document.documentElement.scrollWidth > document.documentElement.clientWidth ? 1 : 0)()
-        JS;
-}
-
 function contentBrokenImageCountScript(): string
 {
     return <<<'JS'
         (() => [...document.images].filter((image) => image.complete && image.naturalWidth === 0).length)()
-        JS;
-}
-
-function contentUndersizedControlsScript(): string
-{
-    return <<<'JS'
-        (() => {
-            const controls = document.querySelectorAll([
-                'button',
-                'input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"])',
-                'select',
-                'textarea',
-                'summary',
-                'a[href]',
-            ].join(','));
-
-            return [...controls].filter((control) => {
-                const styles = window.getComputedStyle(control);
-                const bounds = control.getBoundingClientRect();
-                const isInlineLink = control.matches('a[href]') && styles.display === 'inline';
-
-                return ! isInlineLink
-                    && ! control.closest('[aria-hidden="true"]')
-                    && styles.display !== 'none'
-                    && styles.visibility !== 'hidden'
-                    && bounds.width > 0
-                    && bounds.height > 0
-                    && (bounds.width < 44 || bounds.height < 44);
-            }).map((control) => {
-                const bounds = control.getBoundingClientRect();
-                const identity = control.id ? `#${control.id}` : control.textContent.trim().replace(/\s+/g, ' ').slice(0, 30);
-
-                return `${control.tagName.toLowerCase()}${identity} (${Math.round(bounds.width)}x${Math.round(bounds.height)})`;
-            }).join('|');
-        })()
         JS;
 }
 
@@ -108,9 +66,9 @@ test('long public content and portrait artwork stay contained', function (): voi
             ->mobile()
             ->resize(320, 812);
 
-        $mobilePages->assertScript(contentHorizontalOverflowScript(), 0)
+        $mobilePages->assertScript($this->horizontalOverflowScript(), 0)
             ->assertScript(contentBrokenImageCountScript(), 0)
-            ->assertScript(contentUndersizedControlsScript(), '')
+            ->assertScript($this->undersizedControlsScript(), '')
             ->assertNoAccessibilityIssues()
             ->assertNoJavaScriptErrors();
 
@@ -125,7 +83,7 @@ test('long public content and portrait artwork stay contained', function (): voi
             route('episodes.show', $episode),
         ])->resize(1440, 1000);
 
-        $desktopPages->assertScript(contentHorizontalOverflowScript(), 0)
+        $desktopPages->assertScript($this->horizontalOverflowScript(), 0)
             ->assertScript(contentBrokenImageCountScript(), 0)
             ->assertNoAccessibilityIssues()
             ->assertNoJavaScriptErrors();
@@ -178,8 +136,8 @@ test('pagination boundaries stay usable on narrow screens', function (): void {
         ->mobile()
         ->resize(320, 812);
 
-    $pages->assertScript(contentHorizontalOverflowScript(), 0)
-        ->assertScript(contentUndersizedControlsScript(), '')
+    $pages->assertScript($this->horizontalOverflowScript(), 0)
+        ->assertScript($this->undersizedControlsScript(), '')
         ->assertScript('[...document.querySelectorAll("[aria-current=page]")].some((element) => element.textContent.trim() === "2")', true)
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();

@@ -4,13 +4,6 @@ use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
 
-function displayPreferenceHorizontalOverflowScript(): string
-{
-    return <<<'JS'
-        (() => document.documentElement.scrollWidth > document.documentElement.clientWidth ? 1 : 0)()
-        JS;
-}
-
 function activeMotionDurationScript(): string
 {
     return <<<'JS'
@@ -26,33 +19,6 @@ function activeMotionDurationScript(): string
 
                 return animationDuration || transitionDuration;
             }).length;
-        })()
-        JS;
-}
-
-function forcedColorFocusFailuresScript(): string
-{
-    return <<<'JS'
-        (() => {
-            const controls = document.querySelectorAll('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), summary');
-
-            return [...controls].filter((control) => {
-                const bounds = control.getBoundingClientRect();
-
-                if (control.closest('[aria-hidden="true"]') || bounds.width === 0 || bounds.height === 0) {
-                    return false;
-                }
-
-                control.focus();
-
-                const styles = window.getComputedStyle(control);
-
-                return styles.outlineStyle === 'none' || Number.parseFloat(styles.outlineWidth) === 0;
-            }).map((control) => {
-                const identity = control.id ? `#${control.id}` : control.textContent.trim().replace(/\s+/g, ' ').slice(0, 30);
-
-                return `${control.tagName.toLowerCase()}${identity}`;
-            }).join('|');
         })()
         JS;
 }
@@ -81,7 +47,7 @@ test('public pages reflow with two hundred percent text sizing', function (): vo
 
     foreach ([$home, $blog, $guides, $episodes, $about, $contact, $search, $postPage, $guidePage, $episodePage] as $page) {
         $page->script("document.documentElement.style.fontSize = '200%'");
-        $page->assertScript(displayPreferenceHorizontalOverflowScript(), 0)
+        $page->assertScript($this->horizontalOverflowScript(), 0)
             ->assertNoAccessibilityIssues()
             ->assertNoJavaScriptErrors();
     }
@@ -111,8 +77,8 @@ test('forced colors preserve focus indicators and page structure', function (): 
     ], ['forcedColors' => 'active'])->resize(1280, 900);
 
     $pages->assertScript("window.matchMedia('(forced-colors: active)').matches", true)
-        ->assertScript(forcedColorFocusFailuresScript(), '')
-        ->assertScript(displayPreferenceHorizontalOverflowScript(), 0)
+        ->assertScript($this->missingFocusIndicatorsScript(), '')
+        ->assertScript($this->horizontalOverflowScript(), 0)
         ->assertNoJavaScriptErrors();
 });
 
@@ -151,7 +117,7 @@ test('multilingual and right to left content remains contained', function (): vo
     foreach ([$postPage, $guidePage, $episodePage] as $page) {
         $page->script("document.documentElement.dir = 'rtl'");
         $page->assertSee($multilingualTitle)
-            ->assertScript(displayPreferenceHorizontalOverflowScript(), 0)
+            ->assertScript($this->horizontalOverflowScript(), 0)
             ->assertNoAccessibilityIssues()
             ->assertNoJavaScriptErrors();
     }

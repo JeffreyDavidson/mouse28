@@ -2,87 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-function stateHorizontalOverflowCountScript(): string
-{
-    return <<<'JS'
-        (() => document.documentElement.scrollWidth > document.documentElement.clientWidth ? 1 : 0)()
-        JS;
-}
-
-function stateUndersizedControlsScript(): string
-{
-    return <<<'JS'
-        (() => {
-            const controls = document.querySelectorAll([
-                'button',
-                'input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"])',
-                'select',
-                'textarea',
-                'summary',
-                'a[href]',
-            ].join(','));
-
-            return [...controls].filter((control) => {
-                const styles = window.getComputedStyle(control);
-                const bounds = control.getBoundingClientRect();
-                const isInlineLink = control.matches('a[href]') && styles.display === 'inline';
-
-                return ! isInlineLink
-                    && ! control.closest('[aria-hidden="true"]')
-                    && styles.display !== 'none'
-                    && styles.visibility !== 'hidden'
-                    && bounds.width > 0
-                    && bounds.height > 0
-                    && (bounds.width < 44 || bounds.height < 44);
-            }).map((control) => {
-                const bounds = control.getBoundingClientRect();
-                const identity = control.id ? `#${control.id}` : control.textContent.trim().replace(/\s+/g, ' ').slice(0, 30);
-
-                return `${control.tagName.toLowerCase()}${identity} (${Math.round(bounds.width)}x${Math.round(bounds.height)})`;
-            }).join('|');
-        })()
-        JS;
-}
-
-function stateMissingFocusIndicatorsScript(): string
-{
-    return <<<'JS'
-        (() => {
-            const focusableElements = document.querySelectorAll([
-                'a[href]',
-                'button:not([disabled])',
-                'input:not([disabled]):not([type="hidden"])',
-                'select:not([disabled])',
-                'textarea:not([disabled])',
-                'summary',
-                '[tabindex]:not([tabindex="-1"])',
-            ].join(','));
-
-            return [...focusableElements].filter((element) => {
-                const bounds = element.getBoundingClientRect();
-
-                if (element.closest('[aria-hidden="true"], details:not([open])') || bounds.width === 0 || bounds.height === 0) {
-                    return false;
-                }
-
-                element.focus();
-
-                const styles = window.getComputedStyle(element);
-                const hasOutline = styles.outlineStyle !== 'none'
-                    && styles.outlineColor !== 'rgba(0, 0, 0, 0)'
-                    && Number.parseFloat(styles.outlineWidth) > 0;
-                const hasBoxShadow = styles.boxShadow !== 'none';
-
-                return ! hasOutline && ! hasBoxShadow;
-            }).map((element) => {
-                const identity = element.id ? `#${element.id}` : element.textContent.trim().replace(/\s+/g, ' ').slice(0, 30);
-
-                return `${element.tagName.toLowerCase()}${identity}`;
-            }).join('|');
-        })()
-        JS;
-}
-
 test('empty and no-result states remain actionable on mobile', function (): void {
     $pages = visit([
         route('blog.index'),
@@ -96,9 +15,9 @@ test('empty and no-result states remain actionable on mobile', function (): void
         ->mobile()
         ->resize(320, 812);
 
-    $pages->assertScript(stateHorizontalOverflowCountScript(), 0)
-        ->assertScript(stateUndersizedControlsScript(), '')
-        ->assertScript(stateMissingFocusIndicatorsScript(), '')
+    $pages->assertScript($this->horizontalOverflowScript(), 0)
+        ->assertScript($this->undersizedControlsScript(), '')
+        ->assertScript($this->missingFocusIndicatorsScript(), '')
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 
@@ -131,7 +50,7 @@ test('search validation identifies and focuses the invalid query', function (): 
         ->assertScript('document.activeElement.id', 'site-search')
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
-});
+})->group('browser-smoke');
 
 test('contact page offers an actionable email route when verification is unavailable', function (): void {
     visit(route('contact.show'))
@@ -172,7 +91,7 @@ test('newsletter validation and rate-limit feedback remain accessible', function
         ->assertScript('document.querySelector("#newsletter [role=alert]") !== null')
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
-});
+})->group('browser-smoke');
 
 test('branded recovery pages remain accessible and actionable', function (): void {
     config()->set('app.debug', false);
@@ -193,9 +112,9 @@ test('branded recovery pages remain accessible and actionable', function (): voi
         ->mobile()
         ->resize(320, 812);
 
-    $pages->assertScript(stateHorizontalOverflowCountScript(), 0)
-        ->assertScript(stateUndersizedControlsScript(), '')
-        ->assertScript(stateMissingFocusIndicatorsScript(), '')
+    $pages->assertScript($this->horizontalOverflowScript(), 0)
+        ->assertScript($this->undersizedControlsScript(), '')
+        ->assertScript($this->missingFocusIndicatorsScript(), '')
         ->assertScript('document.documentElement.classList.contains("js-dispatch-errors")', true)
         ->assertScript('getComputedStyle(document.querySelector("h1")).fontFamily.includes("Besley")', true)
         ->assertNoAccessibilityIssues()

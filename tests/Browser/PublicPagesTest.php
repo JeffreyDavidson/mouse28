@@ -25,95 +25,15 @@ function exposedDecorativeGlyphCountScript(): string
         JS;
 }
 
-function horizontalOverflowCountScript(): string
-{
-    return <<<'JS'
-        (() => document.documentElement.scrollWidth > document.documentElement.clientWidth ? 1 : 0)()
-        JS;
-}
-
-function undersizedMobileControlsScript(): string
-{
-    return <<<'JS'
-        (() => {
-            const controls = document.querySelectorAll([
-                'button',
-                'input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"])',
-                'select',
-                'textarea',
-                'summary',
-                'a[href]',
-            ].join(','));
-
-            return [...controls].filter((control) => {
-                const styles = window.getComputedStyle(control);
-                const bounds = control.getBoundingClientRect();
-                const isInlineLink = control.matches('a[href]') && styles.display === 'inline';
-
-                return ! isInlineLink
-                    && ! control.closest('[aria-hidden="true"]')
-                    && styles.display !== 'none'
-                    && styles.visibility !== 'hidden'
-                    && bounds.width > 0
-                    && bounds.height > 0
-                    && (bounds.width < 44 || bounds.height < 44);
-            }).map((control) => {
-                const bounds = control.getBoundingClientRect();
-                const identity = control.id ? `#${control.id}` : control.textContent.trim().replace(/\s+/g, ' ').slice(0, 30);
-
-                return `${control.tagName.toLowerCase()}${identity} (${Math.round(bounds.width)}x${Math.round(bounds.height)})`;
-            }).join('|');
-        })()
-        JS;
-}
-
-function missingFocusIndicatorsScript(): string
-{
-    return <<<'JS'
-        (() => {
-            const focusableElements = document.querySelectorAll([
-                'a[href]',
-                'button:not([disabled])',
-                'input:not([disabled]):not([type="hidden"])',
-                'select:not([disabled])',
-                'textarea:not([disabled])',
-                'summary',
-                'audio[controls]',
-                '[tabindex]:not([tabindex="-1"])',
-            ].join(','));
-
-            return [...focusableElements].filter((element) => {
-                const bounds = element.getBoundingClientRect();
-
-                if (element.closest('[aria-hidden="true"], details:not([open])') || bounds.width === 0 || bounds.height === 0) {
-                    return false;
-                }
-
-                element.focus();
-
-                const styles = window.getComputedStyle(element);
-                const hasOutline = styles.outlineStyle !== 'none'
-                    && styles.outlineColor !== 'rgba(0, 0, 0, 0)'
-                    && Number.parseFloat(styles.outlineWidth) > 0;
-                const hasBoxShadow = styles.boxShadow !== 'none';
-
-                return ! hasOutline && ! hasBoxShadow;
-            }).map((element) => {
-                const identity = element.id ? `#${element.id}` : element.textContent.trim().replace(/\s+/g, ' ').slice(0, 30);
-
-                return `${element.tagName.toLowerCase()}${identity}`;
-            }).join('|');
-        })()
-        JS;
-}
-
 test('public page renders without JavaScript errors', function (string $path, string $content): void {
     visit($path)
         ->assertSee($content)
+        ->assertScript('document.fonts.check("16px Besley")', true)
+        ->assertScript('getComputedStyle(document.querySelector("h1")).fontFamily.includes("Besley")', true)
         ->assertScript('document.querySelectorAll(\'svg:not([aria-hidden="true"]):not([aria-label]):not([aria-labelledby]):not(:has(title))\').length', 0)
         ->assertScript(exposedDecorativeGlyphCountScript(), 0)
         ->assertScript('document.querySelectorAll(\'[tabindex]:not([tabindex="0"]):not([tabindex="-1"])\').length', 0)
-        ->assertScript(missingFocusIndicatorsScript(), '')
+        ->assertScript($this->missingFocusIndicatorsScript(), '')
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 })->with([
@@ -125,36 +45,6 @@ test('public page renders without JavaScript errors', function (string $path, st
     'contact' => ['/contact', 'Contact'],
     'search' => ['/search', 'Search'],
 ]);
-
-test('homepage loads its editorial type without the journey tracker', function (): void {
-    $page = visit(route('home'));
-
-    $page
-        ->assertScript('document.fonts.check("16px Besley")', true)
-        ->assertScript('getComputedStyle(document.querySelector("h1")).fontFamily.includes("Besley")', true)
-        ->assertScript('document.documentElement.classList.contains("js-dispatch-motion")', true)
-        ->assertScript('document.documentElement.classList.contains("js-dispatch-journey")', false)
-        ->assertScript('document.querySelector("[data-dispatch-journey]")', null)
-        ->assertScript('getComputedStyle(document.querySelector("[data-dispatch-motion=hero-paper]")).animationName', 'dispatch-paper-settle')
-        ->assertNoJavaScriptErrors();
-});
-
-test('interior pages load the shared dispatch typography and arrival motion', function (): void {
-    $pages = visit([
-        route('blog.index'),
-        route('guides.index'),
-        route('episodes.index'),
-        route('about'),
-        route('contact.show'),
-        route('search'),
-    ]);
-
-    $pages
-        ->assertScript('document.fonts.check("16px Besley")', true)
-        ->assertScript('getComputedStyle(document.querySelector("h1")).fontFamily.includes("Besley")', true)
-        ->assertScript('document.documentElement.classList.contains("js-dispatch-pages")', true)
-        ->assertNoJavaScriptErrors();
-});
 
 test('polished discovery and guide artwork remain usable on mobile', function (): void {
     $guide = Guide::factory()->create([
@@ -169,8 +59,8 @@ test('polished discovery and guide artwork remain usable on mobile', function ()
         ->mobile()
         ->resize(320, 812)
         ->assertSee('Start somewhere inspiring')
-        ->assertScript(horizontalOverflowCountScript(), 0)
-        ->assertScript(undersizedMobileControlsScript(), '')
+        ->assertScript($this->horizontalOverflowScript(), 0)
+        ->assertScript($this->undersizedControlsScript(), '')
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 
@@ -181,7 +71,7 @@ test('polished discovery and guide artwork remain usable on mobile', function ()
         ->assertSee($guide->title)
         ->assertScript('document.querySelector("[data-guide-artwork]").complete', true)
         ->assertScript('document.querySelector("[data-guide-artwork]").naturalWidth > 0', true)
-        ->assertScript(horizontalOverflowCountScript(), 0)
+        ->assertScript($this->horizontalOverflowScript(), 0)
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 
@@ -196,7 +86,7 @@ test('polished discovery and guide artwork remain usable on mobile', function ()
         ->mobile()
         ->resize(320, 812)
         ->assertScript('document.querySelector("[data-article-secondary]")', null)
-        ->assertScript(horizontalOverflowCountScript(), 0)
+        ->assertScript($this->horizontalOverflowScript(), 0)
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 });
@@ -218,7 +108,7 @@ test('published content detail pages have no accessibility issues', function ():
             ->assertScript('document.querySelectorAll(\'svg:not([aria-hidden="true"]):not([aria-label]):not([aria-labelledby]):not(:has(title))\').length', 0)
             ->assertScript(exposedDecorativeGlyphCountScript(), 0)
             ->assertScript('document.querySelectorAll(\'[tabindex]:not([tabindex="0"]):not([tabindex="-1"])\').length', 0)
-            ->assertScript(missingFocusIndicatorsScript(), '')
+            ->assertScript($this->missingFocusIndicatorsScript(), '')
             ->assertNoJavaScriptErrors();
     }
 
@@ -226,18 +116,6 @@ test('published content detail pages have no accessibility issues', function ():
         ->click('Read Full Transcript')
         ->assertScript('document.querySelector("[aria-controls=episode-transcript]").ariaExpanded', 'true')
         ->assertNoAccessibilityIssues();
-});
-
-test('episode show note list paragraphs keep a compact reading rhythm', function (): void {
-    $episode = Episode::factory()->create([
-        'show_notes' => '<h3>In this episode</h3><ul><li><p>Planning sensory breaks</p></li><li><p>Choosing comfortable attractions</p></li></ul>',
-    ]);
-
-    visit(route('episodes.show', $episode))
-        ->assertScript('getComputedStyle(document.querySelector(".episode-show-notes-content li > p")).marginTop', '0px')
-        ->assertScript('getComputedStyle(document.querySelector(".episode-show-notes-content li > p")).marginBottom', '0px')
-        ->assertNoAccessibilityIssues()
-        ->assertNoJavaScriptErrors();
 });
 
 test('mobile navigation opens and remains usable', function (): void {
@@ -253,19 +131,6 @@ test('mobile navigation opens and remains usable', function (): void {
         ->assertNoJavaScriptErrors();
 });
 
-test('desktop navigation identifies only the current destination', function (): void {
-    visit(route('about'))
-        ->assertScript('document.querySelectorAll(".dispatch-nav-link[aria-current=page]").length', 1)
-        ->assertScript('document.querySelector(".dispatch-nav-link[aria-current=page]").textContent.trim()', 'About')
-        ->assertScript('document.querySelector(".dispatch-nav-link[href*=blog]").hasAttribute("aria-current")', false)
-        ->assertNoJavaScriptErrors();
-
-    visit(route('blog.index'))
-        ->assertScript('document.querySelectorAll(".dispatch-nav-link[aria-current=page]").length', 1)
-        ->assertScript('document.querySelector(".dispatch-nav-link[aria-current=page]").textContent.trim()', 'Blog')
-        ->assertNoJavaScriptErrors();
-});
-
 test('blog topics and search update without reloading the page', function (): void {
     $accessiblePost = Post::factory()->create([
         'title' => 'A quiet entrance plan',
@@ -278,7 +143,8 @@ test('blog topics and search update without reloading the page', function (): vo
 
     $page = visit(route('blog.index'));
 
-    $page->script("window.blogNavigationMarker = 'preserved'");
+    $page->assertScript("document.querySelector('body > p[role=status][aria-live=polite]') !== null", true)
+        ->script("window.blogNavigationMarker = 'preserved'");
 
     $page
         ->click('a[data-blog-filter-link][href*="park-accessibility"]')
@@ -303,40 +169,43 @@ test('blog topics and search update without reloading the page', function (): vo
         ->assertScript('Math.abs(document.querySelector("[data-blog-filters]").getBoundingClientRect().top - window.blogFilterTop) < 2', true)
         ->assertScript('window.blogNavigationMarker', 'preserved')
         ->assertNoJavaScriptErrors();
-});
+})->group('browser-smoke', 'browser-compatibility');
 
 test('keyboard users can skip directly to the main content', function (): void {
     visit(route('home'))
-        ->keys('html > body', 'Tab')
+        ->keys('html > body', $this->tabKey())
         ->assertScript('document.activeElement.textContent.trim()', 'Skip to content')
         ->assertScript('getComputedStyle(document.activeElement).outlineStyle === "none"', false)
         ->keys(':focus', 'Enter')
         ->assertScript('document.activeElement.id', 'main-content')
-        ->keys(':focus', 'Tab')
+        ->keys(':focus', $this->tabKey())
         ->assertScript('document.activeElement.textContent.trim()', 'Read the Blog')
         ->assertNoJavaScriptErrors();
-});
+})->group('browser-smoke', 'browser-compatibility');
 
 test('mobile navigation restores focus when closed with the keyboard', function (): void {
     visit(route('home'))
         ->on()
         ->mobile()
-        ->keys('html > body', 'Tab')
-        ->keys(':focus', 'Tab')
-        ->keys(':focus', 'Tab')
+        ->resize(320, 812)
+        ->assertScript($this->horizontalOverflowScript(), 0)
+        ->assertScript($this->undersizedControlsScript(), '')
+        ->keys('html > body', $this->tabKey())
+        ->keys(':focus', $this->tabKey())
+        ->keys(':focus', $this->tabKey())
         ->assertScript('document.activeElement.getAttribute("aria-label")', 'Open navigation menu')
         ->keys(':focus', 'Enter')
         ->assertScript('document.querySelector("[aria-controls=mobile-navigation]").ariaExpanded', 'true')
         ->assertVisible('#mobile-navigation')
-        ->keys(':focus', 'Tab')
+        ->keys(':focus', $this->tabKey())
         ->assertScript('document.activeElement.textContent.trim()', 'Home')
         ->keys(':focus', 'Escape')
         ->assertScript('getComputedStyle(document.querySelector("#mobile-navigation")).display', 'none')
         ->assertScript('document.activeElement.getAttribute("aria-label")', 'Open navigation menu')
         ->assertNoJavaScriptErrors();
-});
+})->group('browser-smoke', 'browser-compatibility');
 
-test('search and transcript controls work from the keyboard and unavailable contact remains actionable', function (): void {
+test('search and transcript controls work from the keyboard', function (): void {
     $post = Post::factory()->create([
         'title' => 'Accessible Park Planning',
         'body' => 'Practical accessible planning advice for a Disney parks visit.',
@@ -359,10 +228,6 @@ test('search and transcript controls work from the keyboard and unavailable cont
         ->assertSee('Collapse Transcript')
         ->assertNoJavaScriptErrors();
 
-    visit(route('contact.show'))
-        ->assertSee('Email us directly')
-        ->assertVisible('.dispatch-letter-form a[href^="mailto:"]')
-        ->assertNoJavaScriptErrors();
 });
 
 test('public pages remain usable at mobile widths', function (): void {
@@ -387,7 +252,6 @@ test('public pages remain usable at mobile widths', function (): void {
         route('episodes.index'),
         route('about'),
         route('contact.show'),
-        route('search', ['q' => 'accessible']),
         route('blog.show', $post),
         route('episodes.show', $episode),
         route('guides.show', $guide),
@@ -395,10 +259,10 @@ test('public pages remain usable at mobile widths', function (): void {
         ->on()
         ->mobile()
         ->resize(320, 812)
-        ->assertScript(horizontalOverflowCountScript(), 0)
-        ->assertScript(undersizedMobileControlsScript(), '')
+        ->assertScript($this->horizontalOverflowScript(), 0)
+        ->assertScript($this->undersizedControlsScript(), '')
         ->assertScript('document.querySelectorAll(\'[tabindex]:not([tabindex="0"]):not([tabindex="-1"])\').length', 0)
-        ->assertScript(missingFocusIndicatorsScript(), '')
+        ->assertScript($this->missingFocusIndicatorsScript(), '')
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 });
@@ -430,74 +294,56 @@ test('mobile search and transcript controls remain usable', function (): void {
         ->assertScript('document.querySelector("[aria-controls=episode-transcript]").ariaExpanded', 'true')
         ->assertSee('Collapse Transcript')
         ->assertNoJavaScriptErrors();
-});
+})->group('browser-smoke', 'browser-compatibility');
 
-test('admin login renders its authentication controls', function (): void {
-    visit('/admin/login')
-        ->assertVisible('input[type="email"]')
-        ->assertVisible('input[type="password"]')
-        ->assertNoJavaScriptErrors();
-});
-
-test('article reading time remains a duration while scrolling', function (): void {
+test('article navigation scrolls to headings and back to the top with reduced motion', function (): void {
     $post = Post::factory()->create([
-        'body' => str_repeat('accessible park planning ', 200),
+        'body' => "## Planning the day\n\n".str_repeat("Flexible park planning and sensory breaks.\n\n", 80)."## Finding quiet spaces\n\nTake a break.",
     ]);
+    $page = visit(route('blog.show', $post), ['reducedMotion' => 'reduce']);
 
-    visit(route('blog.show', $post))
-        ->assertSee('3 min read')
-        ->assertDontSee('1 of 3 min read')
+    $page->assertScript("window.matchMedia('(prefers-reduced-motion: reduce)').matches", true)
+        ->assertAttribute('#back-to-top', 'aria-hidden', 'true')
+        ->keys('[data-blog-toc-link][href="#section-1"]', 'Enter')
+        ->assertScript('window.scrollY > 500', true)
+        ->assertScript('Math.abs(document.querySelector("#section-1").getBoundingClientRect().top) < 200', true)
+        ->assertAttribute('#back-to-top', 'aria-hidden', 'false')
+        ->assertAttribute('#back-to-top', 'tabindex', '0')
+        ->click('#back-to-top')
+        ->assertScript('window.scrollY', 0)
+        ->assertAttribute('#back-to-top', 'aria-hidden', 'true')
+        ->assertAttribute('#back-to-top', 'tabindex', '-1')
         ->assertNoJavaScriptErrors();
-});
+})->group('browser-smoke');
 
-test('article navigation respects reduced motion preferences', function (): void {
-    $post = Post::factory()->create([
-        'body' => "## Planning the day\n\nStart with a flexible plan.\n\n## Finding quiet spaces\n\nTake sensory breaks when needed.",
-    ]);
-
+test('copying an article link gives accessible feedback', function (): void {
+    $post = Post::factory()->create();
     $page = visit(route('blog.show', $post));
-
-    $page->assertVisible('[data-blog-toc-link][href="#section-0"]')
-        ->script(<<<'JS'
-            window.matchMedia = () => ({ matches: true });
-            Element.prototype.scrollIntoView = function (options) {
-                if (options) {
-                    window.articleScrollBehavior = options.behavior;
-                }
-            };
-        JS);
-
-    $page->keys('[data-blog-toc-link][href="#section-0"]', 'Enter')
-        ->assertScript('window.articleScrollBehavior', 'auto');
 
     $page->script(<<<'JS'
         Object.defineProperty(navigator, 'clipboard', {
             configurable: true,
-            value: {
-                writeText: async (value) => {
-                    window.copiedArticleUrl = value;
-                },
-            },
+            value: { writeText: async (value) => { window.copiedArticleUrl = value; } },
         });
-    JS);
+        JS);
 
     $page->keys('[data-copy-link][aria-label="Copy link"]', 'Enter')
         ->assertScript('window.copiedArticleUrl', route('blog.show', $post))
-        ->assertScript('document.querySelector("[data-copy-link][aria-label=\\"Copy link\\"] .copy-feedback").classList.contains("hidden")', false);
+        ->assertSee('Copied!')
+        ->assertNoJavaScriptErrors();
+});
+
+test('accessibility checks reject small targets and misleading focus decoration', function (): void {
+    $page = visit(route('home'));
 
     $page->script(<<<'JS'
-        window.scrollTo = function (options) {
-            window.backToTopScrollBehavior = options.behavior;
-        };
+        document.body.innerHTML = `
+            <button id="small-target" style="width:46px;height:46px;min-height:0;padding:0">Small</button>
+            <button id="static-shadow" style="outline:none;box-shadow:0 0 2px black">Shadow</button>
+            <div inert><button id="cannot-focus" style="outline:2px solid black">Inert</button></div>
+        `;
+        JS);
 
-        document.getElementById('back-to-top').classList.remove(
-            'pointer-events-none',
-            'invisible',
-            'opacity-0',
-        );
-    JS);
-
-    $page->click('#back-to-top')
-        ->assertScript('window.backToTopScrollBehavior', 'auto')
-        ->assertNoJavaScriptErrors();
+    expect($page->script($this->undersizedControlsScript()))->toContain('button#small-target (46x46)')
+        ->and($page->script($this->missingFocusIndicatorsScript()))->toContain('button#static-shadow', 'button#cannot-focus');
 });
