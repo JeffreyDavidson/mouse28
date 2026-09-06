@@ -13,7 +13,7 @@ class RobotsDocument
             'Disallow: /preview/',
             'Disallow: /search',
             '',
-            'Sitemap: '.url('/sitemap.xml'),
+            'Sitemap: '.route('sitemap'),
         ]);
     }
 }

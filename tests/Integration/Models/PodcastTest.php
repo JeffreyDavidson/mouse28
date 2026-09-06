@@ -2,6 +2,7 @@
 
 use App\Models\Podcast;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 
 uses(RefreshDatabase::class);
 
@@ -22,4 +23,16 @@ test('podcast settings persist one reusable settings record', function (): void 
     expect($retrievedSettings->id)->toBe($settings->id)
         ->and($retrievedSettings->name)->toBe('Mouse28 Weekly')
         ->and(Podcast::query()->count())->toBe(1);
+});
+
+test('podcast info is read once per application request', function (): void {
+    Podcast::query()->create(['name' => 'Mouse28 Weekly']);
+    DB::flushQueryLog();
+    DB::enableQueryLog();
+
+    $firstRead = Podcast::info();
+    $secondRead = Podcast::info();
+
+    expect($secondRead)->toBe($firstRead)
+        ->and(DB::getQueryLog())->toHaveCount(1);
 });

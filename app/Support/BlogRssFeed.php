@@ -15,17 +15,17 @@ class BlogRssFeed
         $xml .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">';
         $xml .= '<channel>';
         $xml .= '<title>Mouse28 Blog</title>';
-        $xml .= '<link>'.url('/blog').'</link>';
+        $xml .= '<link>'.route('blog.index').'</link>';
         $xml .= '<description>Disney parks through the eyes of a family raising a daughter with autism. Practical tips and stories.</description>';
         $xml .= '<language>en-us</language>';
-        $xml .= '<atom:link href="'.url('/rss/blog').'" rel="self" type="application/rss+xml"/>';
-        $xml .= '<image><url>'.url('/images/logo.jpg').'</url><title>Mouse28</title><link>'.url('/').'</link></image>';
+        $xml .= '<atom:link href="'.route('rss.blog').'" rel="self" type="application/rss+xml"/>';
+        $xml .= '<image><url>'.url('/images/logo.jpg').'</url><title>Mouse28</title><link>'.route('home').'</link></image>';
 
         foreach ($posts as $post) {
             $xml .= '<item>';
             $xml .= '<title>'.htmlspecialchars($post->title).'</title>';
-            $xml .= '<link>'.url("/blog/{$post->slug}").'</link>';
-            $xml .= '<guid isPermaLink="true">'.url("/blog/{$post->slug}").'</guid>';
+            $xml .= '<link>'.route('blog.show', $post).'</link>';
+            $xml .= '<guid isPermaLink="true">'.route('blog.show', $post).'</guid>';
             $xml .= '<description>'.htmlspecialchars($post->excerpt ?? Str::limit(strip_tags($post->body), 300)).'</description>';
             $xml .= '<pubDate>'.$post->published_at->toRfc2822String().'</pubDate>';
 

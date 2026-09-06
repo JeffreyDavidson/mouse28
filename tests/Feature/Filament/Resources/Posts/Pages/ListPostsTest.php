@@ -1,9 +1,11 @@
 <?php
 
+use App\Filament\Resources\Posts\Pages\ListPosts;
 use App\Filament\Resources\Posts\PostResource;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -28,4 +30,20 @@ test('content table shows readiness and missing publish dates', function (): voi
         ->assertOk()
         ->assertSee('Readiness')
         ->assertSee('Needs publish date');
+});
+
+test('header does not count scheduled posts as published', function (): void {
+    Post::factory()->create();
+    Post::factory()->scheduled()->create();
+    Post::factory()->draft()->create();
+    actingAs(User::factory()->admin()->create());
+
+    $header = Livewire::test(ListPosts::class)->instance()->getHeader();
+
+    expect($header?->getData())
+        ->toMatchArray([
+            'total' => 3,
+            'published' => 1,
+            'drafts' => 1,
+        ]);
 });

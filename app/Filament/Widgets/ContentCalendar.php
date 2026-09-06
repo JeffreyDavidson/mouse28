@@ -3,9 +3,12 @@
 namespace App\Filament\Widgets;
 
 use App\Filament\Resources\Episodes\EpisodeResource;
+use App\Filament\Resources\Guides\GuideResource;
 use App\Filament\Resources\Posts\PostResource;
 use App\Models\Episode;
+use App\Models\Guide;
 use App\Models\Post;
+use App\Support\EditorialReadiness;
 use Filament\Widgets\Widget;
 
 class ContentCalendar extends Widget
@@ -28,9 +31,10 @@ class ContentCalendar extends Widget
                 'title' => $post->title,
                 'type' => 'Post',
                 'date' => $post->published_at,
-                'status' => ! $post->is_published ? 'Draft' : ($post->published_at->isFuture() ? 'Scheduled' : 'Published'),
+                'status' => EditorialReadiness::status($post)->getLabel(),
                 'url' => PostResource::getUrl('edit', ['record' => $post]),
-            ]);
+            ])
+            ->toBase();
 
         $episodes = Episode::whereBetween('published_at', [$start, $end])
             ->orderBy('published_at')
@@ -39,10 +43,23 @@ class ContentCalendar extends Widget
                 'title' => $episode->title,
                 'type' => 'Episode',
                 'date' => $episode->published_at,
-                'status' => ! $episode->is_published ? 'Draft' : ($episode->published_at->isFuture() ? 'Scheduled' : 'Published'),
+                'status' => EditorialReadiness::status($episode)->getLabel(),
                 'url' => EpisodeResource::getUrl('edit', ['record' => $episode]),
-            ]);
+            ])
+            ->toBase();
 
-        return $posts->merge($episodes)->sortBy('date')->values()->toArray();
+        $guides = Guide::whereBetween('published_at', [$start, $end])
+            ->orderBy('published_at')
+            ->get()
+            ->map(fn ($guide) => [
+                'title' => $guide->title,
+                'type' => 'Guide',
+                'date' => $guide->published_at,
+                'status' => EditorialReadiness::status($guide)->getLabel(),
+                'url' => GuideResource::getUrl('edit', ['record' => $guide]),
+            ])
+            ->toBase();
+
+        return $posts->merge($episodes)->merge($guides)->sortBy('date')->values()->toArray();
     }
 }
