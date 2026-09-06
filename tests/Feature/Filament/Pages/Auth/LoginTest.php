@@ -7,7 +7,7 @@ use function Pest\Laravel\get;
 uses(RefreshDatabase::class);
 
 test('guest can render the admin login', function (): void {
-    get('/admin/login')
+    get(route('filament.admin.auth.login'))
         ->assertOk()
         ->assertSee('Mouse28')
         ->assertSee('Welcome Back')
