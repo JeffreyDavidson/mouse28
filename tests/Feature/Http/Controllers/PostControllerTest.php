@@ -229,3 +229,66 @@ test('an uncategorized post keeps its public fallback presentation', function ()
         ->assertSee('Mouse28 dispatch')
         ->assertDontSee('category=', false);
 });
+
+test('blog posts include article and breadcrumb structured data', function (): void {
+    $post = Post::factory()->create([
+        'title' => 'Accessible <Park> Plan',
+        'cover_image' => 'posts/plan.jpg',
+        'source_url' => 'https://disneyworld.disney.go.com/guest-services/disability-access-service/',
+        'last_reviewed_at' => '2026-08-01',
+        'updated_at' => '2026-07-01',
+    ]);
+
+    $response = get(route('blog.show', $post));
+
+    $response->assertOk();
+    $data = $this->structuredData($response);
+
+    expect($data['@context'])->toBe('https://schema.org')
+        ->and($data['@graph'][0]['@type'])->toBe('BlogPosting')
+        ->and($data['@graph'][0]['headline'])->toBe($post->title)
+        ->and($data['@graph'][0]['mainEntityOfPage'])->toBe(route('blog.show', $post))
+        ->and($data['@graph'][0]['citation'])->toBe($post->source_url)
+        ->and($data['@graph'][0]['dateModified'])->toStartWith('2026-08-01')
+        ->and($data['@graph'][1]['@type'])->toBe('BreadcrumbList')
+        ->and(array_column($data['@graph'][1]['itemListElement'], 'name'))
+        ->toBe(['Home', 'Blog', $post->title]);
+});
+
+test('page copy and metadata avoid em dashes', function (): void {
+    get(route('blog.index'))
+        ->assertOk()
+        ->assertDontSee('—');
+});
+
+test('page uses the dispatch editorial system', function (): void {
+    get(route('blog.index'))
+        ->assertOk()
+        ->assertSee('data-brand-wordmark', false)
+        ->assertSee('data-editorial-blog', false)
+        ->assertSee('js-dispatch-pages', false);
+});
+
+test('reading page uses the dispatch reading surface', function (): void {
+    $post = Post::factory()->create();
+
+    get(route('blog.show', $post))
+        ->assertOk()
+        ->assertSee('editorial-detail-hero', false)
+        ->assertSee('editorial-reading-column', false)
+        ->assertDontSee('—');
+});
+
+test('form placeholders use readable text colors', function (): void {
+    Post::factory()->create();
+    config()->set('services.turnstile.site_key', 'test-site-key');
+    config()->set('services.turnstile.secret_key', 'test-secret-key');
+
+    get(route('blog.index'))
+        ->assertOk()
+        ->assertSee('placeholder:text-navy/60', false)
+        ->assertSee('placeholder:text-white/60', false)
+        ->assertDontSee('placeholder:text-navy/25', false)
+        ->assertDontSee('placeholder:text-white/25', false)
+        ->assertDontSee('placeholder-white/', false);
+});

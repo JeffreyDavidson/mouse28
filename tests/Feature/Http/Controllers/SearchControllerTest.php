@@ -60,3 +60,17 @@ test('text searches are not indexed', function (): void {
         ->assertSee('<meta name="robots" content="noindex,follow">', false)
         ->assertSee('<link rel="canonical" href="'.route('search').'">', false);
 });
+
+test('page copy and metadata avoid em dashes', function (): void {
+    get(route('search'))
+        ->assertOk()
+        ->assertDontSee('—');
+});
+
+test('page uses the dispatch editorial system', function (): void {
+    get(route('search'))
+        ->assertOk()
+        ->assertSee('data-brand-wordmark', false)
+        ->assertSee('dispatch-page-field', false)
+        ->assertSee('js-dispatch-pages', false);
+});

@@ -167,3 +167,48 @@ test('archive canonical preserves meaningful filters and pagination', function (
         ->assertOk()
         ->assertSee('<link rel="canonical" href="'.e($guideCanonical).'">', false);
 });
+
+test('guides include review date source and breadcrumb structured data', function (): void {
+    $guide = Guide::factory()->create([
+        'source_url' => 'https://disneyworld.disney.go.com/guest-services/',
+        'last_reviewed_at' => '2026-08-01',
+        'updated_at' => '2026-07-01',
+    ]);
+
+    $response = get(route('guides.show', $guide));
+
+    $response->assertOk();
+    $data = $this->structuredData($response);
+    $article = $data['@graph'][0];
+
+    expect($article['@type'])->toBe('Article')
+        ->and($article['citation'])->toBe($guide->source_url)
+        ->and($article['dateModified'])->toStartWith('2026-08-01')
+        ->and($data['@graph'][1]['itemListElement'][1]['name'])->toBe('Guides');
+});
+
+test('page copy and metadata avoid em dashes', function (): void {
+    get(route('guides.index'))
+        ->assertOk()
+        ->assertDontSee('—');
+});
+
+test('page uses the dispatch editorial system', function (): void {
+    get(route('guides.index'))
+        ->assertOk()
+        ->assertSee('data-brand-wordmark', false)
+        ->assertSee('data-guide-archive', false)
+        ->assertSee('js-dispatch-pages', false);
+});
+
+test('reading page uses the dispatch reading surface', function (): void {
+    $guide = Guide::factory()->create();
+
+    get(route('guides.show', $guide))
+        ->assertOk()
+        ->assertSee('data-guide-detail', false)
+        ->assertSee('dispatch-reader-sheet', false)
+        ->assertSee('guide-reading-column', false)
+        ->assertDontSee('—')
+        ->assertSee('/images/guides/'.$guide->category->value.'.webp', false);
+});
