@@ -3,6 +3,8 @@
 use App\Models\Episode;
 use App\Models\Podcast;
 use App\Models\Post;
+use Dom\HTMLDocument;
+use Dom\XPath;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Laravel\get;
@@ -24,6 +26,44 @@ test('public index page renders', function (): void {
     get(route('blog.index'))
         ->assertOk()
         ->assertSee('Blog');
+});
+
+test('blog navigation identifies Blog as the current destination', function (): void {
+    $response = get(route('blog.index'))
+        ->assertOk();
+
+    $document = HTMLDocument::createFromString($response->getContent(), LIBXML_NOERROR);
+    $xpath = new XPath($document);
+    $links = $xpath->query('//*[local-name()="a"][contains(concat(" ", normalize-space(@class), " "), " dispatch-nav-link ") and @aria-current="page"]');
+
+    expect($links)->toHaveCount(1)
+        ->and(trim($links->item(0)->textContent))->toBe('Blog')
+        ->and($links->item(0)->getAttribute('href'))->toBe(route('blog.index'));
+});
+
+test('blog pages render one newsletter signup', function (): void {
+    $post = Post::factory()->create();
+
+    foreach ([route('blog.index'), route('blog.show', $post)] as $url) {
+        $response = get($url)
+            ->assertOk();
+
+        expect(substr_count($response->getContent(), 'action="'.route('newsletter.store').'"'))->toBe(1);
+    }
+});
+
+test('post social image URLs are absolute', function (): void {
+    $post = Post::factory()->create([
+        'title' => 'Accessible Disney Planning',
+        'og_image' => 'posts/social-card.jpg',
+    ]);
+
+    get(route('blog.show', $post))
+        ->assertOk()
+        ->assertSee('<meta property="og:image" content="'.url('/storage/posts/social-card.jpg').'">', false)
+        ->assertSee('<meta property="og:image:alt" content="Accessible Disney Planning">', false)
+        ->assertSee('<meta name="twitter:image" content="'.url('/storage/posts/social-card.jpg').'">', false)
+        ->assertSee('<meta name="twitter:image:alt" content="Accessible Disney Planning">', false);
 });
 
 test('empty blog discovery offers useful paths forward', function (): void {
