@@ -13,3 +13,6 @@ Feature tests must exercise an application entry point. Put public HTTP response
 
 ## Keep framework routes at the Feature root
 When an HTTP entry point has no application controller, such as a static Route::view page or Laravel's built-in health route, use a clear top-level Feature test such as AboutTest.php or HealthTest.php and add an explicit source mapping. Do not create tests/Feature/Http/Routes.
+
+## Test application-owned health behavior only
+Keep Laravel's stock `/up` route as an untested liveness endpoint. Add Feature coverage only when the application attaches custom health behavior; do not test framework defaults.

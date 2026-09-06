@@ -34,7 +34,7 @@ Do not clean demo content as part of an unattended deployment. After verified ba
 Verify all of the following against the deployed commit:
 
 - `php artisan migrate:status` has no pending migrations.
-- `/up` returns HTTP 200 and reports the database as available.
+- `/up` returns HTTP 200, confirming that the application boots successfully.
 - `/`, `/blog`, `/episodes`, `/about`, `/contact`, `/search`, and `/admin/login` render successfully. When `GUIDES_ENABLED=true`, `/guides` also renders successfully; otherwise it returns 404.
 - `/sitemap.xml` and `/rss/blog` return valid XML, and `/rss/podcast` permanently redirects to the configured Transistor feed.
 - Public uploaded-media URLs return successful responses.
