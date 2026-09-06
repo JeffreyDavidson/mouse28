@@ -37,6 +37,77 @@ test('valid newsletter signup is sent to configured resend audience', function (
         && $request['email'] === 'dale@example.com');
 });
 
+test('newsletter preserves the submitted email after a resend HTTP failure', function (int $providerStatus): void {
+    Http::fake([
+        'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response([
+            'success' => true,
+            'action' => 'newsletter',
+            'hostname' => 'mouse28.com',
+        ]),
+        'https://api.resend.com/audiences/audience-test-id/contacts' => Http::response([], $providerStatus),
+    ]);
+
+    $response = from(route('home'))
+        ->post(route('newsletter.store'), newsletterPayload());
+
+    $response->assertRedirect(route('home').'#newsletter');
+    $response->assertSessionHas('newsletter_error', 'Something went wrong. Please try again.');
+    $response->assertSessionHasInput('email', 'dale@example.com');
+    $response->assertSessionMissing('newsletter_success');
+})->with([
+    'client error' => [422],
+    'server error' => [503],
+]);
+
+test('newsletter preserves the submitted email after a resend connection failure', function (): void {
+    Http::fake([
+        'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response([
+            'success' => true,
+            'action' => 'newsletter',
+            'hostname' => 'mouse28.com',
+        ]),
+        'https://api.resend.com/audiences/audience-test-id/contacts' => Http::failedConnection(),
+    ]);
+
+    $response = from(route('home'))
+        ->post(route('newsletter.store'), newsletterPayload());
+
+    $response->assertRedirect(route('home').'#newsletter');
+    $response->assertSessionHas('newsletter_error', 'Something went wrong. Please try again.');
+    $response->assertSessionHasInput('email', 'dale@example.com');
+    $response->assertSessionMissing('newsletter_success');
+});
+
+test('newsletter returns a safe JSON response after a resend HTTP failure', function (): void {
+    Http::fake([
+        'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response([
+            'success' => true,
+            'action' => 'newsletter',
+            'hostname' => 'mouse28.com',
+        ]),
+        'https://api.resend.com/audiences/audience-test-id/contacts' => Http::response([], 503),
+    ]);
+
+    $this->postJson(route('newsletter.store'), newsletterPayload())
+        ->assertUnprocessable()
+        ->assertExactJson(['error' => 'Something went wrong.']);
+});
+
+test('newsletter returns a safe JSON response after a resend connection failure', function (): void {
+    Http::fake([
+        'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response([
+            'success' => true,
+            'action' => 'newsletter',
+            'hostname' => 'mouse28.com',
+        ]),
+        'https://api.resend.com/audiences/audience-test-id/contacts' => Http::failedConnection(),
+    ]);
+
+    $this->postJson(route('newsletter.store'), newsletterPayload())
+        ->assertServerError()
+        ->assertExactJson(['error' => 'Something went wrong.']);
+});
+
 test('newsletter signup rejects invalid turnstile response', function (): void {
     Http::fake([
         'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response([
