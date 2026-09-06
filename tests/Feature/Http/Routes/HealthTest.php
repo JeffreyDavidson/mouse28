@@ -3,10 +3,12 @@
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 
+use function Pest\Laravel\getJson;
+
 uses(RefreshDatabase::class);
 
 test('application and database health are reported as available', function (): void {
-    $this->getJson('/up')
+    getJson('/up')
         ->assertOk()
         ->assertExactJson(['status' => 'up']);
 });
@@ -26,7 +28,7 @@ test('an unavailable database is reported as unhealthy', function (): void {
     ]);
     DB::purge('unavailable');
 
-    $response = $this->getJson('/up');
+    $response = getJson('/up');
 
     DB::purge('unavailable');
     config()->set('database.default', $defaultConnection);
