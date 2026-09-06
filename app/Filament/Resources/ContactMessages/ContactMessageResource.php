@@ -61,7 +61,7 @@ class ContactMessageResource extends Resource
                     ->copyable()
                     ->icon('heroicon-o-envelope'),
                 TextColumn::make('subject')
-                    ->formatStateUsing(fn (ContactMessage $record): string => $record->subject_label)
+                    ->formatStateUsing(fn (ContactMessage $record): string => $record->subjectLabel())
                     ->badge()
                     ->color('warning'),
                 TextColumn::make('message')
@@ -91,7 +91,7 @@ class ContactMessageResource extends Resource
                 Action::make('reply')
                     ->label('Reply')
                     ->icon('heroicon-o-paper-airplane')
-                    ->url(fn (ContactMessage $record) => "mailto:{$record->email}?subject=".urlencode("Re: {$record->subject_label}"))
+                    ->url(fn (ContactMessage $record) => "mailto:{$record->email}?subject=".urlencode('Re: '.$record->subjectLabel()))
                     ->openUrlInNewTab(),
                 DeleteAction::make(),
             ])

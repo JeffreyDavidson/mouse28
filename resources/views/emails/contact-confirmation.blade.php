@@ -41,7 +41,7 @@
                             </p>
 
                             <p style="margin: 0 0 24px; font-size: 15px; line-height: 1.7; color: #2a2040;">
-                                Thanks for getting in touch with us at Mouse28! We've received your message about <strong style="color: #1a1040;">{{ $contactMessage->subject_label }}</strong> and will do our best to respond within 48 hours.
+                                Thanks for getting in touch with us at Mouse28! We've received your message about <strong style="color: #1a1040;">{{ $contactMessage->subjectLabel() }}</strong> and will do our best to respond within 48 hours.
                             </p>
 
                             {{-- Their message recap --}}
