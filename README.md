@@ -86,6 +86,8 @@ Run `npx playwright install chromium` once before the local browser suite. A foc
 
 `composer test` runs the feature and architecture suites; browser tests use the separate `composer test:browser` command. Rector uses its default parallel processing. Agent sandboxes must allow the local sockets used by Rector and Pest.
 
+Feature test paths mirror their owning `app/` classes: for example, `app/Http/Controllers/PostController.php` maps to `tests/Feature/Http/Controllers/PostControllerTest.php`. Split coverage for unrelated classes into their respective files, including Filament resource pages. Tests for Blade views and configuration without an application class live under `tests/Feature/Views` and `tests/Feature/Config`; their source paths are listed in `tests/Arch/TestOrganizationTest.php`.
+
 Laravel Boost provides project-aware documentation and inspection tools. `boost.json` tracks four managed skills: `infer-conventions`, `laravel-best-practices`, `pest-testing`, and `tailwindcss-development`; their project copies live under `.agents/skills`. Filament is selected for package guidance. Run `php artisan boost:update` to regenerate guidelines and skills, and review the resulting diff.
 
 The `"nightwatch": true` preference in `boost.json` selects Nightwatch MCP setup through `php artisan boost:install`. It is separate from application monitoring and requires MCP client setup and OAuth authorization. Changing the preference alone does not establish an authenticated connection. Laravel Pao automatically condenses supported test and analysis output when an agent runs the commands.

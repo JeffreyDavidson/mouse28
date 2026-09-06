@@ -46,15 +46,3 @@ test('production cleanup requires an explicit force option', function (): void {
         ->and(Artisan::output())->toContain('Production cleanup requires the --force option.');
     $this->assertModelExists($demoPost);
 });
-
-test('legacy episode cleanup preserves real episodes', function (): void {
-    $demoEpisode = Episode::factory()->create(['slug' => CleanSeededContent::episodeSlugs()[0]]);
-    $realEpisode = Episode::factory()->create(['slug' => 'real-episode']);
-
-    $exitCode = Artisan::call('episodes:clean-seeded');
-
-    expect($exitCode)->toBe(Command::SUCCESS)
-        ->and(Artisan::output())->toContain('Deleted 1 seeded episodes.');
-    $this->assertModelMissing($demoEpisode);
-    $this->assertModelExists($realEpisode);
-});
