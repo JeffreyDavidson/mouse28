@@ -18,13 +18,4 @@ enum ContentAuthor: string implements HasLabel
             self::Both => 'Jeffrey & Cassie',
         };
     }
-
-    public function initials(): string
-    {
-        return match ($this) {
-            self::Jeffrey => 'JD',
-            self::Cassie => 'CD',
-            self::Both => 'J&C',
-        };
-    }
 }

@@ -175,7 +175,7 @@
                                             value="{{ $topic->value }}"
                                             @selected($contactHasFeedback && old('subject') === $topic->value)
                                         >
-                                            {{ $topic->publicLabel() }}
+                                            {{ $topic->contactFormLabel() }}
                                         </option>
                                     @endforeach
                                 </select>
