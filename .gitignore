@@ -23,3 +23,9 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 notes/
+
+# Local design exploration and review artifacts; tracked references stay versioned.
+/.impeccable/critique/
+/.impeccable/mocks/decision/
+/.impeccable/questions/
+/.impeccable/review/
