@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mouse28 Podcast Publishing"
+  short_description: "Publish and verify Mouse28 podcast episodes"
+  default_prompt: "Use $mouse28-podcast-publishing to prepare and publish this Mouse28 podcast episode."
