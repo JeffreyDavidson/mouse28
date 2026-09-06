@@ -28,6 +28,19 @@ class StoreContactRequest extends FormRequest
         ];
     }
 
+    /** @return array{name: string, email: string, subject: string, message: string} */
+    public function messageAttributes(): array
+    {
+        $validated = $this->validated();
+
+        return [
+            'name' => (string) $validated['name'],
+            'email' => (string) $validated['email'],
+            'subject' => (string) $validated['subject'],
+            'message' => (string) $validated['message'],
+        ];
+    }
+
     protected function getRedirectUrl(): string
     {
         return route('contact.show');

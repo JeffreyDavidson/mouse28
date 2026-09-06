@@ -2,8 +2,10 @@
 
 namespace App\Support;
 
+use App\Enums\NewsletterSubscriptionResult;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ResendAudience
 {
@@ -27,6 +29,43 @@ class ResendAudience
         Cache::forget(self::CACHE_KEY);
 
         return $this->fetch();
+    }
+
+    public function subscribe(string $email): NewsletterSubscriptionResult
+    {
+        $audienceId = config('services.resend.audience_id');
+
+        if (! is_string($audienceId) || blank($audienceId)) {
+            Log::error('Newsletter signup is missing its Resend audience configuration.');
+
+            return NewsletterSubscriptionResult::ConfigurationMissing;
+        }
+
+        try {
+            $response = Http::withToken((string) config('services.resend.key'))
+                ->timeout(10)
+                ->post("https://api.resend.com/audiences/{$audienceId}/contacts", [
+                    'email' => $email,
+                ]);
+        } catch (\Throwable $exception) {
+            Log::error('Newsletter signup request failed', [
+                'exception' => $exception::class,
+            ]);
+
+            return NewsletterSubscriptionResult::ConnectionFailed;
+        }
+
+        if (! $response->successful()) {
+            Log::warning('Resend newsletter signup failed', [
+                'status' => $response->status(),
+            ]);
+
+            return NewsletterSubscriptionResult::ProviderRejected;
+        }
+
+        Cache::forget(self::CACHE_KEY);
+
+        return NewsletterSubscriptionResult::Subscribed;
     }
 
     /** @return array{subscribers: list<array<string, mixed>>, error: ?string} */

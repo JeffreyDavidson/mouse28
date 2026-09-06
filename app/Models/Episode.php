@@ -19,6 +19,8 @@ use Illuminate\Support\Carbon;
  * @property-read string $formatted_duration
  * @property-read string|null $og_image_url
  * @property-read string|null $transistor_embed_url
+ *
+ * @method static Builder<static> published()
  */
 #[Fillable([
     'title',

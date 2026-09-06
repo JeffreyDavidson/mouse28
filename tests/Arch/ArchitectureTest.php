@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -40,7 +39,6 @@ $resourceMethods = ['index', 'create', 'store', 'show', 'edit', 'update', 'destr
 
 $controllerClasses = collect(glob(__DIR__.'/../../app/Http/Controllers/*.php') ?: [])
     ->map(fn (string $file): string => 'App\\Http\\Controllers\\'.basename($file, '.php'))
-    ->reject(fn (string $class): bool => $class === Controller::class)
     ->filter(fn (string $class): bool => class_exists($class))
     ->values();
 

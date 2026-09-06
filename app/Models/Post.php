@@ -28,6 +28,8 @@ use Illuminate\Support\Str;
  * @property-read string|null $og_image_url
  * @property-read int $reading_time
  * @property-read string $review_status
+ *
+ * @method static Builder<static> published()
  */
 #[Fillable([
     'title',
