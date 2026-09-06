@@ -275,3 +275,49 @@ test('archive canonical preserves meaningful filters and pagination', function (
         ->assertOk()
         ->assertSee('<link rel="canonical" href="'.e($episodeCanonical).'">', false);
 });
+
+test('episodes include podcast media duration and breadcrumb structured data', function (): void {
+    $episode = Episode::factory()->create([
+        'season_number' => 3,
+        'duration_seconds' => 3723,
+        'audio_url' => 'https://cdn.example.com/episode.mp3',
+    ]);
+
+    $response = get(route('episodes.show', $episode));
+
+    $response->assertOk();
+    $data = $this->structuredData($response);
+    $podcastEpisode = $data['@graph'][0];
+
+    expect($podcastEpisode['@type'])->toBe('PodcastEpisode')
+        ->and($podcastEpisode['duration'])->toBe('PT1H2M3S')
+        ->and($podcastEpisode['associatedMedia']['contentUrl'])->toBe($episode->audio_url)
+        ->and($podcastEpisode['partOfSeason']['@type'])->toBe('PodcastSeason')
+        ->and($podcastEpisode['partOfSeason']['seasonNumber'])->toBe(3)
+        ->and($podcastEpisode['partOfSeries']['@type'])->toBe('PodcastSeries')
+        ->and($data['@graph'][1]['itemListElement'][1]['name'])->toBe('Podcast');
+});
+
+test('page copy and metadata avoid em dashes', function (): void {
+    get(route('episodes.index'))
+        ->assertOk()
+        ->assertDontSee('—');
+});
+
+test('page uses the dispatch editorial system', function (): void {
+    get(route('episodes.index'))
+        ->assertOk()
+        ->assertSee('data-brand-wordmark', false)
+        ->assertSee('data-podcast-archive', false)
+        ->assertSee('js-dispatch-pages', false);
+});
+
+test('reading page uses the dispatch reading surface', function (): void {
+    $episode = Episode::factory()->create();
+
+    get(route('episodes.show', $episode))
+        ->assertOk()
+        ->assertSee('episode-detail-hero', false)
+        ->assertSee('dispatch-page-field', false)
+        ->assertDontSee('—');
+});

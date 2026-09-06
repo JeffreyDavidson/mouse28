@@ -7,6 +7,7 @@ use App\Filament\Widgets\RecentActivity;
 use App\Filament\Widgets\StatsOverview;
 use App\Filament\Widgets\WelcomeBanner;
 use App\Models\User;
+use Filament\Pages\Dashboard;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 
@@ -22,7 +23,7 @@ test('authenticated user can render the admin dashboard', function (): void {
     $user = User::factory()->admin()->create();
 
     actingAs($user)
-        ->get('/admin')
+        ->get(Dashboard::getUrl(panel: 'admin'))
         ->assertOk()
         ->assertSeeLivewire(WelcomeBanner::class)
         ->assertSeeLivewire(StatsOverview::class)
@@ -30,4 +31,12 @@ test('authenticated user can render the admin dashboard', function (): void {
         ->assertSeeLivewire(QuickDraft::class)
         ->assertSeeLivewire(ContentCalendar::class)
         ->assertSeeLivewire(InspirationWidget::class);
+});
+
+test('non admin user cannot access the admin panel', function (): void {
+    $user = User::factory()->create();
+
+    actingAs($user)
+        ->get(Dashboard::getUrl(panel: 'admin'))
+        ->assertForbidden();
 });

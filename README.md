@@ -94,7 +94,7 @@ Choose the suite by what the test exercises:
 - `Browser`: real-browser interactions and rendering.
 - `Arch`: source structure and architectural contracts.
 
-Unit, Integration, and Feature paths mirror their owning `app/` classes. A class can have tests in more than one suite when they exercise different boundaries. For example, database casts belong in `tests/Integration/Models/PostTest.php`, while public post behavior belongs in `tests/Feature/Http/Controllers/PostControllerTest.php`. Split mixed files by boundary and owner. Blade and configuration tests without an application class use explicit source mappings in `tests/Arch/TestOrganizationTest.php`.
+Unit, Integration, and Feature paths mirror their owning `app/` classes. A class can have tests in more than one suite when they exercise different boundaries. For example, database casts belong in `tests/Integration/Models/PostTest.php`, while public post behavior belongs in `tests/Feature/Http/Controllers/PostControllerTest.php`. Split mixed files by boundary and owner. Choose that owner from the behavior being asserted, not a fixture model or internal collaborator. Page-specific response checks belong with their controller or Filament page; shared navigation and metadata checks belong with the layout. Blade and configuration tests without an application class use explicit source mappings in `tests/Arch/TestOrganizationTest.php`.
 
 Run a suite independently with `php artisan test --compact --testsuite=Unit` (or `Integration`, `Feature`, or `Architecture`).
 

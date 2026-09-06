@@ -143,3 +143,19 @@ test('landing page provides search and social metadata', function (): void {
         ->assertSee('<link rel="preload" href="/fonts/mouse28/besley-latin.woff2" as="font" type="font/woff2" crossorigin />', false)
         ->assertSee('<meta property="og:image" content="'.url('/images/hero-family.jpg').'">', false);
 });
+
+test('homepage newsletter form renders bot protection', function (): void {
+    config()->set('services.resend.key', 'resend-test-key');
+    config()->set('services.resend.audience_id', 'audience-test-id');
+    config()->set('services.turnstile.site_key', 'turnstile-test-site-key');
+    config()->set('services.turnstile.secret_key', 'turnstile-test-secret-key');
+    config()->set('services.turnstile.siteverify_url', 'https://challenges.cloudflare.com/turnstile/v0/siteverify');
+    config()->set('services.turnstile.newsletter_action', 'newsletter');
+    config()->set('services.turnstile.allowed_hostnames', ['mouse28.com']);
+
+    get(route('home'))
+        ->assertOk()
+        ->assertSee('data-action="newsletter"', false)
+        ->assertSee('data-appearance="interaction-only"', false)
+        ->assertSee('name="website_url"', false);
+});

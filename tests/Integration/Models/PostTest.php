@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 test('editorial review dates determine the review queue', function (): void {
+    $this->freezeTime();
     config()->set('mouse28.post_review_interval_days', 180);
 
     $currentPost = Post::factory()->create([
@@ -19,9 +20,35 @@ test('editorial review dates determine the review queue', function (): void {
         'last_reviewed_at' => today()->subDays(181),
     ]);
 
-    expect($currentPost->isReviewDue())->toBeFalse()
-        ->and($stalePost->isReviewDue())->toBeTrue()
-        ->and(Post::reviewDue()->pluck('id')->all())->toBe([$stalePost->id]);
+    $boundaryPost = Post::factory()->create([
+        'last_reviewed_at' => today()->subDays(180),
+        'source_url' => 'https://disneyworld.disney.go.com/guest-services/',
+    ]);
+    $unreviewedPost = Post::factory()->create([
+        'source_url' => 'https://disneyworld.disney.go.com/guest-services/',
+        'last_reviewed_at' => null,
+    ]);
+    $untrackedPost = Post::factory()->create([
+        'source_url' => null,
+        'last_reviewed_at' => null,
+    ]);
+
+    $currentIsDue = $currentPost->isReviewDue();
+    $staleIsDue = $stalePost->isReviewDue();
+    $boundaryIsDue = $boundaryPost->isReviewDue();
+    $unreviewedIsDue = $unreviewedPost->isReviewDue();
+    $untrackedIsDue = $untrackedPost->isReviewDue();
+    $reviewDueIds = Post::query()
+        ->reviewDue()
+        ->pluck('id')
+        ->all();
+
+    expect($currentIsDue)->toBeFalse()
+        ->and($staleIsDue)->toBeTrue()
+        ->and($boundaryIsDue)->toBeFalse()
+        ->and($unreviewedIsDue)->toBeTrue()
+        ->and($untrackedIsDue)->toBeFalse()
+        ->and($reviewDueIds)->toEqualCanonicalizing([$stalePost->id, $unreviewedPost->id]);
 });
 
 test('editorial scopes separate the content work queue', function (): void {
@@ -34,11 +61,27 @@ test('editorial scopes separate the content work queue', function (): void {
     ]);
     $needsAttention = Post::factory()->create(['cover_image' => null]);
 
-    expect(Post::drafts()->pluck('id'))->toContain($draft->id)
-        ->and(Post::scheduled()->pluck('id'))->toContain($scheduled->id)
-        ->and(Post::published()->pluck('id'))->toContain($published->id, $needsAttention->id)
-        ->and(Post::needsAttention()->pluck('id'))->toContain($draft->id, $scheduled->id, $needsAttention->id)
-        ->and(Post::needsAttention()->pluck('id'))->not->toContain($published->id);
+    $draftIds = Post::query()
+        ->drafts()
+        ->pluck('id')
+        ->all();
+    $scheduledIds = Post::query()
+        ->scheduled()
+        ->pluck('id')
+        ->all();
+    $publishedIds = Post::query()
+        ->published()
+        ->pluck('id')
+        ->all();
+    $attentionIds = Post::query()
+        ->needsAttention()
+        ->pluck('id')
+        ->all();
+
+    expect($draftIds)->toBe([$draft->id])
+        ->and($scheduledIds)->toBe([$scheduled->id])
+        ->and($publishedIds)->toEqualCanonicalizing([$published->id, $needsAttention->id])
+        ->and($attentionIds)->toEqualCanonicalizing([$draft->id, $scheduled->id, $needsAttention->id]);
 });
 
 test('content enums round trip through their existing database strings', function (): void {
@@ -53,12 +96,13 @@ test('content enums round trip through their existing database strings', functio
         ->and($record->category)->toBe(PostCategory::ParkAccessibility)
         ->and($record->author_name)->toBe('Cassie Davidson');
 
-    $record->update(['author' => ContentAuthor::Both]);
+    $record->update(['author' => ContentAuthor::Both, 'category' => PostCategory::DisneyTips]);
     $record->refresh();
 
-    expect($record->getRawOriginal('author'))->toBe('both')
-        ->and($record->getRawOriginal('category'))->toBe('park-accessibility')
+    expect($record->category)->toBe(PostCategory::DisneyTips)
+        ->and($record->getRawOriginal('author'))->toBe('both')
+        ->and($record->getRawOriginal('category'))->toBe('disney-tips')
         ->and($record->toArray()['author'])->toBe('both')
-        ->and($record->toArray()['category'])->toBe('park-accessibility')
+        ->and($record->toArray()['category'])->toBe('disney-tips')
         ->and($record->author_name)->toBe('Jeffrey & Cassie');
 });

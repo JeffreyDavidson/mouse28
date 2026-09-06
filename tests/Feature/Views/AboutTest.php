@@ -35,3 +35,17 @@ test('landing page provides search and social metadata', function (): void {
         ->assertOk()
         ->assertSee('<meta property="og:title" content="About the Davidson Family | Mouse28">', false);
 });
+
+test('page copy and metadata avoid em dashes', function (): void {
+    get(route('about'))
+        ->assertOk()
+        ->assertDontSee('—');
+});
+
+test('page uses the dispatch editorial system', function (): void {
+    get(route('about'))
+        ->assertOk()
+        ->assertSee('data-brand-wordmark', false)
+        ->assertSee('data-about-editorial', false)
+        ->assertSee('js-dispatch-pages', false);
+});

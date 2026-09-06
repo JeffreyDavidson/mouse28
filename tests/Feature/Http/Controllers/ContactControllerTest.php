@@ -227,6 +227,30 @@ test('landing page provides search and social metadata', function (): void {
         ->assertSee('<meta name="description" content="Contact Jeffrey and Cassie about Mouse28, Disney park accessibility, family travel, collaborations, or the podcast.">', false);
 });
 
+test('page copy and metadata avoid em dashes', function (): void {
+    get(route('contact.show'))
+        ->assertOk()
+        ->assertDontSee('—');
+});
+
+test('page uses the dispatch editorial system', function (): void {
+    get(route('contact.show'))
+        ->assertOk()
+        ->assertSee('data-brand-wordmark', false)
+        ->assertSee('dispatch-letter-form', false)
+        ->assertSee('js-dispatch-pages', false);
+});
+
+test('form placeholders use readable text colors', function (): void {
+    config()->set('services.turnstile.site_key', 'test-site-key');
+    config()->set('services.turnstile.secret_key', 'test-secret-key');
+
+    get(route('contact.show'))
+        ->assertOk()
+        ->assertSee('placeholder:text-navy/65', false)
+        ->assertDontSee('placeholder:text-navy/30', false);
+});
+
 function contactPayload(): array
 {
     return [
