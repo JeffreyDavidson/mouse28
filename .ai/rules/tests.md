@@ -10,3 +10,6 @@ Unit tests exercise isolated logic without booting Laravel, using factories, fac
 
 ## Name tests for the behavior they assert
 Match the class that owns the asserted behavior, not a model used as a fixture or an internal collaborator reached through a request. Page-specific response assertions belong with the corresponding controller or Filament page. Shared layout output belongs with its Blade source mapping; direct composer tests must inspect composer binding. Split mail assertions from model persistence tests. Built-in Filament dashboard access belongs with the application AdminPanelProvider that registers it. Browser scenarios may span pages when testing a shared interaction or rendering constraint.
+
+## Choose model effort for test refactoring scope
+Jeffrey prefers GPT-5.6 Terra with Medium reasoning for focused test moves, assertion improvements, and boundary coverage. Recommend GPT-6 Astra with High reasoning for repository-wide test-value audits or changes spanning application architecture; Terra with Low reasoning is sufficient for routine Git publishing steps. Before substantive work, flag a known model mismatch and explain the recommended switch. These are model-selection preferences, not automatic routing: never claim a model switch occurred unless the runtime confirms it, and do not spawn agents solely to switch models.
