@@ -4,6 +4,7 @@ use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\URL;
 
 use function Pest\Laravel\get;
 
@@ -19,6 +20,22 @@ test('search page is available from public navigation', function (): void {
         ->assertOk()
         ->assertSee(route('search'), false)
         ->assertSee('Search Mouse28');
+});
+
+test('canonical URLs preserve an HTTP application origin', function (): void {
+    $applicationUrl = config('app.url');
+    URL::forceScheme(null);
+    URL::forceRootUrl('http://localhost');
+
+    try {
+        $response = get('http://localhost/search');
+    } finally {
+        URL::forceRootUrl($applicationUrl);
+        URL::forceScheme(str_starts_with($applicationUrl, 'https://') ? 'https' : null);
+    }
+
+    $response->assertOk()
+        ->assertSee('<link rel="canonical" href="http://localhost/search">', false);
 });
 
 test('search groups matching published content', function (): void {

@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\Podcast;
+use Dom\HTMLDocument;
+use Dom\XPath;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Laravel\get;
@@ -11,6 +13,19 @@ test('public index page renders', function (): void {
     get(route('about'))
         ->assertOk()
         ->assertSee('Disney looks different');
+});
+
+test('primary navigation identifies About as the current destination', function (): void {
+    $response = get(route('about'))
+        ->assertOk();
+
+    $document = HTMLDocument::createFromString($response->getContent(), LIBXML_NOERROR);
+    $xpath = new XPath($document);
+    $links = $xpath->query('//*[local-name()="a"][contains(concat(" ", normalize-space(@class), " "), " dispatch-nav-link ") and @aria-current="page"]');
+
+    expect($links)->toHaveCount(1)
+        ->and(trim($links->item(0)->textContent))->toBe('About')
+        ->and($links->item(0)->getAttribute('href'))->toBe(route('about'));
 });
 
 test('about page uses an editorial family story with separate host profiles', function (): void {

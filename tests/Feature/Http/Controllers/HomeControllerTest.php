@@ -16,6 +16,15 @@ test('public index page renders', function (): void {
         ->assertSee('Mouse28');
 });
 
+test('homepage advertises the canonical Transistor feed without persisting defaults', function (): void {
+    get(route('home'))
+        ->assertOk()
+        ->assertSee(config('podcast.rss_url'), false)
+        ->assertSee('RSS Feed');
+
+    expect(Podcast::query()->doesntExist())->toBeTrue();
+});
+
 test('homepage renders configured podcast distribution links', function (): void {
     $podcast = Podcast::query()->create([
         'name' => 'Mouse28',

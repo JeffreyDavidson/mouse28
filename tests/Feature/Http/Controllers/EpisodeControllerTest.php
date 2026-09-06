@@ -14,6 +14,25 @@ test('public index page renders', function (): void {
         ->assertSee('The Mouse28 Podcast');
 });
 
+test('podcast pages render one newsletter signup', function (): void {
+    $episode = Episode::factory()->create();
+
+    foreach ([route('episodes.index'), route('episodes.show', $episode)] as $url) {
+        $response = get($url)
+            ->assertOk();
+
+        expect(substr_count($response->getContent(), 'action="'.route('newsletter.store').'"'))->toBe(1);
+    }
+});
+
+test('podcast index advertises the canonical Transistor feed without persisting defaults', function (): void {
+    get(route('episodes.index'))
+        ->assertOk()
+        ->assertSee(config('podcast.rss_url'), false);
+
+    expect(Podcast::query()->doesntExist())->toBeTrue();
+});
+
 test('podcast index renders configured distribution links', function (): void {
     $podcast = Podcast::query()->create([
         'name' => 'Mouse28',
