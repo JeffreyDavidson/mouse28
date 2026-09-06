@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 test('tests use Pest files within a registered suite', function (): void {
     $testRoot = dirname(__DIR__);
-    $registeredSuites = ['Arch', 'Browser', 'Feature'];
+    $registeredSuites = ['Arch', 'Browser', 'Feature', 'Integration', 'Unit'];
     $violations = [];
 
     $iterator = new RecursiveIteratorIterator(
@@ -39,9 +39,9 @@ test('tests use Pest files within a registered suite', function (): void {
     expect($violations)->toBeEmpty(implode("\n", $violations));
 });
 
-test('feature test paths mirror their application source', function (): void {
+test('test paths mirror their application source', function (string $suite): void {
     $projectRoot = dirname(__DIR__, 2);
-    $featureRoot = $projectRoot.'/tests/Feature/';
+    $suiteRoot = $projectRoot.'/tests/'.$suite.'/';
     $nonClassSources = [
         'Config/SentryTest.php' => 'config/sentry.php',
         'Views/AboutTest.php' => 'resources/views/about.blade.php',
@@ -54,7 +54,7 @@ test('feature test paths mirror their application source', function (): void {
     ];
     $violations = [];
     $iterator = new RecursiveIteratorIterator(
-        new RecursiveDirectoryIterator($featureRoot, FilesystemIterator::SKIP_DOTS),
+        new RecursiveDirectoryIterator($suiteRoot, FilesystemIterator::SKIP_DOTS),
     );
 
     foreach ($iterator as $file) {
@@ -62,7 +62,7 @@ test('feature test paths mirror their application source', function (): void {
             continue;
         }
 
-        $relativePath = substr($file->getPathname(), strlen($featureRoot));
+        $relativePath = substr($file->getPathname(), strlen($suiteRoot));
         $source = $nonClassSources[$relativePath] ?? 'app/'.substr($relativePath, 0, -8).'.php';
 
         if (! is_file($projectRoot.'/'.$source)) {
@@ -71,4 +71,4 @@ test('feature test paths mirror their application source', function (): void {
     }
 
     expect($violations)->toBeEmpty(implode("\n", $violations));
-});
+})->with(['Feature', 'Integration', 'Unit']);

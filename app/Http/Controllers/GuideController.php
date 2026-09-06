@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\GuideCategory;
 use App\Models\Guide;
 use App\Support\ContentContinuation;
 use Illuminate\Http\Request;
@@ -12,17 +13,15 @@ class GuideController extends Controller
     {
         abort_unless(config('mouse28.guides_enabled'), 404);
 
-        $category = $request->string('category')->toString();
-        if (! array_key_exists($category, Guide::CATEGORIES)) {
-            $category = '';
-        }
+        $categoryEnum = GuideCategory::tryFrom($request->string('category')->toString());
+        $category = $categoryEnum->value ?? '';
 
         $guides = Guide::published()
             ->when($category, fn ($query) => $query->where('category', $category))
             ->latest('published_at')
             ->paginate(12)
             ->withQueryString();
-        $categoryLabel = Guide::CATEGORIES[$category] ?? null;
+        $categoryLabel = $categoryEnum?->getLabel();
         $canonicalParameters = array_filter([
             'category' => $category ?: null,
             'page' => $guides->currentPage() > 1 ? $guides->currentPage() : null,

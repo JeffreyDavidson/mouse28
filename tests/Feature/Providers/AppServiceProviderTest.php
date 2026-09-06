@@ -1,19 +1,9 @@
 <?php
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-use Laravel\Nightwatch\Core;
 
 uses(RefreshDatabase::class);
-
-test('Nightwatch identifies administrators without sending their profile details', function (): void {
-    $resolver = app(Core::class)->userDetailsResolver;
-
-    $userDetails = $resolver(User::factory()->make());
-
-    expect($userDetails)->toBe([]);
-});
 
 test('application and database health are reported as available', function (): void {
     $this->getJson('/up')

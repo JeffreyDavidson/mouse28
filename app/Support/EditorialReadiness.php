@@ -2,32 +2,24 @@
 
 namespace App\Support;
 
+use App\Enums\PublicationStatus;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
 
 class EditorialReadiness
 {
-    public static function status(Post|Guide|Episode $content): string
+    public static function status(Post|Guide|Episode $content): PublicationStatus
     {
         if (! $content->is_published) {
-            return 'Draft';
+            return PublicationStatus::Draft;
         }
 
         if (! $content->published_at) {
-            return 'Needs publish date';
+            return PublicationStatus::NeedsPublishDate;
         }
 
-        return $content->published_at->isFuture() ? 'Scheduled' : 'Published';
-    }
-
-    public static function statusColor(Post|Guide|Episode $content): string
-    {
-        return match (self::status($content)) {
-            'Published' => 'success',
-            'Scheduled', 'Needs publish date' => 'warning',
-            default => 'gray',
-        };
+        return $content->published_at->isFuture() ? PublicationStatus::Scheduled : PublicationStatus::Published;
     }
 
     public static function label(Post|Guide|Episode $content): string

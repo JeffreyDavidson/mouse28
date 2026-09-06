@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PublicationStatus;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
@@ -14,10 +15,10 @@ test('publication status distinguishes drafts schedules and missing dates', func
     $scheduled = Post::factory()->scheduled()->create();
     $published = Post::factory()->create();
 
-    expect(EditorialReadiness::status($draft))->toBe('Draft')
-        ->and(EditorialReadiness::status($missingDate))->toBe('Needs publish date')
-        ->and(EditorialReadiness::status($scheduled))->toBe('Scheduled')
-        ->and(EditorialReadiness::status($published))->toBe('Published');
+    expect(EditorialReadiness::status($draft))->toBe(PublicationStatus::Draft)
+        ->and(EditorialReadiness::status($missingDate))->toBe(PublicationStatus::NeedsPublishDate)
+        ->and(EditorialReadiness::status($scheduled))->toBe(PublicationStatus::Scheduled)
+        ->and(EditorialReadiness::status($published))->toBe(PublicationStatus::Published);
 });
 
 test('readiness reports actionable issues for each content type', function (): void {

@@ -2,8 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Enums\ContentAuthor;
+use App\Enums\GuideCategory;
 use App\Models\Guide;
-use App\Models\Post;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /** @extends Factory<Guide> */
@@ -20,8 +21,8 @@ class GuideFactory extends Factory
             'slug' => str($title)->slug(),
             'excerpt' => fake()->sentence(18),
             'body' => fake()->paragraphs(5, true),
-            'category' => fake()->randomKey(Guide::CATEGORIES),
-            'author' => fake()->randomKey(Post::AUTHORS),
+            'category' => fake()->randomElement(GuideCategory::cases()),
+            'author' => fake()->randomElement(ContentAuthor::cases()),
             'source_url' => fake()->url(),
             'last_reviewed_at' => now()->subWeek(),
             'is_published' => true,

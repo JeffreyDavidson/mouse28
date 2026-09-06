@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ContactTopic;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
@@ -16,18 +17,10 @@ use Illuminate\Database\Eloquent\Model;
 ])]
 class ContactMessage extends Model
 {
-    public const SUBJECTS = [
-        'general' => 'General Question',
-        'accessibility' => 'Park Accessibility',
-        'collaboration' => 'Collaboration / Sponsorship',
-        'guest' => 'Podcast Guest',
-        'other' => 'Other',
-    ];
-
     protected function subjectLabel(): Attribute
     {
         return Attribute::make(get: function () {
-            return self::SUBJECTS[$this->subject] ?? ucfirst($this->subject);
+            return ContactTopic::tryFrom($this->subject)?->getLabel() ?? ucfirst($this->subject);
         });
     }
 

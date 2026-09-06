@@ -11,7 +11,7 @@
         'food-reviews' => '/images/guides/food-reviews.webp',
         'family-planning' => '/images/guides/family-planning.webp',
     ];
-    $artworkUrl = $guide->cover_image_url ?: ($categoryArtwork[$guide->category] ?? $categoryArtwork['park-strategy']);
+    $artworkUrl = $guide->cover_image_url ?: ($categoryArtwork[$guide->category?->value] ?? $categoryArtwork['park-strategy']);
 @endphp
 
 <img

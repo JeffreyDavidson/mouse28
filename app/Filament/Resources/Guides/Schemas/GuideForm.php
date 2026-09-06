@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\Guides\Schemas;
 
-use App\Models\Guide;
-use App\Models\Post;
+use App\Enums\ContentAuthor;
+use App\Enums\GuideCategory;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
@@ -44,13 +44,13 @@ class GuideForm
                             ->unique(ignoreRecord: true)
                             ->columnSpan(2),
                         Select::make('category')
-                            ->options(Guide::CATEGORIES)
+                            ->options(GuideCategory::class)
                             ->required()
                             ->columnSpan(2),
                         Select::make('author')
-                            ->options(Post::AUTHORS)
+                            ->options(ContentAuthor::class)
                             ->required()
-                            ->default('both')
+                            ->default(ContentAuthor::Both)
                             ->columnSpan(2),
                     ]),
                 Section::make('Content')
