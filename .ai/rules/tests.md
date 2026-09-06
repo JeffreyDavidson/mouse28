@@ -13,3 +13,6 @@ Match the class that owns the asserted behavior, not a model used as a fixture o
 
 ## Choose model effort for test refactoring scope
 Jeffrey prefers GPT-5.6 Terra with Medium reasoning for focused test moves, assertion improvements, and boundary coverage. Recommend GPT-6 Astra with High reasoning for repository-wide test-value audits or changes spanning application architecture; Terra with Low reasoning is sufficient for routine Git publishing steps. Before substantive work, flag a known model mismatch and explain the recommended switch. These are model-selection preferences, not automatic routing: never claim a model switch occurred unless the runtime confirms it, and do not spawn agents solely to switch models.
+
+## Prefer Pest expectations for values
+Use Pest's expect() API for value and object assertions. Keep Laravel HTTP response, session, database/model, console, and Livewire assertion APIs when they express framework behavior directly; do not replace those fluent domain assertions with raw content or state checks.

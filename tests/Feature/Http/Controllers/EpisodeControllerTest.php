@@ -14,6 +14,26 @@ test('public index page renders', function (): void {
         ->assertSee('The Mouse28 Podcast');
 });
 
+test('podcast index renders configured distribution links', function (): void {
+    $podcast = Podcast::query()->create([
+        'name' => 'Mouse28',
+        'apple_url' => 'https://podcasts.apple.com/show/mouse28',
+        'spotify_url' => 'https://open.spotify.com/show/mouse28',
+        'youtube_url' => 'https://youtube.com/@mouse28',
+    ]);
+
+    $response = get(route('episodes.index'))
+        ->assertOk();
+
+    foreach ([$podcast->apple_url, $podcast->spotify_url, $podcast->youtube_url] as $url) {
+        $response->assertSee($url, false);
+    }
+
+    $response->assertSee(config('podcast.rss_url'), false)
+        ->assertDontSee('Apple Podcasts · Soon')
+        ->assertDontSee('Spotify · Soon');
+});
+
 test('episode pages use concise public-facing labels', function (): void {
     $episode = Episode::factory()->create([
         'episode_number' => 28,

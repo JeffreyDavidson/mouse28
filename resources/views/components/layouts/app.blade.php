@@ -285,7 +285,7 @@
                             href="{{ route('contact.show') }}"
                             class="hover:text-gold inline-flex min-h-12 min-w-12 items-center justify-center font-normal transition-colors sm:min-h-8"
                         >Contact</a>
-                        @foreach ($podcast->distributionLinks() as $link)
+                        @foreach ($podcastLinks as $link)
                             <a
                                 href="{{ $link['url'] }}"
                                 target="_blank"
@@ -409,7 +409,7 @@
                                     href="{{ route('contact.show') }}"
                                     class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
                                 >Contact Us</a>
-                                @foreach ($podcast->distributionLinks() as $link)
+                                @foreach ($podcastLinks as $link)
                                     <a
                                         href="{{ $link['url'] }}"
                                         target="_blank"

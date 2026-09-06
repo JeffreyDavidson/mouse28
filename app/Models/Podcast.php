@@ -33,15 +33,4 @@ class Podcast extends Model
             'description' => 'Disney parks through the lens of raising a daughter with autism.',
         ]);
     }
-
-    /** @return list<array{label: string, url: string}> */
-    public function distributionLinks(): array
-    {
-        return array_values(array_filter([
-            $this->apple_url ? ['label' => 'Apple Podcasts', 'url' => $this->apple_url] : null,
-            $this->spotify_url ? ['label' => 'Spotify', 'url' => $this->spotify_url] : null,
-            $this->youtube_url ? ['label' => 'YouTube', 'url' => $this->youtube_url] : null,
-            ['label' => 'RSS Feed', 'url' => (string) config('podcast.rss_url')],
-        ]));
-    }
 }

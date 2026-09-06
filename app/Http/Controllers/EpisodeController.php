@@ -6,6 +6,7 @@ use App\Models\Episode;
 use App\Models\Podcast;
 use App\Models\Post;
 use App\Support\ContentContinuation;
+use App\Support\PodcastLinks;
 
 class EpisodeController extends Controller
 {
@@ -13,9 +14,12 @@ class EpisodeController extends Controller
     {
         $episodes = Episode::published()->latest('published_at')->paginate(12);
 
+        $podcast = Podcast::info();
+
         return view('episodes.index', [
             'episodes' => $episodes,
-            'podcast' => Podcast::info(),
+            'podcast' => $podcast,
+            'podcastLinks' => PodcastLinks::for($podcast),
             'canonicalUrl' => route('episodes.index', array_filter([
                 'page' => $episodes->currentPage() > 1 ? $episodes->currentPage() : null,
             ])),
