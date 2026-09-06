@@ -16,6 +16,26 @@ test('public index page renders', function (): void {
         ->assertSee('Mouse28');
 });
 
+test('homepage renders configured podcast distribution links', function (): void {
+    $podcast = Podcast::query()->create([
+        'name' => 'Mouse28',
+        'apple_url' => 'https://podcasts.apple.com/show/mouse28',
+        'spotify_url' => 'https://open.spotify.com/show/mouse28',
+        'youtube_url' => 'https://youtube.com/@mouse28',
+    ]);
+
+    $response = get(route('home'))
+        ->assertOk();
+
+    foreach ([$podcast->apple_url, $podcast->spotify_url, $podcast->youtube_url] as $url) {
+        $response->assertSee($url, false);
+    }
+
+    $response->assertSee(config('podcast.rss_url'), false)
+        ->assertDontSee('Apple Podcasts · Soon')
+        ->assertDontSee('Spotify · Soon');
+});
+
 test('homepage uses one newsletter form and responsive hero artwork', function (): void {
     $response = get(route('home'))
         ->assertOk()

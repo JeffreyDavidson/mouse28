@@ -75,9 +75,9 @@
                         </div>
                     @endif
 
-                    @if ($podcast->distributionLinks())
+                    @if ($podcastLinks)
                         <nav aria-label="Listen to the Mouse28 podcast" class="mt-6 flex flex-wrap gap-3">
-                            @foreach ($podcast->distributionLinks() as $link)
+                            @foreach ($podcastLinks as $link)
                                 <a
                                     href="{{ $link['url'] }}"
                                     target="_blank"
