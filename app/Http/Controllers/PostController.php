@@ -7,7 +7,7 @@ use App\Models\Post;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
 
-class PostController extends Controller
+class PostController
 {
     public function index(Request $request)
     {

@@ -78,11 +78,12 @@ test('contact page uses the configured podcast email address', function (): void
 
 test('contact page offers email instead of an unusable form when verification is unavailable', function (string $missingKey): void {
     config()->set("services.turnstile.{$missingKey}");
+    config()->set('mail.admin_address', 'fallback@mouse28.test');
 
     get(route('contact.show'))
         ->assertOk()
         ->assertSee('Email us directly')
-        ->assertSee('href="mailto:mouse28podcast@gmail.com"', false)
+        ->assertSee('href="mailto:fallback@mouse28.test"', false)
         ->assertDontSee('action="'.route('contact.store').'"', false)
         ->assertDontSee('data-action="contact-form"', false);
 })->with([

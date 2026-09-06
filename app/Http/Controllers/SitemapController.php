@@ -7,7 +7,7 @@ use App\Models\Guide;
 use App\Models\Post;
 use Illuminate\Http\Response;
 
-class SitemapController extends Controller
+class SitemapController
 {
     public function index(): Response
     {

@@ -8,7 +8,7 @@ use App\Models\Guide;
 use App\Models\Podcast;
 use App\Models\Post;
 
-class HomeController extends Controller
+class HomeController
 {
     public function index()
     {

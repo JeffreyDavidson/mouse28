@@ -7,7 +7,7 @@ use App\Models\Guide;
 use App\Support\ContentContinuation;
 use Illuminate\Http\Request;
 
-class GuideController extends Controller
+class GuideController
 {
     public function index(Request $request)
     {

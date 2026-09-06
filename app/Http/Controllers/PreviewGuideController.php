@@ -7,7 +7,7 @@ use App\Support\ContentContinuation;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
-class PreviewGuideController extends Controller
+class PreviewGuideController
 {
     public function __invoke(Guide $guide): View
     {

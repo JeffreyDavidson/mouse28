@@ -16,7 +16,7 @@ class SendContactEmails
     public function __invoke(ContactMessage $contactMessage): void
     {
         try {
-            $recipients = array_filter(array_map('trim', explode(',', config('mail.admin_address', 'mouse28podcast@gmail.com'))));
+            $recipients = array_filter(array_map('trim', explode(',', (string) config('mail.admin_address'))));
             $this->mailer
                 ->to($recipients)
                 ->send(new ContactFormSubmitted($contactMessage));

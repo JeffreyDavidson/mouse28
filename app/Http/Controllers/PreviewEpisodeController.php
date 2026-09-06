@@ -9,7 +9,7 @@ use App\Support\ContentContinuation;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
-class PreviewEpisodeController extends Controller
+class PreviewEpisodeController
 {
     public function __invoke(Episode $episode): View
     {

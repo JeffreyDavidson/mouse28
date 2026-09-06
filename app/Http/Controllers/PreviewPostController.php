@@ -6,7 +6,7 @@ use App\Models\Post;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
-class PreviewPostController extends Controller
+class PreviewPostController
 {
     public function __invoke(Post $post): View
     {

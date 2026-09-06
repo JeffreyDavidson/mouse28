@@ -8,7 +8,7 @@ use App\Models\Post;
 use App\Support\ContentContinuation;
 use App\Support\PodcastLinks;
 
-class EpisodeController extends Controller
+class EpisodeController
 {
     public function index()
     {

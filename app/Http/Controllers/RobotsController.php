@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Response;
 
-class RobotsController extends Controller
+class RobotsController
 {
     public function __invoke(): Response
     {

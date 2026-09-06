@@ -9,7 +9,7 @@ use App\Models\Post;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\View\View;
 
-class SearchController extends Controller
+class SearchController
 {
     public function __invoke(SearchRequest $request): View
     {

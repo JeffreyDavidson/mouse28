@@ -7,23 +7,26 @@ use App\Http\Requests\StoreContactRequest;
 use App\Models\ContactMessage;
 use App\Models\Podcast;
 use App\Support\Turnstile;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
-class ContactController extends Controller
+class ContactController
 {
     public function show(): View
     {
         return view('contact', [
-            'contactEmail' => Podcast::info()->email ?: config('mail.admin_address', 'mouse28podcast@gmail.com'),
+            'contactEmail' => Podcast::info()->email ?: (string) config('mail.admin_address'),
             'contactFormAvailable' => filled(config('services.turnstile.site_key'))
                 && filled(config('services.turnstile.secret_key')),
         ]);
     }
 
-    public function store(StoreContactRequest $request, Turnstile $turnstile, SendContactEmails $sendContactEmails)
-    {
-        // Honeypot: if this hidden field is filled, it is a bot
+    public function store(
+        StoreContactRequest $request,
+        Turnstile $turnstile,
+        SendContactEmails $sendContactEmails,
+    ): RedirectResponse {
         if ($request->filled('website_url')) {
             return redirect()->route('contact.show')->with('success', true);
         }
@@ -34,9 +37,7 @@ class ContactController extends Controller
             ])->errorBag('contact');
         }
 
-        $validated = $request->validated();
-
-        $contactMessage = ContactMessage::query()->create($validated);
+        $contactMessage = ContactMessage::query()->create($request->validated());
         $sendContactEmails($contactMessage);
 
         return redirect()->route('contact.show')->with('success', true);

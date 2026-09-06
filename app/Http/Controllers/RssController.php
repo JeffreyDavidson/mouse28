@@ -6,7 +6,7 @@ use App\Models\Post;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 
-class RssController extends Controller
+class RssController
 {
     public function __invoke(): Response
     {

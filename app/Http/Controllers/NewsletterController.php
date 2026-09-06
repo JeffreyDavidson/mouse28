@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
-class NewsletterController extends Controller
+class NewsletterController
 {
     public function store(StoreNewsletterRequest $request, Turnstile $turnstile)
     {
