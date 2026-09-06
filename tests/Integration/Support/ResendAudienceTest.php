@@ -1,11 +1,8 @@
 <?php
 
 use App\Support\ResendAudience;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-
-uses(RefreshDatabase::class);
 
 beforeEach(function (): void {
     config()->set('services.resend.audience_id', 'audience-test-id');

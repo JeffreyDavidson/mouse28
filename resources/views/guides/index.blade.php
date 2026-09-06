@@ -67,12 +67,12 @@
                             @if (! $category) aria-current="page" @endif
                             class="{{ ! $category ? 'border-gold text-navy' : 'border-transparent text-navy/65 hover:text-purple' }} inline-flex min-h-14 items-center border-b-2 text-sm font-semibold transition-colors"
                         >All guides</a>
-                        @foreach (\App\Models\Guide::CATEGORIES as $slug => $label)
+                        @foreach (\App\Enums\GuideCategory::cases() as $categoryOption)
                             <a
-                                href="{{ route('guides.index', ['category' => $slug]) }}"
-                                @if ($category === $slug) aria-current="page" @endif
-                                class="{{ $category === $slug ? 'border-gold text-navy' : 'border-transparent text-navy/65 hover:text-purple' }} inline-flex min-h-14 items-center border-b-2 text-sm font-semibold transition-colors"
-                            >{{ $label }}</a>
+                                href="{{ route('guides.index', ['category' => $categoryOption->value]) }}"
+                                @if ($category === $categoryOption->value) aria-current="page" @endif
+                                class="{{ $category === $categoryOption->value ? 'border-gold text-navy' : 'border-transparent text-navy/65 hover:text-purple' }} inline-flex min-h-14 items-center border-b-2 text-sm font-semibold transition-colors"
+                            >{{ $categoryOption->getLabel() }}</a>
                         @endforeach
                     </div>
                 </nav>
@@ -81,7 +81,7 @@
                     <div class="mt-10 flex flex-wrap items-end justify-between gap-4 sm:mt-14">
                         <div>
                             <h2 class="font-heading text-4xl/[1.08] [font-weight:640] tracking-[-0.025em] text-balance sm:text-5xl">
-                                {{ $category ? (\App\Models\Guide::CATEGORIES[$category] ?? 'Guides') : 'The guide shelf' }}
+                                {{ $category ? (\App\Enums\GuideCategory::tryFrom($category)?->getLabel() ?? 'Guides') : 'The guide shelf' }}
                             </h2>
                             <p class="text-navy/65 mt-3 max-w-xl text-base/7">
                                 Choose the guide that matches the day you are planning.
@@ -137,7 +137,7 @@
                     <section class="border-navy/15 mt-12 grid gap-7 border-y py-12 sm:mt-16 sm:py-16 lg:grid-cols-[5fr_7fr] lg:gap-20">
                         <h2 class="font-heading max-w-[15ch] text-4xl/[1.1] [font-weight:640] tracking-[-0.025em] text-balance sm:text-5xl">
                             @if ($category)
-                                No {{ \App\Models\Guide::CATEGORIES[$category] ?? 'matching' }} guides yet
+                                No {{ \App\Enums\GuideCategory::tryFrom($category)?->getLabel() ?? 'matching' }} guides yet
                             @else
                                 Guides are on the way
                             @endif

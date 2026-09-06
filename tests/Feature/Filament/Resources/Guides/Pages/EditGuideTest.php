@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\ContentAuthor;
+use App\Enums\GuideCategory;
 use App\Filament\Resources\Guides\GuideResource;
 use App\Filament\Resources\Guides\Pages\EditGuide;
 use App\Models\Guide;
@@ -63,4 +65,17 @@ test('deleted content leaves the public site and can be restored by an administr
 
     expect($record->refresh()->deleted_at)->toBeNull();
     get(route('guides.show', $record))->assertOk();
+});
+
+test('editor saves author and category selections as enums', function (): void {
+    $record = Guide::factory()->draft()->create();
+    actingAs(User::factory()->admin()->create());
+
+    Livewire::test(EditGuide::class, ['record' => $record->getRouteKey()])
+        ->fillForm(['author' => 'jeffrey', 'category' => 'family-planning'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($record->refresh()->author)->toBe(ContentAuthor::Jeffrey)
+        ->and($record->category)->toBe(GuideCategory::FamilyPlanning);
 });

@@ -10,16 +10,8 @@ use function Pest\Laravel\get;
 
 uses(RefreshDatabase::class);
 
-test('authenticated user can render the resource listing', function (): void {
-    actingAs(User::factory()->admin()->create());
-
-    get(ContactMessageResource::getUrl())
-        ->assertOk()
-        ->assertSee('Contact Messages');
-});
-
 test('contact topics and free text retain readable admin labels', function (string $subject, string $label): void {
-    ContactMessage::query()->create([
+    $message = ContactMessage::query()->create([
         'name' => 'Dale Cooper',
         'email' => 'dale@example.com',
         'subject' => $subject,
@@ -27,7 +19,7 @@ test('contact topics and free text retain readable admin labels', function (stri
     ]);
     actingAs(User::factory()->admin()->create());
 
-    get(ContactMessageResource::getUrl())
+    get(ContactMessageResource::getUrl('view', ['record' => $message]))
         ->assertOk()
         ->assertSee($label);
 })->with([

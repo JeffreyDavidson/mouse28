@@ -2,6 +2,9 @@
 
 namespace App\Filament\Resources\Posts\Tables;
 
+use App\Enums\ContentAuthor;
+use App\Enums\PostCategory;
+use App\Enums\PublicationStatus;
 use App\Models\Post;
 use App\Support\EditorialReadiness;
 use Filament\Actions\BulkActionGroup;
@@ -28,18 +31,9 @@ class PostsTable
                     ->limit(50),
                 TextColumn::make('author')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => Post::AUTHORS[$state] ?? 'Team')
                     ->color('info'),
                 TextColumn::make('category')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'disney-tips' => 'info',
-                        'park-accessibility' => 'success',
-                        'episode-recap' => 'warning',
-                        'family-life' => 'danger',
-                        'autism-awareness' => 'primary',
-                        default => 'gray',
-                    }),
+                    ->badge(),
                 TextColumn::make('episode.title')
                     ->label('Episode')
                     ->limit(30)
@@ -68,16 +62,15 @@ class PostsTable
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->getStateUsing(fn (Post $record): string => EditorialReadiness::status($record))
-                    ->color(fn (Post $record): string => EditorialReadiness::statusColor($record)),
+                    ->getStateUsing(fn (Post $record): PublicationStatus => EditorialReadiness::status($record)),
                 TextColumn::make('published_at')
                     ->label('Published Date')
                     ->date()
                     ->sortable(),
             ])
             ->filters([
-                SelectFilter::make('category')->options(Post::CATEGORIES),
-                SelectFilter::make('author')->options(Post::AUTHORS),
+                SelectFilter::make('category')->options(PostCategory::class),
+                SelectFilter::make('author')->options(ContentAuthor::class),
                 Filter::make('missing_artwork')
                     ->query(fn (Builder $query): Builder => $query->where(function (Builder $query): void {
                         $query->whereNull('cover_image')->orWhere('cover_image', '');

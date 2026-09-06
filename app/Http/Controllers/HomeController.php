@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PostCategory;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Podcast;
@@ -21,7 +22,7 @@ class HomeController extends Controller
             : collect();
         $planningPosts = config('mouse28.guides_enabled') && $latestGuides->isEmpty()
             ? Post::published()
-                ->whereIn('category', ['park-accessibility', 'disney-tips', 'autism-awareness'])
+                ->whereIn('category', [PostCategory::ParkAccessibility, PostCategory::DisneyTips, PostCategory::AutismAwareness])
                 ->latest('published_at')
                 ->take(2)
                 ->get()

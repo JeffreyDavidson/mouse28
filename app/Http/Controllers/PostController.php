@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\PostCategory;
 use App\Models\Post;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Http\Request;
@@ -10,10 +11,8 @@ class PostController extends Controller
 {
     public function index(Request $request)
     {
-        $category = $request->string('category')->toString();
-        if (! array_key_exists($category, Post::CATEGORIES)) {
-            $category = '';
-        }
+        $categoryEnum = PostCategory::tryFrom($request->string('category')->toString());
+        $category = $categoryEnum->value ?? '';
 
         $search = $request->string('q')->trim()->limit(100)->toString();
         $sort = $request->string('sort', 'newest')->toString();
@@ -21,7 +20,9 @@ class PostController extends Controller
             $sort = 'newest';
         }
         $hasAnyPosts = Post::published()->exists();
-        $usedCategories = Post::published()->distinct()->pluck('category')->filter()->toArray();
+        $usedCategories = Post::published()->distinct()->pluck('category')->filter()
+            ->map(fn (PostCategory $category): string => $category->value)
+            ->all();
         $categoryCounts = Post::published()->selectRaw('category, count(*) as count')->groupBy('category')->pluck('count', 'category');
 
         $posts = Post::published()
@@ -37,7 +38,7 @@ class PostController extends Controller
             'category' => $category ?: null,
             'page' => $posts->currentPage() > 1 ? $posts->currentPage() : null,
         ]);
-        $categoryLabel = Post::CATEGORIES[$category] ?? null;
+        $categoryLabel = $categoryEnum?->getLabel();
 
         return view('blog.index', [
             'posts' => $posts,

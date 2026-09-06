@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\ContentAuthor;
+use App\Enums\PostCategory;
 use App\Models\Post;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -19,8 +21,8 @@ class PostFactory extends Factory
             'slug' => str($title)->slug(),
             'excerpt' => fake()->sentence(18),
             'body' => fake()->paragraphs(5, true),
-            'category' => fake()->randomKey(Post::CATEGORIES),
-            'author' => fake()->randomKey(Post::AUTHORS),
+            'category' => fake()->randomElement(PostCategory::cases()),
+            'author' => fake()->randomElement(ContentAuthor::cases()),
             'is_published' => true,
             'published_at' => now()->subDay(),
         ];

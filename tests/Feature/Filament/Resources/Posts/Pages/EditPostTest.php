@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\ContentAuthor;
+use App\Enums\PostCategory;
 use App\Filament\Resources\Posts\Pages\EditPost;
 use App\Filament\Resources\Posts\PostResource;
 use App\Models\Post;
@@ -81,4 +83,17 @@ test('publishing is blocked until editorial requirements are complete', function
         ->assertNotified();
 
     expect($post->refresh()->is_published)->toBeFalse();
+});
+
+test('editor saves author and category selections as enums', function (): void {
+    $record = Post::factory()->draft()->create();
+    actingAs(User::factory()->admin()->create());
+
+    Livewire::test(EditPost::class, ['record' => $record->getRouteKey()])
+        ->fillForm(['author' => 'jeffrey', 'category' => 'food-reviews'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($record->refresh()->author)->toBe(ContentAuthor::Jeffrey)
+        ->and($record->category)->toBe(PostCategory::FoodReviews);
 });

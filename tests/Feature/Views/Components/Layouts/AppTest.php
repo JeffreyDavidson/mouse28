@@ -73,7 +73,7 @@ test('public reading pages use dispatch reading surfaces', function (): void {
         ->assertSee('dispatch-reader-sheet', false)
         ->assertSee('guide-reading-column', false)
         ->assertDontSee('—')
-        ->assertSee('/images/guides/'.$guide->category.'.webp', false);
+        ->assertSee('/images/guides/'.$guide->category->value.'.webp', false);
 
     get(route('episodes.show', $episode))
         ->assertOk()

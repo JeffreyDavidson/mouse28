@@ -17,7 +17,7 @@
         'merchandise' => ['wash' => 'from-rose-800/20 via-cream to-gold/25', 'ink' => 'text-rose-950', 'stamp' => 'Things we found'],
         'general' => ['wash' => 'from-cyan-900/20 via-cream to-gold/20', 'ink' => 'text-navy', 'stamp' => 'Mouse28 dispatch'],
     ];
-    $artworkStyle = $artworkStyles[$post->category] ?? $artworkStyles['general'];
+    $artworkStyle = $artworkStyles[$post->category?->value] ?? $artworkStyles['general'];
     $monogram = Str::of($post->title)
         ->replaceMatches('/[^\pL\pN\s]+/u', '')
         ->explode(' ')

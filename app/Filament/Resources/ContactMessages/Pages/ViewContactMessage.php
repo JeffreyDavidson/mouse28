@@ -37,7 +37,7 @@ class ViewContactMessage extends ViewRecord
                         ->icon('heroicon-o-envelope')
                         ->copyable(),
                     TextEntry::make('subject')
-                        ->formatStateUsing(fn (string $state) => ContactMessage::SUBJECTS[$state] ?? ucfirst($state))
+                        ->formatStateUsing(fn (ContactMessage $record): string => $record->subject_label)
                         ->badge()
                         ->color('warning'),
                     TextEntry::make('created_at')

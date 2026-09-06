@@ -49,7 +49,7 @@ test('production public content and referenced media can be synced locally', fun
                 'excerpt' => 'Also published on production.',
                 'body' => '<p>Second production body.</p>',
                 'cover_image' => 'posts/second-production-post.webp',
-                'category' => 'family-experiences',
+                'category' => 'family-life',
                 'author' => 'both',
                 'published_at' => now()->subHours(2)->toAtomString(),
             ],

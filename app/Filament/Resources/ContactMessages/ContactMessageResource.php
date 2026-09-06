@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ContactMessages;
 
+use App\Enums\ContactTopic;
 use App\Filament\Resources\ContactMessages\Pages\ListContactMessages;
 use App\Models\ContactMessage;
 use BackedEnum;
@@ -60,7 +61,7 @@ class ContactMessageResource extends Resource
                     ->copyable()
                     ->icon('heroicon-o-envelope'),
                 TextColumn::make('subject')
-                    ->formatStateUsing(fn (string $state) => ContactMessage::SUBJECTS[$state] ?? ucfirst($state))
+                    ->formatStateUsing(fn (ContactMessage $record): string => $record->subject_label)
                     ->badge()
                     ->color('warning'),
                 TextColumn::make('message')
@@ -79,7 +80,7 @@ class ContactMessageResource extends Resource
                 TernaryFilter::make('is_read')
                     ->label('Read Status'),
                 SelectFilter::make('subject')
-                    ->options(ContactMessage::SUBJECTS),
+                    ->options(ContactTopic::class),
             ])
             ->actions([
                 Action::make('markRead')

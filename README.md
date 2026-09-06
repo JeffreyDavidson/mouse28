@@ -84,9 +84,19 @@ Run `vendor/bin/pint` to apply PHP and Blade formatting fixes. Blade formatting 
 Run `vendor/bin/filacheck` to check Filament code for deprecated APIs and common implementation issues.
 Run `npx playwright install chromium` once before the local browser suite. A focused `browser-smoke` group runs in pull-request and main-branch CI. The full Chromium browser suite runs weekly, on demand, and for release tags; the `browser-compatibility` group checks reading, print presentation, and key interactions in Firefox and WebKit.
 
-`composer test` runs the feature and architecture suites; browser tests use the separate `composer test:browser` command. Rector uses its default parallel processing. Agent sandboxes must allow the local sockets used by Rector and Pest.
+`composer test` runs the unit, integration, feature, and architecture suites; browser tests use the separate `composer test:browser` command. Rector uses its default parallel processing. Agent sandboxes must allow the local sockets used by Rector and Pest.
 
-Feature test paths mirror their owning `app/` classes: for example, `app/Http/Controllers/PostController.php` maps to `tests/Feature/Http/Controllers/PostControllerTest.php`. Split coverage for unrelated classes into their respective files, including Filament resource pages. Tests for Blade views and configuration without an application class live under `tests/Feature/Views` and `tests/Feature/Config`; their source paths are listed in `tests/Arch/TestOrganizationTest.php`.
+Choose the suite by what the test exercises:
+
+- `Unit`: isolated logic without booting Laravel or using persistence, facades, factories, or external I/O.
+- `Integration`: components working with Laravel, the database, storage, configuration, or service adapters directly.
+- `Feature`: behavior through HTTP requests, Artisan commands, or Livewire interactions.
+- `Browser`: real-browser interactions and rendering.
+- `Arch`: source structure and architectural contracts.
+
+Unit, Integration, and Feature paths mirror their owning `app/` classes. A class can have tests in more than one suite when they exercise different boundaries. For example, database casts belong in `tests/Integration/Models/PostTest.php`, while public post behavior belongs in `tests/Feature/Http/Controllers/PostControllerTest.php`. Split mixed files by boundary and owner. Blade and configuration tests without an application class use explicit source mappings in `tests/Arch/TestOrganizationTest.php`.
+
+Run a suite independently with `php artisan test --compact --testsuite=Unit` (or `Integration`, `Feature`, or `Architecture`).
 
 Laravel Boost provides project-aware documentation and inspection tools. `boost.json` tracks four managed skills: `infer-conventions`, `laravel-best-practices`, `pest-testing`, and `tailwindcss-development`; their project copies live under `.agents/skills`. Filament is selected for package guidance. Run `php artisan boost:update` to regenerate guidelines and skills, and review the resulting diff.
 

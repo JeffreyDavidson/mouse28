@@ -219,3 +219,13 @@ test('text searches are not indexed', function (): void {
         ->assertSee('<meta name="robots" content="noindex,follow">', false)
         ->assertSee('<link rel="canonical" href="'.route('blog.index').'">', false);
 });
+
+test('an uncategorized post keeps its public fallback presentation', function (): void {
+    $post = Post::factory()->create(['category' => null, 'cover_image' => null]);
+
+    get(route('blog.show', $post))
+        ->assertOk()
+        ->assertSee($post->title)
+        ->assertSee('Mouse28 dispatch')
+        ->assertDontSee('category=', false);
+});

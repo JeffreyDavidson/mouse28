@@ -1,8 +1,8 @@
 <?php
 
+use App\Enums\ContactTopic;
 use App\Mail\ContactFormConfirmation;
 use App\Mail\ContactFormSubmitted;
-use App\Models\ContactMessage;
 use App\Models\Podcast;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -32,12 +32,14 @@ test('contact page renders turnstile widget', function (): void {
         ->assertSee('data-sitekey="test-site-key"', false)
         ->assertSee('data-action="contact-form"', false)
         ->assertSee('data-appearance="interaction-only"', false)
+        ->assertSee('Park Accessibility Question')
+        ->assertSee('Guest on the Podcast')
         ->assertDontSee('Share Your Story')
         ->assertDontSee('Family Disney stories')
         ->assertDontSee('value="story"', false);
 
     expect(substr_count((string) $response->getContent(), 'https://challenges.cloudflare.com/turnstile/v0/api.js'))->toBe(1);
-    expect(ContactMessage::SUBJECTS)->not->toHaveKey('story');
+    expect(array_column(ContactTopic::cases(), 'value'))->not->toContain('story');
 });
 
 test('contact page uses the configured podcast email address', function (): void {
