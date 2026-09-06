@@ -11,6 +11,7 @@ use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
 use App\Models\User;
+use Filament\Pages\Dashboard;
 
 use function Pest\Laravel\actingAs;
 
@@ -70,7 +71,7 @@ test('authenticated admin pages expose no unnamed artwork or decorative glyphs',
     actingAs($user);
 
     $urls = [
-        '/admin',
+        Dashboard::getUrl(panel: 'admin'),
         NewsletterSubscribers::getUrl(),
         PodcastSettings::getUrl(),
         PostResource::getUrl(),

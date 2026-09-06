@@ -25,8 +25,8 @@ function exposedDecorativeGlyphCountScript(): string
         JS;
 }
 
-test('public page renders without JavaScript errors', function (string $path, string $content): void {
-    visit($path)
+test('public page renders without JavaScript errors', function (string $routeName, string $content): void {
+    visit(route($routeName))
         ->assertSee($content)
         ->assertScript('document.fonts.check("16px Besley")', true)
         ->assertScript('getComputedStyle(document.querySelector("h1")).fontFamily.includes("Besley")', true)
@@ -37,13 +37,13 @@ test('public page renders without JavaScript errors', function (string $path, st
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 })->with([
-    'home' => ['/', 'Disney Parks'],
-    'blog' => ['/blog', 'Blog'],
-    'guides' => ['/guides', 'Guides'],
-    'podcast' => ['/episodes', 'Podcast'],
-    'about' => ['/about', 'About'],
-    'contact' => ['/contact', 'Contact'],
-    'search' => ['/search', 'Search'],
+    'home' => ['home', 'Disney Parks'],
+    'blog' => ['blog.index', 'Blog'],
+    'guides' => ['guides.index', 'Guides'],
+    'podcast' => ['episodes.index', 'Podcast'],
+    'about' => ['about', 'About'],
+    'contact' => ['contact.show', 'Contact'],
+    'search' => ['search', 'Search'],
 ]);
 
 test('polished discovery and guide artwork remain usable on mobile', function (): void {
@@ -119,7 +119,7 @@ test('published content detail pages have no accessibility issues', function ():
 });
 
 test('mobile navigation opens and remains usable', function (): void {
-    visit('/')
+    visit(route('home'))
         ->on()
         ->mobile()
         ->click('[aria-label="Open navigation menu"]')
