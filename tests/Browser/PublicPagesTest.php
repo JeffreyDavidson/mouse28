@@ -228,6 +228,18 @@ test('published content detail pages have no accessibility issues', function ():
         ->assertNoAccessibilityIssues();
 });
 
+test('episode show note list paragraphs keep a compact reading rhythm', function (): void {
+    $episode = Episode::factory()->create([
+        'show_notes' => '<h3>In this episode</h3><ul><li><p>Planning sensory breaks</p></li><li><p>Choosing comfortable attractions</p></li></ul>',
+    ]);
+
+    visit(route('episodes.show', $episode))
+        ->assertScript('getComputedStyle(document.querySelector(".episode-show-notes-content li > p")).marginTop', '0px')
+        ->assertScript('getComputedStyle(document.querySelector(".episode-show-notes-content li > p")).marginBottom', '0px')
+        ->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors();
+});
+
 test('mobile navigation opens and remains usable', function (): void {
     visit('/')
         ->on()
