@@ -10,7 +10,7 @@ The homepage content order is:
 1. Hero
 2. Featured post
 3. Latest posts
-4. Guides teaser
+4. Guides teaser (only when `GUIDES_ENABLED=true`)
 5. Podcast
 6. About
 7. Newsletter
@@ -36,8 +36,8 @@ work in the existing Vite pipeline and do not introduce a second toolchain.
 - Use `develop` as the integration branch and `main` as the release branch.
 - Never commit feature work directly to `develop` or `main`.
 - Create focused feature branches from an up-to-date `develop` branch.
-- Merge feature branches into `develop` through pull requests.
-- Promote releases from `develop` to `main` through pull requests.
+- Squash merge feature branches into `develop` through pull requests.
+- Promote releases through `release/` branches into `main` with regular merge commits.
 - Use commit messages in `type: description` format.
 - Do not commit `.worktrees/` or changes belonging to another worktree.
 
@@ -48,6 +48,11 @@ work in the existing Vite pipeline and do not introduce a second toolchain.
 - `Guide` contains accessibility resources.
 - `Podcast::info()` provides the single-row podcast metadata record.
 - Jeffrey, Cassie, or both may be credited as post authors.
+
+Guides are dormant by default: `GUIDES_ENABLED=false` hides public guide routes
+and discovery while retaining Filament management and authorized previews.
+Transistor owns podcast audio hosting, the canonical RSS feed, and embedded
+players. Mouse28 stores episode metadata, share URLs, show notes, and transcripts.
 
 The main navigation contains Home, Blog, Podcast, About, and Contact. Preserve
 the site's blog-first content hierarchy when changing public pages.
@@ -80,6 +85,18 @@ standard checks are:
 - `composer test`
 - `npm run build`
 - `git diff --check`
+
+CI also runs dependency validation and audits, Pint, FilaCheck, Larastan, and
+Rector. `composer test` excludes the separate `composer test:browser` suite.
+Pint's enabled Blade formatter requires the locked Prettier packages.
+
+`boost.json` tracks Boost-managed skills and selected integrations, including
+Filament guidance and Nightwatch MCP setup. The Nightwatch preference does not
+enable application monitoring or complete MCP authentication.
+
+Use Herd for local HTTP serving and `npm run dev` when Vite's development server
+is needed. Production and staging are hosted on Forge; follow
+`docs/operations.md` for deployment work.
 
 Use Pest syntax for new tests. Keep public routes renderable, preserve contact
 form Turnstile and rate-limit protections, and never expose service secrets in

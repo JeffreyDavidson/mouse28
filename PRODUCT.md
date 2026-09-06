@@ -16,7 +16,7 @@ Mouse28 shares accessibility guidance, sensory-aware planning advice, family exp
 
 Success means readers can find relevant guidance, understand what a Disney experience may involve, and plan with greater confidence without feeling reduced to a diagnosis or generic checklist.
 
-The homepage's primary action is reading the blog. Guides and podcast episodes support that editorial path rather than competing with it for first priority.
+The homepage's primary action is reading the blog. Podcast episodes and, when enabled, guides support that editorial path rather than competing with it for first priority.
 
 ## Positioning
 
@@ -24,14 +24,16 @@ Mouse28 offers first-person, accessibility-centered Disney planning from a real 
 
 ## Operating Context
 
-Readers use Mouse28 before and during trip planning. They browse recent stories, search for a specific concern, read focused accessibility guides, and listen to podcast episodes. The public experience is blog-first, with guides and podcast content supporting the editorial core.
+Readers use Mouse28 before and during trip planning. They browse recent stories, search for a specific concern, and listen to podcast episodes. Focused guides are being prepared and are hidden from public discovery by default. The public experience is blog-first, with podcast content supporting the editorial core.
 
 Jeffrey and Cassie manage posts, guides, episodes, podcast information, subscribers, and contact messages through the existing Laravel and Filament application.
 
 ## Capabilities and Constraints
 
-- The public content hierarchy remains Hero, Featured post, Latest posts, Guides teaser, Podcast, About, and Newsletter.
+- The public content hierarchy remains Hero, Featured post, Latest posts, Podcast, About, and Newsletter. When `GUIDES_ENABLED=true`, the Guides teaser appears between Latest posts and Podcast.
 - Posts are the primary editorial content. Guides provide focused accessibility resources, and episodes contain podcast content.
+- Guides remain editable and previewable by administrators while public guide routes, search results, and sitemap entries are disabled by `GUIDES_ENABLED=false`.
+- Transistor hosts podcast audio, embedded players, and the canonical podcast RSS feed. Mouse28 presents episode metadata, show notes, and transcripts; it does not host a second podcast feed or new audio uploads.
 - Posts may credit Jeffrey, Cassie, or both.
 - Search, contact, newsletter, RSS feeds, sitemap, previews, and the protected administration area remain supported.
 - Community Stories and reader-submitted story workflows are outside the product scope.
