@@ -2,19 +2,22 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\NewsletterSubscriptionResult;
 use App\Http\Requests\StoreNewsletterRequest;
+use App\Support\ResendAudience;
 use App\Support\SafeReturnUrl;
 use App\Support\Turnstile;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class NewsletterController
 {
-    public function store(StoreNewsletterRequest $request, Turnstile $turnstile): JsonResponse|RedirectResponse
-    {
+    public function store(
+        StoreNewsletterRequest $request,
+        Turnstile $turnstile,
+        ResendAudience $audience,
+    ): JsonResponse|RedirectResponse {
         if ($request->filled('website_url')) {
             return $this->successResponse($request);
         }
@@ -26,37 +29,13 @@ class NewsletterController
         }
 
         $validated = $request->validated();
+        $result = $audience->subscribe($validated['email']);
 
-        $audienceId = config('services.resend.audience_id');
-        if (! is_string($audienceId) || trim($audienceId) === '') {
-            Log::error('Newsletter signup is missing its Resend audience configuration.');
-
-            return $this->errorResponse($request, 503);
+        if ($result === NewsletterSubscriptionResult::Subscribed) {
+            return $this->successResponse($request);
         }
 
-        try {
-            $response = Http::withToken(config('services.resend.key'))
-                ->timeout(10)
-                ->post("https://api.resend.com/audiences/{$audienceId}/contacts", [
-                    'email' => $validated['email'],
-                ]);
-
-            if ($response->successful()) {
-                return $this->successResponse($request);
-            }
-
-            Log::warning('Resend newsletter signup failed', [
-                'status' => $response->status(),
-            ]);
-
-            return $this->errorResponse($request, 422);
-        } catch (\Throwable $exception) {
-            Log::error('Newsletter signup request failed', [
-                'exception' => $exception::class,
-            ]);
-
-            return $this->errorResponse($request, 500);
-        }
+        return $this->errorResponse($request, $result->statusCode());
     }
 
     private function successResponse(StoreNewsletterRequest $request): JsonResponse|RedirectResponse

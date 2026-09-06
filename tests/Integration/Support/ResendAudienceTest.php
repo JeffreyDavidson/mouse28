@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\NewsletterSubscriptionResult;
 use App\Support\ResendAudience;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
@@ -119,3 +120,42 @@ test('audience data is fetched again after the five minute cache expires', funct
         ]);
     Http::assertSentCount(2);
 });
+
+test('a successful subscription adds the contact and invalidates cached audience data', function (): void {
+    Cache::put('newsletter_subscribers', [['email' => 'existing@example.com']], now()->addMinutes(5));
+    Http::fake([
+        'https://api.resend.com/audiences/audience-test-id/contacts' => Http::response([], 201),
+    ]);
+
+    $result = app(ResendAudience::class)->subscribe('reader@example.com');
+
+    expect($result)->toBe(NewsletterSubscriptionResult::Subscribed)
+        ->and(Cache::has('newsletter_subscribers'))->toBeFalse();
+    Http::assertSent(fn ($request): bool => $request['email'] === 'reader@example.com');
+});
+
+test('subscription failures distinguish configuration provider and connection errors', function (
+    string $scenario,
+    NewsletterSubscriptionResult $expected,
+): void {
+    if ($scenario === 'missing configuration') {
+        config()->set('services.resend.audience_id');
+        Http::fake();
+    } elseif ($scenario === 'provider rejection') {
+        Http::fake([
+            'https://api.resend.com/*' => Http::response([], 503),
+        ]);
+    } else {
+        Http::fake([
+            'https://api.resend.com/*' => Http::failedConnection(),
+        ]);
+    }
+
+    $result = app(ResendAudience::class)->subscribe('reader@example.com');
+
+    expect($result)->toBe($expected);
+})->with([
+    'missing configuration' => ['missing configuration', NewsletterSubscriptionResult::ConfigurationMissing],
+    'provider rejection' => ['provider rejection', NewsletterSubscriptionResult::ProviderRejected],
+    'connection failure' => ['connection failure', NewsletterSubscriptionResult::ConnectionFailed],
+]);
