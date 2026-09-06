@@ -44,11 +44,8 @@ test('test paths mirror their application source', function (string $suite): voi
     $suiteRoot = $projectRoot.'/tests/'.$suite.'/';
     $nonClassSources = [
         'Config/SentryTest.php' => 'config/sentry.php',
+        'Http/Errors/ErrorResponsesTest.php' => 'bootstrap/app.php',
         'Http/Routes/AboutTest.php' => 'routes/web.php',
-        'Views/Errors/Error404Test.php' => 'resources/views/errors/404.blade.php',
-        'Views/Errors/Error419Test.php' => 'resources/views/errors/419.blade.php',
-        'Views/Errors/Error500Test.php' => 'resources/views/errors/500.blade.php',
-        'Views/Errors/Error503Test.php' => 'resources/views/errors/503.blade.php',
     ];
     $violations = [];
     $iterator = new RecursiveIteratorIterator(
