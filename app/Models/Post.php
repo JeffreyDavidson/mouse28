@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 /**
  * @property ContentAuthor|null $author
@@ -124,7 +125,7 @@ class Post extends Model
 
     protected function authorInitials(): Attribute
     {
-        return Attribute::make(get: fn (): string => $this->author?->initials() ?? 'MT');
+        return Attribute::make(get: fn (): string => Str::initials($this->author_name, capitalize: true));
     }
 
     protected function readingTime(): Attribute

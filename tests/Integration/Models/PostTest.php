@@ -106,3 +106,14 @@ test('content enums round trip through their existing database strings', functio
         ->and($record->toArray()['category'])->toBe('disney-tips')
         ->and($record->author_name)->toBe('Jeffrey & Cassie');
 });
+
+test('author initials are derived from the display name', function (?ContentAuthor $author, string $initials): void {
+    $record = Post::factory()->make(['author' => $author]);
+
+    expect($record->author_initials)->toBe($initials);
+})->with([
+    'Jeffrey' => [ContentAuthor::Jeffrey, 'JD'],
+    'Cassie' => [ContentAuthor::Cassie, 'CD'],
+    'both authors' => [ContentAuthor::Both, 'J&C'],
+    'Mouse28 team fallback' => [null, 'MT'],
+]);

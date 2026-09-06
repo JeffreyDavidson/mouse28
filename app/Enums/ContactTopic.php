@@ -23,7 +23,7 @@ enum ContactTopic: string implements HasLabel
         };
     }
 
-    public function publicLabel(): string
+    public function contactFormLabel(): string
     {
         return match ($this) {
             self::Accessibility => 'Park Accessibility Question',
