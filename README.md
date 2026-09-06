@@ -20,7 +20,7 @@ Mouse28 is a blog-first Disney parks and podcast site from Jeffrey and Cassie Da
    cp .env.example .env
    php artisan key:generate
    php artisan migrate
-   npm install
+   npm ci
    npm run build
    ```
 
@@ -80,13 +80,17 @@ npm run build
 git diff --check
 ```
 
-Run `vendor/bin/pint` to apply PHP and Blade formatting fixes. Blade formatting is enabled by default through `pint.json`.
+Run `vendor/bin/pint` to apply PHP and Blade formatting fixes. Blade formatting is enabled by default through `pint.json` and requires the locked Prettier, Blade, and Tailwind formatting packages.
 Run `vendor/bin/filacheck` to check Filament code for deprecated APIs and common implementation issues.
 Run `npx playwright install chromium` once before the local browser suite. Browser smoke tests also run weekly, on demand, and for release tags in GitHub Actions.
 
-Laravel Boost provides project-aware documentation and inspection tools through the committed Codex MCP configuration. Its generated Laravel, Pest, and Tailwind skills are tracked under `.agents/skills`. Laravel Pao automatically condenses supported test and analysis output when an agent runs the commands.
+`composer test` runs the feature and architecture suites; browser tests use the separate `composer test:browser` command. Rector uses its default parallel processing. Agent sandboxes must allow the local sockets used by Rector and Pest.
 
-Use `composer dev` only when a long-running local server, queue listener, Vite server, and log viewer are all needed.
+Laravel Boost provides project-aware documentation and inspection tools. `boost.json` tracks four managed skills: `infer-conventions`, `laravel-best-practices`, `pest-testing`, and `tailwindcss-development`; their project copies live under `.agents/skills`. Filament is selected for package guidance. Run `php artisan boost:update` to regenerate guidelines and skills, and review the resulting diff.
+
+The `"nightwatch": true` preference in `boost.json` selects Nightwatch MCP setup through `php artisan boost:install`. It is separate from application monitoring and requires MCP client setup and OAuth authorization. Changing the preference alone does not establish an authenticated connection. Laravel Pao automatically condenses supported test and analysis output when an agent runs the commands.
+
+Herd already serves the application locally. Use `npm run dev` for Vite's development server when needed. The optional `composer dev` script also starts an HTTP server, queue listener, and log viewer, so it is not needed for the normal Herd workflow.
 
 ## Dependency maintenance
 
@@ -96,6 +100,7 @@ Dependabot vulnerability alerts remain enabled. CI audits the locked Composer an
 
 ## Deployment checklist
 
+- Review the target release and verify database and uploaded-file backups before production mutations. Follow the Forge staging and production runbook linked below.
 - Configure the application URL, database, mail, Resend, Turnstile, Transistor podcast feed, storage, cache, sessions, and queues.
 - Set `NIGHTWATCH_ENABLED=true` and `NIGHTWATCH_TOKEN` to enable Nightwatch. Keep request payload capture disabled and request sampling at or below `0.1`.
 - Set `SENTRY_LARAVEL_DSN`, `SENTRY_ENVIRONMENT=production`, and a deploy-specific `SENTRY_RELEASE` to enable error reporting. Leave PII disabled and tracing and profiling set to `0.0` until they are deliberately reviewed.
@@ -105,8 +110,7 @@ Dependabot vulnerability alerts remain enabled. CI audits the locked Composer an
 - Ensure `public/storage` is linked when uploaded media is used.
 - Run `php artisan optimize` after environment configuration is final.
 - Confirm the scheduler and queue worker are supervised if production uses queued work.
-- Verify `/`, `/search?q=accessibility`, `/sitemap.xml`, both RSS feeds, contact submission, and newsletter signup. When `GUIDES_ENABLED=true`, also verify `/guides`.
-- Back up the database and uploaded files before each deployment.
+- Verify `/up`, `/`, `/blog`, `/episodes`, `/search?q=accessibility`, `/sitemap.xml`, `/rss/blog`, contact submission, and newsletter signup. Confirm `/rss/podcast` permanently redirects to the configured Transistor feed. When `GUIDES_ENABLED=true`, also verify `/guides`.
 - Use `php artisan content:clean-seeded --force` only after backups are verified and real content is ready; it removes only the known demo slugs.
 
 See [docs/architecture.md](docs/architecture.md) for application boundaries, [docs/content-model.md](docs/content-model.md) for editorial language, and [docs/operations.md](docs/operations.md) for the Forge deployment and rollback runbook.
