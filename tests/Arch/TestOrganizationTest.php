@@ -44,7 +44,7 @@ test('test paths mirror their application source', function (string $suite): voi
     $suiteRoot = $projectRoot.'/tests/'.$suite.'/';
     $nonClassSources = [
         'Config/SentryTest.php' => 'config/sentry.php',
-        'Http/Errors/ErrorResponsesTest.php' => 'bootstrap/app.php',
+        'Http/ExceptionHandlingTest.php' => 'bootstrap/app.php',
         'Http/Routes/AboutTest.php' => 'routes/web.php',
     ];
     $violations = [];
