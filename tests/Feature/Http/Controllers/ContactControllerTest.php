@@ -42,6 +42,27 @@ test('contact page renders turnstile widget', function (): void {
     expect(array_column(ContactTopic::cases(), 'value'))->not->toContain('story');
 });
 
+test('contact errors and old input stay out of the newsletter form', function (): void {
+    $response = from(route('contact.show'))
+        ->followingRedirects()
+        ->post(route('contact.store'), [
+            'name' => 'Dale Cooper',
+            'email' => 'not-an-email',
+            'subject' => 'general',
+            'message' => 'Please help with this park question.',
+            'cf-turnstile-response' => 'unused-token',
+        ])
+        ->assertOk();
+
+    expect($response->getContent())
+        ->toMatch('/<input\s+type="email"\s+id="email"\s+name="email"\s+required\s+autocomplete="email"\s+inputmode="email"\s+value="not-an-email"/')
+        ->toMatch('/<input\s+id="footer-newsletter-email"\s+type="email"\s+name="email"\s+value=""/');
+
+    $response
+        ->assertSee('aria-describedby="email-error"', false)
+        ->assertDontSee('aria-describedby="newsletter-email-error"', false);
+});
+
 test('contact page uses the configured podcast email address', function (): void {
     Podcast::query()->create([
         'name' => 'Mouse28',

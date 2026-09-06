@@ -6,6 +6,7 @@ use App\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\URL;
 
+use function Pest\Laravel\from;
 use function Pest\Laravel\get;
 
 uses(RefreshDatabase::class);
@@ -20,6 +21,13 @@ test('search page is available from public navigation', function (): void {
         ->assertOk()
         ->assertSee(route('search'), false)
         ->assertSee('Search Mouse28');
+});
+
+test('search query is limited to one hundred characters', function (): void {
+    from(route('search'))
+        ->get(route('search', ['q' => str_repeat('a', 101)]))
+        ->assertRedirect(route('search'))
+        ->assertSessionHasErrors('q');
 });
 
 test('canonical URLs preserve an HTTP application origin', function (): void {

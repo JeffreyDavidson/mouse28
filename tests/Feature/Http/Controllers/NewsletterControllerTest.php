@@ -37,6 +37,23 @@ test('valid newsletter signup is sent to configured resend audience', function (
         && $request['email'] === 'dale@example.com');
 });
 
+test('newsletter errors and old input stay out of the contact form', function (): void {
+    $response = from(route('contact.show'))
+        ->followingRedirects()
+        ->post(route('newsletter.store'), [
+            'email' => 'not-an-email',
+            'cf-turnstile-response' => 'unused-token',
+        ])
+        ->assertOk();
+
+    expect($response->getContent())
+        ->toMatch('/<input\s+type="email"\s+id="email"\s+name="email"\s+required\s+autocomplete="email"\s+inputmode="email"\s+value=""/')
+        ->toMatch('/<input\s+id="footer-newsletter-email"\s+type="email"\s+name="email"\s+value="not-an-email"/');
+
+    $response
+        ->assertDontSee('aria-describedby="email-error"', false);
+});
+
 test('newsletter preserves the submitted email after a resend HTTP failure', function (int $providerStatus): void {
     Http::fake([
         'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response([
