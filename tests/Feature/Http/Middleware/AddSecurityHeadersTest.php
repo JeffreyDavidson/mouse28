@@ -24,7 +24,7 @@ test('web responses include baseline security headers', function (string $url, i
         ->assertHeader('Permissions-Policy', 'camera=(), geolocation=(), microphone=()');
 })->with([
     'public page' => [fn (): string => route('home'), 200],
-    'admin page' => [fn (): string => '/admin/login', 200],
+    'admin page' => [fn (): string => route('filament.admin.auth.login'), 200],
     'xml response' => [fn (): string => route('sitemap'), 200],
     'error response' => [fn (): string => '/this-page-does-not-exist', 404],
     'server error response' => [fn (): string => '/testing/security-header-error', 500],
@@ -35,7 +35,7 @@ test('private and error responses cannot be indexed', function (string $url, int
         ->assertStatus($status)
         ->assertHeader('X-Robots-Tag', 'noindex, nofollow');
 })->with([
-    'admin page' => [fn (): string => '/admin/login', 200],
+    'admin page' => [fn (): string => route('filament.admin.auth.login'), 200],
     'preview page' => [fn (): string => '/preview/testing', 200],
     'error response' => [fn (): string => '/this-page-does-not-exist', 404],
     'server error response' => [fn (): string => '/testing/security-header-error', 500],
@@ -55,7 +55,7 @@ test('private and error responses cannot be stored', function (string $url, int 
         ->toContain('no-store')
         ->toContain('private');
 })->with([
-    'admin page' => [fn (): string => '/admin/login', 200],
+    'admin page' => [fn (): string => route('filament.admin.auth.login'), 200],
     'preview page' => [fn (): string => '/preview/testing', 200],
     'error response' => [fn (): string => '/this-page-does-not-exist', 404],
     'server error response' => [fn (): string => '/testing/security-header-error', 500],

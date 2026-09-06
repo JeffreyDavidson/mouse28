@@ -45,7 +45,7 @@ function unexpectedAdminJavaScriptErrorCountScript(): string
 }
 
 test('admin login exposes no unnamed artwork or decorative glyphs', function (): void {
-    visit('/admin/login')
+    visit(route('filament.admin.auth.login'))
         ->assertVisible('input[type="email"]')
         ->assertVisible('input[type="password"]')
         ->assertScript('document.documentElement.classList.contains(\'dark\')', true)
