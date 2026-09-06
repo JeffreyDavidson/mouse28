@@ -25,12 +25,17 @@ test('public archives retain string values and restore enum backed content', fun
     $post->delete();
     $guide->delete();
 
-    $service->import(json_decode(json_encode($archive, JSON_THROW_ON_ERROR), true, flags: JSON_THROW_ON_ERROR));
+    $serializedArchive = json_encode($archive, JSON_THROW_ON_ERROR);
+    $decodedArchive = json_decode($serializedArchive, true, flags: JSON_THROW_ON_ERROR);
 
-    expect($post->refresh()->trashed())->toBeFalse()
+    $service->import($decodedArchive);
+    $post->refresh();
+    $guide->refresh();
+
+    expect($post->trashed())->toBeFalse()
         ->and($post->author)->toBe(ContentAuthor::Cassie)
         ->and($post->category)->toBe(PostCategory::DisneyTips)
-        ->and($guide->refresh()->trashed())->toBeFalse()
+        ->and($guide->trashed())->toBeFalse()
         ->and($guide->author)->toBe(ContentAuthor::Both)
         ->and($guide->category)->toBe(GuideCategory::Accessibility);
 });
@@ -45,5 +50,7 @@ test('invalid archive enum values roll back earlier imported records', function 
 
     expect(fn () => $service->import($archive))->toThrow(ValueError::class);
 
-    expect($first->refresh()->title)->toBe('Original first title');
+    $first->refresh();
+
+    expect($first->title)->toBe('Original first title');
 });

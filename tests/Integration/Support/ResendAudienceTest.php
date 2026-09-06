@@ -19,8 +19,13 @@ test('a successful audience read is shared through the cache', function (): void
 
     $audience = app(ResendAudience::class);
 
-    expect($audience->get()['subscribers'])->toHaveCount(1)
-        ->and($audience->get()['error'])->toBeNull();
+    $firstRead = $audience->get();
+    $cachedRead = $audience->get();
+
+    expect($firstRead)->toBe([
+        'subscribers' => [['email' => 'reader@example.com', 'created_at' => '2026-08-22T12:00:00Z']],
+        'error' => null,
+    ])->and($cachedRead)->toBe($firstRead);
 
     Http::assertSentCount(1);
 });

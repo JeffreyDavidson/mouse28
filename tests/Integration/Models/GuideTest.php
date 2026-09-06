@@ -8,6 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 uses(RefreshDatabase::class);
 
 test('editorial review dates determine the review queue', function (): void {
+    $this->freezeTime();
     config()->set('mouse28.guide_review_interval_days', 180);
 
     $currentGuide = Guide::factory()->create([
@@ -20,11 +21,24 @@ test('editorial review dates determine the review queue', function (): void {
         'last_reviewed_at' => null,
     ]);
 
-    expect($currentGuide->isReviewDue())->toBeFalse()
-        ->and($staleGuide->isReviewDue())->toBeTrue()
-        ->and($unreviewedGuide->isReviewDue())->toBeTrue()
-        ->and(Guide::reviewDue()->pluck('id')->all())
-        ->toEqualCanonicalizing([$staleGuide->id, $unreviewedGuide->id]);
+    $boundaryGuide = Guide::factory()->create([
+        'last_reviewed_at' => today()->subDays(180),
+    ]);
+
+    $currentIsDue = $currentGuide->isReviewDue();
+    $staleIsDue = $staleGuide->isReviewDue();
+    $boundaryIsDue = $boundaryGuide->isReviewDue();
+    $unreviewedIsDue = $unreviewedGuide->isReviewDue();
+    $reviewDueIds = Guide::query()
+        ->reviewDue()
+        ->pluck('id')
+        ->all();
+
+    expect($currentIsDue)->toBeFalse()
+        ->and($staleIsDue)->toBeTrue()
+        ->and($boundaryIsDue)->toBeFalse()
+        ->and($unreviewedIsDue)->toBeTrue()
+        ->and($reviewDueIds)->toEqualCanonicalizing([$staleGuide->id, $unreviewedGuide->id]);
 });
 
 test('content enums round trip through their existing database strings', function (): void {
@@ -39,12 +53,13 @@ test('content enums round trip through their existing database strings', functio
         ->and($record->category)->toBe(GuideCategory::Accessibility)
         ->and($record->author_name)->toBe('Cassie Davidson');
 
-    $record->update(['author' => ContentAuthor::Both]);
+    $record->update(['author' => ContentAuthor::Both, 'category' => GuideCategory::FamilyPlanning]);
     $record->refresh();
 
-    expect($record->getRawOriginal('author'))->toBe('both')
-        ->and($record->getRawOriginal('category'))->toBe('accessibility')
+    expect($record->category)->toBe(GuideCategory::FamilyPlanning)
+        ->and($record->getRawOriginal('author'))->toBe('both')
+        ->and($record->getRawOriginal('category'))->toBe('family-planning')
         ->and($record->toArray()['author'])->toBe('both')
-        ->and($record->toArray()['category'])->toBe('accessibility')
+        ->and($record->toArray()['category'])->toBe('family-planning')
         ->and($record->author_name)->toBe('Jeffrey & Cassie');
 });
