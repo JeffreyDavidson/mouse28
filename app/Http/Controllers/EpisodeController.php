@@ -3,40 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Episode;
-use App\Models\Podcast;
-use App\Models\Post;
-use App\Support\ContentContinuation;
-use App\Support\PodcastLinks;
+use App\ViewModels\EpisodeIndexViewModel;
+use App\ViewModels\EpisodeViewModel;
 use Illuminate\View\View;
 
 class EpisodeController
 {
-    public function index(): View
+    public function index(EpisodeIndexViewModel $viewModel): View
     {
-        $episodes = Episode::published()->latest('published_at')->paginate(12);
-
-        $podcast = Podcast::info();
-
-        return view('episodes.index', [
-            'episodes' => $episodes,
-            'podcast' => $podcast,
-            'podcastLinks' => PodcastLinks::for($podcast),
-            'canonicalUrl' => route('episodes.index', array_filter([
-                'page' => $episodes->currentPage() > 1 ? $episodes->currentPage() : null,
-            ])),
-        ]);
+        return view('episodes.index', $viewModel->data());
     }
 
-    public function show(Episode $episode): View
+    public function show(Episode $episode, EpisodeViewModel $viewModel): View
     {
         abort_unless($episode->is_published && $episode->published_at?->isPast(), 404);
 
-        return view('episodes.show', [
-            'episode' => $episode,
-            'podcast' => Podcast::info(),
-            'relatedPosts' => Post::published()->whereBelongsTo($episode)->latest('published_at')->take(4)->get(),
-            'previousEpisode' => ContentContinuation::previousEpisode($episode),
-            'nextEpisode' => ContentContinuation::nextEpisode($episode),
-        ]);
+        return view('episodes.show', $viewModel->data($episode));
     }
 }

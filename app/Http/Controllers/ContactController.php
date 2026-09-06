@@ -2,30 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\SendContactEmails;
+use App\Actions\SubmitContactMessage;
 use App\Http\Requests\StoreContactRequest;
-use App\Models\ContactMessage;
-use App\Models\Podcast;
 use App\Support\Turnstile;
+use App\ViewModels\ContactViewModel;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class ContactController
 {
-    public function show(): View
+    public function show(ContactViewModel $viewModel): View
     {
-        return view('contact', [
-            'contactEmail' => Podcast::info()->email ?: (string) config('mail.admin_address'),
-            'contactFormAvailable' => filled(config('services.turnstile.site_key'))
-                && filled(config('services.turnstile.secret_key')),
-        ]);
+        return view('contact', $viewModel->data());
     }
 
     public function store(
         StoreContactRequest $request,
         Turnstile $turnstile,
-        SendContactEmails $sendContactEmails,
+        SubmitContactMessage $submitContactMessage,
     ): RedirectResponse {
         if ($request->filled('website_url')) {
             return redirect()->route('contact.show')->with('success', true);
@@ -37,8 +32,7 @@ class ContactController
             ])->errorBag('contact');
         }
 
-        $contactMessage = ContactMessage::query()->create($request->validated());
-        $sendContactEmails($contactMessage);
+        $submitContactMessage($request->messageAttributes());
 
         return redirect()->route('contact.show')->with('success', true);
     }
