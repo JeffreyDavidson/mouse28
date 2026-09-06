@@ -16,7 +16,7 @@ test('contact subjects retain their stored value and readable label', function (
     $message->refresh();
 
     expect($message->subject)->toBe($subject)
-        ->and($message->subject_label)->toBe($label);
+        ->and($message->subjectLabel())->toBe($label);
 })->with([
     'general' => ['general', 'General Question'],
     'accessibility' => ['accessibility', 'Park Accessibility'],
