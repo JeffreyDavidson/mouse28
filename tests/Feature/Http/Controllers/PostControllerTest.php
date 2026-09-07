@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\BlogIndex;
 use App\Models\Episode;
 use App\Models\Podcast;
 use App\Models\Post;
@@ -25,6 +26,7 @@ test('hidden content uses the same recovery page without revealing its title', f
 test('public index page renders', function (): void {
     get(route('blog.index'))
         ->assertOk()
+        ->assertSeeLivewire(BlogIndex::class)
         ->assertSee('Blog');
 });
 
