@@ -57,3 +57,17 @@ test('topic and reset actions preserve valid filter state', function (): void {
         ->assertSet('search', '')
         ->assertSet('sort', 'newest');
 });
+
+test('featured story remains visible on subsequent archive pages', function (): void {
+    $featuredPost = Post::factory()->create([
+        'title' => 'Featured throughout the archive',
+        'published_at' => now(),
+    ]);
+    Post::factory()->count(12)->create([
+        'published_at' => now()->subDay(),
+    ]);
+
+    Livewire::withQueryParams(['page' => 2])
+        ->test(BlogIndex::class)
+        ->assertSee($featuredPost->title);
+});
