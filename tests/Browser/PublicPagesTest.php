@@ -469,7 +469,7 @@ test('accessibility checks reject small targets and misleading focus decoration'
 });
 
 test('featured story and viewport stay stable throughout filter transitions', function (): void {
-    Post::factory()->create(['title' => 'Permanent featured story', 'published_at' => now()]);
+    Post::factory()->create(['title' => 'Permanent featured story', 'category' => 'food-reviews', 'published_at' => now()]);
     Post::factory()->create(['category' => 'food-reviews', 'published_at' => now()->subDay()]);
     Post::factory()->count(3)->create(['category' => 'park-accessibility', 'published_at' => now()->subWeek()]);
 
