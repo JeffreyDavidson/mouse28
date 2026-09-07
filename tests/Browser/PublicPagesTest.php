@@ -210,7 +210,7 @@ test('blog filters and sorting animate stories without reloading or moving the c
         ->click('a[data-blog-filter-link][href*="park-accessibility"]')
         ->assertQueryStringHas('category', 'park-accessibility')
         ->assertScript('document.documentElement.dataset.blogNavigationMarker', 'preserved')
-        ->fill('#blog-search', 'quiet entrance')
+        ->typeSlowly('#blog-search', 'quiet entrance', 25)
         ->assertQueryStringHas('q', 'quiet entrance')
         ->assertSee($accessiblePost->title)
         ->assertScript('document.activeElement.id', 'blog-search')
