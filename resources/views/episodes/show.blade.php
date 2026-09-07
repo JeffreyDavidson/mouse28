@@ -128,7 +128,7 @@
                                     href="{{ $appleUrl }}"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    class="text-gold hover:text-cream inline-flex min-h-12 flex-col justify-center"
+                                    class="text-gold hover:text-cream inline-flex min-h-12 flex-col justify-center gap-1.5"
                                 >
                                     <span class="font-semibold underline underline-offset-8">Apple Podcasts</span>
                                     <span class="text-cream/55 text-xs">{{ $episode->apple_url ? 'Listen to this episode' : 'Visit the show' }}</span>
@@ -139,7 +139,7 @@
                                     href="{{ $spotifyUrl }}"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    class="text-gold hover:text-cream inline-flex min-h-12 flex-col justify-center"
+                                    class="text-gold hover:text-cream inline-flex min-h-12 flex-col justify-center gap-1.5"
                                 >
                                     <span class="font-semibold underline underline-offset-8">Spotify</span>
                                     <span class="text-cream/55 text-xs">{{ $episode->spotify_url ? 'Listen to this episode' : 'Visit the show' }}</span>
@@ -150,7 +150,7 @@
                                     href="{{ $youtubeUrl }}"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    class="text-gold hover:text-cream inline-flex min-h-12 flex-col justify-center"
+                                    class="text-gold hover:text-cream inline-flex min-h-12 flex-col justify-center gap-1.5"
                                 >
                                     <span class="font-semibold underline underline-offset-8">YouTube</span>
                                     <span class="text-cream/55 text-xs">{{ $episode->youtube_url ? 'Watch this episode' : 'Visit the channel' }}</span>
@@ -160,7 +160,7 @@
                                 href="{{ config('podcast.rss_url') }}"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                class="text-gold hover:text-cream inline-flex min-h-12 flex-col justify-center"
+                                class="text-gold hover:text-cream inline-flex min-h-12 flex-col justify-center gap-1.5"
                             >
                                 <span class="font-semibold underline underline-offset-8">RSS Feed</span>
                                 <span class="text-cream/55 text-xs">Subscribe in another podcast app</span>
