@@ -542,7 +542,8 @@
     }
 
     .blog-pagination span,
-    .blog-pagination a {
+    .blog-pagination a,
+    .blog-pagination button {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -561,13 +562,15 @@
         color: white;
     }
 
-    .blog-pagination a {
+    .blog-pagination a,
+    .blog-pagination button {
         border: 1px solid rgb(26 16 64 / 10%);
         background: white;
         color: rgb(26 16 64 / 50%);
     }
 
-    .blog-pagination a:hover {
+    .blog-pagination a:hover,
+    .blog-pagination button:hover {
         border-color: var(--color-gold);
         color: var(--color-navy);
     }
