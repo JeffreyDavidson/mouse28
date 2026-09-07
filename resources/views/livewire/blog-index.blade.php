@@ -160,8 +160,7 @@
 
             <div
                 data-blog-results
-                wire:loading.class.delay="opacity-60"
-                class="pt-10 transition-opacity duration-150 motion-reduce:transition-none sm:pt-14"
+                class="pt-10 sm:pt-14"
             >
                 @if ($posts->count())
                     <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
