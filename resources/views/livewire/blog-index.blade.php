@@ -158,10 +158,7 @@
                 </div>
             @endif
 
-            <div
-                data-blog-results
-                class="pt-10 sm:pt-14"
-            >
+            <div data-blog-results class="pt-10 sm:pt-14">
                 @if ($posts->count())
                     <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
                         <h2 class="font-heading text-navy text-3xl [font-weight:640] tracking-[-0.02em] text-balance sm:text-4xl">
