@@ -142,11 +142,14 @@ test('blog filters and sorting update without reloading or moving the controls',
         'category' => 'food-reviews',
         'published_at' => now()->subDay(),
     ]);
+    Post::factory()->count(7)->create([
+        'category' => 'food-reviews',
+    ]);
 
     $page = visit(route('blog.index'));
 
     $page->assertScript("document.querySelector('[data-blog-status][role=status][aria-live=polite]') !== null", true)
-        ->script("window.blogNavigationMarker = 'preserved'");
+        ->script("window.blogNavigationMarker = 'preserved'; const filters = document.querySelector('[data-blog-filters]'); window.scrollTo({ top: window.scrollY + filters.getBoundingClientRect().top - 120, behavior: 'instant' }); window.blogFilterTop = filters.getBoundingClientRect().top");
 
     $page
         ->click('a[data-blog-filter-link][href*="park-accessibility"]')
@@ -154,6 +157,14 @@ test('blog filters and sorting update without reloading or moving the controls',
         ->assertScript('document.title', 'Park Accessibility | Mouse28')
         ->assertSee($accessiblePost->title)
         ->assertDontSee($diningPost->title)
+        ->assertScript('Math.abs(document.querySelector("[data-blog-filters]").getBoundingClientRect().top - window.blogFilterTop) < 2', true)
+        ->click('a[data-blog-filter-link][href*="food-reviews"]')
+        ->assertQueryStringHas('category', 'food-reviews')
+        ->assertSee($diningPost->title)
+        ->assertDontSee($accessiblePost->title)
+        ->assertScript('Math.abs(document.querySelector("[data-blog-filters]").getBoundingClientRect().top - window.blogFilterTop) < 2', true)
+        ->click('a[data-blog-filter-link][href*="park-accessibility"]')
+        ->assertQueryStringHas('category', 'park-accessibility')
         ->assertScript('window.blogNavigationMarker', 'preserved')
         ->fill('#blog-search', 'quiet entrance')
         ->assertQueryStringHas('q', 'quiet entrance')
