@@ -57,7 +57,8 @@
                         <form
                             action="{{ route('blog.index') }}"
                             method="GET"
-                            wire:submit.prevent.preserve-scroll="applySearch"
+                            wire:submit.prevent="applySearch"
+                            data-preserve-blog-filter-position
                         >
                             @if ($category)
                                 <input type="hidden" name="category" value="{{ $category }}" />
@@ -75,14 +76,16 @@
                                     id="blog-search"
                                     type="search"
                                     name="q"
-                                    wire:model.live.debounce.300ms.preserve-scroll="search"
+                                    wire:model.live.debounce.300ms="search"
+                                    data-preserve-blog-filter-position
                                     placeholder="Search posts..."
                                     class="border-navy/15 bg-cream text-navy placeholder:text-navy/60 focus:border-purple focus:ring-purple/20 min-h-12 w-full appearance-none rounded-xl border py-3 pr-12 pl-11 text-base transition-opacity outline-none focus:ring-2 data-loading:opacity-60 motion-reduce:transition-none"
                                 />
                                 @if ($search)
                                     <a
                                         href="{{ route('blog.index', array_filter(['category' => $category, 'sort' => $sort !== 'newest' ? $sort : null])) }}"
-                                        wire:click.prevent.preserve-scroll="clearSearch"
+                                        wire:click.prevent="clearSearch"
+                                        data-preserve-blog-filter-position
                                         class="text-navy/65 hover:text-purple absolute top-1/2 right-0 flex size-12 -translate-y-1/2 items-center justify-center data-loading:pointer-events-none data-loading:opacity-60"
                                         aria-label="Clear search"
                                     >
@@ -99,7 +102,8 @@
                             <div class="flex gap-2 overflow-x-auto pb-1">
                                 <a
                                     href="{{ route('blog.index') }}"
-                                    wire:click.prevent.preserve-scroll="clearFilters"
+                                    wire:click.prevent="clearFilters"
+                                    data-preserve-blog-filter-position
                                     data-blog-filter-link
                                     @if (! $category) aria-current="page" @endif
                                     class="data-loading:pointer-events-none data-loading:opacity-60 inline-flex min-h-12 shrink-0 items-center rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ ! $category ? 'bg-navy text-cream' : 'border-navy/15 text-navy hover:border-purple border' }}"
@@ -108,7 +112,8 @@
                                     @continue(! in_array($categoryOption->value, $usedCategories))
                                     <a
                                         href="{{ route('blog.index', ['category' => $categoryOption->value]) }}"
-                                        wire:click.prevent.preserve-scroll="selectCategory('{{ $categoryOption->value }}')"
+                                        wire:click.prevent="selectCategory('{{ $categoryOption->value }}')"
+                                        data-preserve-blog-filter-position
                                         data-blog-filter-link
                                         @if ($category === $categoryOption->value) aria-current="page" @endif
                                         class="data-loading:pointer-events-none data-loading:opacity-60 inline-flex min-h-12 shrink-0 items-center rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ $category === $categoryOption->value ? 'bg-navy text-cream' : 'border-navy/15 text-navy hover:border-purple border' }}"
@@ -129,7 +134,8 @@
                                 <select
                                     id="blog-sort"
                                     name="sort"
-                                    wire:model.live.preserve-scroll="sort"
+                                    wire:model.live="sort"
+                                    data-preserve-blog-filter-position
                                     class="border-navy/15 bg-cream text-navy focus:border-purple focus:ring-purple/20 min-h-12 min-w-44 appearance-none rounded-xl border py-3 pr-12 pl-4 text-base transition-opacity outline-none focus:ring-2 data-loading:opacity-60 motion-reduce:transition-none"
                                 >
                                     <option value="newest">Newest first</option>
@@ -248,7 +254,8 @@
                             @if ($search || $category)
                                 <a
                                     href="{{ route('blog.index') }}"
-                                    wire:click.prevent.preserve-scroll="clearFilters"
+                                    wire:click.prevent="clearFilters"
+                                    data-preserve-blog-filter-position
                                     class="text-gold inline-flex min-h-12 items-center font-semibold underline underline-offset-8 data-loading:pointer-events-none data-loading:opacity-60"
                                 >View all posts</a>
                             @else
