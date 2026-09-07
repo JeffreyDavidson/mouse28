@@ -169,6 +169,7 @@ test('mobile navigation opens and remains usable', function (): void {
 });
 
 test('blog filters and sorting animate stories without reloading or moving the controls', function (): void {
+    Post::factory()->create(['title' => 'Featured park story', 'published_at' => now()]);
     $accessiblePost = Post::factory()->create([
         'title' => 'A quiet entrance plan',
         'category' => 'park-accessibility',
@@ -466,3 +467,51 @@ test('accessibility checks reject small targets and misleading focus decoration'
     expect($page->script($this->undersizedControlsScript()))->toContain('button#small-target (46x46)')
         ->and($page->script($this->missingFocusIndicatorsScript()))->toContain('button#static-shadow', 'button#cannot-focus');
 });
+
+test('featured story and viewport stay stable throughout filter transitions', function (): void {
+    Post::factory()->create(['title' => 'Permanent featured story', 'published_at' => now()]);
+    Post::factory()->create(['category' => 'food-reviews', 'published_at' => now()->subDay()]);
+    Post::factory()->count(3)->create(['category' => 'park-accessibility', 'published_at' => now()->subWeek()]);
+
+    $page = visit(route('blog.index'));
+    $page->script(<<<'JS'
+        window.scrollTo({ top: document.querySelector('[data-blog-filters]').getBoundingClientRect().top + window.scrollY - 120, behavior: 'instant' });
+        window.filterSamples = [];
+        document.addEventListener('click', (event) => {
+            if (!event.target.closest('[data-blog-filter-link]')) return;
+            const initialY = window.scrollY;
+            const initialTop = document.querySelector('[data-blog-filters]').getBoundingClientRect().top;
+            const retainedCard = document.querySelector('[data-blog-post]:last-child');
+            const started = performance.now();
+            const initialCards = [...document.querySelectorAll('[data-blog-post]')].map(card => card.dataset.blogPost).join(',');
+            let updatedAt = null;
+            window.filterSamples = [];
+            const sample = () => {
+                window.filterSamples.push({
+                    scroll: Math.abs(window.scrollY - initialY),
+                    filter: Math.abs(document.querySelector('[data-blog-filters]').getBoundingClientRect().top - initialTop),
+                    featured: document.querySelector('.editorial-feature')?.textContent.includes('Permanent featured story') ?? false,
+                    moving: [...document.querySelectorAll('[data-blog-post]')].some(card => getComputedStyle(card).transform !== 'none'),
+                    cardPosition: [Math.round(retainedCard.getBoundingClientRect().left), Math.round(retainedCard.getBoundingClientRect().top)].join(","),
+                });
+                const cards = [...document.querySelectorAll('[data-blog-post]')].map(card => card.dataset.blogPost).join(',');
+                if (cards !== initialCards && updatedAt === null) updatedAt = performance.now();
+                if (performance.now() - started < 10000 && (updatedAt === null || performance.now() - updatedAt < 600)) requestAnimationFrame(sample);
+                else window.filterSamplingDone = true;
+            };
+            window.filterSamplingDone = false;
+            requestAnimationFrame(sample);
+        }, true);
+        JS);
+
+    foreach (['a[data-blog-filter-link][href*="park-accessibility"]', 'a[data-blog-filter-link][href$="/blog"]'] as $selector) {
+        $page
+            ->click($selector)
+            ->assertScript('window.filterSamplingDone', true)
+            ->assertScript('window.filterSamples.length > 10', true)
+            ->assertScript('window.filterSamples.every(sample => sample.featured && sample.scroll < 2 && sample.filter < 2)', true)
+            ->assertScript('window.filterSamples.some(sample => sample.moving)', true)
+            ->assertScript('new Set(window.filterSamples.map(sample => sample.cardPosition)).size > 3', true)
+            ->assertNoJavaScriptErrors();
+    }
+})->group('browser-smoke', 'browser-compatibility');

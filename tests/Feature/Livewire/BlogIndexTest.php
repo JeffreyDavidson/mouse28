@@ -30,7 +30,7 @@ test('query string filters update the visible stories', function (): void {
     ])
         ->test(BlogIndex::class)
         ->assertSeeInOrder([$oldestPost->title, $newestPost->title])
-        ->assertDontSee($unrelatedPost->title)
+        ->assertViewHas('archivePosts', fn ($posts): bool => ! $posts->contains($unrelatedPost))
         ->assertSet('category', 'park-accessibility')
         ->assertSet('search', 'accessible')
         ->assertSet('sort', 'oldest');
@@ -70,4 +70,21 @@ test('featured story remains visible on subsequent archive pages', function (): 
     Livewire::withQueryParams(['page' => 2])
         ->test(BlogIndex::class)
         ->assertSee($featuredPost->title);
+});
+
+test('featured story is independent of category search and sort filters', function (): void {
+    $featuredPost = Post::factory()->create(['title' => 'Permanent feature', 'published_at' => now()]);
+    Post::factory()->create(['title' => 'Quiet entrance', 'category' => 'park-accessibility', 'published_at' => now()->subWeek()]);
+    Post::factory()->draft()->create();
+    Post::factory()->scheduled()->create();
+
+    Livewire::test(BlogIndex::class)
+        ->call('selectCategory', 'park-accessibility')
+        ->assertViewHas('featuredPost', fn (Post $post): bool => $post->is($featuredPost))
+        ->set('search', 'no matching stories')
+        ->assertViewHas('featuredPost', fn (Post $post): bool => $post->is($featuredPost))
+        ->set('sort', 'oldest')
+        ->assertViewHas('featuredPost', fn (Post $post): bool => $post->is($featuredPost))
+        ->call('clearFilters')
+        ->assertViewHas('featuredPost', fn (Post $post): bool => $post->is($featuredPost));
 });
