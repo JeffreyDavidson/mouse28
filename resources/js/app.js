@@ -169,6 +169,38 @@ function initializeBlogMetadata() {
     });
 }
 
+function initializeBlogFilterPosition(Livewire) {
+    let filterViewportTop = null;
+
+    const rememberFilterPosition = (event) => {
+        if (!(event.target instanceof Element) || !event.target.closest('[data-preserve-blog-filter-position]')) {
+            return;
+        }
+
+        filterViewportTop = document.querySelector('[data-blog-filters]')?.getBoundingClientRect().top ?? null;
+    };
+
+    ['click', 'input', 'change', 'submit'].forEach((eventName) => {
+        document.addEventListener(eventName, rememberFilterPosition, true);
+    });
+
+    Livewire.hook('morphed', ({ el }) => {
+        if (!el.matches('[data-blog-browser]') || filterViewportTop === null) {
+            return;
+        }
+
+        window.requestAnimationFrame(() => {
+            const filters = document.querySelector('[data-blog-filters]');
+
+            if (filters) {
+                window.scrollBy(0, filters.getBoundingClientRect().top - filterViewportTop);
+            }
+
+            filterViewportTop = null;
+        });
+    });
+}
+
 initializeCopyLinks();
 initializeBlogArticle();
 focusFirstInvalidField();
@@ -178,6 +210,7 @@ if (document.querySelector('[data-editorial-blog]')) {
     const { Alpine, Livewire } = await import('../../vendor/livewire/livewire/dist/livewire.esm');
 
     window.Alpine = Alpine;
+    initializeBlogFilterPosition(Livewire);
     Livewire.start();
 } else {
     const { default: Alpine } = await import('alpinejs');
