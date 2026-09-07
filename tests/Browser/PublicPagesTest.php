@@ -25,6 +25,43 @@ function exposedDecorativeGlyphCountScript(): string
         JS;
 }
 
+function observeBlogCardMotionScript(): string
+{
+    return <<<'JS'
+        (() => {
+            window.blogCardMotionCalls = [];
+
+            const animate = Element.prototype.animate;
+
+            Element.prototype.animate = function (keyframes, options) {
+                if (this.matches('[data-blog-results] article')) {
+                    const frames = Array.from(keyframes);
+
+                    window.blogCardMotionCalls.push({
+                        duration: typeof options === 'number' ? options : options?.duration,
+                        fromTransform: frames[0]?.transform ?? null,
+                        toTransform: frames.at(-1)?.transform ?? null,
+                    });
+                }
+
+                return animate.call(this, keyframes, options);
+            };
+        })()
+        JS;
+}
+
+function blogCardMotionObservedScript(): string
+{
+    return <<<'JS'
+        window.blogCardMotionCalls.some(({ duration, fromTransform, toTransform }) => (
+            duration >= 300
+            && duration <= 500
+            && fromTransform?.startsWith('translate(')
+            && fromTransform !== toTransform
+        ))
+        JS;
+}
+
 test('public page renders without JavaScript errors', function (string $routeName, string $content): void {
     visit(route($routeName))
         ->assertSee($content)
@@ -131,7 +168,7 @@ test('mobile navigation opens and remains usable', function (): void {
         ->assertNoJavaScriptErrors();
 });
 
-test('blog filters and sorting update without reloading or moving the controls', function (): void {
+test('blog filters and sorting animate stories without reloading or moving the controls', function (): void {
     $accessiblePost = Post::factory()->create([
         'title' => 'A quiet entrance plan',
         'category' => 'park-accessibility',
@@ -148,8 +185,9 @@ test('blog filters and sorting update without reloading or moving the controls',
 
     $page = visit(route('blog.index'));
 
-    $page->assertScript("document.querySelector('[data-blog-status][role=status][aria-live=polite]') !== null", true)
-        ->script("document.documentElement.dataset.blogNavigationMarker = 'preserved'; const filters = document.querySelector('[data-blog-filters]'); window.scrollTo({ top: window.scrollY + filters.getBoundingClientRect().top - 120, behavior: 'instant' }); window.blogFilterTop = filters.getBoundingClientRect().top");
+    $page->assertScript("document.querySelector('[data-blog-status][role=status][aria-live=polite]') !== null", true);
+    $page->script(observeBlogCardMotionScript());
+    $page->script("document.documentElement.dataset.blogNavigationMarker = 'preserved'; const filters = document.querySelector('[data-blog-filters]'); window.scrollTo({ top: window.scrollY + filters.getBoundingClientRect().top - 120, behavior: 'instant' }); window.blogFilterTop = filters.getBoundingClientRect().top");
 
     $page
         ->click('a[data-blog-filter-link][href*="park-accessibility"]')
@@ -157,7 +195,12 @@ test('blog filters and sorting update without reloading or moving the controls',
         ->assertScript('document.title', 'Park Accessibility | Mouse28')
         ->assertSee($accessiblePost->title)
         ->assertDontSee($diningPost->title)
-        ->assertScript('Math.abs(document.querySelector("[data-blog-filters]").getBoundingClientRect().top - window.blogFilterTop) < 2', true)
+        ->assertScript(blogCardMotionObservedScript(), true)
+        ->assertScript('Math.abs(document.querySelector("[data-blog-filters]").getBoundingClientRect().top - window.blogFilterTop) < 2', true);
+
+    $page->script('window.blogCardMotionCalls = []');
+
+    $page
         ->click('a[data-blog-filter-link][href*="food-reviews"]')
         ->assertQueryStringHas('category', 'food-reviews')
         ->assertSee($diningPost->title)
@@ -174,20 +217,58 @@ test('blog filters and sorting update without reloading or moving the controls',
         ->assertScript('document.querySelector("[data-blog-browser]").ariaBusy', 'false')
         ->script('window.blogFilterTop = document.querySelector("[data-blog-filters]").getBoundingClientRect().top');
 
+    $page->script('window.blogCardMotionCalls = []');
+
     $page
         ->click('a[data-blog-filter-link][href$="/blog"]')
         ->assertQueryStringMissing('category')
         ->assertQueryStringMissing('q')
         ->assertSee($accessiblePost->title)
         ->assertSee($diningPost->title)
+        ->assertScript(blogCardMotionObservedScript(), true)
         ->assertScript('Math.abs(document.querySelector("[data-blog-filters]").getBoundingClientRect().top - window.blogFilterTop) < 2', true)
+        ->script('window.blogCardMotionCalls = []');
+
+    $page
         ->select('#blog-sort', 'oldest')
         ->assertQueryStringHas('sort', 'oldest')
         ->assertScript('document.querySelector("#blog-sort").value', 'oldest')
         ->assertScript('document.querySelector("[data-blog-results] h3 a").textContent.trim()', $accessiblePost->title)
+        ->assertScript(blogCardMotionObservedScript(), true)
         ->assertScript('document.querySelector("#blog-sort").getBoundingClientRect().right - document.querySelector("[data-blog-sort-chevron]").getBoundingClientRect().right >= 15', true)
         ->assertScript('Math.abs(document.querySelector("[data-blog-filters]").getBoundingClientRect().top - window.blogFilterTop) < 2', true)
         ->assertScript('document.documentElement.dataset.blogNavigationMarker', 'preserved')
+        ->assertNoJavaScriptErrors();
+})->group('browser-smoke', 'browser-compatibility');
+
+test('blog filters update without spatial card motion when reduced motion is preferred', function (): void {
+    Post::factory()->create([
+        'category' => 'food-reviews',
+        'published_at' => now(),
+    ]);
+    Post::factory()->create([
+        'category' => 'park-accessibility',
+        'published_at' => now()->subDay(),
+    ]);
+    Post::factory()->create([
+        'category' => 'food-reviews',
+        'published_at' => now()->subDays(2),
+    ]);
+    $accessiblePost = Post::factory()->create([
+        'category' => 'park-accessibility',
+        'published_at' => now()->subDays(3),
+    ]);
+
+    $page = visit(route('blog.index'), ['reducedMotion' => 'reduce']);
+
+    $page->assertScript("document.querySelector('[data-blog-status][role=status][aria-live=polite]') !== null", true);
+    $page->script(observeBlogCardMotionScript());
+
+    $page
+        ->click('a[data-blog-filter-link][href*="park-accessibility"]')
+        ->assertQueryStringHas('category', 'park-accessibility')
+        ->assertSee($accessiblePost->title)
+        ->assertScript('window.blogCardMotionCalls.length', 0)
         ->assertNoJavaScriptErrors();
 })->group('browser-smoke', 'browser-compatibility');
 
