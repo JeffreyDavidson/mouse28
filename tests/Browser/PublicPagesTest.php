@@ -149,7 +149,7 @@ test('blog filters and sorting update without reloading or moving the controls',
     $page = visit(route('blog.index'));
 
     $page->assertScript("document.querySelector('[data-blog-status][role=status][aria-live=polite]') !== null", true)
-        ->script("window.blogNavigationMarker = 'preserved'; const filters = document.querySelector('[data-blog-filters]'); window.scrollTo({ top: window.scrollY + filters.getBoundingClientRect().top - 120, behavior: 'instant' }); window.blogFilterTop = filters.getBoundingClientRect().top");
+        ->script("document.documentElement.dataset.blogNavigationMarker = 'preserved'; const filters = document.querySelector('[data-blog-filters]'); window.scrollTo({ top: window.scrollY + filters.getBoundingClientRect().top - 120, behavior: 'instant' }); window.blogFilterTop = filters.getBoundingClientRect().top");
 
     $page
         ->click('a[data-blog-filter-link][href*="park-accessibility"]')
@@ -165,12 +165,12 @@ test('blog filters and sorting update without reloading or moving the controls',
         ->assertScript('Math.abs(document.querySelector("[data-blog-filters]").getBoundingClientRect().top - window.blogFilterTop) < 2', true)
         ->click('a[data-blog-filter-link][href*="park-accessibility"]')
         ->assertQueryStringHas('category', 'park-accessibility')
-        ->assertScript('window.blogNavigationMarker', 'preserved')
+        ->assertScript('document.documentElement.dataset.blogNavigationMarker', 'preserved')
         ->fill('#blog-search', 'quiet entrance')
         ->assertQueryStringHas('q', 'quiet entrance')
         ->assertSee($accessiblePost->title)
         ->assertScript('document.activeElement.id', 'blog-search')
-        ->assertScript('window.blogNavigationMarker', 'preserved')
+        ->assertScript('document.documentElement.dataset.blogNavigationMarker', 'preserved')
         ->assertScript('document.querySelector("[data-blog-browser]").ariaBusy', 'false')
         ->script('window.blogFilterTop = document.querySelector("[data-blog-filters]").getBoundingClientRect().top');
 
@@ -187,21 +187,25 @@ test('blog filters and sorting update without reloading or moving the controls',
         ->assertScript('document.querySelector("[data-blog-results] h3 a").textContent.trim()', $accessiblePost->title)
         ->assertScript('document.querySelector("#blog-sort").getBoundingClientRect().right - document.querySelector("[data-blog-sort-chevron]").getBoundingClientRect().right >= 15', true)
         ->assertScript('Math.abs(document.querySelector("[data-blog-filters]").getBoundingClientRect().top - window.blogFilterTop) < 2', true)
-        ->assertScript('window.blogNavigationMarker', 'preserved')
+        ->assertScript('document.documentElement.dataset.blogNavigationMarker', 'preserved')
         ->assertNoJavaScriptErrors();
 })->group('browser-smoke', 'browser-compatibility');
 
-test('blog pagination updates in place', function (): void {
-    Post::factory()->count(13)->create();
+test('blog pagination keeps the featured story visible', function (): void {
+    $featuredPost = Post::factory()->create([
+        'title' => 'Featured throughout the archive',
+        'published_at' => now(),
+    ]);
+    Post::factory()->count(12)->create([
+        'published_at' => now()->subDay(),
+    ]);
 
     $page = visit(route('blog.index'));
-
-    $page->script('window.blogNavigationMarker = "preserved"');
 
     $page
         ->click('button[aria-label="Go to page 2"]')
         ->assertQueryStringHas('page', '2')
-        ->assertScript('window.blogNavigationMarker', 'preserved')
+        ->assertSee($featuredPost->title)
         ->assertNoJavaScriptErrors();
 })->group('browser-smoke', 'browser-compatibility');
 
