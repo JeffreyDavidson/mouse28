@@ -53,6 +53,7 @@
     @head
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
     @stack('styles')
     @stack('head')
     @if (config('services.fathom.site_id'))
@@ -442,5 +443,6 @@
             });
         </script>
     @endif
+    @livewireScriptConfig
 </body>
 </html>

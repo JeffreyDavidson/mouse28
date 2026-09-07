@@ -131,24 +131,27 @@ test('mobile navigation opens and remains usable', function (): void {
         ->assertNoJavaScriptErrors();
 });
 
-test('blog topics and search update without reloading the page', function (): void {
+test('blog filters and sorting update without reloading or moving the controls', function (): void {
     $accessiblePost = Post::factory()->create([
         'title' => 'A quiet entrance plan',
         'category' => 'park-accessibility',
+        'published_at' => now()->subWeek(),
     ]);
     $diningPost = Post::factory()->create([
         'title' => 'A family dining review',
         'category' => 'food-reviews',
+        'published_at' => now()->subDay(),
     ]);
 
     $page = visit(route('blog.index'));
 
-    $page->assertScript("document.querySelector('body > p[role=status][aria-live=polite]') !== null", true)
+    $page->assertScript("document.querySelector('[data-blog-status][role=status][aria-live=polite]') !== null", true)
         ->script("window.blogNavigationMarker = 'preserved'");
 
     $page
         ->click('a[data-blog-filter-link][href*="park-accessibility"]')
         ->assertQueryStringHas('category', 'park-accessibility')
+        ->assertScript('document.title', 'Park Accessibility | Mouse28')
         ->assertSee($accessiblePost->title)
         ->assertDontSee($diningPost->title)
         ->assertScript('window.blogNavigationMarker', 'preserved')
@@ -167,6 +170,26 @@ test('blog topics and search update without reloading the page', function (): vo
         ->assertSee($accessiblePost->title)
         ->assertSee($diningPost->title)
         ->assertScript('Math.abs(document.querySelector("[data-blog-filters]").getBoundingClientRect().top - window.blogFilterTop) < 2', true)
+        ->select('#blog-sort', 'oldest')
+        ->assertQueryStringHas('sort', 'oldest')
+        ->assertScript('document.querySelector("#blog-sort").value', 'oldest')
+        ->assertScript('document.querySelector("[data-blog-results] h3 a").textContent.trim()', $accessiblePost->title)
+        ->assertScript('document.querySelector("#blog-sort").getBoundingClientRect().right - document.querySelector("[data-blog-sort-chevron]").getBoundingClientRect().right >= 15', true)
+        ->assertScript('Math.abs(document.querySelector("[data-blog-filters]").getBoundingClientRect().top - window.blogFilterTop) < 2', true)
+        ->assertScript('window.blogNavigationMarker', 'preserved')
+        ->assertNoJavaScriptErrors();
+})->group('browser-smoke', 'browser-compatibility');
+
+test('blog pagination updates in place', function (): void {
+    Post::factory()->count(13)->create();
+
+    $page = visit(route('blog.index'));
+
+    $page->script('window.blogNavigationMarker = "preserved"');
+
+    $page
+        ->click('button[aria-label="Go to page 2"]')
+        ->assertQueryStringHas('page', '2')
         ->assertScript('window.blogNavigationMarker', 'preserved')
         ->assertNoJavaScriptErrors();
 })->group('browser-smoke', 'browser-compatibility');
