@@ -169,8 +169,76 @@ function initializeBlogMetadata() {
     });
 }
 
-function initializeBlogFilterPosition(Livewire) {
+function initializeBlogFiltering(Livewire) {
     let filterViewportTop = null;
+    let cardPositions = null;
+
+    const storyCards = () => Array.from(document.querySelectorAll('[data-blog-post]'));
+
+    const stopCardAnimations = () => {
+        storyCards().forEach((card) => {
+            card.getAnimations().forEach((animation) => animation.cancel());
+            card.style.removeProperty('will-change');
+        });
+    };
+
+    const rememberCardPositions = () => {
+        stopCardAnimations();
+
+        cardPositions = new Map(storyCards().map((card) => {
+            const bounds = card.getBoundingClientRect();
+
+            return [card.dataset.blogPost, { left: bounds.left, top: bounds.top }];
+        }));
+    };
+
+    const animateCardReflow = () => {
+        if (cardPositions === null || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            cardPositions = null;
+
+            return;
+        }
+
+        storyCards().forEach((card) => {
+            const previousPosition = cardPositions.get(card.dataset.blogPost);
+
+            if (!previousPosition) {
+                card.animate([
+                    { opacity: 0.35 },
+                    { opacity: 1 },
+                ], {
+                    duration: 220,
+                    easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+                });
+
+                return;
+            }
+
+            const bounds = card.getBoundingClientRect();
+            const horizontalDistance = previousPosition.left - bounds.left;
+            const verticalDistance = previousPosition.top - bounds.top;
+
+            if (Math.abs(horizontalDistance) < 1 && Math.abs(verticalDistance) < 1) {
+                return;
+            }
+
+            card.style.willChange = 'transform';
+
+            const animation = card.animate([
+                { transform: `translate(${horizontalDistance}px, ${verticalDistance}px)` },
+                { transform: 'translate(0, 0)' },
+            ], {
+                duration: 380,
+                easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
+            });
+
+            animation.addEventListener('finish', () => {
+                card.style.removeProperty('will-change');
+            }, { once: true });
+        });
+
+        cardPositions = null;
+    };
 
     const rememberFilterPosition = (event) => {
         if (!(event.target instanceof Element) || !event.target.closest('[data-preserve-blog-filter-position]')) {
@@ -178,6 +246,7 @@ function initializeBlogFilterPosition(Livewire) {
         }
 
         filterViewportTop = document.querySelector('[data-blog-filters]')?.getBoundingClientRect().top ?? null;
+        rememberCardPositions();
     };
 
     ['click', 'input', 'change', 'submit'].forEach((eventName) => {
@@ -196,6 +265,7 @@ function initializeBlogFilterPosition(Livewire) {
                 window.scrollBy(0, filters.getBoundingClientRect().top - filterViewportTop);
             }
 
+            animateCardReflow();
             filterViewportTop = null;
         });
     });
@@ -210,7 +280,7 @@ if (document.querySelector('[data-editorial-blog]')) {
     const { Alpine, Livewire } = await import('../../vendor/livewire/livewire/dist/livewire.esm');
 
     window.Alpine = Alpine;
-    initializeBlogFilterPosition(Livewire);
+    initializeBlogFiltering(Livewire);
     Livewire.start();
 } else {
     const { default: Alpine } = await import('alpinejs');

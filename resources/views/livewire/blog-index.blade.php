@@ -191,6 +191,7 @@
                             @foreach ($archivePosts as $post)
                                 <article
                                     wire:key="blog-post-{{ $post->getKey() }}"
+                                    data-blog-post="{{ $post->getKey() }}"
                                     class="editorial-story group min-w-0"
                                 >
                                     <a
