@@ -66,12 +66,12 @@ class QuickDraft extends Widget implements HasForms
 
     private function uniqueSlug(string $title): string
     {
-        $baseSlug = Str::slug($title) ?: 'draft';
+        $baseSlug = Str::substr(Str::slug($title) ?: 'draft', 0, 255);
         $slug = $baseSlug;
         $suffix = 2;
 
         while (Post::withTrashed()->where('slug', $slug)->exists()) {
-            $slug = "{$baseSlug}-{$suffix}";
+            $slug = Str::substr($baseSlug, 0, 255 - strlen("-{$suffix}"))."-{$suffix}";
             $suffix++;
         }
 

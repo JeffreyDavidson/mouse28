@@ -23,7 +23,7 @@ class RecentActivity extends Widget
     {
         $items = collect();
 
-        Post::latest('updated_at')->limit(5)->get()->each(function ($post) use ($items) {
+        Post::latest('updated_at')->limit(8)->get()->each(function ($post) use ($items) {
             $items->push([
                 'icon' => 'document-text',
                 'color' => '#5b3e9e',
@@ -34,7 +34,7 @@ class RecentActivity extends Widget
             ]);
         });
 
-        Episode::latest('updated_at')->limit(5)->get()->each(function ($episode) use ($items) {
+        Episode::latest('updated_at')->limit(8)->get()->each(function ($episode) use ($items) {
             $items->push([
                 'icon' => 'microphone',
                 'color' => '#d4a843',
@@ -45,7 +45,7 @@ class RecentActivity extends Widget
             ]);
         });
 
-        Guide::latest('updated_at')->limit(5)->get()->each(function ($guide) use ($items) {
+        Guide::latest('updated_at')->limit(8)->get()->each(function ($guide) use ($items) {
             $items->push([
                 'icon' => 'book-open',
                 'color' => '#4a90a4',
