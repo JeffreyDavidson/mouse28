@@ -99,15 +99,11 @@ class BlogIndex extends Component
             ->orderBy('published_at', $this->sort === 'oldest' ? 'asc' : 'desc')
             ->paginate(12);
 
-        $featuredPost = null;
+        $featuredPost = $this->hasDefaultFilters() && $posts->currentPage() === 1
+            ? $posts->first()
+            : Post::published()->latest('published_at')->first();
 
-        if ($this->hasDefaultFilters()) {
-            $featuredPost = $posts->currentPage() === 1
-                ? $posts->first()
-                : Post::published()->latest('published_at')->first();
-        }
-
-        $archivePosts = $featuredPost
+        $archivePosts = $featuredPost && $this->hasDefaultFilters()
             ? $posts->getCollection()->reject(fn (Post $post): bool => $post->is($featuredPost))
             : $posts->getCollection();
 
