@@ -4,10 +4,35 @@ namespace App\Support;
 
 use App\Models\Episode;
 use App\Models\Guide;
+use App\Models\Post;
 use Illuminate\Database\Eloquent\Collection;
 
 class ContentContinuation
 {
+    /** @return Collection<int, Post> */
+    public static function relatedPosts(Post $post, int $limit = 5): Collection
+    {
+        $sameCategoryPosts = Post::published()
+            ->whereKeyNot($post->getKey())
+            ->where('category', $post->category)
+            ->latest('published_at')
+            ->take($limit)
+            ->get();
+
+        if ($sameCategoryPosts->count() >= $limit) {
+            return $sameCategoryPosts;
+        }
+
+        return $sameCategoryPosts->merge(
+            Post::published()
+                ->whereKeyNot($post->getKey())
+                ->whereNotIn('id', $sameCategoryPosts->modelKeys())
+                ->latest('published_at')
+                ->take($limit - $sameCategoryPosts->count())
+                ->get()
+        );
+    }
+
     /** @return Collection<int, Guide> */
     public static function relatedGuides(Guide $guide, int $limit = 3): Collection
     {

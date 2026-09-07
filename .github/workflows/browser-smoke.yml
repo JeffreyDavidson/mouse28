@@ -105,4 +105,4 @@ jobs:
         run: npm run build
 
       - name: Run compatibility tests
-        run: php artisan test --compact tests/Browser/CrossBrowserCompatibilityTest.php --browser ${{ matrix.pest-browser }}
+        run: php artisan test --compact --testsuite=Browser --group=browser-compatibility --browser ${{ matrix.pest-browser }}

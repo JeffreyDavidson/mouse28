@@ -135,15 +135,15 @@
                                         @if (! $category) aria-current="page" @endif
                                         class="inline-flex min-h-12 shrink-0 items-center rounded-full px-4 py-2 text-sm font-semibold {{ ! $category ? 'bg-navy text-cream' : 'border-navy/15 text-navy hover:border-purple border' }}"
                                     >All stories</a>
-                                    @foreach (\App\Models\Post::CATEGORIES as $slug => $label)
-                                        @continue(! in_array($slug, $usedCategories))
+                                    @foreach (\App\Enums\PostCategory::cases() as $categoryOption)
+                                        @continue(! in_array($categoryOption->value, $usedCategories))
                                         <a
-                                            href="{{ route('blog.index', ['category' => $slug]) }}"
+                                            href="{{ route('blog.index', ['category' => $categoryOption->value]) }}"
                                             data-blog-navigation-link
                                             data-blog-filter-link
-                                            @if ($category === $slug) aria-current="page" @endif
-                                            class="inline-flex min-h-12 shrink-0 items-center rounded-full px-4 py-2 text-sm font-semibold {{ $category === $slug ? 'bg-navy text-cream' : 'border-navy/15 text-navy hover:border-purple border' }}"
-                                        >{{ $label }}</a>
+                                            @if ($category === $categoryOption->value) aria-current="page" @endif
+                                            class="inline-flex min-h-12 shrink-0 items-center rounded-full px-4 py-2 text-sm font-semibold {{ $category === $categoryOption->value ? 'bg-navy text-cream' : 'border-navy/15 text-navy hover:border-purple border' }}"
+                                        >{{ $categoryOption->getLabel() }}</a>
                                     @endforeach
                                 </div>
                             </nav>
@@ -177,7 +177,7 @@
                                 @if (request('q'))
                                     Results for "{{ request('q') }}"
                                 @elseif ($category)
-                                    {{ \App\Models\Post::CATEGORIES[$category] ?? 'Stories' }}
+                                    {{ \App\Enums\PostCategory::tryFrom($category)?->getLabel() ?? 'Stories' }}
                                 @else
                                     More stories
                                 @endif
@@ -234,7 +234,7 @@
                                 @if (request('q'))
                                     No posts match "{{ request('q') }}"
                                 @elseif ($category)
-                                    Nothing in {{ \App\Models\Post::CATEGORIES[$category] ?? 'this category' }} yet
+                                    Nothing in {{ \App\Enums\PostCategory::tryFrom($category)?->getLabel() ?? 'this category' }} yet
                                 @else
                                     We're putting pen to paper
                                 @endif

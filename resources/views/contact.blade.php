@@ -170,30 +170,14 @@
                                     class="border-navy/20 bg-dark-cream/45 text-navy focus:border-purple focus:ring-purple/15 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
                                 >
                                     <option value="">Choose a topic...</option>
-                                    <option
-                                        value="general"
-                                        @selected($contactHasFeedback && old('subject') === 'general')
-                                    >
-                                        General Question
-                                    </option>
-                                    <option
-                                        value="accessibility"
-                                        @selected($contactHasFeedback && old('subject') === 'accessibility')
-                                    >
-                                        Park Accessibility Question
-                                    </option>
-                                    <option
-                                        value="collaboration"
-                                        @selected($contactHasFeedback && old('subject') === 'collaboration')
-                                    >
-                                        Collaboration / Sponsorship
-                                    </option>
-                                    <option value="guest" @selected($contactHasFeedback && old('subject') === 'guest')>
-                                        Guest on the Podcast
-                                    </option>
-                                    <option value="other" @selected($contactHasFeedback && old('subject') === 'other')>
-                                        Other
-                                    </option>
+                                    @foreach (\App\Enums\ContactTopic::cases() as $topic)
+                                        <option
+                                            value="{{ $topic->value }}"
+                                            @selected($contactHasFeedback && old('subject') === $topic->value)
+                                        >
+                                            {{ $topic->contactFormLabel() }}
+                                        </option>
+                                    @endforeach
                                 </select>
                                 @error('subject', 'contact')
                                     <p id="subject-error" role="alert" class="mt-2 text-sm text-red-800">

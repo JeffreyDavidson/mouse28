@@ -1,24 +1,24 @@
 <?php
 
+use App\Models\Guide;
+use App\Models\Post;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
 use function Pest\Laravel\get;
 
-test('robots policies keep private and generated routes out of crawlers', function (): void {
-    $response = get(route('robots'))
+uses(RefreshDatabase::class);
+
+test('sitemap is valid and excludes unpublished content', function (): void {
+    $post = Post::factory()->create();
+    $draftPost = Post::factory()->draft()->create();
+    $guide = Guide::factory()->create();
+    Guide::factory()->draft()->create();
+
+    $sitemap = get(route('sitemap'))
         ->assertOk()
-        ->assertHeader('Content-Type', 'text/plain; charset=UTF-8')
-        ->assertSee('User-agent: *')
-        ->assertSee('Allow: /')
-        ->assertSee('Disallow: /admin')
-        ->assertSee('Disallow: /preview/')
-        ->assertSee('Disallow: /search')
-        ->assertSee('Sitemap: '.route('sitemap'));
+        ->assertHeader('Content-Type', 'application/xml')
+        ->assertSee(route('guides.show', $guide), false)
+        ->assertDontSee($draftPost->slug);
 
-    $staticPolicy = file_get_contents(public_path('robots.txt'));
-
-    expect($staticPolicy)->not->toBeFalse();
-
-    foreach (['Disallow: /admin', 'Disallow: /preview/', 'Disallow: /search'] as $directive) {
-        expect($response->getContent())->toContain($directive)
-            ->and($staticPolicy)->toContain($directive);
-    }
+    expect(simplexml_load_string($sitemap->getContent()))->not->toBeFalse();
 });

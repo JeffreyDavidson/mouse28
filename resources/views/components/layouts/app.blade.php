@@ -244,7 +244,7 @@
     </header>
 
     {{-- Main Content --}}
-    <main id="main-content" tabindex="-1" class="isolate flex-1">{{ $slot }}</main>
+    <main id="main-content" tabindex="-1" class="relative isolate z-10 flex-1">{{ $slot }}</main>
 
     {{-- Footer --}}
     <footer class="bg-navy relative text-white/70">
@@ -267,30 +267,30 @@
                     >
                         <a
                             href="{{ route('home') }}"
-                            class="hover:text-gold inline-flex min-h-12 min-w-11 items-center justify-center font-normal transition-colors sm:min-h-8"
+                            class="hover:text-gold inline-flex min-h-12 min-w-12 items-center justify-center font-normal transition-colors sm:min-h-8"
                         >Home</a>
                         <a
                             href="{{ route('blog.index') }}"
-                            class="hover:text-gold inline-flex min-h-12 min-w-11 items-center justify-center font-normal transition-colors sm:min-h-8"
+                            class="hover:text-gold inline-flex min-h-12 min-w-12 items-center justify-center font-normal transition-colors sm:min-h-8"
                         >Blog</a>
                         <a
                             href="{{ route('episodes.index') }}"
-                            class="hover:text-gold inline-flex min-h-12 min-w-11 items-center justify-center font-normal transition-colors sm:min-h-8"
+                            class="hover:text-gold inline-flex min-h-12 min-w-12 items-center justify-center font-normal transition-colors sm:min-h-8"
                         >Podcast</a>
                         <a
                             href="{{ route('about') }}"
-                            class="hover:text-gold inline-flex min-h-12 min-w-11 items-center justify-center font-normal transition-colors sm:min-h-8"
+                            class="hover:text-gold inline-flex min-h-12 min-w-12 items-center justify-center font-normal transition-colors sm:min-h-8"
                         >About</a>
                         <a
                             href="{{ route('contact.show') }}"
-                            class="hover:text-gold inline-flex min-h-12 min-w-11 items-center justify-center font-normal transition-colors sm:min-h-8"
+                            class="hover:text-gold inline-flex min-h-12 min-w-12 items-center justify-center font-normal transition-colors sm:min-h-8"
                         >Contact</a>
-                        @foreach ($podcast->distributionLinks() as $link)
+                        @foreach ($podcastLinks as $link)
                             <a
                                 href="{{ $link['url'] }}"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                class="hover:text-gold inline-flex min-h-12 min-w-11 items-center justify-center font-normal transition-colors sm:min-h-8"
+                                class="hover:text-gold inline-flex min-h-12 min-w-12 items-center justify-center font-normal transition-colors sm:min-h-8"
                             >{{ $link['label'] }}</a>
                         @endforeach
                     </nav>
@@ -409,7 +409,7 @@
                                     href="{{ route('contact.show') }}"
                                     class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
                                 >Contact Us</a>
-                                @foreach ($podcast->distributionLinks() as $link)
+                                @foreach ($podcastLinks as $link)
                                     <a
                                         href="{{ $link['url'] }}"
                                         target="_blank"

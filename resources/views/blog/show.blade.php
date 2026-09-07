@@ -189,11 +189,11 @@
                             {{ $post->author_name }}
                         </h2>
                         <p class="text-navy/68 mt-2 text-sm/7">
-                            @if (Str::contains($post->author_name, '&') || (Str::contains($post->author_name, 'Jeffrey') && Str::contains($post->author_name, 'Cassie')))
+                            @if ($post->author === \App\Enums\ContentAuthor::Both)
                                 The couple behind Mouse28, sharing practical park lessons and honest family experiences.
-                            @elseif (Str::contains($post->author_name, 'Cassie'))
+                            @elseif ($post->author === \App\Enums\ContentAuthor::Cassie)
                                 Mouse28 co-host, accessibility advocate, and the planner behind the family's park days.
-                            @elseif (Str::contains($post->author_name, 'Jeffrey'))
+                            @elseif ($post->author === \App\Enums\ContentAuthor::Jeffrey)
                                 Mouse28 co-host, theme park enthusiast, and candid chronicler of Disney family life.
                             @else
                                 Disney park explorer, accessibility advocate, and parent.

@@ -2,39 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Episode;
-use App\Models\Guide;
-use App\Models\Podcast;
-use App\Models\Post;
+use App\ViewModels\HomeViewModel;
+use Illuminate\View\View;
 
-class HomeController extends Controller
+class HomeController
 {
-    public function index()
+    public function index(HomeViewModel $viewModel): View
     {
-        $featuredPost = Post::published()->latest('published_at')->first();
-        $latestPosts = Post::published()->latest('published_at')
-            ->when($featuredPost, fn ($q) => $q->where('id', '!=', $featuredPost->id))
-            ->take(6)->get();
-        $latestEpisodes = Episode::published()->latest('published_at')->take(3)->get();
-        $latestGuides = config('mouse28.guides_enabled')
-            ? Guide::published()->latest('published_at')->take(4)->get()
-            : collect();
-        $planningPosts = config('mouse28.guides_enabled') && $latestGuides->isEmpty()
-            ? Post::published()
-                ->whereIn('category', ['park-accessibility', 'disney-tips', 'autism-awareness'])
-                ->latest('published_at')
-                ->take(2)
-                ->get()
-            : collect();
-        $podcast = Podcast::info();
-
-        return view('home', compact(
-            'featuredPost',
-            'latestPosts',
-            'latestEpisodes',
-            'latestGuides',
-            'planningPosts',
-            'podcast',
-        ));
+        return view('home', $viewModel->data());
     }
 }

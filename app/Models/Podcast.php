@@ -20,10 +20,10 @@ class Podcast extends Model
 {
     public static function info(): self
     {
-        return self::query()->first() ?? new self([
+        return once(fn (): self => self::query()->first() ?? new self([
             'name' => 'Mouse28',
             'description' => 'Disney parks through the lens of raising a daughter with autism.',
-        ]);
+        ]));
     }
 
     public static function settings(): self
@@ -32,16 +32,5 @@ class Podcast extends Model
             'name' => 'Mouse28',
             'description' => 'Disney parks through the lens of raising a daughter with autism.',
         ]);
-    }
-
-    /** @return list<array{label: string, url: string}> */
-    public function distributionLinks(): array
-    {
-        return array_values(array_filter([
-            $this->apple_url ? ['label' => 'Apple Podcasts', 'url' => $this->apple_url] : null,
-            $this->spotify_url ? ['label' => 'Spotify', 'url' => $this->spotify_url] : null,
-            $this->youtube_url ? ['label' => 'YouTube', 'url' => $this->youtube_url] : null,
-            ['label' => 'RSS Feed', 'url' => (string) config('podcast.rss_url')],
-        ]));
     }
 }

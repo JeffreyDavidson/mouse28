@@ -3,43 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Models\Guide;
-use App\Support\ContentContinuation;
+use App\ViewModels\GuideIndexViewModel;
+use App\ViewModels\GuideViewModel;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
-class GuideController extends Controller
+class GuideController
 {
-    public function index(Request $request)
+    public function index(Request $request, GuideIndexViewModel $viewModel): View
     {
         abort_unless(config('mouse28.guides_enabled'), 404);
 
-        $category = $request->string('category')->toString();
-        if (! array_key_exists($category, Guide::CATEGORIES)) {
-            $category = '';
-        }
-
-        $guides = Guide::published()
-            ->when($category, fn ($query) => $query->where('category', $category))
-            ->latest('published_at')
-            ->paginate(12)
-            ->withQueryString();
-        $categoryLabel = Guide::CATEGORIES[$category] ?? null;
-        $canonicalParameters = array_filter([
-            'category' => $category ?: null,
-            'page' => $guides->currentPage() > 1 ? $guides->currentPage() : null,
-        ]);
-
-        return view('guides.index', [
-            'category' => $category,
-            'guides' => $guides,
-            'pageTitle' => $categoryLabel ? "{$categoryLabel} Guides | Mouse28" : 'Disney Parks Guides | Mouse28',
-            'pageDescription' => $categoryLabel
-                ? "Practical Mouse28 {$categoryLabel} guides for planning informed Disney park visits."
-                : 'Practical, regularly reviewed Disney park guides for accessibility, planning, food, and family visits.',
-            'canonicalUrl' => route('guides.index', $canonicalParameters),
-        ]);
+        return view('guides.index', $viewModel->data($request));
     }
 
-    public function show(Guide $guide)
+    public function show(Guide $guide, GuideViewModel $viewModel): View
     {
         abort_unless(config('mouse28.guides_enabled'), 404);
 
@@ -48,9 +26,6 @@ class GuideController extends Controller
             404,
         );
 
-        return view('guides.show', [
-            'guide' => $guide,
-            'relatedGuides' => ContentContinuation::relatedGuides($guide),
-        ]);
+        return view('guides.show', $viewModel->data($guide));
     }
 }

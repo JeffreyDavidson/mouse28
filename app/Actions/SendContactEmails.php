@@ -16,12 +16,15 @@ class SendContactEmails
     public function __invoke(ContactMessage $contactMessage): void
     {
         try {
-            $recipients = array_filter(array_map('trim', explode(',', config('mail.admin_address', 'mouse28podcast@gmail.com'))));
+            $recipients = array_filter(array_map('trim', explode(',', (string) config('mail.admin_address'))));
             $this->mailer
                 ->to($recipients)
                 ->send(new ContactFormSubmitted($contactMessage));
         } catch (Throwable $exception) {
-            Log::error('Failed to send contact notification: '.$exception->getMessage());
+            Log::error('Failed to send contact notification.', [
+                'contact_message_id' => $contactMessage->getKey(),
+                'exception' => $exception::class,
+            ]);
         }
 
         try {
@@ -29,7 +32,10 @@ class SendContactEmails
                 ->to($contactMessage->email)
                 ->send(new ContactFormConfirmation($contactMessage));
         } catch (Throwable $exception) {
-            Log::error('Failed to send contact confirmation: '.$exception->getMessage());
+            Log::error('Failed to send contact confirmation.', [
+                'contact_message_id' => $contactMessage->getKey(),
+                'exception' => $exception::class,
+            ]);
         }
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\ContentAuthor;
+use App\Enums\GuideCategory;
 use Database\Factories\GuideFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -13,6 +15,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
 /**
+ * @property ContentAuthor|null $author
+ * @property GuideCategory $category
  * @property Carbon|null $last_reviewed_at
  * @property Carbon|null $published_at
  * @property-read string $author_name
@@ -21,6 +25,12 @@ use Illuminate\Support\Carbon;
  * @property-read string|null $og_image_url
  * @property-read int $reading_time
  * @property-read string $review_status
+ *
+ * @method static Builder<static> drafts()
+ * @method static Builder<static> needsAttention()
+ * @method static Builder<static> published()
+ * @method static Builder<static> reviewDue()
+ * @method static Builder<static> scheduled()
  */
 #[Fillable([
     'title',
@@ -42,13 +52,6 @@ class Guide extends Model
 {
     /** @use HasFactory<GuideFactory> */
     use HasFactory, SoftDeletes;
-
-    public const CATEGORIES = [
-        'accessibility' => 'Accessibility',
-        'park-strategy' => 'Park Strategy',
-        'food-reviews' => 'Food & Reviews',
-        'family-planning' => 'Family Planning',
-    ];
 
     #[Scope]
     protected function published(Builder $query): void
@@ -101,15 +104,13 @@ class Guide extends Model
     protected function authorName(): Attribute
     {
         return Attribute::make(get: function () {
-            return Post::AUTHORS[$this->author] ?? 'Mouse28 Team';
+            return $this->author?->getLabel() ?? 'Mouse28 Team';
         });
     }
 
     protected function categoryLabel(): Attribute
     {
-        return Attribute::make(get: function () {
-            return self::CATEGORIES[$this->category] ?? str($this->category)->headline();
-        });
+        return Attribute::make(get: fn (): string => $this->category->getLabel());
     }
 
     protected function coverImageUrl(): Attribute
@@ -149,6 +150,8 @@ class Guide extends Model
     protected function casts(): array
     {
         return [
+            'author' => ContentAuthor::class,
+            'category' => GuideCategory::class,
             'is_published' => 'boolean',
             'last_reviewed_at' => 'date',
             'published_at' => 'datetime',

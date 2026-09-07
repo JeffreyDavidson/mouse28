@@ -22,7 +22,7 @@
                     <tr>
                         <td style="background: linear-gradient(135deg, #1a1040 0%, #2d1b69 60%, #3d2580 100%); border-radius: 16px 16px 0 0; padding: 32px 40px; text-align: center;">
                             <p style="margin: 0 0 8px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.12em; color: #d4a843; font-weight: 600;">New Message</p>
-                            <h1 style="margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: 24px; font-weight: 700; color: #ffffff; line-height: 1.3;">{{ $contactMessage->subject_label }}</h1>
+                            <h1 style="margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: 24px; font-weight: 700; color: #ffffff; line-height: 1.3;">{{ $contactMessage->subjectLabel() }}</h1>
                         </td>
                     </tr>
 
@@ -64,7 +64,7 @@
                             <table width="100%" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <td align="center">
-                                        <a href="mailto:{{ $contactMessage->email }}?subject=Re: {{ urlencode($contactMessage->subject_label) }}"
+                                        <a href="mailto:{{ $contactMessage->email }}?subject=Re: {{ urlencode($contactMessage->subjectLabel()) }}"
                                            style="display: inline-block; background: linear-gradient(135deg, #2d1b69, #1a1040); color: #ffffff; font-size: 14px; font-weight: 600; padding: 14px 36px; border-radius: 10px; text-decoration: none; letter-spacing: 0.02em;">
                                             ✉️&nbsp;&nbsp;Reply to {{ $contactMessage->name }}
                                         </a>

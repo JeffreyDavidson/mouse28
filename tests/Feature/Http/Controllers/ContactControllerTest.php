@@ -1,0 +1,285 @@
+<?php
+
+use App\Enums\ContactTopic;
+use App\Mail\ContactFormConfirmation;
+use App\Mail\ContactFormSubmitted;
+use App\Models\Podcast;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+
+use function Pest\Laravel\assertDatabaseCount;
+use function Pest\Laravel\assertDatabaseHas;
+use function Pest\Laravel\from;
+use function Pest\Laravel\get;
+
+uses(RefreshDatabase::class);
+
+beforeEach(function (): void {
+    config()->set('app.key', 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=');
+    config()->set('services.turnstile.site_key', 'test-site-key');
+    config()->set('services.turnstile.secret_key', 'test-secret-key');
+    config()->set('services.turnstile.siteverify_url', 'https://challenges.cloudflare.com/turnstile/v0/siteverify');
+    config()->set('services.turnstile.contact_action', 'contact-form');
+    config()->set('services.turnstile.allowed_hostnames', ['mouse28.com', 'www.mouse28.com']);
+});
+
+test('contact page renders turnstile widget', function (): void {
+    $response = get(route('contact.show'))
+        ->assertOk()
+        ->assertSee('https://challenges.cloudflare.com/turnstile/v0/api.js', false)
+        ->assertSee('class="cf-turnstile"', false)
+        ->assertSee('data-sitekey="test-site-key"', false)
+        ->assertSee('data-action="contact-form"', false)
+        ->assertSee('data-appearance="interaction-only"', false)
+        ->assertSee('Park Accessibility Question')
+        ->assertSee('Guest on the Podcast')
+        ->assertDontSee('Share Your Story')
+        ->assertDontSee('Family Disney stories')
+        ->assertDontSee('value="story"', false);
+
+    expect(substr_count((string) $response->getContent(), 'https://challenges.cloudflare.com/turnstile/v0/api.js'))->toBe(1);
+    expect(array_column(ContactTopic::cases(), 'value'))->not->toContain('story');
+});
+
+test('contact errors and old input stay out of the newsletter form', function (): void {
+    $response = from(route('contact.show'))
+        ->followingRedirects()
+        ->post(route('contact.store'), [
+            'name' => 'Dale Cooper',
+            'email' => 'not-an-email',
+            'subject' => 'general',
+            'message' => 'Please help with this park question.',
+            'cf-turnstile-response' => 'unused-token',
+        ])
+        ->assertOk();
+
+    expect($response->getContent())
+        ->toMatch('/<input\s+type="email"\s+id="email"\s+name="email"\s+required\s+autocomplete="email"\s+inputmode="email"\s+value="not-an-email"/')
+        ->toMatch('/<input\s+id="footer-newsletter-email"\s+type="email"\s+name="email"\s+value=""/');
+
+    $response
+        ->assertSee('aria-describedby="email-error"', false)
+        ->assertDontSee('aria-describedby="newsletter-email-error"', false);
+});
+
+test('contact page uses the configured podcast email address', function (): void {
+    Podcast::query()->create([
+        'name' => 'Mouse28',
+        'email' => 'hello@mouse28.test',
+    ]);
+
+    get(route('contact.show'))
+        ->assertOk()
+        ->assertSee('href="mailto:hello@mouse28.test"', false)
+        ->assertSee('hello@mouse28.test')
+        ->assertDontSee('mouse28podcast@gmail.com');
+});
+
+test('contact page offers email instead of an unusable form when verification is unavailable', function (string $missingKey): void {
+    config()->set("services.turnstile.{$missingKey}");
+    config()->set('mail.admin_address', 'fallback@mouse28.test');
+
+    get(route('contact.show'))
+        ->assertOk()
+        ->assertSee('Email us directly')
+        ->assertSee('href="mailto:fallback@mouse28.test"', false)
+        ->assertDontSee('action="'.route('contact.store').'"', false)
+        ->assertDontSee('data-action="contact-form"', false);
+})->with([
+    'missing site key' => 'site_key',
+    'missing secret key' => 'secret_key',
+]);
+
+test('valid contact submission requires successful turnstile verification', function (): void {
+    Mail::fake();
+
+    Http::fake([
+        'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response([
+            'success' => true,
+            'action' => 'contact-form',
+            'hostname' => 'mouse28.com',
+        ]),
+    ]);
+
+    $response = from(route('contact.show'))
+        ->post(route('contact.store'), contactPayload());
+
+    $response->assertRedirect(route('contact.show'))
+        ->assertSessionHas('success', true)
+        ->assertSessionHasNoErrors();
+
+    assertDatabaseHas('contact_messages', [
+        'email' => 'dale@example.com',
+        'subject' => 'Need help with Mouse28',
+    ]);
+
+    Mail::assertSent(ContactFormSubmitted::class);
+    Mail::assertSent(ContactFormConfirmation::class);
+
+    Http::assertSent(function ($request): bool {
+        return $request->url() === 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
+            && $request['secret'] === 'test-secret-key'
+            && $request['response'] === 'turnstile-token';
+    });
+});
+
+test('contact submission rejects failed turnstile verification before persistence or mail', function (): void {
+    Mail::fake();
+
+    Http::fake([
+        'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response(['success' => false]),
+    ]);
+
+    from(route('contact.show'))
+        ->post(route('contact.store'), contactPayload())
+        ->assertRedirect(route('contact.show'))
+        ->assertSessionHasErrorsIn('contact', 'cf-turnstile-response');
+
+    assertDatabaseCount('contact_messages', 0);
+    Mail::assertNothingSent();
+});
+
+test('contact submission rejects invalid turnstile metadata before persistence or mail', function (array $turnstileResponse, string $email): void {
+    Mail::fake();
+
+    Http::fake([
+        'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response($turnstileResponse),
+    ]);
+
+    from(route('contact.show'))
+        ->post(route('contact.store'), array_merge(contactPayload(), ['email' => $email]))
+        ->assertRedirect(route('contact.show'))
+        ->assertSessionHasErrorsIn('contact', 'cf-turnstile-response');
+
+    assertDatabaseCount('contact_messages', 0);
+    Mail::assertNothingSent();
+})->with([
+    'wrong hostname' => [
+        ['success' => true, 'action' => 'contact-form', 'hostname' => 'attacker.example'],
+        'wrong-hostname@example.com',
+    ],
+    'missing hostname' => [
+        ['success' => true, 'action' => 'contact-form'],
+        'missing-hostname@example.com',
+    ],
+    'wrong action' => [
+        ['success' => true, 'action' => 'newsletter', 'hostname' => 'mouse28.com'],
+        'wrong-action@example.com',
+    ],
+    'missing action' => [
+        ['success' => true, 'hostname' => 'mouse28.com'],
+        'missing-action@example.com',
+    ],
+]);
+
+test('contact submission rejects missing turnstile secret before persistence or mail', function (): void {
+    Mail::fake();
+    config()->set('services.turnstile.secret_key');
+
+    from(route('contact.show'))
+        ->post(route('contact.store'), contactPayload())
+        ->assertRedirect(route('contact.show'))
+        ->assertSessionHasErrorsIn('contact', 'cf-turnstile-response');
+
+    assertDatabaseCount('contact_messages', 0);
+    Mail::assertNothingSent();
+    Http::assertNothingSent();
+});
+
+test('honeypot silently accepts bot submissions without persistence or mail', function (): void {
+    Mail::fake();
+
+    from(route('contact.show'))
+        ->post(route('contact.store'), array_merge(contactPayload(), [
+            'website_url' => 'https://spam.example',
+        ]))
+        ->assertRedirect(route('contact.show'))
+        ->assertSessionHas('success', true);
+
+    assertDatabaseCount('contact_messages', 0);
+    Mail::assertNothingSent();
+    Http::assertNothingSent();
+});
+
+test('contact form rate limit is applied without throttling the contact page', function (): void {
+    Mail::fake();
+
+    Http::fake([
+        'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response([
+            'success' => true,
+            'action' => 'contact-form',
+            'hostname' => 'www.mouse28.com',
+        ]),
+    ]);
+
+    for ($attempt = 0; $attempt < 5; $attempt++) {
+        from(route('contact.show'))
+            ->post(route('contact.store'), array_merge(contactPayload(), [
+                'email' => "dale{$attempt}@example.com",
+            ]))
+            ->assertSessionHasNoErrors();
+    }
+
+    from(route('contact.show'))
+        ->post(route('contact.store'), array_merge(contactPayload(), [
+            'email' => 'dale-rate-limit@example.com',
+        ]))
+        ->assertRedirect(route('contact.show'))
+        ->assertSessionHasErrorsIn('contact', 'contact_rate_limit');
+
+    get(route('contact.show'))->assertOk();
+});
+
+test('public index page renders', function (): void {
+    get(route('contact.show'))
+        ->assertOk()
+        ->assertSee('Send us a note');
+});
+
+test('landing page provides search and social metadata', function (): void {
+    Podcast::query()->create([
+        'name' => 'Mouse28 Weekly',
+        'description' => 'A weekly Disney parks podcast for accessibility-minded families.',
+        'cover_image' => 'podcasts/show-cover.jpg',
+    ]);
+
+    get(route('contact.show'))
+        ->assertOk()
+        ->assertSee('<meta name="description" content="Contact Jeffrey and Cassie about Mouse28, Disney park accessibility, family travel, collaborations, or the podcast.">', false);
+});
+
+test('page copy and metadata avoid em dashes', function (): void {
+    get(route('contact.show'))
+        ->assertOk()
+        ->assertDontSee('—');
+});
+
+test('page uses the dispatch editorial system', function (): void {
+    get(route('contact.show'))
+        ->assertOk()
+        ->assertSee('data-brand-wordmark', false)
+        ->assertSee('dispatch-letter-form', false)
+        ->assertSee('js-dispatch-pages', false);
+});
+
+test('form placeholders use readable text colors', function (): void {
+    config()->set('services.turnstile.site_key', 'test-site-key');
+    config()->set('services.turnstile.secret_key', 'test-secret-key');
+
+    get(route('contact.show'))
+        ->assertOk()
+        ->assertSee('placeholder:text-navy/65', false)
+        ->assertDontSee('placeholder:text-navy/30', false);
+});
+
+function contactPayload(): array
+{
+    return [
+        'name' => 'Dale Cooper',
+        'email' => 'dale@example.com',
+        'subject' => 'Need help with Mouse28',
+        'message' => 'The contact form needs secure bot protection.',
+        'cf-turnstile-response' => 'turnstile-token',
+    ];
+}

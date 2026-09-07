@@ -6,10 +6,7 @@ use App\Support\SafeReturnUrl;
 use App\View\Composers\PodcastComposer;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Foundation\Events\DiagnosingHealth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
@@ -18,24 +15,9 @@ use Laravel\Nightwatch\Facades\Nightwatch;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
-    {
-        //
-    }
-
-    /**
-     * Bootstrap any application services.
-     */
     public function boot(): void
     {
         Nightwatch::user(fn (Authenticatable $user): array => []);
-
-        Event::listen(DiagnosingHealth::class, function (): void {
-            DB::table('migrations')->limit(1)->exists();
-        });
 
         View::composer('components.layouts.app', PodcastComposer::class);
 

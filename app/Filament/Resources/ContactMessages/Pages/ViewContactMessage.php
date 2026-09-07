@@ -37,7 +37,7 @@ class ViewContactMessage extends ViewRecord
                         ->icon('heroicon-o-envelope')
                         ->copyable(),
                     TextEntry::make('subject')
-                        ->formatStateUsing(fn (string $state) => ContactMessage::SUBJECTS[$state] ?? ucfirst($state))
+                        ->formatStateUsing(fn (ContactMessage $record): string => $record->subjectLabel())
                         ->badge()
                         ->color('warning'),
                     TextEntry::make('created_at')
@@ -63,7 +63,7 @@ class ViewContactMessage extends ViewRecord
             Action::make('reply')
                 ->label('Reply')
                 ->icon('heroicon-o-paper-airplane')
-                ->url(fn () => "mailto:{$this->record->email}?subject=".urlencode("Re: {$this->record->subject_label}"))
+                ->url(fn () => "mailto:{$this->record->email}?subject=".urlencode('Re: '.$this->record->subjectLabel()))
                 ->openUrlInNewTab(),
             DeleteAction::make(),
         ];

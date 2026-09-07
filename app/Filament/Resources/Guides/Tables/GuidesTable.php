@@ -2,8 +2,10 @@
 
 namespace App\Filament\Resources\Guides\Tables;
 
+use App\Enums\ContentAuthor;
+use App\Enums\GuideCategory;
+use App\Enums\PublicationStatus;
 use App\Models\Guide;
-use App\Models\Post;
 use App\Support\EditorialReadiness;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -26,8 +28,7 @@ class GuidesTable
             ->columns([
                 TextColumn::make('title')->searchable()->limit(50),
                 TextColumn::make('category')
-                    ->badge()
-                    ->formatStateUsing(fn (string $state): string => Guide::CATEGORIES[$state] ?? $state),
+                    ->badge(),
                 TextColumn::make('last_reviewed_at')->date()->sortable()->placeholder('Not reviewed'),
                 TextColumn::make('review_status')
                     ->label('Review')
@@ -41,13 +42,12 @@ class GuidesTable
                     ->tooltip(fn (Guide $record): string => EditorialReadiness::summary($record)),
                 TextColumn::make('status')
                     ->badge()
-                    ->getStateUsing(fn (Guide $record): string => EditorialReadiness::status($record))
-                    ->color(fn (Guide $record): string => EditorialReadiness::statusColor($record)),
+                    ->getStateUsing(fn (Guide $record): PublicationStatus => EditorialReadiness::status($record)),
                 TextColumn::make('published_at')->date()->sortable(),
             ])
             ->filters([
-                SelectFilter::make('category')->options(Guide::CATEGORIES),
-                SelectFilter::make('author')->options(Post::AUTHORS),
+                SelectFilter::make('category')->options(GuideCategory::class),
+                SelectFilter::make('author')->options(ContentAuthor::class),
                 Filter::make('missing_artwork')
                     ->query(fn (Builder $query): Builder => $query->where(function (Builder $query): void {
                         $query->whereNull('cover_image')->orWhere('cover_image', '');

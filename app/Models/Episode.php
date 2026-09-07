@@ -12,15 +12,18 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * @property Carbon|null $published_at
- * @property-read string|null $audio_source_url
  * @property-read string|null $cover_image_url
  * @property-read string $formatted_duration
  * @property-read string|null $og_image_url
  * @property-read string|null $transistor_embed_url
+ *
+ * @method static Builder<static> drafts()
+ * @method static Builder<static> needsAttention()
+ * @method static Builder<static> published()
+ * @method static Builder<static> scheduled()
  */
 #[Fillable([
     'title',
@@ -107,17 +110,6 @@ class Episode extends Model
         });
     }
 
-    protected function audioSourceUrl(): Attribute
-    {
-        return Attribute::make(get: function (): ?string {
-            if ($this->audio_path && Storage::disk('public')->exists($this->audio_path)) {
-                return Storage::disk('public')->url($this->audio_path);
-            }
-
-            return $this->audio_url;
-        });
-    }
-
     protected function transistorEmbedUrl(): Attribute
     {
         return Attribute::make(get: function (): ?string {
@@ -133,15 +125,6 @@ class Episode extends Model
 
             return "https://share.transistor.fm/e/{$matches[1]}";
         });
-    }
-
-    public function audioFileSize(): int
-    {
-        if (! $this->audio_path || ! Storage::disk('public')->exists($this->audio_path)) {
-            return 0;
-        }
-
-        return Storage::disk('public')->size($this->audio_path);
     }
 
     protected function formattedDuration(): Attribute

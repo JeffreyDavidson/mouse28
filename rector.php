@@ -14,5 +14,4 @@ return RectorConfig::configure()
     ])
     ->withSets([
         LaravelLevelSetList::UP_TO_LARAVEL_130,
-    ])
-    ->withoutParallel();
+    ]);

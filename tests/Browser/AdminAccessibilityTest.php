@@ -11,6 +11,7 @@ use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
 use App\Models\User;
+use Filament\Pages\Dashboard;
 
 use function Pest\Laravel\actingAs;
 
@@ -45,7 +46,9 @@ function unexpectedAdminJavaScriptErrorCountScript(): string
 }
 
 test('admin login exposes no unnamed artwork or decorative glyphs', function (): void {
-    visit('/admin/login')
+    visit(route('filament.admin.auth.login'))
+        ->assertVisible('input[type="email"]')
+        ->assertVisible('input[type="password"]')
         ->assertScript('document.documentElement.classList.contains(\'dark\')', true)
         ->assertScript('document.querySelectorAll(\'svg:not([aria-hidden="true"]):not([aria-label]):not([aria-labelledby]):not(:has(title))\').length', 0)
         ->assertScript(exposedAdminDecorativeGlyphCountScript(), 0)
@@ -67,8 +70,8 @@ test('authenticated admin pages expose no unnamed artwork or decorative glyphs',
 
     actingAs($user);
 
-    visit([
-        '/admin',
+    $urls = [
+        Dashboard::getUrl(panel: 'admin'),
         NewsletterSubscribers::getUrl(),
         PodcastSettings::getUrl(),
         PostResource::getUrl(),
@@ -82,9 +85,16 @@ test('authenticated admin pages expose no unnamed artwork or decorative glyphs',
         EpisodeResource::getUrl('edit', ['record' => $episode]),
         ContactMessageResource::getUrl(),
         ContactMessageResource::getUrl('view', ['record' => $contactMessage]),
-    ])->assertScript('document.documentElement.classList.contains(\'dark\')', true)
-        ->assertScript('document.querySelectorAll(\'svg:not([aria-hidden="true"]):not([aria-label]):not([aria-labelledby]):not(:has(title))\').length', 0)
-        ->assertScript(exposedAdminDecorativeGlyphCountScript(), 0)
-        ->assertNoAccessibilityIssues()
-        ->assertScript(unexpectedAdminJavaScriptErrorCountScript(), 0);
+    ];
+
+    foreach ($urls as $url) {
+        visit($url)
+            ->assertPathIs(parse_url($url, PHP_URL_PATH))
+            ->assertVisible('.fi-main')
+            ->assertScript('document.documentElement.classList.contains(\'dark\')', true)
+            ->assertScript('document.querySelectorAll(\'svg:not([aria-hidden="true"]):not([aria-label]):not([aria-labelledby]):not(:has(title))\').length', 0)
+            ->assertScript(exposedAdminDecorativeGlyphCountScript(), 0)
+            ->assertNoAccessibilityIssues()
+            ->assertScript(unexpectedAdminJavaScriptErrorCountScript(), 0);
+    }
 });

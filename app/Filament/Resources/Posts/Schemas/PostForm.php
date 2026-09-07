@@ -2,7 +2,8 @@
 
 namespace App\Filament\Resources\Posts\Schemas;
 
-use App\Models\Post;
+use App\Enums\ContentAuthor;
+use App\Enums\PostCategory;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
@@ -45,13 +46,13 @@ class PostForm
                             ->columnSpan(2)
                             ->unique(ignoreRecord: true),
                         Select::make('category')
-                            ->options(Post::CATEGORIES)
+                            ->options(PostCategory::class)
                             ->required()
                             ->columnSpan(1),
                         Select::make('author')
-                            ->options(Post::AUTHORS)
+                            ->options(ContentAuthor::class)
                             ->required()
-                            ->default('both')
+                            ->default(ContentAuthor::Both)
                             ->columnSpan(1),
                         Select::make('episode_id')
                             ->label('Related Episode')

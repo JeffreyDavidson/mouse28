@@ -1999,8 +1999,8 @@
         color: black !important;
     }
 
-    header,
-    footer,
+    body > header,
+    body > footer,
     form,
     button,
     audio,
