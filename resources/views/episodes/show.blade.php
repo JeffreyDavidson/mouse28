@@ -80,10 +80,28 @@
                     <p class="text-cream/72 mt-6 max-w-3xl text-lg/8 text-pretty">{{ $episode->description }}</p>
                 @endif
 
-                @if ($episode->transistor_embed_url)
-                    <div class="border-gold/30 mt-8 border-y py-6">
-                        <h2 class="font-heading text-xl [font-weight:620]">Listen to this episode</h2>
-                        <div class="mt-4 overflow-hidden rounded-xl bg-white">
+                <section class="border-gold/30 mt-8 border-y py-6" aria-labelledby="episode-listening-heading">
+                    <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-1">
+                        <h2 id="episode-listening-heading" class="font-heading text-xl [font-weight:620]">
+                            {{ $episode->transistor_embed_url ? 'Listen to this episode' : 'Listen elsewhere' }}
+                        </h2>
+                        @if ($episode->transistor_embed_url)
+                            <a
+                                href="{{ $episode->transistor_url }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="text-cream/65 hover:text-gold inline-flex min-h-12 items-center gap-2 text-sm font-medium transition-colors"
+                            >
+                                Open in a new tab
+                                <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 3h7m0 0v7m0-7L10 14M5 7v12h12v-5" />
+                                </svg>
+                            </a>
+                        @endif
+                    </div>
+
+                    @if ($episode->transistor_embed_url)
+                        <div class="mt-3 overflow-hidden rounded-xl bg-white">
                             <iframe
                                 src="{{ $episode->transistor_embed_url }}"
                                 title="Listen to {{ $episode->title }}"
@@ -93,59 +111,63 @@
                                 class="block w-full border-0"
                             ></iframe>
                         </div>
-                        <a
-                            href="{{ $episode->transistor_url }}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="text-gold hover:text-cream mt-3 inline-flex min-h-12 items-center text-sm font-semibold underline underline-offset-8"
-                        >Open the player in a new tab</a>
-                    </div>
-                @endif
+                    @endif
 
-                <nav aria-label="Podcast listening options" class="mt-6 flex flex-wrap gap-x-5 gap-y-2">
-                    @if ($appleUrl)
-                        <a
-                            href="{{ $appleUrl }}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="text-gold hover:text-cream inline-flex min-h-12 flex-col justify-center"
+                    <div @class(['mt-5', 'border-cream/15 border-t pt-5' => $episode->transistor_embed_url])>
+                        @if ($episode->transistor_embed_url)
+                            <p class="text-cream/55 text-xs font-semibold tracking-[0.14em] uppercase">
+                                Listen elsewhere
+                            </p>
+                        @endif
+                        <nav
+                            aria-label="Podcast listening options"
+                            @class(['flex flex-wrap gap-x-7 gap-y-1', 'mt-2' => $episode->transistor_embed_url])
                         >
-                            <span class="font-semibold underline underline-offset-8">Apple Podcasts</span>
-                            <span class="text-cream/55 text-xs">{{ $episode->apple_url ? 'Listen to this episode' : 'Visit the show' }}</span>
-                        </a>
-                    @endif
-                    @if ($spotifyUrl)
-                        <a
-                            href="{{ $spotifyUrl }}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="text-gold hover:text-cream inline-flex min-h-12 flex-col justify-center"
-                        >
-                            <span class="font-semibold underline underline-offset-8">Spotify</span>
-                            <span class="text-cream/55 text-xs">{{ $episode->spotify_url ? 'Listen to this episode' : 'Visit the show' }}</span>
-                        </a>
-                    @endif
-                    @if ($youtubeUrl)
-                        <a
-                            href="{{ $youtubeUrl }}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="text-gold hover:text-cream inline-flex min-h-12 flex-col justify-center"
-                        >
-                            <span class="font-semibold underline underline-offset-8">YouTube</span>
-                            <span class="text-cream/55 text-xs">{{ $episode->youtube_url ? 'Watch this episode' : 'Visit the channel' }}</span>
-                        </a>
-                    @endif
-                    <a
-                        href="{{ config('podcast.rss_url') }}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="text-gold hover:text-cream inline-flex min-h-12 flex-col justify-center"
-                    >
-                        <span class="font-semibold underline underline-offset-8">RSS Feed</span>
-                        <span class="text-cream/55 text-xs">Subscribe in another podcast app</span>
-                    </a>
-                </nav>
+                            @if ($appleUrl)
+                                <a
+                                    href="{{ $appleUrl }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="text-gold hover:text-cream inline-flex min-h-12 flex-col justify-center gap-1.5"
+                                >
+                                    <span class="font-semibold underline underline-offset-8">Apple Podcasts</span>
+                                    <span class="text-cream/55 text-xs">{{ $episode->apple_url ? 'Listen to this episode' : 'Visit the show' }}</span>
+                                </a>
+                            @endif
+                            @if ($spotifyUrl)
+                                <a
+                                    href="{{ $spotifyUrl }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="text-gold hover:text-cream inline-flex min-h-12 flex-col justify-center gap-1.5"
+                                >
+                                    <span class="font-semibold underline underline-offset-8">Spotify</span>
+                                    <span class="text-cream/55 text-xs">{{ $episode->spotify_url ? 'Listen to this episode' : 'Visit the show' }}</span>
+                                </a>
+                            @endif
+                            @if ($youtubeUrl)
+                                <a
+                                    href="{{ $youtubeUrl }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="text-gold hover:text-cream inline-flex min-h-12 flex-col justify-center gap-1.5"
+                                >
+                                    <span class="font-semibold underline underline-offset-8">YouTube</span>
+                                    <span class="text-cream/55 text-xs">{{ $episode->youtube_url ? 'Watch this episode' : 'Visit the channel' }}</span>
+                                </a>
+                            @endif
+                            <a
+                                href="{{ config('podcast.rss_url') }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="text-gold hover:text-cream inline-flex min-h-12 flex-col justify-center gap-1.5"
+                            >
+                                <span class="font-semibold underline underline-offset-8">RSS Feed</span>
+                                <span class="text-cream/55 text-xs">Subscribe in another podcast app</span>
+                            </a>
+                        </nav>
+                    </div>
+                </section>
             </div>
         </div>
     </section>

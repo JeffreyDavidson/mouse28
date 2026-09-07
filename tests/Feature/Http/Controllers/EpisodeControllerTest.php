@@ -247,13 +247,15 @@ test('episode pages embed only valid Transistor share URLs', function (): void {
         ->assertOk()
         ->assertSee('src="https://share.transistor.fm/e/428d650c"', false)
         ->assertSee('title="Listen to '.$episode->title.'"', false)
-        ->assertSee('Open the player in a new tab');
+        ->assertSee('Open in a new tab')
+        ->assertSee('Listen elsewhere');
 
     $episode->update(['transistor_url' => 'https://example.com/not-a-transistor-player']);
 
     get(route('episodes.show', $episode->fresh()))
         ->assertOk()
         ->assertDontSee('https://example.com/not-a-transistor-player', false)
+        ->assertSee('Listen elsewhere')
         ->assertDontSee('<iframe', false);
 });
 
