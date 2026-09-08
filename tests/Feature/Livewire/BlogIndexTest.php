@@ -8,6 +8,7 @@ use Livewire\Livewire;
 uses(RefreshDatabase::class);
 
 test('query string filters update the visible stories', function (): void {
+    // Arrange
     $newestPost = Post::factory()->create([
         'title' => 'Newest accessible plan',
         'category' => 'park-accessibility',
@@ -27,43 +28,65 @@ test('query string filters update the visible stories', function (): void {
         'category' => 'park-accessibility',
         'q' => 'accessible',
         'sort' => 'oldest',
-    ])
-        ->test(BlogIndex::class)
-        ->assertSeeInOrder([$oldestPost->title, $newestPost->title])
-        ->assertViewHas('archivePosts', fn ($posts): bool => ! $posts->contains($unrelatedPost))
-        ->assertSet('category', 'park-accessibility')
+    ]);
+
+    // Act
+    $page = Livewire::test(BlogIndex::class);
+
+    // Assert
+    $page->assertSeeInOrder([$oldestPost->title, $newestPost->title])
+        ->assertViewHas('archivePosts', fn ($posts): bool => ! $posts->contains($unrelatedPost));
+    $page->assertSet('category', 'park-accessibility')
         ->assertSet('search', 'accessible')
         ->assertSet('sort', 'oldest')
-        ->assertViewHas('hasAnyPosts', true)
-        ->set('search', 'no matching story')
-        ->assertViewHas('archivePosts', fn ($posts): bool => $posts->isEmpty())
+        ->assertViewHas('hasAnyPosts', true);
+
+    // Act
+    $page->set('search', 'no matching story');
+
+    // Assert
+    $page->assertViewHas('archivePosts', fn ($posts): bool => $posts->isEmpty())
         ->assertViewHas('hasAnyPosts', true);
 });
 
 test('topic and reset actions preserve valid filter state', function (): void {
+    // Arrange
     Livewire::withQueryParams([
         'category' => 'not-a-category',
         'q' => str_repeat('a', 120),
         'sort' => 'not-a-sort',
         'page' => 4,
-    ])
-        ->test(BlogIndex::class)
-        ->assertSet('category', '')
+    ]);
+
+    // Act
+    $page = Livewire::test(BlogIndex::class);
+
+    // Assert
+    $page->assertSet('category', '')
         ->assertSet('search', str_repeat('a', 100))
-        ->assertSet('sort', 'newest')
-        ->call('selectCategory', 'park-accessibility')
-        ->assertSet('category', 'park-accessibility')
+        ->assertSet('sort', 'newest');
+
+    // Act
+    $page->call('selectCategory', 'park-accessibility');
+
+    // Assert
+    $page->assertSet('category', 'park-accessibility')
         ->assertSet('search', '')
         ->assertSet('sort', 'newest')
-        ->assertDispatched('blog-metadata-updated')
-        ->call('clearFilters')
-        ->assertSet('category', '')
+        ->assertDispatched('blog-metadata-updated');
+
+    // Act
+    $page->call('clearFilters');
+
+    // Assert
+    $page->assertSet('category', '')
         ->assertSet('search', '')
         ->assertSet('sort', 'newest')
         ->assertViewHas('hasAnyPosts', false);
 });
 
 test('featured story remains visible on subsequent archive pages', function (): void {
+    // Arrange
     $featuredPost = Post::factory()->create([
         'title' => 'Featured throughout the archive',
         'published_at' => now(),
@@ -72,24 +95,45 @@ test('featured story remains visible on subsequent archive pages', function (): 
         'published_at' => now()->subDay(),
     ]);
 
-    Livewire::withQueryParams(['page' => 2])
-        ->test(BlogIndex::class)
-        ->assertSee($featuredPost->title);
+    Livewire::withQueryParams(['page' => 2]);
+
+    // Act
+    $page = Livewire::test(BlogIndex::class);
+
+    // Assert
+    $page->assertSee($featuredPost->title);
 });
 
 test('featured story is independent of category search and sort filters', function (): void {
+    // Arrange
     $featuredPost = Post::factory()->create(['title' => 'Permanent feature', 'published_at' => now()]);
     Post::factory()->create(['title' => 'Quiet entrance', 'category' => 'park-accessibility', 'published_at' => now()->subWeek()]);
     Post::factory()->draft()->create();
     Post::factory()->scheduled()->create();
 
-    Livewire::test(BlogIndex::class)
-        ->call('selectCategory', 'park-accessibility')
-        ->assertViewHas('featuredPost', fn (Post $post): bool => $post->is($featuredPost))
-        ->set('search', 'no matching stories')
-        ->assertViewHas('featuredPost', fn (Post $post): bool => $post->is($featuredPost))
-        ->set('sort', 'oldest')
-        ->assertViewHas('featuredPost', fn (Post $post): bool => $post->is($featuredPost))
-        ->call('clearFilters')
-        ->assertViewHas('featuredPost', fn (Post $post): bool => $post->is($featuredPost));
+    $page = Livewire::test(BlogIndex::class);
+
+    // Act
+    $page->call('selectCategory', 'park-accessibility');
+
+    // Assert
+    $page->assertViewHas('featuredPost', fn (Post $post): bool => $post->is($featuredPost));
+
+    // Act
+    $page->set('search', 'no matching stories');
+
+    // Assert
+    $page->assertViewHas('featuredPost', fn (Post $post): bool => $post->is($featuredPost));
+
+    // Act
+    $page->set('sort', 'oldest');
+
+    // Assert
+    $page->assertViewHas('featuredPost', fn (Post $post): bool => $post->is($featuredPost));
+
+    // Act
+    $page->call('clearFilters');
+
+    // Assert
+    $page->assertViewHas('featuredPost', fn (Post $post): bool => $post->is($featuredPost));
 });
