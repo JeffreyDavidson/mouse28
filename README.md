@@ -103,7 +103,7 @@ composer test:rector:pest
 
 `composer analyse:pest` is a required CI step after Laravel preparation, using an in-memory SQLite connection and test service drivers. It remains separate from `composer test`. A nonzero exit code fails CI; no baseline or blanket suppression hides findings.
 
-`composer test:rector:pest` is read-only and remains opt-in. Its reviewed configuration excludes rewrites from strict empty-array comparisons to broad emptiness checks, and from `is_file()` to an existence-only assertion. Run `composer rector:pest` only to deliberately apply the proposed test changes, then inspect the diff and rerun the affected tests. Preserve Arrange / Act / Assert boundaries and framework-specific assertions when reviewing rewrites.
+`composer test:rector:pest` is a required, read-only CI step alongside the application Rector check. Proposed changes or errors fail CI; CI never applies rewrites. Its reviewed configuration excludes rewrites from strict empty-array comparisons to broad emptiness checks, and from `is_file()` to an existence-only assertion. Run `composer rector:pest` only to deliberately apply the proposed test changes, then inspect the diff and rerun the affected tests. Preserve Arrange / Act / Assert boundaries and framework-specific assertions when reviewing rewrites.
 
 Choose the suite by what the test exercises:
 

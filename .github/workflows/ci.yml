@@ -74,6 +74,9 @@ jobs:
       - name: Check automated refactoring
         run: composer test:rector
 
+      - name: Check Pest automated refactoring
+        run: composer test:rector:pest
+
       - name: Prepare Laravel
         run: |
           cp .env.example .env
