@@ -45,8 +45,8 @@ test('contact page renders turnstile widget', function (): void {
         ->assertDontSee('Family Disney stories')
         ->assertDontSee('value="story"', false);
 
-    expect(substr_count((string) $response->getContent(), 'https://challenges.cloudflare.com/turnstile/v0/api.js'))->toBe(1);
-    expect(array_column(ContactTopic::cases(), 'value'))->not->toContain('story');
+    expect(substr_count((string) $response->getContent(), 'https://challenges.cloudflare.com/turnstile/v0/api.js'))->toBe(1)
+        ->and(array_column(ContactTopic::cases(), 'value'))->not->toContain('story');
 });
 
 test('contact errors and old input stay out of the newsletter form', function (): void {

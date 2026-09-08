@@ -57,11 +57,7 @@ test('activity queries select only fields rendered by the widget', function (): 
 
     app(RecentActivity::class)->getActivity();
 
-    expect($queries)->toHaveCount(3);
-
-    foreach ($queries as $query) {
-        expect($query)
-            ->toContain('select "id", "title", "is_published", "published_at", "updated_at"')
-            ->not->toContain('select *');
-    }
+    expect($queries)->toHaveCount(3)
+        ->each->not->toContain('select *')
+        ->toContain('select "id", "title", "is_published", "published_at", "updated_at"');
 });
