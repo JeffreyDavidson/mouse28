@@ -35,6 +35,34 @@ test('related posts prioritize category and fill remaining slots with recent pos
     expect($related->modelKeys())->toBe([$newerMatch->id, $olderMatch->id, $fallback->id]);
 });
 
+test('continuation queries select only the fields rendered by their cards', function (): void {
+    $post = Post::factory()->create(['category' => 'park-accessibility']);
+    Post::factory()->create(['category' => 'park-accessibility']);
+    $guide = Guide::factory()->create(['category' => GuideCategory::Accessibility]);
+    Guide::factory()->create(['category' => GuideCategory::Accessibility]);
+    $currentEpisode = Episode::factory()->create(['published_at' => now()->subDay()]);
+    Episode::factory()->create(['published_at' => now()->subDays(2)]);
+    Episode::factory()->create(['published_at' => now()]);
+
+    $relatedPost = ContentContinuation::relatedPosts($post)->sole();
+    $relatedGuide = ContentContinuation::relatedGuides($guide)->sole();
+    $previousEpisode = ContentContinuation::previousEpisode($currentEpisode);
+    $nextEpisode = ContentContinuation::nextEpisode($currentEpisode);
+
+    expect($relatedPost->getAttributes())
+        ->toHaveKeys(['id', 'slug', 'title', 'category', 'body', 'cover_image'])
+        ->not->toHaveKeys(['excerpt', 'meta_description'])
+        ->and($relatedGuide->getAttributes())
+        ->toHaveKeys(['id', 'slug', 'title', 'category', 'cover_image'])
+        ->not->toHaveKeys(['body', 'excerpt', 'meta_description'])
+        ->and($previousEpisode?->getAttributes())
+        ->toHaveKeys(['id', 'slug', 'title'])
+        ->not->toHaveKeys(['description', 'show_notes', 'transcript'])
+        ->and($nextEpisode?->getAttributes())
+        ->toHaveKeys(['id', 'slug', 'title'])
+        ->not->toHaveKeys(['description', 'show_notes', 'transcript']);
+});
+
 test('related guides prioritize category and respect the requested limit', function (int $limit): void {
     $current = Guide::factory()->create(['category' => GuideCategory::Accessibility]);
     $olderMatch = Guide::factory()->create([

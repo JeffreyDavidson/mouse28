@@ -13,6 +13,7 @@ class ContentContinuation
     public static function relatedPosts(Post $post, int $limit = 5): Collection
     {
         $sameCategoryPosts = Post::published()
+            ->select(['id', 'slug', 'title', 'category', 'body', 'cover_image'])
             ->whereKeyNot($post->getKey())
             ->where('category', $post->category)
             ->latest('published_at')
@@ -25,6 +26,7 @@ class ContentContinuation
 
         return $sameCategoryPosts->merge(
             Post::published()
+                ->select(['id', 'slug', 'title', 'category', 'body', 'cover_image'])
                 ->whereKeyNot($post->getKey())
                 ->whereNotIn('id', $sameCategoryPosts->modelKeys())
                 ->latest('published_at')
@@ -37,6 +39,7 @@ class ContentContinuation
     public static function relatedGuides(Guide $guide, int $limit = 3): Collection
     {
         $sameCategoryGuides = Guide::published()
+            ->select(['id', 'slug', 'title', 'category', 'cover_image'])
             ->whereKeyNot($guide->getKey())
             ->where('category', $guide->category)
             ->latest('published_at')
@@ -49,6 +52,7 @@ class ContentContinuation
 
         return $sameCategoryGuides->merge(
             Guide::published()
+                ->select(['id', 'slug', 'title', 'category', 'cover_image'])
                 ->whereKeyNot($guide->getKey())
                 ->whereNotIn('id', $sameCategoryGuides->modelKeys())
                 ->latest('published_at')
@@ -64,6 +68,7 @@ class ContentContinuation
         }
 
         return Episode::published()
+            ->select(['id', 'slug', 'title'])
             ->where('published_at', '<', $episode->published_at)
             ->latest('published_at')
             ->first();
@@ -76,6 +81,7 @@ class ContentContinuation
         }
 
         return Episode::published()
+            ->select(['id', 'slug', 'title'])
             ->where('published_at', '>', $episode->published_at)
             ->oldest('published_at')
             ->first();
