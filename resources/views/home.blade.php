@@ -4,7 +4,6 @@
     og-description="Accessibility tips, sensory-friendly Disney park planning, and honest family experiences from Jeffrey and Cassie Davidson."
     og-image="/images/hero-family.jpg"
     :canonical="route('home')"
-    :show-footer-newsletter="false"
     :dispatch-layout="true"
 >
     <div class="dispatch-cloth overflow-hidden">
@@ -384,77 +383,6 @@
                     >
                         <span></span>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="newsletter" class="relative z-20 px-4 pb-10 sm:px-6 sm:pb-14 md:-mt-16">
-            @php($newsletterHasFeedback = $errors->newsletter->isNotEmpty() || session('newsletter_error'))
-            <div class="dispatch-envelope relative mx-auto max-w-[82rem] overflow-hidden p-6 sm:p-8 md:min-h-64">
-                <div class="relative z-10 grid items-center gap-6 md:grid-cols-[8fr_12fr]">
-                    <div>
-                        <h2 class="font-heading text-navy text-3xl [font-weight:640] tracking-[-0.02em] text-balance sm:text-4xl">
-                            Stay in the Loop
-                        </h2>
-                        <p class="text-navy/70 mt-3 max-w-[42ch] text-base/7 text-pretty sm:text-[0.9375rem]/6">
-                            New posts, podcast episodes, and practical park tips delivered to your inbox.
-                        </p>
-                    </div>
-                    <div>
-                        @if (session('newsletter_success'))
-                            <div
-                                role="status"
-                                class="bg-gold/15 text-navy ring-gold/50 rounded-xl px-6 py-4 text-base font-medium ring-1"
-                            >
-                                You're subscribed. We'll send you the good stuff.
-                            </div>
-                        @else
-                            @if (session('newsletter_error'))
-                                <div role="alert" class="mb-4 rounded-xl bg-red-100 px-5 py-3 text-base text-red-800">
-                                    {{ session('newsletter_error') }}
-                                </div>
-                            @endif
-                            <form action="{{ route('newsletter.store') }}" method="POST" class="space-y-3">
-                                @csrf
-                                <x-newsletter-protection honeypot-id="home-newsletter-website" />
-                                <div class="flex flex-col gap-3 sm:flex-row">
-                                    <label for="home-newsletter-email" class="sr-only">Email address</label
-                                    ><input
-                                        id="home-newsletter-email"
-                                        type="email"
-                                        name="email"
-                                        value="{{ $newsletterHasFeedback ? old('email') : '' }}"
-                                        placeholder="your@email.com"
-                                        autocomplete="email"
-                                        required
-                                        @error('email', 'newsletter') aria-invalid="true" aria-describedby="home-newsletter-email-message" @enderror
-                                        @error('email', 'newsletter') autofocus @enderror
-                                        class="bg-cream/90 text-navy ring-navy/15 placeholder:text-navy/60 focus:outline-purple min-h-12 min-w-0 flex-1 rounded-xl px-5 py-3 text-base shadow-sm ring-1 focus:outline-2 focus:-outline-offset-1"
-                                    /><button
-                                        type="submit"
-                                        class="dispatch-button bg-gold text-navy hover:bg-gold-light min-h-12 px-7 py-3 text-base font-semibold sm:text-sm"
-                                    >
-                                        Subscribe
-                                    </button>
-                                </div>
-                                @error('email', 'newsletter')
-                                    <p
-                                        id="home-newsletter-email-message"
-                                        role="alert"
-                                        class="text-base text-red-800 sm:text-sm"
-                                    >
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                                <p class="text-navy/65 text-base sm:text-sm">
-                                    We use your email to send Mouse28 updates.
-                                </p>
-                            </form>
-                        @endif
-                    </div>
-                </div>
-                <div class="dispatch-stamp absolute right-6 bottom-5 hidden rotate-6 p-2 sm:block" aria-hidden="true">
-                    <span class="font-heading text-navy text-lg [font-weight:700] tracking-[-0.03em]">M28</span>
                 </div>
             </div>
         </section>

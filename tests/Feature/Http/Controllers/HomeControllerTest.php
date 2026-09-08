@@ -75,7 +75,10 @@ test('homepage uses one newsletter form and responsive hero artwork', function (
         ->assertDontSee('data-animate', false)
         ->assertSee('Our first dispatch is being prepared.')
         ->assertDontSee('/storage/posts/welcome-to-mouse-28.webp', false)
-        ->assertSee('We use your email to send Mouse28 updates.');
+        ->assertSee('We use your email to send Mouse28 updates.')
+        ->assertSee('id="footer-newsletter-email"', false)
+        ->assertSee('Connect')
+        ->assertDontSee('id="home-newsletter-email"', false);
 
     expect(substr_count($response->getContent(), 'action="'.route('newsletter.store').'"'))->toBe(1);
 });

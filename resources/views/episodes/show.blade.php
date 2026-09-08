@@ -6,7 +6,6 @@
     :og-image="$episode->og_image_url ?: $episode->cover_image_url"
     :robots="($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow'"
     :dispatch-layout="true"
-    :show-footer-newsletter="false"
 >
     <!--
         THESIS: An episode page should behave like a listening sheet, not a dashboard of podcast widgets.
@@ -44,6 +43,10 @@
             <div class="podcast-cover-frame mx-auto w-full max-w-md lg:mx-0">
                 <img
                     src="{{ $coverImage }}"
+                    @if ($srcset = \App\Support\ResponsiveArtwork::srcset($episode->cover_image, square: true))
+                        srcset="{{ $srcset }}"
+                        sizes="(min-width: 1188px) 448px, (min-width: 1024px) calc(41.6667vw - 46.6667px), (min-width: 480px) 448px, calc(100vw - 32px)"
+                    @endif
                     alt="{{ $episode->title }} podcast artwork"
                     width="1200"
                     height="1200"
@@ -306,10 +309,6 @@
                 :next-episode="$nextEpisode"
                 :compact="$isSparseEpisode"
             />
-
-            <div class="mx-auto mt-14 max-w-3xl" data-print-hidden>
-                <x-newsletter-card subtitle="New episodes and Disney tips delivered to your inbox" />
-            </div>
         </div>
     </section>
 </x-layouts.app>

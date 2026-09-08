@@ -2,8 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Episode;
 use App\Models\Post;
-use App\Support\ResponsivePostArtwork;
+use App\Support\ResponsiveArtwork;
 use ErrorException;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
@@ -13,14 +14,26 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 
-#[Signature('content:generate-post-artwork {--force : Allow generation in production}')]
-#[Description('Generate static responsive WebP copies of published post covers without replacing originals')]
-class GeneratePostArtwork extends Command
+#[Signature('content:generate-artwork {--type=posts : Cover type (posts or episodes)} {--force : Allow generation in production}', aliases: ['content:generate-post-artwork'])]
+#[Description('Generate static responsive WebP copies of published covers without replacing originals')]
+class GenerateResponsiveArtwork extends Command
 {
     use ConfirmableTrait;
 
     public function handle(): int
     {
+        $query = match ($this->option('type')) {
+            'posts' => Post::published(),
+            'episodes' => Episode::published(),
+            default => null,
+        };
+
+        if (! $query) {
+            $this->error('Choose --type=posts or --type=episodes.');
+
+            return self::FAILURE;
+        }
+
         if (! $this->confirmToProceed()) {
             return self::FAILURE;
         }
@@ -34,19 +47,19 @@ class GeneratePostArtwork extends Command
         $generated = 0;
         $failed = false;
 
-        foreach (Post::published()->whereNotNull('cover_image')->select(['id', 'cover_image'])->lazyById(100) as $post) {
-            $source = ResponsivePostArtwork::source($post->cover_image);
+        foreach ($query->whereNotNull('cover_image')->select(['id', 'cover_image'])->lazyById(100) as $record) {
+            $source = ResponsiveArtwork::source($record->cover_image);
 
             if (! $source) {
-                $this->warn("Skipped unavailable or unsupported artwork for post {$post->id}.");
+                $this->warn("Skipped unavailable or unsupported artwork for {$this->option('type')} record {$record->id}.");
 
                 continue;
             }
 
             try {
-                $generated += $this->generate($source);
+                $generated += $this->generate($source, $this->option('type') === 'episodes');
             } catch (ErrorException|RuntimeException) {
-                $this->error("Could not generate artwork for post {$post->id}; original retained.");
+                $this->error("Could not generate artwork for {$this->option('type')} record {$record->id}; original retained.");
                 $failed = true;
             }
         }
@@ -57,7 +70,7 @@ class GeneratePostArtwork extends Command
     }
 
     /** @param array{path: string, hash: string} $source */
-    private function generate(array $source): int
+    private function generate(array $source, bool $square): int
     {
         // Convert decoder warnings into a bounded per-image failure, without printing file contents.
         set_error_handler(static function (int $severity, string $message): never {
@@ -75,14 +88,26 @@ class GeneratePostArtwork extends Command
             $generated = 0;
             $disk = Storage::disk('public');
 
-            foreach (ResponsivePostArtwork::WIDTHS as $width) {
-                $path = ResponsivePostArtwork::variantPath($source['hash'], $width);
+            foreach (ResponsiveArtwork::WIDTHS as $width) {
+                $path = ResponsiveArtwork::variantPath($source['hash'], $width, $square);
 
-                if ($width > $dimensions[0] || $disk->exists($path)) {
+                if ($width > ($square ? min($dimensions[0], $dimensions[1]) : $dimensions[0]) || $disk->exists($path)) {
                     continue;
                 }
 
-                $image ??= imagecreatefromstring(File::get($source['path']));
+                if ($image === null) {
+                    $image = imagecreatefromstring(File::get($source['path']));
+
+                    if ($image && $square) {
+                        $side = min($dimensions[0], $dimensions[1]);
+                        $image = imagecrop($image, [
+                            'x' => intdiv($dimensions[0] - $side, 2),
+                            'y' => intdiv($dimensions[1] - $side, 2),
+                            'width' => $side,
+                            'height' => $side,
+                        ]);
+                    }
+                }
 
                 if (! $image) {
                     throw new RuntimeException('Unable to decode image.');

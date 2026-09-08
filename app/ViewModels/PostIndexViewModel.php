@@ -3,7 +3,6 @@
 namespace App\ViewModels;
 
 use App\Enums\PostCategory;
-use App\Models\Post;
 use Illuminate\Http\Request;
 
 class PostIndexViewModel
@@ -13,7 +12,6 @@ class PostIndexViewModel
      *     category: string,
      *     search: string,
      *     sort: string,
-     *     hasAnyPosts: bool,
      *     pageTitle: string,
      *     pageDescription: string,
      *     canonicalUrl: string,
@@ -38,7 +36,6 @@ class PostIndexViewModel
             'category' => $category,
             'search' => $search,
             'sort' => $sort,
-            'hasAnyPosts' => Post::published()->exists(),
             'pageTitle' => $categoryLabel ? "{$categoryLabel} | Mouse28" : 'Disney Parks Blog | Mouse28',
             'pageDescription' => $categoryLabel
                 ? "Mouse28 {$categoryLabel} articles, family experiences, and practical Disney park takeaways."

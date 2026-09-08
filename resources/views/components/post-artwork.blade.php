@@ -32,7 +32,7 @@
 @if ($post->cover_image_url)
     <img
         src="{{ $post->cover_image_url }}"
-        @if ($srcset = \App\Support\ResponsivePostArtwork::srcset($post->cover_image))
+        @if ($srcset = \App\Support\ResponsiveArtwork::srcset($post->cover_image))
             srcset="{{ $srcset }}"
             sizes="{{ ($priority ? '' : 'auto, ').$sizes }}"
         @endif

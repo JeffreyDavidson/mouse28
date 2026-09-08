@@ -10,17 +10,20 @@
         THESIS: Mouse28 is a family field journal shaped by repeat park days and Viola's way of seeing the world.
         OWN-WORLD: Candid park photography, navy cloth, cream paper, gold rules, and generous editorial type.
         STORY: Meet the family in motion, understand what they learned, discover why they share it, then meet each host.
-        FIRST VIEWPORT: A real park moment leads; the headline reads like the cover line of a family profile.
+        FIRST VIEWPORT: Headline and introduction form one left-hand block, paired with the uncropped safari photo; mobile stacks copy then photo.
         FORM [seed: park-photo-essay]: A photographic magazine feature ending in two distinct personal profiles.
     -->
     <div data-about-editorial>
-        <header class="bg-navy text-cream px-4 pt-5 pb-10 sm:px-6 sm:pt-8 sm:pb-14 lg:pt-10 lg:pb-20">
-            <div class="mx-auto max-w-[86rem]">
-                <div class="grid gap-6 pb-8 sm:pb-10 lg:grid-cols-[8fr_4fr] lg:items-end lg:gap-16">
-                    <h1 class="font-heading text-cream max-w-[18ch] text-[2.75rem]/[1.02] [font-weight:680] tracking-[-0.03em] text-balance sm:text-6xl lg:text-7xl">
+        <header aria-labelledby="about-heading" class="bg-navy text-cream px-4 py-10 sm:px-6 sm:py-14 lg:py-16">
+            <div class="mx-auto grid max-w-[86rem] items-center gap-8 sm:gap-10 lg:grid-cols-[5fr_7fr] lg:gap-16">
+                <div class="max-w-xl">
+                    <h1
+                        id="about-heading"
+                        class="font-heading text-cream max-w-[18ch] text-[2.75rem]/[1.08] [font-weight:680] tracking-[-0.03em] text-balance sm:text-5xl xl:text-6xl"
+                    >
                         Disney looks different through our family's eyes.
                     </h1>
-                    <p class="text-cream/75 max-w-xl text-lg/8 text-pretty lg:pb-1">
+                    <p class="text-cream/75 mt-6 max-w-[38ch] text-lg/8 text-pretty">
                         We're Jeffrey and Cassie, the parents, park regulars, and voices behind Mouse28.
                     </p>
                 </div>
@@ -30,7 +33,7 @@
                         <picture>
                             <source
                                 srcset="/images/hero-family-640.webp 640w, /images/hero-family-1024.webp 1024w, /images/hero-family.webp 2048w"
-                                sizes="(min-width: 1400px) 1376px, calc(100vw - 2rem)"
+                                sizes="(min-width: 1424px) 765px, (min-width: 1024px) calc(58.3333vw - 65.3333px), (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
                                 type="image/webp"
                             />
                             <img
@@ -39,7 +42,7 @@
                                 width="2048"
                                 height="1536"
                                 fetchpriority="high"
-                                class="aspect-[5/4] w-full object-cover object-center sm:aspect-[16/9] lg:aspect-[16/7]"
+                                class="aspect-[4/3] w-full object-cover object-center"
                             />
                         </picture>
                     </div>

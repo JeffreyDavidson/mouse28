@@ -2,11 +2,37 @@
 
 use App\Models\Episode;
 use App\Models\Podcast;
+use App\Support\ResponsiveArtwork;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\get;
 
 uses(RefreshDatabase::class);
+
+test('episode artwork uses available responsive candidates and falls back after replacement', function (): void {
+    Storage::fake('public');
+    $disk = Storage::disk('public');
+    $contents = UploadedFile::fake()->image('cover.png', 800, 800)->getContent();
+    $disk->put('episodes/cover.png', $contents);
+    $variant = ResponsiveArtwork::variantPath(hash('sha256', $contents), 768, square: true);
+    $disk->put($variant, 'generated image');
+    $episode = Episode::factory()->create(['cover_image' => 'episodes/cover.png']);
+
+    get(route('episodes.show', $episode))
+        ->assertOk()
+        ->assertSee('srcset="'.$disk->url($variant).' 768w"', false)
+        ->assertSee('fetchpriority="high"', false)
+        ->assertSee('sizes="(min-width: 1188px) 448px, (min-width: 1024px) calc(41.6667vw - 46.6667px), (min-width: 480px) 448px, calc(100vw - 32px)"', false);
+
+    $disk->put('episodes/cover.png', UploadedFile::fake()->image('replacement.png', 801, 800)->getContent());
+
+    get(route('episodes.show', $episode))
+        ->assertOk()
+        ->assertSee('src="/storage/episodes/cover.png"', false)
+        ->assertDontSee($disk->url($variant), false);
+});
 
 test('podcast pages stay within their query budget as content grows', function (string $page, int $queries): void {
     $episode = Episode::factory()->create();
@@ -31,7 +57,9 @@ test('podcast pages render one newsletter signup', function (): void {
 
     foreach ([route('episodes.index'), route('episodes.show', $episode)] as $url) {
         $response = get($url)
-            ->assertOk();
+            ->assertOk()
+            ->assertSee('id="footer-newsletter-email"', false)
+            ->assertSee('Connect');
 
         expect(substr_count($response->getContent(), 'action="'.route('newsletter.store').'"'))->toBe(1);
     }

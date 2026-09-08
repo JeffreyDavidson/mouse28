@@ -4,7 +4,6 @@
     :og-image="$podcast->cover_image ? '/storage/'.ltrim($podcast->cover_image, '/') : '/images/podcast/mouse28-cover.jpg'"
     :canonical="$canonicalUrl"
     :dispatch-layout="true"
-    :show-footer-newsletter="$episodes->isEmpty()"
 >
     <!--
         THESIS: The podcast page behaves like a show and listening archive, not a dashboard of episode widgets.
@@ -157,9 +156,6 @@
                         <div class="episodes-pagination mt-14 flex justify-center">{{ $episodes->links() }}</div>
                     @endif
 
-                    <div class="mx-auto mt-16 max-w-3xl">
-                        <x-newsletter-card subtitle="New episodes and Disney tips delivered to your inbox" />
-                    </div>
                 @endif
             </div>
         </section>

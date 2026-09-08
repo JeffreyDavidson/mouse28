@@ -1,8 +1,9 @@
 <?php
 
-use App\Console\Commands\GeneratePostArtwork;
+use App\Console\Commands\GenerateResponsiveArtwork;
+use App\Models\Episode;
 use App\Models\Post;
-use App\Support\ResponsivePostArtwork;
+use App\Support\ResponsiveArtwork;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -19,7 +20,7 @@ test('responsive covers preserve originals and use immutable URLs', function ():
     $post = Post::factory()->create(['cover_image' => 'posts/cover.png']);
     $original = $disk->get('posts/cover.png');
 
-    expect(ResponsivePostArtwork::srcset($post->cover_image))->toBeNull();
+    expect(ResponsiveArtwork::srcset($post->cover_image))->toBeNull();
 
     $result = $this->artisan('content:generate-post-artwork');
 
@@ -27,10 +28,10 @@ test('responsive covers preserve originals and use immutable URLs', function ():
         ->and($disk->get('posts/cover.png'))->toBe($original)
         ->and($post->refresh()->cover_image)->toBe('posts/cover.png');
 
-    foreach (ResponsivePostArtwork::WIDTHS as $width) {
-        $path = ResponsivePostArtwork::variantPath(hash('sha256', $original), $width);
+    foreach (ResponsiveArtwork::WIDTHS as $width) {
+        $path = ResponsiveArtwork::variantPath(hash('sha256', $original), $width);
         expect(getimagesize($disk->path($path))[0])->toBe($width)
-            ->and(ResponsivePostArtwork::srcset($post->cover_image))->toContain(" {$width}w");
+            ->and(ResponsiveArtwork::srcset($post->cover_image))->toContain(" {$width}w");
     }
 
     $paths = $disk->allFiles();
@@ -38,7 +39,7 @@ test('responsive covers preserve originals and use immutable URLs', function ():
     expect($disk->allFiles())->toBe($paths);
 
     $disk->put('posts/cover.png', UploadedFile::fake()->image('replacement.png', 1500, 900)->getContent());
-    expect(ResponsivePostArtwork::srcset($post->cover_image))->toBeNull();
+    expect(ResponsiveArtwork::srcset($post->cover_image))->toBeNull();
 });
 
 test('generation skips drafts and never upscales small covers', function (): void {
@@ -74,25 +75,63 @@ test('production generation requires explicit approval', function (): void {
     expect($result)->toBe(Command::FAILURE);
 });
 
-test('production artwork generation uses native confirmation', function (string $answer, bool $interactive, bool $force, int $expected): void {
+test('production artwork generation uses native confirmation', function (string $answer, bool $interactive, bool $force, int $expected, string $type): void {
     Storage::fake('public');
     $disk = Storage::disk('public');
-    $disk->put('posts/cover.png', UploadedFile::fake()->image('cover.png', 800, 400)->getContent());
-    $post = Post::factory()->create(['cover_image' => 'posts/cover.png']);
+    $disk->put("{$type}/cover.png", UploadedFile::fake()->image('cover.png', 1000, 800)->getContent());
+    $record = ($type === 'posts' ? Post::factory() : Episode::factory())->create(['cover_image' => "{$type}/cover.png"]);
     $this->app->detectEnvironment(fn (): string => 'production');
     Prompt::fallbackWhen(true);
-    $command = app(GeneratePostArtwork::class);
+    $command = app(GenerateResponsiveArtwork::class);
     $command->setLaravel($this->app);
     $tester = new CommandTester($command);
     $tester->setInputs([$answer]);
 
-    $result = $tester->execute($force ? ['--force' => true] : [], ['interactive' => $interactive]);
+    $result = $tester->execute(['--type' => $type, '--force' => $force], ['interactive' => $interactive]);
 
     expect($result)->toBe($expected)
-        ->and(ResponsivePostArtwork::srcset($post->cover_image) !== null)->toBe($expected === Command::SUCCESS);
+        ->and(ResponsiveArtwork::srcset($record->cover_image, square: $type === 'episodes') !== null)->toBe($expected === Command::SUCCESS);
 })->with([
     'confirmed' => ['yes', true, false, Command::SUCCESS],
     'declined' => ['no', true, false, Command::FAILURE],
     'noninteractive defaults to no' => ['', false, false, Command::FAILURE],
     'explicit force' => ['', false, true, Command::SUCCESS],
-]);
+])->with(['posts', 'episodes']);
+
+test('episode generation is explicit and only includes published covers', function (): void {
+    Storage::fake('public');
+    $disk = Storage::disk('public');
+    foreach (['published', 'draft', 'scheduled'] as $index => $name) {
+        $disk->put("episodes/{$name}.png", UploadedFile::fake()->image("{$name}.png", 1400 + $index, 800)->getContent());
+    }
+    $episode = Episode::factory()->create(['cover_image' => 'episodes/published.png']);
+    Episode::factory()->draft()->create(['cover_image' => 'episodes/draft.png']);
+    Episode::factory()->scheduled()->create(['cover_image' => 'episodes/scheduled.png']);
+    $original = $disk->get($episode->cover_image);
+
+    $this->artisan('content:generate-post-artwork');
+
+    expect($disk->allFiles())->toHaveCount(3);
+
+    $result = $this->artisan('content:generate-artwork', ['--type' => 'episodes']);
+
+    expect($result)->toBe(Command::SUCCESS)
+        ->and($disk->allFiles())->toHaveCount(5)
+        ->and($disk->get($episode->cover_image))->toBe($original)
+        ->and($episode->refresh()->cover_image)->toBe('episodes/published.png');
+
+    foreach ([480, 768] as $width) {
+        $path = ResponsiveArtwork::variantPath(hash('sha256', $original), $width, square: true);
+        $dimensions = getimagesize($disk->path($path));
+        expect([$dimensions[0], $dimensions[1]])->toBe([$width, $width]);
+    }
+});
+
+test('unsupported artwork types fail without generating files', function (): void {
+    Storage::fake('public');
+
+    $result = $this->artisan('content:generate-artwork', ['--type' => 'anything']);
+
+    expect($result)->toBe(Command::FAILURE)
+        ->and(Storage::disk('public')->allFiles())->toBeEmpty();
+});
