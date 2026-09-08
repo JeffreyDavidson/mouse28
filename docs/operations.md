@@ -29,9 +29,13 @@ The Forge deployment should install locked Composer dependencies, install locked
 
 Do not clean demo content as part of an unattended deployment. After verified backups and real-content review, `php artisan content:clean-seeded --force` removes only the documented demo slugs in one transaction.
 
+Laravel's destructive database commands (`db:wipe`, `migrate:fresh`, `migrate:refresh`, `migrate:reset`, and `migrate:rollback`) are prohibited when `APP_ENV=production`, even with `--force`. This includes Forge staging configured with that environment. Use forward migrations; do not disable this safeguard as a deployment or rollback shortcut.
+
 ## After deploying
 
 For the responsive-post-artwork release, confirm GD WebP support and the persistent local public disk before running `php artisan content:generate-post-artwork --force` on the explicitly approved target. This additive operation leaves original covers and database records untouched; it must be separately approved under the production mutation rules. Run it again after publishing/replacing covers. Without generated candidates the public site continues serving originals. Verify candidate URLs return 200 before claiming responsive-image savings on production.
+
+Without `--force`, the artwork command uses Laravel's native production confirmation prompt. Declining it, or running noninteractively without force, cancels generation. A console prompt or flag does not replace the operational approval above.
 
 Review explicit static-asset cache policy at the Forge/Nginx edge: content-fingerprinted `/build/assets/` and `/storage/posts/responsive/` files are candidates for a one-year `public, immutable` policy. Unversioned originals, fonts and site images need a shorter freshness policy or versioned URLs. Preserve private/no-store behavior for admin, previews and errors, and do not apply public HTML caching to CSRF tokens or form/session feedback. No edge configuration is changed by the artwork command or benchmark.
 

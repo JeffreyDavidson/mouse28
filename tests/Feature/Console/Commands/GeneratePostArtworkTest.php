@@ -1,11 +1,14 @@
 <?php
 
+use App\Console\Commands\GeneratePostArtwork;
 use App\Models\Post;
 use App\Support\ResponsivePostArtwork;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Laravel\Prompts\Prompt;
+use Symfony\Component\Console\Tester\CommandTester;
 
 uses(RefreshDatabase::class);
 
@@ -70,3 +73,26 @@ test('production generation requires explicit approval', function (): void {
 
     expect($result)->toBe(Command::FAILURE);
 });
+
+test('production artwork generation uses native confirmation', function (string $answer, bool $interactive, bool $force, int $expected): void {
+    Storage::fake('public');
+    $disk = Storage::disk('public');
+    $disk->put('posts/cover.png', UploadedFile::fake()->image('cover.png', 800, 400)->getContent());
+    $post = Post::factory()->create(['cover_image' => 'posts/cover.png']);
+    $this->app->detectEnvironment(fn (): string => 'production');
+    Prompt::fallbackWhen(true);
+    $command = app(GeneratePostArtwork::class);
+    $command->setLaravel($this->app);
+    $tester = new CommandTester($command);
+    $tester->setInputs([$answer]);
+
+    $result = $tester->execute($force ? ['--force' => true] : [], ['interactive' => $interactive]);
+
+    expect($result)->toBe($expected)
+        ->and(ResponsivePostArtwork::srcset($post->cover_image) !== null)->toBe($expected === Command::SUCCESS);
+})->with([
+    'confirmed' => ['yes', true, false, Command::SUCCESS],
+    'declined' => ['no', true, false, Command::FAILURE],
+    'noninteractive defaults to no' => ['', false, false, Command::FAILURE],
+    'explicit force' => ['', false, true, Command::SUCCESS],
+]);

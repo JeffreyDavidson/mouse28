@@ -8,6 +8,7 @@ use ErrorException;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
+use Illuminate\Console\ConfirmableTrait;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
@@ -16,11 +17,11 @@ use RuntimeException;
 #[Description('Generate static responsive WebP copies of published post covers without replacing originals')]
 class GeneratePostArtwork extends Command
 {
+    use ConfirmableTrait;
+
     public function handle(): int
     {
-        if (app()->isProduction() && ! $this->option('force')) {
-            $this->error('Production artwork generation requires explicit --force approval.');
-
+        if (! $this->confirmToProceed()) {
             return self::FAILURE;
         }
 
