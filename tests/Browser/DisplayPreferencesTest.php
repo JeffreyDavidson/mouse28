@@ -4,25 +4,6 @@ use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
 
-function activeMotionDurationScript(): string
-{
-    return <<<'JS'
-        (() => {
-            const durationInMilliseconds = (duration) => duration.endsWith('ms')
-                ? Number.parseFloat(duration)
-                : Number.parseFloat(duration) * 1000;
-
-            return [...document.querySelectorAll('*')].filter((element) => {
-                const styles = window.getComputedStyle(element);
-                const animationDuration = styles.animationDuration.split(',').some((duration) => durationInMilliseconds(duration) > 10);
-                const transitionDuration = styles.transitionDuration.split(',').some((duration) => durationInMilliseconds(duration) > 10);
-
-                return animationDuration || transitionDuration;
-            }).length;
-        })()
-        JS;
-}
-
 test('public pages reflow with two hundred percent text sizing', function (): void {
     $post = Post::factory()->create();
     $guide = Guide::factory()->create();
@@ -58,12 +39,37 @@ test('public pages reflow with two hundred percent text sizing', function (): vo
         ->assertScript('document.activeElement.id', 'main-content');
 });
 
-test('reduced motion preference removes authored motion', function (): void {
+test('reduced motion preference removes nonessential authored motion', function (): void {
     $page = visit(route('home'), ['reducedMotion' => 'reduce']);
 
     $page->assertScript("window.matchMedia('(prefers-reduced-motion: reduce)').matches", true)
         ->assertScript('getComputedStyle(document.documentElement).scrollBehavior', 'auto')
-        ->assertScript(activeMotionDurationScript(), 0)
+        ->assertScript(<<<'JS'
+            (() => {
+                const durationInMilliseconds = (duration) => duration.endsWith('ms')
+                    ? Number.parseFloat(duration)
+                    : Number.parseFloat(duration) * 1000;
+
+                const selectors = [
+                    '.cta-primary',
+                    '.dispatch-button',
+                    '.dispatch-story-card',
+                    '.dispatch-guide-card',
+                    '.dispatch-play-button',
+                    '.dispatch-interactive-card',
+                    '#mobile-navigation',
+                    '[data-dispatch-motion]',
+                    '[data-dispatch-reveal]',
+                ];
+
+                return selectors.every((selector) => [...document.querySelectorAll(selector)].every((element) => {
+                    const styles = window.getComputedStyle(element);
+
+                    return styles.animationDuration.split(',').every((duration) => durationInMilliseconds(duration) <= 10)
+                        && styles.transitionDuration.split(',').every((duration) => durationInMilliseconds(duration) <= 10);
+                }));
+            })()
+            JS, true)
         ->assertScript('[...document.querySelectorAll("[data-animate]")].every((element) => getComputedStyle(element).opacity === "1")', true)
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();

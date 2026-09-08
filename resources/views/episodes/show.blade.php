@@ -201,7 +201,9 @@
                     >
                         Show notes
                     </h2>
-                    <div class="episode-show-notes-content mt-6 wrap-anywhere">{!! $episode->show_notes !!}</div>
+                    <div class="episode-show-notes-content mt-6 wrap-anywhere">
+                        {!! str($episode->show_notes)->sanitizeHtml() !!}
+                    </div>
                 </section>
             @endif
 
@@ -220,7 +222,7 @@
                             class="episode-transcript-content max-h-[600px] wrap-anywhere"
                             :class="{ 'max-h-none': expanded }"
                         >
-                            {!! $episode->transcript !!}
+                            {!! str($episode->transcript)->sanitizeHtml() !!}
                         </div>
                         <div class="relative" x-show="! expanded" x-cloak>
                             <div class="from-cream pointer-events-none absolute inset-x-0 bottom-full h-20 bg-linear-to-t to-transparent"></div>
