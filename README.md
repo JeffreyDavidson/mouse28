@@ -97,6 +97,8 @@ composer test:rector:pest
 
 `phpstan-pest.neon` scans all PHP tests at level 5 with a separate result cache. Composer's PHPStan extension installer already registers the Pest plugin; do not include it a second time. `rector-pest.php` applies Pest's coding-style rules only to `tests/`.
 
+`composer analyse:pest` sets `APP_ENV=testing` for the analysis process so Livewire registers its test-only response assertions. Use the Composer command, or set the same environment variable when invoking PHPStan directly. This does not change `.env` or the application analysis command.
+
 These checks are opt-in while existing findings are reviewed, not CI gates or part of `composer test`. A nonzero exit code reports findings that need review; no baseline or blanket suppression hides them. `composer test:rector:pest` is read-only. Run `composer rector:pest` only to deliberately apply the proposed test changes, then inspect the diff and rerun the affected tests. Preserve Arrange / Act / Assert boundaries and framework-specific assertions when reviewing rewrites.
 
 Choose the suite by what the test exercises:
