@@ -9,6 +9,13 @@ use function Pest\Laravel\get;
 
 uses(RefreshDatabase::class);
 
+test('about stays within its query budget', function (): void {
+    $this->expectsDatabaseQueryCount(1);
+
+    get(route('about'))
+        ->assertOk();
+});
+
 test('public index page renders', function (): void {
     get(route('about'))
         ->assertOk()

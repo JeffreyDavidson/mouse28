@@ -111,19 +111,12 @@
             </div>
 
             <div class="editorial-detail-artwork overflow-hidden rounded-xl">
-                @if ($post->cover_image_url)
-                    <img
-                        src="{{ $post->cover_image_url }}"
-                        alt=""
-                        width="1024"
-                        height="768"
-                        fetchpriority="high"
-                        decoding="async"
-                        class="aspect-[4/3] size-full object-cover"
-                    />
-                @else
-                    <x-post-artwork :post="$post" class="aspect-[4/3] size-full object-cover" />
-                @endif
+                <x-post-artwork
+                    :post="$post"
+                    :priority="true"
+                    sizes="(min-width: 1376px) 527px, (min-width: 1024px) 38vw, (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
+                    class="aspect-[4/3] size-full object-cover"
+                />
             </div>
         </div>
     </section>

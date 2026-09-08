@@ -31,6 +31,10 @@ Do not clean demo content as part of an unattended deployment. After verified ba
 
 ## After deploying
 
+For the responsive-post-artwork release, confirm GD WebP support and the persistent local public disk before running `php artisan content:generate-post-artwork --force` on the explicitly approved target. This additive operation leaves original covers and database records untouched; it must be separately approved under the production mutation rules. Run it again after publishing/replacing covers. Without generated candidates the public site continues serving originals. Verify candidate URLs return 200 before claiming responsive-image savings on production.
+
+Review explicit static-asset cache policy at the Forge/Nginx edge: content-fingerprinted `/build/assets/` and `/storage/posts/responsive/` files are candidates for a one-year `public, immutable` policy. Unversioned originals, fonts and site images need a shorter freshness policy or versioned URLs. Preserve private/no-store behavior for admin, previews and errors, and do not apply public HTML caching to CSRF tokens or form/session feedback. No edge configuration is changed by the artwork command or benchmark.
+
 Verify all of the following against the deployed commit:
 
 - `php artisan migrate:status` has no pending migrations.

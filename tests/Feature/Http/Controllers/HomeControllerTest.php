@@ -10,6 +10,17 @@ use function Pest\Laravel\get;
 
 uses(RefreshDatabase::class);
 
+test('homepage stays within its query budget as content grows', function (): void {
+    config()->set('mouse28.guides_enabled', false);
+    Post::factory()->count(30)->create();
+    Episode::factory()->count(15)->create();
+
+    $this->expectsDatabaseQueryCount(3);
+
+    get(route('home'))
+        ->assertOk();
+});
+
 test('public index page renders', function (): void {
     get(route('home'))
         ->assertOk()

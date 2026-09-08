@@ -19,7 +19,7 @@
         $groupedEpisodes = $allEpisodes->groupBy(fn ($episode) => $episode->season_number ?? 0);
         $coverImage = $podcast->cover_image
             ? '/storage/'.ltrim($podcast->cover_image, '/')
-            : '/images/podcast/mouse28-cover.jpg';
+            : '/images/podcast/mouse28-cover.webp';
     @endphp
 
     <div data-podcast-archive>
