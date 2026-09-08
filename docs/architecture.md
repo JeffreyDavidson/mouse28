@@ -86,7 +86,7 @@ Admin, preview, and error responses also emit `X-Robots-Tag: noindex, nofollow` 
 
 ## Verification
 
-Pest's Agent, Faker, Livewire, PHPStan, Rector, and Type Coverage plugins are development dependencies. PHPStan's extension installer registers the Pest extension automatically. The transitive `tomasvotruba/type-coverage` extension is excluded from automatic registration so installing Pest's coverage tooling does not impose a new 99% gate on `composer analyse`; run `composer test:type-coverage` explicitly. This command uses the same 2 GB memory allowance as static analysis because the local 128 MB default is insufficient. Existing PHPStan paths and Rector sets remain unchanged; installing the plugins does not expand analysis to tests or enable new Rector rules.
+Pest's Agent, Faker, Livewire, PHPStan, Rector, and Type Coverage plugins are development dependencies. PHPStan's extension installer registers the Pest extension automatically. The transitive `tomasvotruba/type-coverage` extension is excluded from automatic registration so `composer analyse` retains its separate analysis settings. `composer test:type-coverage` enforces a 100% minimum for Pest's measured type coverage over the `app` source configured in `phpunit.xml`, locally and in CI. This is type-declaration coverage, not runtime test coverage or proof of complete type safety. The command uses the same 2 GB memory allowance as static analysis because the local 128 MB default is insufficient. Existing PHPStan paths and Rector sets remain unchanged; analysis is not expanded to tests and no new Rector rules are enabled.
 
 ### Public-page performance benchmark
 

@@ -69,7 +69,7 @@
             "@php artisan test --exclude-testsuite=Browser"
         ],
         "test:browser": "@php artisan test --testsuite=Browser",
-        "test:type-coverage": "php -d memory_limit=2G vendor/bin/pest --type-coverage",
+        "test:type-coverage": "php -d memory_limit=2G vendor/bin/pest --type-coverage --min=100 --compact",
         "analyse": "php -d memory_limit=2G vendor/bin/phpstan analyse --no-progress",
         "rector": "vendor/bin/rector process",
         "test:rector": "vendor/bin/rector process --dry-run",
