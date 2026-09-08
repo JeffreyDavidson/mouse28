@@ -42,11 +42,7 @@ test('timeline queries select only fields rendered by the calendar', function ()
 
     app(ContentCalendar::class)->getTimeline();
 
-    expect($queries)->toHaveCount(3);
-
-    foreach ($queries as $query) {
-        expect($query)
-            ->toContain('select "id", "title", "is_published", "published_at"')
-            ->not->toContain('select *');
-    }
+    expect($queries)->toHaveCount(3)
+        ->each->not->toContain('select *')
+        ->toContain('select "id", "title", "is_published", "published_at"');
 });
