@@ -6,6 +6,9 @@
 *.md diff=markdown
 *.php diff=php
 
+# Preserve upstream whitespace in Filament's generated upload asset.
+/public/js/filament/forms/components/file-upload.js whitespace=-blank-at-eol
+
 /.github export-ignore
 CHANGELOG.md export-ignore
 .styleci.yml export-ignore
