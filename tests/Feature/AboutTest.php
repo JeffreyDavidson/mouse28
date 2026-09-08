@@ -39,12 +39,13 @@ test('about introduction groups its copy and preserves responsive safari artwork
 });
 
 test('primary navigation identifies About as the current destination', function (): void {
-    $response = get(route('about'))
-        ->assertOk();
+    // Act
+    $response = get(route('about'));
 
+    // Assert
+    $response->assertOk();
     $document = HTMLDocument::createFromString($response->getContent(), LIBXML_NOERROR);
-    $xpath = new XPath($document);
-    $links = $xpath->query('//*[local-name()="a"][contains(concat(" ", normalize-space(@class), " "), " dispatch-nav-link ") and @aria-current="page"]');
+    $links = $document->querySelectorAll('a.dispatch-nav-link[aria-current="page"]');
 
     expect($links)->toHaveCount(1)
         ->and(trim($links->item(0)->textContent))->toBe('About')

@@ -81,6 +81,7 @@ test('ready drafts can be explicitly published and unpublished', function (): vo
 });
 
 test('deleted content leaves the public site and can be restored by an administrator', function (): void {
+    // Arrange
     $admin = User::factory()->admin()->create();
     $record = Episode::factory()->create();
 
@@ -90,10 +91,14 @@ test('deleted content leaves the public site and can be restored by an administr
 
     actingAs($admin);
 
-    Livewire::test(EditEpisode::class, ['record' => $record->getRouteKey()])
-        ->callAction('restore')
-        ->assertNotified();
+    $page = livewire(EditEpisode::class, ['record' => $record->getRouteKey()]);
 
-    expect($record->refresh()->deleted_at)->toBeNull();
-    get(route('episodes.show', $record))->assertOk();
+    // Act
+    $page->callAction('restore');
+    $response = get(route('episodes.show', $record));
+
+    // Assert
+    $page->assertNotified();
+    $this->assertNotSoftDeleted($record);
+    $response->assertOk();
 });

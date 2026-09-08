@@ -6,7 +6,6 @@ use App\Models\Podcast;
 use App\Models\Post;
 use App\Support\ResponsiveArtwork;
 use Dom\HTMLDocument;
-use Dom\XPath;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -70,12 +69,13 @@ test('public index page renders', function (): void {
 });
 
 test('blog navigation identifies Blog as the current destination', function (): void {
-    $response = get(route('blog.index'))
-        ->assertOk();
+    // Act
+    $response = get(route('blog.index'));
 
+    // Assert
+    $response->assertOk();
     $document = HTMLDocument::createFromString($response->getContent(), LIBXML_NOERROR);
-    $xpath = new XPath($document);
-    $links = $xpath->query('//*[local-name()="a"][contains(concat(" ", normalize-space(@class), " "), " dispatch-nav-link ") and @aria-current="page"]');
+    $links = $document->querySelectorAll('a.dispatch-nav-link[aria-current="page"]');
 
     expect($links)->toHaveCount(1)
         ->and(trim($links->item(0)->textContent))->toBe('Blog')
