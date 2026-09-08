@@ -28,7 +28,7 @@ test('responsive covers preserve originals and use immutable URLs', function ():
         ->and($disk->get('posts/cover.png'))->toBe($original)
         ->and($post->refresh()->cover_image)->toBe('posts/cover.png');
 
-    foreach (ResponsiveArtwork::WIDTHS as $width) {
+    foreach ([480, 640, 768, 1280] as $width) {
         $path = ResponsiveArtwork::variantPath(hash('sha256', $original), $width);
         expect(getimagesize($disk->path($path))[0])->toBe($width)
             ->and(ResponsiveArtwork::srcset($post->cover_image))->toContain(" {$width}w");
@@ -55,6 +55,31 @@ test('generation skips drafts and never upscales small covers', function (): voi
     expect($result)->toBe(Command::SUCCESS)
         ->and($disk->allFiles())->toHaveCount(2);
 });
+
+test('intermediate candidates are generated only when the source can support them', function (string $type, int $width, int $height, bool $hasIntermediate): void {
+    Storage::fake('public');
+    $disk = Storage::disk('public');
+    $source = "{$type}/cover.png";
+    $original = UploadedFile::fake()->image('cover.png', $width, $height)->getContent();
+    $disk->put($source, $original);
+    ($type === 'posts' ? Post::factory() : Episode::factory())->create(['cover_image' => $source]);
+    $square = $type === 'episodes';
+    $existing = ResponsiveArtwork::variantPath(hash('sha256', $original), 480, $square);
+    $disk->put($existing, 'existing derivative');
+
+    $result = $this->artisan('content:generate-artwork', ['--type' => $type]);
+
+    expect($result)->toBe(Command::SUCCESS)
+        ->and($disk->get($source))->toBe($original)
+        ->and($disk->get($existing))->toBe('existing derivative')
+        ->and($disk->exists(ResponsiveArtwork::variantPath(hash('sha256', $original), 640, $square)))->toBe($hasIntermediate)
+        ->and($disk->exists(ResponsiveArtwork::variantPath(hash('sha256', $original), 768, $square)))->toBeFalse();
+})->with([
+    'post below 640 pixels' => ['posts', 639, 400, false],
+    'post at 640 pixels' => ['posts', 640, 400, true],
+    'episode short edge below 640 pixels' => ['episodes', 1000, 639, false],
+    'episode short edge at 640 pixels' => ['episodes', 1000, 640, true],
+]);
 
 test('corrupt covers fail gracefully without changing originals', function (): void {
     Storage::fake('public');
@@ -116,11 +141,11 @@ test('episode generation is explicit and only includes published covers', functi
     $result = $this->artisan('content:generate-artwork', ['--type' => 'episodes']);
 
     expect($result)->toBe(Command::SUCCESS)
-        ->and($disk->allFiles())->toHaveCount(5)
+        ->and($disk->allFiles())->toHaveCount(6)
         ->and($disk->get($episode->cover_image))->toBe($original)
         ->and($episode->refresh()->cover_image)->toBe('episodes/published.png');
 
-    foreach ([480, 768] as $width) {
+    foreach ([480, 640, 768] as $width) {
         $path = ResponsiveArtwork::variantPath(hash('sha256', $original), $width, square: true);
         $dimensions = getimagesize($disk->path($path));
         expect([$dimensions[0], $dimensions[1]])->toBe([$width, $width]);
