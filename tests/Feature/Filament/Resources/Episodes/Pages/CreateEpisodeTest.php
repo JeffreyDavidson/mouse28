@@ -10,7 +10,7 @@ use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 use function Pest\Livewire\livewire;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('episode creation validates numeric and URL storage constraints', function (string $field, mixed $value, string $rule): void {
     // Arrange

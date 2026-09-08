@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\get;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('blog pages stay within their query budget as content grows', function (string $page, int $queries): void {
     $episode = Episode::factory()->create();

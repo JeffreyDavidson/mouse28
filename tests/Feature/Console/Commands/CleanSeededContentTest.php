@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('known demo content is removed without deleting real content', function (): void {
     $demoEpisode = Episode::factory()->create(['slug' => CleanSeededContent::episodeSlugs()[0]]);

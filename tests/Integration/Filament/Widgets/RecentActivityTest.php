@@ -9,7 +9,7 @@ use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('activity shows the eight newest records even when one content type dominates', function (string $modelClass): void {
     $this->freezeSecond();

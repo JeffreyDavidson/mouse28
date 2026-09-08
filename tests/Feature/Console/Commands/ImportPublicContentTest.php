@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('public content archive can be imported without replacing environment-specific podcast email', function (): void {
     $archivePath = storage_path('framework/testing/public-content-import.json');

@@ -9,7 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('public content archive excludes drafts and private records', function (): void {
     $episode = Episode::factory()->create([

@@ -8,7 +8,7 @@ use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('seeder creates a useful mix of related dummy content', function (): void {
     $exitCode = Artisan::call('db:seed', ['--force' => true]);
