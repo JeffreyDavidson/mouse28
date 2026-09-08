@@ -17,7 +17,7 @@ use Symfony\Component\Finder\SplFileInfo;
 class AttachContentArtwork extends Command
 {
     /** @var array<string, string> */
-    private const EPISODE_ARTWORK = [
+    private const array EPISODE_ARTWORK = [
         'trailer-meet-mouse28' => 'episodes/trailer-meet-mouse28.webp',
         'meet-jeffrey-and-cassie-our-disney-story' => 'episodes/meet-jeffrey-and-cassie-our-disney-story.webp',
     ];

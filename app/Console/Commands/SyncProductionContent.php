@@ -17,7 +17,7 @@ use Throwable;
 #[Description('Replace local published content and media with the public content currently on Mouse28 production')]
 class SyncProductionContent extends Command
 {
-    private const SSH_OPTIONS = [
+    private const array SSH_OPTIONS = [
         '-o',
         'BatchMode=yes',
         '-o',

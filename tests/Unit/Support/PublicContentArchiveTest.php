@@ -2,6 +2,24 @@
 
 use App\Support\PublicContentArchive;
 
+test('archive versions must match the supported integer version', function (mixed $version): void {
+    $service = new PublicContentArchive;
+    $archive = [
+        'version' => $version,
+        'posts' => [],
+        'guides' => [],
+        'episodes' => [],
+        'podcast' => null,
+    ];
+
+    expect(fn () => $service->mediaPaths($archive))
+        ->toThrow(InvalidArgumentException::class, 'The public content archive version is not supported.');
+})->with([
+    'string version' => ['1'],
+    'future version' => [2],
+    'null version' => [null],
+]);
+
 test('media paths include all content types once in sorted order', function (): void {
     $service = new PublicContentArchive;
     $archive = [
