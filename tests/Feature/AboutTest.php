@@ -22,6 +22,22 @@ test('public index page renders', function (): void {
         ->assertSee('Disney looks different');
 });
 
+test('about introduction groups its copy and preserves responsive safari artwork', function (): void {
+    $response = get(route('about'))
+        ->assertOk()
+        ->assertSee('aria-labelledby="about-heading"', false)
+        ->assertSee('lg:grid-cols-[5fr_7fr]', false)
+        ->assertSee('aspect-[4/3]', false)
+        ->assertSee('fetchpriority="high"', false)
+        ->assertSee("Kilimanjaro Safaris at Disney's Animal Kingdom", false);
+
+    $document = HTMLDocument::createFromString($response->getContent(), LIBXML_NOERROR);
+    $xpath = new XPath($document);
+
+    expect($xpath->query('//*[@id="about-heading"]/following-sibling::*[local-name()="p"]'))->toHaveCount(1)
+        ->and($xpath->query('//*[local-name()="h1"]'))->toHaveCount(1);
+});
+
 test('primary navigation identifies About as the current destination', function (): void {
     $response = get(route('about'))
         ->assertOk();
