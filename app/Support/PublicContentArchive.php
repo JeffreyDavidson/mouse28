@@ -14,9 +14,9 @@ use InvalidArgumentException;
 
 class PublicContentArchive
 {
-    private const VERSION = 1;
+    private const int VERSION = 1;
 
-    private const EPISODE_FIELDS = [
+    private const array EPISODE_FIELDS = [
         'title',
         'slug',
         'description',
@@ -38,7 +38,7 @@ class PublicContentArchive
         'og_image',
     ];
 
-    private const POST_FIELDS = [
+    private const array POST_FIELDS = [
         'title',
         'slug',
         'excerpt',
@@ -54,7 +54,7 @@ class PublicContentArchive
         'og_image',
     ];
 
-    private const GUIDE_FIELDS = [
+    private const array GUIDE_FIELDS = [
         'title',
         'slug',
         'excerpt',
@@ -70,7 +70,7 @@ class PublicContentArchive
         'og_image',
     ];
 
-    private const PODCAST_FIELDS = [
+    private const array PODCAST_FIELDS = [
         'name',
         'description',
         'cover_image',

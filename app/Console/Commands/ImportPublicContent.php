@@ -14,7 +14,7 @@ use Throwable;
 #[Description('Import a public Mouse28 content archive into staging or another non-production environment')]
 class ImportPublicContent extends Command
 {
-    private const STAGING_HOST = 'staging.mouse28.com';
+    private const string STAGING_HOST = 'staging.mouse28.com';
 
     public function handle(PublicContentArchive $archive): int
     {
