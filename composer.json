@@ -27,9 +27,15 @@
         "laraveldaily/filacheck": "^1.2.4",
         "nunomaduro/collision": "^8.6",
         "pestphp/pest": "^5.1",
+        "pestphp/pest-plugin-agent": "^5.0",
         "pestphp/pest-plugin-arch": "^5.0",
         "pestphp/pest-plugin-browser": "^5.0",
+        "pestphp/pest-plugin-faker": "^5.0",
         "pestphp/pest-plugin-laravel": "^5.0",
+        "pestphp/pest-plugin-livewire": "^5.0",
+        "pestphp/pest-plugin-phpstan": "^5.0",
+        "pestphp/pest-plugin-rector": "^5.0",
+        "pestphp/pest-plugin-type-coverage": "^5.0",
         "phpstan/extension-installer": "^1.4",
         "rector/rector": "^2.6"
     },
@@ -63,6 +69,7 @@
             "@php artisan test --exclude-testsuite=Browser"
         ],
         "test:browser": "@php artisan test --testsuite=Browser",
+        "test:type-coverage": "php -d memory_limit=2G vendor/bin/pest --type-coverage",
         "analyse": "php -d memory_limit=2G vendor/bin/phpstan analyse --no-progress",
         "rector": "vendor/bin/rector process",
         "test:rector": "vendor/bin/rector process --dry-run",
@@ -88,6 +95,11 @@
         ]
     },
     "extra": {
+        "phpstan/extension-installer": {
+            "ignore": [
+                "tomasvotruba/type-coverage"
+            ]
+        },
         "laravel": {
             "dont-discover": []
         }

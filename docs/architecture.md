@@ -86,6 +86,8 @@ Admin, preview, and error responses also emit `X-Robots-Tag: noindex, nofollow` 
 
 ## Verification
 
+Pest's Agent, Faker, Livewire, PHPStan, Rector, and Type Coverage plugins are development dependencies. PHPStan's extension installer registers the Pest extension automatically. The transitive `tomasvotruba/type-coverage` extension is excluded from automatic registration so installing Pest's coverage tooling does not impose a new 99% gate on `composer analyse`; run `composer test:type-coverage` explicitly. This command uses the same 2 GB memory allowance as static analysis because the local 128 MB default is insufficient. Existing PHPStan paths and Rector sets remain unchanged; installing the plugins does not expand analysis to tests or enable new Rector rules.
+
 ### Public-page performance benchmark
 
 Run `npm run benchmark:pages -- --base https://mouse28.test --profile slow-mobile --runs 3 --output /tmp/mouse28-mobile.json` against a built, content-populated local site. Run the same command with `--profile desktop` separately. Select a staging or production origin explicitly; the command never deploys, authenticates, or submits forms. It visits the public landing pages, searches for “disney”, checks the dormant guides route, and discovers one published detail page per enabled content type. `--paths /blog,/episodes` narrows a repeat run; never silently compare runs that discovered different content.
