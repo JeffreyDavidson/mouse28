@@ -86,6 +86,8 @@ Admin, preview, and error responses also emit `X-Robots-Tag: noindex, nofollow` 
 
 ## Verification
 
+Pest's Agent, Faker, Livewire, PHPStan, Rector, and Type Coverage plugins are development dependencies. PHPStan's extension installer registers the Pest extension automatically. The transitive `tomasvotruba/type-coverage` extension is excluded from automatic registration so installing Pest's coverage tooling does not impose a new 99% gate on `composer analyse`; run `composer test:type-coverage` explicitly. This command uses the same 2 GB memory allowance as static analysis because the local 128 MB default is insufficient. Existing PHPStan paths and Rector sets remain unchanged; installing the plugins does not expand analysis to tests or enable new Rector rules.
+
 ### Public-page performance benchmark
 
 Navigation reports retain the original TTFB and add DNS, connection setup (including TLS), TLS, pre-request, response-wait, and document-transfer durations in milliseconds, plus an allowlisted set of raw navigation timestamps. TLS is a subset of connection time; DNS and connection time are subsets of pre-request time, not additional totals. Pre-request plus response-wait equals TTFB for these navigation entries. Response-wait includes network latency and is **not** isolated PHP or database execution time. Zero connection phases can indicate connection reuse. Summary rows include median pre-request, response-wait, and document-transfer times; independently calculated medians need not add up. Run `node --test tests/Browser/navigation-timings.test.mjs` to verify the calculations without starting a browser.
