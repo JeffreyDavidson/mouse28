@@ -154,6 +154,25 @@ class PublicContentArchive
         return $this->persist($archive, prunePublished: true);
     }
 
+    /** @param array<string, mixed> $archive */
+    public function assertSafeToSync(array $archive): void
+    {
+        $this->validate($archive);
+
+        foreach (['posts' => Post::class, 'guides' => Guide::class, 'episodes' => Episode::class] as $type => $model) {
+            $identity = $type === 'episodes' ? 'episode_number' : 'slug';
+            $records = $model::query()
+                ->whereIn($identity, array_column($archive[$type], $identity))
+                ->get();
+
+            foreach ($records as $record) {
+                if (! $record->is_published || $record->published_at === null || $record->published_at->isFuture()) {
+                    throw new InvalidArgumentException("Sync conflicts with local unpublished {$type}. Resolve the conflicting {$identity} before syncing.");
+                }
+            }
+        }
+    }
+
     /**
      * @param  array<string, mixed>  $archive
      * @return list<string>
@@ -191,6 +210,10 @@ class PublicContentArchive
         $this->validate($archive);
 
         return DB::transaction(function () use ($archive, $prunePublished): array {
+            if ($prunePublished) {
+                $this->assertSafeToSync($archive);
+            }
+
             foreach ($archive['episodes'] as $attributes) {
                 $this->importEpisode($attributes);
             }

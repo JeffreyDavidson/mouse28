@@ -43,6 +43,7 @@ test('test paths mirror their application source', function (string $suite): voi
     $projectRoot = dirname(__DIR__, 2);
     $suiteRoot = $projectRoot.'/tests/'.$suite.'/';
     $nonClassSources = [
+        'TestHarnessTest.php' => 'tests/TestCase.php',
         'AboutTest.php' => 'routes/web.php',
         'Config/SentryTest.php' => 'config/sentry.php',
         'Database/Seeders/DatabaseSeederTest.php' => 'database/seeders/DatabaseSeeder.php',

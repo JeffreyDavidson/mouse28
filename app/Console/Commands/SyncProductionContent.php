@@ -81,6 +81,7 @@ class SyncProductionContent extends Command
             /** @var array<string, mixed> $contents */
             $contents = json_decode(File::get($localArchivePath), true, flags: JSON_THROW_ON_ERROR);
             $mediaPaths = $archive->mediaPaths($contents);
+            $archive->assertSafeToSync($contents);
 
             if ($mediaPaths !== []) {
                 File::put($mediaManifestPath, implode(PHP_EOL, $mediaPaths).PHP_EOL);

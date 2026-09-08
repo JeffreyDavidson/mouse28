@@ -44,13 +44,21 @@ class AttachContentArtwork extends Command
             return self::FAILURE;
         }
 
-        $copied = collect($artwork)->sum(function (string $path) use ($sourceDirectory): int {
+        $copied = 0;
+
+        foreach ($artwork as $path) {
             if (Storage::disk('public')->exists($path)) {
-                return 0;
+                continue;
             }
 
-            return Storage::disk('public')->put($path, File::get("{$sourceDirectory}/{$path}")) ? 1 : 0;
-        });
+            if (! Storage::disk('public')->put($path, File::get("{$sourceDirectory}/{$path}"))) {
+                $this->error("Unable to copy artwork: {$path}. No content records were updated.");
+
+                return self::FAILURE;
+            }
+
+            $copied++;
+        }
 
         $updated = $this->attach(Post::query(), $postArtwork)
             + $this->attach(Episode::query(), self::EPISODE_ARTWORK);

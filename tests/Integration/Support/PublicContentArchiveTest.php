@@ -3,12 +3,36 @@
 use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
 use App\Enums\PostCategory;
+use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
 use App\Support\PublicContentArchive;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
+
+test('sync refuses unpublished identity collisions without changing content', function (string $model, string $state): void {
+    // Arrange
+    $record = $model::factory()->create();
+    $service = app(PublicContentArchive::class);
+    $archive = $service->export();
+    $record->update($state === 'draft'
+        ? ['is_published' => false, 'title' => 'Local work']
+        : ['published_at' => now()->addWeek(), 'title' => 'Local work']);
+
+    $exception = null;
+
+    // Act
+    try {
+        $service->sync($archive);
+    } catch (InvalidArgumentException $caught) {
+        $exception = $caught;
+    }
+
+    // Assert
+    expect($exception)->toBeInstanceOf(InvalidArgumentException::class)
+        ->and($record->refresh()->title)->toBe('Local work');
+})->with([Post::class, Guide::class, Episode::class])->with(['draft', 'scheduled']);
 
 test('public archives retain string values and restore enum backed content', function (): void {
     $post = Post::factory()->create(['author' => ContentAuthor::Cassie, 'category' => PostCategory::DisneyTips]);
