@@ -2,6 +2,7 @@
 
 use App\Models\Episode;
 use App\Models\Post;
+use App\Support\PublicContentArchive;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Process\PendingProcess;
@@ -11,6 +12,29 @@ use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 
 uses(RefreshDatabase::class);
+
+test('sync stops before transferring media when a local draft collides', function (): void {
+    Storage::fake('public');
+    config()->set('mouse28.production_sync.ssh_host', 'cold-moon');
+    config()->set('mouse28.production_sync.site_path', '/home/forge/mouse28.com/current');
+    $post = Post::factory()->create(['cover_image' => 'posts/local.webp']);
+    $archive = app(PublicContentArchive::class)->export();
+    $post->update(['is_published' => false]);
+    Process::fake(function (PendingProcess $process) use ($archive) {
+        if ($process->command[0] === 'scp') {
+            File::put($process->command[array_key_last($process->command)], json_encode($archive, JSON_THROW_ON_ERROR));
+        }
+
+        return Process::result();
+    });
+    Process::preventStrayProcesses();
+
+    $exitCode = Artisan::call('content:sync-production');
+
+    expect($exitCode)->toBe(Command::FAILURE)
+        ->and($post->refresh()->is_published)->toBeFalse();
+    Process::assertDidntRun(fn (PendingProcess $process): bool => $process->command[0] === 'rsync');
+});
 
 test('production public content and referenced media can be synced locally', function (): void {
     Storage::fake('public');
