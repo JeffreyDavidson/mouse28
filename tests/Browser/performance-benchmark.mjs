@@ -2,6 +2,7 @@ import { parseArgs } from 'node:util';
 import { writeFile } from 'node:fs/promises';
 import { chromium } from 'playwright';
 import { navigationTimings } from './navigation-timings.mjs';
+import { benchmarkFailures } from './benchmark-failures.mjs';
 
 const { values } = parseArgs({ options: {
     base: { type: 'string' },
@@ -90,7 +91,7 @@ try {
                     const onCdpResponse = ({ response, type }) => {
                         const resource = new URL(response.url);
                         if (resource.origin !== base.origin) return;
-                        if (response.status >= 400) failures.push({ path: resource.pathname, status: response.status });
+                        if (response.status >= 400) failures.push({ path: resource.pathname, status: response.status, type });
                         if (!['Image', 'Script', 'Stylesheet', 'Font'].includes(type)) return;
                         const headers = Object.fromEntries(Object.entries(response.headers).map(([key, value]) => [key.toLowerCase(), value]));
                         assets.set(resource.pathname, { path: resource.pathname, type, cacheControl: headers['cache-control'] ?? null, expires: headers.expires ?? null, lastModified: headers['last-modified'] ?? null, encoding: headers['content-encoding'] ?? null, cached: Boolean(response.fromDiskCache || response.fromPrefetchCache) });
@@ -112,11 +113,12 @@ try {
                                 largestResources: performance.getEntriesByType('resource').filter(entry => new URL(entry.name).origin === location.origin).sort((a, b) => b.transferSize - a.transferSize).slice(0, 5).map(entry => ({ path: new URL(entry.name).pathname, bytes: entry.transferSize, duration: Math.round(entry.duration) })) };
                         });
                         const sample = { path, run, cache, status: response?.status(), ...metrics, ...navigationTimings(metrics.navigation), bytes, requests, pageErrors, errorOrigins, failures, assets: [...assets.values()] };
+                        sample.failureReasons = benchmarkFailures(sample);
                         samples.push(sample);
-                        if (pageErrors > 0 || (sample.status !== 200 && !(path === '/guides' && sample.status === 404))) process.exitCode = 1;
-                        console.log(JSON.stringify({ path, run, cache, status: sample.status, lcp: Math.round(metrics.lcp), cls: metrics.cls, ttfb: Math.round(metrics.ttfb), bytes, pageErrors }));
+                        if (sample.failureReasons.length > 0) process.exitCode = 1;
+                        console.log(JSON.stringify({ path, run, cache, status: sample.status, lcp: Math.round(metrics.lcp), cls: metrics.cls, ttfb: Math.round(metrics.ttfb), bytes, pageErrors, failureReasons: sample.failureReasons }));
                     } catch (error) {
-                        samples.push({ path, run, cache, error: error.name });
+                        samples.push({ path, run, cache, error: error.name, failureReasons: ['navigation-error'] });
                         process.exitCode = 1;
                         console.error(`${path} ${cache}: ${error.name}`);
                     } finally {
@@ -136,12 +138,13 @@ try {
     for (const path of [...new Set(samples.map(sample => sample.path))]) {
         for (const cache of ['cold', 'warm']) {
             const group = samples.filter(sample => sample.path === path && sample.cache === cache && !sample.error);
+            const failedRuns = samples.filter(sample => sample.path === path && sample.cache === cache && sample.failureReasons.length > 0).length;
             const median = key => {
                 const sorted = group.map(sample => sample[key]).filter(value => typeof value === 'number').sort((a, b) => a - b);
                 const middle = Math.floor(sorted.length / 2);
                 return sorted.length ? (sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2) : null;
             };
-            report.summary.push({ path, cache, completedRuns: group.length, medianLcpMs: median('lcp'), medianTtfbMs: median('ttfb'), medianPreRequestMs: median('preRequestMs'), medianResponseWaitMs: median('responseWaitMs'), medianDocumentTransferMs: median('documentTransferMs'), medianBytes: median('bytes'), worstCls: group.length ? Math.max(...group.map(sample => sample.cls)) : null });
+            report.summary.push({ path, cache, completedRuns: group.length, failedRuns, medianLcpMs: median('lcp'), medianTtfbMs: median('ttfb'), medianPreRequestMs: median('preRequestMs'), medianResponseWaitMs: median('responseWaitMs'), medianDocumentTransferMs: median('documentTransferMs'), medianBytes: median('bytes'), worstCls: group.length ? Math.max(...group.map(sample => sample.cls)) : null });
         }
     }
     if (values.output) await writeFile(values.output, JSON.stringify(report, null, 2) + '\n');
