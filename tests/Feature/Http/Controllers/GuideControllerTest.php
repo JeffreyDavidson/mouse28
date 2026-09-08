@@ -101,6 +101,18 @@ test('invalid guide category falls back to all guides', function (): void {
         ->assertSee($guide->title);
 });
 
+test('a valid category limits the guide index to matching published guides', function (): void {
+    $matching = Guide::factory()->create(['category' => 'accessibility']);
+    $other = Guide::factory()->create(['category' => 'family-planning']);
+    $draft = Guide::factory()->draft()->create(['category' => 'accessibility']);
+
+    get(route('guides.index', ['category' => 'accessibility']))
+        ->assertOk()
+        ->assertSee($matching->title)
+        ->assertDontSee($other->title)
+        ->assertDontSee($draft->title);
+});
+
 test('editorial review information is shown on the public page', function (): void {
     config()->set('mouse28.guide_review_interval_days', 180);
 

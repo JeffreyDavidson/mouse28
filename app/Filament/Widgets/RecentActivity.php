@@ -23,7 +23,7 @@ class RecentActivity extends Widget
     {
         $items = collect();
 
-        Post::select(['id', 'title', 'is_published', 'published_at', 'updated_at'])->latest('updated_at')->limit(8)->get()->each(function ($post) use ($items) {
+        Post::select(['id', 'title', 'is_published', 'published_at', 'updated_at'])->latest('updated_at')->limit(8)->get()->each(function (Post $post) use ($items): void {
             $items->push([
                 'icon' => 'document-text',
                 'color' => '#5b3e9e',
@@ -34,7 +34,7 @@ class RecentActivity extends Widget
             ]);
         });
 
-        Episode::select(['id', 'title', 'is_published', 'published_at', 'updated_at'])->latest('updated_at')->limit(8)->get()->each(function ($episode) use ($items) {
+        Episode::select(['id', 'title', 'is_published', 'published_at', 'updated_at'])->latest('updated_at')->limit(8)->get()->each(function (Episode $episode) use ($items): void {
             $items->push([
                 'icon' => 'microphone',
                 'color' => '#d4a843',
@@ -45,7 +45,7 @@ class RecentActivity extends Widget
             ]);
         });
 
-        Guide::select(['id', 'title', 'is_published', 'published_at', 'updated_at'])->latest('updated_at')->limit(8)->get()->each(function ($guide) use ($items) {
+        Guide::select(['id', 'title', 'is_published', 'published_at', 'updated_at'])->latest('updated_at')->limit(8)->get()->each(function (Guide $guide) use ($items): void {
             $items->push([
                 'icon' => 'book-open',
                 'color' => '#4a90a4',
