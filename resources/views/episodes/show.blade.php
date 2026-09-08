@@ -6,7 +6,6 @@
     :og-image="$episode->og_image_url ?: $episode->cover_image_url"
     :robots="($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow'"
     :dispatch-layout="true"
-    :show-footer-newsletter="false"
 >
     <!--
         THESIS: An episode page should behave like a listening sheet, not a dashboard of podcast widgets.
@@ -310,10 +309,6 @@
                 :next-episode="$nextEpisode"
                 :compact="$isSparseEpisode"
             />
-
-            <div class="mx-auto mt-14 max-w-3xl" data-print-hidden>
-                <x-newsletter-card subtitle="New episodes and Disney tips delivered to your inbox" />
-            </div>
         </div>
     </section>
 </x-layouts.app>

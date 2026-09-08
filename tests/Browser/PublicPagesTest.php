@@ -4,6 +4,26 @@ use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
 
+test('main public pages share one full footer signup', function (): void {
+    $post = Post::factory()->create();
+    $episode = Episode::factory()->create();
+
+    visit([
+        route('home'),
+        route('blog.index'),
+        route('blog.show', $post),
+        route('episodes.index'),
+        route('episodes.show', $episode),
+        route('about'),
+        route('contact.show'),
+    ])
+        ->assertScript('document.querySelectorAll("footer").length', 1)
+        ->assertScript('document.querySelectorAll("footer #footer-newsletter-email").length', 1)
+        ->assertScript('document.querySelectorAll(\'form[action$="/newsletter"]\').length', 1)
+        ->assertScript('document.querySelector("footer").textContent.includes("Connect")', true)
+        ->assertNoJavaScriptErrors();
+});
+
 function exposedDecorativeGlyphCountScript(): string
 {
     return <<<'JS'

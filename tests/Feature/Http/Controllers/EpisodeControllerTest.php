@@ -57,7 +57,9 @@ test('podcast pages render one newsletter signup', function (): void {
 
     foreach ([route('episodes.index'), route('episodes.show', $episode)] as $url) {
         $response = get($url)
-            ->assertOk();
+            ->assertOk()
+            ->assertSee('id="footer-newsletter-email"', false)
+            ->assertSee('Connect');
 
         expect(substr_count($response->getContent(), 'action="'.route('newsletter.store').'"'))->toBe(1);
     }

@@ -7,7 +7,6 @@
     :og-image="$post->og_image_url ?: $post->cover_image_url"
     :robots="($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow'"
     :dispatch-layout="true"
-    :show-footer-newsletter="false"
 >
     <!--
         THESIS: A Mouse28 post should feel like opening a family field journal, not entering a publishing template.
@@ -253,10 +252,6 @@
                 </div>
             </section>
         @endif
-
-        <div class="mx-auto mt-16 max-w-3xl px-4 sm:px-6" data-print-hidden>
-            <x-newsletter-card subtitle="Disney tips, park updates, and new posts" />
-        </div>
     </section>
 
     <button

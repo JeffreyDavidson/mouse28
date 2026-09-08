@@ -273,12 +273,6 @@
                     </div>
                 @endif
             </div>
-
-            @if ($hasAnyPosts || $search || $category)
-                <div class="mx-auto mt-16 max-w-3xl">
-                    <x-newsletter-card subtitle="Disney tips, park updates, and new posts" />
-                </div>
-            @endif
         </div>
     </section>
 </div>
