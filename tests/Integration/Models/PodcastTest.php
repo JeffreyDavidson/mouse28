@@ -3,8 +3,28 @@
 use App\Models\Podcast;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Spatie\Activitylog\Models\Activity;
 
 uses(RefreshDatabase::class);
+
+test('podcast changes exclude the private contact email from the audit log', function (): void {
+    $podcast = Podcast::query()->create(['name' => 'Original', 'email' => 'private@example.com']);
+    $created = Activity::query()->firstOrFail();
+
+    $podcast->update(['name' => 'Updated', 'email' => 'another@example.com']);
+
+    $updated = Activity::query()->latest('id')->firstOrFail();
+    expect($created->causer_id)->toBeNull()
+        ->and($created->attribute_changes->get('attributes'))->not->toHaveKey('email')
+        ->and($updated->attribute_changes->all())->toBe([
+            'attributes' => ['name' => 'Updated'],
+            'old' => ['name' => 'Original'],
+        ]);
+
+    $podcast->update(['email' => 'third@example.com']);
+
+    expect(Activity::query()->count())->toBe(2);
+});
 
 test('podcast info provides site defaults without a settings record', function (): void {
     $podcast = Podcast::info();
