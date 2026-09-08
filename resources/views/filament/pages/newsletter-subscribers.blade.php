@@ -6,7 +6,11 @@
         $count = count($subscribers);
     @endphp
 
-    <x-filament.page-header title="Newsletter Subscribers" subtitle="Powered by Resend · Cached 5 min" class="mb-6">
+    <x-filament.page-header
+        title="Newsletter Subscribers"
+        subtitle="All contacts, including unsubscribed · Resend · Cached 5 min"
+        class="mb-6"
+    >
         <x-slot:icon>
             <svg class="text-mouse-gold-light size-8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="2" y="2" width="20" height="16" rx="2" />
@@ -15,8 +19,10 @@
         </x-slot:icon>
 
         <x-slot:stats>
-            <x-filament.resource-stat :label="str('subscriber')->plural($count)" tone="gold">
-                {{ $count }}</x-filament.resource-stat>
+            <x-filament.resource-stat label="Active subscribers" tone="gold">
+                {{ $audience['active_count'] }}
+            </x-filament.resource-stat>
+            <x-filament.resource-stat label="Total contacts"> {{ $count }} </x-filament.resource-stat>
         </x-slot:stats>
 
         <x-slot:actions>
@@ -35,7 +41,7 @@
                     icon="heroicon-m-arrow-down-tray"
                     class="min-h-12"
                 >
-                    Export CSV
+                    Export all contacts
                 </x-filament::button>
             @endif
         </x-slot:actions>
@@ -60,13 +66,18 @@
                 <rect x="2" y="4" width="20" height="16" rx="2" />
                 <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
             </svg>
-            <h3 class="font-mouse-heading text-mouse-cream text-xl font-bold">No subscribers yet</h3>
+            <h3 class="font-mouse-heading text-mouse-cream text-xl font-bold">No contacts yet</h3>
             <p class="font-mouse-body text-mouse-cream/50 mt-2 text-sm">
                 Share your newsletter signup link to start growing your audience <span aria-hidden="true">✨</span>
             </p>
         </div>
     @elseif ($count > 0)
-        <div class="bg-mouse-navy-light/30 border-mouse-gold/12 overflow-x-auto rounded-2xl border">
+        <div
+            class="bg-mouse-navy-light/30 border-mouse-gold/12 focus-visible:outline-mouse-gold-light overflow-x-auto rounded-2xl border focus-visible:outline-2 focus-visible:outline-offset-2"
+            role="region"
+            aria-label="Newsletter contacts"
+            tabindex="0"
+        >
             <table class="w-full min-w-160 border-collapse">
                 <thead class="bg-mouse-navy/60">
                     <tr>
@@ -86,13 +97,19 @@
                             class="border-mouse-gold/10 font-mouse-body text-mouse-gold/80 border-b px-6 py-4 text-left text-xs font-semibold tracking-wider uppercase"
                             scope="col"
                         >
-                            Subscribed
+                            Created
+                        </th>
+                        <th
+                            class="border-mouse-gold/10 font-mouse-body text-mouse-gold/80 border-b px-6 py-4 text-left text-xs font-semibold tracking-wider uppercase"
+                            scope="col"
+                        >
+                            Status
                         </th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach ($subscribers as $index => $subscriber)
-                        @php($subscribedAt = isset($subscriber['created_at']) ? \Carbon\Carbon::parse($subscriber['created_at']) : null)
+                        @php($createdAt = isset($subscriber['created_at']) ? \Carbon\Carbon::parse($subscriber['created_at']) : null)
                         <tr class="hover:bg-mouse-gold/4 transition-colors">
                             <td class="border-mouse-gold/6 font-mouse-body text-mouse-cream/40 border-b px-6 py-4 text-xs">
                                 {{ $index + 1 }}
@@ -109,14 +126,17 @@
                                 </div>
                             </td>
                             <td class="border-mouse-gold/6 font-mouse-body text-mouse-cream/50 border-b px-6 py-4 text-sm">
-                                @if ($subscribedAt)
-                                    <time datetime="{{ $subscribedAt->toIso8601String() }}">
-                                        {{ $subscribedAt->format('M j, Y') }}
-                                        <span class="text-mouse-cream/30 ml-2 text-xs">{{ $subscribedAt->format('g:ia') }}</span>
+                                @if ($createdAt)
+                                    <time datetime="{{ $createdAt->toIso8601String() }}">
+                                        {{ $createdAt->format('M j, Y') }}
+                                        <span class="text-mouse-cream/30 ml-2 text-xs">{{ $createdAt->format('g:ia') }}</span>
                                     </time>
                                 @else
                                     —
                                 @endif
+                            </td>
+                            <td class="border-mouse-gold/6 font-mouse-body text-mouse-cream border-b px-6 py-4 text-sm">
+                                {{ $subscriber['subscription_status'] }}
                             </td>
                         </tr>
                     @endforeach
