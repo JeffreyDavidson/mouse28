@@ -81,6 +81,16 @@ jobs:
           mkdir -p database
           touch database/database.sqlite
 
+      - name: Run Pest static analysis
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ':memory:'
+          QUEUE_CONNECTION: sync
+          SESSION_DRIVER: array
+          CACHE_STORE: array
+          MAIL_MAILER: array
+        run: composer analyse:pest
+
       - name: Run tests
         env:
           DB_CONNECTION: sqlite
