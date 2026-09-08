@@ -101,7 +101,9 @@ composer test:rector:pest
 
 `tests/pest-livewire.stub` supplies the component-specific return type missing from Pest Livewire 5.0's `livewire()` helper, retaining the generic `Component` fallback for named components. It is loaded only by Pest PHPStan analysis, never at runtime. Revisit the stub when the plugin supplies equivalent typing upstream.
 
-These checks are opt-in while existing findings are reviewed, not CI gates or part of `composer test`. A nonzero exit code reports findings that need review; no baseline or blanket suppression hides them. `composer test:rector:pest` is read-only. Run `composer rector:pest` only to deliberately apply the proposed test changes, then inspect the diff and rerun the affected tests. Preserve Arrange / Act / Assert boundaries and framework-specific assertions when reviewing rewrites.
+`composer analyse:pest` is a required CI step after Laravel preparation, using an in-memory SQLite connection and test service drivers. It remains separate from `composer test`. A nonzero exit code fails CI; no baseline or blanket suppression hides findings.
+
+`composer test:rector:pest` remains opt-in and read-only while its existing proposals are reviewed. Run `composer rector:pest` only to deliberately apply the proposed test changes, then inspect the diff and rerun the affected tests. Preserve Arrange / Act / Assert boundaries and framework-specific assertions when reviewing rewrites.
 
 Choose the suite by what the test exercises:
 
