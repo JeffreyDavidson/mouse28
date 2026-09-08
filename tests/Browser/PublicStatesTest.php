@@ -48,6 +48,7 @@ test('search validation identifies and focuses the invalid query', function (): 
         ->assertSee('Search terms may not be longer than 100 characters.')
         ->assertAttribute('#site-search', 'aria-invalid', 'true')
         ->assertAttribute('#site-search', 'aria-describedby', 'site-search-error')
+        ->waitForEvent('load')
         ->assertScript('document.activeElement.id', 'site-search')
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
@@ -72,6 +73,7 @@ test('newsletter validation and rate-limit feedback remain accessible', function
         ->assertValue('#footer-newsletter-email', 'not-an-email')
         ->assertAttribute('#footer-newsletter-email', 'aria-invalid', 'true')
         ->assertAttribute('#footer-newsletter-email', 'aria-describedby', 'footer-newsletter-email-error')
+        ->waitForEvent('load')
         ->assertScript('document.activeElement.id', 'footer-newsletter-email')
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
