@@ -282,6 +282,8 @@
                     <div class="dispatch-podcast-frame mx-auto w-full max-w-72 p-3 md:mx-0">
                         <img
                             src="/images/podcast/mouse28-cover.webp"
+                            srcset="/images/podcast/mouse28-cover-640.webp 640w, /images/podcast/mouse28-cover.webp 1200w"
+                            sizes="auto, 264px"
                             alt="Mouse28 podcast artwork"
                             width="1200"
                             height="1200"

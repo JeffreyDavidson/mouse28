@@ -83,6 +83,24 @@ test('homepage uses one newsletter form and responsive hero artwork', function (
     expect(substr_count($response->getContent(), 'action="'.route('newsletter.store').'"'))->toBe(1);
 });
 
+test('homepage offers a smaller bundled podcast cover without replacing the original', function (): void {
+    get(route('home'))
+        ->assertOk()
+        ->assertSee('srcset="/images/podcast/mouse28-cover-640.webp 640w, /images/podcast/mouse28-cover.webp 1200w"', false)
+        ->assertSee('sizes="auto, 264px"', false);
+
+    $candidate = public_path('images/podcast/mouse28-cover-640.webp');
+    $original = public_path('images/podcast/mouse28-cover.webp');
+
+    expect(is_file($candidate))->toBeTrue()
+        ->and(is_file($original))->toBeTrue();
+
+    $dimensions = getimagesize($candidate);
+
+    expect([$dimensions[0], $dimensions[1], $dimensions['mime']])->toBe([640, 640, 'image/webp'])
+        ->and(filesize($candidate))->toBeLessThan(filesize($original));
+});
+
 test('homepage only presents published content as stories and guides', function (): void {
     $featuredPost = Post::factory()->create([
         'title' => 'A Real Featured Dispatch',
