@@ -14,6 +14,21 @@ test('mobile visitors receive the responsive hero and a lean public script', fun
     )->assertScript(
         <<<'JS'
             (() => {
+                const preload = document.querySelector('head link[rel="preload"][as="image"]');
+                const source = document.querySelector('.hero-split-photo source');
+
+                return preload?.imageSrcset === source.srcset
+                    && preload?.imageSizes === source.sizes
+                    && preload?.fetchPriority === 'high';
+            })()
+            JS,
+        true,
+    )->assertScript(
+        'performance.getEntriesByType("resource").filter(resource => resource.name.includes("/images/hero-family")).length',
+        1,
+    )->assertScript(
+        <<<'JS'
+            (() => {
                 const script = performance.getEntriesByType('resource')
                     .find((resource) => /\/build\/assets\/app-[^/]+\.js$/.test(resource.name));
 

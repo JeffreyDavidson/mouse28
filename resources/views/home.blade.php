@@ -6,6 +6,16 @@
     :canonical="route('home')"
     :dispatch-layout="true"
 >
+    @php
+        \Laravel\Head\Facades\Head::link('preload', '/images/hero-family.webp', [
+            'as' => 'image',
+            'type' => 'image/webp',
+            'imagesrcset' => '/images/hero-family-640.webp 640w, /images/hero-family-1024.webp 1024w, /images/hero-family.webp 1600w',
+            'imagesizes' => '(min-width: 768px) 60vw, 100vw',
+            'fetchpriority' => 'high',
+        ]);
+    @endphp
+
     <div class="dispatch-cloth overflow-hidden">
         <section class="dispatch-hero relative px-4 pt-6 sm:px-6 sm:pt-8">
             <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
