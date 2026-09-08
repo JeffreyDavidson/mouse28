@@ -86,6 +86,7 @@ class Post extends Model
             ->dontLogEmptyChanges();
     }
 
+    /** @return BelongsTo<Episode, $this> */
     public function episode(): BelongsTo
     {
         return $this->belongsTo(Episode::class);
