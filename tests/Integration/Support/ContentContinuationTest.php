@@ -7,7 +7,7 @@ use App\Models\Post;
 use App\Support\ContentContinuation;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 beforeEach(function (): void {
     $this->freezeSecond();

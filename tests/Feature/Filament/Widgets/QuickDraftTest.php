@@ -9,7 +9,7 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('duplicate maximum length titles keep generated slugs within the column limit', function (): void {
     $title = str_repeat('a', 255);

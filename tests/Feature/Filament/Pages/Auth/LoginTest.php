@@ -4,7 +4,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Laravel\get;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('guest can render the admin login', function (): void {
     get(route('filament.admin.auth.login'))

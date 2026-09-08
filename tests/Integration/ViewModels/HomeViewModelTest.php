@@ -6,7 +6,7 @@ use App\Models\Post;
 use App\ViewModels\HomeViewModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('homepage content queries select only fields rendered by their cards', function (): void {
     config()->set('mouse28.guides_enabled', true);

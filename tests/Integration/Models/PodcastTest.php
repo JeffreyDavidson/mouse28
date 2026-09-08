@@ -5,7 +5,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\Models\Activity;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('podcast changes exclude the private contact email from the audit log', function (): void {
     $podcast = Podcast::query()->create(['name' => 'Original', 'email' => 'private@example.com']);

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Laravel\Prompts\Prompt;
 use Symfony\Component\Console\Tester\CommandTester;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('responsive covers preserve originals and use immutable URLs', function (): void {
     Storage::fake('public');

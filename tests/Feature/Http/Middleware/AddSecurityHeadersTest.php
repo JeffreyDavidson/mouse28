@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use function Pest\Laravel\get;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 beforeEach(function (): void {
     config()->set('app.debug', false);

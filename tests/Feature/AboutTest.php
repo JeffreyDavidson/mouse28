@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Laravel\get;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('about stays within its query budget', function (): void {
     $this->expectsDatabaseQueryCount(1);

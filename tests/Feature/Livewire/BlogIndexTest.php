@@ -5,7 +5,7 @@ use App\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('query string filters update the visible stories', function (): void {
     // Arrange

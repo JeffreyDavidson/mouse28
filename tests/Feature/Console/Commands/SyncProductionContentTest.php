@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('sync stops before transferring media when a local draft collides', function (): void {
     // Arrange

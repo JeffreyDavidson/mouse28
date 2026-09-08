@@ -9,7 +9,7 @@ use App\Models\Post;
 use App\Support\PublicContentArchive;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('sync refuses unpublished identity collisions without changing content', function (string $model, string $state): void {
     // Arrange

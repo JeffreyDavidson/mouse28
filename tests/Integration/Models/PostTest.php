@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Activitylog\Models\Activity;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('post editorial changes record the actor and changed values only', function (): void {
     $editor = User::factory()->admin()->create();

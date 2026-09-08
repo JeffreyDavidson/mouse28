@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use function Pest\Laravel\get;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('unknown URLs render the branded recovery page', function (): void {
     get('/this-page-does-not-exist')

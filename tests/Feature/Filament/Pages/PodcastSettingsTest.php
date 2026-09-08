@@ -11,7 +11,7 @@ use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 use function Pest\Livewire\livewire;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('podcast links enforce their storage length without changing saved settings', function (string $field): void {
     // Arrange

@@ -13,7 +13,7 @@ use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\from;
 use function Pest\Laravel\get;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('contact stays within its query budget', function (): void {
     $this->expectsDatabaseQueryCount(1);
