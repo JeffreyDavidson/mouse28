@@ -4,6 +4,10 @@ use App\Support\ResponsiveArtwork;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
+test('responsive artwork preserves the supported derivative widths', function (): void {
+    expect(ResponsiveArtwork::WIDTHS)->toBe([480, 640, 768, 1280]);
+});
+
 test('unsafe or unavailable source paths have no responsive candidates', function (?string $path): void {
     Storage::fake('public');
 
