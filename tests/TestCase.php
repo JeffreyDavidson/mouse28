@@ -3,6 +3,7 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Testing\TestResponse;
 
 abstract class TestCase extends BaseTestCase
@@ -12,6 +13,8 @@ abstract class TestCase extends BaseTestCase
         $this->mockConsoleOutput = false;
 
         parent::setUp();
+
+        Http::preventStrayRequests();
 
         $this->withoutVite();
     }
