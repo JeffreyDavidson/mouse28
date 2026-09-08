@@ -6,13 +6,13 @@
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
-        "php": "^8.5",
         "filament/filament": "^5.7",
         "laravel/framework": "^13.23",
         "laravel/head": "^0.2.1",
         "laravel/nightwatch": "^1.30",
         "laravel/tinker": "^3.0",
         "livewire/livewire": "^4.4",
+        "php": "^8.5",
         "resend/resend-laravel": "^1.4",
         "sentry/sentry-laravel": "^4.27"
     },
@@ -69,7 +69,6 @@
             "@php artisan test --exclude-testsuite=Browser"
         ],
         "test:browser": "@php artisan test --testsuite=Browser",
-        "test:type-coverage": "php -d memory_limit=2G vendor/bin/pest --type-coverage --min=100 --compact",
         "analyse": "php -d memory_limit=2G vendor/bin/phpstan analyse --no-progress",
         "rector": "vendor/bin/rector process",
         "test:rector": "vendor/bin/rector process --dry-run",
@@ -95,11 +94,6 @@
         ]
     },
     "extra": {
-        "phpstan/extension-installer": {
-            "ignore": [
-                "tomasvotruba/type-coverage"
-            ]
-        },
         "laravel": {
             "dont-discover": []
         }
