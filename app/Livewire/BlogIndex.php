@@ -111,7 +111,7 @@ class BlogIndex extends Component
             'posts' => $posts,
             'featuredPost' => $featuredPost,
             'archivePosts' => $archivePosts,
-            'hasAnyPosts' => Post::published()->exists(),
+            'hasAnyPosts' => $featuredPost !== null,
             'usedCategories' => Post::published()->distinct()->pluck('category')->filter()
                 ->values()
                 ->map(fn (PostCategory $category): string => $category->value)
