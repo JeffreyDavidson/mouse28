@@ -25,6 +25,7 @@ class ContentCalendar extends Widget
         $end = now()->addDays(7)->endOfDay();
 
         $posts = Post::whereBetween('published_at', [$start, $end])
+            ->select(['id', 'title', 'is_published', 'published_at'])
             ->orderBy('published_at')
             ->get()
             ->map(fn ($post) => [
@@ -37,6 +38,7 @@ class ContentCalendar extends Widget
             ->toBase();
 
         $episodes = Episode::whereBetween('published_at', [$start, $end])
+            ->select(['id', 'title', 'is_published', 'published_at'])
             ->orderBy('published_at')
             ->get()
             ->map(fn ($episode) => [
@@ -49,6 +51,7 @@ class ContentCalendar extends Widget
             ->toBase();
 
         $guides = Guide::whereBetween('published_at', [$start, $end])
+            ->select(['id', 'title', 'is_published', 'published_at'])
             ->orderBy('published_at')
             ->get()
             ->map(fn ($guide) => [
