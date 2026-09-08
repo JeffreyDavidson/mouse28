@@ -436,9 +436,9 @@ test('mobile search and transcript controls remain usable', function (): void {
         ->assertNoJavaScriptErrors();
 })->group('browser-smoke', 'browser-compatibility');
 
-test('article navigation scrolls to headings and back to the top with reduced motion', function (): void {
+test('article navigation scrolls to headings and back to the top with reduced motion', function (string $trailingContent): void {
     $post = Post::factory()->create([
-        'body' => "## Planning the day\n\n".str_repeat("Flexible park planning and sensory breaks.\n\n", 80)."## Finding quiet spaces\n\nTake a break.",
+        'body' => "## Planning the day\n\n".str_repeat("Flexible park planning and sensory breaks.\n\n", 80)."## Finding quiet spaces\n\n".$trailingContent,
     ]);
     $page = visit(route('blog.show', $post), ['reducedMotion' => 'reduce']);
 
@@ -446,7 +446,17 @@ test('article navigation scrolls to headings and back to the top with reduced mo
         ->assertAttribute('#back-to-top', 'aria-hidden', 'true')
         ->keys('[data-blog-toc-link][href="#section-1"]', 'Enter')
         ->assertScript('window.scrollY > 500', true)
-        ->assertScript('Math.abs(document.querySelector("#section-1").getBoundingClientRect().top) < 200', true)
+        ->assertScript(<<<'JS'
+            (() => {
+                const heading = document.querySelector('#section-1').getBoundingClientRect();
+                const maximumScroll = document.documentElement.scrollHeight - window.innerHeight;
+                const targetScroll = Math.min(window.scrollY + heading.top, maximumScroll);
+
+                return Math.abs(window.scrollY - targetScroll) < 2
+                    && heading.top >= -1
+                    && heading.bottom <= window.innerHeight;
+            })()
+            JS, true)
         ->assertAttribute('#back-to-top', 'aria-hidden', 'false')
         ->assertAttribute('#back-to-top', 'tabindex', '0')
         ->click('#back-to-top')
@@ -454,7 +464,10 @@ test('article navigation scrolls to headings and back to the top with reduced mo
         ->assertAttribute('#back-to-top', 'aria-hidden', 'true')
         ->assertAttribute('#back-to-top', 'tabindex', '-1')
         ->assertNoJavaScriptErrors();
-})->group('browser-smoke');
+})->with([
+    'heading near the page bottom' => 'Take a break.',
+    'heading with room to align at the top' => str_repeat("Find a quiet spot and take time to recharge.\n\n", 40),
+])->group('browser-smoke');
 
 test('copying an article link gives accessible feedback', function (): void {
     $post = Post::factory()->create();
