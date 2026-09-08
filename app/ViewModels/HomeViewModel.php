@@ -21,17 +21,31 @@ class HomeViewModel
      */
     public function data(): array
     {
-        $featuredPost = Post::published()->latest('published_at')->first();
-        $latestPosts = Post::published()->latest('published_at')
+        $featuredPost = Post::published()
+            ->select(['id', 'slug', 'title', 'category', 'cover_image'])
+            ->latest('published_at')
+            ->first();
+        $latestPosts = Post::published()
+            ->select(['id', 'slug', 'title', 'category', 'cover_image', 'published_at'])
+            ->latest('published_at')
             ->when($featuredPost, fn ($query) => $query->whereKeyNot($featuredPost->getKey()))
             ->take(6)
             ->get();
-        $latestEpisodes = Episode::published()->latest('published_at')->take(3)->get();
+        $latestEpisodes = Episode::published()
+            ->select(['id', 'slug', 'title', 'description', 'episode_number', 'duration_seconds'])
+            ->latest('published_at')
+            ->take(3)
+            ->get();
         $latestGuides = config('mouse28.guides_enabled')
-            ? Guide::published()->latest('published_at')->take(4)->get()
+            ? Guide::published()
+                ->select(['id', 'slug', 'title', 'excerpt', 'category', 'cover_image'])
+                ->latest('published_at')
+                ->take(4)
+                ->get()
             : new Collection;
         $planningPosts = config('mouse28.guides_enabled') && $latestGuides->isEmpty()
             ? Post::published()
+                ->select(['id', 'slug', 'title', 'category', 'cover_image'])
                 ->whereIn('category', [PostCategory::ParkAccessibility, PostCategory::DisneyTips, PostCategory::AutismAwareness])
                 ->latest('published_at')
                 ->take(2)
