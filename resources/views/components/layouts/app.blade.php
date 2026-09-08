@@ -375,7 +375,13 @@
             <div class="mt-8 flex flex-col items-center justify-between gap-4 border-t border-white/10 pt-6 sm:flex-row">
                 <p class="text-base text-white/60 sm:text-sm">&copy; {{ date('Y') }} Mouse28. All rights reserved.</p>
                 <p class="text-base text-white/60 sm:text-sm">
-                    Made with <span aria-hidden="true">✨</span> from Infinity Digital
+                    Made with <span aria-hidden="true">✨</span> from
+                    <a
+                        href="https://infinitydigital.dev"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="hover:text-gold inline-flex min-h-12 items-center underline underline-offset-4 transition-colors sm:min-h-6"
+                    >Infinity Digital</a>
                 </p>
             </div>
         </div>

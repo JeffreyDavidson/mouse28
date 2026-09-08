@@ -21,6 +21,8 @@ test('main public pages share one full footer signup', function (): void {
         ->assertScript('document.querySelectorAll("footer #footer-newsletter-email").length', 1)
         ->assertScript('document.querySelectorAll(\'form[action$="/newsletter"]\').length', 1)
         ->assertScript('document.querySelector("footer").textContent.includes("Connect")', true)
+        ->assertAttribute('footer a[href="https://infinitydigital.dev"]', 'rel', 'noopener noreferrer')
+        ->assertAttribute('footer a[href="https://infinitydigital.dev"]', 'target', '_blank')
         ->assertNoJavaScriptErrors();
 });
 
