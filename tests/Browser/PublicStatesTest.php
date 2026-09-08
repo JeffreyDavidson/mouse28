@@ -10,8 +10,8 @@ test('empty and no-result states remain actionable on mobile', function (): void
         route('guides.index', ['category' => 'accessibility']),
         route('episodes.index'),
         route('search', ['q' => 'quiet']),
-    ])
-        ->on()
+    ]);
+    $pages->on()
         ->mobile()
         ->resize(320, 812);
 
@@ -110,8 +110,8 @@ test('branded recovery pages remain accessible and actionable', function (): voi
         '/testing/browser-expired-session',
         '/testing/browser-server-error',
         '/testing/browser-maintenance',
-    ])
-        ->on()
+    ]);
+    $pages->on()
         ->mobile()
         ->resize(320, 812);
 

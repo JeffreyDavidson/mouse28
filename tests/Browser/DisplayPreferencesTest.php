@@ -22,7 +22,8 @@ test('public pages reflow with two hundred percent text sizing', function (): vo
         route('blog.show', $post),
         route('guides.show', $guide),
         route('episodes.show', $episode),
-    ])->resize(640, 900);
+    ]);
+    $pages->resize(640, 900);
 
     [$home, $blog, $guides, $episodes, $about, $contact, $search, $postPage, $guidePage, $episodePage] = $pages;
 
@@ -80,7 +81,8 @@ test('forced colors preserve focus indicators and page structure', function (): 
         route('home'),
         route('blog.index'),
         route('contact.show'),
-    ], ['forcedColors' => 'active'])->resize(1280, 900);
+    ], ['forcedColors' => 'active']);
+    $pages->resize(1280, 900);
 
     $pages->assertScript("window.matchMedia('(forced-colors: active)').matches", true)
         ->assertScript($this->missingFocusIndicatorsScript(), '')
@@ -116,7 +118,8 @@ test('multilingual and right to left content remains contained', function (): vo
         route('blog.show', $post),
         route('guides.show', $guide),
         route('episodes.show', $episode),
-    ])->resize(320, 812);
+    ]);
+    $pages->resize(320, 812);
 
     [$postPage, $guidePage, $episodePage] = $pages;
 

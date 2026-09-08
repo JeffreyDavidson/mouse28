@@ -61,8 +61,8 @@ test('long public content and portrait artwork stay contained', function (): voi
             route('blog.show', $post),
             route('guides.show', $guide),
             route('episodes.show', $episode),
-        ])
-            ->on()
+        ]);
+        $mobilePages->on()
             ->mobile()
             ->resize(320, 812);
 
@@ -81,7 +81,8 @@ test('long public content and portrait artwork stay contained', function (): voi
             route('blog.show', $post),
             route('guides.show', $guide),
             route('episodes.show', $episode),
-        ])->resize(1440, 1000);
+        ]);
+        $desktopPages->resize(1440, 1000);
 
         $desktopPages->assertScript($this->horizontalOverflowScript(), 0)
             ->assertScript(contentBrokenImageCountScript(), 0)
@@ -131,8 +132,8 @@ test('pagination boundaries stay usable on narrow screens', function (): void {
         route('blog.index', ['page' => 2]),
         route('guides.index', ['page' => 2]),
         route('episodes.index', ['page' => 2]),
-    ])
-        ->on()
+    ]);
+    $pages->on()
         ->mobile()
         ->resize(320, 812);
 
