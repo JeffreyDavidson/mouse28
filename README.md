@@ -86,6 +86,19 @@ Run `npx playwright install chromium` once before the local browser suite. A foc
 
 `composer test` runs the unit, integration, feature, and architecture suites; browser tests use the separate `composer test:browser` command. Rector uses its default parallel processing. Agent sandboxes must allow the local sockets used by Rector and Pest.
 
+### Pest static analysis and refactoring
+
+Test-only analysis uses separate configurations so the existing application checks remain unchanged:
+
+```bash
+composer analyse:pest
+composer test:rector:pest
+```
+
+`phpstan-pest.neon` scans all PHP tests at level 5 with a separate result cache. Composer's PHPStan extension installer already registers the Pest plugin; do not include it a second time. `rector-pest.php` applies Pest's coding-style rules only to `tests/`.
+
+These checks are opt-in while existing findings are reviewed, not CI gates or part of `composer test`. A nonzero exit code reports findings that need review; no baseline or blanket suppression hides them. `composer test:rector:pest` is read-only. Run `composer rector:pest` only to deliberately apply the proposed test changes, then inspect the diff and rerun the affected tests. Preserve Arrange / Act / Assert boundaries and framework-specific assertions when reviewing rewrites.
+
 Choose the suite by what the test exercises:
 
 - `Unit`: isolated logic without booting Laravel or using persistence, facades, factories, or external I/O.
