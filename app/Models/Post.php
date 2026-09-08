@@ -15,6 +15,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property ContentAuthor|null $author
@@ -56,6 +58,33 @@ class Post extends Model
 {
     /** @use HasFactory<PostFactory> */
     use HasFactory, SoftDeletes;
+
+    use LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->useLogName('editorial')
+            ->logOnly([
+                'title',
+                'slug',
+                'excerpt',
+                'body',
+                'source_url',
+                'last_reviewed_at',
+                'cover_image',
+                'episode_id',
+                'category',
+                'author',
+                'is_published',
+                'published_at',
+                'meta_title',
+                'meta_description',
+                'og_image',
+            ])
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges();
+    }
 
     public function episode(): BelongsTo
     {

@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property Carbon|null $published_at
@@ -51,6 +53,36 @@ class Episode extends Model
 {
     /** @use HasFactory<EpisodeFactory> */
     use HasFactory, SoftDeletes;
+
+    use LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->useLogName('editorial')
+            ->logOnly([
+                'title',
+                'slug',
+                'description',
+                'show_notes',
+                'transcript',
+                'episode_number',
+                'season_number',
+                'transistor_url',
+                'apple_url',
+                'spotify_url',
+                'youtube_url',
+                'duration_seconds',
+                'cover_image',
+                'is_published',
+                'published_at',
+                'meta_title',
+                'meta_description',
+                'og_image',
+            ])
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges();
+    }
 
     public function posts(): HasMany
     {

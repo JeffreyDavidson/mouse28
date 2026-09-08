@@ -30,6 +30,10 @@ The public layout normalizes canonical and social-image URLs to absolute URLs. L
 
 ## Administration and authorization
 
+Spatie Activitylog records Eloquent create, update, delete, and restore events for posts, guides, and episodes, plus create/update/delete events for podcast settings, under the `editorial` log. Each model declares an explicit attribute allowlist; updates retain only changed values and skip empty changes. The authenticated user is the causer when present; CLI/import operations without an authenticated user have no causer. Podcast contact email, users, credentials, and contact submissions are not logged. Read-only public requests do not write audit records. Bulk query-builder writes and quiet model operations bypass model events and therefore are not audited.
+
+The `activity_log` migration must run before deploying the logging-enabled models. Records are stored server-side; this slice does not add a Filament audit-history viewer or replace the existing recent-content dashboard widget. No automatic log-deletion schedule is enabled. Audit rows may contain draft editorial text and must remain private; they are not a replacement for backups or a tamper-proof audit system.
+
 Filament is mounted at `/admin`. `User::canAccessPanel()` requires the explicit `is_admin` flag. Model policies provide the same boundary for content resources and protected record actions. Custom settings and subscriber pages also enforce administrator access.
 
 `EditorialReadiness` provides shared publication status and readiness rules for posts, guides, and episodes. Filament list tabs and filters separate drafts, scheduled and published content, incomplete records, and review-due material. Editors publish and unpublish from explicit edit-page actions; publication is blocked until required editorial content, artwork, and SEO metadata are complete, and a blank publish date is filled automatically. Episode audio and transcripts are tracked as availability information but intentionally do not block publication while the original recordings are unavailable.
