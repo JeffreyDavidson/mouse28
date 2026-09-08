@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Storage;
 
 class ResponsiveArtwork
 {
-    public const WIDTHS = [480, 768, 1280];
+    public const WIDTHS = [480, 640, 768, 1280];
 
     /** @return array{path: string, hash: string}|null */
     public static function source(?string $path): ?array
