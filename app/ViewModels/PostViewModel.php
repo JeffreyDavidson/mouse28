@@ -27,7 +27,7 @@ class PostViewModel
 
         $data = [
             'post' => $post,
-            'recentPosts' => ContentContinuation::relatedPosts($post),
+            'recentPosts' => ContentContinuation::relatedPosts($post, limit: 2),
         ];
 
         if ($preview) {
