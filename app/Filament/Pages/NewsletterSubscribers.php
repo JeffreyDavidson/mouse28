@@ -28,10 +28,26 @@ class NewsletterSubscribers extends Page
         return auth()->user()?->is_admin === true;
     }
 
-    /** @return array{subscribers: list<array<string, mixed>>, error: ?string} */
+    /** @return array{subscribers: list<array<string, mixed>>, error: ?string, active_count: int} */
     public function getAudience(): array
     {
-        return app(ResendAudience::class)->get();
+        $audience = app(ResendAudience::class)->get();
+        $audience['subscribers'] = array_map(static fn (array $subscriber): array => [
+            ...$subscriber,
+            'subscription_status' => match ($subscriber['unsubscribed'] ?? null) {
+                false => 'Subscribed',
+                true => 'Unsubscribed',
+                default => 'Unknown',
+            },
+        ], $audience['subscribers']);
+
+        return [
+            ...$audience,
+            'active_count' => count(array_filter(
+                $audience['subscribers'],
+                static fn (array $subscriber): bool => $subscriber['subscription_status'] === 'Subscribed',
+            )),
+        ];
     }
 
     public function refreshSubscribers(): void
@@ -65,11 +81,12 @@ class NewsletterSubscribers extends Page
                 return;
             }
 
-            fputcsv($handle, ['Email', 'Created At']);
+            fputcsv($handle, ['Email', 'Created At', 'Status']);
             foreach ($subscribers as $sub) {
                 fputcsv($handle, [
                     $this->escapeCsvValue($sub['email'] ?? ''),
                     $this->escapeCsvValue($sub['created_at'] ?? ''),
+                    $sub['subscription_status'],
                 ]);
             }
             fclose($handle);
