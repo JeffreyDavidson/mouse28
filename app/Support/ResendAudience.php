@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 
 class ResendAudience
 {
-    private const CACHE_KEY = 'newsletter_subscribers';
+    private const string CACHE_KEY = 'newsletter_subscribers';
 
     /** @return array{subscribers: list<array<string, mixed>>, error: ?string} */
     public function get(): array
