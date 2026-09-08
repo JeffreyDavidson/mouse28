@@ -4,6 +4,9 @@ parameters:
 
     level: 5
 
+    stubFiles:
+        - tests/pest-livewire.stub
+
     bootstrapFiles:
         - bootstrap/app.php
 
