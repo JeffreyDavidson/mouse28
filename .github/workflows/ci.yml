@@ -85,6 +85,9 @@ jobs:
           MAIL_MAILER: array
         run: composer test
 
+      - name: Enforce application type coverage
+        run: composer test:type-coverage
+
       - name: Build assets
         run: npm run build
 
