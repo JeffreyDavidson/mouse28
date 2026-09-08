@@ -76,11 +76,11 @@ class PodcastSettings extends Page
                     ->description('Where listeners can find your podcast')
                     ->columns(2)
                     ->schema([
-                        TextInput::make('apple_url')->url()->label('Apple Podcasts')
+                        TextInput::make('apple_url')->url()->maxLength(255)->label('Apple Podcasts')
                             ->prefixIcon(Heroicon::OutlinedLink),
-                        TextInput::make('spotify_url')->url()->label('Spotify')
+                        TextInput::make('spotify_url')->url()->maxLength(255)->label('Spotify')
                             ->prefixIcon(Heroicon::OutlinedLink),
-                        TextInput::make('youtube_url')->url()->label('YouTube')
+                        TextInput::make('youtube_url')->url()->maxLength(255)->label('YouTube')
                             ->prefixIcon(Heroicon::OutlinedLink),
                     ]),
 
@@ -89,9 +89,9 @@ class PodcastSettings extends Page
                     ->description('Connect your social accounts')
                     ->columns(2)
                     ->schema([
-                        TextInput::make('instagram_url')->url()->label('Instagram')
+                        TextInput::make('instagram_url')->url()->maxLength(255)->label('Instagram')
                             ->prefixIcon(Heroicon::OutlinedLink),
-                        TextInput::make('tiktok_url')->url()->label('TikTok')
+                        TextInput::make('tiktok_url')->url()->maxLength(255)->label('TikTok')
                             ->prefixIcon(Heroicon::OutlinedLink),
                     ]),
 
