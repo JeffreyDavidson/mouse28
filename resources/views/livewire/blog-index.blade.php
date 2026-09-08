@@ -19,6 +19,8 @@
                     >
                         <x-post-artwork
                             :post="$featuredPost"
+                            :priority="true"
+                            sizes="(min-width: 1376px) 775px, (min-width: 1024px) 56vw, (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
                             class="h-full min-h-72 w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025] lg:min-h-[31rem]"
                         />
                     </a>
@@ -158,11 +160,7 @@
                 </div>
             @endif
 
-            <div
-                data-blog-results
-                wire:loading.class.delay="opacity-60"
-                class="pt-10 transition-opacity duration-150 motion-reduce:transition-none sm:pt-14"
-            >
+            <div data-blog-results class="pt-10 sm:pt-14">
                 @if ($posts->count())
                     <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
                         <h2 class="font-heading text-navy text-3xl [font-weight:640] tracking-[-0.02em] text-balance sm:text-4xl">
@@ -275,12 +273,6 @@
                     </div>
                 @endif
             </div>
-
-            @if ($hasAnyPosts || $search || $category)
-                <div class="mx-auto mt-16 max-w-3xl">
-                    <x-newsletter-card subtitle="Disney tips, park updates, and new posts" />
-                </div>
-            @endif
         </div>
     </section>
 </div>

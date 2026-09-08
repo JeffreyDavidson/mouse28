@@ -4,7 +4,8 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "benchmark:pages": "node tests/Browser/performance-benchmark.mjs"
     },
     "devDependencies": {
         "@tailwindcss/typography": "^0.5.20",

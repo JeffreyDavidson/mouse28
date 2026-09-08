@@ -33,7 +33,11 @@ test('query string filters update the visible stories', function (): void {
         ->assertViewHas('archivePosts', fn ($posts): bool => ! $posts->contains($unrelatedPost))
         ->assertSet('category', 'park-accessibility')
         ->assertSet('search', 'accessible')
-        ->assertSet('sort', 'oldest');
+        ->assertSet('sort', 'oldest')
+        ->assertViewHas('hasAnyPosts', true)
+        ->set('search', 'no matching story')
+        ->assertViewHas('archivePosts', fn ($posts): bool => $posts->isEmpty())
+        ->assertViewHas('hasAnyPosts', true);
 });
 
 test('topic and reset actions preserve valid filter state', function (): void {
@@ -55,7 +59,8 @@ test('topic and reset actions preserve valid filter state', function (): void {
         ->call('clearFilters')
         ->assertSet('category', '')
         ->assertSet('search', '')
-        ->assertSet('sort', 'newest');
+        ->assertSet('sort', 'newest')
+        ->assertViewHas('hasAnyPosts', false);
 });
 
 test('featured story remains visible on subsequent archive pages', function (): void {

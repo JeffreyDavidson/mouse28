@@ -102,24 +102,41 @@
             scroll-behavior: auto !important;
         }
 
-        *,
-        *::before,
-        *::after {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-delay: 0ms !important;
-            transition-duration: 0.01ms !important;
-        }
-
-        main,
         .sparkle,
         .sparkle-delay,
         .sparkle-delay-2,
         .cta-primary,
         .episodes-waveform-bar,
         .contact-check-circle,
-        .contact-check-mark {
+        .contact-check-mark,
+        .card-shimmer::after,
+        #mobile-navigation,
+        .hamburger-line,
+        .mouse28-wordmark-route,
+        .post-card,
+        .post-card .card-img,
+        .post-card .card-overlay,
+        .ticket,
+        .blog-pagination span,
+        .blog-pagination a,
+        .blog-pagination button,
+        .episodes-pagination span,
+        .episodes-pagination a,
+        .episode-show-notes-content a,
+        .episode-transcript-content p,
+        .dispatch-button,
+        .dispatch-feature-book,
+        .dispatch-story-card,
+        .dispatch-story-slip,
+        .dispatch-guide-card,
+        .dispatch-play-button,
+        .dispatch-envelope,
+        .podcast-track a,
+        .dispatch-interactive-card,
+        .dispatch-error-recovery a,
+        .dispatch-error-recovery button {
             animation: none !important;
+            transition: none !important;
         }
 
         [data-dispatch-motion],

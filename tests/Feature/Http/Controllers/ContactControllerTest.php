@@ -15,6 +15,13 @@ use function Pest\Laravel\get;
 
 uses(RefreshDatabase::class);
 
+test('contact stays within its query budget', function (): void {
+    $this->expectsDatabaseQueryCount(1);
+
+    get(route('contact.show'))
+        ->assertOk();
+});
+
 beforeEach(function (): void {
     config()->set('app.key', 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=');
     config()->set('services.turnstile.site_key', 'test-site-key');

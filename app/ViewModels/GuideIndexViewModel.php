@@ -4,6 +4,7 @@ namespace App\ViewModels;
 
 use App\Enums\GuideCategory;
 use App\Models\Guide;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -24,7 +25,8 @@ class GuideIndexViewModel
         $category = $categoryEnum->value ?? '';
 
         $guides = Guide::published()
-            ->when($category, fn ($query) => $query->where('category', $category))
+            ->select(['id', 'slug', 'title', 'category', 'excerpt', 'body', 'cover_image'])
+            ->when($category, fn (Builder $query): Builder => $query->where('category', $category))
             ->latest('published_at')
             ->paginate(12)
             ->withQueryString();

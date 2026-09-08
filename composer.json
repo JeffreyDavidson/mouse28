@@ -6,30 +6,37 @@
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
-        "php": "^8.5",
         "filament/filament": "^5.7",
         "laravel/framework": "^13.23",
         "laravel/head": "^0.2.1",
         "laravel/nightwatch": "^1.30",
         "laravel/tinker": "^3.0",
         "livewire/livewire": "^4.4",
+        "php": "^8.5",
         "resend/resend-laravel": "^1.4",
-        "sentry/sentry-laravel": "^4.27"
+        "sentry/sentry-laravel": "^4.27",
+        "spatie/laravel-activitylog": "^5.1"
     },
     "require-dev": {
         "driftingly/rector-laravel": "^2.5",
-        "fakerphp/faker": "^1.23",
         "larastan/larastan": "^3.10",
         "laravel/boost": "^2.4",
         "laravel/pail": "^1.2.2",
         "laravel/pao": "^1.1",
         "laravel/pint": "^1.30.5",
         "laraveldaily/filacheck": "^1.2.4",
+        "laraveldaily/filacheck-pro": "^1.1",
         "nunomaduro/collision": "^8.6",
         "pestphp/pest": "^5.1",
+        "pestphp/pest-plugin-agent": "^5.0",
         "pestphp/pest-plugin-arch": "^5.0",
         "pestphp/pest-plugin-browser": "^5.0",
+        "pestphp/pest-plugin-faker": "^5.0",
         "pestphp/pest-plugin-laravel": "^5.0",
+        "pestphp/pest-plugin-livewire": "^5.0",
+        "pestphp/pest-plugin-phpstan": "^5.0",
+        "pestphp/pest-plugin-rector": "^5.0",
+        "pestphp/pest-plugin-type-coverage": "^5.0",
         "phpstan/extension-installer": "^1.4",
         "rector/rector": "^2.6"
     },
@@ -63,6 +70,9 @@
             "@php artisan test --exclude-testsuite=Browser"
         ],
         "test:browser": "@php artisan test --testsuite=Browser",
+        "test:filacheck": "FILACHECK_DISABLE_AGENT_MODE=1 vendor/bin/filacheck",
+        "filacheck:fix": "FILACHECK_DISABLE_AGENT_MODE=1 vendor/bin/filacheck --fix --dirty",
+        "test:type-coverage": "php -d memory_limit=2G vendor/bin/pest --type-coverage --min=100 --compact",
         "analyse": "php -d memory_limit=2G vendor/bin/phpstan analyse --no-progress",
         "rector": "vendor/bin/rector process",
         "test:rector": "vendor/bin/rector process --dry-run",
@@ -88,6 +98,11 @@
         ]
     },
     "extra": {
+        "phpstan/extension-installer": {
+            "ignore": [
+                "tomasvotruba/type-coverage"
+            ]
+        },
         "laravel": {
             "dont-discover": []
         }
@@ -100,6 +115,13 @@
             "pestphp/pest-plugin": true,
             "php-http/discovery": true,
             "phpstan/extension-installer": true
+        }
+    },
+    "repositories": {
+        "filacheck": {
+            "type": "composer",
+            "url": "https://satis.filamentexamples.com",
+            "only": ["laraveldaily/filacheck-pro"]
         }
     },
     "minimum-stability": "stable",

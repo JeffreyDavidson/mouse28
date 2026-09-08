@@ -2,16 +2,54 @@
 
 use App\Models\Episode;
 use App\Models\Podcast;
+use App\Support\ResponsiveArtwork;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\get;
 
 uses(RefreshDatabase::class);
 
+test('episode artwork uses available responsive candidates and falls back after replacement', function (): void {
+    Storage::fake('public');
+    $disk = Storage::disk('public');
+    $contents = UploadedFile::fake()->image('cover.png', 800, 800)->getContent();
+    $disk->put('episodes/cover.png', $contents);
+    $variant = ResponsiveArtwork::variantPath(hash('sha256', $contents), 768, square: true);
+    $disk->put($variant, 'generated image');
+    $episode = Episode::factory()->create(['cover_image' => 'episodes/cover.png']);
+
+    get(route('episodes.show', $episode))
+        ->assertOk()
+        ->assertSee('srcset="'.$disk->url($variant).' 768w"', false)
+        ->assertSee('fetchpriority="high"', false)
+        ->assertSee('sizes="(min-width: 1188px) 448px, (min-width: 1024px) calc(41.6667vw - 46.6667px), (min-width: 480px) 448px, calc(100vw - 32px)"', false);
+
+    $disk->put('episodes/cover.png', UploadedFile::fake()->image('replacement.png', 801, 800)->getContent());
+
+    get(route('episodes.show', $episode))
+        ->assertOk()
+        ->assertSee('src="/storage/episodes/cover.png"', false)
+        ->assertDontSee($disk->url($variant), false);
+});
+
+test('podcast pages stay within their query budget as content grows', function (string $page, int $queries): void {
+    $episode = Episode::factory()->create();
+    Episode::factory()->count(15)->create();
+    $url = $page === 'index' ? route('episodes.index') : route('episodes.show', $episode);
+
+    $this->expectsDatabaseQueryCount($queries);
+
+    get($url)
+        ->assertOk();
+})->with(['archive' => ['index', 3], 'episode' => ['show', 5]]);
+
 test('public index page renders', function (): void {
     get(route('episodes.index'))
         ->assertOk()
-        ->assertSee('The Mouse28 Podcast');
+        ->assertSee('The Mouse28 Podcast')
+        ->assertSee('src="/images/podcast/mouse28-cover.webp"', false);
 });
 
 test('podcast pages render one newsletter signup', function (): void {
@@ -19,7 +57,9 @@ test('podcast pages render one newsletter signup', function (): void {
 
     foreach ([route('episodes.index'), route('episodes.show', $episode)] as $url) {
         $response = get($url)
-            ->assertOk();
+            ->assertOk()
+            ->assertSee('id="footer-newsletter-email"', false)
+            ->assertSee('Connect');
 
         expect(substr_count($response->getContent(), 'action="'.route('newsletter.store').'"'))->toBe(1);
     }
@@ -91,6 +131,20 @@ test('published episode detail page renders', function (): void {
         ->assertSee('id="episode-transcript"', false)
         ->assertSee('aria-controls="episode-transcript"', false)
         ->assertSee(':aria-expanded="expanded.toString()"', false);
+});
+
+test('episode pages sanitize rich show notes and transcripts', function (): void {
+    $episode = Episode::factory()->create([
+        'show_notes' => '<p>Safe show notes.</p><script>alert("show notes")</script>',
+        'transcript' => '<p>Safe transcript.</p><img src="x" onerror="alert(\'transcript\')">',
+    ]);
+
+    get(route('episodes.show', $episode))
+        ->assertOk()
+        ->assertSee('<p>Safe show notes.</p>', false)
+        ->assertSee('<p>Safe transcript.</p>', false)
+        ->assertDontSee('alert("show notes")', false)
+        ->assertDontSee('onerror=', false);
 });
 
 test('sparse episode detail pages use a compact continuation layout', function (): void {

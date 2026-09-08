@@ -10,6 +10,17 @@ use function Pest\Laravel\get;
 
 uses(RefreshDatabase::class);
 
+test('homepage stays within its query budget as content grows', function (): void {
+    config()->set('mouse28.guides_enabled', false);
+    Post::factory()->count(30)->create();
+    Episode::factory()->count(15)->create();
+
+    $this->expectsDatabaseQueryCount(3);
+
+    get(route('home'))
+        ->assertOk();
+});
+
 test('public index page renders', function (): void {
     get(route('home'))
         ->assertOk()
@@ -64,9 +75,30 @@ test('homepage uses one newsletter form and responsive hero artwork', function (
         ->assertDontSee('data-animate', false)
         ->assertSee('Our first dispatch is being prepared.')
         ->assertDontSee('/storage/posts/welcome-to-mouse-28.webp', false)
-        ->assertSee('We use your email to send Mouse28 updates.');
+        ->assertSee('We use your email to send Mouse28 updates.')
+        ->assertSee('id="footer-newsletter-email"', false)
+        ->assertSee('Connect')
+        ->assertDontSee('id="home-newsletter-email"', false);
 
     expect(substr_count($response->getContent(), 'action="'.route('newsletter.store').'"'))->toBe(1);
+});
+
+test('homepage offers a smaller bundled podcast cover without replacing the original', function (): void {
+    get(route('home'))
+        ->assertOk()
+        ->assertSee('srcset="/images/podcast/mouse28-cover-640.webp 640w, /images/podcast/mouse28-cover.webp 1200w"', false)
+        ->assertSee('sizes="auto, 264px"', false);
+
+    $candidate = public_path('images/podcast/mouse28-cover-640.webp');
+    $original = public_path('images/podcast/mouse28-cover.webp');
+
+    expect(is_file($candidate))->toBeTrue()
+        ->and(is_file($original))->toBeTrue();
+
+    $dimensions = getimagesize($candidate);
+
+    expect([$dimensions[0], $dimensions[1], $dimensions['mime']])->toBe([640, 640, 'image/webp'])
+        ->and(filesize($candidate))->toBeLessThan(filesize($original));
 });
 
 test('homepage only presents published content as stories and guides', function (): void {

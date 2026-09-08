@@ -16,6 +16,7 @@ test('empty and no-result states remain actionable on mobile', function (): void
         ->resize(320, 812);
 
     $pages->assertScript($this->horizontalOverflowScript(), 0)
+        ->assertScript('document.querySelectorAll("footer #footer-newsletter-email").length', 1)
         ->assertScript($this->undersizedControlsScript(), '')
         ->assertScript($this->missingFocusIndicatorsScript(), '')
         ->assertNoAccessibilityIssues()
@@ -47,6 +48,7 @@ test('search validation identifies and focuses the invalid query', function (): 
         ->assertSee('Search terms may not be longer than 100 characters.')
         ->assertAttribute('#site-search', 'aria-invalid', 'true')
         ->assertAttribute('#site-search', 'aria-describedby', 'site-search-error')
+        ->waitForEvent('load')
         ->assertScript('document.activeElement.id', 'site-search')
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
@@ -65,13 +67,14 @@ test('newsletter validation and rate-limit feedback remain accessible', function
 
     $validationPage->script('document.querySelector(\'form[action$="/newsletter"]\').noValidate = true');
 
-    $validationPage->fill('#home-newsletter-email', 'not-an-email')
+    $validationPage->fill('#footer-newsletter-email', 'not-an-email')
         ->keys('form[action$="/newsletter"] button[type="submit"]', 'Enter')
         ->assertSee('The email field must be a valid email address.')
-        ->assertValue('#home-newsletter-email', 'not-an-email')
-        ->assertAttribute('#home-newsletter-email', 'aria-invalid', 'true')
-        ->assertAttribute('#home-newsletter-email', 'aria-describedby', 'home-newsletter-email-message')
-        ->assertScript('document.activeElement.id', 'home-newsletter-email')
+        ->assertValue('#footer-newsletter-email', 'not-an-email')
+        ->assertAttribute('#footer-newsletter-email', 'aria-invalid', 'true')
+        ->assertAttribute('#footer-newsletter-email', 'aria-describedby', 'footer-newsletter-email-error')
+        ->waitForEvent('load')
+        ->assertScript('document.activeElement.id', 'footer-newsletter-email')
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 

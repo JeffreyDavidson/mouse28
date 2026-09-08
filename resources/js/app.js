@@ -170,8 +170,8 @@ function initializeBlogMetadata() {
 }
 
 function initializeBlogFiltering(Livewire) {
-    let filterViewportTop = null;
-    let cardPositions = null;
+    let pendingFilterTransition = false;
+    let filterTransition = null;
 
     const storyCards = () => Array.from(document.querySelectorAll('[data-blog-post]'));
 
@@ -182,32 +182,30 @@ function initializeBlogFiltering(Livewire) {
         });
     };
 
-    const rememberCardPositions = () => {
+    const cardPositions = () => {
         stopCardAnimations();
 
-        cardPositions = new Map(storyCards().map((card) => {
+        return new Map(storyCards().map((card) => {
             const bounds = card.getBoundingClientRect();
 
             return [card.dataset.blogPost, { left: bounds.left, top: bounds.top }];
         }));
     };
 
-    const animateCardReflow = () => {
-        if (cardPositions === null || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            cardPositions = null;
-
+    const animateCardReflow = (previousPositions) => {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
             return;
         }
 
         storyCards().forEach((card) => {
-            const previousPosition = cardPositions.get(card.dataset.blogPost);
+            const previousPosition = previousPositions.get(card.dataset.blogPost);
 
             if (!previousPosition) {
                 card.animate([
                     { opacity: 0.35 },
                     { opacity: 1 },
                 ], {
-                    duration: 220,
+                    duration: 260,
                     easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
                 });
 
@@ -228,7 +226,7 @@ function initializeBlogFiltering(Livewire) {
                 { transform: `translate(${horizontalDistance}px, ${verticalDistance}px)` },
                 { transform: 'translate(0, 0)' },
             ], {
-                duration: 380,
+                duration: 440,
                 easing: 'cubic-bezier(0.16, 1, 0.3, 1)',
             });
 
@@ -236,37 +234,67 @@ function initializeBlogFiltering(Livewire) {
                 card.style.removeProperty('will-change');
             }, { once: true });
         });
-
-        cardPositions = null;
     };
 
-    const rememberFilterPosition = (event) => {
+    const queueFilterTransition = (event) => {
         if (!(event.target instanceof Element) || !event.target.closest('[data-preserve-blog-filter-position]')) {
             return;
         }
 
-        filterViewportTop = document.querySelector('[data-blog-filters]')?.getBoundingClientRect().top ?? null;
-        rememberCardPositions();
+        pendingFilterTransition = true;
     };
 
     ['click', 'input', 'change', 'submit'].forEach((eventName) => {
-        document.addEventListener(eventName, rememberFilterPosition, true);
+        document.addEventListener(eventName, queueFilterTransition, true);
     });
 
-    Livewire.hook('morphed', ({ el }) => {
-        if (!el.matches('[data-blog-browser]') || filterViewportTop === null) {
+    Livewire.hook('commit', ({ component, fail }) => {
+        if (!component.el.matches('[data-blog-browser]') || !pendingFilterTransition) {
             return;
         }
 
+        pendingFilterTransition = false;
+
+        const filters = document.querySelector('[data-blog-filters]');
+
+        if (!filters) {
+            return;
+        }
+
+        const transition = {
+            viewportTop: filters.getBoundingClientRect().top,
+            cardPositions: cardPositions(),
+        };
+
+        filterTransition = transition;
+
+        fail(() => {
+            if (filterTransition === transition) {
+                filterTransition = null;
+            }
+        });
+    });
+
+    Livewire.hook('morphed', ({ el }) => {
+        if (!el.matches('[data-blog-browser]') || filterTransition === null) {
+            return;
+        }
+
+        const transition = filterTransition;
+
         window.requestAnimationFrame(() => {
+            if (filterTransition !== transition) {
+                return;
+            }
+
             const filters = document.querySelector('[data-blog-filters]');
 
             if (filters) {
-                window.scrollBy(0, filters.getBoundingClientRect().top - filterViewportTop);
+                window.scrollBy(0, filters.getBoundingClientRect().top - transition.viewportTop);
             }
 
-            animateCardReflow();
-            filterViewportTop = null;
+            animateCardReflow(transition.cardPositions);
+            filterTransition = null;
         });
     });
 }

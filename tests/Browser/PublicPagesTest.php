@@ -4,6 +4,28 @@ use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
 
+test('main public pages share one full footer signup', function (): void {
+    $post = Post::factory()->create();
+    $episode = Episode::factory()->create();
+
+    visit([
+        route('home'),
+        route('blog.index'),
+        route('blog.show', $post),
+        route('episodes.index'),
+        route('episodes.show', $episode),
+        route('about'),
+        route('contact.show'),
+    ])
+        ->assertScript('document.querySelectorAll("footer").length', 1)
+        ->assertScript('document.querySelectorAll("footer #footer-newsletter-email").length', 1)
+        ->assertScript('document.querySelectorAll(\'form[action$="/newsletter"]\').length', 1)
+        ->assertScript('document.querySelector("footer").textContent.includes("Connect")', true)
+        ->assertAttribute('footer a[href="https://infinitydigital.dev"]', 'rel', 'noopener noreferrer')
+        ->assertAttribute('footer a[href="https://infinitydigital.dev"]', 'target', '_blank')
+        ->assertNoJavaScriptErrors();
+});
+
 function exposedDecorativeGlyphCountScript(): string
 {
     return <<<'JS'
@@ -210,7 +232,7 @@ test('blog filters and sorting animate stories without reloading or moving the c
         ->click('a[data-blog-filter-link][href*="park-accessibility"]')
         ->assertQueryStringHas('category', 'park-accessibility')
         ->assertScript('document.documentElement.dataset.blogNavigationMarker', 'preserved')
-        ->fill('#blog-search', 'quiet entrance')
+        ->typeSlowly('#blog-search', 'quiet entrance', 25)
         ->assertQueryStringHas('q', 'quiet entrance')
         ->assertSee($accessiblePost->title)
         ->assertScript('document.activeElement.id', 'blog-search')
@@ -416,9 +438,9 @@ test('mobile search and transcript controls remain usable', function (): void {
         ->assertNoJavaScriptErrors();
 })->group('browser-smoke', 'browser-compatibility');
 
-test('article navigation scrolls to headings and back to the top with reduced motion', function (): void {
+test('article navigation scrolls to headings and back to the top with reduced motion', function (string $trailingContent): void {
     $post = Post::factory()->create([
-        'body' => "## Planning the day\n\n".str_repeat("Flexible park planning and sensory breaks.\n\n", 80)."## Finding quiet spaces\n\nTake a break.",
+        'body' => "## Planning the day\n\n".str_repeat("Flexible park planning and sensory breaks.\n\n", 80)."## Finding quiet spaces\n\n".$trailingContent,
     ]);
     $page = visit(route('blog.show', $post), ['reducedMotion' => 'reduce']);
 
@@ -426,7 +448,17 @@ test('article navigation scrolls to headings and back to the top with reduced mo
         ->assertAttribute('#back-to-top', 'aria-hidden', 'true')
         ->keys('[data-blog-toc-link][href="#section-1"]', 'Enter')
         ->assertScript('window.scrollY > 500', true)
-        ->assertScript('Math.abs(document.querySelector("#section-1").getBoundingClientRect().top) < 200', true)
+        ->assertScript(<<<'JS'
+            (() => {
+                const heading = document.querySelector('#section-1').getBoundingClientRect();
+                const maximumScroll = document.documentElement.scrollHeight - window.innerHeight;
+                const targetScroll = Math.min(window.scrollY + heading.top, maximumScroll);
+
+                return Math.abs(window.scrollY - targetScroll) < 2
+                    && heading.top >= -1
+                    && heading.bottom <= window.innerHeight;
+            })()
+            JS, true)
         ->assertAttribute('#back-to-top', 'aria-hidden', 'false')
         ->assertAttribute('#back-to-top', 'tabindex', '0')
         ->click('#back-to-top')
@@ -434,7 +466,10 @@ test('article navigation scrolls to headings and back to the top with reduced mo
         ->assertAttribute('#back-to-top', 'aria-hidden', 'true')
         ->assertAttribute('#back-to-top', 'tabindex', '-1')
         ->assertNoJavaScriptErrors();
-})->group('browser-smoke');
+})->with([
+    'heading near the page bottom' => 'Take a break.',
+    'heading with room to align at the top' => str_repeat("Find a quiet spot and take time to recharge.\n\n", 40),
+])->group('browser-smoke');
 
 test('copying an article link gives accessible feedback', function (): void {
     $post = Post::factory()->create();

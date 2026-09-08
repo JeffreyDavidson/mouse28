@@ -26,6 +26,7 @@ class EpisodeViewModel
             'episode' => $episode,
             'podcast' => Podcast::info(),
             'relatedPosts' => Post::published()
+                ->select(['id', 'slug', 'title', 'category', 'cover_image'])
                 ->whereBelongsTo($episode)
                 ->latest('published_at')
                 ->take(4)

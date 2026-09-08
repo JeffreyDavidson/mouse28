@@ -29,7 +29,7 @@ jobs:
         uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
         with:
           php-version: '8.5'
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          extensions: dom, curl, gd, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
           coverage: none
 
       - name: Setup Node
@@ -40,6 +40,12 @@ jobs:
 
       - name: Validate PHP dependencies
         run: composer validate --strict --no-check-publish
+
+      - name: Configure private Composer repository
+        env:
+          FILAMENTEXAMPLES_COMPOSER_USERNAME: ${{ secrets.FILAMENTEXAMPLES_COMPOSER_USERNAME }}
+          FILAMENTEXAMPLES_COMPOSER_PASSWORD: ${{ secrets.FILAMENTEXAMPLES_COMPOSER_PASSWORD }}
+        run: composer config --global --auth http-basic.satis.filamentexamples.com "$FILAMENTEXAMPLES_COMPOSER_USERNAME" "$FILAMENTEXAMPLES_COMPOSER_PASSWORD"
 
       - name: Install PHP dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
@@ -53,11 +59,14 @@ jobs:
       - name: Audit Node dependencies
         run: npm audit --audit-level=high
 
+      - name: Test benchmark calculations and failure handling
+        run: node --test tests/Browser/navigation-timings.test.mjs tests/Browser/benchmark-failures.test.mjs
+
       - name: Check PHP and Blade formatting
         run: vendor/bin/pint --test
 
       - name: Check Filament code
-        run: vendor/bin/filacheck
+        run: composer test:filacheck
 
       - name: Run static analysis
         run: composer analyse
@@ -81,6 +90,9 @@ jobs:
           CACHE_STORE: array
           MAIL_MAILER: array
         run: composer test
+
+      - name: Enforce application type coverage
+        run: composer test:type-coverage
 
       - name: Build assets
         run: npm run build

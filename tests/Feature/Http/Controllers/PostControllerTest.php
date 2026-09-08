@@ -4,13 +4,52 @@ use App\Livewire\BlogIndex;
 use App\Models\Episode;
 use App\Models\Podcast;
 use App\Models\Post;
+use App\Support\ResponsiveArtwork;
 use Dom\HTMLDocument;
 use Dom\XPath;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\get;
 
 uses(RefreshDatabase::class);
+
+test('blog pages stay within their query budget as content grows', function (string $page, int $queries): void {
+    $episode = Episode::factory()->create();
+    $post = Post::factory()->create(['episode_id' => $episode->id, 'category' => 'disney-tips']);
+    Post::factory()->count(30)->create(['category' => 'disney-tips']);
+    $url = $page === 'index' ? route('blog.index') : route('blog.show', $post);
+
+    $this->expectsDatabaseQueryCount($queries);
+
+    get($url)
+        ->assertOk();
+})->with(['archive' => ['index', 4], 'article with episode' => ['show', 4]]);
+
+test('blog featured cover is prioritized while archive cards remain deferred', function (): void {
+    Storage::fake('public');
+    $contents = UploadedFile::fake()->image('cover.webp', 600, 300)->getContent();
+    Storage::disk('public')->put('posts/cover.webp', $contents);
+    Storage::disk('public')->put(
+        ResponsiveArtwork::variantPath(hash('sha256', $contents), 480),
+        UploadedFile::fake()->image('variant.webp', 480, 240)->getContent(),
+    );
+    Post::factory()->count(2)->create(['cover_image' => 'posts/cover.webp']);
+
+    $response = get(route('blog.index'))
+        ->assertOk();
+
+    $document = HTMLDocument::createFromString($response->getContent(), LIBXML_NOERROR);
+    $images = $document->querySelectorAll('img[src="/storage/posts/cover.webp"]');
+
+    expect($images->item(0)->getAttribute('loading'))->toBe('eager')
+        ->and($images->item(0)->getAttribute('fetchpriority'))->toBe('high')
+        ->and($images->item(1)->getAttribute('loading'))->toBe('lazy')
+        ->and($images->item(0)->getAttribute('srcset'))->toContain('480w', '600w')
+        ->and($images->item(0)->getAttribute('sizes'))->not->toStartWith('auto')
+        ->and($images->item(1)->getAttribute('sizes'))->toStartWith('auto, ');
+});
 
 test('hidden content uses the same recovery page without revealing its title', function (): void {
     $draftPost = Post::factory()->draft()->create([
@@ -48,7 +87,9 @@ test('blog pages render one newsletter signup', function (): void {
 
     foreach ([route('blog.index'), route('blog.show', $post)] as $url) {
         $response = get($url)
-            ->assertOk();
+            ->assertOk()
+            ->assertSee('id="footer-newsletter-email"', false)
+            ->assertSee('Connect');
 
         expect(substr_count($response->getContent(), 'action="'.route('newsletter.store').'"'))->toBe(1);
     }

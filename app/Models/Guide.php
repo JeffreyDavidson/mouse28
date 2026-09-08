@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property ContentAuthor|null $author
@@ -52,6 +54,32 @@ class Guide extends Model
 {
     /** @use HasFactory<GuideFactory> */
     use HasFactory, SoftDeletes;
+
+    use LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->useLogName('editorial')
+            ->logOnly([
+                'title',
+                'slug',
+                'excerpt',
+                'body',
+                'category',
+                'author',
+                'cover_image',
+                'source_url',
+                'last_reviewed_at',
+                'is_published',
+                'published_at',
+                'meta_title',
+                'meta_description',
+                'og_image',
+            ])
+            ->logOnlyDirty()
+            ->dontLogEmptyChanges();
+    }
 
     #[Scope]
     protected function published(Builder $query): void

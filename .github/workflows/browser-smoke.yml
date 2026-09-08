@@ -40,6 +40,12 @@ jobs:
           node-version: 22
           cache: npm
 
+      - name: Configure private Composer repository
+        env:
+          FILAMENTEXAMPLES_COMPOSER_USERNAME: ${{ secrets.FILAMENTEXAMPLES_COMPOSER_USERNAME }}
+          FILAMENTEXAMPLES_COMPOSER_PASSWORD: ${{ secrets.FILAMENTEXAMPLES_COMPOSER_PASSWORD }}
+        run: composer config --global --auth http-basic.satis.filamentexamples.com "$FILAMENTEXAMPLES_COMPOSER_USERNAME" "$FILAMENTEXAMPLES_COMPOSER_PASSWORD"
+
       - name: Install PHP dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
@@ -91,6 +97,12 @@ jobs:
         with:
           node-version: 22
           cache: npm
+
+      - name: Configure private Composer repository
+        env:
+          FILAMENTEXAMPLES_COMPOSER_USERNAME: ${{ secrets.FILAMENTEXAMPLES_COMPOSER_USERNAME }}
+          FILAMENTEXAMPLES_COMPOSER_PASSWORD: ${{ secrets.FILAMENTEXAMPLES_COMPOSER_PASSWORD }}
+        run: composer config --global --auth http-basic.satis.filamentexamples.com "$FILAMENTEXAMPLES_COMPOSER_USERNAME" "$FILAMENTEXAMPLES_COMPOSER_PASSWORD"
 
       - name: Install PHP dependencies
         run: composer install --no-interaction --prefer-dist --no-progress

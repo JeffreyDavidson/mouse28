@@ -5,7 +5,6 @@
     :canonical="$canonicalUrl"
     :robots="$robots"
     :dispatch-layout="true"
-    :show-footer-newsletter="! ($hasAnyPosts || $search || $category)"
 >
     <!--
         THESIS: The blog is an artwork-led family journal, not a widget sidebar wrapped around a post feed.

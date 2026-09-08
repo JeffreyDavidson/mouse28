@@ -9,14 +9,15 @@ use App\Models\Post;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
 class PublicContentArchive
 {
-    private const VERSION = 1;
+    private const int VERSION = 1;
 
-    private const EPISODE_FIELDS = [
+    private const array EPISODE_FIELDS = [
         'title',
         'slug',
         'description',
@@ -38,7 +39,7 @@ class PublicContentArchive
         'og_image',
     ];
 
-    private const POST_FIELDS = [
+    private const array POST_FIELDS = [
         'title',
         'slug',
         'excerpt',
@@ -54,7 +55,7 @@ class PublicContentArchive
         'og_image',
     ];
 
-    private const GUIDE_FIELDS = [
+    private const array GUIDE_FIELDS = [
         'title',
         'slug',
         'excerpt',
@@ -70,7 +71,7 @@ class PublicContentArchive
         'og_image',
     ];
 
-    private const PODCAST_FIELDS = [
+    private const array PODCAST_FIELDS = [
         'name',
         'description',
         'cover_image',
@@ -169,7 +170,7 @@ class PublicContentArchive
             ))
             ->when(
                 is_array($archive['podcast']),
-                fn ($paths) => $paths->push($archive['podcast']['cover_image'] ?? null),
+                fn (Collection $paths): Collection => $paths->push($archive['podcast']['cover_image'] ?? null),
             )
             ->filter(fn (mixed $path): bool => filled($path))
             ->map(fn (mixed $path): string => $this->validateMediaPath($path))
@@ -299,7 +300,7 @@ class PublicContentArchive
 
         return $query
             ->published()
-            ->when($slugs !== [], fn ($query) => $query->whereNotIn('slug', $slugs))
+            ->when($slugs !== [], fn (Builder $query): Builder => $query->whereNotIn('slug', $slugs))
             ->delete();
     }
 

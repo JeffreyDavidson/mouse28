@@ -7,7 +7,6 @@
     :og-image="$post->og_image_url ?: $post->cover_image_url"
     :robots="($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow'"
     :dispatch-layout="true"
-    :show-footer-newsletter="false"
 >
     <!--
         THESIS: A Mouse28 post should feel like opening a family field journal, not entering a publishing template.
@@ -111,19 +110,12 @@
             </div>
 
             <div class="editorial-detail-artwork overflow-hidden rounded-xl">
-                @if ($post->cover_image_url)
-                    <img
-                        src="{{ $post->cover_image_url }}"
-                        alt=""
-                        width="1024"
-                        height="768"
-                        fetchpriority="high"
-                        decoding="async"
-                        class="aspect-[4/3] size-full object-cover"
-                    />
-                @else
-                    <x-post-artwork :post="$post" class="aspect-[4/3] size-full object-cover" />
-                @endif
+                <x-post-artwork
+                    :post="$post"
+                    :priority="true"
+                    sizes="(min-width: 1376px) 527px, (min-width: 1024px) 38vw, (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
+                    class="aspect-[4/3] size-full object-cover"
+                />
             </div>
         </div>
     </section>
@@ -260,10 +252,6 @@
                 </div>
             </section>
         @endif
-
-        <div class="mx-auto mt-16 max-w-3xl px-4 sm:px-6" data-print-hidden>
-            <x-newsletter-card subtitle="Disney tips, park updates, and new posts" />
-        </div>
     </section>
 
     <button

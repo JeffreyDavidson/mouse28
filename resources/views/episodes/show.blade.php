@@ -6,7 +6,6 @@
     :og-image="$episode->og_image_url ?: $episode->cover_image_url"
     :robots="($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow'"
     :dispatch-layout="true"
-    :show-footer-newsletter="false"
 >
     <!--
         THESIS: An episode page should behave like a listening sheet, not a dashboard of podcast widgets.
@@ -33,7 +32,7 @@
             && blank($episode->transcript)
             && $showNotesLength < 160;
         $coverImage = $episode->cover_image_url
-            ?: ($podcast->cover_image ? '/storage/'.ltrim($podcast->cover_image, '/') : '/images/podcast/mouse28-cover.jpg');
+            ?: ($podcast->cover_image ? '/storage/'.ltrim($podcast->cover_image, '/') : '/images/podcast/mouse28-cover.webp');
         $appleUrl = $episode->apple_url ?: $podcast->apple_url;
         $spotifyUrl = $episode->spotify_url ?: $podcast->spotify_url;
         $youtubeUrl = $episode->youtube_url ?: $podcast->youtube_url;
@@ -44,6 +43,10 @@
             <div class="podcast-cover-frame mx-auto w-full max-w-md lg:mx-0">
                 <img
                     src="{{ $coverImage }}"
+                    @if ($srcset = \App\Support\ResponsiveArtwork::srcset($episode->cover_image, square: true))
+                        srcset="{{ $srcset }}"
+                        sizes="(min-width: 1188px) 448px, (min-width: 1024px) calc(41.6667vw - 46.6667px), (min-width: 480px) 448px, calc(100vw - 32px)"
+                    @endif
                     alt="{{ $episode->title }} podcast artwork"
                     width="1200"
                     height="1200"
@@ -201,7 +204,9 @@
                     >
                         Show notes
                     </h2>
-                    <div class="episode-show-notes-content mt-6 wrap-anywhere">{!! $episode->show_notes !!}</div>
+                    <div class="episode-show-notes-content mt-6 wrap-anywhere">
+                        {!! str($episode->show_notes)->sanitizeHtml() !!}
+                    </div>
                 </section>
             @endif
 
@@ -220,7 +225,7 @@
                             class="episode-transcript-content max-h-[600px] wrap-anywhere"
                             :class="{ 'max-h-none': expanded }"
                         >
-                            {!! $episode->transcript !!}
+                            {!! str($episode->transcript)->sanitizeHtml() !!}
                         </div>
                         <div class="relative" x-show="! expanded" x-cloak>
                             <div class="from-cream pointer-events-none absolute inset-x-0 bottom-full h-20 bg-linear-to-t to-transparent"></div>
@@ -304,10 +309,6 @@
                 :next-episode="$nextEpisode"
                 :compact="$isSparseEpisode"
             />
-
-            <div class="mx-auto mt-14 max-w-3xl" data-print-hidden>
-                <x-newsletter-card subtitle="New episodes and Disney tips delivered to your inbox" />
-            </div>
         </div>
     </section>
 </x-layouts.app>

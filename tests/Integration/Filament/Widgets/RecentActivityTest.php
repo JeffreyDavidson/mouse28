@@ -5,7 +5,9 @@ use App\Filament\Widgets\RecentActivity;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
+use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 
 uses(RefreshDatabase::class);
 
@@ -38,4 +40,28 @@ test('activity includes guides and identifies scheduled content', function (): v
             'url' => GuideResource::getUrl('edit', ['record' => $guide]),
         ])
         ->and($activity[$post->title]['type'])->toBe('Scheduled post');
+});
+
+test('activity queries select only fields rendered by the widget', function (): void {
+    Post::factory()->create();
+    Episode::factory()->create();
+    Guide::factory()->create();
+
+    $queries = [];
+
+    DB::listen(function (QueryExecuted $query) use (&$queries): void {
+        if (str_contains($query->sql, 'from "posts"') || str_contains($query->sql, 'from "episodes"') || str_contains($query->sql, 'from "guides"')) {
+            $queries[] = $query->sql;
+        }
+    });
+
+    app(RecentActivity::class)->getActivity();
+
+    expect($queries)->toHaveCount(3);
+
+    foreach ($queries as $query) {
+        expect($query)
+            ->toContain('select "id", "title", "is_published", "published_at", "updated_at"')
+            ->not->toContain('select *');
+    }
 });

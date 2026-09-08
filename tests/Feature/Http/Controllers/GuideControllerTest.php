@@ -8,6 +8,18 @@ use function Pest\Laravel\get;
 
 uses(RefreshDatabase::class);
 
+test('guide pages stay within their query budget as content grows', function (string $page, int $queries): void {
+    config()->set('mouse28.guides_enabled', true);
+    $guide = Guide::factory()->create(['category' => 'accessibility']);
+    Guide::factory()->count(30)->create(['category' => 'accessibility']);
+    $url = $page === 'index' ? route('guides.index') : route('guides.show', $guide);
+
+    $this->expectsDatabaseQueryCount($queries);
+
+    get($url)
+        ->assertOk();
+})->with(['archive' => ['index', 3], 'guide' => ['show', 3]]);
+
 test('public index page renders', function (): void {
     get(route('guides.index'))
         ->assertOk()
@@ -87,6 +99,18 @@ test('invalid guide category falls back to all guides', function (): void {
     get(route('guides.index', ['category' => 'not-a-category']))
         ->assertOk()
         ->assertSee($guide->title);
+});
+
+test('a valid category limits the guide index to matching published guides', function (): void {
+    $matching = Guide::factory()->create(['category' => 'accessibility']);
+    $other = Guide::factory()->create(['category' => 'family-planning']);
+    $draft = Guide::factory()->draft()->create(['category' => 'accessibility']);
+
+    get(route('guides.index', ['category' => 'accessibility']))
+        ->assertOk()
+        ->assertSee($matching->title)
+        ->assertDontSee($other->title)
+        ->assertDontSee($draft->title);
 });
 
 test('editorial review information is shown on the public page', function (): void {

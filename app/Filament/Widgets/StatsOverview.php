@@ -6,6 +6,7 @@ use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
 use App\Support\ResendAudience;
+use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\Widget;
 
 class StatsOverview extends Widget
@@ -32,35 +33,35 @@ class StatsOverview extends Widget
             [
                 'label' => 'Guides',
                 'value' => $publishedGuides,
-                'icon' => 'heroicon-o-book-open',
+                'icon' => Heroicon::OutlinedBookOpen,
                 'description' => $guidesDueForReview > 0 ? "{$guidesDueForReview} need review" : 'Reviews current',
                 'color' => '#4a90a4',
             ],
             [
                 'label' => 'Blog Posts',
                 'value' => $publishedPosts,
-                'icon' => 'heroicon-o-document-text',
+                'icon' => Heroicon::OutlinedDocumentText,
                 'description' => $postsDueForReview > 0 ? "{$postsDueForReview} need review" : 'Reviews current',
                 'color' => '#5b3e9e',
             ],
             [
                 'label' => 'Episodes',
                 'value' => $publishedEpisodes,
-                'icon' => 'heroicon-o-microphone',
+                'icon' => Heroicon::OutlinedMicrophone,
                 'description' => 'Published',
                 'color' => '#d4a843',
             ],
             [
                 'label' => 'Drafts',
                 'value' => $drafts,
-                'icon' => 'heroicon-o-pencil-square',
+                'icon' => Heroicon::OutlinedPencilSquare,
                 'description' => 'All content',
                 'color' => '#e8a838',
             ],
             [
                 'label' => 'Subscribers',
                 'value' => count($audience['subscribers']),
-                'icon' => 'heroicon-o-users',
+                'icon' => Heroicon::OutlinedUsers,
                 'description' => $audience['error'] ? 'Unavailable' : 'Newsletter',
                 'color' => '#7b5eb5',
             ],
