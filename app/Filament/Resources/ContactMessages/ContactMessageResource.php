@@ -10,11 +10,13 @@ use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Resources\Resource;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Cache;
 
 class ContactMessageResource extends Resource
 {
@@ -22,7 +24,7 @@ class ContactMessageResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-envelope';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedEnvelope;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Communication';
 
@@ -35,7 +37,11 @@ class ContactMessageResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        $count = ContactMessage::where('is_read', false)->count();
+        $count = Cache::store('array')->remember(
+            'filament.contact-messages.unread-count',
+            60,
+            fn (): int => ContactMessage::query()->where('is_read', false)->count(),
+        );
 
         return $count > 0 ? (string) $count : null;
     }
@@ -55,11 +61,11 @@ class ContactMessageResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->weight(fn (ContactMessage $record) => $record->is_read ? 'normal' : 'bold')
-                    ->icon('heroicon-o-user'),
+                    ->icon(Heroicon::OutlinedUser),
                 TextColumn::make('email')
                     ->searchable()
                     ->copyable()
-                    ->icon('heroicon-o-envelope'),
+                    ->icon(Heroicon::OutlinedEnvelope),
                 TextColumn::make('subject')
                     ->formatStateUsing(fn (ContactMessage $record): string => $record->subjectLabel())
                     ->badge()
@@ -85,12 +91,12 @@ class ContactMessageResource extends Resource
             ->actions([
                 Action::make('markRead')
                     ->label('Mark Read')
-                    ->icon('heroicon-o-check')
+                    ->icon(Heroicon::OutlinedCheck)
                     ->action(fn (ContactMessage $record) => $record->update(['is_read' => true]))
                     ->hidden(fn (ContactMessage $record) => $record->is_read),
                 Action::make('reply')
                     ->label('Reply')
-                    ->icon('heroicon-o-paper-airplane')
+                    ->icon(Heroicon::OutlinedPaperAirplane)
                     ->url(fn (ContactMessage $record) => "mailto:{$record->email}?subject=".urlencode('Re: '.$record->subjectLabel()))
                     ->openUrlInNewTab(),
                 DeleteAction::make(),

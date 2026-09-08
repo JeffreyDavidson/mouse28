@@ -41,7 +41,7 @@ class GuideForm
                         TextInput::make('slug')
                             ->required()
                             ->maxLength(255)
-                            ->unique(ignoreRecord: true)
+                            ->unique()
                             ->columnSpan(2),
                         Select::make('category')
                             ->options(GuideCategory::class)

@@ -16,6 +16,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Str;
 
 class PostForm
@@ -26,7 +27,7 @@ class PostForm
             ->columns(1)
             ->components([
                 Section::make('Post Details')
-                    ->icon('heroicon-o-information-circle')
+                    ->icon(Heroicon::OutlinedInformationCircle)
                     ->description('Basic post information')
                     ->columns(4)
                     ->schema([
@@ -44,7 +45,7 @@ class PostForm
                             ->required()
                             ->maxLength(255)
                             ->columnSpan(2)
-                            ->unique(ignoreRecord: true),
+                            ->unique(),
                         Select::make('category')
                             ->options(PostCategory::class)
                             ->required()
@@ -64,7 +65,7 @@ class PostForm
                     ]),
 
                 Section::make('Content')
-                    ->icon('heroicon-o-document-text')
+                    ->icon(Heroicon::OutlinedDocumentText)
                     ->description('Post excerpt and body content')
                     ->schema([
                         Textarea::make('excerpt')
@@ -94,7 +95,7 @@ class PostForm
                 Grid::make(2)
                     ->schema([
                         Section::make('Media')
-                            ->icon('heroicon-o-photo')
+                            ->icon(Heroicon::OutlinedPhoto)
                             ->schema([
                                 FileUpload::make('cover_image')
                                     ->image()
@@ -111,7 +112,7 @@ class PostForm
                             ]),
 
                         Section::make('Publishing')
-                            ->icon('heroicon-o-rocket-launch')
+                            ->icon(Heroicon::OutlinedRocketLaunch)
                             ->description('Save the post, then use the Publish action when its content is ready.')
                             ->schema([
                                 DateTimePicker::make('published_at')
@@ -121,7 +122,7 @@ class PostForm
                     ]),
 
                 Section::make('SEO')
-                    ->icon('heroicon-o-magnifying-glass')
+                    ->icon(Heroicon::OutlinedMagnifyingGlass)
                     ->description('Search engine optimization')
                     ->collapsed()
                     ->columns(2)

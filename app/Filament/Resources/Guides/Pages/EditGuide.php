@@ -11,6 +11,7 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Support\Icons\Heroicon;
 
 /** @property Guide $record */
 class EditGuide extends EditRecord
@@ -21,7 +22,7 @@ class EditGuide extends EditRecord
     {
         return [
             Action::make('publish')
-                ->icon('heroicon-o-rocket-launch')
+                ->icon(Heroicon::OutlinedRocketLaunch)
                 ->color('success')
                 ->requiresConfirmation()
                 ->visible(fn (): bool => ! $this->record->is_published)
@@ -47,7 +48,7 @@ class EditGuide extends EditRecord
                     Notification::make()->success()->title('Guide published')->send();
                 }),
             Action::make('unpublish')
-                ->icon('heroicon-o-arrow-uturn-left')
+                ->icon(Heroicon::OutlinedArrowUturnLeft)
                 ->color('warning')
                 ->requiresConfirmation()
                 ->visible(fn (): bool => $this->record->is_published)
@@ -56,7 +57,7 @@ class EditGuide extends EditRecord
                     Notification::make()->success()->title('Guide unpublished')->send();
                 }),
             Action::make('preview')
-                ->icon('heroicon-o-eye')
+                ->icon(Heroicon::OutlinedEye)
                 ->authorize('view')
                 ->url(fn (): string => route('preview.guides', $this->record))
                 ->openUrlInNewTab(),
