@@ -28,7 +28,7 @@ class ContentCalendar extends Widget
             ->select(['id', 'title', 'is_published', 'published_at'])
             ->orderBy('published_at')
             ->get()
-            ->map(fn ($post) => [
+            ->map(fn (Post $post): array => [
                 'title' => $post->title,
                 'type' => 'Post',
                 'date' => $post->published_at,
@@ -41,7 +41,7 @@ class ContentCalendar extends Widget
             ->select(['id', 'title', 'is_published', 'published_at'])
             ->orderBy('published_at')
             ->get()
-            ->map(fn ($episode) => [
+            ->map(fn (Episode $episode): array => [
                 'title' => $episode->title,
                 'type' => 'Episode',
                 'date' => $episode->published_at,
@@ -54,7 +54,7 @@ class ContentCalendar extends Widget
             ->select(['id', 'title', 'is_published', 'published_at'])
             ->orderBy('published_at')
             ->get()
-            ->map(fn ($guide) => [
+            ->map(fn (Guide $guide): array => [
                 'title' => $guide->title,
                 'type' => 'Guide',
                 'date' => $guide->published_at,
