@@ -9,7 +9,11 @@ class BlogRssFeed
 {
     public function content(): string
     {
-        $posts = Post::published()->latest('published_at')->take(20)->get();
+        $posts = Post::published()
+            ->select(['id', 'slug', 'title', 'excerpt', 'body', 'published_at', 'category'])
+            ->latest('published_at')
+            ->take(20)
+            ->get();
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">';

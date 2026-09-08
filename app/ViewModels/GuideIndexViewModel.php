@@ -24,6 +24,7 @@ class GuideIndexViewModel
         $category = $categoryEnum->value ?? '';
 
         $guides = Guide::published()
+            ->select(['id', 'slug', 'title', 'category', 'excerpt', 'body', 'cover_image'])
             ->when($category, fn ($query) => $query->where('category', $category))
             ->latest('published_at')
             ->paginate(12)
