@@ -11,6 +11,7 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\View\View;
 
 /** @property Episode $record */
@@ -22,7 +23,7 @@ class EditEpisode extends EditRecord
     {
         return [
             Action::make('publish')
-                ->icon('heroicon-o-rocket-launch')
+                ->icon(Heroicon::OutlinedRocketLaunch)
                 ->color('success')
                 ->requiresConfirmation()
                 ->visible(fn (): bool => ! $this->record->is_published)
@@ -48,7 +49,7 @@ class EditEpisode extends EditRecord
                     Notification::make()->success()->title('Episode published')->send();
                 }),
             Action::make('unpublish')
-                ->icon('heroicon-o-arrow-uturn-left')
+                ->icon(Heroicon::OutlinedArrowUturnLeft)
                 ->color('warning')
                 ->requiresConfirmation()
                 ->visible(fn (): bool => $this->record->is_published)
@@ -57,7 +58,7 @@ class EditEpisode extends EditRecord
                     Notification::make()->success()->title('Episode unpublished')->send();
                 }),
             Action::make('preview')
-                ->icon('heroicon-o-eye')
+                ->icon(Heroicon::OutlinedEye)
                 ->authorize('view')
                 ->url(fn (): string => route('preview.episodes', $this->record))
                 ->openUrlInNewTab(),

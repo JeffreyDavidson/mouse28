@@ -11,6 +11,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 
 /** @property ContactMessage $record */
 class ViewContactMessage extends ViewRecord
@@ -32,9 +33,9 @@ class ViewContactMessage extends ViewRecord
             Section::make('Message Details')
                 ->schema([
                     TextEntry::make('name')
-                        ->icon('heroicon-o-user'),
+                        ->icon(Heroicon::OutlinedUser),
                     TextEntry::make('email')
-                        ->icon('heroicon-o-envelope')
+                        ->icon(Heroicon::OutlinedEnvelope)
                         ->copyable(),
                     TextEntry::make('subject')
                         ->formatStateUsing(fn (ContactMessage $record): string => $record->subjectLabel())
@@ -62,7 +63,7 @@ class ViewContactMessage extends ViewRecord
         return [
             Action::make('reply')
                 ->label('Reply')
-                ->icon('heroicon-o-paper-airplane')
+                ->icon(Heroicon::OutlinedPaperAirplane)
                 ->url(fn () => "mailto:{$this->record->email}?subject=".urlencode('Re: '.$this->record->subjectLabel()))
                 ->openUrlInNewTab(),
             DeleteAction::make(),

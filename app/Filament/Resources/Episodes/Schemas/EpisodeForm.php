@@ -12,6 +12,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Str;
 
 class EpisodeForm
@@ -22,7 +23,7 @@ class EpisodeForm
             ->columns(1)
             ->components([
                 Section::make('Episode Details')
-                    ->icon('heroicon-o-information-circle')
+                    ->icon(Heroicon::OutlinedInformationCircle)
                     ->description('Basic episode information')
                     ->columns(4)
                     ->schema([
@@ -40,7 +41,7 @@ class EpisodeForm
                             ->required()
                             ->maxLength(255)
                             ->columnSpan(2)
-                            ->unique(ignoreRecord: true),
+                            ->unique(),
                         TextInput::make('episode_number')
                             ->numeric()
                             ->required()
@@ -54,14 +55,14 @@ class EpisodeForm
                 Grid::make(2)
                     ->schema([
                         Section::make('Media')
-                            ->icon('heroicon-o-photo')
+                            ->icon(Heroicon::OutlinedPhoto)
                             ->schema([
                                 TextInput::make('transistor_url')
                                     ->label('Transistor Episode URL')
                                     ->url()
                                     ->maxLength(500)
                                     ->rules(['regex:/\Ahttps:\/\/share\.transistor\.fm\/s\/[a-zA-Z0-9]+\/?\z/'])
-                                    ->prefixIcon('heroicon-o-link')
+                                    ->prefixIcon(Heroicon::OutlinedLink)
                                     ->helperText('Paste the episode share URL, such as https://share.transistor.fm/s/428d650c. Mouse28 builds the embedded player from it.'),
                                 FileUpload::make('cover_image')
                                     ->image()
@@ -78,11 +79,11 @@ class EpisodeForm
                                 TextInput::make('duration_seconds')
                                     ->numeric()
                                     ->suffix('seconds')
-                                    ->prefixIcon('heroicon-o-clock'),
+                                    ->prefixIcon(Heroicon::OutlinedClock),
                             ]),
 
                         Section::make('Publishing')
-                            ->icon('heroicon-o-rocket-launch')
+                            ->icon(Heroicon::OutlinedRocketLaunch)
                             ->description('Save the episode, then use the Publish action when its editorial content is ready. Transcripts may be added later.')
                             ->schema([
                                 DateTimePicker::make('published_at')
@@ -92,7 +93,7 @@ class EpisodeForm
                     ]),
 
                 Section::make('Content')
-                    ->icon('heroicon-o-document-text')
+                    ->icon(Heroicon::OutlinedDocumentText)
                     ->description('Episode description, show notes, and transcript')
                     ->schema([
                         Textarea::make('description')
@@ -119,16 +120,16 @@ class EpisodeForm
                 Grid::make(2)
                     ->schema([
                         Section::make('Distribution')
-                            ->icon('heroicon-o-signal')
+                            ->icon(Heroicon::OutlinedSignal)
                             ->description('Where listeners can find this episode')
                             ->schema([
-                                TextInput::make('apple_url')->url()->label('Apple Podcasts')->prefixIcon('heroicon-o-link'),
-                                TextInput::make('spotify_url')->url()->label('Spotify')->prefixIcon('heroicon-o-link'),
-                                TextInput::make('youtube_url')->url()->label('YouTube')->prefixIcon('heroicon-o-link'),
+                                TextInput::make('apple_url')->url()->label('Apple Podcasts')->prefixIcon(Heroicon::OutlinedLink),
+                                TextInput::make('spotify_url')->url()->label('Spotify')->prefixIcon(Heroicon::OutlinedLink),
+                                TextInput::make('youtube_url')->url()->label('YouTube')->prefixIcon(Heroicon::OutlinedLink),
                             ]),
 
                         Section::make('SEO')
-                            ->icon('heroicon-o-magnifying-glass')
+                            ->icon(Heroicon::OutlinedMagnifyingGlass)
                             ->description('Search engine optimization')
                             ->collapsed()
                             ->schema([

@@ -57,7 +57,7 @@ class PodcastSettings extends Page
         return $form
             ->schema([
                 Section::make('General')
-                    ->icon('heroicon-o-microphone')
+                    ->icon(Heroicon::OutlinedMicrophone)
                     ->description('Your podcast name, description, and cover art')
                     ->columns(2)
                     ->schema([
@@ -66,38 +66,39 @@ class PodcastSettings extends Page
                         Textarea::make('description')->rows(3)->columnSpanFull(),
                         FileUpload::make('cover_image')
                             ->image()
+                            ->maxSize(5120)
                             ->disk('public')
                             ->directory('podcast'),
                     ]),
 
                 Section::make('Distribution Links')
-                    ->icon('heroicon-o-signal')
+                    ->icon(Heroicon::OutlinedSignal)
                     ->description('Where listeners can find your podcast')
                     ->columns(2)
                     ->schema([
                         TextInput::make('apple_url')->url()->label('Apple Podcasts')
-                            ->prefixIcon('heroicon-o-link'),
+                            ->prefixIcon(Heroicon::OutlinedLink),
                         TextInput::make('spotify_url')->url()->label('Spotify')
-                            ->prefixIcon('heroicon-o-link'),
+                            ->prefixIcon(Heroicon::OutlinedLink),
                         TextInput::make('youtube_url')->url()->label('YouTube')
-                            ->prefixIcon('heroicon-o-link'),
+                            ->prefixIcon(Heroicon::OutlinedLink),
                     ]),
 
                 Section::make('Social Media')
-                    ->icon('heroicon-o-heart')
+                    ->icon(Heroicon::OutlinedHeart)
                     ->description('Connect your social accounts')
                     ->columns(2)
                     ->schema([
                         TextInput::make('instagram_url')->url()->label('Instagram')
-                            ->prefixIcon('heroicon-o-link'),
+                            ->prefixIcon(Heroicon::OutlinedLink),
                         TextInput::make('tiktok_url')->url()->label('TikTok')
-                            ->prefixIcon('heroicon-o-link'),
+                            ->prefixIcon(Heroicon::OutlinedLink),
                     ]),
 
                 Actions::make([
                     Action::make('save')
                         ->label('Save Settings')
-                        ->icon('heroicon-o-check')
+                        ->icon(Heroicon::OutlinedCheck)
                         ->action(fn () => $this->save()),
                 ])->alignEnd(),
             ])
