@@ -29,7 +29,7 @@ class HomeViewModel
             ->select(['id', 'slug', 'title', 'category', 'cover_image', 'published_at'])
             ->latest('published_at')
             ->when($featuredPost, fn ($query) => $query->whereKeyNot($featuredPost->getKey()))
-            ->take(6)
+            ->take(3)
             ->get();
         $latestEpisodes = Episode::published()
             ->select(['id', 'slug', 'title', 'description', 'episode_number', 'duration_seconds'])
@@ -40,7 +40,7 @@ class HomeViewModel
             ? Guide::published()
                 ->select(['id', 'slug', 'title', 'excerpt', 'category', 'cover_image'])
                 ->latest('published_at')
-                ->take(4)
+                ->take(2)
                 ->get()
             : new Collection;
         $planningPosts = config('mouse28.guides_enabled') && $latestGuides->isEmpty()
