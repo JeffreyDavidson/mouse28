@@ -15,4 +15,5 @@ Before planning or editing, find the row whose globs match the file's path and r
 | resources/{js,views/livewire}/** | .ai/rules/livewire.md |
 | app/Models/** | .ai/rules/models.md |
 | tests/** | .ai/rules/tests.md |
+| {app/Support/ResponsiveArtwork.php,app/Console/Commands/GenerateResponsiveArtwork.php,resources/views/components/post-artwork.blade.php,resources/views/episodes/show.blade.php} | .ai/rules/views-episodes.md |
 | resources/views/home.blade.php | .ai/rules/views.md |

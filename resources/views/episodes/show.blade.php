@@ -44,6 +44,10 @@
             <div class="podcast-cover-frame mx-auto w-full max-w-md lg:mx-0">
                 <img
                     src="{{ $coverImage }}"
+                    @if ($srcset = \App\Support\ResponsiveArtwork::srcset($episode->cover_image, square: true))
+                        srcset="{{ $srcset }}"
+                        sizes="(min-width: 1188px) 448px, (min-width: 1024px) calc(41.6667vw - 46.6667px), (min-width: 480px) 448px, calc(100vw - 32px)"
+                    @endif
                     alt="{{ $episode->title }} podcast artwork"
                     width="1200"
                     height="1200"

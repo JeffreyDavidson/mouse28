@@ -4,7 +4,7 @@ use App\Livewire\BlogIndex;
 use App\Models\Episode;
 use App\Models\Podcast;
 use App\Models\Post;
-use App\Support\ResponsivePostArtwork;
+use App\Support\ResponsiveArtwork;
 use Dom\HTMLDocument;
 use Dom\XPath;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -32,7 +32,7 @@ test('blog featured cover is prioritized while archive cards remain deferred', f
     $contents = UploadedFile::fake()->image('cover.webp', 600, 300)->getContent();
     Storage::disk('public')->put('posts/cover.webp', $contents);
     Storage::disk('public')->put(
-        ResponsivePostArtwork::variantPath(hash('sha256', $contents), 480),
+        ResponsiveArtwork::variantPath(hash('sha256', $contents), 480),
         UploadedFile::fake()->image('variant.webp', 480, 240)->getContent(),
     );
     Post::factory()->count(2)->create(['cover_image' => 'posts/cover.webp']);
