@@ -10,10 +10,10 @@ class SitemapDocument
 {
     public function content(): string
     {
-        $posts = Post::published()->latest('published_at')->get();
-        $episodes = Episode::published()->latest('published_at')->get();
+        $posts = Post::published()->select(['slug', 'updated_at'])->latest('published_at')->get();
+        $episodes = Episode::published()->select(['slug', 'updated_at'])->latest('published_at')->get();
         $guides = config('mouse28.guides_enabled')
-            ? Guide::published()->latest('published_at')->get()
+            ? Guide::published()->select(['slug', 'updated_at'])->latest('published_at')->get()
             : collect();
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';

@@ -27,6 +27,7 @@ class SearchViewModel
 
         if ($query !== '') {
             $posts = Post::published()
+                ->select(['slug', 'title', 'excerpt', 'category'])
                 ->where(function (Builder $builder) use ($query): void {
                     $builder->where('title', 'like', "%{$query}%")
                         ->orWhere('excerpt', 'like', "%{$query}%")
@@ -38,6 +39,7 @@ class SearchViewModel
 
             if (config('mouse28.guides_enabled')) {
                 $guides = Guide::published()
+                    ->select(['slug', 'title', 'excerpt', 'category'])
                     ->where(function (Builder $builder) use ($query): void {
                         $builder->where('title', 'like', "%{$query}%")
                             ->orWhere('excerpt', 'like', "%{$query}%")
@@ -49,6 +51,7 @@ class SearchViewModel
             }
 
             $episodes = Episode::published()
+                ->select(['slug', 'episode_number', 'title', 'description'])
                 ->where(function (Builder $builder) use ($query): void {
                     $builder->where('title', 'like', "%{$query}%")
                         ->orWhere('description', 'like', "%{$query}%")

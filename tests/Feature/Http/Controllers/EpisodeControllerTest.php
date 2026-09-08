@@ -93,6 +93,20 @@ test('published episode detail page renders', function (): void {
         ->assertSee(':aria-expanded="expanded.toString()"', false);
 });
 
+test('episode pages sanitize rich show notes and transcripts', function (): void {
+    $episode = Episode::factory()->create([
+        'show_notes' => '<p>Safe show notes.</p><script>alert("show notes")</script>',
+        'transcript' => '<p>Safe transcript.</p><img src="x" onerror="alert(\'transcript\')">',
+    ]);
+
+    get(route('episodes.show', $episode))
+        ->assertOk()
+        ->assertSee('<p>Safe show notes.</p>', false)
+        ->assertSee('<p>Safe transcript.</p>', false)
+        ->assertDontSee('alert("show notes")', false)
+        ->assertDontSee('onerror=', false);
+});
+
 test('sparse episode detail pages use a compact continuation layout', function (): void {
     $episode = Episode::factory()->create([
         'audio_url' => null,
