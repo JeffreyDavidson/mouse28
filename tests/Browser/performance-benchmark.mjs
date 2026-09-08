@@ -1,6 +1,7 @@
 import { parseArgs } from 'node:util';
 import { writeFile } from 'node:fs/promises';
 import { chromium } from 'playwright';
+import { navigationTimings } from './navigation-timings.mjs';
 
 const { values } = parseArgs({ options: {
     base: { type: 'string' },
@@ -106,10 +107,11 @@ try {
                         const metrics = await page.evaluate(() => {
                             const navigation = performance.getEntriesByType('navigation')[0];
                             return { ...window.pageMetrics, ttfb: navigation.responseStart, fcp: performance.getEntriesByName('first-contentful-paint')[0]?.startTime ?? null, load: navigation.loadEventEnd || null,
+                                navigation: Object.fromEntries(['startTime', 'domainLookupStart', 'domainLookupEnd', 'connectStart', 'connectEnd', 'secureConnectionStart', 'requestStart', 'responseStart', 'responseEnd'].map(key => [key, navigation[key]])),
                                 incompleteImages: [...document.images].filter(img => !img.complete && img.getBoundingClientRect().top < innerHeight).length,
                                 largestResources: performance.getEntriesByType('resource').filter(entry => new URL(entry.name).origin === location.origin).sort((a, b) => b.transferSize - a.transferSize).slice(0, 5).map(entry => ({ path: new URL(entry.name).pathname, bytes: entry.transferSize, duration: Math.round(entry.duration) })) };
                         });
-                        const sample = { path, run, cache, status: response?.status(), ...metrics, bytes, requests, pageErrors, errorOrigins, failures, assets: [...assets.values()] };
+                        const sample = { path, run, cache, status: response?.status(), ...metrics, ...navigationTimings(metrics.navigation), bytes, requests, pageErrors, errorOrigins, failures, assets: [...assets.values()] };
                         samples.push(sample);
                         if (pageErrors > 0 || (sample.status !== 200 && !(path === '/guides' && sample.status === 404))) process.exitCode = 1;
                         console.log(JSON.stringify({ path, run, cache, status: sample.status, lcp: Math.round(metrics.lcp), cls: metrics.cls, ttfb: Math.round(metrics.ttfb), bytes, pageErrors }));
@@ -139,7 +141,7 @@ try {
                 const middle = Math.floor(sorted.length / 2);
                 return sorted.length ? (sorted.length % 2 ? sorted[middle] : (sorted[middle - 1] + sorted[middle]) / 2) : null;
             };
-            report.summary.push({ path, cache, completedRuns: group.length, medianLcpMs: median('lcp'), medianTtfbMs: median('ttfb'), medianBytes: median('bytes'), worstCls: group.length ? Math.max(...group.map(sample => sample.cls)) : null });
+            report.summary.push({ path, cache, completedRuns: group.length, medianLcpMs: median('lcp'), medianTtfbMs: median('ttfb'), medianPreRequestMs: median('preRequestMs'), medianResponseWaitMs: median('responseWaitMs'), medianDocumentTransferMs: median('documentTransferMs'), medianBytes: median('bytes'), worstCls: group.length ? Math.max(...group.map(sample => sample.cls)) : null });
         }
     }
     if (values.output) await writeFile(values.output, JSON.stringify(report, null, 2) + '\n');

@@ -53,6 +53,9 @@ jobs:
       - name: Audit Node dependencies
         run: npm audit --audit-level=high
 
+      - name: Test benchmark timing calculations
+        run: node --test tests/Browser/navigation-timings.test.mjs
+
       - name: Check PHP and Blade formatting
         run: vendor/bin/pint --test
 
