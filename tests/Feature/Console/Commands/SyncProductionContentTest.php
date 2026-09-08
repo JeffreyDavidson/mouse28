@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Storage;
 uses(RefreshDatabase::class);
 
 test('sync stops before transferring media when a local draft collides', function (): void {
+    // Arrange
     Storage::fake('public');
     config()->set('mouse28.production_sync.ssh_host', 'cold-moon');
     config()->set('mouse28.production_sync.site_path', '/home/forge/mouse28.com/current');
@@ -29,8 +30,10 @@ test('sync stops before transferring media when a local draft collides', functio
     });
     Process::preventStrayProcesses();
 
+    // Act
     $exitCode = Artisan::call('content:sync-production');
 
+    // Assert
     expect($exitCode)->toBe(Command::FAILURE)
         ->and($post->refresh()->is_published)->toBeFalse();
     Process::assertDidntRun(fn (PendingProcess $process): bool => $process->command[0] === 'rsync');

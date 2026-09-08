@@ -11,15 +11,19 @@ use Illuminate\Support\Facades\Storage;
 uses(RefreshDatabase::class);
 
 test('failed artwork writes leave content unattached and return failure', function (): void {
+    // Arrange
     $post = Post::factory()->create(['slug' => 'welcome-to-mouse-28', 'cover_image' => null]);
     $disk = $this->createStub(FilesystemAdapter::class);
     $disk->method('exists')->willReturn(false);
     $disk->method('put')->willReturn(false);
     Storage::set('public', $disk);
 
-    expect($this->artisan('content:attach-artwork'))->toBe(Command::FAILURE);
+    // Act
+    $exitCode = $this->artisan('content:attach-artwork');
 
-    expect($post->refresh()->cover_image)->toBeNull();
+    // Assert
+    expect($exitCode)->toBe(Command::FAILURE)
+        ->and($post->refresh()->cover_image)->toBeNull();
 });
 
 test('bundled artwork is attached without replacing existing uploads', function (): void {
