@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c286e66c17d757e5224d6a9c1b331034",
+    "content-hash": "cc3fcd45b3a1a0761732dddba7581fd8",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -11425,6 +11425,67 @@
                 "source": "https://github.com/LaravelDaily/FilaCheck/tree/v1.2.5"
             },
             "time": "2026-08-06T08:22:19+00:00"
+        },
+        {
+            "name": "laraveldaily/filacheck-pro",
+            "version": "v1.2.7",
+            "dist": {
+                "type": "zip",
+                "url": "https://satis.filamentexamples.com/dist/laraveldaily/filacheck-pro/laraveldaily-filacheck-pro-1aef0c4b55a09b055fa8a38f99be44efea9d7d2c-zip-cdee39.zip",
+                "reference": "1aef0c4b55a09b055fa8a38f99be44efea9d7d2c",
+                "shasum": "ef3d819a99bb9cb4851d2c62b8b87ec275053561"
+            },
+            "require": {
+                "laravel/agent-detector": "^2.0",
+                "laraveldaily/filacheck": "^1.0|dev-main",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^9.0|^10.0",
+                "pestphp/pest": "^3.0|^4.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "FilacheckPro\\FilacheckProServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "FilacheckPro\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "FilacheckPro\\Tests\\": "tests/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "authors": [
+                {
+                    "name": "Povilas Korop",
+                    "email": "povilas@laraveldaily.com"
+                }
+            ],
+            "description": "Premium FilaCheck rules - performance optimization, best practices, and advanced static analysis",
+            "keywords": [
+                "code-quality",
+                "filament",
+                "laravel",
+                "lint",
+                "livewire",
+                "performance",
+                "static-analysis"
+            ],
+            "support": {
+                "source": "https://github.com/LaravelDaily/FilaCheck-Pro/tree/v1.2.7",
+                "issues": "https://github.com/LaravelDaily/FilaCheck-Pro/issues"
+            },
+            "time": "2026-06-16T06:01:42+00:00"
         },
         {
             "name": "myclabs/deep-copy",
