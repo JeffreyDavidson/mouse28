@@ -89,7 +89,10 @@ class BlogIndex extends Component
 
     public function render(): View
     {
+        $cardColumns = ['id', 'slug', 'title', 'excerpt', 'body', 'category', 'author', 'cover_image', 'published_at'];
+
         $posts = Post::published()
+            ->select($cardColumns)
             ->when($this->category, fn (Builder $query) => $query->where('category', $this->category))
             ->when($this->search, fn (Builder $query) => $query->where(function (Builder $query): void {
                 $query->where('title', 'like', "%{$this->search}%")
@@ -101,7 +104,7 @@ class BlogIndex extends Component
 
         $featuredPost = $this->hasDefaultFilters() && $posts->currentPage() === 1
             ? $posts->first()
-            : Post::published()->latest('published_at')->first();
+            : Post::published()->select($cardColumns)->latest('published_at')->first();
 
         $archivePosts = $featuredPost && $this->hasDefaultFilters()
             ? $posts->getCollection()->reject(fn (Post $post): bool => $post->is($featuredPost))
