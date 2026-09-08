@@ -21,16 +21,13 @@ class HomeViewModel
      */
     public function data(): array
     {
-        $featuredPost = Post::published()
-            ->select(['id', 'slug', 'title', 'category', 'cover_image'])
-            ->latest('published_at')
-            ->first();
-        $latestPosts = Post::published()
+        $posts = Post::published()
             ->select(['id', 'slug', 'title', 'category', 'cover_image', 'published_at'])
             ->latest('published_at')
-            ->when($featuredPost, fn ($query) => $query->whereKeyNot($featuredPost->getKey()))
-            ->take(3)
+            ->take(4)
             ->get();
+        $featuredPost = $posts->first();
+        $latestPosts = $posts->skip(1)->values();
         $latestEpisodes = Episode::published()
             ->select(['id', 'slug', 'title', 'description', 'episode_number', 'duration_seconds'])
             ->latest('published_at')

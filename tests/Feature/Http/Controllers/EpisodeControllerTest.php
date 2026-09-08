@@ -8,10 +8,22 @@ use function Pest\Laravel\get;
 
 uses(RefreshDatabase::class);
 
+test('podcast pages stay within their query budget as content grows', function (string $page, int $queries): void {
+    $episode = Episode::factory()->create();
+    Episode::factory()->count(15)->create();
+    $url = $page === 'index' ? route('episodes.index') : route('episodes.show', $episode);
+
+    $this->expectsDatabaseQueryCount($queries);
+
+    get($url)
+        ->assertOk();
+})->with(['archive' => ['index', 3], 'episode' => ['show', 5]]);
+
 test('public index page renders', function (): void {
     get(route('episodes.index'))
         ->assertOk()
-        ->assertSee('The Mouse28 Podcast');
+        ->assertSee('The Mouse28 Podcast')
+        ->assertSee('src="/images/podcast/mouse28-cover.webp"', false);
 });
 
 test('podcast pages render one newsletter signup', function (): void {

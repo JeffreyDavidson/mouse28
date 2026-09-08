@@ -19,6 +19,8 @@
                     >
                         <x-post-artwork
                             :post="$featuredPost"
+                            :priority="true"
+                            sizes="(min-width: 1376px) 775px, (min-width: 1024px) 56vw, (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
                             class="h-full min-h-72 w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025] lg:min-h-[31rem]"
                         />
                     </a>

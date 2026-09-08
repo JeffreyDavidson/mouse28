@@ -1,6 +1,8 @@
 @props([
     'post',
     'compact' => false,
+    'priority' => false,
+    'sizes' => '(min-width: 1376px) 644px, (min-width: 768px) calc(50vw - 44px), (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)',
 ])
 
 @php
@@ -30,11 +32,16 @@
 @if ($post->cover_image_url)
     <img
         src="{{ $post->cover_image_url }}"
+        @if ($srcset = \App\Support\ResponsivePostArtwork::srcset($post->cover_image))
+            srcset="{{ $srcset }}"
+            sizes="{{ ($priority ? '' : 'auto, ').$sizes }}"
+        @endif
         alt=""
         width="1024"
         height="768"
-        loading="lazy"
+        loading="{{ $priority ? 'eager' : 'lazy' }}"
         decoding="async"
+        @if ($priority) fetchpriority="high" @endif
         {{ $attributes }}
     />
 @else

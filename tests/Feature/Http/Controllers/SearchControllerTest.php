@@ -11,6 +11,18 @@ use function Pest\Laravel\get;
 
 uses(RefreshDatabase::class);
 
+test('search stays within its query budget as content grows', function (): void {
+    config()->set('mouse28.guides_enabled', true);
+    Post::factory()->count(30)->create(['title' => 'Disney planning']);
+    Guide::factory()->count(15)->create(['title' => 'Disney planning']);
+    Episode::factory()->count(15)->create(['title' => 'Disney planning']);
+
+    $this->expectsDatabaseQueryCount(4);
+
+    get(route('search', ['q' => 'Disney']))
+        ->assertOk();
+});
+
 test('search page is available from public navigation', function (): void {
     get(route('search'))
         ->assertOk()

@@ -8,6 +8,18 @@ use function Pest\Laravel\get;
 
 uses(RefreshDatabase::class);
 
+test('guide pages stay within their query budget as content grows', function (string $page, int $queries): void {
+    config()->set('mouse28.guides_enabled', true);
+    $guide = Guide::factory()->create(['category' => 'accessibility']);
+    Guide::factory()->count(30)->create(['category' => 'accessibility']);
+    $url = $page === 'index' ? route('guides.index') : route('guides.show', $guide);
+
+    $this->expectsDatabaseQueryCount($queries);
+
+    get($url)
+        ->assertOk();
+})->with(['archive' => ['index', 3], 'guide' => ['show', 3]]);
+
 test('public index page renders', function (): void {
     get(route('guides.index'))
         ->assertOk()

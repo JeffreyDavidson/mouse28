@@ -7,6 +7,7 @@ use App\View\Composers\PodcastComposer;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
@@ -17,6 +18,8 @@ class AppServiceProvider extends ServiceProvider
 {
     public function boot(): void
     {
+        DB::prohibitDestructiveCommands($this->app->isProduction());
+
         Nightwatch::user(fn (Authenticatable $user): array => []);
 
         View::composer('components.layouts.app', PodcastComposer::class);

@@ -33,7 +33,7 @@
             && blank($episode->transcript)
             && $showNotesLength < 160;
         $coverImage = $episode->cover_image_url
-            ?: ($podcast->cover_image ? '/storage/'.ltrim($podcast->cover_image, '/') : '/images/podcast/mouse28-cover.jpg');
+            ?: ($podcast->cover_image ? '/storage/'.ltrim($podcast->cover_image, '/') : '/images/podcast/mouse28-cover.webp');
         $appleUrl = $episode->apple_url ?: $podcast->apple_url;
         $spotifyUrl = $episode->spotify_url ?: $podcast->spotify_url;
         $youtubeUrl = $episode->youtube_url ?: $podcast->youtube_url;
