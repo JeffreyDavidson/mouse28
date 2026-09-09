@@ -39,7 +39,8 @@ test('query string filters update the visible stories', function (): void {
     $page->assertSet('category', 'park-accessibility')
         ->assertSet('search', 'accessible')
         ->assertSet('sort', 'oldest')
-        ->assertViewHas('hasAnyPosts', true);
+        ->assertViewHas('hasAnyPosts', true)
+        ->assertViewHas('usedCategories', ['park-accessibility', 'food-reviews']);
 
     // Act
     $page->set('search', 'no matching story');
