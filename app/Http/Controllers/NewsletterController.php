@@ -9,6 +9,7 @@ use App\Support\SafeReturnUrl;
 use App\Support\Turnstile;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Validation\ValidationException;
 
 class NewsletterController
@@ -22,14 +23,13 @@ class NewsletterController
             return $this->successResponse($request);
         }
 
-        if (! $turnstile->passes($request, config('services.turnstile.newsletter_action'))) {
+        if (! $turnstile->passes($request, Config::string('services.turnstile.newsletter_action'))) {
             throw ValidationException::withMessages([
                 'cf-turnstile-response' => 'Please verify that you are human and try again.',
             ])->errorBag('newsletter')->redirectTo($this->redirectUrl($request));
         }
 
-        $validated = $request->validated();
-        $result = $audience->subscribe($validated['email']);
+        $result = $audience->subscribe($request->safe()->string('email')->toString());
 
         if ($result === NewsletterSubscriptionResult::Subscribed) {
             return $this->successResponse($request);

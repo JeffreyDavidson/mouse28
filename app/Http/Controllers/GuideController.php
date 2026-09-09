@@ -12,14 +12,14 @@ class GuideController
 {
     public function index(Request $request, GuideIndexViewModel $viewModel): View
     {
-        abort_unless(config('mouse28.guides_enabled'), 404);
+        abort_if(! config('mouse28.guides_enabled'), 404);
 
         return view('guides.index', $viewModel->data($request));
     }
 
     public function show(Guide $guide, GuideViewModel $viewModel): View
     {
-        abort_unless(config('mouse28.guides_enabled'), 404);
+        abort_if(! config('mouse28.guides_enabled'), 404);
 
         abort_unless(
             $guide->is_published && $guide->published_at?->isPast(),

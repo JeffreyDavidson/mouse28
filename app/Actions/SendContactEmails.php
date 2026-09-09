@@ -6,6 +6,7 @@ use App\Mail\ContactFormConfirmation;
 use App\Mail\ContactFormSubmitted;
 use App\Models\ContactMessage;
 use Illuminate\Contracts\Mail\Mailer;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
@@ -16,7 +17,7 @@ class SendContactEmails
     public function __invoke(ContactMessage $contactMessage): void
     {
         try {
-            $recipients = array_filter(array_map(trim(...), explode(',', (string) config('mail.admin_address'))));
+            $recipients = array_filter(array_map(trim(...), explode(',', Config::string('mail.admin_address'))));
             $this->mailer
                 ->to($recipients)
                 ->send(new ContactFormSubmitted($contactMessage));

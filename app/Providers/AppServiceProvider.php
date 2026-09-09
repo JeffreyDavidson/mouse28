@@ -7,6 +7,7 @@ use App\View\Composers\PodcastComposer;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
@@ -24,8 +25,8 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer('components.layouts.app', PodcastComposer::class);
 
-        if (str_starts_with((string) config('app.url'), 'https://')) {
-            URL::forceRootUrl((string) config('app.url'));
+        if (str_starts_with(Config::string('app.url'), 'https://')) {
+            URL::forceRootUrl(Config::string('app.url'));
             URL::forceScheme('https');
         }
 

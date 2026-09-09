@@ -31,13 +31,13 @@ class StoreContactRequest extends FormRequest
     /** @return array{name: string, email: string, subject: string, message: string} */
     public function messageAttributes(): array
     {
-        $validated = $this->validated();
+        $validated = $this->safe();
 
         return [
-            'name' => (string) $validated['name'],
-            'email' => (string) $validated['email'],
-            'subject' => (string) $validated['subject'],
-            'message' => (string) $validated['message'],
+            'name' => $validated->string('name')->toString(),
+            'email' => $validated->string('email')->toString(),
+            'subject' => $validated->string('subject')->toString(),
+            'message' => $validated->string('message')->toString(),
         ];
     }
 
