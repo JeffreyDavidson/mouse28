@@ -2,11 +2,10 @@ parameters:
     paths:
         - app
 
-    level: 5
+    level: max
+    treatPhpDocTypesAsCertain: false
 
     bootstrapFiles:
         - bootstrap/app.php
 
-    excludePaths:
-        - bootstrap/cache
-        - storage
+    tmpDir: storage/framework/cache/phpstan-app

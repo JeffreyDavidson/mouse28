@@ -8,6 +8,7 @@ use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Finder\SplFileInfo;
@@ -24,7 +25,7 @@ class AttachContentArtwork extends Command
 
     public function handle(): int
     {
-        $sourceDirectory = (string) config('mouse28.content_artwork_path');
+        $sourceDirectory = Config::string('mouse28.content_artwork_path');
 
         if (! File::isDirectory("{$sourceDirectory}/posts")) {
             $this->error("Bundled post artwork directory is missing: {$sourceDirectory}/posts");

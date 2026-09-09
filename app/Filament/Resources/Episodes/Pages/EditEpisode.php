@@ -13,10 +13,12 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Date;
 
 /** @property Episode $record */
 class EditEpisode extends EditRecord
 {
+    #[\Override]
     protected static string $resource = EpisodeResource::class;
 
     protected function getHeaderActions(): array
@@ -43,7 +45,7 @@ class EditEpisode extends EditRecord
 
                     $this->record->update([
                         'is_published' => true,
-                        'published_at' => $this->record->published_at ?? now(),
+                        'published_at' => $this->record->published_at ?? Date::now(),
                     ]);
 
                     Notification::make()->success()->title('Episode published')->send();

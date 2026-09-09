@@ -31,6 +31,26 @@ test('a successful audience read is shared through the cache', function (): void
     Http::assertSentCount(1);
 });
 
+test('audience normalization keeps named fields and excludes malformed entries', function (): void {
+    Http::fake([
+        'https://api.resend.com/*' => Http::response(['data' => [
+            null,
+            'invalid',
+            ['email' => 'reader@example.com', 0 => 'unexpected', 'unsubscribed' => true],
+        ]]),
+    ]);
+    $audience = app(ResendAudience::class);
+
+    $result = $audience->get();
+    $cachedResult = $audience->get();
+
+    expect($result)->toBe([
+        'subscribers' => [['email' => 'reader@example.com', 'unsubscribed' => true]],
+        'error' => null,
+    ])->and($cachedResult)->toBe($result);
+    Http::assertSentCount(1);
+});
+
 test('missing audience configuration does not contact the provider', function (?string $audienceId): void {
     config()->set('services.resend.audience_id', $audienceId);
     Http::fake();

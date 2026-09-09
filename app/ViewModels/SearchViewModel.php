@@ -21,9 +21,9 @@ class SearchViewModel
      */
     public function data(string $query): array
     {
-        $posts = collect();
-        $guides = collect();
-        $episodes = collect();
+        $posts = (new Post)->newCollection();
+        $guides = (new Guide)->newCollection();
+        $episodes = (new Episode)->newCollection();
 
         if ($query !== '') {
             $posts = Post::published()

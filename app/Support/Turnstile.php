@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -12,7 +13,6 @@ class Turnstile
     {
         $token = $request->input('cf-turnstile-response');
         $secret = config('services.turnstile.secret_key');
-        $endpoint = config('services.turnstile.siteverify_url');
 
         if (! is_string($token) || trim($token) === '' || ! is_string($secret) || trim($secret) === '') {
             return false;
@@ -21,7 +21,7 @@ class Turnstile
         try {
             $response = Http::asForm()
                 ->timeout(5)
-                ->post($endpoint, [
+                ->post(Config::string('services.turnstile.siteverify_url'), [
                     'secret' => $secret,
                     'response' => $token,
                     'remoteip' => $request->ip(),
@@ -34,15 +34,23 @@ class Turnstile
             return false;
         }
 
-        $hostname = strtolower((string) $response->json('hostname', ''));
-        $allowedHostnames = array_map('strtolower', array_filter(
-            config('services.turnstile.allowed_hostnames', []),
-            'is_string',
-        ));
+        $hostname = $response->json('hostname');
+
+        if (! is_string($hostname) || $hostname === '') {
+            return false;
+        }
+
+        $allowedHostnames = [];
+
+        foreach (Config::array('services.turnstile.allowed_hostnames', []) as $allowedHostname) {
+            if (is_string($allowedHostname)) {
+                $allowedHostnames[] = strtolower($allowedHostname);
+            }
+        }
 
         return $response->ok()
             && $response->json('success') === true
             && $response->json('action') === $expectedAction
-            && in_array($hostname, $allowedHostnames, true);
+            && in_array(strtolower($hostname), $allowedHostnames, true);
     }
 }

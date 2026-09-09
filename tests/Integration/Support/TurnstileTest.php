@@ -89,6 +89,22 @@ test('verification requires an OK response with a boolean success value', functi
     'server error' => [true, 503],
 ]);
 
+test('verification rejects a malformed hostname', function (): void {
+    Http::fake([
+        'challenges.cloudflare.com/*' => Http::response([
+            'success' => true,
+            'action' => 'contact-form',
+            'hostname' => ['mouse28.com'],
+        ]),
+    ]);
+    $request = Request::create(route('contact.store'), 'POST', ['cf-turnstile-response' => 'test-token']);
+    $turnstile = app(Turnstile::class);
+
+    $passes = $turnstile->passes($request, 'contact-form');
+
+    expect($passes)->toBeFalse();
+});
+
 test('a verification connection failure returns false', function (): void {
     Http::fake([
         'challenges.cloudflare.com/*' => Http::failedConnection(),

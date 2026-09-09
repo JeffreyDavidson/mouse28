@@ -20,16 +20,22 @@ use Filament\Support\Icons\Heroicon;
 /** @property-read Schema $form */
 class PodcastSettings extends Page
 {
+    #[\Override]
     protected string $view = 'filament.pages.podcast-settings';
 
+    #[\Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
+    #[\Override]
     protected static string|\UnitEnum|null $navigationGroup = 'Settings';
 
+    #[\Override]
     protected static ?string $navigationLabel = 'Podcast Settings';
 
+    #[\Override]
     protected static ?string $title = 'Podcast Settings';
 
+    /** @var array<string, mixed>|null */
     public ?array $data = [];
 
     public static function canAccess(): bool
@@ -40,7 +46,10 @@ class PodcastSettings extends Page
     public function mount(): void
     {
         $podcast = Podcast::settings();
-        $this->form->fill($podcast->toArray());
+        $this->form->fill($podcast->only([
+            'name', 'email', 'description', 'cover_image',
+            'apple_url', 'spotify_url', 'youtube_url', 'instagram_url', 'tiktok_url',
+        ]));
     }
 
     public function content(Schema $schema): Schema

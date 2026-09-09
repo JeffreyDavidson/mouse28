@@ -7,20 +7,27 @@ use BackedEnum;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Facades\Date;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class NewsletterSubscribers extends Page
 {
+    #[\Override]
     protected string $view = 'filament.pages.newsletter-subscribers';
 
+    #[\Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedEnvelopeOpen;
 
+    #[\Override]
     protected static string|\UnitEnum|null $navigationGroup = 'Communication';
 
+    #[\Override]
     protected static ?int $navigationSort = 2;
 
+    #[\Override]
     protected static ?string $navigationLabel = 'Newsletter Subscribers';
 
+    #[\Override]
     protected static ?string $title = 'Newsletter Subscribers';
 
     public static function canAccess(): bool
@@ -28,12 +35,13 @@ class NewsletterSubscribers extends Page
         return auth()->user()?->is_admin === true;
     }
 
-    /** @return array{subscribers: list<array<string, mixed>>, error: ?string, active_count: int} */
+    /** @return array{subscribers: list<array{email: mixed, created_at: mixed, subscription_status: string}>, error: ?string, active_count: int} */
     public function getAudience(): array
     {
         $audience = app(ResendAudience::class)->get();
-        $audience['subscribers'] = array_map(static fn (array $subscriber): array => [
-            ...$subscriber,
+        $subscribers = array_map(static fn (array $subscriber): array => [
+            'email' => $subscriber['email'] ?? null,
+            'created_at' => $subscriber['created_at'] ?? null,
             'subscription_status' => match ($subscriber['unsubscribed'] ?? null) {
                 false => 'Subscribed',
                 true => 'Unsubscribed',
@@ -42,9 +50,10 @@ class NewsletterSubscribers extends Page
         ], $audience['subscribers']);
 
         return [
-            ...$audience,
+            'subscribers' => $subscribers,
+            'error' => $audience['error'],
             'active_count' => count(array_filter(
-                $audience['subscribers'],
+                $subscribers,
                 static fn (array $subscriber): bool => $subscriber['subscription_status'] === 'Subscribed',
             )),
         ];
@@ -81,22 +90,27 @@ class NewsletterSubscribers extends Page
                 return;
             }
 
-            fputcsv($handle, ['Email', 'Created At', 'Status']);
+            fputcsv($handle, ['Email', 'Created At', 'Status'], escape: '\\');
             foreach ($subscribers as $sub) {
                 fputcsv($handle, [
                     $this->escapeCsvValue($sub['email'] ?? ''),
                     $this->escapeCsvValue($sub['created_at'] ?? ''),
                     $sub['subscription_status'],
-                ]);
+                ],
+                    escape: '\\');
             }
             fclose($handle);
-        }, 'newsletter-subscribers-'.now()->format('Y-m-d').'.csv', [
+        }, 'newsletter-subscribers-'.Date::now()->format('Y-m-d').'.csv', [
             'Content-Type' => 'text/csv',
         ]);
     }
 
     private function escapeCsvValue(mixed $value): string
     {
+        if (! is_scalar($value) && $value !== null && ! $value instanceof \Stringable) {
+            throw new \UnexpectedValueException('Subscriber CSV fields must contain scalar values.');
+        }
+
         $value = (string) $value;
 
         return preg_match('/^[=+\-@\t\r]/', $value) === 1 ? "'{$value}" : $value;

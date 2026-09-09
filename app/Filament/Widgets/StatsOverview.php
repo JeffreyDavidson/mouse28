@@ -11,12 +11,16 @@ use Filament\Widgets\Widget;
 
 class StatsOverview extends Widget
 {
+    #[\Override]
     protected static ?int $sort = -2;
 
+    #[\Override]
     protected int|string|array $columnSpan = 'full';
 
+    #[\Override]
     protected string $view = 'filament.widgets.stats-overview';
 
+    /** @return list<array{label: string, value: int, icon: Heroicon, description: string, color: string}> */
     public function getStats(): array
     {
         $publishedPosts = Post::published()->count();

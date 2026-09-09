@@ -9,6 +9,7 @@ use Illuminate\Contracts\View\View;
 
 class ListContactMessages extends ListRecords
 {
+    #[\Override]
     protected static string $resource = ContactMessageResource::class;
 
     public function getHeader(): ?View

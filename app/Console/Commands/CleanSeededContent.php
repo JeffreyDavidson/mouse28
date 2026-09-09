@@ -9,6 +9,7 @@ use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use UnexpectedValueException;
 
 #[Signature('content:clean-seeded {--force : Allow demo content cleanup in production}')]
 #[Description('Remove only the known demo posts, guides, and episodes')]
@@ -31,11 +32,15 @@ class CleanSeededContent extends Command
                 ->whereIn('episode_id', $seededEpisodeIds)
                 ->update(['episode_id' => null]);
 
-            return [
-                Post::query()->whereIn('slug', self::postSlugs())->forceDelete(),
-                Guide::query()->whereIn('slug', self::guideSlugs())->forceDelete(),
-                Episode::query()->whereIn('slug', self::episodeSlugs())->forceDelete(),
-            ];
+            $posts = Post::query()->whereIn('slug', self::postSlugs())->forceDelete();
+            $guides = Guide::query()->whereIn('slug', self::guideSlugs())->forceDelete();
+            $episodes = Episode::query()->whereIn('slug', self::episodeSlugs())->forceDelete();
+
+            if (! is_int($posts) || ! is_int($guides) || ! is_int($episodes)) {
+                throw new UnexpectedValueException('Seeded content deletion did not return integer counts.');
+            }
+
+            return [$posts, $guides, $episodes];
         });
 
         $this->info("Removed {$posts} demo posts, {$guides} demo guides, and {$episodes} demo episodes.");

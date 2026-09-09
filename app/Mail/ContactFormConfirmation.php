@@ -8,6 +8,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Config;
 
 class ContactFormConfirmation extends Mailable
 {
@@ -19,7 +20,7 @@ class ContactFormConfirmation extends Mailable
     {
         return new Envelope(
             subject: 'We got your message! — Mouse28',
-            replyTo: [(string) config('mail.admin_address')],
+            replyTo: [Config::string('mail.admin_address')],
         );
     }
 
