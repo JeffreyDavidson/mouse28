@@ -16,7 +16,7 @@ function homepageStoryColumnsDoNotOverlapScript(): string
                 return false;
             }
 
-            return window.innerWidth < 1536
+            return window.innerWidth < 768
                 ? feature.bottom <= latest.top + 1
                 : feature.right <= latest.left + 1;
         })()

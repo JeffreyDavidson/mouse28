@@ -1979,15 +1979,15 @@
     }
 }
 
-@media (min-width: 1536px) {
+@media (min-width: 768px) {
     .dispatch-blog-cluster {
-        margin-top: -6.25rem;
+        margin-top: -4rem;
     }
 }
 
-@media (min-width: 768px) and (max-width: 1535px) {
+@media (min-width: 1024px) {
     .dispatch-blog-cluster {
-        margin-top: -2rem;
+        margin-top: -6.25rem;
     }
 }
 
