@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
@@ -92,6 +93,7 @@ class Post extends Model
         return $this->belongsTo(Episode::class);
     }
 
+    /** @param Builder<static> $query */
     #[Scope]
     protected function published(Builder $query): void
     {
@@ -100,22 +102,25 @@ class Post extends Model
             ->where('published_at', '<=', now());
     }
 
+    /** @param Builder<static> $query */
     #[Scope]
     protected function reviewDue(Builder $query): void
     {
         $query->whereNotNull('source_url')
             ->where(function (Builder $query): void {
                 $query->whereNull('last_reviewed_at')
-                    ->orWhere('last_reviewed_at', '<', today()->subDays(config('mouse28.post_review_interval_days')));
+                    ->orWhere('last_reviewed_at', '<', today()->subDays(Config::integer('mouse28.post_review_interval_days')));
             });
     }
 
+    /** @param Builder<static> $query */
     #[Scope]
     protected function drafts(Builder $query): void
     {
         $query->where('is_published', false);
     }
 
+    /** @param Builder<static> $query */
     #[Scope]
     protected function scheduled(Builder $query): void
     {
@@ -123,6 +128,7 @@ class Post extends Model
             ->where('published_at', '>', now());
     }
 
+    /** @param Builder<static> $query */
     #[Scope]
     protected function needsAttention(Builder $query): void
     {
@@ -152,16 +158,19 @@ class Post extends Model
         });
     }
 
+    /** @return Attribute<string, never> */
     protected function authorName(): Attribute
     {
         return Attribute::make(get: fn () => $this->author?->getLabel() ?? 'Mouse28 Team');
     }
 
+    /** @return Attribute<string, never> */
     protected function authorInitials(): Attribute
     {
         return Attribute::make(get: fn (): string => Str::initials($this->author_name, capitalize: true));
     }
 
+    /** @return Attribute<int, never> */
     protected function readingTime(): Attribute
     {
         return Attribute::make(get: function () {
@@ -171,21 +180,25 @@ class Post extends Model
         });
     }
 
+    /** @return Attribute<string, never> */
     protected function categoryLabel(): Attribute
     {
         return Attribute::make(get: fn (): string => $this->category?->getLabel() ?? '');
     }
 
+    /** @return Attribute<string|null, never> */
     protected function coverImageUrl(): Attribute
     {
         return Attribute::make(get: fn () => $this->cover_image ? '/storage/'.$this->cover_image : null);
     }
 
+    /** @return Attribute<string|null, never> */
     protected function ogImageUrl(): Attribute
     {
         return Attribute::make(get: fn () => $this->og_image ? '/storage/'.$this->og_image : null);
     }
 
+    /** @return Attribute<string, never> */
     protected function reviewStatus(): Attribute
     {
         return Attribute::make(get: function (): string {
@@ -201,7 +214,7 @@ class Post extends Model
     {
         return filled($this->source_url)
             && (! $this->last_reviewed_at
-                || $this->last_reviewed_at->lt(today()->subDays(config('mouse28.post_review_interval_days'))));
+                || $this->last_reviewed_at->lt(today()->subDays(Config::integer('mouse28.post_review_interval_days'))));
     }
 
     protected function casts(): array
