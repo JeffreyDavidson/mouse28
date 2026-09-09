@@ -117,9 +117,9 @@ class BlogIndex extends Component
             'hasAnyPosts' => $featuredPost !== null,
             'usedCategories' => Post::published()->distinct()->pluck('category')->filter()
                 ->values()
-                ->map(fn (mixed $category): ?string => is_string($category)
-                    ? PostCategory::tryFrom($category)?->value
-                    : null)
+                ->map(fn (mixed $category): ?string => $category instanceof PostCategory
+                    ? $category->value
+                    : (is_string($category) ? PostCategory::tryFrom($category)?->value : null))
                 ->filter()
                 ->all(),
         ]);
