@@ -7,6 +7,7 @@ use BackedEnum;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Facades\Date;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class NewsletterSubscribers extends Page
@@ -97,7 +98,7 @@ class NewsletterSubscribers extends Page
                     escape: '\\');
             }
             fclose($handle);
-        }, 'newsletter-subscribers-'.now()->format('Y-m-d').'.csv', [
+        }, 'newsletter-subscribers-'.Date::now()->format('Y-m-d').'.csv', [
             'Content-Type' => 'text/csv',
         ]);
     }

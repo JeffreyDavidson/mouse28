@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Enums\NewsletterSubscriptionResult;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -94,7 +95,7 @@ class ResendAudience
 
         $subscribers = $this->normalize($response->json('data', []));
 
-        Cache::put(self::CACHE_KEY, $subscribers, now()->addMinutes(5));
+        Cache::put(self::CACHE_KEY, $subscribers, Date::now()->addMinutes(5));
 
         return ['subscribers' => $subscribers, 'error' => null];
     }

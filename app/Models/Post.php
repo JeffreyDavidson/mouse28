@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
@@ -99,7 +100,7 @@ class Post extends Model
     {
         $query->where('is_published', true)
             ->whereNotNull('published_at')
-            ->where('published_at', '<=', now());
+            ->where('published_at', '<=', Date::now());
     }
 
     /** @param Builder<static> $query */
@@ -109,7 +110,7 @@ class Post extends Model
         $query->whereNotNull('source_url')
             ->where(function (Builder $query): void {
                 $query->whereNull('last_reviewed_at')
-                    ->orWhere('last_reviewed_at', '<', today()->subDays(Config::integer('mouse28.post_review_interval_days')));
+                    ->orWhere('last_reviewed_at', '<', Date::today()->subDays(Config::integer('mouse28.post_review_interval_days')));
             });
     }
 
@@ -125,7 +126,7 @@ class Post extends Model
     protected function scheduled(Builder $query): void
     {
         $query->where('is_published', true)
-            ->where('published_at', '>', now());
+            ->where('published_at', '>', Date::now());
     }
 
     /** @param Builder<static> $query */
@@ -214,7 +215,7 @@ class Post extends Model
     {
         return filled($this->source_url)
             && (! $this->last_reviewed_at
-                || $this->last_reviewed_at->lt(today()->subDays(Config::integer('mouse28.post_review_interval_days'))));
+                || $this->last_reviewed_at->lt(Date::today()->subDays(Config::integer('mouse28.post_review_interval_days'))));
     }
 
     protected function casts(): array

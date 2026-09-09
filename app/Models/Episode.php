@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Date;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
@@ -96,7 +97,7 @@ class Episode extends Model
     {
         $query->where('is_published', true)
             ->whereNotNull('published_at')
-            ->where('published_at', '<=', now());
+            ->where('published_at', '<=', Date::now());
     }
 
     /** @param Builder<static> $query */
@@ -111,7 +112,7 @@ class Episode extends Model
     protected function scheduled(Builder $query): void
     {
         $query->where('is_published', true)
-            ->where('published_at', '>', now());
+            ->where('published_at', '>', Date::now());
     }
 
     /** @param Builder<static> $query */

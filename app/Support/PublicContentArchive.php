@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -126,7 +127,7 @@ class PublicContentArchive
 
         return [
             'version' => self::VERSION,
-            'exported_at' => now()->toAtomString(),
+            'exported_at' => Date::now()->toAtomString(),
             'episodes' => $episodes,
             'posts' => $posts,
             'guides' => $guides,

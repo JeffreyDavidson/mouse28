@@ -13,6 +13,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Date;
 
 /** @property Post $record */
 class EditPost extends EditRecord
@@ -44,7 +45,7 @@ class EditPost extends EditRecord
 
                     $this->record->update([
                         'is_published' => true,
-                        'published_at' => $this->record->published_at ?? now(),
+                        'published_at' => $this->record->published_at ?? Date::now(),
                     ]);
 
                     Notification::make()->success()->title('Post published')->send();

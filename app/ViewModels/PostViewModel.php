@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Support\ContentContinuation;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Date;
 
 class PostViewModel
 {
@@ -22,7 +23,7 @@ class PostViewModel
             'episode' => fn (BelongsTo $query) => $query
                 ->where('is_published', true)
                 ->whereNotNull('published_at')
-                ->where('published_at', '<=', now()),
+                ->where('published_at', '<=', Date::now()),
         ]);
 
         $data = [
