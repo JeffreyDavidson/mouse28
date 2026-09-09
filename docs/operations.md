@@ -17,6 +17,30 @@ Staging runs with `APP_ENV=production` so production safeguards stay active. Set
 `MOUSE28_DEPLOYMENT_ENVIRONMENT=staging`, and use matching isolated Nightwatch
 and Sentry environments before running `php artisan app:verify-production`.
 
+## Branch and release workflow
+
+Keep the Forge sites configured to these source branches:
+
+- `staging.mouse28.com` tracks `develop` for normal integration work.
+- `mouse28.com` tracks `main` for production releases.
+
+Before a release, create `release/YYYY.MM.DD` from the up-to-date `develop`
+branch and open a release pull request into `main`. In Forge, temporarily set
+the staging site's source branch to that release branch and deploy it. Verify
+the exact release candidate on staging, then merge the release pull request
+into `main` with a regular merge commit and deploy `main` to production.
+
+After production verification, restore the staging site's source branch to
+`develop` in Forge and deploy it again if `develop` has advanced. Finally,
+create a synchronization branch from `develop`, merge `main` into it, and open
+the required protected pull request back into `develop`. This keeps the commit
+ancestry aligned and prevents future release branches from appearing out of
+date with `main`.
+
+Do not use a staging deployment of `develop` as release approval; it may contain
+changes that are not part of the production candidate. Do not push directly to
+the protected `main` or `develop` branches.
+
 ## Syncing public content locally
 
 Run `php artisan content:sync-production` from the local Mouse28 checkout to replace local published posts, guides, episodes, podcast display metadata, and their referenced public media with the current production versions. The command uses the `cold-moon` SSH alias and `/home/forge/mouse28.com/current` site path by default; override them with `MOUSE28_PRODUCTION_SSH_HOST` and `MOUSE28_PRODUCTION_SITE_PATH` when the Forge target changes.
