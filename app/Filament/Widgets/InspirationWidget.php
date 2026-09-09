@@ -6,10 +6,13 @@ use Filament\Widgets\Widget;
 
 class InspirationWidget extends Widget
 {
+    #[\Override]
     protected static ?int $sort = 6;
 
+    #[\Override]
     protected int|string|array $columnSpan = 1;
 
+    #[\Override]
     protected string $view = 'filament.widgets.inspiration';
 
     public function getPrompt(): string

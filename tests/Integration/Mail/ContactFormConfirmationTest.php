@@ -10,7 +10,7 @@ test('contact confirmation uses the configured contact address for replies', fun
         'subject' => 'accessibility',
     ]);
 
-    $envelope = (new ContactFormConfirmation($contactMessage))->envelope();
+    $envelope = new ContactFormConfirmation($contactMessage)->envelope();
 
     expect($envelope->subject)->toBe('We got your message! — Mouse28')
         ->and($envelope->replyTo)->toHaveCount(1)

@@ -16,6 +16,7 @@ use Filament\Support\Icons\Heroicon;
 /** @property Guide $record */
 class EditGuide extends EditRecord
 {
+    #[\Override]
     protected static string $resource = GuideResource::class;
 
     protected function getHeaderActions(): array

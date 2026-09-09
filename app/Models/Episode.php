@@ -130,16 +130,12 @@ class Episode extends Model
 
     protected function ogImageUrl(): Attribute
     {
-        return Attribute::make(get: function () {
-            return $this->og_image ? '/storage/'.$this->og_image : null;
-        });
+        return Attribute::make(get: fn () => $this->og_image ? '/storage/'.$this->og_image : null);
     }
 
     protected function coverImageUrl(): Attribute
     {
-        return Attribute::make(get: function () {
-            return $this->cover_image ? '/storage/'.$this->cover_image : null;
-        });
+        return Attribute::make(get: fn () => $this->cover_image ? '/storage/'.$this->cover_image : null);
     }
 
     protected function transistorEmbedUrl(): Attribute

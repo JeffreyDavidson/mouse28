@@ -16,6 +16,7 @@ use Filament\Support\Icons\Heroicon;
 /** @property ContactMessage $record */
 class ViewContactMessage extends ViewRecord
 {
+    #[\Override]
     protected static string $resource = ContactMessageResource::class;
 
     public function mount(int|string $record): void

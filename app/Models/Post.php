@@ -154,9 +154,7 @@ class Post extends Model
 
     protected function authorName(): Attribute
     {
-        return Attribute::make(get: function () {
-            return $this->author?->getLabel() ?? 'Mouse28 Team';
-        });
+        return Attribute::make(get: fn () => $this->author?->getLabel() ?? 'Mouse28 Team');
     }
 
     protected function authorInitials(): Attribute
@@ -180,16 +178,12 @@ class Post extends Model
 
     protected function coverImageUrl(): Attribute
     {
-        return Attribute::make(get: function () {
-            return $this->cover_image ? '/storage/'.$this->cover_image : null;
-        });
+        return Attribute::make(get: fn () => $this->cover_image ? '/storage/'.$this->cover_image : null);
     }
 
     protected function ogImageUrl(): Attribute
     {
-        return Attribute::make(get: function () {
-            return $this->og_image ? '/storage/'.$this->og_image : null;
-        });
+        return Attribute::make(get: fn () => $this->og_image ? '/storage/'.$this->og_image : null);
     }
 
     protected function reviewStatus(): Attribute

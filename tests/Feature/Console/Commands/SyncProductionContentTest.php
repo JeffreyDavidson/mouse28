@@ -23,7 +23,7 @@ test('sync stops before transferring media when a local draft collides', functio
     $post->update(['is_published' => false]);
     Process::fake(function (PendingProcess $process) use ($archive) {
         if ($process->command[0] === 'scp') {
-            File::put($process->command[array_key_last($process->command)], json_encode($archive, JSON_THROW_ON_ERROR));
+            File::put(array_last($process->command), json_encode($archive, JSON_THROW_ON_ERROR));
         }
 
         return Process::result();
@@ -88,7 +88,7 @@ test('production public content and referenced media can be synced locally', fun
         $command = $process->command;
 
         if ($command[0] === 'scp') {
-            File::put($command[array_key_last($command)], json_encode($archive, JSON_THROW_ON_ERROR));
+            File::put(array_last($command), json_encode($archive, JSON_THROW_ON_ERROR));
         }
 
         if ($command[0] === 'rsync') {
@@ -158,7 +158,7 @@ test('production content sync rejects unsafe media paths', function (): void {
 
     Process::fake(function (PendingProcess $process) use ($archive) {
         if ($process->command[0] === 'scp') {
-            File::put($process->command[array_key_last($process->command)], json_encode($archive, JSON_THROW_ON_ERROR));
+            File::put(array_last($process->command), json_encode($archive, JSON_THROW_ON_ERROR));
         }
 
         return Process::result();

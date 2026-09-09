@@ -18,14 +18,19 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class GuideResource extends Resource
 {
+    #[\Override]
     protected static ?string $model = Guide::class;
 
+    #[\Override]
     protected static ?string $recordTitleAttribute = 'title';
 
+    #[\Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBookOpen;
 
+    #[\Override]
     protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
+    #[\Override]
     protected static ?int $navigationSort = 1;
 
     public static function getGloballySearchableAttributes(): array

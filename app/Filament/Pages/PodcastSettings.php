@@ -20,14 +20,19 @@ use Filament\Support\Icons\Heroicon;
 /** @property-read Schema $form */
 class PodcastSettings extends Page
 {
+    #[\Override]
     protected string $view = 'filament.pages.podcast-settings';
 
+    #[\Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
+    #[\Override]
     protected static string|\UnitEnum|null $navigationGroup = 'Settings';
 
+    #[\Override]
     protected static ?string $navigationLabel = 'Podcast Settings';
 
+    #[\Override]
     protected static ?string $title = 'Podcast Settings';
 
     public ?array $data = [];

@@ -8,6 +8,7 @@ use Illuminate\Contracts\View\View;
 
 class CreatePost extends CreateRecord
 {
+    #[\Override]
     protected static string $resource = PostResource::class;
 
     public function getHeader(): ?View

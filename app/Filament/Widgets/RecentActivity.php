@@ -13,10 +13,13 @@ use Filament\Widgets\Widget;
 
 class RecentActivity extends Widget
 {
+    #[\Override]
     protected static ?int $sort = 3;
 
+    #[\Override]
     protected int|string|array $columnSpan = 1;
 
+    #[\Override]
     protected string $view = 'filament.widgets.recent-activity';
 
     public function getActivity(): array

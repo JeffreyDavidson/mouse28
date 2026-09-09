@@ -35,9 +35,9 @@ class Turnstile
         }
 
         $hostname = strtolower((string) $response->json('hostname', ''));
-        $allowedHostnames = array_map('strtolower', array_filter(
+        $allowedHostnames = array_map(strtolower(...), array_filter(
             config('services.turnstile.allowed_hostnames', []),
-            'is_string',
+            is_string(...),
         ));
 
         return $response->ok()

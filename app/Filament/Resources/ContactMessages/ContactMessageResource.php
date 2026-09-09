@@ -20,14 +20,19 @@ use Illuminate\Support\Facades\Cache;
 
 class ContactMessageResource extends Resource
 {
+    #[\Override]
     protected static ?string $model = ContactMessage::class;
 
+    #[\Override]
     protected static ?string $recordTitleAttribute = 'name';
 
+    #[\Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedEnvelope;
 
+    #[\Override]
     protected static string|\UnitEnum|null $navigationGroup = 'Communication';
 
+    #[\Override]
     protected static ?int $navigationSort = 1;
 
     public static function getGloballySearchableAttributes(): array

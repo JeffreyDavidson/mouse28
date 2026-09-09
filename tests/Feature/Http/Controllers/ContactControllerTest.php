@@ -124,11 +124,9 @@ test('valid contact submission requires successful turnstile verification', func
     Mail::assertSent(ContactFormSubmitted::class);
     Mail::assertSent(ContactFormConfirmation::class);
 
-    Http::assertSent(function ($request): bool {
-        return $request->url() === 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
-            && $request['secret'] === 'test-secret-key'
-            && $request['response'] === 'turnstile-token';
-    });
+    Http::assertSent(fn ($request): bool => $request->url() === 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
+        && $request['secret'] === 'test-secret-key'
+        && $request['response'] === 'turnstile-token');
 });
 
 test('contact submission rejects failed turnstile verification before persistence or mail', function (): void {

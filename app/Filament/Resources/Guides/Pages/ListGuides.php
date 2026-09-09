@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ListGuides extends ListRecords
 {
+    #[\Override]
     protected static string $resource = GuideResource::class;
 
     protected function getHeaderActions(): array

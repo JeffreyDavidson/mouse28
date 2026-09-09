@@ -18,14 +18,19 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PostResource extends Resource
 {
+    #[\Override]
     protected static ?string $model = Post::class;
 
+    #[\Override]
     protected static ?string $recordTitleAttribute = 'title';
 
+    #[\Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
 
+    #[\Override]
     protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
+    #[\Override]
     protected static ?int $navigationSort = 2;
 
     public static function getGloballySearchableAttributes(): array

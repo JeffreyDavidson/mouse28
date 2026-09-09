@@ -18,10 +18,13 @@ class QuickDraft extends Widget implements HasForms
 {
     use InteractsWithForms;
 
+    #[\Override]
     protected static ?int $sort = 5;
 
+    #[\Override]
     protected int|string|array $columnSpan = 1;
 
+    #[\Override]
     protected string $view = 'filament.widgets.quick-draft';
 
     public ?array $data = [];

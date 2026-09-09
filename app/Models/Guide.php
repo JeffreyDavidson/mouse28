@@ -131,9 +131,7 @@ class Guide extends Model
 
     protected function authorName(): Attribute
     {
-        return Attribute::make(get: function () {
-            return $this->author?->getLabel() ?? 'Mouse28 Team';
-        });
+        return Attribute::make(get: fn () => $this->author?->getLabel() ?? 'Mouse28 Team');
     }
 
     protected function categoryLabel(): Attribute
@@ -143,30 +141,22 @@ class Guide extends Model
 
     protected function coverImageUrl(): Attribute
     {
-        return Attribute::make(get: function () {
-            return $this->cover_image ? '/storage/'.$this->cover_image : null;
-        });
+        return Attribute::make(get: fn () => $this->cover_image ? '/storage/'.$this->cover_image : null);
     }
 
     protected function ogImageUrl(): Attribute
     {
-        return Attribute::make(get: function () {
-            return $this->og_image ? '/storage/'.$this->og_image : null;
-        });
+        return Attribute::make(get: fn () => $this->og_image ? '/storage/'.$this->og_image : null);
     }
 
     protected function readingTime(): Attribute
     {
-        return Attribute::make(get: function () {
-            return max(1, (int) ceil(str_word_count(strip_tags($this->body)) / 200));
-        });
+        return Attribute::make(get: fn () => max(1, (int) ceil(str_word_count(strip_tags($this->body)) / 200)));
     }
 
     protected function reviewStatus(): Attribute
     {
-        return Attribute::make(get: function () {
-            return $this->isReviewDue() ? 'Review due' : 'Current';
-        });
+        return Attribute::make(get: fn () => $this->isReviewDue() ? 'Review due' : 'Current');
     }
 
     public function isReviewDue(): bool

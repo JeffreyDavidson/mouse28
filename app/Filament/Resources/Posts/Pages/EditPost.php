@@ -17,6 +17,7 @@ use Illuminate\Contracts\View\View;
 /** @property Post $record */
 class EditPost extends EditRecord
 {
+    #[\Override]
     protected static string $resource = PostResource::class;
 
     protected function getHeaderActions(): array

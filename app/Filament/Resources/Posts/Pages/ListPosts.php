@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class ListPosts extends ListRecords
 {
+    #[\Override]
     protected static string $resource = PostResource::class;
 
     protected function getHeaderActions(): array

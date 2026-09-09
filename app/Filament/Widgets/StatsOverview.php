@@ -11,10 +11,13 @@ use Filament\Widgets\Widget;
 
 class StatsOverview extends Widget
 {
+    #[\Override]
     protected static ?int $sort = -2;
 
+    #[\Override]
     protected int|string|array $columnSpan = 'full';
 
+    #[\Override]
     protected string $view = 'filament.widgets.stats-overview';
 
     public function getStats(): array

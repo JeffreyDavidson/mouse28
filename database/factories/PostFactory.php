@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /** @extends Factory<Post> */
 class PostFactory extends Factory
 {
+    #[\Override]
     protected $model = Post::class;
 
     public function definition(): array

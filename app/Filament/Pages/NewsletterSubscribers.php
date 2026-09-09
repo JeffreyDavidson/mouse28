@@ -11,16 +11,22 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class NewsletterSubscribers extends Page
 {
+    #[\Override]
     protected string $view = 'filament.pages.newsletter-subscribers';
 
+    #[\Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedEnvelopeOpen;
 
+    #[\Override]
     protected static string|\UnitEnum|null $navigationGroup = 'Communication';
 
+    #[\Override]
     protected static ?int $navigationSort = 2;
 
+    #[\Override]
     protected static ?string $navigationLabel = 'Newsletter Subscribers';
 
+    #[\Override]
     protected static ?string $title = 'Newsletter Subscribers';
 
     public static function canAccess(): bool
@@ -81,13 +87,14 @@ class NewsletterSubscribers extends Page
                 return;
             }
 
-            fputcsv($handle, ['Email', 'Created At', 'Status']);
+            fputcsv($handle, ['Email', 'Created At', 'Status'], escape: '\\');
             foreach ($subscribers as $sub) {
                 fputcsv($handle, [
                     $this->escapeCsvValue($sub['email'] ?? ''),
                     $this->escapeCsvValue($sub['created_at'] ?? ''),
                     $sub['subscription_status'],
-                ]);
+                ],
+                    escape: '\\');
             }
             fclose($handle);
         }, 'newsletter-subscribers-'.now()->format('Y-m-d').'.csv', [

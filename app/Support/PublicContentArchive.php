@@ -107,12 +107,10 @@ class PublicContentArchive
             ->published()
             ->orderBy('published_at')
             ->get([...self::POST_FIELDS, 'episode_id'])
-            ->map(function (Post $post) use ($episodeSlugs): array {
-                return [
-                    ...$this->attributes($post, self::POST_FIELDS),
-                    'episode_slug' => $episodeSlugs->get((int) $post->getAttribute('episode_id')),
-                ];
-            })
+            ->map(fn (Post $post): array => [
+                ...$this->attributes($post, self::POST_FIELDS),
+                'episode_slug' => $episodeSlugs->get((int) $post->getAttribute('episode_id')),
+            ])
             ->values()
             ->all();
 

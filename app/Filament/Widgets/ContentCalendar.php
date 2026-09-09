@@ -13,10 +13,13 @@ use Filament\Widgets\Widget;
 
 class ContentCalendar extends Widget
 {
+    #[\Override]
     protected static ?int $sort = 4;
 
+    #[\Override]
     protected int|string|array $columnSpan = 1;
 
+    #[\Override]
     protected string $view = 'filament.widgets.content-calendar';
 
     public function getTimeline(): array

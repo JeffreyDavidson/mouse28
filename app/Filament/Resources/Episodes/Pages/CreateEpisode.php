@@ -8,6 +8,7 @@ use Illuminate\Contracts\View\View;
 
 class CreateEpisode extends CreateRecord
 {
+    #[\Override]
     protected static string $resource = EpisodeResource::class;
 
     public function getHeader(): ?View
