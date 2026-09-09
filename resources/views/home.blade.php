@@ -76,8 +76,8 @@
         </section>
 
         <section class="dispatch-blog-cluster relative z-10 px-4 pb-5 sm:px-6" data-dispatch-reveal="story-folio">
-            <div class="mx-auto grid max-w-[86rem] items-start md:grid-cols-[8fr_12fr]">
-                <div class="relative z-20 mx-auto w-[82%] max-w-sm md:mx-0 md:w-[82%] md:max-w-none md:translate-x-4 md:-translate-y-8 md:-rotate-2 lg:translate-x-8 xl:translate-x-20">
+            <div class="mx-auto grid max-w-[86rem] items-start 2xl:grid-cols-[8fr_12fr]">
+                <div class="relative z-20 mx-auto mt-2 w-full max-w-lg 2xl:mx-0 2xl:mt-0 2xl:w-[82%] 2xl:max-w-none 2xl:translate-x-20 2xl:-translate-y-8 2xl:-rotate-2">
                     <span class="sr-only">Latest from the Blog</span>
                     @if ($featuredPost)
                         <a
@@ -116,7 +116,7 @@
                         </div>
                     @endif
                 </div>
-                <div class="dispatch-latest-sheet relative z-10 p-5 pt-7 sm:p-7 md:ml-4 md:pl-14 lg:p-8 lg:pl-16">
+                <div class="dispatch-latest-sheet relative z-10 mt-6 p-5 pt-7 sm:p-7 lg:p-8 2xl:mt-0 2xl:ml-4 2xl:pl-16">
                     <div class="border-gold/45 flex items-center justify-between gap-4 border-b pb-4">
                         <h2 class="font-heading text-navy text-3xl [font-weight:640] tracking-[-0.02em] text-balance sm:text-4xl">
                             Latest Stories
