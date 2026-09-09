@@ -5,12 +5,41 @@ use App\Models\Guide;
 use App\Models\Post;
 use Illuminate\Support\Facades\Storage;
 
+function homepageStoryColumnsDoNotOverlapScript(): string
+{
+    return <<<'JS'
+        (() => {
+            const feature = document.querySelector('.dispatch-feature-book')?.getBoundingClientRect();
+            const latest = document.querySelector('.dispatch-latest-sheet')?.getBoundingClientRect();
+
+            if (! feature || ! latest) {
+                return false;
+            }
+
+            return window.innerWidth < 768
+                ? feature.bottom <= latest.top + 1
+                : feature.right <= latest.left + 1;
+        })()
+        JS;
+}
+
 function contentBrokenImageCountScript(): string
 {
     return <<<'JS'
         (() => [...document.images].filter((image) => image.complete && image.naturalWidth === 0).length)()
         JS;
 }
+
+test('homepage story columns stay separated at responsive breakpoints', function (): void {
+    Post::factory()->count(4)->create();
+
+    $page = visit(route('home'));
+
+    foreach ([[320, 812], [768, 900], [1024, 900], [1280, 900], [1440, 1000]] as [$width, $height]) {
+        $page->resize($width, $height)
+            ->assertScript(homepageStoryColumnsDoNotOverlapScript(), true);
+    }
+});
 
 test('long public content and portrait artwork stay contained', function (): void {
     $longTitle = str_repeat('AccessibilityResilience', 10);
