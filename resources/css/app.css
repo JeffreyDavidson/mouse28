@@ -1970,16 +1970,24 @@
         --dispatch-resting-rotation: 1deg;
     }
 
-    .dispatch-blog-cluster {
-        margin-top: -6.25rem;
-    }
-
     .dispatch-latest-sheet {
         min-height: 33rem;
     }
 
     .dispatch-guide-spread {
         min-height: 36rem;
+    }
+}
+
+@media (min-width: 1536px) {
+    .dispatch-blog-cluster {
+        margin-top: -6.25rem;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1535px) {
+    .dispatch-blog-cluster {
+        margin-top: -2rem;
     }
 }
 
