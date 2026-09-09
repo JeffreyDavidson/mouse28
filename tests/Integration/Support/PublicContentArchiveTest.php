@@ -64,6 +64,21 @@ test('public archives retain string values and restore enum backed content', fun
         ->and($guide->category)->toBe(GuideCategory::Accessibility);
 });
 
+test('archive validation rejects a non-string slug before importing any records', function (): void {
+    $post = Post::factory()->create(['title' => 'Original title']);
+    $service = app(PublicContentArchive::class);
+    $archive = $service->export();
+    $archive['posts'][0]['title'] = 'Changed by import';
+    $archive['posts'][0]['slug'] = ['invalid-slug'];
+
+    expect(fn () => $service->import($archive))
+        ->toThrow(InvalidArgumentException::class, 'invalid posts');
+
+    $post->refresh();
+
+    expect($post->title)->toBe('Original title');
+});
+
 test('invalid archive enum values roll back earlier imported records', function (): void {
     $first = Post::factory()->create(['title' => 'Original first title', 'published_at' => now()->subDays(2)]);
     Post::factory()->create();
