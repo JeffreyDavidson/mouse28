@@ -132,6 +132,11 @@ Dependabot vulnerability alerts remain enabled. CI audits the locked Composer an
 
 ## Deployment checklist
 
+- Keep Forge staging on `develop` and production on `main`; for each release,
+  temporarily deploy the exact `release/YYYY.MM.DD` branch to staging before
+  merging it into `main`.
+- After production verification, synchronize `main` back into `develop` with a
+  protected pull request so future release branches share the same ancestry.
 - Review the target release and verify database and uploaded-file backups before production mutations. Follow the Forge staging and production runbook linked below.
 - Configure the application URL, database, mail, Resend, Turnstile, Transistor podcast feed, storage, cache, sessions, and queues.
 - Set `NIGHTWATCH_ENABLED=true` and `NIGHTWATCH_TOKEN` to enable Nightwatch. Keep request payload capture disabled and request sampling at or below `0.1`.
