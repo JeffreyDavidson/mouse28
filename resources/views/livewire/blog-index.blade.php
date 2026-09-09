@@ -124,7 +124,7 @@
                             </div>
                         </nav>
 
-                        <form action="{{ route('blog.index') }}" method="GET">
+                        <form action="{{ route('blog.index') }}" method="GET" class="min-w-0">
                             @if ($category)
                                 <input type="hidden" name="category" value="{{ $category }}" />
                             @endif
@@ -132,13 +132,13 @@
                                 <input type="hidden" name="q" value="{{ $search }}" />
                             @endif
                             <label for="blog-sort" class="text-navy mb-2 block text-sm font-semibold">Order</label>
-                            <div class="relative">
+                            <div class="relative min-w-44">
                                 <select
                                     id="blog-sort"
                                     name="sort"
                                     wire:model.live="sort"
                                     data-preserve-blog-filter-position
-                                    class="border-navy/15 bg-cream text-navy focus:border-purple focus:ring-purple/20 min-h-12 min-w-44 appearance-none rounded-xl border py-3 pr-12 pl-4 text-base transition-opacity outline-none focus:ring-2 data-loading:opacity-60 motion-reduce:transition-none"
+                                    class="border-navy/15 bg-cream text-navy focus:border-purple focus:ring-purple/20 min-h-12 w-full min-w-44 appearance-none rounded-xl border py-3 pr-12 pl-4 text-base transition-opacity outline-none focus:ring-2 data-loading:opacity-60 motion-reduce:transition-none"
                                 >
                                     <option value="newest">Newest first</option>
                                     <option value="oldest">Oldest first</option>
