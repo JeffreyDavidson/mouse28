@@ -23,7 +23,7 @@ test('post editorial changes record the actor and changed values only', function
         ->and($updated->log_name)->toBe('editorial')
         ->and($updated->causer_id)->toBe($editor->id)
         ->and($updated->subject_id)->toBe($record->id)
-        ->and($updated->attribute_changes->all())->toBe([
+        ->and($updated->attribute_changes?->all() ?? [])->toBe([
             'attributes' => ['title' => 'Updated title'],
             'old' => ['title' => 'Original title'],
         ]);
