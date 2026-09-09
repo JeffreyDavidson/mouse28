@@ -77,7 +77,7 @@
 
         <section class="dispatch-blog-cluster relative z-10 px-4 pb-5 sm:px-6" data-dispatch-reveal="story-folio">
             <div class="mx-auto grid max-w-[86rem] items-start md:grid-cols-[8fr_12fr]">
-                <div class="relative z-20 mx-auto w-[82%] max-w-sm md:mx-0 md:w-[82%] md:max-w-none md:translate-x-40 md:-translate-y-8 md:-rotate-2">
+                <div class="relative z-20 mx-auto w-[82%] max-w-sm md:mx-0 md:w-[82%] md:max-w-none md:translate-x-4 md:-translate-y-8 md:-rotate-2 lg:translate-x-8 xl:translate-x-20">
                     <span class="sr-only">Latest from the Blog</span>
                     @if ($featuredPost)
                         <a

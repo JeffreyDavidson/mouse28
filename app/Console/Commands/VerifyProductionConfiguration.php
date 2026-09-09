@@ -88,12 +88,12 @@ class VerifyProductionConfiguration extends Command
 
     private function usesPersistentDriver(mixed $driver): bool
     {
-        return is_string($driver) && ! in_array($driver, ['array', 'null'], true);
+        return $this->isConfigured($driver) && ! in_array($driver, ['array', 'null'], true);
     }
 
     private function usesDeliveringMailer(mixed $mailer): bool
     {
-        return is_string($mailer) && ! in_array($mailer, ['array', 'log'], true);
+        return $this->isConfigured($mailer) && ! in_array($mailer, ['array', 'log'], true);
     }
 
     private function isProductionEmail(mixed $email): bool
