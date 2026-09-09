@@ -20,6 +20,7 @@ class StatsOverview extends Widget
     #[\Override]
     protected string $view = 'filament.widgets.stats-overview';
 
+    /** @return list<array{label: string, value: int, icon: Heroicon, description: string, color: string}> */
     public function getStats(): array
     {
         $publishedPosts = Post::published()->count();

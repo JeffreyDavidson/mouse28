@@ -32,9 +32,9 @@ class EpisodeForm
                             ->maxLength(255)
                             ->columnSpan(2)
                             ->live(onBlur: true)
-                            ->afterStateUpdated(function (Get $get, Set $set, ?string $state) {
-                                if (! $get('slug') || $get('slug') === Str::slug($get('title'))) {
-                                    $set('slug', Str::slug($state));
+                            ->afterStateUpdated(function (Get $get, Set $set, ?string $state): void {
+                                if (! $get('slug') || $get('slug') === Str::slug($state ?? '')) {
+                                    $set('slug', Str::slug($state ?? ''));
                                 }
                             }),
                         TextInput::make('slug')

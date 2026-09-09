@@ -16,6 +16,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 
 class GuideForm
@@ -35,7 +36,7 @@ class GuideForm
                             ->live(onBlur: true)
                             ->afterStateUpdated(function (Get $get, Set $set, ?string $state): void {
                                 if (! $get('slug')) {
-                                    $set('slug', Str::slug($state));
+                                    $set('slug', Str::slug($state ?? ''));
                                 }
                             }),
                         TextInput::make('slug')
@@ -71,7 +72,7 @@ class GuideForm
                                     ->helperText('Link to the official policy or primary source.'),
                                 DatePicker::make('last_reviewed_at')
                                     ->label('Last Reviewed')
-                                    ->helperText('Guides are flagged after '.config('mouse28.guide_review_interval_days').' days.'),
+                                    ->helperText('Guides are flagged after '.Config::integer('mouse28.guide_review_interval_days').' days.'),
                             ]),
                         Section::make('Publishing')
                             ->description('Save the guide, then use the Publish action when its content is ready.')

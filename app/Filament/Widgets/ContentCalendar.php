@@ -10,6 +10,7 @@ use App\Models\Guide;
 use App\Models\Post;
 use App\Support\EditorialReadiness;
 use Filament\Widgets\Widget;
+use Illuminate\Support\Carbon;
 
 class ContentCalendar extends Widget
 {
@@ -22,6 +23,7 @@ class ContentCalendar extends Widget
     #[\Override]
     protected string $view = 'filament.widgets.content-calendar';
 
+    /** @return array<int, array{title: string, type: string, date: Carbon|null, status: string, url: string}> */
     public function getTimeline(): array
     {
         $start = now()->startOfDay();
@@ -66,6 +68,6 @@ class ContentCalendar extends Widget
             ])
             ->toBase();
 
-        return $posts->merge($episodes)->merge($guides)->sortBy('date')->values()->toArray();
+        return $posts->merge($episodes)->merge($guides)->sortBy('date')->values()->all();
     }
 }
