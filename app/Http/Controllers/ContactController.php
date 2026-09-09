@@ -7,6 +7,7 @@ use App\Http\Requests\StoreContactRequest;
 use App\Support\Turnstile;
 use App\ViewModels\ContactViewModel;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -26,7 +27,7 @@ class ContactController
             return redirect()->route('contact.show')->with('success', true);
         }
 
-        if (! $turnstile->passes($request, config('services.turnstile.contact_action'))) {
+        if (! $turnstile->passes($request, Config::string('services.turnstile.contact_action'))) {
             throw ValidationException::withMessages([
                 'cf-turnstile-response' => 'Please verify that you are human and try again.',
             ])->errorBag('contact');

@@ -26,6 +26,10 @@ class BlogRssFeed
         $xml .= '<image><url>'.url('/images/logo.jpg').'</url><title>Mouse28</title><link>'.route('home').'</link></image>';
 
         foreach ($posts as $post) {
+            if ($post->published_at === null) {
+                continue;
+            }
+
             $xml .= '<item>';
             $xml .= '<title>'.htmlspecialchars($post->title).'</title>';
             $xml .= '<link>'.route('blog.show', $post).'</link>';

@@ -71,7 +71,7 @@ composer validate --strict --no-check-publish
 composer audit --locked --format=plain
 npm audit --audit-level=high
 vendor/bin/pint --test
-vendor/bin/filacheck
+composer test:filacheck
 composer analyse
 composer test:rector
 composer test
@@ -81,10 +81,30 @@ git diff --check
 ```
 
 Run `vendor/bin/pint` to apply PHP and Blade formatting fixes. Blade formatting is enabled by default through `pint.json` and requires the locked Prettier, Blade, and Tailwind formatting packages.
-Run `vendor/bin/filacheck` to check Filament code for deprecated APIs and common implementation issues.
+Run `composer test:filacheck` for a read-only check of Filament code for deprecated APIs and common implementation issues. This wrapper disables FilaCheck Pro's agent mode, which can otherwise enable automatic fixes even without `--fix`.
+Use `composer filacheck:fix` only when intentionally applying fixes to files with uncommitted Git changes. Review the resulting diff and rerun the affected tests and `composer test:filacheck` before committing.
 Run `npx playwright install chromium` once before the local browser suite. A focused `browser-smoke` group runs in pull-request and main-branch CI. The full Chromium browser suite runs weekly, on demand, and for release tags; the `browser-compatibility` group checks reading, print presentation, and key interactions in Firefox and WebKit.
 
 `composer test` runs the unit, integration, feature, and architecture suites; browser tests use the separate `composer test:browser` command. Rector uses its default parallel processing. Agent sandboxes must allow the local sockets used by Rector and Pest.
+
+### Pest static analysis and refactoring
+
+Test-only analysis uses separate configurations so the existing application checks remain unchanged:
+
+```bash
+composer analyse:pest
+composer test:rector:pest
+```
+
+`phpstan.neon` and `phpstan-pest.neon` analyze application code and tests separately at maximum level, with independent caches under `storage/framework/cache`. Both use `treatPhpDocTypesAsCertain: false`. Composer's PHPStan extension installer already registers the Pest plugin; do not include it a second time. `rector-pest.php` applies PHP and installed Laravel upgrade rules plus Pest's coding-style rules, scoped only to `tests/`.
+
+`composer analyse:pest` sets `APP_ENV=testing` for the analysis process so Livewire registers its test-only response assertions. Use the Composer command, or set the same environment variable when invoking PHPStan directly. This does not change `.env` or the application analysis command.
+
+`tests/pest-livewire.stub` supplies the component-specific return type missing from Pest Livewire 5.0's `livewire()` helper, retaining the generic `Component` fallback for named components. It is loaded only by Pest PHPStan analysis, never at runtime. Revisit the stub when the plugin supplies equivalent typing upstream.
+
+`composer analyse:pest` is a required CI step after Laravel preparation, using an in-memory SQLite connection and test service drivers. It remains separate from `composer test`. A nonzero exit code fails CI; no baseline or blanket suppression hides findings.
+
+`composer test:rector:pest` is a required, read-only CI step alongside the application Rector check. Proposed changes or errors fail CI; CI never applies rewrites. Its reviewed configuration excludes rewrites from strict empty-array comparisons to broad emptiness checks, and from `is_file()` to an existence-only assertion. Run `composer rector:pest` only to deliberately apply the proposed test changes, then inspect the diff and rerun the affected tests. Preserve Arrange / Act / Assert boundaries and framework-specific assertions when reviewing rewrites.
 
 Choose the suite by what the test exercises:
 

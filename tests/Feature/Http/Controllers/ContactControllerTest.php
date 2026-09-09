@@ -13,7 +13,7 @@ use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\from;
 use function Pest\Laravel\get;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('contact stays within its query budget', function (): void {
     $this->expectsDatabaseQueryCount(1);
@@ -45,8 +45,8 @@ test('contact page renders turnstile widget', function (): void {
         ->assertDontSee('Family Disney stories')
         ->assertDontSee('value="story"', false);
 
-    expect(substr_count((string) $response->getContent(), 'https://challenges.cloudflare.com/turnstile/v0/api.js'))->toBe(1);
-    expect(array_column(ContactTopic::cases(), 'value'))->not->toContain('story');
+    expect(substr_count((string) $response->getContent(), 'https://challenges.cloudflare.com/turnstile/v0/api.js'))->toBe(1)
+        ->and(array_column(ContactTopic::cases(), 'value'))->not->toContain('story');
 });
 
 test('contact errors and old input stay out of the newsletter form', function (): void {
@@ -124,11 +124,9 @@ test('valid contact submission requires successful turnstile verification', func
     Mail::assertSent(ContactFormSubmitted::class);
     Mail::assertSent(ContactFormConfirmation::class);
 
-    Http::assertSent(function ($request): bool {
-        return $request->url() === 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
-            && $request['secret'] === 'test-secret-key'
-            && $request['response'] === 'turnstile-token';
-    });
+    Http::assertSent(fn ($request): bool => $request->url() === 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
+        && $request['secret'] === 'test-secret-key'
+        && $request['response'] === 'turnstile-token');
 });
 
 test('contact submission rejects failed turnstile verification before persistence or mail', function (): void {

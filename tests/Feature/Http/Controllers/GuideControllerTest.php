@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Laravel\get;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('guide pages stay within their query budget as content grows', function (string $page, int $queries): void {
     config()->set('mouse28.guides_enabled', true);

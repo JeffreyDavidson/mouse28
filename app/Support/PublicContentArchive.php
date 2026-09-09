@@ -8,11 +8,13 @@ use App\Models\Podcast;
 use App\Models\Post;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
+/**
+ * @phpstan-type ValidatedArchive array{version: int, posts: list<array<string, mixed>>, guides: list<array<string, mixed>>, episodes: list<array<string, mixed>>, podcast: array<string, mixed>|null}
+ */
 class PublicContentArchive
 {
     private const int VERSION = 1;
@@ -107,12 +109,10 @@ class PublicContentArchive
             ->published()
             ->orderBy('published_at')
             ->get([...self::POST_FIELDS, 'episode_id'])
-            ->map(function (Post $post) use ($episodeSlugs): array {
-                return [
-                    ...$this->attributes($post, self::POST_FIELDS),
-                    'episode_slug' => $episodeSlugs->get((int) $post->getAttribute('episode_id')),
-                ];
-            })
+            ->map(fn (Post $post): array => [
+                ...$this->attributes($post, self::POST_FIELDS),
+                'episode_slug' => $episodeSlugs->get($post->episode_id),
+            ])
             ->values()
             ->all();
 
@@ -128,10 +128,10 @@ class PublicContentArchive
 
         return [
             'version' => self::VERSION,
-            'exported_at' => now()->toAtomString(),
-            'episodes' => $episodes,
-            'posts' => $posts,
-            'guides' => $guides,
+            'exported_at' => Date::now()->toAtomString(),
+            'episodes' => array_values($episodes),
+            'posts' => array_values($posts),
+            'guides' => array_values($guides),
             'podcast' => $podcast ? $this->attributes($podcast, self::PODCAST_FIELDS) : null,
         ];
     }
@@ -154,43 +154,67 @@ class PublicContentArchive
         return $this->persist($archive, prunePublished: true);
     }
 
+    /** @param array<string, mixed> $archive */
+    public function assertSafeToSync(array $archive): void
+    {
+        $archive = $this->validate($archive);
+
+        foreach (['posts' => Post::class, 'guides' => Guide::class, 'episodes' => Episode::class] as $type => $model) {
+            $identity = $type === 'episodes' ? 'episode_number' : 'slug';
+            $records = $model::query()
+                ->whereIn($identity, array_column($archive[$type], $identity))
+                ->get();
+
+            foreach ($records as $record) {
+                if (! $record->is_published || $record->published_at === null || $record->published_at->isFuture()) {
+                    throw new InvalidArgumentException("Sync conflicts with local unpublished {$type}. Resolve the conflicting {$identity} before syncing.");
+                }
+            }
+        }
+    }
+
     /**
      * @param  array<string, mixed>  $archive
      * @return list<string>
      */
     public function mediaPaths(array $archive): array
     {
-        $this->validate($archive);
+        $archive = $this->validate($archive);
 
-        $paths = collect(['episodes', 'posts', 'guides'])
-            ->flatMap(fn (string $contentType) => collect($archive[$contentType])->flatMap(
-                fn (array $attributes): array => array_values(
-                    Arr::only($attributes, ['audio_path', 'cover_image', 'og_image']),
-                ),
-            ))
-            ->when(
-                is_array($archive['podcast']),
-                fn (Collection $paths): Collection => $paths->push($archive['podcast']['cover_image'] ?? null),
-            )
-            ->filter(fn (mixed $path): bool => filled($path))
-            ->map(fn (mixed $path): string => $this->validateMediaPath($path))
-            ->unique()
-            ->sort()
-            ->values()
-            ->all();
+        $paths = [];
 
-        return $paths;
+        foreach ([$archive['episodes'], $archive['posts'], $archive['guides']] as $records) {
+            foreach ($records as $attributes) {
+                foreach (['audio_path', 'cover_image', 'og_image'] as $field) {
+                    if (filled($attributes[$field] ?? null)) {
+                        $paths[] = $this->validateMediaPath($attributes[$field]);
+                    }
+                }
+            }
+        }
+
+        $podcastCover = $archive['podcast']['cover_image'] ?? null;
+
+        if (filled($podcastCover)) {
+            $paths[] = $this->validateMediaPath($podcastCover);
+        }
+
+        return array_values(collect($paths)->unique()->sort()->all());
     }
 
     /**
      * @param  array<string, mixed>  $archive
-     * @return array{posts: int, guides: int, episodes: int, podcast: int, removed_posts?: int, removed_guides?: int, removed_episodes?: int}
+     * @return ($prunePublished is true ? array{posts: int, guides: int, episodes: int, podcast: int, removed_posts: int, removed_guides: int, removed_episodes: int} : array{posts: int, guides: int, episodes: int, podcast: int})
      */
     private function persist(array $archive, bool $prunePublished = false): array
     {
-        $this->validate($archive);
+        $archive = $this->validate($archive);
 
         return DB::transaction(function () use ($archive, $prunePublished): array {
+            if ($prunePublished) {
+                $this->assertSafeToSync($archive);
+            }
+
             foreach ($archive['episodes'] as $attributes) {
                 $this->importEpisode($attributes);
             }
@@ -205,7 +229,7 @@ class PublicContentArchive
 
             if (is_array($archive['podcast'])) {
                 $podcast = Podcast::query()->first() ?? new Podcast;
-                $podcast->fill(Arr::only($archive['podcast'], self::PODCAST_FIELDS));
+                $podcast->fill($this->onlyAttributes($archive['podcast'], self::PODCAST_FIELDS));
                 $podcast->save();
             }
 
@@ -239,7 +263,7 @@ class PublicContentArchive
         }
 
         $episode->fill([
-            ...Arr::only($attributes, self::EPISODE_FIELDS),
+            ...$this->onlyAttributes($attributes, self::EPISODE_FIELDS),
             'is_published' => true,
         ]);
         $episode->save();
@@ -258,7 +282,7 @@ class PublicContentArchive
         }
 
         $post->fill([
-            ...Arr::only($attributes, self::POST_FIELDS),
+            ...$this->onlyAttributes($attributes, self::POST_FIELDS),
             'episode_id' => $episodeId,
             'is_published' => true,
         ]);
@@ -275,7 +299,7 @@ class PublicContentArchive
         }
 
         $guide->fill([
-            ...Arr::only($attributes, self::GUIDE_FIELDS),
+            ...$this->onlyAttributes($attributes, self::GUIDE_FIELDS),
             'is_published' => true,
         ]);
         $guide->save();
@@ -287,7 +311,7 @@ class PublicContentArchive
      */
     private function attributes(Model $model, array $fields): array
     {
-        return Arr::only($model->getAttributes(), $fields);
+        return $this->onlyAttributes($model->getAttributes(), $fields);
     }
 
     /**
@@ -298,10 +322,16 @@ class PublicContentArchive
     {
         $slugs = collect($records)->pluck('slug')->all();
 
-        return $query
+        $deleted = $query
             ->published()
             ->when($slugs !== [], fn (Builder $query): Builder => $query->whereNotIn('slug', $slugs))
             ->delete();
+
+        if (! is_int($deleted)) {
+            throw new \UnexpectedValueException('Public content pruning did not return a record count.');
+        }
+
+        return $deleted;
     }
 
     private function validateMediaPath(mixed $path): string
@@ -317,27 +347,67 @@ class PublicContentArchive
         return $path;
     }
 
-    /** @param array<string, mixed> $archive */
-    private function validate(array $archive): void
+    /**
+     * @param  array<string, mixed>  $archive
+     * @return ValidatedArchive
+     */
+    private function validate(array $archive): array
     {
         if (($archive['version'] ?? null) !== self::VERSION) {
             throw new InvalidArgumentException('The public content archive version is not supported.');
         }
 
-        foreach (['posts', 'guides', 'episodes'] as $contentType) {
-            if (! isset($archive[$contentType]) || ! is_array($archive[$contentType])) {
-                throw new InvalidArgumentException("The public content archive is missing {$contentType}.");
-            }
-
-            foreach ($archive[$contentType] as $attributes) {
-                if (! is_array($attributes) || blank($attributes['slug'] ?? null)) {
-                    throw new InvalidArgumentException("The public content archive contains invalid {$contentType}.");
-                }
-            }
-        }
-
         if (! array_key_exists('podcast', $archive) || (! is_array($archive['podcast']) && $archive['podcast'] !== null)) {
             throw new InvalidArgumentException('The public content archive contains invalid podcast metadata.');
         }
+
+        return [
+            'version' => self::VERSION,
+            'posts' => $this->validateRecords($archive['posts'] ?? null, 'posts', [...self::POST_FIELDS, 'episode_slug']),
+            'guides' => $this->validateRecords($archive['guides'] ?? null, 'guides', self::GUIDE_FIELDS),
+            'episodes' => $this->validateRecords($archive['episodes'] ?? null, 'episodes', self::EPISODE_FIELDS),
+            'podcast' => $archive['podcast'] === null ? null : $this->onlyAttributes($archive['podcast'], self::PODCAST_FIELDS),
+        ];
+    }
+
+    /**
+     * @param  list<string>  $fields
+     * @return list<array<string, mixed>>
+     */
+    private function validateRecords(mixed $records, string $contentType, array $fields): array
+    {
+        if (! is_array($records)) {
+            throw new InvalidArgumentException("The public content archive is missing {$contentType}.");
+        }
+
+        $validated = [];
+
+        foreach ($records as $attributes) {
+            if (! is_array($attributes) || ! is_string($attributes['slug'] ?? null) || blank($attributes['slug'])) {
+                throw new InvalidArgumentException("The public content archive contains invalid {$contentType}.");
+            }
+
+            $validated[] = $this->onlyAttributes($attributes, $fields);
+        }
+
+        return $validated;
+    }
+
+    /**
+     * @param  array<array-key, mixed>  $attributes
+     * @param  list<string>  $fields
+     * @return array<string, mixed>
+     */
+    private function onlyAttributes(array $attributes, array $fields): array
+    {
+        $selected = [];
+
+        foreach ($fields as $field) {
+            if (array_key_exists($field, $attributes)) {
+                $selected[$field] = $attributes[$field];
+            }
+        }
+
+        return $selected;
     }
 }

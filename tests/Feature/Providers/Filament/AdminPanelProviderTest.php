@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Http;
 
 use function Pest\Laravel\actingAs;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('authenticated user can render the admin dashboard', function (): void {
     Http::fake([

@@ -5,12 +5,12 @@ use App\Filament\Resources\Posts\PostResource;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
+use function Pest\Livewire\livewire;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('authenticated user can render the resource listing', function (): void {
     actingAs(User::factory()->admin()->create());
@@ -33,13 +33,18 @@ test('content table shows readiness and missing publish dates', function (): voi
 });
 
 test('header does not count scheduled posts as published', function (): void {
+    // Arrange
     Post::factory()->create();
     Post::factory()->scheduled()->create();
     Post::factory()->draft()->create();
     actingAs(User::factory()->admin()->create());
 
-    $header = Livewire::test(ListPosts::class)->instance()->getHeader();
+    // Act
+    $page = livewire(ListPosts::class);
+    $component = $page->instance();
+    $header = $component->getHeader();
 
+    // Assert
     expect($header?->getData())
         ->toMatchArray([
             'total' => 3,

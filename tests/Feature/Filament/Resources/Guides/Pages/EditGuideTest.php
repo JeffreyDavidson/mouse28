@@ -11,8 +11,9 @@ use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
+use function Pest\Livewire\livewire;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('edit page offers a draft preview', function (): void {
     $admin = User::factory()->admin()->create();
@@ -50,6 +51,7 @@ test('ready drafts can be explicitly published and unpublished', function (): vo
 });
 
 test('deleted content leaves the public site and can be restored by an administrator', function (): void {
+    // Arrange
     $admin = User::factory()->admin()->create();
     $record = Guide::factory()->create();
 
@@ -59,12 +61,16 @@ test('deleted content leaves the public site and can be restored by an administr
 
     actingAs($admin);
 
-    Livewire::test(EditGuide::class, ['record' => $record->getRouteKey()])
-        ->callAction('restore')
-        ->assertNotified();
+    $page = livewire(EditGuide::class, ['record' => $record->getRouteKey()]);
 
-    expect($record->refresh()->deleted_at)->toBeNull();
-    get(route('guides.show', $record))->assertOk();
+    // Act
+    $page->callAction('restore');
+    $response = get(route('guides.show', $record));
+
+    // Assert
+    $page->assertNotified();
+    $this->assertNotSoftDeleted($record);
+    $response->assertOk();
 });
 
 test('editor saves author and category selections as enums', function (): void {

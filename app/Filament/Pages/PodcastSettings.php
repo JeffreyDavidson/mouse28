@@ -20,16 +20,22 @@ use Filament\Support\Icons\Heroicon;
 /** @property-read Schema $form */
 class PodcastSettings extends Page
 {
+    #[\Override]
     protected string $view = 'filament.pages.podcast-settings';
 
+    #[\Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
+    #[\Override]
     protected static string|\UnitEnum|null $navigationGroup = 'Settings';
 
+    #[\Override]
     protected static ?string $navigationLabel = 'Podcast Settings';
 
+    #[\Override]
     protected static ?string $title = 'Podcast Settings';
 
+    /** @var array<string, mixed>|null */
     public ?array $data = [];
 
     public static function canAccess(): bool
@@ -40,7 +46,10 @@ class PodcastSettings extends Page
     public function mount(): void
     {
         $podcast = Podcast::settings();
-        $this->form->fill($podcast->toArray());
+        $this->form->fill($podcast->only([
+            'name', 'email', 'description', 'cover_image',
+            'apple_url', 'spotify_url', 'youtube_url', 'instagram_url', 'tiktok_url',
+        ]));
     }
 
     public function content(Schema $schema): Schema
@@ -76,11 +85,11 @@ class PodcastSettings extends Page
                     ->description('Where listeners can find your podcast')
                     ->columns(2)
                     ->schema([
-                        TextInput::make('apple_url')->url()->label('Apple Podcasts')
+                        TextInput::make('apple_url')->url()->maxLength(255)->label('Apple Podcasts')
                             ->prefixIcon(Heroicon::OutlinedLink),
-                        TextInput::make('spotify_url')->url()->label('Spotify')
+                        TextInput::make('spotify_url')->url()->maxLength(255)->label('Spotify')
                             ->prefixIcon(Heroicon::OutlinedLink),
-                        TextInput::make('youtube_url')->url()->label('YouTube')
+                        TextInput::make('youtube_url')->url()->maxLength(255)->label('YouTube')
                             ->prefixIcon(Heroicon::OutlinedLink),
                     ]),
 
@@ -89,9 +98,9 @@ class PodcastSettings extends Page
                     ->description('Connect your social accounts')
                     ->columns(2)
                     ->schema([
-                        TextInput::make('instagram_url')->url()->label('Instagram')
+                        TextInput::make('instagram_url')->url()->maxLength(255)->label('Instagram')
                             ->prefixIcon(Heroicon::OutlinedLink),
-                        TextInput::make('tiktok_url')->url()->label('TikTok')
+                        TextInput::make('tiktok_url')->url()->maxLength(255)->label('TikTok')
                             ->prefixIcon(Heroicon::OutlinedLink),
                     ]),
 

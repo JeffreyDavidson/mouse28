@@ -3,7 +3,10 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Testing\TestResponse;
+use Symfony\Component\HttpFoundation\Response;
+use UnexpectedValueException;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -13,20 +16,49 @@ abstract class TestCase extends BaseTestCase
 
         parent::setUp();
 
+        Http::preventStrayRequests();
+
         $this->withoutVite();
     }
 
-    /** @return array<string, mixed> */
+    /**
+     * @param  TestResponse<Response>  $response
+     * @return array<string, mixed>
+     */
     protected function structuredData(TestResponse $response): array
     {
+        $content = $response->getContent();
+
+        if ($content === false) {
+            throw new UnexpectedValueException('The response body could not be read.');
+        }
+
         $matched = preg_match(
             '/<script type="application\/ld\+json">(.*?)<\/script>/s',
-            $response->getContent(),
+            $content,
             $matches,
         );
 
-        expect($matched)->toBe(1, 'The response did not contain JSON-LD structured data.');
+        if ($matched !== 1 || ! isset($matches[1]) || ! is_string($matches[1])) {
+            throw new UnexpectedValueException('The response did not contain JSON-LD structured data.');
+        }
 
-        return json_decode($matches[1], true, flags: JSON_THROW_ON_ERROR);
+        $data = json_decode($matches[1], true, flags: JSON_THROW_ON_ERROR);
+
+        if (! is_array($data)) {
+            throw new UnexpectedValueException('The JSON-LD structured data was not an object.');
+        }
+
+        $structuredData = [];
+
+        foreach ($data as $key => $value) {
+            if (! is_string($key)) {
+                throw new UnexpectedValueException('The JSON-LD structured data must be an object.');
+            }
+
+            $structuredData[$key] = $value;
+        }
+
+        return $structuredData;
     }
 }

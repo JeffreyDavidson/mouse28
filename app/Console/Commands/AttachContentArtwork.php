@@ -8,6 +8,7 @@ use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Finder\SplFileInfo;
@@ -24,7 +25,7 @@ class AttachContentArtwork extends Command
 
     public function handle(): int
     {
-        $sourceDirectory = (string) config('mouse28.content_artwork_path');
+        $sourceDirectory = Config::string('mouse28.content_artwork_path');
 
         if (! File::isDirectory("{$sourceDirectory}/posts")) {
             $this->error("Bundled post artwork directory is missing: {$sourceDirectory}/posts");
@@ -44,13 +45,21 @@ class AttachContentArtwork extends Command
             return self::FAILURE;
         }
 
-        $copied = collect($artwork)->sum(function (string $path) use ($sourceDirectory): int {
+        $copied = 0;
+
+        foreach ($artwork as $path) {
             if (Storage::disk('public')->exists($path)) {
-                return 0;
+                continue;
             }
 
-            return Storage::disk('public')->put($path, File::get("{$sourceDirectory}/{$path}")) ? 1 : 0;
-        });
+            if (! Storage::disk('public')->put($path, File::get("{$sourceDirectory}/{$path}"))) {
+                $this->error("Unable to copy artwork: {$path}. No content records were updated.");
+
+                return self::FAILURE;
+            }
+
+            $copied++;
+        }
 
         $updated = $this->attach(Post::query(), $postArtwork)
             + $this->attach(Episode::query(), self::EPISODE_ARTWORK);

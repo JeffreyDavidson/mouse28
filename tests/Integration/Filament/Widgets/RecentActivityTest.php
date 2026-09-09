@@ -9,7 +9,7 @@ use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('activity shows the eight newest records even when one content type dominates', function (string $modelClass): void {
     $this->freezeSecond();
@@ -57,11 +57,7 @@ test('activity queries select only fields rendered by the widget', function (): 
 
     app(RecentActivity::class)->getActivity();
 
-    expect($queries)->toHaveCount(3);
-
-    foreach ($queries as $query) {
-        expect($query)
-            ->toContain('select "id", "title", "is_published", "published_at", "updated_at"')
-            ->not->toContain('select *');
-    }
+    expect($queries)->toHaveCount(3)
+        ->each->not->toContain('select *')
+        ->toContain('select "id", "title", "is_published", "published_at", "updated_at"');
 });

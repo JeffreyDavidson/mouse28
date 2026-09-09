@@ -12,8 +12,42 @@ use App\Models\Guide;
 use App\Models\Post;
 use App\Models\User;
 use Filament\Pages\Dashboard;
+use Illuminate\Support\Facades\Http;
 
 use function Pest\Laravel\actingAs;
+
+test('newsletter contact statuses remain readable on desktop and mobile', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+    config()->set('services.resend.audience_id', 'audience-test-id');
+    Http::fake(['https://api.resend.com/*' => Http::response(['data' => [
+        ['email' => 'active@example.com', 'unsubscribed' => false],
+        ['email' => 'left@example.com', 'unsubscribed' => true],
+        ['email' => 'unknown@example.com'],
+    ]])]);
+
+    // Act
+    $page = visit(NewsletterSubscribers::getUrl());
+    $page->resize(1440, 1000);
+
+    // Assert
+    $page->assertSee('Active subscribers')
+        ->assertSee('Unsubscribed')
+        ->assertSee('Unknown')
+        ->assertScript($this->horizontalOverflowScript(), 0)
+        ->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors();
+
+    // Act
+    $page->resize(390, 844);
+
+    // Assert
+    $page->assertSee('Total contacts')
+        ->assertSee('Export all contacts')
+        ->assertScript($this->horizontalOverflowScript(), 0)
+        ->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors();
+});
 
 function exposedAdminDecorativeGlyphCountScript(): string
 {

@@ -8,7 +8,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('published statistics exclude scheduled content', function (): void {
     config()->set('services.resend.audience_id', 'audience-test-id');

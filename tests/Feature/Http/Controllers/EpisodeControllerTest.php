@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\get;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('episode artwork uses available responsive candidates and falls back after replacement', function (): void {
     Storage::fake('public');

@@ -6,6 +6,7 @@ use App\Support\PublicContentArchive;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Uri;
 use Throwable;
@@ -24,7 +25,13 @@ class ImportPublicContent extends Command
             return self::FAILURE;
         }
 
-        $path = (string) $this->argument('path');
+        $path = $this->argument('path');
+
+        if (! is_string($path) || $path === '') {
+            $this->error('A valid public content archive path is required.');
+
+            return self::FAILURE;
+        }
 
         if (! File::isFile($path)) {
             $this->error("Public content archive not found at {$path}.");
@@ -54,6 +61,6 @@ class ImportPublicContent extends Command
         }
 
         return ! $this->option('staging')
-            || Uri::of((string) config('app.url'))->host() !== self::STAGING_HOST;
+            || Uri::of(Config::string('app.url'))->host() !== self::STAGING_HOST;
     }
 }

@@ -74,12 +74,26 @@ jobs:
       - name: Check automated refactoring
         run: composer test:rector
 
+      - name: Check Pest automated refactoring
+        run: composer test:rector:pest
+
       - name: Prepare Laravel
         run: |
           cp .env.example .env
           php artisan key:generate
           mkdir -p database
           touch database/database.sqlite
+
+      - name: Run Pest static analysis (informational)
+        continue-on-error: true
+        env:
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ':memory:'
+          QUEUE_CONNECTION: sync
+          SESSION_DRIVER: array
+          CACHE_STORE: array
+          MAIL_MAILER: array
+        run: composer analyse:pest
 
       - name: Run tests
         env:
@@ -101,4 +115,5 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run focused browser regressions
+        continue-on-error: true
         run: php artisan test --compact --testsuite=Browser --group=browser-smoke

@@ -17,6 +17,7 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 
 class PostForm
@@ -36,9 +37,9 @@ class PostForm
                             ->maxLength(255)
                             ->columnSpan(2)
                             ->live(onBlur: true)
-                            ->afterStateUpdated(function (Get $get, Set $set, ?string $state) {
-                                if (! $get('slug') || $get('slug') === Str::slug($get('title'))) {
-                                    $set('slug', Str::slug($state));
+                            ->afterStateUpdated(function (Get $get, Set $set, ?string $state): void {
+                                if (! $get('slug') || $get('slug') === Str::slug($state ?? '')) {
+                                    $set('slug', Str::slug($state ?? ''));
                                 }
                             }),
                         TextInput::make('slug')
@@ -89,7 +90,7 @@ class PostForm
                         DatePicker::make('last_reviewed_at')
                             ->label('Last Reviewed')
                             ->required(fn (Get $get): bool => filled($get('source_url')))
-                            ->helperText('Sourced posts are flagged after '.config('mouse28.post_review_interval_days').' days.'),
+                            ->helperText('Sourced posts are flagged after '.Config::integer('mouse28.post_review_interval_days').' days.'),
                     ]),
 
                 Grid::make(2)

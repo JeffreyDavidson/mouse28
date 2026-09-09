@@ -32,9 +32,9 @@ class EpisodeForm
                             ->maxLength(255)
                             ->columnSpan(2)
                             ->live(onBlur: true)
-                            ->afterStateUpdated(function (Get $get, Set $set, ?string $state) {
-                                if (! $get('slug') || $get('slug') === Str::slug($get('title'))) {
-                                    $set('slug', Str::slug($state));
+                            ->afterStateUpdated(function (Get $get, Set $set, ?string $state): void {
+                                if (! $get('slug') || $get('slug') === Str::slug($state ?? '')) {
+                                    $set('slug', Str::slug($state ?? ''));
                                 }
                             }),
                         TextInput::make('slug')
@@ -43,11 +43,16 @@ class EpisodeForm
                             ->columnSpan(2)
                             ->unique(),
                         TextInput::make('episode_number')
-                            ->numeric()
+                            ->integer()
+                            ->minValue(0)
+                            ->maxValue(2147483647)
+                            ->unique()
                             ->required()
                             ->columnSpan(1),
                         TextInput::make('season_number')
-                            ->numeric()
+                            ->integer()
+                            ->minValue(0)
+                            ->maxValue(4294967295)
                             ->default(1)
                             ->columnSpan(1),
                     ]),
@@ -60,7 +65,7 @@ class EpisodeForm
                                 TextInput::make('transistor_url')
                                     ->label('Transistor Episode URL')
                                     ->url()
-                                    ->maxLength(500)
+                                    ->maxLength(255)
                                     ->rules(['regex:/\Ahttps:\/\/share\.transistor\.fm\/s\/[a-zA-Z0-9]+\/?\z/'])
                                     ->prefixIcon(Heroicon::OutlinedLink)
                                     ->helperText('Paste the episode share URL, such as https://share.transistor.fm/s/428d650c. Mouse28 builds the embedded player from it.'),
@@ -77,7 +82,9 @@ class EpisodeForm
                                     ->directory('episodes')
                                     ->helperText('Landscape image (1.91:1), up to 5 MB. Uploads are cropped and resized automatically.'),
                                 TextInput::make('duration_seconds')
-                                    ->numeric()
+                                    ->integer()
+                                    ->minValue(0)
+                                    ->maxValue(2147483647)
                                     ->suffix('seconds')
                                     ->prefixIcon(Heroicon::OutlinedClock),
                             ]),
@@ -123,9 +130,9 @@ class EpisodeForm
                             ->icon(Heroicon::OutlinedSignal)
                             ->description('Where listeners can find this episode')
                             ->schema([
-                                TextInput::make('apple_url')->url()->label('Apple Podcasts')->prefixIcon(Heroicon::OutlinedLink),
-                                TextInput::make('spotify_url')->url()->label('Spotify')->prefixIcon(Heroicon::OutlinedLink),
-                                TextInput::make('youtube_url')->url()->label('YouTube')->prefixIcon(Heroicon::OutlinedLink),
+                                TextInput::make('apple_url')->url()->maxLength(255)->label('Apple Podcasts')->prefixIcon(Heroicon::OutlinedLink),
+                                TextInput::make('spotify_url')->url()->maxLength(255)->label('Spotify')->prefixIcon(Heroicon::OutlinedLink),
+                                TextInput::make('youtube_url')->url()->maxLength(255)->label('YouTube')->prefixIcon(Heroicon::OutlinedLink),
                             ]),
 
                         Section::make('SEO')

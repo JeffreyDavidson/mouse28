@@ -3,12 +3,36 @@
 use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
 use App\Enums\PostCategory;
+use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
 use App\Support\PublicContentArchive;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
+
+test('sync refuses unpublished identity collisions without changing content', function (string $model, string $state): void {
+    // Arrange
+    $record = $model::factory()->create();
+    $service = app(PublicContentArchive::class);
+    $archive = $service->export();
+    $record->update($state === 'draft'
+        ? ['is_published' => false, 'title' => 'Local work']
+        : ['published_at' => now()->addWeek(), 'title' => 'Local work']);
+
+    $exception = null;
+
+    // Act
+    try {
+        $service->sync($archive);
+    } catch (InvalidArgumentException $caught) {
+        $exception = $caught;
+    }
+
+    // Assert
+    expect($exception)->toBeInstanceOf(InvalidArgumentException::class)
+        ->and($record->refresh()->title)->toBe('Local work');
+})->with([Post::class, Guide::class, Episode::class])->with(['draft', 'scheduled']);
 
 test('public archives retain string values and restore enum backed content', function (): void {
     $post = Post::factory()->create(['author' => ContentAuthor::Cassie, 'category' => PostCategory::DisneyTips]);
@@ -38,6 +62,21 @@ test('public archives retain string values and restore enum backed content', fun
         ->and($guide->trashed())->toBeFalse()
         ->and($guide->author)->toBe(ContentAuthor::Both)
         ->and($guide->category)->toBe(GuideCategory::Accessibility);
+});
+
+test('archive validation rejects a non-string slug before importing any records', function (): void {
+    $post = Post::factory()->create(['title' => 'Original title']);
+    $service = app(PublicContentArchive::class);
+    $archive = $service->export();
+    $archive['posts'][0]['title'] = 'Changed by import';
+    $archive['posts'][0]['slug'] = ['invalid-slug'];
+
+    expect(fn () => $service->import($archive))
+        ->toThrow(InvalidArgumentException::class, 'invalid posts');
+
+    $post->refresh();
+
+    expect($post->title)->toBe('Original title');
 });
 
 test('invalid archive enum values roll back earlier imported records', function (): void {

@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Http;
 
 use function Pest\Laravel\from;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 beforeEach(function (): void {
     config()->set('services.resend.key', 'resend-test-key');

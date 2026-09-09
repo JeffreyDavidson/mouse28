@@ -42,6 +42,10 @@ class ResponsiveArtwork
 
     public static function srcset(?string $path, bool $square = false): ?string
     {
+        if ($path === null) {
+            return null;
+        }
+
         $source = self::source($path);
 
         if (! $source) {

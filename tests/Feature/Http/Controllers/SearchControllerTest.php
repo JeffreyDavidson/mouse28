@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\URL;
 use function Pest\Laravel\from;
 use function Pest\Laravel\get;
 
-uses(RefreshDatabase::class);
+pest()->use(RefreshDatabase::class);
 
 test('search stays within its query budget as content grows', function (): void {
     config()->set('mouse28.guides_enabled', true);

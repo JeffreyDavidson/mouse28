@@ -10,19 +10,25 @@ use App\Models\Guide;
 use App\Models\Post;
 use App\Support\EditorialReadiness;
 use Filament\Widgets\Widget;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Date;
 
 class ContentCalendar extends Widget
 {
+    #[\Override]
     protected static ?int $sort = 4;
 
+    #[\Override]
     protected int|string|array $columnSpan = 1;
 
+    #[\Override]
     protected string $view = 'filament.widgets.content-calendar';
 
+    /** @return array<int, array{title: string, type: string, date: Carbon|null, status: string, url: string}> */
     public function getTimeline(): array
     {
-        $start = now()->startOfDay();
-        $end = now()->addDays(7)->endOfDay();
+        $start = Date::now()->startOfDay();
+        $end = Date::now()->addDays(7)->endOfDay();
 
         $posts = Post::whereBetween('published_at', [$start, $end])
             ->select(['id', 'title', 'is_published', 'published_at'])
@@ -63,6 +69,6 @@ class ContentCalendar extends Widget
             ])
             ->toBase();
 
-        return $posts->merge($episodes)->merge($guides)->sortBy('date')->values()->toArray();
+        return $posts->merge($episodes)->merge($guides)->sortBy('date')->values()->all();
     }
 }

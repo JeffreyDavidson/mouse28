@@ -12,11 +12,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Date;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property Carbon|null $published_at
+ * @property Carbon $updated_at
  * @property-read string|null $cover_image_url
  * @property-read string $formatted_duration
  * @property-read string|null $og_image_url
@@ -84,32 +86,37 @@ class Episode extends Model
             ->dontLogEmptyChanges();
     }
 
+    /** @return HasMany<Post, $this> */
     public function posts(): HasMany
     {
         return $this->hasMany(Post::class);
     }
 
+    /** @param Builder<static> $query */
     #[Scope]
     protected function published(Builder $query): void
     {
         $query->where('is_published', true)
             ->whereNotNull('published_at')
-            ->where('published_at', '<=', now());
+            ->where('published_at', '<=', Date::now());
     }
 
+    /** @param Builder<static> $query */
     #[Scope]
     protected function drafts(Builder $query): void
     {
         $query->where('is_published', false);
     }
 
+    /** @param Builder<static> $query */
     #[Scope]
     protected function scheduled(Builder $query): void
     {
         $query->where('is_published', true)
-            ->where('published_at', '>', now());
+            ->where('published_at', '>', Date::now());
     }
 
+    /** @param Builder<static> $query */
     #[Scope]
     protected function needsAttention(Builder $query): void
     {
@@ -128,20 +135,19 @@ class Episode extends Model
         });
     }
 
+    /** @return Attribute<string|null, never> */
     protected function ogImageUrl(): Attribute
     {
-        return Attribute::make(get: function () {
-            return $this->og_image ? '/storage/'.$this->og_image : null;
-        });
+        return Attribute::make(get: fn () => $this->og_image ? '/storage/'.$this->og_image : null);
     }
 
+    /** @return Attribute<string|null, never> */
     protected function coverImageUrl(): Attribute
     {
-        return Attribute::make(get: function () {
-            return $this->cover_image ? '/storage/'.$this->cover_image : null;
-        });
+        return Attribute::make(get: fn () => $this->cover_image ? '/storage/'.$this->cover_image : null);
     }
 
+    /** @return Attribute<string|null, never> */
     protected function transistorEmbedUrl(): Attribute
     {
         return Attribute::make(get: function (): ?string {
@@ -159,6 +165,7 @@ class Episode extends Model
         });
     }
 
+    /** @return Attribute<string, never> */
     protected function formattedDuration(): Attribute
     {
         return Attribute::make(get: function () {

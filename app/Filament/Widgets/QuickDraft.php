@@ -11,6 +11,7 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
 use Filament\Widgets\Widget;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 /** @property-read Schema $form */
@@ -18,12 +19,16 @@ class QuickDraft extends Widget implements HasForms
 {
     use InteractsWithForms;
 
+    #[\Override]
     protected static ?int $sort = 5;
 
+    #[\Override]
     protected int|string|array $columnSpan = 1;
 
+    #[\Override]
     protected string $view = 'filament.widgets.quick-draft';
 
+    /** @var array<string, mixed>|null */
     public ?array $data = [];
 
     public function form(Schema $form): Schema
@@ -48,7 +53,7 @@ class QuickDraft extends Widget implements HasForms
 
         Post::query()->create([
             'title' => $state['title'],
-            'slug' => $this->uniqueSlug($state['title']),
+            'slug' => $this->uniqueSlug(Arr::string($state, 'title')),
             'excerpt' => $state['notes'] ?? null,
             'body' => $state['notes'] ?? '',
             'author' => ContentAuthor::Both,

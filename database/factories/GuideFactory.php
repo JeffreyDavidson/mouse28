@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /** @extends Factory<Guide> */
 class GuideFactory extends Factory
 {
+    #[\Override]
     protected $model = Guide::class;
 
     public function definition(): array

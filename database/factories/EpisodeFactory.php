@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /** @extends Factory<Episode> */
 class EpisodeFactory extends Factory
 {
+    #[\Override]
     protected $model = Episode::class;
 
     public function definition(): array

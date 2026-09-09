@@ -1,11 +1,14 @@
 parameters:
     paths:
-        - app
+        - tests
 
     level: max
     treatPhpDocTypesAsCertain: false
 
+    stubFiles:
+        - tests/pest-livewire.stub
+
     bootstrapFiles:
         - bootstrap/app.php
 
-    tmpDir: storage/framework/cache/phpstan-app
+    tmpDir: storage/framework/cache/phpstan-pest
