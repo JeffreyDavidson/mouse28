@@ -35,12 +35,13 @@ class NewsletterSubscribers extends Page
         return auth()->user()?->is_admin === true;
     }
 
-    /** @return array{subscribers: list<array<string, mixed>>, error: ?string, active_count: int} */
+    /** @return array{subscribers: list<array{email: mixed, created_at: mixed, subscription_status: string}>, error: ?string, active_count: int} */
     public function getAudience(): array
     {
         $audience = app(ResendAudience::class)->get();
-        $audience['subscribers'] = array_map(static fn (array $subscriber): array => [
-            ...$subscriber,
+        $subscribers = array_map(static fn (array $subscriber): array => [
+            'email' => $subscriber['email'] ?? null,
+            'created_at' => $subscriber['created_at'] ?? null,
             'subscription_status' => match ($subscriber['unsubscribed'] ?? null) {
                 false => 'Subscribed',
                 true => 'Unsubscribed',
@@ -49,9 +50,10 @@ class NewsletterSubscribers extends Page
         ], $audience['subscribers']);
 
         return [
-            ...$audience,
+            'subscribers' => $subscribers,
+            'error' => $audience['error'],
             'active_count' => count(array_filter(
-                $audience['subscribers'],
+                $subscribers,
                 static fn (array $subscriber): bool => $subscriber['subscription_status'] === 'Subscribed',
             )),
         ];
@@ -105,6 +107,10 @@ class NewsletterSubscribers extends Page
 
     private function escapeCsvValue(mixed $value): string
     {
+        if (! is_scalar($value) && $value !== null && ! $value instanceof \Stringable) {
+            throw new \UnexpectedValueException('Subscriber CSV fields must contain scalar values.');
+        }
+
         $value = (string) $value;
 
         return preg_match('/^[=+\-@\t\r]/', $value) === 1 ? "'{$value}" : $value;

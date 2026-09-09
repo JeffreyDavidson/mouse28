@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Enums\NewsletterSubscriptionResult;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -43,7 +44,7 @@ class ResendAudience
         }
 
         try {
-            $response = Http::withToken((string) config('services.resend.key'))
+            $response = Http::withToken(Config::string('services.resend.key'))
                 ->timeout(10)
                 ->post("https://api.resend.com/audiences/{$audienceId}/contacts", [
                     'email' => $email,
@@ -79,7 +80,7 @@ class ResendAudience
         }
 
         try {
-            $response = Http::withToken((string) config('services.resend.key'))
+            $response = Http::withToken(Config::string('services.resend.key'))
                 ->timeout(10)
                 ->get("https://api.resend.com/audiences/{$audienceId}/contacts");
         } catch (\Throwable) {
@@ -109,6 +110,24 @@ class ResendAudience
             return [];
         }
 
-        return array_values(array_filter($subscribers, is_array(...)));
+        $normalized = [];
+
+        foreach ($subscribers as $subscriber) {
+            if (! is_array($subscriber)) {
+                continue;
+            }
+
+            $fields = [];
+
+            foreach ($subscriber as $key => $value) {
+                if (is_string($key)) {
+                    $fields[$key] = $value;
+                }
+            }
+
+            $normalized[] = $fields;
+        }
+
+        return $normalized;
     }
 }
