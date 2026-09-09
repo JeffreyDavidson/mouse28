@@ -7,6 +7,7 @@ use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Process\ProcessResult;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
@@ -32,8 +33,8 @@ class SyncProductionContent extends Command
             return self::FAILURE;
         }
 
-        $host = (string) config('mouse28.production_sync.ssh_host');
-        $sitePath = rtrim((string) config('mouse28.production_sync.site_path'), '/');
+        $host = Config::string('mouse28.production_sync.ssh_host');
+        $sitePath = rtrim(Config::string('mouse28.production_sync.site_path'), '/');
 
         if (! $this->sourceIsSafe($host, $sitePath)) {
             $this->error('Production sync source configuration is invalid.');

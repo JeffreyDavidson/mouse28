@@ -7,12 +7,19 @@ use App\Models\Guide;
 use App\Models\Podcast;
 use App\Models\Post;
 use Illuminate\Support\Str;
+use UnexpectedValueException;
 
 class StructuredData
 {
+    /** @return array<string, mixed> */
     public static function forPost(Post $post): array
     {
-        $modifiedAt = $post->updated_at;
+        $modifiedAt = $post->updated_at ?? $post->published_at;
+
+        if ($modifiedAt === null || $post->published_at === null) {
+            throw new UnexpectedValueException('Published posts must have publication and update timestamps.');
+        }
+
         if ($post->last_reviewed_at?->gt($modifiedAt)) {
             $modifiedAt = $post->last_reviewed_at;
         }
@@ -40,9 +47,15 @@ class StructuredData
         return self::graph($article, 'BlogPosting', 'Blog', route('blog.index'), $post->title, route('blog.show', $post));
     }
 
+    /** @return array<string, mixed> */
     public static function forGuide(Guide $guide): array
     {
-        $modifiedAt = $guide->updated_at;
+        $modifiedAt = $guide->updated_at ?? $guide->published_at;
+
+        if ($modifiedAt === null || $guide->published_at === null) {
+            throw new UnexpectedValueException('Published guides must have publication and update timestamps.');
+        }
+
         if ($guide->last_reviewed_at?->gt($modifiedAt)) {
             $modifiedAt = $guide->last_reviewed_at;
         }
@@ -70,8 +83,13 @@ class StructuredData
         return self::graph($article, 'Article', 'Guides', route('guides.index'), $guide->title, route('guides.show', $guide));
     }
 
+    /** @return array<string, mixed> */
     public static function forEpisode(Episode $episode, ?Podcast $podcast = null): array
     {
+        if ($episode->published_at === null) {
+            throw new UnexpectedValueException('Published episodes must have a publication timestamp.');
+        }
+
         $podcastEpisode = [
             '@type' => 'PodcastEpisode',
             'name' => $episode->meta_title ?: $episode->title,
@@ -112,6 +130,10 @@ class StructuredData
         return self::graph($podcastEpisode, 'PodcastEpisode', 'Podcast', route('episodes.index'), $episode->title, route('episodes.show', $episode));
     }
 
+    /**
+     * @param  array<string, mixed>  $content
+     * @return array<string, mixed>
+     */
     private static function graph(array $content, string $type, string $sectionName, string $sectionUrl, string $title, string $url): array
     {
         $content['@id'] = $url.'#'.Str::kebab($type);
@@ -132,6 +154,7 @@ class StructuredData
         ];
     }
 
+    /** @return array<string, mixed> */
     private static function breadcrumb(int $position, string $name, string $url): array
     {
         return [
@@ -156,6 +179,7 @@ class StructuredData
         return "PT{$hours}H{$minutes}M{$remainingSeconds}S";
     }
 
+    /** @return array<string, mixed> */
     private static function person(string $name): array
     {
         return [
@@ -164,6 +188,7 @@ class StructuredData
         ];
     }
 
+    /** @return array<string, mixed> */
     private static function publisher(): array
     {
         return [

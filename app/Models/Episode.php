@@ -18,6 +18,7 @@ use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property Carbon|null $published_at
+ * @property Carbon $updated_at
  * @property-read string|null $cover_image_url
  * @property-read string $formatted_duration
  * @property-read string|null $og_image_url

@@ -23,6 +23,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property GuideCategory $category
  * @property Carbon|null $last_reviewed_at
  * @property Carbon|null $published_at
+ * @property Carbon $updated_at
  * @property-read string $author_name
  * @property-read string $category_label
  * @property-read string|null $cover_image_url
