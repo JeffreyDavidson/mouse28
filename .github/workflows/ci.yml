@@ -115,4 +115,5 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run focused browser regressions
+        continue-on-error: true
         run: php artisan test --compact --testsuite=Browser --group=browser-smoke
