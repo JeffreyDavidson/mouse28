@@ -2,7 +2,8 @@ parameters:
     paths:
         - tests
 
-    level: 5
+    level: max
+    treatPhpDocTypesAsCertain: false
 
     stubFiles:
         - tests/pest-livewire.stub
