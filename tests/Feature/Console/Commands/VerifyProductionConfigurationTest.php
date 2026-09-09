@@ -45,6 +45,28 @@ test('safe production configuration passes', function (): void {
         ->and(Artisan::output())->toContain('Production configuration is ready.');
 });
 
+test('blank or non-string driver settings fail preflight', function (string $setting, string $message, mixed $value): void {
+    config()->set($setting, $value);
+
+    $exitCode = Artisan::call('app:verify-production');
+    $output = Artisan::output();
+
+    expect($exitCode)->toBe(Command::FAILURE)
+        ->and($output)->toContain($message)
+        ->not->toContain('Production configuration is ready.');
+})->with([
+    'session' => ['session.driver', 'SESSION_DRIVER must use a persistent driver.'],
+    'cache' => ['cache.default', 'CACHE_STORE must use a persistent driver.'],
+    'mail' => ['mail.default', 'MAIL_MAILER must use a delivering transport.'],
+])->with([
+    'empty' => [''],
+    'whitespace' => [" \t\n"],
+    'null' => [null],
+    'boolean' => [false],
+    'integer' => [123],
+    'array' => [[]],
+]);
+
 test('safe staging configuration passes with isolated observability', function (): void {
     config()->set([
         'app.url' => 'https://staging.mouse28.com',
