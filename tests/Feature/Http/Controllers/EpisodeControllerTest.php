@@ -61,34 +61,34 @@ test('podcast pages render one newsletter signup', function (): void {
             ->assertSee('id="footer-newsletter-email"', false)
             ->assertSee('Connect');
 
-        expect(substr_count($response->getContent(), 'action="'.route('newsletter.store').'"'))->toBe(1);
+        expect(substr_count($this->responseContent($response), 'action="'.route('newsletter.store').'"'))->toBe(1);
     }
 });
 
 test('podcast index advertises the canonical Transistor feed without persisting defaults', function (): void {
     get(route('episodes.index'))
         ->assertOk()
-        ->assertSee(config('podcast.rss_url'), false);
+        ->assertSee(config()->string('podcast.rss_url'), false);
 
     expect(Podcast::query()->doesntExist())->toBeTrue();
 });
 
 test('podcast index renders configured distribution links', function (): void {
-    $podcast = Podcast::query()->create([
-        'name' => 'Mouse28',
+    $links = [
         'apple_url' => 'https://podcasts.apple.com/show/mouse28',
         'spotify_url' => 'https://open.spotify.com/show/mouse28',
         'youtube_url' => 'https://youtube.com/@mouse28',
-    ]);
+    ];
+    Podcast::query()->create(['name' => 'Mouse28', ...$links]);
 
     $response = get(route('episodes.index'))
         ->assertOk();
 
-    foreach ([$podcast->apple_url, $podcast->spotify_url, $podcast->youtube_url] as $url) {
+    foreach ($links as $url) {
         $response->assertSee($url, false);
     }
 
-    $response->assertSee(config('podcast.rss_url'), false)
+    $response->assertSee(config()->string('podcast.rss_url'), false)
         ->assertDontSee('Apple Podcasts · Soon')
         ->assertDontSee('Spotify · Soon');
 });
@@ -154,8 +154,9 @@ test('sparse episode detail pages use a compact continuation layout', function (
         'show_notes' => '<p>Coming soon.</p>',
         'transcript' => null,
     ]);
+    $publishedAt = $episode->published_at ?? throw new UnexpectedValueException('The episode is not published.');
     $previousEpisode = Episode::factory()->create([
-        'published_at' => $episode->published_at->subDay(),
+        'published_at' => $publishedAt->subDay(),
     ]);
 
     get(route('episodes.show', $episode))
@@ -271,13 +272,13 @@ test('episode destinations override show links and missing destinations fall bac
 
     get(route('episodes.show', $episode))
         ->assertOk()
-        ->assertSee($episode->apple_url, false)
+        ->assertSee('https://podcasts.apple.com/episode/42', false)
         ->assertSee('Listen to this episode')
         ->assertSee('https://open.spotify.com/show/mouse28', false)
         ->assertSee('Visit the show')
         ->assertSee('https://youtube.com/@mouse28', false)
         ->assertSee('Visit the channel')
-        ->assertSee(config('podcast.rss_url'), false)
+        ->assertSee(config()->string('podcast.rss_url'), false)
         ->assertSee('"name":"Mouse28 Travel Podcast"', false);
 });
 
@@ -289,7 +290,7 @@ test('episode pages hide podcast platforms that are not configured', function ()
         ->assertDontSee('Apple Podcasts')
         ->assertDontSee('Spotify')
         ->assertDontSee('Not configured')
-        ->assertSee(config('podcast.rss_url'), false);
+        ->assertSee(config()->string('podcast.rss_url'), false);
 });
 
 test('episode pages embed only valid Transistor share URLs', function (): void {
@@ -364,15 +365,15 @@ test('episodes include podcast media duration and breadcrumb structured data', f
 
     $response->assertOk();
     $data = $this->structuredData($response);
-    $podcastEpisode = $data['@graph'][0];
+    $podcastEpisode = data_get($data, '@graph.0');
 
-    expect($podcastEpisode['@type'])->toBe('PodcastEpisode')
-        ->and($podcastEpisode['duration'])->toBe('PT1H2M3S')
-        ->and($podcastEpisode['associatedMedia']['contentUrl'])->toBe($episode->audio_url)
-        ->and($podcastEpisode['partOfSeason']['@type'])->toBe('PodcastSeason')
-        ->and($podcastEpisode['partOfSeason']['seasonNumber'])->toBe(3)
-        ->and($podcastEpisode['partOfSeries']['@type'])->toBe('PodcastSeries')
-        ->and($data['@graph'][1]['itemListElement'][1]['name'])->toBe('Podcast');
+    expect(data_get($podcastEpisode, '@type'))->toBe('PodcastEpisode')
+        ->and(data_get($podcastEpisode, 'duration'))->toBe('PT1H2M3S')
+        ->and(data_get($podcastEpisode, 'associatedMedia.contentUrl'))->toBe($episode->audio_url)
+        ->and(data_get($podcastEpisode, 'partOfSeason.@type'))->toBe('PodcastSeason')
+        ->and(data_get($podcastEpisode, 'partOfSeason.seasonNumber'))->toBe(3)
+        ->and(data_get($podcastEpisode, 'partOfSeries.@type'))->toBe('PodcastSeries')
+        ->and(data_get($data, '@graph.1.itemListElement.1.name'))->toBe('Podcast');
 });
 
 test('page copy and metadata avoid em dashes', function (): void {

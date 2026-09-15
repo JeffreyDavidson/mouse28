@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 
 use function Pest\Laravel\from;
@@ -33,7 +34,7 @@ test('valid newsletter signup is sent to configured resend audience', function (
         ->assertSessionHas('newsletter_success', true)
         ->assertSessionHasNoErrors();
 
-    Http::assertSent(fn ($request): bool => $request->url() === 'https://api.resend.com/audiences/audience-test-id/contacts'
+    Http::assertSent(fn (Request $request): bool => $request->url() === 'https://api.resend.com/audiences/audience-test-id/contacts'
         && $request['email'] === 'dale@example.com');
 });
 
@@ -139,7 +140,7 @@ test('newsletter signup rejects invalid turnstile response', function (): void {
         ->assertRedirect(route('home').'#newsletter')
         ->assertSessionHasErrorsIn('newsletter', 'cf-turnstile-response');
 
-    Http::assertNotSent(fn ($request): bool => str_contains($request->url(), 'api.resend.com'));
+    Http::assertNotSent(fn (Request $request): bool => str_contains($request->url(), 'api.resend.com'));
 });
 
 test('newsletter honeypot silently accepts bot without external requests', function (): void {
@@ -171,7 +172,7 @@ test('newsletter requires a configured audience', function (): void {
         ->assertRedirect(route('home').'#newsletter')
         ->assertSessionHas('newsletter_error');
 
-    Http::assertNotSent(fn ($request): bool => str_contains($request->url(), 'api.resend.com'));
+    Http::assertNotSent(fn (Request $request): bool => str_contains($request->url(), 'api.resend.com'));
 });
 
 test('newsletter rate limit is applied', function (): void {
@@ -213,6 +214,7 @@ test('newsletter redirects do not trust an external referrer', function (): void
         ->assertRedirect(route('home').'#newsletter');
 });
 
+/** @return array<string, string> */
 function newsletterPayload(): array
 {
     return [

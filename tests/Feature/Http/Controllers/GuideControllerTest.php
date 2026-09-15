@@ -203,12 +203,12 @@ test('guides include review date source and breadcrumb structured data', functio
 
     $response->assertOk();
     $data = $this->structuredData($response);
-    $article = $data['@graph'][0];
+    $article = data_get($data, '@graph.0');
 
-    expect($article['@type'])->toBe('Article')
-        ->and($article['citation'])->toBe($guide->source_url)
-        ->and($article['dateModified'])->toStartWith('2026-08-01')
-        ->and($data['@graph'][1]['itemListElement'][1]['name'])->toBe('Guides');
+    expect(data_get($article, '@type'))->toBe('Article')
+        ->and(data_get($article, 'citation'))->toBe($guide->source_url)
+        ->and(data_get($article, 'dateModified'))->toStartWith('2026-08-01')
+        ->and(data_get($data, '@graph.1.itemListElement.1.name'))->toBe('Guides');
 });
 
 test('page copy and metadata avoid em dashes', function (): void {

@@ -53,7 +53,7 @@ test('public content archive excludes drafts and private records', function (): 
         ->and(collect(publicArchiveRecords($archive, 'posts'))->pluck('slug')->all())->toBe(['published-post'])
         ->and(collect(publicArchiveRecords($archive, 'episodes'))->pluck('slug')->all())->toBe(['published-episode'])
         ->and(collect(publicArchiveRecords($archive, 'guides'))->pluck('slug')->all())->toBe(['published-guide'])
-        ->and($archive['posts'][0]['episode_slug'])->toBe('published-episode')
+        ->and(publicArchiveRecords($archive, 'posts')[0]['episode_slug'])->toBe('published-episode')
         ->and($archive['podcast'])->not->toHaveKey('email')
         ->and(File::get($archivePath))->not->toContain('Private Post', 'Private Guide', 'Private Episode', 'private@example.com');
 
@@ -82,7 +82,10 @@ function publicArchive(string $path): array
     return $result;
 }
 
-/** @return list<array<string, mixed>> */
+/**
+ * @param  array<string, mixed>  $archive
+ * @return list<array<string, mixed>>
+ */
 function publicArchiveRecords(array $archive, string $key): array
 {
     $records = $archive[$key] ?? null;

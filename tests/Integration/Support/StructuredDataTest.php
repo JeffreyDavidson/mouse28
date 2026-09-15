@@ -22,7 +22,7 @@ test('post structured data prioritizes metadata and the newest content timestamp
     $post->last_reviewed_at = Carbon::parse('2026-08-03 12:00:00 UTC');
 
     $data = StructuredData::forPost($post);
-    $article = $data['@graph'][0];
+    $article = data_get($data, '@graph.0');
 
     expect($article)->toMatchArray([
         '@type' => 'BlogPosting',
@@ -33,8 +33,8 @@ test('post structured data prioritizes metadata and the newest content timestamp
         'dateModified' => '2026-08-03T00:00:00+00:00',
         'image' => url($post->og_image_url),
         'citation' => 'https://source.example/park-tips',
-    ])->and($article['@id'])->toBe(route('blog.show', $post).'#blog-posting')
-        ->and($data['@graph'][1]['itemListElement'])->toContain([
+    ])->and(data_get($article, '@id'))->toBe(route('blog.show', $post).'#blog-posting')
+        ->and(data_get($data, '@graph.1.itemListElement'))->toContain([
             '@type' => 'ListItem',
             'position' => 2,
             'name' => 'Blog',
@@ -69,14 +69,14 @@ test('post and guide structured data use content fallbacks without optional meta
     $guide->updated_at = Carbon::parse('2026-08-02 12:00:00 UTC');
     $guide->last_reviewed_at = Carbon::parse('2026-08-01 12:00:00 UTC');
 
-    $postArticle = StructuredData::forPost($post)['@graph'][0];
-    $guideArticle = StructuredData::forGuide($guide)['@graph'][0];
+    $postArticle = data_get(StructuredData::forPost($post), '@graph.0');
+    $guideArticle = data_get(StructuredData::forGuide($guide), '@graph.0');
 
-    expect($postArticle['description'])->not->toContain('<')
-        ->and($postArticle['description'])->toHaveLength(203)
-        ->and($postArticle['description'])->toEndWith('...')
-        ->and($postArticle['dateModified'])->toBe('2026-08-02T12:00:00+00:00')
-        ->and($postArticle['image'])->toBe(url($post->cover_image_url))
+    expect(data_get($postArticle, 'description'))->not->toContain('<')
+        ->and(data_get($postArticle, 'description'))->toHaveLength(203)
+        ->and(data_get($postArticle, 'description'))->toEndWith('...')
+        ->and(data_get($postArticle, 'dateModified'))->toBe('2026-08-02T12:00:00+00:00')
+        ->and(data_get($postArticle, 'image'))->toBe(url($post->cover_image_url))
         ->and($postArticle)->not->toHaveKeys(['citation'])
         ->and($guideArticle)->toMatchArray([
             '@type' => 'Article',
@@ -104,7 +104,7 @@ test('episode structured data includes configured podcast and optional media met
     $podcast = new Podcast(['name' => 'Mouse28 Weekly']);
 
     $data = StructuredData::forEpisode($episode, $podcast);
-    $podcastEpisode = $data['@graph'][0];
+    $podcastEpisode = data_get($data, '@graph.0');
 
     expect($podcastEpisode)->toMatchArray([
         '@type' => 'PodcastEpisode',
@@ -144,11 +144,11 @@ test('episode structured data omits unavailable media metadata and uses the defa
         'published_at' => Carbon::parse('2026-08-01 12:00:00 UTC'),
     ]);
 
-    $podcastEpisode = StructuredData::forEpisode($episode)['@graph'][0];
+    $podcastEpisode = data_get(StructuredData::forEpisode($episode), '@graph.0');
 
-    expect($podcastEpisode['name'])->toBe('Episode 43')
-        ->and($podcastEpisode['description'])->toBe('Episode notes.')
-        ->and($podcastEpisode['partOfSeries']['name'])->toBe('Mouse28')
+    expect(data_get($podcastEpisode, 'name'))->toBe('Episode 43')
+        ->and(data_get($podcastEpisode, 'description'))->toBe('Episode notes.')
+        ->and(data_get($podcastEpisode, 'partOfSeries.name'))->toBe('Mouse28')
         ->and($podcastEpisode)->not->toHaveKeys([
             'partOfSeason',
             'duration',

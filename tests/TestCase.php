@@ -23,15 +23,25 @@ abstract class TestCase extends BaseTestCase
 
     /**
      * @param  TestResponse<Response>  $response
-     * @return array<string, mixed>
      */
-    protected function structuredData(TestResponse $response): array
+    protected function responseContent(TestResponse $response): string
     {
         $content = $response->getContent();
 
         if ($content === false) {
             throw new UnexpectedValueException('The response body could not be read.');
         }
+
+        return $content;
+    }
+
+    /**
+     * @param  TestResponse<Response>  $response
+     * @return array<string, mixed>
+     */
+    protected function structuredData(TestResponse $response): array
+    {
+        $content = $this->responseContent($response);
 
         $matched = preg_match(
             '/<script type="application\/ld\+json">(.*?)<\/script>/s',

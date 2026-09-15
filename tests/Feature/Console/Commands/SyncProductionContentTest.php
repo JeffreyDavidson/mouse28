@@ -22,8 +22,9 @@ test('sync stops before transferring media when a local draft collides', functio
     $archive = app(PublicContentArchive::class)->export();
     $post->update(['is_published' => false]);
     Process::fake(function (PendingProcess $process) use ($archive) {
-        if ($process->command[0] === 'scp') {
-            File::put(array_last($process->command), json_encode($archive, JSON_THROW_ON_ERROR));
+        $command = syncProcessArguments($process);
+        if ($command[0] === 'scp') {
+            File::put(array_last($command), json_encode($archive, JSON_THROW_ON_ERROR));
         }
 
         return Process::result();
@@ -36,7 +37,7 @@ test('sync stops before transferring media when a local draft collides', functio
     // Assert
     expect($exitCode)->toBe(Command::FAILURE)
         ->and($post->refresh()->is_published)->toBeFalse();
-    Process::assertDidntRun(fn (PendingProcess $process): bool => $process->command[0] === 'rsync');
+    Process::assertDidntRun(fn (PendingProcess $process): bool => syncProcessArguments($process)[0] === 'rsync');
 });
 
 test('production public content and referenced media can be synced locally', function (): void {
@@ -85,7 +86,7 @@ test('production public content and referenced media can be synced locally', fun
     $transferredMedia = [];
 
     Process::fake(function (PendingProcess $process) use ($archive, &$transferredMedia) {
-        $command = $process->command;
+        $command = syncProcessArguments($process);
 
         if ($command[0] === 'scp') {
             File::put(array_last($command), json_encode($archive, JSON_THROW_ON_ERROR));
@@ -94,8 +95,8 @@ test('production public content and referenced media can be synced locally', fun
         if ($command[0] === 'rsync') {
             $manifestArgument = collect($command)->first(
                 fn (string $argument): bool => str_starts_with($argument, '--files-from='),
-            );
-            $transferredMedia = File::lines(substr($manifestArgument, strlen('--files-from=')))
+            ) ?? throw new UnexpectedValueException('The rsync command must specify a media manifest.');
+            $transferredMedia = collect(explode("\n", File::get(substr($manifestArgument, strlen('--files-from=')))))
                 ->map(fn (string $path): string => trim($path))
                 ->filter()
                 ->values()
@@ -126,9 +127,9 @@ test('production public content and referenced media can be synced locally', fun
         ])
         ->and(Artisan::output())->toContain('Local drafts were preserved.');
 
-    Process::assertRanTimes(fn (PendingProcess $process): bool => $process->command[0] === 'ssh', 2);
-    Process::assertRan(fn (PendingProcess $process): bool => $process->command[0] === 'scp');
-    Process::assertRan(fn (PendingProcess $process): bool => $process->command[0] === 'rsync');
+    Process::assertRanTimes(fn (PendingProcess $process): bool => syncProcessArguments($process)[0] === 'ssh', 2);
+    Process::assertRan(fn (PendingProcess $process): bool => syncProcessArguments($process)[0] === 'scp');
+    Process::assertRan(fn (PendingProcess $process): bool => syncProcessArguments($process)[0] === 'rsync');
 });
 
 test('production content sync refuses to run in production', function (): void {
@@ -157,8 +158,9 @@ test('production content sync rejects unsafe media paths', function (): void {
     ]);
 
     Process::fake(function (PendingProcess $process) use ($archive) {
-        if ($process->command[0] === 'scp') {
-            File::put(array_last($process->command), json_encode($archive, JSON_THROW_ON_ERROR));
+        $command = syncProcessArguments($process);
+        if ($command[0] === 'scp') {
+            File::put(array_last($command), json_encode($archive, JSON_THROW_ON_ERROR));
         }
 
         return Process::result();
@@ -171,8 +173,20 @@ test('production content sync rejects unsafe media paths', function (): void {
         ->and(Artisan::output())->toContain('unsafe media path')
         ->and(Post::query()->where('slug', 'unsafe-post')->exists())->toBeFalse();
 
-    Process::assertDidntRun(fn (PendingProcess $process): bool => $process->command[0] === 'rsync');
+    Process::assertDidntRun(fn (PendingProcess $process): bool => syncProcessArguments($process)[0] === 'rsync');
 });
+
+/** @return non-empty-list<string> */
+function syncProcessArguments(PendingProcess $process): array
+{
+    $command = $process->command;
+
+    if (! is_array($command) || $command === []) {
+        throw new UnexpectedValueException('Content sync must pass a nonempty argument array to the process.');
+    }
+
+    return array_values($command);
+}
 
 /**
  * @param  array<string, mixed>  $overrides

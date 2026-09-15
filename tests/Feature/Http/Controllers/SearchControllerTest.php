@@ -43,7 +43,7 @@ test('search query is limited to one hundred characters', function (): void {
 });
 
 test('canonical URLs preserve an HTTP application origin', function (): void {
-    $applicationUrl = config('app.url');
+    $applicationUrl = config()->string('app.url');
     URL::forceScheme(null);
     URL::forceRootUrl('http://localhost');
 

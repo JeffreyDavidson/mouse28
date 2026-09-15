@@ -27,10 +27,10 @@ test('published statistics exclude scheduled content', function (): void {
     Guide::factory()->scheduled()->create();
     Guide::factory()->draft()->create();
 
-    $stats = collect(app(StatsOverview::class)->getStats())->keyBy('label');
+    $stats = collect(app(StatsOverview::class)->getStats())->pluck('value', 'label');
 
-    expect($stats['Blog Posts']['value'])->toBe(1)
-        ->and($stats['Episodes']['value'])->toBe(1)
-        ->and($stats['Guides']['value'])->toBe(1)
-        ->and($stats['Drafts']['value'])->toBe(3);
+    expect($stats['Blog Posts'])->toBe(1)
+        ->and($stats['Episodes'])->toBe(1)
+        ->and($stats['Guides'])->toBe(1)
+        ->and($stats['Drafts'])->toBe(3);
 });

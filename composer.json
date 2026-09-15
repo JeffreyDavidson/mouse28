@@ -80,6 +80,7 @@
             "@test:lint",
             "@test:filacheck",
             "@analyse",
+            "@analyse:pest",
             "@test:rector",
             "@test:rector:pest",
             "@test",

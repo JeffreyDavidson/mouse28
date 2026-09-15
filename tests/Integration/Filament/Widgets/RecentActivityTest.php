@@ -5,20 +5,23 @@ use App\Filament\Widgets\RecentActivity;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
+use Database\Factories\EpisodeFactory;
+use Database\Factories\GuideFactory;
+use Database\Factories\PostFactory;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 
 pest()->use(RefreshDatabase::class);
 
-test('activity shows the eight newest records even when one content type dominates', function (string $modelClass): void {
+test('activity shows the eight newest records even when one content type dominates', function (PostFactory|EpisodeFactory|GuideFactory $factory): void {
     $this->freezeSecond();
-    $records = collect(range(1, 9))->map(fn (int $offset) => $modelClass::factory()->create([
+    $records = collect(range(1, 9))->map(fn (int $offset) => $factory->createOne([
         'title' => "Recent item {$offset}",
         'updated_at' => now()->subMinutes($offset),
     ]));
     foreach ([Post::class, Episode::class, Guide::class] as $otherClass) {
-        if ($otherClass !== $modelClass) {
+        if ($otherClass !== $factory->modelName()) {
             $otherClass::factory()->create(['updated_at' => now()->subDay()]);
         }
     }
@@ -26,7 +29,11 @@ test('activity shows the eight newest records even when one content type dominat
     $activity = app(RecentActivity::class)->getActivity();
 
     expect(array_column($activity, 'label'))->toBe($records->take(8)->pluck('title')->all());
-})->with([Post::class, Episode::class, Guide::class]);
+})->with([
+    'posts' => fn () => Post::factory(),
+    'episodes' => fn () => Episode::factory(),
+    'guides' => fn () => Guide::factory(),
+]);
 
 test('activity includes guides and identifies scheduled content', function (): void {
     $guide = Guide::factory()->create(['title' => 'Updated Accessibility Guide']);
@@ -39,7 +46,7 @@ test('activity includes guides and identifies scheduled content', function (): v
             'type' => 'Published guide',
             'url' => GuideResource::getUrl('edit', ['record' => $guide]),
         ])
-        ->and($activity[$post->title]['type'])->toBe('Scheduled post');
+        ->and($activity[$post->title])->toMatchArray(['type' => 'Scheduled post']);
 });
 
 test('activity queries select only fields rendered by the widget', function (): void {

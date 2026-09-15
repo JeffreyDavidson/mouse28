@@ -84,8 +84,7 @@ jobs:
           mkdir -p database
           touch database/database.sqlite
 
-      - name: Run Pest static analysis (informational)
-        continue-on-error: true
+      - name: Run Pest static analysis
         env:
           DB_CONNECTION: sqlite
           DB_DATABASE: ':memory:'

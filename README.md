@@ -66,9 +66,9 @@ Published post, guide, and episode pages emit Schema.org content and breadcrumb 
 
 ## Development commands
 
-Run `composer check` for the required CI checks locally: dependency validation and audits, benchmark helper tests, formatting, FilaCheck, application static analysis, application and Pest Rector checks, non-browser tests, type coverage, an asset build, focused Chromium browser smoke tests, and diff whitespace validation. Install the locked Composer and Node dependencies and Chromium first. Audits require network access. The command stops at the first failure and does not apply formatting or Rector fixes; it does build assets and clear Laravel's config cache through `composer test`.
+Run `composer check` for the required CI checks locally: dependency validation and audits, benchmark helper tests, formatting, FilaCheck, application and Pest static analysis, application and Pest Rector checks, non-browser tests, type coverage, an asset build, focused Chromium browser smoke tests, and diff whitespace validation. Install the locked Composer and Node dependencies and Chromium first. Audits require network access. The command stops at the first failure and does not apply formatting or Rector fixes; it does build assets and clear Laravel's config cache through `composer test`.
 
-Pest static analysis is currently informational in CI and is not included in `composer check`; run `composer analyse:pest` separately to inspect the outstanding findings. The full browser suite remains available through `composer test:browser`.
+Run `composer analyse:pest` for a focused test-analysis check. The full browser suite remains available through `composer test:browser`.
 
 Individual commands:
 
@@ -79,6 +79,7 @@ npm audit --audit-level=high
 composer test:lint
 composer test:filacheck
 composer analyse
+composer analyse:pest
 composer test:rector
 composer test
 composer test:browser
@@ -108,7 +109,7 @@ composer test:rector:pest
 
 `tests/pest-livewire.stub` supplies the component-specific return type missing from Pest Livewire 5.0's `livewire()` helper, retaining the generic `Component` fallback for named components. It is loaded only by Pest PHPStan analysis, never at runtime. Revisit the stub when the plugin supplies equivalent typing upstream.
 
-`composer analyse:pest` runs as an informational CI step after Laravel preparation, using an in-memory SQLite connection and test service drivers. It remains separate from `composer test` and `composer check`. A nonzero exit code is recorded in the logs but does not fail CI because the step uses `continue-on-error: true`. Resolve the existing analysis findings and verify clean runs before making this step mandatory and adding it to `composer check`; no PHPStan baseline suppresses the findings.
+`composer analyse:pest` is required in CI and included in `composer check`. CI runs it after Laravel preparation, using an in-memory SQLite connection and test service drivers. A nonzero exit code fails the quality gate. It remains separate from `composer test`; neither analysis configuration uses a PHPStan baseline.
 
 `composer test:rector:pest` is a required, read-only CI step alongside the application Rector check. Proposed changes or errors fail CI; CI never applies rewrites. Its reviewed configuration excludes rewrites from strict empty-array comparisons to broad emptiness checks, and from `is_file()` to an existence-only assertion. Run `composer rector:pest` only to deliberately apply the proposed test changes, then inspect the diff and rerun the affected tests. Preserve Arrange / Act / Assert boundaries and framework-specific assertions when reviewing rewrites.
 
