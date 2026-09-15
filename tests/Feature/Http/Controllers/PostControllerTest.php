@@ -39,15 +39,17 @@ test('blog featured cover is prioritized while archive cards remain deferred', f
     $response = get(route('blog.index'))
         ->assertOk();
 
-    $document = HTMLDocument::createFromString($response->getContent(), LIBXML_NOERROR);
+    $document = HTMLDocument::createFromString($this->responseContent($response), LIBXML_NOERROR);
     $images = $document->querySelectorAll('img[src="/storage/posts/cover.webp"]');
+    $featuredImage = $images->item(0) ?? throw new UnexpectedValueException('The featured image is missing.');
+    $archiveImage = $images->item(1) ?? throw new UnexpectedValueException('The archive image is missing.');
 
-    expect($images->item(0)->getAttribute('loading'))->toBe('eager')
-        ->and($images->item(0)->getAttribute('fetchpriority'))->toBe('high')
-        ->and($images->item(1)->getAttribute('loading'))->toBe('lazy')
-        ->and($images->item(0)->getAttribute('srcset'))->toContain('480w', '600w')
-        ->and($images->item(0)->getAttribute('sizes'))->not->toStartWith('auto')
-        ->and($images->item(1)->getAttribute('sizes'))->toStartWith('auto, ');
+    expect($featuredImage->getAttribute('loading'))->toBe('eager')
+        ->and($featuredImage->getAttribute('fetchpriority'))->toBe('high')
+        ->and($archiveImage->getAttribute('loading'))->toBe('lazy')
+        ->and($featuredImage->getAttribute('srcset'))->toContain('480w', '600w')
+        ->and($featuredImage->getAttribute('sizes'))->not->toStartWith('auto')
+        ->and($archiveImage->getAttribute('sizes'))->toStartWith('auto, ');
 });
 
 test('hidden content uses the same recovery page without revealing its title', function (): void {
@@ -64,8 +66,8 @@ test('hidden content uses the same recovery page without revealing its title', f
 test('public index page renders', function (): void {
     get(route('blog.index'))
         ->assertOk()
-        ->assertSeeLivewire(BlogIndex::class)
-        ->assertSee('Blog');
+        ->assertSee('Blog')
+        ->assertSeeLivewire(BlogIndex::class);
 });
 
 test('blog navigation identifies Blog as the current destination', function (): void {
@@ -74,12 +76,13 @@ test('blog navigation identifies Blog as the current destination', function (): 
 
     // Assert
     $response->assertOk();
-    $document = HTMLDocument::createFromString($response->getContent(), LIBXML_NOERROR);
+    $document = HTMLDocument::createFromString($this->responseContent($response), LIBXML_NOERROR);
     $links = $document->querySelectorAll('a.dispatch-nav-link[aria-current="page"]');
 
-    expect($links)->toHaveCount(1)
-        ->and(trim($links->item(0)->textContent))->toBe('Blog')
-        ->and($links->item(0)->getAttribute('href'))->toBe(route('blog.index'));
+    expect($links)->toHaveCount(1);
+    $link = $links->item(0) ?? throw new UnexpectedValueException('The current navigation link is missing.');
+    expect(trim($link->textContent ?? ''))->toBe('Blog')
+        ->and($link->getAttribute('href'))->toBe(route('blog.index'));
 });
 
 test('blog pages render one newsletter signup', function (): void {
@@ -91,7 +94,7 @@ test('blog pages render one newsletter signup', function (): void {
             ->assertSee('id="footer-newsletter-email"', false)
             ->assertSee('Connect');
 
-        expect(substr_count($response->getContent(), 'action="'.route('newsletter.store').'"'))->toBe(1);
+        expect(substr_count($this->responseContent($response), 'action="'.route('newsletter.store').'"'))->toBe(1);
     }
 });
 
@@ -229,7 +232,7 @@ test('editorial review information is shown on the public page', function (): vo
     get(route('blog.show', $currentPost))
         ->assertOk()
         ->assertSee('Last reviewed')
-        ->assertSee($currentPost->source_url, false)
+        ->assertSee('https://disneyworld.disney.go.com/guest-services/disability-access-service/', false)
         ->assertDontSee('due for editorial review');
 
     get(route('blog.show', $stalePost))
@@ -327,14 +330,14 @@ test('blog posts include article and breadcrumb structured data', function (): v
     $response->assertOk();
     $data = $this->structuredData($response);
 
-    expect($data['@context'])->toBe('https://schema.org')
-        ->and($data['@graph'][0]['@type'])->toBe('BlogPosting')
-        ->and($data['@graph'][0]['headline'])->toBe($post->title)
-        ->and($data['@graph'][0]['mainEntityOfPage'])->toBe(route('blog.show', $post))
-        ->and($data['@graph'][0]['citation'])->toBe($post->source_url)
-        ->and($data['@graph'][0]['dateModified'])->toStartWith('2026-08-01')
-        ->and($data['@graph'][1]['@type'])->toBe('BreadcrumbList')
-        ->and(array_column($data['@graph'][1]['itemListElement'], 'name'))
+    expect(data_get($data, '@context'))->toBe('https://schema.org')
+        ->and(data_get($data, '@graph.0.@type'))->toBe('BlogPosting')
+        ->and(data_get($data, '@graph.0.headline'))->toBe($post->title)
+        ->and(data_get($data, '@graph.0.mainEntityOfPage'))->toBe(route('blog.show', $post))
+        ->and(data_get($data, '@graph.0.citation'))->toBe($post->source_url)
+        ->and(data_get($data, '@graph.0.dateModified'))->toStartWith('2026-08-01')
+        ->and(data_get($data, '@graph.1.@type'))->toBe('BreadcrumbList')
+        ->and(data_get($data, '@graph.1.itemListElement.*.name'))
         ->toBe(['Home', 'Blog', $post->title]);
 });
 

@@ -2,6 +2,7 @@
 
 use App\Livewire\BlogIndex;
 use App\Models\Post;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 
@@ -35,7 +36,7 @@ test('query string filters update the visible stories', function (): void {
 
     // Assert
     $page->assertSeeInOrder([$oldestPost->title, $newestPost->title])
-        ->assertViewHas('archivePosts', fn ($posts): bool => ! $posts->contains($unrelatedPost));
+        ->assertViewHas('archivePosts', fn (Collection $posts): bool => ! $posts->contains($unrelatedPost));
     $page->assertSet('category', 'park-accessibility')
         ->assertSet('search', 'accessible')
         ->assertSet('sort', 'oldest')
@@ -46,7 +47,7 @@ test('query string filters update the visible stories', function (): void {
     $page->set('search', 'no matching story');
 
     // Assert
-    $page->assertViewHas('archivePosts', fn ($posts): bool => $posts->isEmpty())
+    $page->assertViewHas('archivePosts', fn (Collection $posts): bool => $posts->isEmpty())
         ->assertViewHas('hasAnyPosts', true);
 });
 

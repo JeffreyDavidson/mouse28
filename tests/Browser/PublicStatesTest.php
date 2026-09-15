@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Vite;
 
 test('empty and no-result states remain actionable on mobile', function (): void {
     $pages = visit([
@@ -93,6 +94,45 @@ test('newsletter validation and rate-limit feedback remain accessible', function
         ->assertSee('Too many signup attempts. Please wait a minute and try again.')
         ->assertScript('document.querySelector("#newsletter [role=alert]") !== null')
         ->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors();
+})->group('browser-smoke');
+
+test('newsletter validation focus survives fragment restoration after pageshow', function (): void {
+    $page = visit(route('home'));
+    $page->script('document.querySelector(\'form[action$="/newsletter"]\').noValidate = true');
+
+    $page->fill('#footer-newsletter-email', 'not-an-email')
+        ->keys('form[action$="/newsletter"] button[type="submit"]', 'Enter')
+        ->assertSee('The email field must be a valid email address.')
+        ->waitForEvent('load');
+
+    // Reproduce the browser restoring its fragment after the pageshow focus handler.
+    $page->script(<<<'JS'
+        () => {
+            history.replaceState(null, '', location.pathname);
+            window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }));
+            location.hash = 'newsletter';
+        }
+        JS);
+
+    $page->assertScript('document.activeElement.id', 'footer-newsletter-email')
+        ->assertNoJavaScriptErrors();
+})->group('browser-smoke');
+
+test('newsletter validation restores focus when the application script loads after pageshow', function (): void {
+    Vite::useScriptTagAttributes(['type' => 'text/plain', 'data-delayed-app' => true]);
+
+    $page = visit(route('home'));
+    $page->script('document.querySelector(\'form[action$="/newsletter"]\').noValidate = true');
+
+    $page->fill('#footer-newsletter-email', 'not-an-email')
+        ->keys('form[action$="/newsletter"] button[type="submit"]', 'Enter')
+        ->assertSee('The email field must be a valid email address.')
+        ->waitForEvent('load');
+
+    $page->script('() => import(document.querySelector("script[data-delayed-app]").src)');
+
+    $page->assertScript('document.activeElement.id', 'footer-newsletter-email')
         ->assertNoJavaScriptErrors();
 })->group('browser-smoke');
 

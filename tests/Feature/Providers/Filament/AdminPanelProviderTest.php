@@ -22,15 +22,13 @@ test('authenticated user can render the admin dashboard', function (): void {
 
     $user = User::factory()->admin()->create();
 
-    actingAs($user)
+    $response = actingAs($user)
         ->get(Dashboard::getUrl(panel: 'admin'))
-        ->assertOk()
-        ->assertSeeLivewire(WelcomeBanner::class)
-        ->assertSeeLivewire(StatsOverview::class)
-        ->assertSeeLivewire(RecentActivity::class)
-        ->assertSeeLivewire(QuickDraft::class)
-        ->assertSeeLivewire(ContentCalendar::class)
-        ->assertSeeLivewire(InspirationWidget::class);
+        ->assertOk();
+
+    foreach ([WelcomeBanner::class, StatsOverview::class, RecentActivity::class, QuickDraft::class, ContentCalendar::class, InspirationWidget::class] as $widget) {
+        $response->assertSeeLivewire($widget);
+    }
 });
 
 test('non admin user cannot access the admin panel', function (): void {

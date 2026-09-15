@@ -2,6 +2,7 @@
 
 use App\Mail\ContactFormConfirmation;
 use App\Models\ContactMessage;
+use Illuminate\Mail\Mailables\Address;
 
 test('contact confirmation uses the configured contact address for replies', function (): void {
     config()->set('mail.admin_address', 'hello@mouse28.test');
@@ -14,7 +15,7 @@ test('contact confirmation uses the configured contact address for replies', fun
 
     expect($envelope->subject)->toBe('We got your message! — Mouse28')
         ->and($envelope->replyTo)->toHaveCount(1)
-        ->and($envelope->replyTo[0]->address)->toBe('hello@mouse28.test');
+        ->and($envelope->replyTo[0])->toEqual(new Address('hello@mouse28.test'));
 });
 
 test('contact confirmation renders the contact details safely', function (): void {

@@ -8,7 +8,4 @@ parameters:
     stubFiles:
         - tests/pest-livewire.stub
 
-    bootstrapFiles:
-        - bootstrap/app.php
-
     tmpDir: storage/framework/cache/phpstan-pest

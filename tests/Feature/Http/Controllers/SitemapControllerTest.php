@@ -24,5 +24,5 @@ test('sitemap is valid and excludes unpublished content', function (): void {
         ->assertSee(route('episodes.show', $episode), false)
         ->assertDontSee($draftPost->slug);
 
-    expect(simplexml_load_string($sitemap->getContent()))->not->toBeFalse();
+    expect(simplexml_load_string($this->responseContent($sitemap)))->not->toBeFalse();
 });

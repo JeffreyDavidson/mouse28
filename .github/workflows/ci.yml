@@ -63,7 +63,7 @@ jobs:
         run: node --test tests/Browser/navigation-timings.test.mjs tests/Browser/benchmark-failures.test.mjs
 
       - name: Check PHP and Blade formatting
-        run: vendor/bin/pint --test
+        run: composer test:lint
 
       - name: Check Filament code
         run: composer test:filacheck
@@ -84,8 +84,7 @@ jobs:
           mkdir -p database
           touch database/database.sqlite
 
-      - name: Run Pest static analysis (informational)
-        continue-on-error: true
+      - name: Run Pest static analysis
         env:
           DB_CONNECTION: sqlite
           DB_DATABASE: ':memory:'
@@ -115,5 +114,13 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Run focused browser regressions
-        continue-on-error: true
         run: php artisan test --compact --testsuite=Browser --group=browser-smoke
+
+      - name: Upload browser failure screenshots
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: browser-regression-screenshots
+          path: tests/Browser/Screenshots
+          if-no-files-found: ignore
+          retention-days: 7

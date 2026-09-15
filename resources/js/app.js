@@ -145,9 +145,19 @@ function initializeBlogArticle() {
 }
 
 function focusFirstInvalidField() {
-    window.addEventListener('pageshow', () => {
-        document.querySelector('[aria-invalid="true"]')?.focus();
-    });
+    const focusInvalidField = () => {
+        // Fragment restoration can overwrite focus during the pageshow task.
+        window.requestAnimationFrame(() => {
+            document.querySelector('[aria-invalid="true"]')?.focus();
+        });
+    };
+
+    window.addEventListener('pageshow', focusInvalidField);
+
+    // A late-loading module may initialize after pageshow has already fired.
+    if (document.readyState === 'complete') {
+        focusInvalidField();
+    }
 }
 
 function initializeBlogMetadata() {

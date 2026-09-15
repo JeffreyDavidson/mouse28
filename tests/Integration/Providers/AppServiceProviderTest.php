@@ -63,7 +63,8 @@ test('production database protection cannot be bypassed with force', function (s
 test('Nightwatch identifies administrators without sending their profile details', function (): void {
     // Arrange
     $admin = User::factory()->admin()->make();
-    $resolver = app(Core::class)->userDetailsResolver;
+    $resolver = app(Core::class)->userDetailsResolver
+        ?? throw new UnexpectedValueException('The Nightwatch user resolver is not registered.');
 
     // Act
     $userDetails = $resolver($admin);

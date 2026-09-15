@@ -31,7 +31,7 @@ test('about introduction groups its copy and preserves responsive safari artwork
         ->assertSee('fetchpriority="high"', false)
         ->assertSee("Kilimanjaro Safaris at Disney's Animal Kingdom", false);
 
-    $document = HTMLDocument::createFromString($response->getContent(), LIBXML_NOERROR);
+    $document = HTMLDocument::createFromString($this->responseContent($response), LIBXML_NOERROR);
     $xpath = new XPath($document);
 
     expect($xpath->query('//*[@id="about-heading"]/following-sibling::*[local-name()="p"]'))->toHaveCount(1)
@@ -44,12 +44,13 @@ test('primary navigation identifies About as the current destination', function 
 
     // Assert
     $response->assertOk();
-    $document = HTMLDocument::createFromString($response->getContent(), LIBXML_NOERROR);
+    $document = HTMLDocument::createFromString($this->responseContent($response), LIBXML_NOERROR);
     $links = $document->querySelectorAll('a.dispatch-nav-link[aria-current="page"]');
 
-    expect($links)->toHaveCount(1)
-        ->and(trim($links->item(0)->textContent))->toBe('About')
-        ->and($links->item(0)->getAttribute('href'))->toBe(route('about'));
+    expect($links)->toHaveCount(1);
+    $link = $links->item(0) ?? throw new UnexpectedValueException('The current navigation link is missing.');
+    expect(trim($link->textContent ?? ''))->toBe('About')
+        ->and($link->getAttribute('href'))->toBe(route('about'));
 });
 
 test('about page uses an editorial family story with separate host profiles', function (): void {

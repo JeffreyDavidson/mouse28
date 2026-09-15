@@ -18,7 +18,7 @@ test('responsive covers preserve originals and use immutable URLs', function ():
     $disk = Storage::disk('public');
     $disk->put('posts/cover.png', UploadedFile::fake()->image('cover.png', 1400, 900)->getContent());
     $post = Post::factory()->create(['cover_image' => 'posts/cover.png']);
-    $original = $disk->get('posts/cover.png');
+    $original = $disk->get('posts/cover.png') ?? throw new UnexpectedValueException('The original cover is missing.');
 
     expect(ResponsiveArtwork::srcset($post->cover_image))->toBeNull();
 
@@ -30,7 +30,8 @@ test('responsive covers preserve originals and use immutable URLs', function ():
 
     foreach ([480, 640, 768, 1280] as $width) {
         $path = ResponsiveArtwork::variantPath(hash('sha256', $original), $width);
-        expect(getimagesize($disk->path($path))[0])->toBe($width)
+        $dimensions = getimagesize($disk->path($path)) ?: throw new UnexpectedValueException('The generated cover is not an image.');
+        expect($dimensions[0])->toBe($width)
             ->and(ResponsiveArtwork::srcset($post->cover_image))->toContain(" {$width}w");
     }
 
@@ -104,7 +105,7 @@ test('production artwork generation uses native confirmation', function (string 
     Storage::fake('public');
     $disk = Storage::disk('public');
     $disk->put("{$type}/cover.png", UploadedFile::fake()->image('cover.png', 1000, 800)->getContent());
-    $record = ($type === 'posts' ? Post::factory() : Episode::factory())->create(['cover_image' => "{$type}/cover.png"]);
+    $record = ($type === 'posts' ? Post::factory() : Episode::factory())->createOne(['cover_image' => "{$type}/cover.png"]);
     $this->app->detectEnvironment(fn (): string => 'production');
     Prompt::fallbackWhen(true);
     $command = app(GenerateResponsiveArtwork::class);
@@ -132,7 +133,7 @@ test('episode generation is explicit and only includes published covers', functi
     $episode = Episode::factory()->create(['cover_image' => 'episodes/published.png']);
     Episode::factory()->draft()->create(['cover_image' => 'episodes/draft.png']);
     Episode::factory()->scheduled()->create(['cover_image' => 'episodes/scheduled.png']);
-    $original = $disk->get($episode->cover_image);
+    $original = $disk->get('episodes/published.png') ?? throw new UnexpectedValueException('The original episode cover is missing.');
 
     $this->artisan('content:generate-post-artwork');
 
@@ -142,12 +143,12 @@ test('episode generation is explicit and only includes published covers', functi
 
     expect($result)->toBe(Command::SUCCESS)
         ->and($disk->allFiles())->toHaveCount(6)
-        ->and($disk->get($episode->cover_image))->toBe($original)
+        ->and($disk->get('episodes/published.png'))->toBe($original)
         ->and($episode->refresh()->cover_image)->toBe('episodes/published.png');
 
     foreach ([480, 640, 768] as $width) {
         $path = ResponsiveArtwork::variantPath(hash('sha256', $original), $width, square: true);
-        $dimensions = getimagesize($disk->path($path));
+        $dimensions = getimagesize($disk->path($path)) ?: throw new UnexpectedValueException('The generated episode cover is not an image.');
         expect([$dimensions[0], $dimensions[1]])->toBe([$width, $width]);
     }
 });

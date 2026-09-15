@@ -30,28 +30,28 @@ test('public index page renders', function (): void {
 test('homepage advertises the canonical Transistor feed without persisting defaults', function (): void {
     get(route('home'))
         ->assertOk()
-        ->assertSee(config('podcast.rss_url'), false)
+        ->assertSee(config()->string('podcast.rss_url'), false)
         ->assertSee('RSS Feed');
 
     expect(Podcast::query()->doesntExist())->toBeTrue();
 });
 
 test('homepage renders configured podcast distribution links', function (): void {
-    $podcast = Podcast::query()->create([
-        'name' => 'Mouse28',
+    $links = [
         'apple_url' => 'https://podcasts.apple.com/show/mouse28',
         'spotify_url' => 'https://open.spotify.com/show/mouse28',
         'youtube_url' => 'https://youtube.com/@mouse28',
-    ]);
+    ];
+    Podcast::query()->create(['name' => 'Mouse28', ...$links]);
 
     $response = get(route('home'))
         ->assertOk();
 
-    foreach ([$podcast->apple_url, $podcast->spotify_url, $podcast->youtube_url] as $url) {
+    foreach ($links as $url) {
         $response->assertSee($url, false);
     }
 
-    $response->assertSee(config('podcast.rss_url'), false)
+    $response->assertSee(config()->string('podcast.rss_url'), false)
         ->assertDontSee('Apple Podcasts · Soon')
         ->assertDontSee('Spotify · Soon');
 });
@@ -80,7 +80,7 @@ test('homepage uses one newsletter form and responsive hero artwork', function (
         ->assertSee('Connect')
         ->assertDontSee('id="home-newsletter-email"', false);
 
-    expect(substr_count($response->getContent(), 'action="'.route('newsletter.store').'"'))->toBe(1);
+    expect(substr_count($this->responseContent($response), 'action="'.route('newsletter.store').'"'))->toBe(1);
 });
 
 test('homepage offers a smaller bundled podcast cover without replacing the original', function (): void {
@@ -95,10 +95,16 @@ test('homepage offers a smaller bundled podcast cover without replacing the orig
     expect(is_file($candidate))->toBeTrue()
         ->and(is_file($original))->toBeTrue();
 
-    $dimensions = getimagesize($candidate);
+    $dimensions = getimagesize($candidate) ?: throw new UnexpectedValueException('The podcast cover is not an image.');
+    $candidateSize = filesize($candidate);
+    $originalSize = filesize($original);
+
+    if ($candidateSize === false || $originalSize === false) {
+        throw new UnexpectedValueException('The podcast cover sizes could not be read.');
+    }
 
     expect([$dimensions[0], $dimensions[1], $dimensions['mime']])->toBe([640, 640, 'image/webp'])
-        ->and(filesize($candidate))->toBeLessThan(filesize($original));
+        ->and($candidateSize)->toBeLessThan($originalSize);
 });
 
 test('homepage only presents published content as stories and guides', function (): void {
@@ -166,7 +172,7 @@ test('homepage defers the below-fold featured post image', function (): void {
     $response = get(route('home'))
         ->assertOk();
 
-    expect($response->getContent())->toMatch(
+    expect($this->responseContent($response))->toMatch(
         '/<img[^>]*src="\/storage\/posts\/featured\.webp"[^>]*loading="lazy"[^>]*decoding="async"[^>]*>/',
     );
 });

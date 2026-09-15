@@ -122,8 +122,10 @@ test('authenticated admin pages expose no unnamed artwork or decorative glyphs',
     ];
 
     foreach ($urls as $url) {
+        $path = parse_url($url, PHP_URL_PATH) ?: throw new UnexpectedValueException('The admin URL has no path.');
+
         visit($url)
-            ->assertPathIs(parse_url($url, PHP_URL_PATH))
+            ->assertPathIs($path)
             ->assertVisible('.fi-main')
             ->assertScript('document.documentElement.classList.contains(\'dark\')', true)
             ->assertScript('document.querySelectorAll(\'svg:not([aria-hidden="true"]):not([aria-label]):not([aria-labelledby]):not(:has(title))\').length', 0)
