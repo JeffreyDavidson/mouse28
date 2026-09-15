@@ -145,9 +145,16 @@ function initializeBlogArticle() {
 }
 
 function focusFirstInvalidField() {
-    window.addEventListener('pageshow', () => {
+    const focusInvalidField = () => {
         document.querySelector('[aria-invalid="true"]')?.focus();
-    });
+    };
+
+    window.addEventListener('pageshow', focusInvalidField);
+
+    // A late-loading module may initialize after pageshow has already fired.
+    if (document.readyState === 'complete') {
+        focusInvalidField();
+    }
 }
 
 function initializeBlogMetadata() {
