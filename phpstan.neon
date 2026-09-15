@@ -5,7 +5,4 @@ parameters:
     level: max
     treatPhpDocTypesAsCertain: false
 
-    bootstrapFiles:
-        - bootstrap/app.php
-
     tmpDir: storage/framework/cache/phpstan-app
