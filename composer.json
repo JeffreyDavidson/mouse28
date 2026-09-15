@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "mouse28/mouse28",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "A Disney parks blog and podcast focused on accessibility and family experiences.",
+    "keywords": ["mouse28", "disney", "accessibility", "podcast"],
     "license": "MIT",
     "require": {
         "filament/filament": "^5.7",
@@ -58,7 +58,7 @@
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
             "@php artisan key:generate",
             "@php artisan migrate --force",
-            "npm install",
+            "npm ci",
             "npm run build"
         ],
         "dev": [
@@ -70,6 +70,24 @@
             "@php artisan test --exclude-testsuite=Browser"
         ],
         "test:browser": "@php artisan test --testsuite=Browser",
+        "lint": "vendor/bin/pint --blade",
+        "test:lint": "vendor/bin/pint --blade --test",
+        "check": [
+            "@composer validate --strict --no-check-publish",
+            "@composer audit --locked --format=plain",
+            "npm audit --audit-level=high",
+            "node --test tests/Browser/navigation-timings.test.mjs tests/Browser/benchmark-failures.test.mjs",
+            "@test:lint",
+            "@test:filacheck",
+            "@analyse",
+            "@test:rector",
+            "@test:rector:pest",
+            "@test",
+            "@test:type-coverage",
+            "npm run build",
+            "@php artisan test --compact --testsuite=Browser --group=browser-smoke",
+            "git diff --check"
+        ],
         "test:filacheck": "FILACHECK_DISABLE_AGENT_MODE=1 vendor/bin/filacheck",
         "filacheck:fix": "FILACHECK_DISABLE_AGENT_MODE=1 vendor/bin/filacheck --fix --dirty",
         "test:type-coverage": "php -d memory_limit=2G vendor/bin/pest --type-coverage --min=100 --compact",
