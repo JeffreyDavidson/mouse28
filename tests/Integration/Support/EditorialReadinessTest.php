@@ -5,11 +5,13 @@ use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
 use App\Support\EditorialReadiness;
+use Database\Factories\EpisodeFactory;
+use Database\Factories\GuideFactory;
+use Database\Factories\PostFactory;
 
-/** @param class-string<Post|Guide|Episode> $modelClass */
-test('publication status respects publication flags and dates', function (string $modelClass, bool $isPublished, ?int $offset, PublicationStatus $expected): void {
+test('publication status respects publication flags and dates', function (PostFactory|GuideFactory|EpisodeFactory $factory, bool $isPublished, ?int $offset, PublicationStatus $expected): void {
     $this->freezeSecond();
-    $content = $modelClass::factory()->make([
+    $content = $factory->makeOne([
         'is_published' => $isPublished,
         'published_at' => $offset === null ? null : now()->addSeconds($offset),
     ]);
@@ -18,9 +20,9 @@ test('publication status respects publication flags and dates', function (string
 
     expect($status)->toBe($expected);
 })->with([
-    'post' => [Post::class],
-    'guide' => [Guide::class],
-    'episode' => [Episode::class],
+    'post' => fn () => Post::factory(),
+    'guide' => fn () => Guide::factory(),
+    'episode' => fn () => Episode::factory(),
 ])->with([
     'draft' => [false, null, PublicationStatus::Draft],
     'draft with a past date' => [false, -1, PublicationStatus::Draft],

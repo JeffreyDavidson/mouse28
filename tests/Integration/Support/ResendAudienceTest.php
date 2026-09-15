@@ -2,6 +2,7 @@
 
 use App\Enums\NewsletterSubscriptionResult;
 use App\Support\ResendAudience;
+use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
@@ -151,7 +152,7 @@ test('a successful subscription adds the contact and invalidates cached audience
 
     expect($result)->toBe(NewsletterSubscriptionResult::Subscribed)
         ->and(Cache::has('newsletter_subscribers'))->toBeFalse();
-    Http::assertSent(fn ($request): bool => $request['email'] === 'reader@example.com');
+    Http::assertSent(fn (Request $request): bool => $request['email'] === 'reader@example.com');
 });
 
 test('subscription failures distinguish configuration provider and connection errors', function (

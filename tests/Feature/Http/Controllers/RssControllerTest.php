@@ -18,5 +18,5 @@ test('blog feed is valid and excludes unpublished content', function (): void {
         ->assertOk()
         ->assertSee($post->title)
         ->assertDontSee($draftPost->title);
-    expect(simplexml_load_string($blogFeed->getContent()))->not->toBeFalse();
+    expect(simplexml_load_string($this->responseContent($blogFeed)))->not->toBeFalse();
 });

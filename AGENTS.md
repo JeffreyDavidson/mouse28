@@ -99,8 +99,9 @@ Inspect `composer.json` and `package.json` before running project commands. Use
 `composer check` for the full local quality gate, including dependency audits,
 formatting, static analysis, Rector, tests, type coverage, an asset build, and
 Chromium browser smoke tests. It requires installed dependencies, Chromium, and
-network access for audits. It does not include informational Pest static analysis;
-run `composer analyse:pest` separately.
+network access for audits. Both application and Pest static analysis run at
+`level: max` and are required in CI; run `composer analyse:pest` for a focused
+test-analysis check.
 
 For small changes, run the relevant focused checks:
 

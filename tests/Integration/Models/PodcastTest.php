@@ -14,9 +14,11 @@ test('podcast changes exclude the private contact email from the audit log', fun
     $podcast->update(['name' => 'Updated', 'email' => 'another@example.com']);
 
     $updated = Activity::query()->latest('id')->firstOrFail();
-    expect($created->causer_id)->toBeNull()
-        ->and($created->attribute_changes->get('attributes'))->not->toHaveKey('email')
-        ->and($updated->attribute_changes->all())->toBe([
+    expect($created->attribute_changes)->not->toBeNull()
+        ->and($updated->attribute_changes)->not->toBeNull()
+        ->and($created->causer_id)->toBeNull()
+        ->and($created->attribute_changes?->get('attributes'))->not->toHaveKey('email')
+        ->and($updated->attribute_changes?->all())->toBe([
             'attributes' => ['name' => 'Updated'],
             'old' => ['name' => 'Original'],
         ]);

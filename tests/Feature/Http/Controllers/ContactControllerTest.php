@@ -5,6 +5,7 @@ use App\Mail\ContactFormConfirmation;
 use App\Mail\ContactFormSubmitted;
 use App\Models\Podcast;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 
@@ -124,7 +125,7 @@ test('valid contact submission requires successful turnstile verification', func
     Mail::assertSent(ContactFormSubmitted::class);
     Mail::assertSent(ContactFormConfirmation::class);
 
-    Http::assertSent(fn ($request): bool => $request->url() === 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
+    Http::assertSent(fn (Request $request): bool => $request->url() === 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
         && $request['secret'] === 'test-secret-key'
         && $request['response'] === 'turnstile-token');
 });
@@ -278,6 +279,7 @@ test('form placeholders use readable text colors', function (): void {
         ->assertDontSee('placeholder:text-navy/30', false);
 });
 
+/** @return array<string, string> */
 function contactPayload(): array
 {
     return [

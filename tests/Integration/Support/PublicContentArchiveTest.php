@@ -7,13 +7,16 @@ use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
 use App\Support\PublicContentArchive;
+use Database\Factories\EpisodeFactory;
+use Database\Factories\GuideFactory;
+use Database\Factories\PostFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 pest()->use(RefreshDatabase::class);
 
-test('sync refuses unpublished identity collisions without changing content', function (string $model, string $state): void {
+test('sync refuses unpublished identity collisions without changing content', function (PostFactory|GuideFactory|EpisodeFactory $factory, string $state): void {
     // Arrange
-    $record = $model::factory()->create();
+    $record = $factory->createOne();
     $service = app(PublicContentArchive::class);
     $archive = $service->export();
     $record->update($state === 'draft'
@@ -32,7 +35,11 @@ test('sync refuses unpublished identity collisions without changing content', fu
     // Assert
     expect($exception)->toBeInstanceOf(InvalidArgumentException::class)
         ->and($record->refresh()->title)->toBe('Local work');
-})->with([Post::class, Guide::class, Episode::class])->with(['draft', 'scheduled']);
+})->with([
+    'posts' => fn () => Post::factory(),
+    'guides' => fn () => Guide::factory(),
+    'episodes' => fn () => Episode::factory(),
+])->with(['draft', 'scheduled']);
 
 test('public archives retain string values and restore enum backed content', function (): void {
     $post = Post::factory()->create(['author' => ContentAuthor::Cassie, 'category' => PostCategory::DisneyTips]);
@@ -52,7 +59,20 @@ test('public archives retain string values and restore enum backed content', fun
     $serializedArchive = json_encode($archive, JSON_THROW_ON_ERROR);
     $decodedArchive = json_decode($serializedArchive, true, flags: JSON_THROW_ON_ERROR);
 
-    $service->import($decodedArchive);
+    if (! is_array($decodedArchive)) {
+        throw new UnexpectedValueException('The serialized archive must decode to an array.');
+    }
+
+    $importArchive = [];
+    foreach ($decodedArchive as $key => $value) {
+        if (! is_string($key)) {
+            throw new UnexpectedValueException('The decoded archive keys must be strings.');
+        }
+
+        $importArchive[$key] = $value;
+    }
+
+    $service->import($importArchive);
     $post->refresh();
     $guide->refresh();
 
