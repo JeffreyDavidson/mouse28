@@ -146,7 +146,10 @@ function initializeBlogArticle() {
 
 function focusFirstInvalidField() {
     const focusInvalidField = () => {
-        document.querySelector('[aria-invalid="true"]')?.focus();
+        // Fragment restoration can overwrite focus during the pageshow task.
+        window.requestAnimationFrame(() => {
+            document.querySelector('[aria-invalid="true"]')?.focus();
+        });
     };
 
     window.addEventListener('pageshow', focusInvalidField);

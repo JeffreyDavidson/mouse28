@@ -97,6 +97,28 @@ test('newsletter validation and rate-limit feedback remain accessible', function
         ->assertNoJavaScriptErrors();
 })->group('browser-smoke');
 
+test('newsletter validation focus survives fragment restoration after pageshow', function (): void {
+    $page = visit(route('home'));
+    $page->script('document.querySelector(\'form[action$="/newsletter"]\').noValidate = true');
+
+    $page->fill('#footer-newsletter-email', 'not-an-email')
+        ->keys('form[action$="/newsletter"] button[type="submit"]', 'Enter')
+        ->assertSee('The email field must be a valid email address.')
+        ->waitForEvent('load');
+
+    // Reproduce the browser restoring its fragment after the pageshow focus handler.
+    $page->script(<<<'JS'
+        () => {
+            history.replaceState(null, '', location.pathname);
+            window.dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }));
+            location.hash = 'newsletter';
+        }
+        JS);
+
+    $page->assertScript('document.activeElement.id', 'footer-newsletter-email')
+        ->assertNoJavaScriptErrors();
+})->group('browser-smoke');
+
 test('newsletter validation restores focus when the application script loads after pageshow', function (): void {
     Vite::useScriptTagAttributes(['type' => 'text/plain', 'data-delayed-app' => true]);
 
