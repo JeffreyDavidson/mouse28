@@ -30,6 +30,22 @@ function contentBrokenImageCountScript(): string
         JS;
 }
 
+function homepagePodcastContentIsContainedScript(): string
+{
+    return <<<'JS'
+        (() => {
+            const artwork = document.querySelector('.dispatch-podcast-frame img');
+            const content = document.querySelector('.dispatch-podcast-frame')?.nextElementSibling;
+            const title = content?.querySelector('h3');
+
+            return artwork !== null
+                && artwork.getBoundingClientRect().width >= 100
+                && title instanceof HTMLElement
+                && title.scrollWidth <= title.clientWidth + 1;
+        })()
+        JS;
+}
+
 test('homepage story columns stay separated at responsive breakpoints', function (): void {
     Post::factory()->count(4)->create();
 
@@ -118,6 +134,10 @@ test('long public content and portrait artwork stay contained', function (): voi
             ->assertNoAccessibilityIssues()
             ->assertNoJavaScriptErrors();
 
+        [$desktopHome] = $desktopPages;
+
+        $desktopHome->assertScript(homepagePodcastContentIsContainedScript(), true);
+
         [, , $guideIndex, , , $postPage, , $episodePage] = $mobilePages;
 
         $guideIndex->assertScript(
@@ -135,7 +155,7 @@ test('long public content and portrait artwork stay contained', function (): voi
     } finally {
         Storage::disk('public')->delete($portraitPath);
     }
-});
+})->group('browser-smoke');
 
 test('pagination boundaries stay usable on narrow screens', function (): void {
     foreach (range(1, 13) as $number) {
@@ -161,6 +181,7 @@ test('pagination boundaries stay usable on narrow screens', function (): void {
         route('blog.index', ['page' => 2]),
         route('guides.index', ['page' => 2]),
         route('episodes.index', ['page' => 2]),
+        route('search', ['q' => 'Boundary', 'postsPage' => 2, 'guidesPage' => 2, 'episodesPage' => 2]),
     ]);
     $pages->on()
         ->mobile()
@@ -172,9 +193,12 @@ test('pagination boundaries stay usable on narrow screens', function (): void {
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 
-    [$blog, $guides, $episodes] = $pages;
+    [$blog, $guides, $episodes, $search] = $pages;
 
     $blog->assertSee('Boundary Post 13');
     $guides->assertSee('Boundary Guide 13');
     $episodes->assertSee('Boundary Episode 13');
+    $search->assertSee('Boundary Post 7')
+        ->assertSee('Boundary Guide 7')
+        ->assertSee('Boundary Episode 7');
 });

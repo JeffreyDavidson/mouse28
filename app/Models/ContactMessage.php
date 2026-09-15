@@ -24,6 +24,9 @@ class ContactMessage extends Model
     {
         return [
             'is_read' => 'boolean',
+            'email_attempted_at' => 'datetime',
+            'notification_sent_at' => 'datetime',
+            'confirmation_sent_at' => 'datetime',
         ];
     }
 }

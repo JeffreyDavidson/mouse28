@@ -9,6 +9,7 @@ use App\Filament\Widgets\QuickDraft;
 use App\Filament\Widgets\RecentActivity;
 use App\Filament\Widgets\StatsOverview;
 use App\Filament\Widgets\WelcomeBanner;
+use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -37,6 +38,10 @@ class AdminPanelProvider extends PanelProvider
             ->darkModeBrandLogo(view('filament.brand-logo'))
             ->darkMode(isForced: true)
             ->login(Login::class)
+            ->profile()
+            ->multiFactorAuthentication([
+                AppAuthentication::make()->recoverable(),
+            ], isRequired: true)
             ->spa()
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->colors([

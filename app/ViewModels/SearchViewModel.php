@@ -6,24 +6,24 @@ use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class SearchViewModel
 {
     /**
      * @return array{
      *     query: string,
-     *     posts: Collection<int, Post>,
-     *     guides: Collection<int, Guide>,
-     *     episodes: Collection<int, Episode>,
+     *     posts: LengthAwarePaginator<int, Post>,
+     *     guides: LengthAwarePaginator<int, Guide>,
+     *     episodes: LengthAwarePaginator<int, Episode>,
      *     resultCount: int
      * }
      */
     public function data(string $query): array
     {
-        $posts = (new Post)->newCollection();
-        $guides = (new Guide)->newCollection();
-        $episodes = (new Episode)->newCollection();
+        $posts = new LengthAwarePaginator((new Post)->newCollection(), 0, 6);
+        $guides = new LengthAwarePaginator((new Guide)->newCollection(), 0, 6);
+        $episodes = new LengthAwarePaginator((new Episode)->newCollection(), 0, 6);
 
         if ($query !== '') {
             $posts = Post::published()
@@ -34,8 +34,10 @@ class SearchViewModel
                         ->orWhere('body', 'like', "%{$query}%");
                 })
                 ->latest('published_at')
-                ->take(6)
-                ->get();
+                ->latest('id')
+                ->paginate(6, pageName: 'postsPage')
+                ->withQueryString()
+                ->fragment('post-results-heading');
 
             if (config('mouse28.guides_enabled')) {
                 $guides = Guide::published()
@@ -46,8 +48,10 @@ class SearchViewModel
                             ->orWhere('body', 'like', "%{$query}%");
                     })
                     ->latest('published_at')
-                    ->take(6)
-                    ->get();
+                    ->latest('id')
+                    ->paginate(6, pageName: 'guidesPage')
+                    ->withQueryString()
+                    ->fragment('guide-results-heading');
             }
 
             $episodes = Episode::published()
@@ -59,8 +63,10 @@ class SearchViewModel
                         ->orWhere('transcript', 'like', "%{$query}%");
                 })
                 ->latest('published_at')
-                ->take(6)
-                ->get();
+                ->latest('id')
+                ->paginate(6, pageName: 'episodesPage')
+                ->withQueryString()
+                ->fragment('episode-results-heading');
         }
 
         return [
@@ -68,7 +74,7 @@ class SearchViewModel
             'posts' => $posts,
             'guides' => $guides,
             'episodes' => $episodes,
-            'resultCount' => $posts->count() + $guides->count() + $episodes->count(),
+            'resultCount' => $posts->total() + $guides->total() + $episodes->total(),
         ];
     }
 }
