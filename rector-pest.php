@@ -8,7 +8,7 @@ use Pest\Rector\Set\PestSetList;
 use Rector\Config\RectorConfig;
 use RectorLaravel\Set\LaravelSetProvider;
 
-$config = RectorConfig::configure()
+return RectorConfig::configure()
     ->withPaths([
         __DIR__.'/tests',
     ])
@@ -21,11 +21,6 @@ $config = RectorConfig::configure()
         SimplifyToLiteralBooleanRector::class,
         // Preserve regular-file checks; toBeFile() also accepts directories.
         UseToBeFileRector::class,
-    ]);
-
-// Required by older Laravel Rector versions.
-if (class_exists(LaravelSetProvider::class)) {
-    $config->withSetProviders(LaravelSetProvider::class);
-}
-
-return $config->withComposerBased(laravel: true);
+    ])
+    ->withSetProviders(LaravelSetProvider::class)
+    ->withComposerBased(laravel: true);
