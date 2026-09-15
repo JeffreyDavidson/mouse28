@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Rector\Config\RectorConfig;
 use RectorLaravel\Set\LaravelSetProvider;
 
-$config = RectorConfig::configure()
+return RectorConfig::configure()
     ->withPaths([
         __DIR__.'/app',
         __DIR__.'/bootstrap/app.php',
@@ -15,11 +15,6 @@ $config = RectorConfig::configure()
         __DIR__.'/database/seeders',
         __DIR__.'/routes',
     ])
-    ->withPhpSets();
-
-// Laravel Rector before 2.6 requires explicit provider registration.
-if (class_exists(LaravelSetProvider::class)) {
-    $config->withSetProviders(LaravelSetProvider::class);
-}
-
-return $config->withComposerBased(laravel: true);
+    ->withPhpSets()
+    ->withSetProviders(LaravelSetProvider::class)
+    ->withComposerBased(laravel: true);
