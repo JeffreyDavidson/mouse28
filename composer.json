@@ -1,9 +1,9 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "mouse28/mouse28",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "A Disney parks blog and podcast focused on accessibility and family experiences.",
+    "keywords": ["mouse28", "disney", "accessibility", "podcast"],
     "license": "MIT",
     "require": {
         "filament/filament": "^5.7",
@@ -58,7 +58,7 @@
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
             "@php artisan key:generate",
             "@php artisan migrate --force",
-            "npm install",
+            "npm ci",
             "npm run build"
         ],
         "dev": [

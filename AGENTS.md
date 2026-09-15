@@ -95,15 +95,21 @@ represent them safely.
 
 ## Development and Verification
 
-Inspect `composer.json` and `package.json` before running project commands. The
-standard checks are:
+Inspect `composer.json` and `package.json` before running project commands. Use
+`composer check` for the full local quality gate, including dependency audits,
+formatting, static analysis, Rector, tests, type coverage, an asset build, and
+Chromium browser smoke tests. It requires installed dependencies, Chromium, and
+network access for audits. It does not include informational Pest static analysis;
+run `composer analyse:pest` separately.
+
+For small changes, run the relevant focused checks:
 
 - `composer test`
 - `npm run build`
 - `git diff --check`
 
-CI also runs dependency validation and audits, Pint, FilaCheck, Larastan, and
-Rector. `composer test` excludes the separate `composer test:browser` suite.
+Use `composer test:lint` to check formatting or `composer lint` to apply fixes.
+`composer test` excludes the separate `composer test:browser` suite.
 Pint's enabled Blade formatter requires the locked Prettier packages.
 
 `boost.json` tracks Boost-managed skills and selected integrations, including
