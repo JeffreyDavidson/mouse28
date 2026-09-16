@@ -79,9 +79,9 @@ to start a new export with less than 1 GiB free disk space.
 The migration was verified with snapshot `20260916T024602Z`. The former Mac launch
 agent `com.jeffreydavidson.mouse28-backup` is disabled and unloaded. At Jeffrey's
 request, its launch-agent file, backup and restore-check scripts, logs, and local
-archive directory were removed to macOS Trash; they remain recoverable only until
-Trash is emptied. No further Mac backups are scheduled. Keychain credentials and
-the encryption password were preserved for recovery, as were all Backblaze
+archive directory were removed to macOS Trash and subsequently permanently
+deleted with explicit confirmation. No further Mac backups are scheduled.
+Keychain credentials and the encryption password were preserved for recovery, as were all Backblaze
 archives. Existing server-side local database jobs are unchanged.
 
 Retention is deliberately unchanged: unique dated B2 snapshots do **not** expire
@@ -93,12 +93,36 @@ independent missed-run alerts are not yet configured for the server job.
 For recovery, first verify the manifest's ciphertext hashes, decrypt with the
 existing backup password and recorded OpenSSL parameters, then verify plaintext
 hashes and archive integrity. A local integrity check of the pre-migration backup
-passed, and the new job checks encryption round trips, but these are not a full
-database restore rehearsal. Database import must be tested in an explicitly
-approved isolated environment, never against production as a routine check.
+passed, and the new job checks encryption round trips.
+
+An explicitly approved server-side restore rehearsal of B2 snapshot
+`20260916T024602Z` passed on September 15, 2026 (New York time):
+
+- All three objects were downloaded on the server and checked against remote
+  size, ETag, and SHA-256 metadata; encrypted and decrypted archive hashes matched
+  the manifest.
+- A separate MySQL 8.0 instance imported all 17 expected tables and 266 rows;
+  every restored table passed `CHECK TABLE`.
+- All 42 uploaded-media files were extracted into a private test directory and
+  verified by size and checksum (7,189,222 uncompressed bytes).
+- The temporary instance was stopped and every rehearsal directory removed.
+  The existing production MySQL process remained running; `/up` and `/` returned
+  HTTP 200 afterward. No backup contents were copied to the Mac.
+
+This verifies database import and media recovery, not a full application boot or
+disaster-recovery cutover. Future rehearsals require approval for their isolated
+target and cleanup; never import into the live database as a routine check.
+Use a private `mkdtemp` directory under `/tmp`, which the existing server AppArmor
+policy permits, without changing confinement. Start a separate instance with
+`--no-defaults`, its own data directory, socket, PID file, and logs; disable TCP,
+MySQL X, scheduled events, binary logging, and file import/export. Use bounded
+commands and conservative memory settings. MySQL 8.0 clients do not support
+`--no-login-paths`: use `MYSQL_TEST_LOGIN_FILE=/dev/null` with `--no-defaults`
+and an explicit test socket to avoid inherited connection settings. Confirm the
+connected server's data directory and disabled networking before importing.
 
 The removed Mac automation is not an active fallback. Reinstating it requires
-explicit approval and recovery of its files before re-enabling its launch agent;
+explicit approval and rebuilding its deleted files before enabling a launch agent;
 avoid running duplicate schedules. A pre-migration server crontab is preserved at
 `/home/forge/mouse28-offsite-backup/crontab.before-migration`; compare it rather
 than overwriting a newer crontab, to avoid losing unrelated jobs.
