@@ -77,9 +77,12 @@ commands have timeouts, and cron imposes a 15-minute overall limit. The job refu
 to start a new export with less than 1 GiB free disk space.
 
 The migration was verified with snapshot `20260916T024602Z`. The former Mac launch
-agent `com.jeffreydavidson.mouse28-backup` is disabled and unloaded. Its scripts,
-Keychain items, and existing local archives remain for recovery; no further Mac
-backups are scheduled. Existing server-side local database jobs are unchanged.
+agent `com.jeffreydavidson.mouse28-backup` is disabled and unloaded. At Jeffrey's
+request, its launch-agent file, backup and restore-check scripts, logs, and local
+archive directory were removed to macOS Trash; they remain recoverable only until
+Trash is emptied. No further Mac backups are scheduled. Keychain credentials and
+the encryption password were preserved for recovery, as were all Backblaze
+archives. Existing server-side local database jobs are unchanged.
 
 Retention is deliberately unchanged: unique dated B2 snapshots do **not** expire
 under the current rule, which deletes only hidden versions after 30 days. The
@@ -94,8 +97,9 @@ passed, and the new job checks encryption round trips, but these are not a full
 database restore rehearsal. Database import must be tested in an explicitly
 approved isolated environment, never against production as a routine check.
 
-To reverse the scheduling cutover, first disable only the new server cron entry,
-then re-enable the old Mac launch agent. A pre-migration crontab is preserved at
+The removed Mac automation is not an active fallback. Reinstating it requires
+explicit approval and recovery of its files before re-enabling its launch agent;
+avoid running duplicate schedules. A pre-migration server crontab is preserved at
 `/home/forge/mouse28-offsite-backup/crontab.before-migration`; compare it rather
 than overwriting a newer crontab, to avoid losing unrelated jobs.
 
