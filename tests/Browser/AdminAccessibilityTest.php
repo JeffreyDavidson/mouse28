@@ -90,6 +90,27 @@ test('admin login exposes no unnamed artwork or decorative glyphs', function ():
         ->assertNoJavaScriptErrors();
 });
 
+test('admin login controls remain usable on narrow screens', function (): void {
+    $page = visit(route('filament.admin.auth.login'));
+
+    foreach ([320, 390] as $width) {
+        $page->resize($width, 844);
+
+        $page->assertScript($this->horizontalOverflowScript(), 0)
+            ->assertScript($this->undersizedControlsScript(), '')
+            ->assertNoAccessibilityIssues()
+            ->assertNoJavaScriptErrors();
+    }
+
+    $page->click('button[aria-label="Show password"]');
+
+    $page->assertVisible('input[type="text"]');
+
+    $page->click('button[aria-label="Hide password"]');
+
+    $page->assertVisible('input[type="password"]');
+})->group('browser-smoke');
+
 test('authenticated admin pages expose no unnamed artwork or decorative glyphs', function (): void {
     $user = User::factory()->admin()->create();
     $post = Post::factory()->create();

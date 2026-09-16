@@ -102,6 +102,29 @@
     color: var(--color-mouse-gold-light) !important;
 }
 
+@media (width < 40rem) {
+    .fi-simple-main .fi-input,
+    .fi-simple-main .fi-btn,
+    .fi-simple-main .fi-icon-btn {
+        min-height: 3rem;
+    }
+
+    .fi-simple-main .fi-input {
+        font-size: 1rem;
+    }
+
+    .fi-simple-main .fi-icon-btn {
+        min-width: 3rem;
+        margin: 0;
+    }
+
+    .fi-simple-main label:has(input[type='checkbox']) {
+        display: flex;
+        min-height: 3rem;
+        align-items: center;
+    }
+}
+
 /* Panel shell */
 .fi-sidebar {
     border-right: 1px solid rgb(212 168 67 / 15%) !important;
@@ -203,6 +226,10 @@
 .fi-section-header-heading {
     color: var(--color-mouse-gold-light) !important;
     font-family: var(--font-mouse-heading) !important;
+}
+
+.fi-main .fi-in-placeholder {
+    color: rgb(254 249 239 / 70%) !important;
 }
 
 .fi-section-header-description {

@@ -175,7 +175,7 @@ test('newsletter requires a configured audience', function (): void {
     Http::assertNotSent(fn (Request $request): bool => str_contains($request->url(), 'api.resend.com'));
 });
 
-test('newsletter rate limit is applied', function (): void {
+test('newsletter rate limit ignores spoofed forwarded IPs', function (): void {
     Http::fake([
         'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response([
             'success' => true,
@@ -187,6 +187,8 @@ test('newsletter rate limit is applied', function (): void {
 
     for ($attempt = 0; $attempt < 5; $attempt++) {
         from(route('home'))
+            ->withServerVariables(['REMOTE_ADDR' => '198.51.100.10'])
+            ->withHeaders(['X-Forwarded-For' => "203.0.113.{$attempt}"])
             ->post(route('newsletter.store'), array_merge(newsletterPayload(), [
                 'email' => "dale{$attempt}@example.com",
             ]))
@@ -194,6 +196,8 @@ test('newsletter rate limit is applied', function (): void {
     }
 
     from(route('home'))
+        ->withServerVariables(['REMOTE_ADDR' => '198.51.100.10'])
+        ->withHeaders(['X-Forwarded-For' => '203.0.113.99'])
         ->post(route('newsletter.store'), newsletterPayload())
         ->assertSessionHasErrorsIn('newsletter', 'newsletter_rate_limit');
 });

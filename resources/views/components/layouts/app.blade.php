@@ -358,6 +358,10 @@
                                 href="{{ route('contact.show') }}"
                                 class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
                             >Contact Us</a>
+                            <a
+                                href="{{ route('privacy') }}"
+                                class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
+                            >Privacy</a>
                             @foreach ($podcastLinks as $link)
                                 <a
                                     href="{{ $link['url'] }}"

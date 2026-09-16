@@ -25,21 +25,20 @@ Keep the Forge sites configured to these source branches:
 - `mouse28.com` tracks `main` for production releases.
 
 Before a release, create `release/YYYY.MM.DD` from the up-to-date `develop`
-branch and open a release pull request into `main`. In Forge, temporarily set
-the staging site's source branch to that release branch and deploy it. Verify
-the exact release candidate on staging, then merge the release pull request
-into `main` with a regular merge commit and deploy `main` to production.
+branch and open a release pull request into `main`. Confirm its head, base,
+checks, and Conventional Commit subject. Approve and merge it with a regular
+merge commit; Forge's configured deployment starts from that merge. Do not
+manually trigger a second deployment or repoint staging for routine releases.
+When checking staging, record its deployed revision: a newer `develop` is not
+proof that an older release candidate passed verification.
 
-After production verification, restore the staging site's source branch to
-`develop` in Forge and deploy it again if `develop` has advanced. Finally,
-create a synchronization branch from `develop`, merge `main` into it, and open
-the required protected pull request back into `develop`. This keeps the commit
-ancestry aligned and prevents future release branches from appearing out of
-date with `main`.
-
-Do not use a staging deployment of `develop` as release approval; it may contain
-changes that are not part of the production candidate. Do not push directly to
-the protected `main` or `develop` branches.
+After production verification, synchronize `main` into `develop` when Jeffrey
+explicitly requests it: fetch the remote branches, update the local `develop`,
+merge `origin/main` with a Conventional Commit synchronization subject, and
+push `develop`. This synchronization does not add feature work to `develop`.
+If branch protection rejects the push, stop and ask for the approved resolution;
+do not silently disable protection or create a synchronization PR instead.
+Feature work still goes through squash-merged pull requests into `develop`.
 
 ## Syncing public content locally
 
@@ -51,6 +50,21 @@ The sync is one-way and refuses to run when the current application environment 
 
 The Forge deployment should install locked Composer dependencies, install locked Node dependencies, build assets, run forward-only migrations, link public storage, refresh optimized caches, and restart workers only when queued jobs are introduced.
 
+The production Forge script runs `php artisan app:verify-production --no-interaction`
+after optimization, before migrations, and stops on failure. Immediately after
+release activation, bounded HTTP checks require `/up` and `/` to return exactly
+200 before release cleanup proceeds. These checks are part of the normal
+merge-triggered deployment; changing the script does not itself deploy the site.
+A failed post-activation check marks the deployment failed and preserves recovery
+artifacts, but does not automatically roll back the active release or database.
+Future changes to the live Forge script require separate approval.
+
+The audit-remediation release adds nullable MFA and contact-email tracking
+columns. Run its forward migrations before activating its application code.
+Every administrator must enroll an authenticator app and save their recovery
+codes; existing unenrolled administrators are routed to enrollment after signing
+in. Do not seed or manually fill MFA secrets on their behalf.
+
 Do not clean demo content as part of an unattended deployment. After verified backups and real-content review, `php artisan content:clean-seeded --force` removes only the documented demo slugs in one transaction.
 
 Laravel's destructive database commands (`db:wipe`, `migrate:fresh`, `migrate:refresh`, `migrate:reset`, and `migrate:rollback`) are prohibited when `APP_ENV=production`, even with `--force`. This includes Forge staging configured with that environment. Use forward migrations; do not disable this safeguard as a deployment or rollback shortcut.
@@ -61,7 +75,19 @@ For responsive artwork, confirm GD WebP support and the persistent local public 
 
 Without `--force`, the artwork command uses Laravel's native production confirmation prompt. Declining it, or running noninteractively without force, cancels generation. A console prompt or flag does not replace the operational approval above.
 
-Review explicit static-asset cache policy at the Forge/Nginx edge: content-fingerprinted `/build/assets/` and responsive files under `/storage/posts/responsive/` and `/storage/episodes/responsive/v1/` are candidates for a one-year `public, immutable` policy. Unversioned originals, fonts and site images need a shorter freshness policy or versioned URLs. Preserve private/no-store behavior for admin, previews and errors, and do not apply public HTML caching to CSRF tokens or form/session feedback. No edge configuration is changed by the artwork command or benchmark.
+The Forge/Nginx edge uses a one-year `public, immutable` policy for content-fingerprinted `/build/assets/` and responsive files under `/storage/posts/responsive/` and `/storage/episodes/responsive/v1/`. Unversioned originals, fonts and site images need a shorter freshness policy or versioned URLs. Preserve private/no-store behavior for admin, previews and errors, and do not apply public HTML caching to CSRF tokens or form/session feedback. No edge configuration is changed by the artwork command or benchmark.
+
+On the installed Nginx 1.26 series, a location-level `add_header` stops inheritance
+of server-level headers. Cache locations must preserve the shared security
+headers explicitly, including HSTS and `X-Content-Type-Options`. Verify live
+responses for all three locations after any approved change; configuration
+syntax success alone does not prove header behavior. The September 15 audit
+found these inherited headers missing; the repair remains a separately approved
+production change.
+
+Nginx owns client-IP resolution through its trusted Cloudflare ranges and passes
+the resolved address to PHP as `REMOTE_ADDR`. Laravel must not trust arbitrary
+forwarded headers again. Review this boundary before introducing another proxy.
 
 Verify all of the following against the deployed commit:
 

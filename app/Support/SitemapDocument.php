@@ -21,7 +21,7 @@ class SitemapDocument
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
-        $staticRoutes = ['home', 'blog.index', 'episodes.index', 'about', 'contact.show'];
+        $staticRoutes = ['home', 'blog.index', 'episodes.index', 'about', 'contact.show', 'privacy'];
 
         if (config('mouse28.guides_enabled')) {
             $staticRoutes[] = 'guides.index';

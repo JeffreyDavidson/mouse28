@@ -16,6 +16,7 @@ test('main public pages share one full footer signup', function (): void {
         route('episodes.show', $episode),
         route('about'),
         route('contact.show'),
+        route('privacy'),
     ])
         ->assertScript('document.querySelectorAll("footer").length', 1)
         ->assertScript('document.querySelectorAll("footer #footer-newsletter-email").length', 1)
@@ -102,6 +103,7 @@ test('public page renders without JavaScript errors', function (string $routeNam
     'podcast' => ['episodes.index', 'Podcast'],
     'about' => ['about', 'About'],
     'contact' => ['contact.show', 'Contact'],
+    'privacy' => ['privacy', 'Privacy information'],
     'search' => ['search', 'Search'],
 ]);
 
@@ -400,6 +402,7 @@ test('public pages remain usable at mobile widths', function (): void {
         route('episodes.index'),
         route('about'),
         route('contact.show'),
+        route('privacy'),
         route('blog.show', $post),
         route('episodes.show', $episode),
         route('guides.show', $guide),

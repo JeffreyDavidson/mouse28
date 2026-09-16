@@ -208,7 +208,7 @@ test('honeypot silently accepts bot submissions without persistence or mail', fu
     Http::assertNothingSent();
 });
 
-test('contact form rate limit is applied without throttling the contact page', function (): void {
+test('contact form rate limit ignores spoofed forwarded IPs without throttling the contact page', function (): void {
     Mail::fake();
 
     Http::fake([
@@ -221,6 +221,8 @@ test('contact form rate limit is applied without throttling the contact page', f
 
     for ($attempt = 0; $attempt < 5; $attempt++) {
         from(route('contact.show'))
+            ->withServerVariables(['REMOTE_ADDR' => '198.51.100.10'])
+            ->withHeaders(['X-Forwarded-For' => "203.0.113.{$attempt}"])
             ->post(route('contact.store'), array_merge(contactPayload(), [
                 'email' => "dale{$attempt}@example.com",
             ]))
@@ -228,6 +230,8 @@ test('contact form rate limit is applied without throttling the contact page', f
     }
 
     from(route('contact.show'))
+        ->withServerVariables(['REMOTE_ADDR' => '198.51.100.10'])
+        ->withHeaders(['X-Forwarded-For' => '203.0.113.99'])
         ->post(route('contact.store'), array_merge(contactPayload(), [
             'email' => 'dale-rate-limit@example.com',
         ]))
