@@ -32,6 +32,20 @@ test('content table shows readiness and missing publish dates', function (): voi
         ->assertSee('Needs publish date');
 });
 
+test('draft and scheduled tabs filter episodes', function (): void {
+    $draft = Episode::factory()->draft()->create();
+    $scheduled = Episode::factory()->scheduled()->create();
+    actingAs(User::factory()->admin()->create());
+
+    livewire(ListEpisodes::class)
+        ->set('activeTab', 'drafts')
+        ->assertCanSeeTableRecords([$draft])
+        ->assertCanNotSeeTableRecords([$scheduled])
+        ->set('activeTab', 'scheduled')
+        ->assertCanSeeTableRecords([$scheduled])
+        ->assertCanNotSeeTableRecords([$draft]);
+});
+
 test('header does not count scheduled episodes as published', function (): void {
     // Arrange
     Episode::factory()->create();
