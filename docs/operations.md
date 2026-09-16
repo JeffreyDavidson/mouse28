@@ -46,6 +46,59 @@ Run `php artisan content:sync-production` from the local Mouse28 checkout to rep
 
 The sync is one-way and refuses to run when the current application environment is production. It never exports private users, subscribers, contact submissions, credentials, or environment-specific podcast email. Local drafts and scheduled content are preserved; stale currently published local records are soft deleted.
 
+## Off-site backups
+
+Mouse28's off-site backup job runs as `forge` on `cold-moon`, independently of
+Forge's paid database-backup feature and application deployments. The daily cron
+schedule is **07:15 UTC** (03:15 New York during daylight-saving time). Its private
+installation is `/home/forge/mouse28-offsite-backup`:
+
+- `backup.py` orchestrates the backup; `export-database.php` reads the active
+  release's Laravel database configuration without printing credentials.
+- `credentials.json` is mode `0600` inside the mode `0700` installation directory.
+  Never print, download, or commit this file. The encryption password is the
+  existing Mouse28 backup password, retained separately in the original secret
+  stores for recovery; this server file must not be its only surviving copy.
+- `last-success.json` records the latest verified snapshot. Scheduled output goes
+  to `backup.log`, with generic failure stages rather than credentials or data.
+- `test_backup.py` provides isolated safety tests using synthetic data.
+
+Each run exports a transactional MySQL dump and archives only persistent public
+media from `/home/forge/mouse28.com/storage/app/public`. It preserves the existing
+AES-256-CBC/PBKDF2-SHA256 format with 200,000 iterations, verifies local encryption
+round trips, and uploads the two encrypted archives followed by `manifest.txt` to
+the existing `jdavidson-mouse28-production-backups` B2 bucket. Uploads use
+Content-MD5 and are verified against remote size, ETag, and SHA-256 metadata.
+
+Plaintext working files are temporary. Successfully verified encrypted working
+bundles are removed from the server; failed uploads retain their encrypted bundle
+for retry before the next fresh backup. A process lock prevents overlapping runs,
+commands have timeouts, and cron imposes a 15-minute overall limit. The job refuses
+to start a new export with less than 1 GiB free disk space.
+
+The migration was verified with snapshot `20260916T024602Z`. The former Mac launch
+agent `com.jeffreydavidson.mouse28-backup` is disabled and unloaded. Its scripts,
+Keychain items, and existing local archives remain for recovery; no further Mac
+backups are scheduled. Existing server-side local database jobs are unchanged.
+
+Retention is deliberately unchanged: unique dated B2 snapshots do **not** expire
+under the current rule, which deletes only hidden versions after 30 days. The
+bucket's existing seven-day Object Lock remains in place. Changing retention or
+deleting older local/off-site backups requires explicit approval. Email and
+independent missed-run alerts are not yet configured for the server job.
+
+For recovery, first verify the manifest's ciphertext hashes, decrypt with the
+existing backup password and recorded OpenSSL parameters, then verify plaintext
+hashes and archive integrity. A local integrity check of the pre-migration backup
+passed, and the new job checks encryption round trips, but these are not a full
+database restore rehearsal. Database import must be tested in an explicitly
+approved isolated environment, never against production as a routine check.
+
+To reverse the scheduling cutover, first disable only the new server cron entry,
+then re-enable the old Mac launch agent. A pre-migration crontab is preserved at
+`/home/forge/mouse28-offsite-backup/crontab.before-migration`; compare it rather
+than overwriting a newer crontab, to avoid losing unrelated jobs.
+
 ## Deploying
 
 The Forge deployment should install locked Composer dependencies, install locked Node dependencies, build assets, run forward-only migrations, link public storage, refresh optimized caches, and restart workers only when queued jobs are introduced.
@@ -82,8 +135,9 @@ of server-level headers. Cache locations must preserve the shared security
 headers explicitly, including HSTS and `X-Content-Type-Options`. Verify live
 responses for all three locations after any approved change; configuration
 syntax success alone does not prove header behavior. The September 15 audit
-found these inherited headers missing; the repair remains a separately approved
-production change.
+found these inherited headers missing; the approved repair now explicitly
+preserves them in all three asset locations and was verified against live
+asset, public, admin, and error responses.
 
 Nginx owns client-IP resolution through its trusted Cloudflare ranges and passes
 the resolved address to PHP as `REMOTE_ADDR`. Laravel must not trust arbitrary
