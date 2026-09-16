@@ -9,7 +9,7 @@ test('mobile visitors receive the responsive hero and a lean public script', fun
         ->resize(375, 812);
 
     $page->assertScript(
-        "document.querySelector('.hero-split-photo img').currentSrc.endsWith('/images/hero-family-1024.webp')",
+        "document.querySelector('.hero-split-photo img').currentSrc.endsWith('/images/hero-family-768.webp')",
         true,
     )->assertScript(
         <<<'JS'
