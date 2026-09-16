@@ -60,6 +60,7 @@ test('homepage uses one newsletter form and responsive hero artwork', function (
     $response = get(route('home'))
         ->assertOk()
         ->assertSee('/images/hero-family-640.webp 640w', false)
+        ->assertSee('/images/hero-family-768.webp 768w', false)
         ->assertSee('/images/hero-family-1024.webp 1024w', false)
         ->assertSee('dispatch-cloth', false)
         ->assertSee('dispatch-feature-book', false)
