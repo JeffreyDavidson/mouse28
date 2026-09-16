@@ -6,6 +6,7 @@ use App\Models\Guide;
 use App\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Http;
 
 pest()->use(RefreshDatabase::class);
@@ -51,4 +52,16 @@ test('published statistics exclude scheduled content', function (): void {
         ->and($stats['Episodes'])->toBe(1)
         ->and($stats['Guides'])->toBe(1)
         ->and($stats['Drafts'])->toBe(3);
+});
+
+test('dashboard signals when a sourced published post is due for review', function (): void {
+    config()->set('mouse28.post_review_interval_days', 180);
+    Post::factory()->create([
+        'source_url' => 'https://example.test/official-source',
+        'last_reviewed_at' => Date::today()->subDays(181),
+    ]);
+
+    $stat = collect(app(StatsOverview::class)->getStats())->sole('label', 'Blog Posts');
+
+    expect($stat['description'])->toBe('1 need review');
 });

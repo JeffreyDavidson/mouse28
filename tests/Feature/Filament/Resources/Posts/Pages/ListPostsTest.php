@@ -32,6 +32,20 @@ test('content table shows readiness and missing publish dates', function (): voi
         ->assertSee('Needs publish date');
 });
 
+test('draft and scheduled tabs filter posts', function (): void {
+    $draft = Post::factory()->draft()->create();
+    $scheduled = Post::factory()->scheduled()->create();
+    actingAs(User::factory()->admin()->create());
+
+    livewire(ListPosts::class)
+        ->set('activeTab', 'drafts')
+        ->assertCanSeeTableRecords([$draft])
+        ->assertCanNotSeeTableRecords([$scheduled])
+        ->set('activeTab', 'scheduled')
+        ->assertCanSeeTableRecords([$scheduled])
+        ->assertCanNotSeeTableRecords([$draft]);
+});
+
 test('header does not count scheduled posts as published', function (): void {
     // Arrange
     Post::factory()->create();
