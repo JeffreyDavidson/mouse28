@@ -113,6 +113,9 @@ jobs:
       - name: Install Chromium for browser regressions
         run: npx playwright install --with-deps chromium
 
+      - name: Link public storage
+        run: php artisan storage:link --no-interaction
+
       - name: Run focused browser regressions
         run: php artisan test --compact --testsuite=Browser --group=browser-smoke
 

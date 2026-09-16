@@ -64,9 +64,12 @@ class StatsOverview extends Widget
             ],
             [
                 'label' => 'Subscribers',
-                'value' => count($audience['subscribers']),
+                'value' => count(array_filter(
+                    $audience['subscribers'],
+                    static fn (array $subscriber): bool => ($subscriber['unsubscribed'] ?? null) === false,
+                )),
                 'icon' => Heroicon::OutlinedUsers,
-                'description' => $audience['error'] ? 'Unavailable' : 'Newsletter',
+                'description' => $audience['error'] ? 'Unavailable' : 'Active newsletter subscribers',
                 'color' => '#7b5eb5',
             ],
         ];

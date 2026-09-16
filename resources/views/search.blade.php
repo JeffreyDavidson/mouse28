@@ -117,17 +117,17 @@
                 </div>
             @else
                 <p role="status" class="text-navy/65 mb-10 text-center text-sm">
-                    Showing {{ $resultCount }} {{ Str::plural('result', $resultCount) }} for “{{ $query }}”
+                    {{ $resultCount }} {{ Str::plural('result', $resultCount) }} for “{{ $query }}”
                 </p>
 
                 <div class="space-y-12">
-                    @if ($posts->isNotEmpty())
+                    @if ($posts->total() > 0)
                         <section aria-labelledby="post-results-heading">
                             <div class="border-navy/10 mb-5 flex items-end justify-between gap-4 border-b pb-3">
                                 <h2 id="post-results-heading" class="font-heading text-navy text-3xl font-bold">
                                     Blog posts
                                 </h2>
-                                <span class="text-navy/65 text-sm">{{ $posts->count() }} found</span>
+                                <span class="text-navy/65 text-sm">{{ $posts->total() }} found</span>
                             </div>
                             <div class="grid gap-4 md:grid-cols-2">
                                 @foreach ($posts as $post)
@@ -147,16 +147,17 @@
                                     </a>
                                 @endforeach
                             </div>
+                            <div class="episodes-pagination mt-8">{{ $posts->links() }}</div>
                         </section>
                     @endif
 
-                    @if ($guides->isNotEmpty())
+                    @if ($guides->total() > 0)
                         <section aria-labelledby="guide-results-heading">
                             <div class="border-navy/10 mb-5 flex items-end justify-between gap-4 border-b pb-3">
                                 <h2 id="guide-results-heading" class="font-heading text-navy text-3xl font-bold">
                                     Guides
                                 </h2>
-                                <span class="text-navy/65 text-sm">{{ $guides->count() }} found</span>
+                                <span class="text-navy/65 text-sm">{{ $guides->total() }} found</span>
                             </div>
                             <div class="grid gap-4 md:grid-cols-2">
                                 @foreach ($guides as $guide)
@@ -176,16 +177,17 @@
                                     </a>
                                 @endforeach
                             </div>
+                            <div class="episodes-pagination mt-8">{{ $guides->links() }}</div>
                         </section>
                     @endif
 
-                    @if ($episodes->isNotEmpty())
+                    @if ($episodes->total() > 0)
                         <section aria-labelledby="episode-results-heading">
                             <div class="border-navy/10 mb-5 flex items-end justify-between gap-4 border-b pb-3">
                                 <h2 id="episode-results-heading" class="font-heading text-navy text-3xl font-bold">
                                     Podcast episodes
                                 </h2>
-                                <span class="text-navy/65 text-sm">{{ $episodes->count() }} found</span>
+                                <span class="text-navy/65 text-sm">{{ $episodes->total() }} found</span>
                             </div>
                             <div class="grid gap-4 md:grid-cols-2">
                                 @foreach ($episodes as $episode)
@@ -205,6 +207,7 @@
                                     </a>
                                 @endforeach
                             </div>
+                            <div class="episodes-pagination mt-8">{{ $episodes->links() }}</div>
                         </section>
                     @endif
                 </div>

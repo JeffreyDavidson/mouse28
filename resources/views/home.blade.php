@@ -87,7 +87,7 @@
                         >
                             <div class="dispatch-book-title">
                                 <p class="text-purple text-base font-semibold sm:text-sm">Featured story</p>
-                                <p class="font-heading text-navy mt-2 text-2xl [font-weight:620] tracking-[-0.02em] text-balance lg:text-3xl">
+                                <p class="font-heading text-navy mt-2 text-2xl [font-weight:620] tracking-[-0.02em] text-balance wrap-anywhere lg:text-3xl">
                                     {{ $featuredPost->title }}
                                 </p>
                             </div>
@@ -141,7 +141,7 @@
                                     <p class="text-purple text-sm font-semibold sm:text-xs">
                                         {{ $post->category_label }}
                                     </p>
-                                    <h3 class="font-heading text-navy group-hover:text-purple mt-1 line-clamp-3 text-lg [font-weight:560] tracking-[-0.012em] text-balance">
+                                    <h3 class="font-heading text-navy group-hover:text-purple mt-1 line-clamp-3 text-lg [font-weight:560] tracking-[-0.012em] text-balance wrap-anywhere">
                                         {{ $post->title }}
                                     </h3>
                                     <p class="text-navy/65 mt-auto pt-2 text-sm tabular-nums sm:text-xs">
@@ -278,7 +278,7 @@
                         class="text-gold hover:text-gold-light hidden min-h-12 items-center text-sm font-semibold underline underline-offset-8 sm:inline-flex"
                     >All episodes</a>
                 </div>
-                <div class="mt-4 grid gap-5 md:grid-cols-[5fr_7fr_8fr] md:items-center">
+                <div class="mt-4 grid gap-5 wrap-anywhere md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)_minmax(0,8fr)] md:items-center">
                     <div class="dispatch-podcast-frame mx-auto w-full max-w-72 p-3 md:mx-0">
                         <img
                             src="/images/podcast/mouse28-cover.webp"
