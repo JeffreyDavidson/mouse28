@@ -87,8 +87,9 @@ archives. Existing server-side local database jobs are unchanged.
 Retention is deliberately unchanged: unique dated B2 snapshots do **not** expire
 under the current rule, which deletes only hidden versions after 30 days. The
 bucket's existing seven-day Object Lock remains in place. Changing retention or
-deleting older local/off-site backups requires explicit approval. Email and
-independent missed-run alerts are not yet configured for the server job.
+deleting older local/off-site backups requires explicit approval. Backup failures
+remain log-only for now: review `backup.log` on the server; email and independent
+missed-run alerts are intentionally not configured.
 
 For recovery, first verify the manifest's ciphertext hashes, decrypt with the
 existing backup password and recorded OpenSSL parameters, then verify plaintext
