@@ -29,7 +29,7 @@
         "laraveldaily/filacheck": "^1.2.4",
         "laraveldaily/filacheck-pro": "^1.1",
         "nunomaduro/collision": "^8.6",
-        "pestphp/pest": "^5.0",
+        "pestphp/pest": "^5.1",
         "pestphp/pest-plugin-agent": "^5.0",
         "pestphp/pest-plugin-arch": "^5.0",
         "pestphp/pest-plugin-browser": "^5.0",
