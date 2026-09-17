@@ -124,7 +124,5 @@ test('authenticated user can render newsletter subscribers', function (): void {
     actingAs($user)
         ->get(NewsletterSubscribers::getUrl())
         ->assertOk()
-        ->assertSee('Newsletter Subscribers')
-        ->assertSee('No contacts yet')
-        ->assertSee('audience <span aria-hidden="true">✨</span>', false);
+        ->assertSee('Newsletter Subscribers')->assertSee('No contacts yet')->assertSeeHtml('audience <span aria-hidden="true">✨</span>');
 });

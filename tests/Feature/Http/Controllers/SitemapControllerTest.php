@@ -17,11 +17,7 @@ test('sitemap is valid and excludes unpublished content', function (): void {
     Guide::factory()->draft()->create();
 
     $sitemap = get(route('sitemap'))
-        ->assertOk()
-        ->assertHeader('Content-Type', 'application/xml')
-        ->assertSee(route('blog.show', $post), false)
-        ->assertSee(route('guides.show', $guide), false)
-        ->assertSee(route('episodes.show', $episode), false)
+        ->assertOk()->assertHeader('Content-Type', 'application/xml')->assertSeeHtml(route('blog.show', $post))->assertSeeHtml(route('guides.show', $guide))->assertSeeHtml(route('episodes.show', $episode))
         ->assertDontSee($draftPost->slug);
 
     expect(simplexml_load_string($this->responseContent($sitemap)))->not->toBeFalse();

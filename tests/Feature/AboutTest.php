@@ -23,13 +23,7 @@ test('public index page renders', function (): void {
 });
 
 test('about introduction groups its copy and preserves responsive safari artwork', function (): void {
-    $response = get(route('about'))
-        ->assertOk()
-        ->assertSee('aria-labelledby="about-heading"', false)
-        ->assertSee('lg:grid-cols-[5fr_7fr]', false)
-        ->assertSee('aspect-[4/3]', false)
-        ->assertSee('fetchpriority="high"', false)
-        ->assertSee("Kilimanjaro Safaris at Disney's Animal Kingdom", false);
+    $response = get(route('about'))->assertOk()->assertSeeHtml('aria-labelledby="about-heading"')->assertSeeHtml('lg:grid-cols-[5fr_7fr]')->assertSeeHtml('aspect-[4/3]')->assertSeeHtml('fetchpriority="high"')->assertSeeHtml("Kilimanjaro Safaris at Disney's Animal Kingdom");
 
     $document = HTMLDocument::createFromString($this->responseContent($response), LIBXML_NOERROR);
     $xpath = new XPath($document);
@@ -54,9 +48,7 @@ test('primary navigation identifies About as the current destination', function 
 });
 
 test('about page uses an editorial family story with separate host profiles', function (): void {
-    get(route('about'))
-        ->assertOk()
-        ->assertSee('data-about-editorial', false)
+    get(route('about'))->assertOk()->assertSeeHtml('data-about-editorial')
         ->assertSee('Jeffrey Davidson')
         ->assertSee('Cassie Davidson')
         ->assertDontSee('Park Visits')
@@ -71,9 +63,7 @@ test('landing page provides search and social metadata', function (): void {
         'cover_image' => 'podcasts/show-cover.jpg',
     ]);
 
-    get(route('about'))
-        ->assertOk()
-        ->assertSee('<meta property="og:title" content="About the Davidson Family | Mouse28">', false);
+    get(route('about'))->assertOk()->assertSeeHtml('<meta property="og:title" content="About the Davidson Family | Mouse28">');
 });
 
 test('page copy and metadata avoid em dashes', function (): void {
@@ -83,9 +73,5 @@ test('page copy and metadata avoid em dashes', function (): void {
 });
 
 test('page uses the dispatch editorial system', function (): void {
-    get(route('about'))
-        ->assertOk()
-        ->assertSee('data-brand-wordmark', false)
-        ->assertSee('data-about-editorial', false)
-        ->assertSee('js-dispatch-pages', false);
+    get(route('about'))->assertOk()->assertSeeHtml('data-brand-wordmark')->assertSeeHtml('data-about-editorial')->assertSeeHtml('js-dispatch-pages');
 });

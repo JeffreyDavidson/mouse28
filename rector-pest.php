@@ -18,7 +18,6 @@ return RectorConfig::configure()
     ])
     ->withComposerBased(laravel: true)
     ->withSkip([
-        AssertSeeToAssertSeeHtmlRector::class,
         SimplifyToLiteralBooleanRector::class,
         UseToBeFileRector::class,
     ]);

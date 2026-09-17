@@ -51,8 +51,7 @@ test('newsletter errors and old input stay out of the contact form', function ()
         ->toMatch('/<input\s+type="email"\s+id="email"\s+name="email"\s+required\s+autocomplete="email"\s+inputmode="email"\s+value=""/')
         ->toMatch('/<input\s+id="footer-newsletter-email"\s+type="email"\s+name="email"\s+value="not-an-email"/');
 
-    $response
-        ->assertDontSee('aria-describedby="email-error"', false);
+    $response->assertDontSeeHtml('aria-describedby="email-error"');
 });
 
 test('newsletter preserves the submitted email after a resend HTTP failure', function (int $providerStatus): void {
