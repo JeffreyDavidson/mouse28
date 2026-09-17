@@ -3,7 +3,12 @@
     "name": "mouse28/mouse28",
     "type": "project",
     "description": "A Disney parks blog and podcast focused on accessibility and family experiences.",
-    "keywords": ["mouse28", "disney", "accessibility", "podcast"],
+    "keywords": [
+        "mouse28",
+        "disney",
+        "accessibility",
+        "podcast"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.5",
@@ -152,7 +157,9 @@
         "filacheck": {
             "type": "composer",
             "url": "https://satis.filamentexamples.com",
-            "only": ["laraveldaily/filacheck-pro"]
+            "only": [
+                "laraveldaily/filacheck-pro"
+            ]
         }
     },
     "minimum-stability": "stable",
