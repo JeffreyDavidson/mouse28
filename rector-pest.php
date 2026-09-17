@@ -6,7 +6,6 @@ use Pest\Rector\Rules\SimplifyToLiteralBooleanRector;
 use Pest\Rector\Rules\UseToBeFileRector;
 use Pest\Rector\Set\PestSetList;
 use Rector\Config\RectorConfig;
-use RectorLaravel\Rector\MethodCall\AssertSeeToAssertSeeHtmlRector;
 
 return RectorConfig::configure()
     ->withPaths([
