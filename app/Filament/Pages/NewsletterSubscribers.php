@@ -83,7 +83,7 @@ class NewsletterSubscribers extends Page
     {
         $subscribers = $this->getAudience()['subscribers'];
 
-        return response()->streamDownload(function () use ($subscribers) {
+        return response()->streamDownload(function () use ($subscribers): void {
             $handle = fopen('php://output', 'w');
 
             if ($handle === false) {

@@ -95,7 +95,7 @@ class GenerateResponsiveArtwork extends Command
                     continue;
                 }
 
-                if ($image === null) {
+                if (! $image instanceof \GdImage) {
                     $image = imagecreatefromstring(File::get($source['path']));
 
                     if ($image && $square) {

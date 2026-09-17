@@ -19,8 +19,8 @@ class ContactFormConfirmation extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'We got your message! — Mouse28',
             replyTo: array_values(array_filter(array_map(trim(...), explode(',', Config::string('mail.admin_address'))))),
+            subject: 'We got your message! — Mouse28',
         );
     }
 
