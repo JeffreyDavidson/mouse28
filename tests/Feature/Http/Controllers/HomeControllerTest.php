@@ -66,8 +66,8 @@ test('homepage offers a smaller bundled podcast cover without replacing the orig
     $candidate = public_path('images/podcast/mouse28-cover-640.webp');
     $original = public_path('images/podcast/mouse28-cover.webp');
 
-    expect(is_file($candidate))->toBeTrue()
-        ->and(is_file($original))->toBeTrue();
+    expect($candidate)->toBeFile()
+        ->and($original)->toBeFile();
 
     $dimensions = getimagesize($candidate) ?: throw new UnexpectedValueException('The podcast cover is not an image.');
     $candidateSize = filesize($candidate);

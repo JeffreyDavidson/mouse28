@@ -70,5 +70,5 @@ test('Nightwatch identifies administrators without sending their profile details
     $userDetails = $resolver($admin);
 
     // Assert
-    expect($userDetails)->toBe([]);
+    expect($userDetails)->toBeEmpty();
 });
