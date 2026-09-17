@@ -175,7 +175,7 @@ class Post extends Model
     /** @return Attribute<int, never> */
     protected function readingTime(): Attribute
     {
-        return Attribute::make(get: function () {
+        return Attribute::make(get: function (): int {
             $words = str_word_count(strip_tags($this->body ?? ''));
 
             return max(1, (int) ceil($words / 200));
@@ -191,13 +191,13 @@ class Post extends Model
     /** @return Attribute<string|null, never> */
     protected function coverImageUrl(): Attribute
     {
-        return Attribute::make(get: fn () => $this->cover_image ? '/storage/'.$this->cover_image : null);
+        return Attribute::make(get: fn (): ?string => $this->cover_image ? '/storage/'.$this->cover_image : null);
     }
 
     /** @return Attribute<string|null, never> */
     protected function ogImageUrl(): Attribute
     {
-        return Attribute::make(get: fn () => $this->og_image ? '/storage/'.$this->og_image : null);
+        return Attribute::make(get: fn (): ?string => $this->og_image ? '/storage/'.$this->og_image : null);
     }
 
     /** @return Attribute<string, never> */
