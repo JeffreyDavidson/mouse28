@@ -18,8 +18,10 @@
         "spatie/laravel-activitylog": "^5.1"
     },
     "require-dev": {
+        "barryvdh/laravel-ide-helper": "^3.7",
         "christophrumpel/missing-livewire-assertions": "^4.0",
         "driftingly/rector-laravel": "^2.5",
+        "jasonmccreary/double": "^0.7.0",
         "larastan/larastan": "^3.10",
         "laravel/boost": "^2.4",
         "laravel/doctor": "^0.1.0",
@@ -28,6 +30,7 @@
         "laravel/pint": "^1.30.5",
         "laraveldaily/filacheck": "^1.2.4",
         "laraveldaily/filacheck-pro": "^1.1",
+        "mrpunyapal/laravel-auditor": "^0.1.6",
         "nunomaduro/collision": "^8.6",
         "pestphp/pest": "^5.1",
         "pestphp/pest-plugin-agent": "^5.0",
@@ -42,7 +45,8 @@
         "pestphp/pest-plugin-type-coverage": "^5.0",
         "phpstan/extension-installer": "^1.4",
         "rector/rector": "^2.6",
-        "spatie/pest-plugin-snapshots": "^2.2"
+        "spatie/pest-plugin-snapshots": "^2.2",
+        "spatie/pest-plugin-test-time": "^2.3"
     },
     "autoload": {
         "psr-4": {
