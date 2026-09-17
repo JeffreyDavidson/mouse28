@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
+use Spatie\Tags\HasTags;
 
 /**
  * @property ContentAuthor|null $author
@@ -60,7 +61,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class Post extends Model
 {
     /** @use HasFactory<PostFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, HasTags, SoftDeletes;
 
     use LogsActivity;
 

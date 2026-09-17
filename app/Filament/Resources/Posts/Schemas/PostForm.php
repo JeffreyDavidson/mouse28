@@ -9,6 +9,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieTagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
@@ -32,6 +33,9 @@ class PostForm
                     ->description('Basic post information')
                     ->columns(4)
                     ->schema([
+                        SpatieTagsInput::make('tags')
+                            ->type('content')
+                            ->columnSpanFull(),
                         TextInput::make('title')
                             ->required()
                             ->maxLength(255)
