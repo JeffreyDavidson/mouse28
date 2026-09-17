@@ -27,6 +27,9 @@ class EpisodeForm
                     ->description('Basic episode information')
                     ->columns(4)
                     ->schema([
+                        SpatieTagsInput::make('tags')
+                            ->type('content')
+                            ->columnSpanFull(),
                         TextInput::make('title')
                             ->required()
                             ->maxLength(255)
