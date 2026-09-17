@@ -38,24 +38,19 @@ test('guides stay hidden from the public site when the feature is disabled', fun
     get(route('guides.show', $guide))->assertNotFound();
 
     foreach ([route('home'), route('blog.index'), route('search'), '/missing-page'] as $url) {
-        get($url)
-            ->assertDontSee(route('guides.index'), false)
+        get($url)->assertDontSeeHtml(route('guides.index'))
             ->assertDontSee('Browse practical guides');
     }
 
     get(route('home'))
-        ->assertOk()
-        ->assertDontSee($guide->title)
-        ->assertDontSee('dispatch-guide-spread', false);
+        ->assertOk()->assertDontSee($guide->title)->assertDontSeeHtml('dispatch-guide-spread');
 
     get(route('search', ['q' => 'not ready yet']))
         ->assertOk()
         ->assertSee('No results')
         ->assertDontSee($guide->title);
 
-    get(route('sitemap'))
-        ->assertOk()
-        ->assertDontSee('/guides', false);
+    get(route('sitemap'))->assertOk()->assertDontSeeHtml('/guides');
 });
 
 test('guide pages use category artwork when an editor has not uploaded a cover', function (): void {
@@ -64,15 +59,9 @@ test('guide pages use category artwork when an editor has not uploaded a cover',
         'cover_image' => null,
     ]);
 
-    get(route('guides.index'))
-        ->assertOk()
-        ->assertSee('/images/guides/accessibility.webp', false)
-        ->assertSee('data-guide-artwork', false);
+    get(route('guides.index'))->assertOk()->assertSeeHtml('/images/guides/accessibility.webp')->assertSeeHtml('data-guide-artwork');
 
-    get(route('guides.show', $guide))
-        ->assertOk()
-        ->assertSee('/images/guides/accessibility.webp', false)
-        ->assertSee('fetchpriority="high"', false);
+    get(route('guides.show', $guide))->assertOk()->assertSeeHtml('/images/guides/accessibility.webp')->assertSeeHtml('fetchpriority="high"');
 });
 
 test('only currently published content is publicly visible', function (): void {
@@ -162,9 +151,7 @@ test('related guides prioritize the category and fill open slots', function (): 
 test('category label links to its filtered index', function (): void {
     $guide = Guide::factory()->create(['category' => 'family-planning']);
 
-    get(route('guides.show', $guide))
-        ->assertOk()
-        ->assertSee(route('guides.index', ['category' => $guide->category]), false);
+    get(route('guides.show', $guide))->assertOk()->assertSeeHtml(route('guides.index', ['category' => $guide->category]));
 });
 
 test('landing page provides search and social metadata', function (): void {
@@ -174,9 +161,7 @@ test('landing page provides search and social metadata', function (): void {
         'cover_image' => 'podcasts/show-cover.jpg',
     ]);
 
-    get(route('guides.index'))
-        ->assertOk()
-        ->assertSee('<meta property="og:title" content="Disney Parks Guides | Mouse28">', false);
+    get(route('guides.index'))->assertOk()->assertSeeHtml('<meta property="og:title" content="Disney Parks Guides | Mouse28">');
 });
 
 test('archive canonical preserves meaningful filters and pagination', function (): void {
@@ -187,9 +172,7 @@ test('archive canonical preserves meaningful filters and pagination', function (
         'page' => 2,
     ]);
 
-    get($guideCanonical)
-        ->assertOk()
-        ->assertSee('<link rel="canonical" href="'.e($guideCanonical).'">', false);
+    get($guideCanonical)->assertOk()->assertSeeHtml('<link rel="canonical" href="'.e($guideCanonical).'">');
 });
 
 test('guides include review date source and breadcrumb structured data', function (): void {
@@ -218,21 +201,11 @@ test('page copy and metadata avoid em dashes', function (): void {
 });
 
 test('page uses the dispatch editorial system', function (): void {
-    get(route('guides.index'))
-        ->assertOk()
-        ->assertSee('data-brand-wordmark', false)
-        ->assertSee('data-guide-archive', false)
-        ->assertSee('js-dispatch-pages', false);
+    get(route('guides.index'))->assertOk()->assertSeeHtml('data-brand-wordmark')->assertSeeHtml('data-guide-archive')->assertSeeHtml('js-dispatch-pages');
 });
 
 test('reading page uses the dispatch reading surface', function (): void {
     $guide = Guide::factory()->create();
 
-    get(route('guides.show', $guide))
-        ->assertOk()
-        ->assertSee('data-guide-detail', false)
-        ->assertSee('dispatch-reader-sheet', false)
-        ->assertSee('guide-reading-column', false)
-        ->assertDontSee('—')
-        ->assertSee('/images/guides/'.$guide->category->value.'.webp', false);
+    get(route('guides.show', $guide))->assertOk()->assertSeeHtml('data-guide-detail')->assertSeeHtml('dispatch-reader-sheet')->assertSeeHtml('guide-reading-column')->assertDontSee('—')->assertSeeHtml('/images/guides/'.$guide->category->value.'.webp');
 });

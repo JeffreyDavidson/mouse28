@@ -33,18 +33,10 @@ beforeEach(function (): void {
 });
 
 test('contact page renders turnstile widget', function (): void {
-    $response = get(route('contact.show'))
-        ->assertOk()
-        ->assertSee('https://challenges.cloudflare.com/turnstile/v0/api.js', false)
-        ->assertSee('class="cf-turnstile"', false)
-        ->assertSee('data-sitekey="test-site-key"', false)
-        ->assertSee('data-action="contact-form"', false)
-        ->assertSee('data-appearance="interaction-only"', false)
+    $response = get(route('contact.show'))->assertOk()->assertSeeHtml('https://challenges.cloudflare.com/turnstile/v0/api.js')->assertSeeHtml('class="cf-turnstile"')->assertSeeHtml('data-sitekey="test-site-key"')->assertSeeHtml('data-action="contact-form"')->assertSeeHtml('data-appearance="interaction-only"')
         ->assertSee('Park Accessibility Question')
         ->assertSee('Guest on the Podcast')
-        ->assertDontSee('Share Your Story')
-        ->assertDontSee('Family Disney stories')
-        ->assertDontSee('value="story"', false);
+        ->assertDontSee('Share Your Story')->assertDontSee('Family Disney stories')->assertDontSeeHtml('value="story"');
 
     expect(substr_count((string) $response->getContent(), 'https://challenges.cloudflare.com/turnstile/v0/api.js'))->toBe(1)
         ->and(array_column(ContactTopic::cases(), 'value'))->not->toContain('story');
@@ -66,9 +58,7 @@ test('contact errors and old input stay out of the newsletter form', function ()
         ->toMatch('/<input\s+type="email"\s+id="email"\s+name="email"\s+required\s+autocomplete="email"\s+inputmode="email"\s+value="not-an-email"/')
         ->toMatch('/<input\s+id="footer-newsletter-email"\s+type="email"\s+name="email"\s+value=""/');
 
-    $response
-        ->assertSee('aria-describedby="email-error"', false)
-        ->assertDontSee('aria-describedby="newsletter-email-error"', false);
+    $response->assertSeeHtml('aria-describedby="email-error"')->assertDontSeeHtml('aria-describedby="newsletter-email-error"');
 });
 
 test('contact page uses the configured podcast email address', function (): void {
@@ -77,9 +67,7 @@ test('contact page uses the configured podcast email address', function (): void
         'email' => 'hello@mouse28.test',
     ]);
 
-    get(route('contact.show'))
-        ->assertOk()
-        ->assertSee('href="mailto:hello@mouse28.test"', false)
+    get(route('contact.show'))->assertOk()->assertSeeHtml('href="mailto:hello@mouse28.test"')
         ->assertSee('hello@mouse28.test')
         ->assertDontSee('mouse28podcast@gmail.com');
 });
@@ -89,11 +77,7 @@ test('contact page offers email instead of an unusable form when verification is
     config()->set('mail.admin_address', 'fallback@mouse28.test');
 
     get(route('contact.show'))
-        ->assertOk()
-        ->assertSee('Email us directly')
-        ->assertSee('href="mailto:fallback@mouse28.test"', false)
-        ->assertDontSee('action="'.route('contact.store').'"', false)
-        ->assertDontSee('data-action="contact-form"', false);
+        ->assertOk()->assertSee('Email us directly')->assertSeeHtml('href="mailto:fallback@mouse28.test"')->assertDontSeeHtml('action="'.route('contact.store').'"')->assertDontSeeHtml('data-action="contact-form"');
 })->with([
     'missing site key' => 'site_key',
     'missing secret key' => 'secret_key',
@@ -254,9 +238,7 @@ test('landing page provides search and social metadata', function (): void {
         'cover_image' => 'podcasts/show-cover.jpg',
     ]);
 
-    get(route('contact.show'))
-        ->assertOk()
-        ->assertSee('<meta name="description" content="Contact Jeffrey and Cassie about Mouse28, Disney park accessibility, family travel, collaborations, or the podcast.">', false);
+    get(route('contact.show'))->assertOk()->assertSeeHtml('<meta name="description" content="Contact Jeffrey and Cassie about Mouse28, Disney park accessibility, family travel, collaborations, or the podcast.">');
 });
 
 test('page copy and metadata avoid em dashes', function (): void {
@@ -266,21 +248,14 @@ test('page copy and metadata avoid em dashes', function (): void {
 });
 
 test('page uses the dispatch editorial system', function (): void {
-    get(route('contact.show'))
-        ->assertOk()
-        ->assertSee('data-brand-wordmark', false)
-        ->assertSee('dispatch-letter-form', false)
-        ->assertSee('js-dispatch-pages', false);
+    get(route('contact.show'))->assertOk()->assertSeeHtml('data-brand-wordmark')->assertSeeHtml('dispatch-letter-form')->assertSeeHtml('js-dispatch-pages');
 });
 
 test('form placeholders use readable text colors', function (): void {
     config()->set('services.turnstile.site_key', 'test-site-key');
     config()->set('services.turnstile.secret_key', 'test-secret-key');
 
-    get(route('contact.show'))
-        ->assertOk()
-        ->assertSee('placeholder:text-navy/65', false)
-        ->assertDontSee('placeholder:text-navy/30', false);
+    get(route('contact.show'))->assertOk()->assertSeeHtml('placeholder:text-navy/65')->assertDontSeeHtml('placeholder:text-navy/30');
 });
 
 /** @return array<string, string> */
