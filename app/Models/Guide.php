@@ -12,12 +12,12 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Spatie\Tags\HasTags;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Date;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
+use Spatie\Tags\HasTags;
 
 /**
  * @property ContentAuthor|null $author
@@ -57,7 +57,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class Guide extends Model
 {
     /** @use HasFactory<GuideFactory> */
-    use HasFactory, SoftDeletes, HasTags;
+    use HasFactory, HasTags, SoftDeletes;
 
     use LogsActivity;
 

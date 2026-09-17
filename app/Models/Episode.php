@@ -11,11 +11,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Spatie\Tags\HasTags;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Date;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
+use Spatie\Tags\HasTags;
 
 /**
  * @property Carbon|null $published_at
@@ -55,7 +55,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class Episode extends Model
 {
     /** @use HasFactory<EpisodeFactory> */
-    use HasFactory, SoftDeletes, HasTags;
+    use HasFactory, HasTags, SoftDeletes;
 
     use LogsActivity;
 
