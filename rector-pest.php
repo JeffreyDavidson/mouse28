@@ -2,8 +2,6 @@
 
 declare(strict_types=1);
 
-use Pest\Rector\Rules\SimplifyToLiteralBooleanRector;
-use Pest\Rector\Rules\UseToBeFileRector;
 use Pest\Rector\Set\PestSetList;
 use Rector\Config\RectorConfig;
 
@@ -15,8 +13,4 @@ return RectorConfig::configure()
     ->withSets([
         PestSetList::CODING_STYLE,
     ])
-    ->withComposerBased(laravel: true)
-    ->withSkip([
-        SimplifyToLiteralBooleanRector::class,
-        UseToBeFileRector::class,
-    ]);
+    ->withComposerBased(laravel: true);
