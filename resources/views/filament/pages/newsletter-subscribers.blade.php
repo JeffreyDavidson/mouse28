@@ -4,6 +4,12 @@
         $subscribers = $audience['subscribers'];
         $error = $audience['error'];
         $count = count($subscribers);
+        $subscribers = new \Illuminate\Pagination\LengthAwarePaginator(
+            array_slice($subscribers, ($this->getPage() - 1) * 50, 50),
+            $count,
+            50,
+            $this->getPage(),
+        );
     @endphp
 
     <x-filament.page-header
@@ -112,7 +118,7 @@
                         @php($createdAt = isset($subscriber['created_at']) ? \Carbon\Carbon::parse($subscriber['created_at']) : null)
                         <tr class="hover:bg-mouse-gold/4 transition-colors">
                             <td class="border-mouse-gold/6 font-mouse-body text-mouse-cream/40 border-b px-6 py-4 text-xs">
-                                {{ $index + 1 }}
+                                {{ $subscribers->firstItem() + $index }}
                             </td>
                             <td class="border-mouse-gold/6 border-b px-6 py-4">
                                 <div class="flex items-center gap-3">
@@ -143,5 +149,6 @@
                 </tbody>
             </table>
         </div>
+        {{ $subscribers->links() }}
     @endif
 </x-filament-panels::page>

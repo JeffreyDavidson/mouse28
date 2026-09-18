@@ -2,6 +2,7 @@ function registerAlpineComponents(Alpine) {
     Alpine.data('copyLink', () => ({
         feedback: '',
         isFeedbackVisible: false,
+        feedbackTimer: null,
 
         async copy() {
             try {
@@ -18,11 +19,16 @@ function registerAlpineComponents(Alpine) {
         },
 
         showFeedback(duration) {
+            window.clearTimeout(this.feedbackTimer);
             this.isFeedbackVisible = true;
 
-            window.setTimeout(() => {
+            this.feedbackTimer = window.setTimeout(() => {
                 this.isFeedbackVisible = false;
             }, duration);
+        },
+
+        destroy() {
+            window.clearTimeout(this.feedbackTimer);
         },
     }));
 }
@@ -36,17 +42,15 @@ function initializeBlogArticle() {
 
     const progressBar = document.getElementById('reading-progress');
     const backToTop = document.getElementById('back-to-top');
-    const preferredScrollBehavior = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
-        ? 'auto'
-        : 'smooth';
+    const preferredScrollBehavior = () =>
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
 
     const updateProgress = () => {
         const articleBounds = article.getBoundingClientRect();
         const articleTop = window.scrollY + articleBounds.top;
         const denominator = articleBounds.height - window.innerHeight * 0.5;
-        const percentage = denominator > 0
-            ? Math.max(0, Math.min(100, ((window.scrollY - articleTop) / denominator) * 100))
-            : 0;
+        const percentage =
+            denominator > 0 ? Math.max(0, Math.min(100, ((window.scrollY - articleTop) / denominator) * 100)) : 0;
 
         if (progressBar) {
             progressBar.style.width = `${percentage}%`;

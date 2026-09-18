@@ -30,12 +30,21 @@ class PostIndexViewModel
         }
 
         $page = max($request->integer('page', 1), 1);
-        $categoryLabel = $categoryEnum?->getLabel();
 
         return [
             'category' => $category,
             'search' => $search,
             'sort' => $sort,
+            ...$this->metadata($category, $search, $sort, $page),
+        ];
+    }
+
+    /** @return array{pageTitle: string, pageDescription: string, canonicalUrl: string, robots: string} */
+    public function metadata(string $category, string $search, string $sort, int $page): array
+    {
+        $categoryLabel = PostCategory::tryFrom($category)?->getLabel();
+
+        return [
             'pageTitle' => $categoryLabel ? "{$categoryLabel} | Mouse28" : 'Disney Parks Blog | Mouse28',
             'pageDescription' => $categoryLabel
                 ? "Mouse28 {$categoryLabel} articles, family experiences, and practical Disney park takeaways."

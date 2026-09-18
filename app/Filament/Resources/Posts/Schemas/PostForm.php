@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Posts\Schemas;
 
 use App\Enums\ContentAuthor;
 use App\Enums\PostCategory;
+use App\Models\Post;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
@@ -47,6 +48,9 @@ class PostForm
                                 }
                             }),
                         TextInput::make('slug')
+                            ->regex('/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/')
+                            ->disabled(fn (?Post $record): bool => $record?->published_at?->isPast() ?? false)
+                            ->helperText('Lowercase words separated by hyphens. URLs are locked once their publication date has passed.')
                             ->required()
                             ->maxLength(255)
                             ->columnSpan(2)

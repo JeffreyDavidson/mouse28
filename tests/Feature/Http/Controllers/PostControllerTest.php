@@ -178,6 +178,7 @@ test('blog search category sorting and pagination preserve filters', function ()
     Post::factory()->create([
         'title' => 'Unrelated dining review',
         'category' => 'food-reviews',
+        'published_at' => now()->subMonth(),
     ]);
 
     get(route('blog.index', [

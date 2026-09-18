@@ -13,6 +13,26 @@ use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
 
+test('subscriber pages are bounded while exports contain the whole audience', function (): void {
+    Http::fake(['https://api.resend.com/*' => Http::response(['data' => array_map(
+        fn (int $number): array => ['email' => "reader{$number}@example.com"],
+        range(1, 51),
+    )])]);
+    actingAs(User::factory()->admin()->create());
+    $page = livewire(NewsletterSubscribers::class);
+
+    $page->assertSee('reader1@example.com')->assertDontSee('reader51@example.com');
+
+    $page->call('setPage', 2);
+
+    $page->assertSee('reader51@example.com')->assertDontSee('reader1@example.com');
+
+    $page->call('exportCsv');
+
+    $page->assertFileDownloaded('newsletter-subscribers-'.now()->format('Y-m-d').'.csv');
+    Http::assertSentCount(1);
+});
+
 beforeEach(function (): void {
     config()->set('services.resend.audience_id', 'audience-test-id');
     config()->set('services.resend.key', 'resend-test-key');

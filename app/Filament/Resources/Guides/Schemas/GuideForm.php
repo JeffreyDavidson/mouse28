@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Guides\Schemas;
 
 use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
+use App\Models\Guide;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
@@ -44,6 +45,9 @@ class GuideForm
                                 }
                             }),
                         TextInput::make('slug')
+                            ->regex('/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/')
+                            ->disabled(fn (?Guide $record): bool => $record?->published_at?->isPast() ?? false)
+                            ->helperText('Lowercase words separated by hyphens. URLs are locked once their publication date has passed.')
                             ->required()
                             ->maxLength(255)
                             ->unique()

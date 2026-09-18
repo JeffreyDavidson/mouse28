@@ -46,6 +46,20 @@ Run `php artisan content:sync-production` from the local Mouse28 checkout to rep
 
 The sync is one-way and refuses to run when the current application environment is production. It never exports private users, subscribers, contact submissions, credentials, or environment-specific podcast email. Local drafts and scheduled content are preserved; stale currently published local records are soft deleted.
 
+## Contact mail queue deployment prerequisite
+
+Before deploying queued contact delivery, configure a supervised Forge worker:
+`php artisan queue:work database --queue=contact-mail --timeout=60 --tries=3`.
+Use the site's current release directory, keep database `retry_after` greater than
+60 seconds (the default is 90), and restart workers after each deployment. Verify
+the jobs and failed_jobs migrations are present and that the worker can process a
+new, authorized test submission. A default-queue worker does not consume this queue.
+
+Do not backfill historical contacts. New jobs automatically retry only within
+23 hours of submission. Inspect failed jobs and provider receipts before a manual
+retry; Resend retains idempotency keys for 24 hours, not indefinitely. No production
+worker or deployment is created by the application changes themselves.
+
 ## Off-site backups
 
 Mouse28's off-site backup job runs as `forge` on `cold-moon`, independently of
@@ -84,14 +98,18 @@ deleted with explicit confirmation. No further Mac backups are scheduled.
 Keychain credentials and the encryption password were preserved for recovery, as were all Backblaze
 archives. Existing server-side local database jobs are unchanged.
 
-Retention is deliberately unchanged: unique dated B2 snapshots do **not** expire
-under the current rule, which deletes only hidden versions after 30 days. The
-bucket's existing seven-day Object Lock remains in place. The approved retention
-policy now expires current objects after 90 days and noncurrent versions after 30
-days; an additional expired-delete-marker rule is required by Backblaze. No
-existing objects were manually deleted. Backup failures remain log-only for now:
-review `backup.log` on the server; email and independent missed-run alerts are
-intentionally not configured.
+The B2 lifecycle policy was verified read-only on September 18, 2026: enabled
+rules expire current objects after 90 days, noncurrent versions after 30 days,
+and remove expired delete markers. This replaces the former hidden-versions-only
+policy; unique dated snapshots are no longer retained indefinitely. No objects
+were manually deleted during verification. The existing seven-day Object Lock
+is a separate protection, not an indefinite-retention policy.
+
+Backup failures remain log-only: review `backup.log` and `last-success.json` on
+the server. Failure and independent missed-run alerts are approved but **not yet
+configured**; the monitoring service and notification destination must be selected
+before operational completion. The latest success marker was verified at
+07:15 UTC on September 18, 2026; that check does not replace ongoing monitoring.
 
 For recovery, first verify the manifest's ciphertext hashes, decrypt with the
 existing backup password and recorded OpenSSL parameters, then verify plaintext

@@ -13,6 +13,7 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Date;
 
 /** @property Episode $record */
@@ -24,6 +25,28 @@ class EditEpisode extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('generateArtwork')
+                ->label('Generate responsive artwork')
+                ->icon(Heroicon::OutlinedPhoto)
+                ->authorize('update')
+                ->requiresConfirmation()
+                ->modalDescription('Generate missing responsive copies of this saved cover. The original image is preserved.')
+                ->visible(fn (): bool => $this->record->is_published && ($this->record->published_at?->isPast() ?? false) && filled($this->record->cover_image))
+                ->action(function (): void {
+                    $result = Artisan::call('content:generate-artwork', [
+                        '--type' => 'episodes',
+                        '--id' => $this->record->getKey(),
+                        '--force' => true,
+                        '--no-interaction' => true,
+                    ]);
+                    $notification = Notification::make();
+                    if ($result !== 0) {
+                        $notification->danger()->title('Artwork generation failed')->body('The original cover is unchanged. Check its format and image-driver support.');
+                    } else {
+                        $notification->success()->title('Responsive artwork prepared');
+                    }
+                    $notification->send();
+                }),
             Action::make('publish')
                 ->icon(Heroicon::OutlinedRocketLaunch)
                 ->color('success')

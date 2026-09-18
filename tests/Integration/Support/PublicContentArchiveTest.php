@@ -14,6 +14,53 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 pest()->use(RefreshDatabase::class);
 
+test('content tags round trip and replace stale tags while legacy archives preserve them', function (): void {
+    $post = Post::factory()->create();
+    $guide = Guide::factory()->create();
+    $episode = Episode::factory()->create();
+    foreach ([$post, $guide, $episode] as $record) {
+        $record->syncTagsWithType(['Accessibility', 'Family'], 'content');
+    }
+    $service = app(PublicContentArchive::class);
+    $archive = $service->export();
+    foreach ([$post, $guide, $episode] as $record) {
+        $record->syncTagsWithType(['Stale'], 'content');
+    }
+
+    $service->import($archive);
+
+    foreach ([$post, $guide, $episode] as $record) {
+        expect($record->refresh()->tagsWithType('content')->pluck('name')->sort()->values()->all())
+            ->toBe(['Accessibility', 'Family']);
+    }
+    unset($archive['posts'][0]['tags']);
+    $archive['guides'][0]['tags'] = [];
+
+    $service->import($archive);
+
+    expect($post->refresh()->tagsWithType('content'))->toHaveCount(2)
+        ->and($guide->refresh()->tagsWithType('content'))->toBeEmpty();
+});
+
+test('invalid imported attributes leave all existing records unchanged', function (string $field, mixed $value): void {
+    $post = Post::factory()->create(['title' => 'Original']);
+    $service = app(PublicContentArchive::class);
+    $archive = $service->export();
+    $archive['posts'][0]['title'] = 'Changed';
+    $archive['posts'][0][$field] = $value;
+
+    expect(fn () => $service->import($archive))->toThrow(InvalidArgumentException::class)
+        ->and($post->refresh()->title)->toBe('Original');
+})->with([
+    'unsafe media' => ['cover_image', '../private.jpg'],
+    'invalid date' => ['published_at', 'not a date'],
+    'invalid slug' => ['slug', 'folder/story'],
+    'invalid tags' => ['tags', [42]],
+    'invalid URL' => ['source_url', 'javascript:alert(1)'],
+    'invalid media type' => ['cover_image', []],
+    'invalid relation type' => ['episode_slug', []],
+]);
+
 test('sync refuses unpublished identity collisions without changing content', function (PostFactory|GuideFactory|EpisodeFactory $factory, string $state): void {
     // Arrange
     $record = $factory->createOne();
@@ -107,7 +154,7 @@ test('invalid archive enum values roll back earlier imported records', function 
     $archive['posts'][0]['title'] = 'Changed by import';
     $archive['posts'][1]['category'] = 'not-a-category';
 
-    expect(fn () => $service->import($archive))->toThrow(ValueError::class);
+    expect(fn () => $service->import($archive))->toThrow(InvalidArgumentException::class);
 
     $first->refresh();
 

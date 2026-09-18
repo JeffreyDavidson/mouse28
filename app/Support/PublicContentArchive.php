@@ -2,6 +2,9 @@
 
 namespace App\Support;
 
+use App\Enums\ContentAuthor;
+use App\Enums\GuideCategory;
+use App\Enums\PostCategory;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Podcast;
@@ -10,6 +13,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use InvalidArgumentException;
 
 /**
@@ -97,30 +102,34 @@ class PublicContentArchive
     public function export(): array
     {
         $episodes = Episode::query()
+            ->with('tags')
             ->published()
             ->orderBy('published_at')
-            ->get(self::EPISODE_FIELDS)
-            ->map(fn (Episode $episode): array => $this->attributes($episode, self::EPISODE_FIELDS))
+            ->get(['id', ...self::EPISODE_FIELDS])
+            ->map(fn (Episode $episode): array => [...$this->attributes($episode, self::EPISODE_FIELDS), 'tags' => $episode->tagsWithType('content')->pluck('name')->all()])
             ->values()
             ->all();
         $episodeSlugs = Episode::query()->published()->pluck('slug', 'id');
 
         $posts = Post::query()
+            ->with('tags')
             ->published()
             ->orderBy('published_at')
-            ->get([...self::POST_FIELDS, 'episode_id'])
+            ->get(['id', ...self::POST_FIELDS, 'episode_id'])
             ->map(fn (Post $post): array => [
                 ...$this->attributes($post, self::POST_FIELDS),
                 'episode_slug' => $episodeSlugs->get($post->episode_id),
+                'tags' => $post->tagsWithType('content')->pluck('name')->all(),
             ])
             ->values()
             ->all();
 
         $guides = Guide::query()
+            ->with('tags')
             ->published()
             ->orderBy('published_at')
-            ->get(self::GUIDE_FIELDS)
-            ->map(fn (Guide $guide): array => $this->attributes($guide, self::GUIDE_FIELDS))
+            ->get(['id', ...self::GUIDE_FIELDS])
+            ->map(fn (Guide $guide): array => [...$this->attributes($guide, self::GUIDE_FIELDS), 'tags' => $guide->tagsWithType('content')->pluck('name')->all()])
             ->values()
             ->all();
 
@@ -209,6 +218,7 @@ class PublicContentArchive
     private function persist(array $archive, bool $prunePublished = false): array
     {
         $archive = $this->validate($archive);
+        $this->validateForPersistence($archive);
 
         return DB::transaction(function () use ($archive, $prunePublished): array {
             if ($prunePublished) {
@@ -267,6 +277,9 @@ class PublicContentArchive
             'is_published' => true,
         ]);
         $episode->save();
+        if (is_array($attributes['tags'] ?? null)) {
+            $episode->syncTagsWithType($attributes['tags'], 'content');
+        }
     }
 
     /** @param array<string, mixed> $attributes */
@@ -287,6 +300,9 @@ class PublicContentArchive
             'is_published' => true,
         ]);
         $post->save();
+        if (is_array($attributes['tags'] ?? null)) {
+            $post->syncTagsWithType($attributes['tags'], 'content');
+        }
     }
 
     /** @param array<string, mixed> $attributes */
@@ -303,6 +319,9 @@ class PublicContentArchive
             'is_published' => true,
         ]);
         $guide->save();
+        if (is_array($attributes['tags'] ?? null)) {
+            $guide->syncTagsWithType($attributes['tags'], 'content');
+        }
     }
 
     /**
@@ -347,6 +366,45 @@ class PublicContentArchive
         return $path;
     }
 
+    /** @param ValidatedArchive $archive */
+    private function validateForPersistence(array $archive): void
+    {
+        $rules = [];
+        foreach (['posts', 'guides', 'episodes'] as $type) {
+            $rules["{$type}.*.title"] = ['required', 'string', 'max:255'];
+            $rules["{$type}.*.slug"] = ['required', 'string', 'max:255', 'regex:/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/'];
+            $rules["{$type}.*.published_at"] = ['required', 'date', 'before_or_equal:now'];
+            $rules["{$type}.*.last_reviewed_at"] = ['nullable', 'date'];
+            $rules["{$type}.*.author"] = ['nullable', Rule::enum(ContentAuthor::class)];
+            foreach (['excerpt', 'body', 'description', 'show_notes', 'transcript', 'meta_title', 'meta_description'] as $field) {
+                $rules["{$type}.*.{$field}"] = ['nullable', 'string'];
+            }
+            foreach (['cover_image', 'og_image', 'audio_path'] as $field) {
+                $rules["{$type}.*.{$field}"] = ['nullable', 'string', 'max:255'];
+            }
+            foreach (['source_url', 'transistor_url', 'audio_url', 'apple_url', 'spotify_url', 'youtube_url'] as $field) {
+                $rules["{$type}.*.{$field}"] = ['nullable', 'string', 'url:http,https', 'max:255'];
+            }
+        }
+        $rules['posts.*.episode_slug'] = ['nullable', 'string', 'max:255', 'regex:/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/'];
+        $rules['posts.*.category'] = ['nullable', Rule::enum(PostCategory::class)];
+        $rules['guides.*.category'] = ['nullable', Rule::enum(GuideCategory::class)];
+        $rules['episodes.*.episode_number'] = ['required', 'integer', 'min:0', 'max:2147483647', 'distinct'];
+        $rules['episodes.*.season_number'] = ['nullable', 'integer', 'min:0', 'max:4294967295'];
+        $rules['episodes.*.duration_seconds'] = ['nullable', 'integer', 'min:0', 'max:2147483647'];
+        $rules['podcast.name'] = ['required_with:podcast', 'string', 'max:255'];
+        $rules['podcast.description'] = ['nullable', 'string'];
+        $rules['podcast.cover_image'] = ['nullable', 'string', 'max:255'];
+        foreach (['apple_url', 'spotify_url', 'youtube_url', 'instagram_url', 'tiktok_url'] as $field) {
+            $rules["podcast.{$field}"] = ['nullable', 'string', 'url:http,https', 'max:255'];
+        }
+
+        $validator = Validator::make($archive, $rules);
+        if ($validator->fails()) {
+            throw new InvalidArgumentException('Invalid public content archive: '.implode(' ', $validator->errors()->all()));
+        }
+    }
+
     /**
      * @param  array<string, mixed>  $archive
      * @return ValidatedArchive
@@ -359,6 +417,10 @@ class PublicContentArchive
 
         if (! array_key_exists('podcast', $archive) || (! is_array($archive['podcast']) && $archive['podcast'] !== null)) {
             throw new InvalidArgumentException('The public content archive contains invalid podcast metadata.');
+        }
+
+        if (filled($archive['podcast']['cover_image'] ?? null)) {
+            $this->validateMediaPath($archive['podcast']['cover_image']);
         }
 
         return [
@@ -381,13 +443,40 @@ class PublicContentArchive
         }
 
         $validated = [];
+        $slugs = [];
+        $episodeNumbers = [];
 
         foreach ($records as $attributes) {
             if (! is_array($attributes) || ! is_string($attributes['slug'] ?? null) || blank($attributes['slug'])) {
                 throw new InvalidArgumentException("The public content archive contains invalid {$contentType}.");
             }
 
-            $validated[] = $this->onlyAttributes($attributes, $fields);
+            if (in_array($attributes['slug'], $slugs, true)) {
+                throw new InvalidArgumentException("The public content archive contains duplicate {$contentType} slugs.");
+            }
+            $slugs[] = $attributes['slug'];
+
+            foreach (['cover_image', 'og_image', 'audio_path'] as $field) {
+                if (filled($attributes[$field] ?? null)) {
+                    $this->validateMediaPath($attributes[$field]);
+                }
+            }
+
+            if (array_key_exists('tags', $attributes)
+                && (! is_array($attributes['tags']) || ! array_is_list($attributes['tags'])
+                    || array_any($attributes['tags'], fn (mixed $tag): bool => ! is_string($tag) || trim($tag) === '' || mb_strlen($tag) > 255))) {
+                throw new InvalidArgumentException("The public content archive contains invalid {$contentType} tags.");
+            }
+
+            // Media inspection also accepts partial legacy records; persistence validates the full payload.
+            if (array_key_exists('episode_number', $attributes)) {
+                if (in_array($attributes['episode_number'], $episodeNumbers, true)) {
+                    throw new InvalidArgumentException('The public content archive contains duplicate episode numbers.');
+                }
+                $episodeNumbers[] = $attributes['episode_number'];
+            }
+
+            $validated[] = $this->onlyAttributes($attributes, [...$fields, 'tags']);
         }
 
         return $validated;

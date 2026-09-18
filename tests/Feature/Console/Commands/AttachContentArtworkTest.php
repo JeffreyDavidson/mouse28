@@ -19,7 +19,7 @@ test('failed artwork writes leave content unattached and return failure', functi
     Storage::set('public', $disk);
 
     // Act
-    $exitCode = $this->artisan('content:attach-artwork');
+    $exitCode = $this->pendingCommand('content:attach-artwork')->run();
 
     // Assert
     expect($exitCode)->toBe(Command::FAILURE)
@@ -61,7 +61,7 @@ test('bundled artwork is attached without replacing existing uploads', function 
         'cover_image' => 'episodes/custom-upload.webp',
     ]);
 
-    expect($this->artisan('content:attach-artwork'))->toBe(Command::SUCCESS);
+    expect($this->pendingCommand('content:attach-artwork')->run())->toBe(Command::SUCCESS);
 
     foreach ($artwork as $path) {
         Storage::disk('public')->assertExists($path);
@@ -75,14 +75,16 @@ test('bundled artwork is attached without replacing existing uploads', function 
 
     Storage::disk('public')->assertMissing('posts/recap-epcot-kids-think-differently-ep4.webp');
 
-    expect($this->artisan('content:attach-artwork'))->toBe(Command::SUCCESS);
+    expect($this->pendingCommand('content:attach-artwork')->run())->toBe(Command::SUCCESS);
 });
 
 test('artwork attachment stops when a bundled file is missing', function (): void {
     Storage::fake('public');
     config()->set('mouse28.content_artwork_path', storage_path('framework/testing/missing-artwork'));
 
-    expect($this->artisan('content:attach-artwork'))->toBe(Command::FAILURE);
+    $this->pendingCommand('content:attach-artwork')
+        ->expectsOutputToContain('Bundled post artwork directory is missing:')
+        ->assertFailed();
 });
 
 test('new post artwork is discovered by its slug while concepts stay inactive', function (): void {
@@ -113,7 +115,7 @@ test('new post artwork is discovered by its slug while concepts stay inactive', 
     ]);
 
     try {
-        expect($this->artisan('content:attach-artwork'))->toBe(Command::SUCCESS);
+        expect($this->pendingCommand('content:attach-artwork')->run())->toBe(Command::SUCCESS);
 
         Storage::disk('public')->assertExists('posts/a-new-park-story.webp');
         Storage::disk('public')->assertMissing('posts/ignored-cover.jpg');
