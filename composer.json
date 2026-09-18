@@ -6,7 +6,6 @@
     "keywords": ["mouse28", "disney", "accessibility", "podcast"],
     "license": "MIT",
     "require": {
-        "php": "^8.5",
         "filament/filament": "^5.7",
         "filament/spatie-laravel-tags-plugin": "^5.0",
         "intervention/image": "^4.0",
@@ -15,6 +14,7 @@
         "laravel/nightwatch": "^1.30",
         "laravel/tinker": "^3.0",
         "livewire/livewire": "^4.4",
+        "php": "^8.5",
         "resend/resend-laravel": "^1.4",
         "sentry/sentry-laravel": "^4.27",
         "spatie/laravel-activitylog": "^5.1",
@@ -33,6 +33,7 @@
         "laravel/pint": "^1.30.5",
         "laraveldaily/filacheck": "^1.2.4",
         "laraveldaily/filacheck-pro": "^1.1",
+        "mockery/mockery": "^1.6",
         "mrpunyapal/laravel-auditor": "^0.1.6",
         "nunomaduro/collision": "^8.6",
         "pestphp/pest": "^5.1",
@@ -137,7 +138,7 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true,
+        "sort-packages": false,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true,
