@@ -105,11 +105,32 @@ policy; unique dated snapshots are no longer retained indefinitely. No objects
 were manually deleted during verification. The existing seven-day Object Lock
 is a separate protection, not an indefinite-retention policy.
 
-Backup failures remain log-only: review `backup.log` and `last-success.json` on
-the server. Failure and independent missed-run alerts are approved but **not yet
-configured**; the monitoring service and notification destination must be selected
-before operational completion. The latest success marker was verified at
-07:15 UTC on September 18, 2026; that check does not replace ongoing monitoring.
+Forge monitors the job through the **Mouse28 verified off-site backup** heartbeat
+on the production site's Observe page. It expects the existing `15 7 * * *`
+schedule and allows 30 minutes after the expected run before notifying. A failed,
+stuck, or missed backup therefore produces a missing-check-in alert rather than
+an immediate exception email. This monitor runs outside the backup server.
+
+The job pings only after a fresh database and media backup has been uploaded and
+verified; retrying an older pending upload alone cannot report success. The
+endpoint is stored in the server-only `heartbeat-url` file with mode `0600`.
+Never commit or log this capability URL. The request has bounded timeouts and
+retries, does not follow redirects, and keeps its URL out of process arguments.
+A heartbeat delivery failure leaves the verified backup intact, returns failure,
+and logs only the generic notification stage. Inspect `backup.log` and
+`last-success.json` to distinguish backup failures from monitoring failures.
+
+Forge's account email is `jdavidsonwebdev@gmail.com`; email and in-app
+**Heartbeat check-in missed** notifications are enabled, with no servers muted.
+The built-in **Backup failed** preference concerns Forge-managed database backups,
+not this custom B2 job. Storage, encryption, retention, and cron remain unchanged.
+
+On September 18, 2026, all 13 synthetic safety tests passed locally and on the
+server. Fresh snapshot `20260918T213158Z` was verified at 21:32 UTC and Forge
+reported **Beating** after its success ping. An actual missed-run email has not
+been deliberately triggered or confirmed in the inbox. Original scripts are
+preserved as `backup.py.before-heartbeat` and `test_backup.py.before-heartbeat`
+in the private server installation for recovery.
 
 For recovery, first verify the manifest's ciphertext hashes, decrypt with the
 existing backup password and recorded OpenSSL parameters, then verify plaintext
