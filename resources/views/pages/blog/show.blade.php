@@ -93,13 +93,17 @@
                         </a>
                         <button
                             type="button"
-                            data-copy-link
+                            x-data="copyLink"
+                            x-on:click="copy"
                             class="border-cream/20 text-cream/70 hover:border-gold hover:text-gold relative inline-flex size-12 items-center justify-center rounded-full border transition-colors"
                             aria-label="Copy link"
                         >
                             <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
                             <span
-                                class="copy-feedback bg-gold text-navy absolute -bottom-9 left-1/2 hidden -translate-x-1/2 rounded-full px-3 py-1 text-xs whitespace-nowrap"
+                                x-cloak
+                                x-show="isFeedbackVisible"
+                                x-text="feedback"
+                                class="bg-gold text-navy absolute -bottom-9 left-1/2 -translate-x-1/2 rounded-full px-3 py-1 text-xs whitespace-nowrap"
                                 role="status"
                                 aria-live="polite"
                                 aria-atomic="true"
