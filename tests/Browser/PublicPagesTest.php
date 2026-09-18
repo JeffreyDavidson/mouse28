@@ -491,8 +491,27 @@ test('copying an article link gives accessible feedback', function (): void {
         });
         JS);
 
-    $page->keys('[data-copy-link][aria-label="Copy link"]', 'Enter')
+    $page->keys('button[aria-label="Copy link"]', 'Enter')
         ->assertScript('window.copiedArticleUrl', route('blog.show', $post))
+        ->assertScript('document.querySelector("[x-data=copyLink]")._x_dataStack.length', 1)
+        ->assertSee('Copied!')
+        ->assertNoJavaScriptErrors();
+});
+
+test('copying an episode link gives accessible feedback', function (): void {
+    $episode = Episode::factory()->create();
+    $page = visit(route('episodes.show', $episode));
+
+    $page->script(<<<'JS'
+        Object.defineProperty(navigator, 'clipboard', {
+            configurable: true,
+            value: { writeText: async (value) => { window.copiedEpisodeUrl = value; } },
+        });
+        JS);
+
+    $page->click('[aria-labelledby="share-episode"] button')
+        ->assertScript('window.copiedEpisodeUrl', route('episodes.show', $episode))
+        ->assertScript('document.querySelector("[aria-labelledby=share-episode] [x-data=copyLink]")._x_dataStack.length', 1)
         ->assertSee('Copied!')
         ->assertNoJavaScriptErrors();
 });
