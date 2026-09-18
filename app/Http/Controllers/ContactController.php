@@ -15,7 +15,7 @@ class ContactController
 {
     public function show(ContactViewModel $viewModel): View
     {
-        return view('contact', $viewModel->data());
+        return view('pages.contact', $viewModel->data());
     }
 
     public function store(

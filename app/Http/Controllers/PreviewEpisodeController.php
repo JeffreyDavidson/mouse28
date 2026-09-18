@@ -13,6 +13,6 @@ class PreviewEpisodeController
     {
         Gate::authorize('view', $episode);
 
-        return view('episodes.show', $viewModel->data($episode, preview: true));
+        return view('pages.episodes.show', $viewModel->data($episode, preview: true));
     }
 }

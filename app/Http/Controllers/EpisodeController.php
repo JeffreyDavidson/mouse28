@@ -11,13 +11,13 @@ class EpisodeController
 {
     public function index(EpisodeIndexViewModel $viewModel): View
     {
-        return view('episodes.index', $viewModel->data());
+        return view('pages.episodes.index', $viewModel->data());
     }
 
     public function show(Episode $episode, EpisodeViewModel $viewModel): View
     {
         abort_unless($episode->is_published && $episode->published_at?->isPast(), 404);
 
-        return view('episodes.show', $viewModel->data($episode));
+        return view('pages.episodes.show', $viewModel->data($episode));
     }
 }

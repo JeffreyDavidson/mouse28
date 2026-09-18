@@ -11,12 +11,13 @@ Before planning or editing, find the row whose globs match the file's path and r
 | resources/content-artwork/** | .ai/rules/content-artwork.md |
 | app/Http/Controllers/** | .ai/rules/controllers.md |
 | app/Enums/** | .ai/rules/enums.md |
-| {app/Models/Episode.php,app/Filament/Resources/Episodes/**,resources/views/episodes/**,config/podcast.php} | .ai/rules/episodes.md |
+| {app/Models/Episode.php,app/Filament/Resources/Episodes/**,resources/views/pages/episodes/**,config/podcast.php} | .ai/rules/episodes.md |
 | tests/Feature/** | .ai/rules/feature.md |
 | ** | .ai/rules/general.md |
 | resources/views/components/layouts/app.blade.php | .ai/rules/layouts.md |
 | resources/{js,views/livewire}/** | .ai/rules/livewire.md |
 | app/Models/**, app/Models/ContactMessage.php | .ai/rules/models.md |
+| resources/views/pages/** | .ai/rules/pages.md |
 | tests/** | .ai/rules/tests.md |
-| {app/Support/ResponsiveArtwork.php,app/Console/Commands/GenerateResponsiveArtwork.php,resources/views/components/post-artwork.blade.php,resources/views/episodes/show.blade.php} | .ai/rules/views-episodes.md |
-| resources/views/home.blade.php | .ai/rules/views.md |
+| {app/Support/ResponsiveArtwork.php,app/Console/Commands/GenerateResponsiveArtwork.php,resources/views/components/post-artwork.blade.php,resources/views/pages/episodes/show.blade.php} | .ai/rules/views-episodes.md |
+| resources/views/pages/home.blade.php, resources/views/** | .ai/rules/views.md |
