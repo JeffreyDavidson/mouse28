@@ -13,6 +13,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Enums/** | .ai/rules/enums.md |
 | {app/Models/Episode.php,app/Filament/Resources/Episodes/**,resources/views/episodes/**,config/podcast.php} | .ai/rules/episodes.md |
 | tests/Feature/** | .ai/rules/feature.md |
+| ** | .ai/rules/general.md |
 | resources/views/components/layouts/app.blade.php | .ai/rules/layouts.md |
 | resources/{js,views/livewire}/** | .ai/rules/livewire.md |
 | app/Models/**, app/Models/ContactMessage.php | .ai/rules/models.md |
