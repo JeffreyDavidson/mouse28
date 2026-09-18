@@ -7,7 +7,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/**/Post*.php, app/** | .ai/rules/app.md |
 | bootstrap/app.php | .ai/rules/bootstrap.md |
 | app/{Support,Console/Commands}/**/*PublicContent*.php | .ai/rules/commands.md |
-| {app/Support/ResponsivePostArtwork.php,app/Console/Commands/GeneratePostArtwork.php,resources/views/components/post-artwork.blade.php} | .ai/rules/components.md |
+| {app/Support/ResponsiveArtwork.php,app/Console/Commands/GenerateResponsiveArtwork.php,resources/views/components/post-artwork.blade.php} | .ai/rules/components.md |
 | resources/content-artwork/** | .ai/rules/content-artwork.md |
 | app/Http/Controllers/** | .ai/rules/controllers.md |
 | app/Enums/** | .ai/rules/enums.md |
