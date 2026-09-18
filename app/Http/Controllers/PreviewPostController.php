@@ -13,6 +13,6 @@ class PreviewPostController
     {
         Gate::authorize('view', $post);
 
-        return view('blog.show', $viewModel->data($post, preview: true));
+        return view('pages.blog.show', $viewModel->data($post, preview: true));
     }
 }

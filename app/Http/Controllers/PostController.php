@@ -12,13 +12,13 @@ class PostController
 {
     public function index(Request $request, PostIndexViewModel $viewModel): View
     {
-        return view('blog.index', $viewModel->data($request));
+        return view('pages.blog.index', $viewModel->data($request));
     }
 
     public function show(Post $post, PostViewModel $viewModel): View
     {
         abort_unless($post->is_published && $post->published_at?->isPast(), 404);
 
-        return view('blog.show', $viewModel->data($post));
+        return view('pages.blog.show', $viewModel->data($post));
     }
 }

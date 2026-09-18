@@ -1,6 +1,6 @@
 ---
 paths:
-  - '{app/Support/ResponsiveArtwork.php,app/Console/Commands/GenerateResponsiveArtwork.php,resources/views/components/post-artwork.blade.php,resources/views/episodes/show.blade.php}'
+  - '{app/Support/ResponsiveArtwork.php,app/Console/Commands/GenerateResponsiveArtwork.php,resources/views/components/post-artwork.blade.php,resources/views/pages/episodes/show.blade.php}'
 ---
 
 # Views Episodes
