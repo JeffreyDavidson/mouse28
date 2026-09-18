@@ -299,8 +299,8 @@
                                 placeholder="your@email.com"
                                 autocomplete="email"
                                 required
-                                @error('email', 'newsletter') aria-invalid="true" aria-describedby="footer-newsletter-email-error" @enderror
-                                @error('email', 'newsletter') autofocus @enderror
+                                @if ($errors->newsletter->has('email')) aria-invalid="true" aria-describedby="footer-newsletter-email-error" @endif
+                                @if ($errors->newsletter->has('email')) autofocus @endif
                                 class="focus:border-gold/50 focus:ring-gold/30 min-h-12 min-w-0 flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-2.5 text-base text-white transition-colors placeholder:text-white/60 focus:ring-1 focus:outline-none sm:text-sm"
                             />
                             <button
@@ -310,11 +310,11 @@
                                 Subscribe
                             </button>
                         </div>
-                        @error('email', 'newsletter')
+                        @if ($errors->newsletter->has('email'))
                             <p id="footer-newsletter-email-error" role="alert" class="text-sm text-red-300">
-                                {{ $message }}
+                                {{ $errors->newsletter->first('email') }}
                             </p>
-                        @enderror
+                        @endif
                         <p class="text-xs text-white/60">We use your email to send Mouse28 updates.</p>
                     </form>
                 </div>
