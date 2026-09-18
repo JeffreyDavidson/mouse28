@@ -6,6 +6,7 @@ parameters:
     treatPhpDocTypesAsCertain: false
 
     stubFiles:
+        - tests/pest-browser.stub
         - tests/pest-livewire.stub
 
     tmpDir: storage/framework/cache/phpstan-pest
