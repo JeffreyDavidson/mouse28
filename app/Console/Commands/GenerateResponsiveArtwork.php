@@ -5,12 +5,11 @@ namespace App\Console\Commands;
 use App\Models\Episode;
 use App\Models\Post;
 use App\Support\ResponsiveArtwork;
-use ErrorException;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Console\ConfirmableTrait;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 
@@ -38,8 +37,8 @@ class GenerateResponsiveArtwork extends Command
             return self::FAILURE;
         }
 
-        if (! function_exists('imagewebp') || config('filesystems.disks.public.driver') !== 'local') {
-            $this->error('Artwork generation requires GD with WebP support and local public storage.');
+        if (config('filesystems.disks.public.driver') !== 'local' || (config('images.default') === 'gd' && ! function_exists('imagewebp'))) {
+            $this->error('Artwork generation requires an image driver with WebP support and local public storage.');
 
             return self::FAILURE;
         }
@@ -58,7 +57,7 @@ class GenerateResponsiveArtwork extends Command
 
             try {
                 $generated += $this->generate($source, $this->option('type') === 'episodes');
-            } catch (ErrorException|RuntimeException) {
+            } catch (RuntimeException) {
                 $this->error("Could not generate artwork for {$this->option('type')} record {$record->id}; original retained.");
                 $failed = true;
             }
@@ -72,78 +71,45 @@ class GenerateResponsiveArtwork extends Command
     /** @param array{path: string, hash: string} $source */
     private function generate(array $source, bool $square): int
     {
-        // Convert decoder warnings into a bounded per-image failure, without printing file contents.
-        set_error_handler(static function (int $severity, string $message): never {
-            throw new ErrorException($message, 0, $severity);
-        });
+        $image = Image::fromPath($source['path']);
+        [$sourceWidth, $sourceHeight] = $image->dimensions();
 
-        try {
-            $dimensions = getimagesize($source['path']);
-
-            if (! $dimensions || $dimensions[0] * $dimensions[1] > 12_000_000) {
-                throw new RuntimeException('Unsupported image dimensions.');
-            }
-
-            $image = null;
-            $generated = 0;
-            $disk = Storage::disk('public');
-
-            foreach (ResponsiveArtwork::WIDTHS as $width) {
-                $path = ResponsiveArtwork::variantPath($source['hash'], $width, $square);
-
-                if ($width > ($square ? min($dimensions[0], $dimensions[1]) : $dimensions[0]) || $disk->exists($path)) {
-                    continue;
-                }
-
-                if (! $image instanceof \GdImage) {
-                    $image = imagecreatefromstring(File::get($source['path']));
-
-                    if ($image && $square) {
-                        $side = min($dimensions[0], $dimensions[1]);
-                        $image = imagecrop($image, [
-                            'x' => intdiv($dimensions[0] - $side, 2),
-                            'y' => intdiv($dimensions[1] - $side, 2),
-                            'width' => $side,
-                            'height' => $side,
-                        ]);
-                    }
-                }
-
-                if (! $image) {
-                    throw new RuntimeException('Unable to decode image.');
-                }
-
-                $resized = imagescale($image, $width);
-
-                if (! $resized) {
-                    throw new RuntimeException('Unable to resize image.');
-                }
-
-                imagesavealpha($resized, true);
-                ob_start();
-
-                try {
-                    if (! imagewebp($resized, null, 82)) {
-                        throw new RuntimeException('Unable to encode image.');
-                    }
-
-                    $contents = ob_get_contents();
-                } finally {
-                    ob_end_clean();
-                }
-
-                if (! is_string($contents) || $contents === '') {
-                    throw new RuntimeException('Empty encoded image.');
-                }
-
-                File::ensureDirectoryExists(dirname($disk->path($path)));
-                File::replace($disk->path($path), $contents);
-                $generated++;
-            }
-
-            return $generated;
-        } finally {
-            restore_error_handler();
+        if ($sourceWidth < 1 || $sourceHeight < 1 || $sourceWidth * $sourceHeight > 12_000_000) {
+            throw new RuntimeException('Unsupported image dimensions.');
         }
+
+        if ($square) {
+            $side = min($sourceWidth, $sourceHeight);
+            $image = $image->crop($side, $side, intdiv($sourceWidth - $side, 2), intdiv($sourceHeight - $side, 2));
+        }
+
+        $generated = 0;
+        $disk = Storage::disk('public');
+
+        foreach (ResponsiveArtwork::WIDTHS as $width) {
+            $path = ResponsiveArtwork::variantPath($source['hash'], $width, $square);
+
+            if ($width > ($square ? min($sourceWidth, $sourceHeight) : $sourceWidth) || $disk->exists($path)) {
+                continue;
+            }
+
+            $contents = $image
+                ->scale(width: $width)
+                ->toWebp()
+                ->quality(82)
+                ->toBytes();
+
+            if ($contents === '') {
+                throw new RuntimeException('Empty encoded image.');
+            }
+
+            if (! $disk->put($path, $contents)) {
+                throw new RuntimeException('Unable to write image.');
+            }
+
+            $generated++;
+        }
+
+        return $generated;
     }
 }
