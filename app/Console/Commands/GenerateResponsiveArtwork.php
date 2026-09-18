@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use RuntimeException;
 
-#[Signature('content:generate-artwork {--type=posts : Cover type (posts or episodes)} {--force : Allow generation in production}', aliases: ['content:generate-post-artwork'])]
+#[Signature('content:generate-artwork {--type=posts : Cover type (posts or episodes)} {--id= : Generate only this published record} {--force : Allow generation in production}', aliases: ['content:generate-post-artwork'])]
 #[Description('Generate static responsive WebP copies of published covers without replacing originals')]
 class GenerateResponsiveArtwork extends Command
 {
@@ -31,6 +31,16 @@ class GenerateResponsiveArtwork extends Command
             $this->error('Choose --type=posts or --type=episodes.');
 
             return self::FAILURE;
+        }
+
+        if ($this->option('id') !== null) {
+            $id = filter_var($this->option('id'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+            if ($id === false || ! (clone $query)->whereKey($id)->exists()) {
+                $this->error('Choose an existing published record ID.');
+
+                return self::FAILURE;
+            }
+            $query->whereKey($id);
         }
 
         if (! $this->confirmToProceed()) {
@@ -51,6 +61,7 @@ class GenerateResponsiveArtwork extends Command
 
             if (! $source) {
                 $this->warn("Skipped unavailable or unsupported artwork for {$this->option('type')} record {$record->id}.");
+                $failed = $failed || $this->option('id') !== null;
 
                 continue;
             }

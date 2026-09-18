@@ -4,16 +4,21 @@ namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Testing\PendingCommand;
 use Illuminate\Testing\TestResponse;
 use Symfony\Component\HttpFoundation\Response;
 use UnexpectedValueException;
 
 abstract class TestCase extends BaseTestCase
 {
+    /** @param array<string, mixed> $parameters */
+    protected function pendingCommand(string $command, array $parameters = []): PendingCommand
+    {
+        return new PendingCommand($this, $this->app, $command, $parameters);
+    }
+
     protected function setUp(): void
     {
-        $this->mockConsoleOutput = false;
-
         parent::setUp();
 
         Http::preventStrayRequests();

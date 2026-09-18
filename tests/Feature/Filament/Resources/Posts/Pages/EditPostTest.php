@@ -7,6 +7,7 @@ use App\Filament\Resources\Posts\PostResource;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
 use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
@@ -14,6 +15,42 @@ use function Pest\Laravel\get;
 use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
+
+test('explicit artwork action generates only the saved record cover', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $record = Post::factory()->create(['cover_image' => 'posts/cover.png']);
+    Artisan::shouldReceive('call')->once()
+        ->with('content:generate-artwork', [
+            '--type' => 'posts', '--id' => $record->id,
+            '--force' => true, '--no-interaction' => true,
+        ])->andReturn(0);
+
+    livewire(EditPost::class, ['record' => $record->getRouteKey()])
+        ->callAction('generateArtwork')
+        ->assertNotified('Responsive artwork prepared');
+});
+
+test('published URLs cannot be changed by submitted editor state', function (): void {
+    $record = Post::factory()->create(['slug' => 'permanent-url']);
+    actingAs(User::factory()->admin()->create());
+
+    livewire(EditPost::class, ['record' => $record->getRouteKey()])
+        ->fillForm(['slug' => 'replacement-url'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($record->refresh()->slug)->toBe('permanent-url');
+});
+
+test('draft slugs reject characters that cannot form public routes', function (): void {
+    $record = Post::factory()->draft()->create();
+    actingAs(User::factory()->admin()->create());
+
+    livewire(EditPost::class, ['record' => $record->getRouteKey()])
+        ->fillForm(['slug' => 'Invalid/URL'])
+        ->call('save')
+        ->assertHasFormErrors(['slug' => 'regex']);
+});
 
 test('edit page offers a draft preview', function (): void {
     $admin = User::factory()->admin()->create();

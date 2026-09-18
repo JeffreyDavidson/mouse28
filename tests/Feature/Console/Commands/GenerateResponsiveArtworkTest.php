@@ -13,6 +13,31 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 pest()->use(RefreshDatabase::class);
 
+test('record scoped generation leaves other covers alone', function (string $type): void {
+    Storage::fake('public');
+    $disk = Storage::disk('public');
+    $disk->put("{$type}/selected.png", UploadedFile::fake()->image('selected.png', 1000, 800)->getContent());
+    $disk->put("{$type}/other.png", UploadedFile::fake()->image('other.png', 1200, 800)->getContent());
+    $selected = ($type === 'posts' ? Post::factory() : Episode::factory())->createOne(['cover_image' => "{$type}/selected.png"]);
+    $other = ($type === 'posts' ? Post::factory() : Episode::factory())->createOne(['cover_image' => "{$type}/other.png"]);
+
+    $this->pendingCommand('content:generate-artwork', ['--type' => $type, '--id' => $selected->id])
+        ->expectsOutputToContain('Originals and content records were not changed.')
+        ->assertSuccessful();
+
+    expect(ResponsiveArtwork::srcset($selected->cover_image, square: $type === 'episodes'))->not->toBeNull()
+        ->and(ResponsiveArtwork::srcset($other->cover_image, square: $type === 'episodes'))->toBeNull();
+})->with(['posts', 'episodes']);
+
+test('record scoped generation reports missing sources as a failure', function (): void {
+    Storage::fake('public');
+    $post = Post::factory()->create(['cover_image' => 'posts/missing.png']);
+
+    $this->pendingCommand('content:generate-artwork', ['--id' => $post->id])
+        ->expectsOutputToContain('Skipped unavailable or unsupported artwork')
+        ->assertFailed();
+});
+
 test('responsive covers preserve originals and use immutable URLs', function (): void {
     Storage::fake('public');
     $disk = Storage::disk('public');
@@ -22,7 +47,7 @@ test('responsive covers preserve originals and use immutable URLs', function ():
 
     expect(ResponsiveArtwork::srcset($post->cover_image))->toBeNull();
 
-    $result = $this->artisan('content:generate-post-artwork');
+    $result = $this->pendingCommand('content:generate-post-artwork')->run();
 
     expect($result)->toBe(Command::SUCCESS)
         ->and($disk->get('posts/cover.png'))->toBe($original)
@@ -37,7 +62,7 @@ test('responsive covers preserve originals and use immutable URLs', function ():
     }
 
     $paths = $disk->allFiles();
-    $this->artisan('content:generate-post-artwork');
+    $this->pendingCommand('content:generate-post-artwork')->run();
     expect($disk->allFiles())->toBe($paths);
 
     $disk->put('posts/cover.png', UploadedFile::fake()->image('replacement.png', 1500, 900)->getContent());
@@ -52,7 +77,7 @@ test('generation skips drafts and never upscales small covers', function (): voi
     Post::factory()->create(['cover_image' => 'posts/small.png']);
     Post::factory()->draft()->create(['cover_image' => 'posts/draft.png']);
 
-    $result = $this->artisan('content:generate-post-artwork');
+    $result = $this->pendingCommand('content:generate-post-artwork')->run();
 
     expect($result)->toBe(Command::SUCCESS)
         ->and($disk->allFiles())->toHaveCount(2);
@@ -69,7 +94,7 @@ test('intermediate candidates are generated only when the source can support the
     $existing = ResponsiveArtwork::variantPath(hash('sha256', $original), 480, $square);
     $disk->put($existing, 'existing derivative');
 
-    $result = $this->artisan('content:generate-artwork', ['--type' => $type]);
+    $result = $this->pendingCommand('content:generate-artwork', ['--type' => $type])->run();
 
     expect($result)->toBe(Command::SUCCESS)
         ->and($disk->get($source))->toBe($original)
@@ -88,7 +113,7 @@ test('corrupt covers fail gracefully without changing originals', function (): v
     Storage::disk('public')->put('posts/broken.png', 'not an image');
     Post::factory()->create(['cover_image' => 'posts/broken.png']);
 
-    $result = $this->artisan('content:generate-post-artwork');
+    $result = $this->pendingCommand('content:generate-post-artwork')->run();
 
     expect($result)->toBe(Command::FAILURE)
         ->and(Storage::disk('public')->get('posts/broken.png'))->toBe('not an image');
@@ -97,9 +122,9 @@ test('corrupt covers fail gracefully without changing originals', function (): v
 test('production generation requires explicit approval', function (): void {
     $this->app->detectEnvironment(fn (): string => 'production');
 
-    $result = $this->artisan('content:generate-post-artwork');
-
-    expect($result)->toBe(Command::FAILURE);
+    $this->pendingCommand('content:generate-post-artwork')
+        ->expectsConfirmation('Are you sure you want to run this command?', 'no')
+        ->assertFailed();
 });
 
 test('production artwork generation uses native confirmation', function (string $answer, bool $interactive, bool $force, int $expected, string $type): void {
@@ -136,11 +161,11 @@ test('episode generation is explicit and only includes published covers', functi
     Episode::factory()->scheduled()->create(['cover_image' => 'episodes/scheduled.png']);
     $original = $disk->get('episodes/published.png') ?? throw new UnexpectedValueException('The original episode cover is missing.');
 
-    $this->artisan('content:generate-post-artwork');
+    $this->pendingCommand('content:generate-post-artwork')->run();
 
     expect($disk->allFiles())->toHaveCount(3);
 
-    $result = $this->artisan('content:generate-artwork', ['--type' => 'episodes']);
+    $result = $this->pendingCommand('content:generate-artwork', ['--type' => 'episodes'])->run();
 
     expect($result)->toBe(Command::SUCCESS)
         ->and($disk->allFiles())->toHaveCount(6)
@@ -169,7 +194,7 @@ test('episode variants use a centered square crop', function (): void {
     $disk->put('episodes/cover.png', $contents);
     $episode = Episode::factory()->create(['cover_image' => 'episodes/cover.png']);
 
-    $this->artisan('content:generate-artwork', ['--type' => 'episodes']);
+    $this->pendingCommand('content:generate-artwork', ['--type' => 'episodes'])->run();
 
     $path = ResponsiveArtwork::variantPath(hash('sha256', $contents), 480, square: true);
     $variant = imagecreatefromwebp($disk->path($path)) ?: throw new UnexpectedValueException('The generated episode cover is not WebP.');
@@ -185,7 +210,7 @@ test('episode variants use a centered square crop', function (): void {
 test('unsupported artwork types fail without generating files', function (): void {
     Storage::fake('public');
 
-    $result = $this->artisan('content:generate-artwork', ['--type' => 'anything']);
+    $result = $this->pendingCommand('content:generate-artwork', ['--type' => 'anything'])->run();
 
     expect($result)->toBe(Command::FAILURE)
         ->and(Storage::disk('public')->allFiles())->toBeEmpty();

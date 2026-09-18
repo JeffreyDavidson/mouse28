@@ -15,6 +15,24 @@ use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
 
+test('published URLs are preserved and draft slugs are validated', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $published = Guide::factory()->create(['slug' => 'permanent-url']);
+    $draft = Guide::factory()->draft()->create();
+
+    livewire(EditGuide::class, ['record' => $published->getRouteKey()])
+        ->fillForm(['slug' => 'replacement-url'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($published->refresh()->slug)->toBe('permanent-url');
+
+    livewire(EditGuide::class, ['record' => $draft->getRouteKey()])
+        ->fillForm(['slug' => 'Invalid/URL'])
+        ->call('save')
+        ->assertHasFormErrors(['slug' => 'regex']);
+});
+
 test('edit page offers a draft preview', function (): void {
     $admin = User::factory()->admin()->create();
     $guide = Guide::factory()->draft()->create();

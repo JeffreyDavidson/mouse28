@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Support\ArtworkSourceCache;
 use App\Support\SafeReturnUrl;
 use App\View\Composers\PodcastComposer;
 use Illuminate\Cache\RateLimiting\Limit;
@@ -17,6 +18,11 @@ use Laravel\Nightwatch\Facades\Nightwatch;
 
 class AppServiceProvider extends ServiceProvider
 {
+    public function register(): void
+    {
+        $this->app->scoped(ArtworkSourceCache::class);
+    }
+
     public function boot(): void
     {
         DB::prohibitDestructiveCommands($this->app->isProduction());
