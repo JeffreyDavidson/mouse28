@@ -8,6 +8,7 @@
     "require": {
         "filament/filament": "^5.7",
         "filament/spatie-laravel-tags-plugin": "^5.0",
+        "intervention/image": "^4.0",
         "laravel/framework": "^13.23",
         "laravel/head": "^0.2.1",
         "laravel/nightwatch": "^1.30",

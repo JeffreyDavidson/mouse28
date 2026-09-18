@@ -32,6 +32,7 @@ test('responsive covers preserve originals and use immutable URLs', function ():
         $path = ResponsiveArtwork::variantPath(hash('sha256', $original), $width);
         $dimensions = getimagesize($disk->path($path)) ?: throw new UnexpectedValueException('The generated cover is not an image.');
         expect($dimensions[0])->toBe($width)
+            ->and($dimensions['mime'])->toBe('image/webp')
             ->and(ResponsiveArtwork::srcset($post->cover_image))->toContain(" {$width}w");
     }
 
@@ -151,6 +152,34 @@ test('episode generation is explicit and only includes published covers', functi
         $dimensions = getimagesize($disk->path($path)) ?: throw new UnexpectedValueException('The generated episode cover is not an image.');
         expect([$dimensions[0], $dimensions[1]])->toBe([$width, $width]);
     }
+});
+
+test('episode variants use a centered square crop', function (): void {
+    Storage::fake('public');
+    $disk = Storage::disk('public');
+    $source = imagecreatetruecolor(1200, 600);
+
+    imagefilledrectangle($source, 0, 0, 299, 599, 0xFF0000);
+    imagefilledrectangle($source, 300, 0, 899, 599, 0x00FF00);
+    imagefilledrectangle($source, 900, 0, 1199, 599, 0x0000FF);
+    ob_start();
+    imagepng($source);
+    $contents = ob_get_clean() ?: throw new UnexpectedValueException('The test image could not be encoded.');
+
+    $disk->put('episodes/cover.png', $contents);
+    $episode = Episode::factory()->create(['cover_image' => 'episodes/cover.png']);
+
+    $this->artisan('content:generate-artwork', ['--type' => 'episodes']);
+
+    $path = ResponsiveArtwork::variantPath(hash('sha256', $contents), 480, square: true);
+    $variant = imagecreatefromwebp($disk->path($path)) ?: throw new UnexpectedValueException('The generated episode cover is not WebP.');
+    $index = imagecolorat($variant, 240, 240);
+    $color = imagecolorsforindex($variant, $index === false ? throw new UnexpectedValueException('The generated episode cover has no center pixel.') : $index);
+
+    expect($episode->refresh()->cover_image)->toBe('episodes/cover.png')
+        ->and($color['green'])->toBeGreaterThan(200)
+        ->and($color['red'])->toBeLessThan(50)
+        ->and($color['blue'])->toBeLessThan(50);
 });
 
 test('unsupported artwork types fail without generating files', function (): void {
