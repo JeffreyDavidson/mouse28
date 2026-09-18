@@ -1,11 +1,11 @@
 <?php
 
 use App\Enums\ContactTopic;
-use App\Mail\ContactFormConfirmation;
-use App\Mail\ContactFormSubmitted;
+use App\Jobs\DeliverContactEmails;
 use App\Models\Podcast;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 
@@ -24,6 +24,7 @@ test('contact stays within its query budget', function (): void {
 });
 
 beforeEach(function (): void {
+    Bus::fake([DeliverContactEmails::class]);
     config()->set('app.key', 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=');
     config()->set('services.turnstile.site_key', 'test-site-key');
     config()->set('services.turnstile.secret_key', 'test-secret-key');
@@ -106,8 +107,8 @@ test('valid contact submission requires successful turnstile verification', func
         'subject' => 'Need help with Mouse28',
     ]);
 
-    Mail::assertSent(ContactFormSubmitted::class);
-    Mail::assertSent(ContactFormConfirmation::class);
+    Mail::assertNothingSent();
+    Bus::assertDispatched(DeliverContactEmails::class);
 
     Http::assertSent(fn (Request $request): bool => $request->url() === 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
         && $request['secret'] === 'test-secret-key'
