@@ -3,7 +3,8 @@
     class="from-navy via-navy-light to-navy relative overflow-hidden rounded-2xl border border-white/5 bg-linear-to-br p-7 text-center"
 >
     @php
-        $newsletterHasFeedback = $errors->newsletter->isNotEmpty() || session('newsletter_error');
+        $newsletterErrors = $errors->getBag('newsletter');
+        $newsletterHasFeedback = $newsletterErrors->isNotEmpty() || session('newsletter_error');
     @endphp
     <div class="bg-gold/5 absolute top-1/2 left-1/2 size-32 -translate-1/2 rounded-full blur-3xl"></div>
     <div class="relative">
@@ -43,13 +44,15 @@
                 placeholder="your@email.com"
                 autocomplete="email"
                 required
-                @error('email', 'newsletter') aria-invalid="true" aria-describedby="newsletter-email-error" @enderror
-                @error('email', 'newsletter') autofocus @enderror
+                @if ($newsletterErrors->has('email')) aria-invalid="true" aria-describedby="newsletter-email-error" @endif
+                @if ($newsletterErrors->has('email')) autofocus @endif
                 class="focus:border-gold/40 focus:ring-gold/20 min-h-12 w-full rounded-xl border border-white/10 bg-white/8 px-4 py-3 text-base text-white transition-colors placeholder:text-white/60 focus:bg-white/12 focus:ring-2 focus:outline-none sm:text-sm"
             />
-            @error('email', 'newsletter')
-                <p id="newsletter-email-error" role="alert" class="text-left text-sm text-red-200">{{ $message }}</p>
-            @enderror
+            @if ($newsletterErrors->has('email'))
+                <p id="newsletter-email-error" role="alert" class="text-left text-sm text-red-200">
+                    {{ $newsletterErrors->first('email') }}
+                </p>
+            @endif
             <button
                 type="submit"
                 class="from-gold to-gold-light text-navy shadow-gold/20 min-h-12 w-full rounded-full bg-linear-to-r py-3 text-base font-bold shadow-lg transition-transform hover:-translate-y-0.5 sm:text-sm"
