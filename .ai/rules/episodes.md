@@ -1,6 +1,6 @@
 ---
 paths:
-  - '{app/Models/Episode.php,app/Filament/Resources/Episodes/**,resources/views/episodes/**,config/podcast.php}'
+- '{app/Models/Episode.php,app/Filament/Resources/Episodes/**,resources/views/pages/episodes/**,config/podcast.php}'
 ---
 
 # Episodes

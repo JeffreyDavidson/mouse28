@@ -65,7 +65,7 @@ class ContactMessageResource extends Resource
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable()
-                    ->weight(fn (ContactMessage $record) => $record->is_read ? 'normal' : 'bold')
+                    ->weight(fn (ContactMessage $record): string => $record->is_read ? 'normal' : 'bold')
                     ->icon(Heroicon::OutlinedUser),
                 TextColumn::make('email')
                     ->searchable()
@@ -102,7 +102,7 @@ class ContactMessageResource extends Resource
                 Action::make('reply')
                     ->label('Reply')
                     ->icon(Heroicon::OutlinedPaperAirplane)
-                    ->url(fn (ContactMessage $record) => "mailto:{$record->email}?subject=".urlencode('Re: '.$record->subjectLabel()))
+                    ->url(fn (ContactMessage $record): string => "mailto:{$record->email}?subject=".urlencode('Re: '.$record->subjectLabel()))
                     ->openUrlInNewTab(),
                 DeleteAction::make(),
             ])

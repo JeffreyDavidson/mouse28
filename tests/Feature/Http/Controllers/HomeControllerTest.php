@@ -28,9 +28,7 @@ test('public index page renders', function (): void {
 });
 
 test('homepage advertises the canonical Transistor feed without persisting defaults', function (): void {
-    get(route('home'))
-        ->assertOk()
-        ->assertSee(config()->string('podcast.rss_url'), false)
+    get(route('home'))->assertOk()->assertSeeHtml(config()->string('podcast.rss_url'))
         ->assertSee('RSS Feed');
 
     expect(Podcast::query()->doesntExist())->toBeTrue();
@@ -48,53 +46,28 @@ test('homepage renders configured podcast distribution links', function (): void
         ->assertOk();
 
     foreach ($links as $url) {
-        $response->assertSee($url, false);
+        $response->assertSeeHtml($url);
     }
 
-    $response->assertSee(config()->string('podcast.rss_url'), false)
+    $response->assertSeeHtml(config()->string('podcast.rss_url'))
         ->assertDontSee('Apple Podcasts · Soon')
         ->assertDontSee('Spotify · Soon');
 });
 
 test('homepage uses one newsletter form and responsive hero artwork', function (): void {
-    $response = get(route('home'))
-        ->assertOk()
-        ->assertSee('/images/hero-family-640.webp 640w', false)
-        ->assertSee('/images/hero-family-768.webp 768w', false)
-        ->assertSee('/images/hero-family-1024.webp 1024w', false)
-        ->assertSee('dispatch-cloth', false)
-        ->assertSee('dispatch-feature-book', false)
-        ->assertSee('dispatch-latest-sheet', false)
-        ->assertSee('dispatch-guide-spread', false)
-        ->assertSee('dispatch-podcast-panel', false)
-        ->assertSee('data-brand-wordmark', false)
-        ->assertSee('data-dispatch-motion="hero-paper"', false)
-        ->assertSee('data-dispatch-motion="hero-photo"', false)
-        ->assertSee('data-dispatch-reveal="story-folio"', false)
-        ->assertDontSee('data-dispatch-journey', false)
-        ->assertDontSee('data-dispatch-stop', false)
-        ->assertDontSee('data-animate', false)
-        ->assertSee('Our first dispatch is being prepared.')
-        ->assertDontSee('/storage/posts/welcome-to-mouse-28.webp', false)
-        ->assertSee('We use your email to send Mouse28 updates.')
-        ->assertSee('id="footer-newsletter-email"', false)
-        ->assertSee('Connect')
-        ->assertDontSee('id="home-newsletter-email"', false);
+    $response = get(route('home'))->assertOk()->assertSeeHtml('/images/hero-family-640.webp 640w')->assertSeeHtml('/images/hero-family-768.webp 768w')->assertSeeHtml('/images/hero-family-1024.webp 1024w')->assertSeeHtml('dispatch-cloth')->assertSeeHtml('dispatch-feature-book')->assertSeeHtml('dispatch-latest-sheet')->assertSeeHtml('dispatch-guide-spread')->assertSeeHtml('dispatch-podcast-panel')->assertSeeHtml('data-brand-wordmark')->assertSeeHtml('data-dispatch-motion="hero-paper"')->assertSeeHtml('data-dispatch-motion="hero-photo"')->assertSeeHtml('data-dispatch-reveal="story-folio"')->assertDontSeeHtml('data-dispatch-journey')->assertDontSeeHtml('data-dispatch-stop')->assertDontSeeHtml('data-animate')->assertSee('Our first dispatch is being prepared.')->assertDontSeeHtml('/storage/posts/welcome-to-mouse-28.webp')->assertSee('We use your email to send Mouse28 updates.')->assertSeeHtml('id="footer-newsletter-email"')->assertSee('Connect')->assertDontSeeHtml('id="home-newsletter-email"');
 
     expect(substr_count($this->responseContent($response), 'action="'.route('newsletter.store').'"'))->toBe(1);
 });
 
 test('homepage offers a smaller bundled podcast cover without replacing the original', function (): void {
-    get(route('home'))
-        ->assertOk()
-        ->assertSee('srcset="/images/podcast/mouse28-cover-640.webp 640w, /images/podcast/mouse28-cover.webp 1200w"', false)
-        ->assertSee('sizes="auto, 264px"', false);
+    get(route('home'))->assertOk()->assertSeeHtml('srcset="/images/podcast/mouse28-cover-640.webp 640w, /images/podcast/mouse28-cover.webp 1200w"')->assertSeeHtml('sizes="auto, 264px"');
 
     $candidate = public_path('images/podcast/mouse28-cover-640.webp');
     $original = public_path('images/podcast/mouse28-cover.webp');
 
-    expect(is_file($candidate))->toBeTrue()
-        ->and(is_file($original))->toBeTrue();
+    expect($candidate)->toBeFile()
+        ->and($original)->toBeFile();
 
     $dimensions = getimagesize($candidate) ?: throw new UnexpectedValueException('The podcast cover is not an image.');
     $candidateSize = filesize($candidate);
@@ -131,16 +104,10 @@ test('homepage only presents published content as stories and guides', function 
     get(route('home'))
         ->assertOk()
         ->assertSee($featuredPost->title)
-        ->assertSee($latestPost->title)
-        ->assertSee($guide->title)
-        ->assertSee('/images/guides/accessibility.webp', false)
+        ->assertSee($latestPost->title)->assertSee($guide->title)->assertSeeHtml('/images/guides/accessibility.webp')
         ->assertDontSee($draftPost->title)
         ->assertDontSee('Accessibility planning')
-        ->assertDontSee('Sensory-friendly park days')
-        ->assertDontSee('Honest family stories')
-        ->assertDontSee('/storage/posts/our-disney-park-bag-essentials.webp', false)
-        ->assertDontSee('/storage/posts/the-ride-that-surprised-us.webp', false)
-        ->assertDontSee('/storage/posts/disney-dining-with-a-picky-eater.webp', false);
+        ->assertDontSee('Sensory-friendly park days')->assertDontSee('Honest family stories')->assertDontSeeHtml('/storage/posts/our-disney-park-bag-essentials.webp')->assertDontSeeHtml('/storage/posts/the-ride-that-surprised-us.webp')->assertDontSeeHtml('/storage/posts/disney-dining-with-a-picky-eater.webp');
 });
 
 test('homepage turns an empty guide shelf into useful planning stories', function (): void {
@@ -158,9 +125,7 @@ test('homepage turns an empty guide shelf into useful planning stories', functio
     get(route('home'))
         ->assertOk()
         ->assertSee('Start planning with these stories')
-        ->assertSee('Explore planning stories')
-        ->assertSee($planningPost->title)
-        ->assertSee('data-post-artwork-fallback', false)
+        ->assertSee('Explore planning stories')->assertSee($planningPost->title)->assertSeeHtml('data-post-artwork-fallback')
         ->assertDontSee('Browse all guides')
         ->assertDontSee($draftPlanningPost->title);
 });
@@ -203,13 +168,7 @@ test('landing page provides search and social metadata', function (): void {
         'cover_image' => 'podcasts/show-cover.jpg',
     ]);
 
-    get(route('home'))
-        ->assertOk()
-        ->assertSee('<meta name="description" content="Accessibility tips, sensory-friendly park planning, family experiences, and the Mouse28 podcast from Jeffrey and Cassie Davidson.">', false)
-        ->assertSee('<meta name="theme-color" content="#1a1040" />', false)
-        ->assertSee('<link rel="preload" href="/fonts/mouse28/poppins-400.woff2" as="font" type="font/woff2" crossorigin />', false)
-        ->assertSee('<link rel="preload" href="/fonts/mouse28/besley-latin.woff2" as="font" type="font/woff2" crossorigin />', false)
-        ->assertSee('<meta property="og:image" content="'.url('/images/hero-family.jpg').'">', false);
+    get(route('home'))->assertOk()->assertSeeHtml('<meta name="description" content="Accessibility tips, sensory-friendly park planning, family experiences, and the Mouse28 podcast from Jeffrey and Cassie Davidson.">')->assertSeeHtml('<meta name="theme-color" content="#1a1040" />')->assertSeeHtml('<link rel="preload" href="/fonts/mouse28/poppins-400.woff2" as="font" type="font/woff2" crossorigin />')->assertSeeHtml('<link rel="preload" href="/fonts/mouse28/besley-latin.woff2" as="font" type="font/woff2" crossorigin />')->assertSeeHtml('<meta property="og:image" content="'.url('/images/hero-family.jpg').'">');
 });
 
 test('homepage newsletter form renders bot protection', function (): void {
@@ -221,9 +180,5 @@ test('homepage newsletter form renders bot protection', function (): void {
     config()->set('services.turnstile.newsletter_action', 'newsletter');
     config()->set('services.turnstile.allowed_hostnames', ['mouse28.com']);
 
-    get(route('home'))
-        ->assertOk()
-        ->assertSee('data-action="newsletter"', false)
-        ->assertSee('data-appearance="interaction-only"', false)
-        ->assertSee('name="website_url"', false);
+    get(route('home'))->assertOk()->assertSeeHtml('data-action="newsletter"')->assertSeeHtml('data-appearance="interaction-only"')->assertSeeHtml('name="website_url"');
 });

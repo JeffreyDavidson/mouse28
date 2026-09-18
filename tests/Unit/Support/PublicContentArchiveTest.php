@@ -66,7 +66,7 @@ test('archives without media return an empty list', function (): void {
 
     $paths = $service->mediaPaths($archive);
 
-    expect($paths)->toBe([]);
+    expect($paths)->toBeEmpty();
 });
 
 test('unsafe media paths are rejected', function (mixed $path): void {

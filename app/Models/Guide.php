@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Date;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
+use Spatie\Tags\HasTags;
 
 /**
  * @property ContentAuthor|null $author
@@ -56,7 +57,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class Guide extends Model
 {
     /** @use HasFactory<GuideFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, HasTags, SoftDeletes;
 
     use LogsActivity;
 
@@ -152,25 +153,25 @@ class Guide extends Model
     /** @return Attribute<string|null, never> */
     protected function coverImageUrl(): Attribute
     {
-        return Attribute::make(get: fn () => $this->cover_image ? '/storage/'.$this->cover_image : null);
+        return Attribute::make(get: fn (): ?string => $this->cover_image ? '/storage/'.$this->cover_image : null);
     }
 
     /** @return Attribute<string|null, never> */
     protected function ogImageUrl(): Attribute
     {
-        return Attribute::make(get: fn () => $this->og_image ? '/storage/'.$this->og_image : null);
+        return Attribute::make(get: fn (): ?string => $this->og_image ? '/storage/'.$this->og_image : null);
     }
 
     /** @return Attribute<int, never> */
     protected function readingTime(): Attribute
     {
-        return Attribute::make(get: fn () => max(1, (int) ceil(str_word_count(strip_tags($this->body)) / 200)));
+        return Attribute::make(get: fn (): int => max(1, (int) ceil(str_word_count(strip_tags($this->body)) / 200)));
     }
 
     /** @return Attribute<string, never> */
     protected function reviewStatus(): Attribute
     {
-        return Attribute::make(get: fn () => $this->isReviewDue() ? 'Review due' : 'Current');
+        return Attribute::make(get: fn (): string => $this->isReviewDue() ? 'Review due' : 'Current');
     }
 
     public function isReviewDue(): bool

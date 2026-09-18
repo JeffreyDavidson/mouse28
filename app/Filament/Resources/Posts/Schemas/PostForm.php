@@ -4,11 +4,13 @@ namespace App\Filament\Resources\Posts\Schemas;
 
 use App\Enums\ContentAuthor;
 use App\Enums\PostCategory;
+use App\Models\Post;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieTagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
@@ -32,6 +34,9 @@ class PostForm
                     ->description('Basic post information')
                     ->columns(4)
                     ->schema([
+                        SpatieTagsInput::make('tags')
+                            ->type('content')
+                            ->columnSpanFull(),
                         TextInput::make('title')
                             ->required()
                             ->maxLength(255)
@@ -43,6 +48,9 @@ class PostForm
                                 }
                             }),
                         TextInput::make('slug')
+                            ->regex('/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/')
+                            ->disabled(fn (?Post $record): bool => $record?->published_at?->isPast() ?? false)
+                            ->helperText('Lowercase words separated by hyphens. URLs are locked once their publication date has passed.')
                             ->required()
                             ->maxLength(255)
                             ->columnSpan(2)

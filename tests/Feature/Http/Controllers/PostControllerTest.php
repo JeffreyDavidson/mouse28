@@ -89,9 +89,7 @@ test('blog pages render one newsletter signup', function (): void {
     $post = Post::factory()->create();
 
     foreach ([route('blog.index'), route('blog.show', $post)] as $url) {
-        $response = get($url)
-            ->assertOk()
-            ->assertSee('id="footer-newsletter-email"', false)
+        $response = get($url)->assertOk()->assertSeeHtml('id="footer-newsletter-email"')
             ->assertSee('Connect');
 
         expect(substr_count($this->responseContent($response), 'action="'.route('newsletter.store').'"'))->toBe(1);
@@ -104,19 +102,11 @@ test('post social image URLs are absolute', function (): void {
         'og_image' => 'posts/social-card.jpg',
     ]);
 
-    get(route('blog.show', $post))
-        ->assertOk()
-        ->assertSee('<meta property="og:image" content="'.url('/storage/posts/social-card.jpg').'">', false)
-        ->assertSee('<meta property="og:image:alt" content="Accessible Disney Planning">', false)
-        ->assertSee('<meta name="twitter:image" content="'.url('/storage/posts/social-card.jpg').'">', false)
-        ->assertSee('<meta name="twitter:image:alt" content="Accessible Disney Planning">', false);
+    get(route('blog.show', $post))->assertOk()->assertSeeHtml('<meta property="og:image" content="'.url('/storage/posts/social-card.jpg').'">')->assertSeeHtml('<meta property="og:image:alt" content="Accessible Disney Planning">')->assertSeeHtml('<meta name="twitter:image" content="'.url('/storage/posts/social-card.jpg').'">')->assertSeeHtml('<meta name="twitter:image:alt" content="Accessible Disney Planning">');
 });
 
 test('empty blog discovery offers useful paths forward', function (): void {
-    get(route('blog.index'))
-        ->assertOk()
-        ->assertSee(route('guides.index'), false)
-        ->assertSee(route('episodes.index'), false);
+    get(route('blog.index'))->assertOk()->assertSeeHtml(route('guides.index'))->assertSeeHtml(route('episodes.index'));
 });
 
 test('blog discovery controls precede results in the document order', function (): void {
@@ -139,15 +129,7 @@ test('blog index uses an artwork led archive without dashboard widgets', functio
         'cover_image' => null,
     ]);
 
-    get(route('blog.index'))
-        ->assertOk()
-        ->assertSee('data-editorial-blog', false)
-        ->assertSee('editorial-feature', false)
-        ->assertSee('editorial-story-grid', false)
-        ->assertSee('data-equal-width-stories', false)
-        ->assertSee('data-post-artwork', false)
-        ->assertDontSee('Blog Stats')
-        ->assertDontSee('Categories</h3>', false);
+    get(route('blog.index'))->assertOk()->assertSeeHtml('data-editorial-blog')->assertSeeHtml('editorial-feature')->assertSeeHtml('editorial-story-grid')->assertSeeHtml('data-equal-width-stories')->assertSeeHtml('data-post-artwork')->assertDontSee('Blog Stats')->assertDontSeeHtml('Categories</h3>');
 });
 
 test('published post detail page renders', function (): void {
@@ -165,16 +147,7 @@ test('published post detail page renders', function (): void {
     get(route('blog.show', $post))
         ->assertOk()
         ->assertSee($post->title)
-        ->assertSee('3 min read')
-        ->assertDontSee('1 of 3 min read')
-        ->assertSee('Start with a flexible plan', false)
-        ->assertSee('editorial-reading-column', false)
-        ->assertDontSee('data-article-secondary', false)
-        ->assertSee('id="back-to-top"', false)
-        ->assertSee('aria-hidden="true"', false)
-        ->assertSee('tabindex="-1"', false)
-        ->assertSee('inline-flex size-12 items-center justify-center rounded-full', false)
-        ->assertDontSee('inline-flex size-11', false);
+        ->assertSee('3 min read')->assertDontSee('1 of 3 min read')->assertSeeHtml('Start with a flexible plan')->assertSeeHtml('editorial-reading-column')->assertDontSeeHtml('data-article-secondary')->assertSeeHtml('id="back-to-top"')->assertSeeHtml('aria-hidden="true"')->assertSeeHtml('tabindex="-1"')->assertSeeHtml('inline-flex size-12 items-center justify-center rounded-full')->assertDontSeeHtml('inline-flex size-11');
 });
 
 test('only currently published content is publicly visible', function (): void {
@@ -205,6 +178,7 @@ test('blog search category sorting and pagination preserve filters', function ()
     Post::factory()->create([
         'title' => 'Unrelated dining review',
         'category' => 'food-reviews',
+        'published_at' => now()->subMonth(),
     ]);
 
     get(route('blog.index', [
@@ -230,9 +204,7 @@ test('editorial review information is shown on the public page', function (): vo
     ]);
 
     get(route('blog.show', $currentPost))
-        ->assertOk()
-        ->assertSee('Last reviewed')
-        ->assertSee('https://disneyworld.disney.go.com/guest-services/disability-access-service/', false)
+        ->assertOk()->assertSee('Last reviewed')->assertSeeHtml('https://disneyworld.disney.go.com/guest-services/disability-access-service/')
         ->assertDontSee('due for editorial review');
 
     get(route('blog.show', $stalePost))
@@ -249,28 +221,20 @@ test('posts do not reveal an unpublished related episode', function (): void {
     ]);
 
     get(route('blog.show', $post))
-        ->assertOk()
-        ->assertDontSee($draftEpisode->title)
-        ->assertDontSee(route('episodes.show', $draftEpisode), false);
+        ->assertOk()->assertDontSee($draftEpisode->title)->assertDontSeeHtml(route('episodes.show', $draftEpisode));
 });
 
 test('category label links to its filtered index', function (): void {
     $post = Post::factory()->create(['category' => 'park-accessibility']);
 
-    get(route('blog.show', $post))
-        ->assertOk()
-        ->assertSee(route('blog.index', ['category' => $post->category]), false);
+    get(route('blog.show', $post))->assertOk()->assertSeeHtml(route('blog.index', ['category' => $post->category]));
 });
 
 test('invalid blog filters do not create indexable archive variants', function (): void {
     get(route('blog.index', [
         'category' => 'not-a-category',
         'sort' => 'not-a-sort',
-    ]))
-        ->assertOk()
-        ->assertSee('<title>Disney Parks Blog | Mouse28</title>', false)
-        ->assertSee('<meta name="robots" content="index,follow">', false)
-        ->assertSee('<link rel="canonical" href="'.route('blog.index').'">', false);
+    ]))->assertOk()->assertSeeHtml('<title>Disney Parks Blog | Mouse28</title>')->assertSeeHtml('<meta name="robots" content="index,follow">')->assertSeeHtml('<link rel="canonical" href="'.route('blog.index').'">');
 });
 
 test('landing page provides search and social metadata', function (): void {
@@ -280,10 +244,7 @@ test('landing page provides search and social metadata', function (): void {
         'cover_image' => 'podcasts/show-cover.jpg',
     ]);
 
-    get(route('blog.index'))
-        ->assertOk()
-        ->assertSee('<meta property="og:title" content="Disney Parks Blog | Mouse28">', false)
-        ->assertSee('<meta property="og:url" content="'.route('blog.index').'">', false);
+    get(route('blog.index'))->assertOk()->assertSeeHtml('<meta property="og:title" content="Disney Parks Blog | Mouse28">')->assertSeeHtml('<meta property="og:url" content="'.route('blog.index').'">');
 });
 
 test('archive canonical preserves meaningful filters and pagination', function (): void {
@@ -294,16 +255,11 @@ test('archive canonical preserves meaningful filters and pagination', function (
         'page' => 2,
     ]);
 
-    get($blogCanonical)
-        ->assertOk()
-        ->assertSee('<link rel="canonical" href="'.e($blogCanonical).'">', false);
+    get($blogCanonical)->assertOk()->assertSeeHtml('<link rel="canonical" href="'.e($blogCanonical).'">');
 });
 
 test('text searches are not indexed', function (): void {
-    get(route('blog.index', ['q' => 'sensory']))
-        ->assertOk()
-        ->assertSee('<meta name="robots" content="noindex,follow">', false)
-        ->assertSee('<link rel="canonical" href="'.route('blog.index').'">', false);
+    get(route('blog.index', ['q' => 'sensory']))->assertOk()->assertSeeHtml('<meta name="robots" content="noindex,follow">')->assertSeeHtml('<link rel="canonical" href="'.route('blog.index').'">');
 });
 
 test('an uncategorized post keeps its public fallback presentation', function (): void {
@@ -311,9 +267,7 @@ test('an uncategorized post keeps its public fallback presentation', function ()
 
     get(route('blog.show', $post))
         ->assertOk()
-        ->assertSee($post->title)
-        ->assertSee('Mouse28 dispatch')
-        ->assertDontSee('category=', false);
+        ->assertSee($post->title)->assertSee('Mouse28 dispatch')->assertDontSeeHtml('category=');
 });
 
 test('blog posts include article and breadcrumb structured data', function (): void {
@@ -348,20 +302,13 @@ test('page copy and metadata avoid em dashes', function (): void {
 });
 
 test('page uses the dispatch editorial system', function (): void {
-    get(route('blog.index'))
-        ->assertOk()
-        ->assertSee('data-brand-wordmark', false)
-        ->assertSee('data-editorial-blog', false)
-        ->assertSee('js-dispatch-pages', false);
+    get(route('blog.index'))->assertOk()->assertSeeHtml('data-brand-wordmark')->assertSeeHtml('data-editorial-blog')->assertSeeHtml('js-dispatch-pages');
 });
 
 test('reading page uses the dispatch reading surface', function (): void {
     $post = Post::factory()->create();
 
-    get(route('blog.show', $post))
-        ->assertOk()
-        ->assertSee('editorial-detail-hero', false)
-        ->assertSee('editorial-reading-column', false)
+    get(route('blog.show', $post))->assertOk()->assertSeeHtml('editorial-detail-hero')->assertSeeHtml('editorial-reading-column')
         ->assertDontSee('—');
 });
 
@@ -370,11 +317,5 @@ test('form placeholders use readable text colors', function (): void {
     config()->set('services.turnstile.site_key', 'test-site-key');
     config()->set('services.turnstile.secret_key', 'test-secret-key');
 
-    get(route('blog.index'))
-        ->assertOk()
-        ->assertSee('placeholder:text-navy/60', false)
-        ->assertSee('placeholder:text-white/60', false)
-        ->assertDontSee('placeholder:text-navy/25', false)
-        ->assertDontSee('placeholder:text-white/25', false)
-        ->assertDontSee('placeholder-white/', false);
+    get(route('blog.index'))->assertOk()->assertSeeHtml('placeholder:text-navy/60')->assertSeeHtml('placeholder:text-white/60')->assertDontSeeHtml('placeholder:text-navy/25')->assertDontSeeHtml('placeholder:text-white/25')->assertDontSeeHtml('placeholder-white/');
 });

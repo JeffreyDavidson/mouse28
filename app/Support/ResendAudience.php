@@ -79,26 +79,45 @@ class ResendAudience
             return ['subscribers' => [], 'error' => 'The Resend audience is not configured.'];
         }
 
-        try {
-            $response = Http::withToken(Config::string('services.resend.key'))
-                ->timeout(10)
-                ->get("https://api.resend.com/audiences/{$audienceId}/contacts");
-        } catch (\Throwable) {
-            return ['subscribers' => [], 'error' => 'Could not connect to the Resend API.'];
+        $subscribers = [];
+        $cursor = null;
+        $seenCursors = [];
+
+        for ($page = 0; $page < 100; $page++) {
+            try {
+                $response = Http::withToken(Config::string('services.resend.key'))
+                    ->connectTimeout(3)
+                    ->timeout(10)
+                    ->get("https://api.resend.com/audiences/{$audienceId}/contacts", array_filter([
+                        'limit' => 100,
+                        'after' => $cursor,
+                    ]));
+            } catch (\Throwable) {
+                return ['subscribers' => [], 'error' => 'Could not connect to the Resend API.'];
+            }
+
+            if (! $response->successful()) {
+                return ['subscribers' => [], 'error' => 'Failed to fetch subscribers from Resend API (HTTP '.$response->status().').'];
+            }
+
+            $batch = $this->normalize($response->json('data', []));
+            $subscribers = [...$subscribers, ...$batch];
+
+            if ($response->json('has_more') !== true) {
+                Cache::put(self::CACHE_KEY, $subscribers, Date::now()->addMinutes(5));
+
+                return ['subscribers' => $subscribers, 'error' => null];
+            }
+
+            $cursor = $batch === [] ? null : array_last($batch)['id'] ?? null;
+            if (! is_string($cursor) || $cursor === '' || in_array($cursor, $seenCursors, true)) {
+                return ['subscribers' => [], 'error' => 'The Resend API returned an invalid pagination cursor.'];
+            }
+            $seenCursors[] = $cursor;
         }
 
-        if (! $response->successful()) {
-            return [
-                'subscribers' => [],
-                'error' => 'Failed to fetch subscribers from Resend API (HTTP '.$response->status().').',
-            ];
-        }
+        return ['subscribers' => [], 'error' => 'The audience exceeds the supported retrieval limit.'];
 
-        $subscribers = $this->normalize($response->json('data', []));
-
-        Cache::put(self::CACHE_KEY, $subscribers, Date::now()->addMinutes(5));
-
-        return ['subscribers' => $subscribers, 'error' => null];
     }
 
     /**

@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources\Episodes\Schemas;
 
+use App\Models\Episode;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\SpatieTagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
@@ -27,6 +29,9 @@ class EpisodeForm
                     ->description('Basic episode information')
                     ->columns(4)
                     ->schema([
+                        SpatieTagsInput::make('tags')
+                            ->type('content')
+                            ->columnSpanFull(),
                         TextInput::make('title')
                             ->required()
                             ->maxLength(255)
@@ -38,6 +43,9 @@ class EpisodeForm
                                 }
                             }),
                         TextInput::make('slug')
+                            ->regex('/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/')
+                            ->disabled(fn (?Episode $record): bool => $record?->published_at?->isPast() ?? false)
+                            ->helperText('Lowercase words separated by hyphens. URLs are locked once their publication date has passed.')
                             ->required()
                             ->maxLength(255)
                             ->columnSpan(2)

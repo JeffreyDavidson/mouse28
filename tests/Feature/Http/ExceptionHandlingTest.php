@@ -8,33 +8,13 @@ use function Pest\Laravel\get;
 pest()->use(RefreshDatabase::class);
 
 test('unknown URLs render the branded recovery page', function (): void {
-    get('/this-page-does-not-exist')
-        ->assertNotFound()
-        ->assertSee('<title>Page Not Found | Mouse28</title>', false)
-        ->assertSee('<meta name="robots" content="none">', false)
-        ->assertDontSee('<link rel="canonical"', false)
-        ->assertSee('That page wandered off')
-        ->assertSee('dispatch-error-sheet', false)
-        ->assertSee('data-brand-wordmark', false)
-        ->assertSee('js-dispatch-errors', false)
-        ->assertSee(route('home'), false)
-        ->assertSee(route('search'), false)
-        ->assertSee(route('blog.index'), false)
-        ->assertSee(route('guides.index'), false)
-        ->assertSee(route('episodes.index'), false)
-        ->assertSee('placeholder:text-navy/60', false)
-        ->assertDontSee('placeholder:text-navy/35', false);
+    get('/this-page-does-not-exist')->assertNotFound()->assertSeeHtml('<title>Page Not Found | Mouse28</title>')->assertSeeHtml('<meta name="robots" content="none">')->assertDontSeeHtml('<link rel="canonical"')->assertSee('That page wandered off')->assertSeeHtml('dispatch-error-sheet')->assertSeeHtml('data-brand-wordmark')->assertSeeHtml('js-dispatch-errors')->assertSeeHtml(route('home'))->assertSeeHtml(route('search'))->assertSeeHtml(route('blog.index'))->assertSeeHtml(route('guides.index'))->assertSeeHtml(route('episodes.index'))->assertSeeHtml('placeholder:text-navy/60')->assertDontSeeHtml('placeholder:text-navy/35');
 });
 
 test('expired sessions explain how to recover', function (): void {
     Route::get('/testing/expired-session', fn () => abort(419, 'Private session details'));
 
-    get('/testing/expired-session')
-        ->assertStatus(419)
-        ->assertSee('<title>Page Expired | Mouse28</title>', false)
-        ->assertSee('Your session took a break')
-        ->assertSee('dispatch-error-recovery', false)
-        ->assertSee(route('contact.show'), false)
+    get('/testing/expired-session')->assertStatus(419)->assertSeeHtml('<title>Page Expired | Mouse28</title>')->assertSee('Your session took a break')->assertSeeHtml('dispatch-error-recovery')->assertSeeHtml(route('contact.show'))
         ->assertDontSee('Private session details');
 });
 
@@ -44,26 +24,13 @@ test('unexpected errors render a safe branded response', function (): void {
         throw new RuntimeException('Sensitive database connection details');
     });
 
-    get('/testing/server-error')
-        ->assertStatus(500)
-        ->assertSee('<title>Something Went Wrong | Mouse28</title>', false)
-        ->assertSee('<meta name="robots" content="none">', false)
-        ->assertDontSee('<link rel="canonical"', false)
-        ->assertDontSee('fonts.googleapis.com', false)
-        ->assertSee('The magic hit a snag')
-        ->assertSee('dispatch-error-marker', false)
-        ->assertSee('data-brand-wordmark', false)
+    get('/testing/server-error')->assertStatus(500)->assertSeeHtml('<title>Something Went Wrong | Mouse28</title>')->assertSeeHtml('<meta name="robots" content="none">')->assertDontSeeHtml('<link rel="canonical"')->assertDontSeeHtml('fonts.googleapis.com')->assertSee('The magic hit a snag')->assertSeeHtml('dispatch-error-marker')->assertSeeHtml('data-brand-wordmark')
         ->assertDontSee('Sensitive database connection details');
 });
 
 test('maintenance responses offer a safe retry path', function (): void {
     Route::get('/testing/maintenance', fn () => abort(503, 'Private maintenance details'));
 
-    get('/testing/maintenance')
-        ->assertStatus(503)
-        ->assertSee('<title>We’ll Be Right Back | Mouse28</title>', false)
-        ->assertSee('We’re making a little magic')
-        ->assertSee('dispatch-error-sheet', false)
-        ->assertSee('/testing/maintenance', false)
+    get('/testing/maintenance')->assertStatus(503)->assertSeeHtml('<title>We’ll Be Right Back | Mouse28</title>')->assertSee('We’re making a little magic')->assertSeeHtml('dispatch-error-sheet')->assertSeeHtml('/testing/maintenance')
         ->assertDontSee('Private maintenance details');
 });

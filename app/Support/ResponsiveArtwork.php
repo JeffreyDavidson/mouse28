@@ -25,7 +25,9 @@ class ResponsiveArtwork
             return null;
         }
 
-        $hash = hash_file('sha256', $file);
+        $hash = app()->runningInConsole()
+            ? hash_file('sha256', $file)
+            : app(ArtworkSourceCache::class)->hash($file);
 
         return $hash === false ? null : ['path' => $file, 'hash' => $hash];
     }

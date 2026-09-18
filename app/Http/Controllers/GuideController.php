@@ -14,7 +14,7 @@ class GuideController
     {
         abort_if(! config('mouse28.guides_enabled'), 404);
 
-        return view('guides.index', $viewModel->data($request));
+        return view('pages.guides.index', $viewModel->data($request));
     }
 
     public function show(Guide $guide, GuideViewModel $viewModel): View
@@ -26,6 +26,6 @@ class GuideController
             404,
         );
 
-        return view('guides.show', $viewModel->data($guide));
+        return view('pages.guides.show', $viewModel->data($guide));
     }
 }

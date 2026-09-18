@@ -5,6 +5,7 @@ use App\Filament\Resources\Episodes\Pages\EditEpisode;
 use App\Models\Episode;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
 use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
@@ -12,6 +13,38 @@ use function Pest\Laravel\get;
 use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
+
+test('explicit artwork action generates only the saved record cover', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $record = Episode::factory()->create(['cover_image' => 'episodes/cover.png']);
+    Artisan::shouldReceive('call')->once()
+        ->with('content:generate-artwork', [
+            '--type' => 'episodes', '--id' => $record->id,
+            '--force' => true, '--no-interaction' => true,
+        ])->andReturn(0);
+
+    livewire(EditEpisode::class, ['record' => $record->getRouteKey()])
+        ->callAction('generateArtwork')
+        ->assertNotified('Responsive artwork prepared');
+});
+
+test('published URLs are preserved and draft slugs are validated', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $published = Episode::factory()->create(['slug' => 'permanent-url']);
+    $draft = Episode::factory()->draft()->create();
+
+    livewire(EditEpisode::class, ['record' => $published->getRouteKey()])
+        ->fillForm(['slug' => 'replacement-url'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($published->refresh()->slug)->toBe('permanent-url');
+
+    livewire(EditEpisode::class, ['record' => $draft->getRouteKey()])
+        ->fillForm(['slug' => 'Invalid/URL'])
+        ->call('save')
+        ->assertHasFormErrors(['slug' => 'regex']);
+});
 
 test('editing an episode retains its number without a uniqueness error', function (): void {
     // Arrange

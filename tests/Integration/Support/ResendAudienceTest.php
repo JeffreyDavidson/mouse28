@@ -12,6 +12,31 @@ beforeEach(function (): void {
     Cache::forget('newsletter_subscribers');
 });
 
+test('all subscriber pages are retrieved before caching', function (): void {
+    Http::fakeSequence()
+        ->push(['data' => [['id' => 'one', 'email' => 'first@example.com']], 'has_more' => true])
+        ->push(['data' => [['id' => 'two', 'email' => 'second@example.com']], 'has_more' => false]);
+
+    $result = app(ResendAudience::class)->get();
+
+    expect($result['subscribers'])->toHaveCount(2);
+    Http::assertSent(fn (Request $request): bool => ($request->data()['after'] ?? null) === 'one');
+    expect(app(ResendAudience::class)->get())->toBe($result);
+    Http::assertSentCount(2);
+});
+
+test('a later provider failure never caches or exports a partial audience', function (): void {
+    Http::fakeSequence()
+        ->push(['data' => [['id' => 'one', 'email' => 'first@example.com']], 'has_more' => true])
+        ->push([], 503);
+
+    $result = app(ResendAudience::class)->get();
+
+    expect($result['subscribers'])->toBeEmpty()
+        ->and($result['error'])->not->toBeNull()
+        ->and(Cache::has('newsletter_subscribers'))->toBeFalse();
+});
+
 test('a successful audience read is shared through the cache', function (): void {
     Http::fake([
         'https://api.resend.com/*' => Http::response([

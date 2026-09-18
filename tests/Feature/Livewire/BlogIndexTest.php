@@ -4,9 +4,28 @@ use App\Livewire\BlogIndex;
 use App\Models\Post;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Livewire\Livewire;
 
 pest()->use(RefreshDatabase::class);
+
+test('equal publication dates have stable ordering across archive pages', function (): void {
+    $records = Post::factory()->count(25)->create(['published_at' => now()->subDay()]);
+    $ids = $records->modelKeys();
+    rsort($ids);
+    $page = Livewire::test(BlogIndex::class);
+
+    $page->assertViewHas('posts', fn (LengthAwarePaginator $posts): bool => $posts->getCollection()->pluck('id')->all() === array_slice($ids, 0, 12));
+
+    $page->call('setPage', 2);
+
+    $page->assertViewHas('posts', fn (LengthAwarePaginator $posts): bool => $posts->getCollection()->pluck('id')->all() === array_slice($ids, 12, 12));
+
+    $page->set('sort', 'oldest');
+    sort($ids);
+
+    $page->assertViewHas('posts', fn (LengthAwarePaginator $posts): bool => $posts->getCollection()->pluck('id')->all() === array_slice($ids, 0, 12));
+});
 
 test('query string filters update the visible stories', function (): void {
     // Arrange

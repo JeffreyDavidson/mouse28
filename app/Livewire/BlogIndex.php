@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Enums\PostCategory;
 use App\Models\Post;
+use App\ViewModels\PostIndexViewModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -100,11 +101,12 @@ class BlogIndex extends Component
                     ->orWhere('body', 'like', "%{$this->search}%");
             }))
             ->orderBy('published_at', $this->sort === 'oldest' ? 'asc' : 'desc')
+            ->orderBy('id', $this->sort === 'oldest' ? 'asc' : 'desc')
             ->paginate(12);
 
         $featuredPost = $this->hasDefaultFilters() && $posts->currentPage() === 1
             ? $posts->first()
-            : Post::published()->select($cardColumns)->latest('published_at')->first();
+            : Post::published()->select($cardColumns)->latest('published_at')->latest('id')->first();
 
         $archivePosts = $featuredPost && $this->hasDefaultFilters()
             ? $posts->getCollection()->reject(fn (Post $post): bool => $post->is($featuredPost))
@@ -154,19 +156,9 @@ class BlogIndex extends Component
 
     private function dispatchMetadata(int $page): void
     {
-        $categoryLabel = PostCategory::tryFrom($this->category)?->getLabel();
-
         $this->dispatch(
             'blog-metadata-updated',
-            pageTitle: $categoryLabel ? "{$categoryLabel} | Mouse28" : 'Disney Parks Blog | Mouse28',
-            pageDescription: $categoryLabel
-                ? "Mouse28 {$categoryLabel} articles, family experiences, and practical Disney park takeaways."
-                : 'Disney park accessibility tips, trip reports, family experiences, news, and practical planning from Jeffrey and Cassie Davidson.',
-            canonicalUrl: route('blog.index', array_filter([
-                'category' => $this->category ?: null,
-                'page' => $page > 1 ? $page : null,
-            ])),
-            robots: $this->search !== '' || $this->sort !== 'newest' ? 'noindex,follow' : 'index,follow',
+            ...app(PostIndexViewModel::class)->metadata($this->category, $this->search, $this->sort, $page),
         );
     }
 }

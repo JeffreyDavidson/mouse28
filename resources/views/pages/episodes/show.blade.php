@@ -262,12 +262,19 @@
                     >Share on Facebook</a>
                     <button
                         type="button"
-                        data-copy-link
+                        x-data="copyLink"
+                        x-on:click="copy"
                         class="text-purple inline-flex min-h-12 items-center underline underline-offset-8"
                     >
-                        <span data-copy-label>Copy Link</span>
-                        <span data-copy-feedback class="hidden" role="status" aria-live="polite" aria-atomic="true"
-                            >Copied!</span>
+                        <span x-show="! isFeedbackVisible">Copy Link</span>
+                        <span
+                            x-cloak
+                            x-show="isFeedbackVisible"
+                            x-text="feedback"
+                            role="status"
+                            aria-live="polite"
+                            aria-atomic="true"
+                        ></span>
                     </button>
                 </div>
             </section>

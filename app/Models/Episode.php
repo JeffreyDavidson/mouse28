@@ -15,6 +15,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Date;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
+use Spatie\Tags\HasTags;
 
 /**
  * @property Carbon|null $published_at
@@ -54,7 +55,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class Episode extends Model
 {
     /** @use HasFactory<EpisodeFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, HasTags, SoftDeletes;
 
     use LogsActivity;
 
@@ -138,13 +139,13 @@ class Episode extends Model
     /** @return Attribute<string|null, never> */
     protected function ogImageUrl(): Attribute
     {
-        return Attribute::make(get: fn () => $this->og_image ? '/storage/'.$this->og_image : null);
+        return Attribute::make(get: fn (): ?string => $this->og_image ? '/storage/'.$this->og_image : null);
     }
 
     /** @return Attribute<string|null, never> */
     protected function coverImageUrl(): Attribute
     {
-        return Attribute::make(get: fn () => $this->cover_image ? '/storage/'.$this->cover_image : null);
+        return Attribute::make(get: fn (): ?string => $this->cover_image ? '/storage/'.$this->cover_image : null);
     }
 
     /** @return Attribute<string|null, never> */
@@ -168,7 +169,7 @@ class Episode extends Model
     /** @return Attribute<string, never> */
     protected function formattedDuration(): Attribute
     {
-        return Attribute::make(get: function () {
+        return Attribute::make(get: function (): string {
             if (! $this->duration_seconds) {
                 return '';
             }

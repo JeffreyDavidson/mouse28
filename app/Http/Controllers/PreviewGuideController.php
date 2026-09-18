@@ -13,6 +13,6 @@ class PreviewGuideController
     {
         Gate::authorize('view', $guide);
 
-        return view('guides.show', $viewModel->data($guide, preview: true));
+        return view('pages.guides.show', $viewModel->data($guide, preview: true));
     }
 }

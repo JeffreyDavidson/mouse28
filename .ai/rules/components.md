@@ -1,6 +1,6 @@
 ---
 paths:
-  - '{app/Support/ResponsivePostArtwork.php,app/Console/Commands/GeneratePostArtwork.php,resources/views/components/post-artwork.blade.php}'
+- '{app/Support/ResponsiveArtwork.php,app/Console/Commands/GenerateResponsiveArtwork.php,resources/views/components/post-artwork.blade.php}'
 ---
 
 # Components

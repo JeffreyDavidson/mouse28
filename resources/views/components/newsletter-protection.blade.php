@@ -18,10 +18,12 @@
     </div>
 @endif
 
-@error('cf-turnstile-response', 'newsletter')
-    <p role="alert" class="text-sm text-red-200">{{ $message }}</p>
-@enderror
+@php($newsletterErrors = $errors->getBag('newsletter'))
 
-@error('newsletter_rate_limit', 'newsletter')
-    <p role="alert" class="text-sm text-red-200">{{ $message }}</p>
-@enderror
+@if ($newsletterErrors->has('cf-turnstile-response'))
+    <p role="alert" class="text-sm text-red-200">{{ $newsletterErrors->first('cf-turnstile-response') }}</p>
+@endif
+
+@if ($newsletterErrors->has('newsletter_rate_limit'))
+    <p role="alert" class="text-sm text-red-200">{{ $newsletterErrors->first('newsletter_rate_limit') }}</p>
+@endif

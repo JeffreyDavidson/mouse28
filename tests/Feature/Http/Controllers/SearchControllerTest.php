@@ -29,13 +29,9 @@ test('search stays within its query budget as content grows', function (): void 
 
 test('search page is available from public navigation', function (): void {
     get(route('search'))
-        ->assertOk()
-        ->assertSee('Search posts, guides, and podcast episodes')
-        ->assertSee('noindex,follow', false);
+        ->assertOk()->assertSee('Search posts, guides, and podcast episodes')->assertSeeHtml('noindex,follow');
 
-    get(route('home'))
-        ->assertOk()
-        ->assertSee(route('search'), false)
+    get(route('home'))->assertOk()->assertSeeHtml(route('search'))
         ->assertSee('Search Mouse28');
 });
 
@@ -58,8 +54,7 @@ test('canonical URLs preserve an HTTP application origin', function (): void {
         URL::forceScheme(str_starts_with($applicationUrl, 'https://') ? 'https' : null);
     }
 
-    $response->assertOk()
-        ->assertSee('<link rel="canonical" href="http://localhost/search">', false);
+    $response->assertOk()->assertSeeHtml('<link rel="canonical" href="http://localhost/search">');
 });
 
 test('search groups matching published content', function (): void {
@@ -123,9 +118,7 @@ test('out of range search pages retain pagination to existing results', function
 
     get(route('search', ['q' => 'Sensory', 'postsPage' => 99]))
         ->assertOk()
-        ->assertSee('7 results for “Sensory”')
-        ->assertSee('Blog posts')
-        ->assertSee('postsPage=1', false);
+        ->assertSee('7 results for “Sensory”')->assertSee('Blog posts')->assertSeeHtml('postsPage=1');
 });
 
 test('search excludes drafts and scheduled content', function (): void {
@@ -149,10 +142,7 @@ test('empty search offers useful paths forward', function (): void {
 });
 
 test('text searches are not indexed', function (): void {
-    get(route('search', ['q' => 'sensory']))
-        ->assertOk()
-        ->assertSee('<meta name="robots" content="noindex,follow">', false)
-        ->assertSee('<link rel="canonical" href="'.route('search').'">', false);
+    get(route('search', ['q' => 'sensory']))->assertOk()->assertSeeHtml('<meta name="robots" content="noindex,follow">')->assertSeeHtml('<link rel="canonical" href="'.route('search').'">');
 });
 
 test('page copy and metadata avoid em dashes', function (): void {
@@ -162,9 +152,5 @@ test('page copy and metadata avoid em dashes', function (): void {
 });
 
 test('page uses the dispatch editorial system', function (): void {
-    get(route('search'))
-        ->assertOk()
-        ->assertSee('data-brand-wordmark', false)
-        ->assertSee('dispatch-page-field', false)
-        ->assertSee('js-dispatch-pages', false);
+    get(route('search'))->assertOk()->assertSeeHtml('data-brand-wordmark')->assertSeeHtml('dispatch-page-field')->assertSeeHtml('js-dispatch-pages');
 });

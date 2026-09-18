@@ -12,6 +12,6 @@ class SearchController
     {
         $query = $request->string('q')->trim()->toString();
 
-        return view('search', $viewModel->data($query));
+        return view('pages.search', $viewModel->data($query));
     }
 }

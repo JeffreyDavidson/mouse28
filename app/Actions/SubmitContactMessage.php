@@ -1,18 +1,21 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Actions;
 
+use App\Jobs\DeliverContactEmails;
 use App\Models\ContactMessage;
+use Illuminate\Support\Facades\DB;
 
 class SubmitContactMessage
 {
-    public function __construct(private readonly SendContactEmails $sendContactEmails) {}
-
     /** @param array{name: string, email: string, subject: string, message: string} $attributes */
     public function __invoke(array $attributes): void
     {
-        $contactMessage = ContactMessage::query()->create($attributes);
-
-        ($this->sendContactEmails)($contactMessage);
+        DB::transaction(function () use ($attributes): void {
+            $contactMessage = ContactMessage::query()->create($attributes);
+            DeliverContactEmails::dispatch($contactMessage->id);
+        });
     }
 }
