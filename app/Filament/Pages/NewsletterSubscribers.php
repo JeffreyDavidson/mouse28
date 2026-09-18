@@ -8,10 +8,13 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Date;
+use Livewire\WithPagination;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class NewsletterSubscribers extends Page
 {
+    use WithPagination;
+
     #[\Override]
     protected string $view = 'filament.pages.newsletter-subscribers';
 
@@ -61,6 +64,7 @@ class NewsletterSubscribers extends Page
 
     public function refreshSubscribers(): void
     {
+        $this->resetPage();
         $audience = app(ResendAudience::class)->refresh();
 
         $notification = Notification::make();
@@ -81,7 +85,10 @@ class NewsletterSubscribers extends Page
 
     public function exportCsv(): StreamedResponse
     {
-        $subscribers = $this->getAudience()['subscribers'];
+        abort_unless(static::canAccess(), 403);
+        $audience = $this->getAudience();
+        abort_if($audience['error'] !== null, 503, 'Subscriber export is unavailable. Please try again.');
+        $subscribers = $audience['subscribers'];
 
         return response()->streamDownload(function () use ($subscribers): void {
             $handle = fopen('php://output', 'w');

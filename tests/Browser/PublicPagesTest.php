@@ -493,10 +493,9 @@ test('copying an article link gives accessible feedback', function (): void {
 
     $page->keys('button[aria-label="Copy link"]', 'Enter')
         ->assertScript('window.copiedArticleUrl', route('blog.show', $post))
-        ->assertScript('document.querySelector("[x-data=copyLink]")._x_dataStack.length', 1)
         ->assertSee('Copied!')
         ->assertNoJavaScriptErrors();
-});
+})->group('browser-smoke');
 
 test('copying an episode link gives accessible feedback', function (): void {
     $episode = Episode::factory()->create();
@@ -511,10 +510,63 @@ test('copying an episode link gives accessible feedback', function (): void {
 
     $page->click('[aria-labelledby="share-episode"] button')
         ->assertScript('window.copiedEpisodeUrl', route('episodes.show', $episode))
-        ->assertScript('document.querySelector("[aria-labelledby=share-episode] [x-data=copyLink]")._x_dataStack.length', 1)
         ->assertSee('Copied!')
         ->assertNoJavaScriptErrors();
-});
+})->group('browser-smoke');
+
+test('copy feedback resets and disposes its timer with the component', function (): void {
+    $post = Post::factory()->create();
+    $page = visit(route('blog.show', $post));
+    $page->script(<<<'JS'
+        Object.defineProperty(navigator, 'clipboard', {
+            configurable: true,
+            value: { writeText: async () => {} },
+        });
+        window.copyTimers = new Set();
+        const schedule = window.setTimeout.bind(window);
+        const cancel = window.clearTimeout.bind(window);
+        window.setTimeout = (callback, duration, ...args) => {
+            const id = schedule(() => {
+                window.copyTimers.delete(id);
+                callback(...args);
+            }, duration);
+            if (duration === 1500) window.copyTimers.add(id);
+            return id;
+        };
+        window.clearTimeout = (id) => {
+            window.copyTimers.delete(id);
+            cancel(id);
+        };
+        JS);
+
+    $page->click('button[aria-label="Copy link"]')
+        ->click('button[aria-label="Copy link"]')
+        ->assertScript('window.copyTimers.size', 1)
+        ->assertSee('Copied!')
+        ->assertScript('document.querySelector("[x-data=copyLink] [role=status]").checkVisibility()', false);
+
+    $page->click('button[aria-label="Copy link"]')
+        ->assertScript('window.copyTimers.size', 1);
+    $page->script('document.querySelector("[x-data=copyLink]").remove()');
+
+    $page->assertScript('window.copyTimers.size', 0)
+        ->assertNoJavaScriptErrors();
+})->group('browser-smoke');
+
+test('clipboard rejection provides an actionable fallback', function (): void {
+    $post = Post::factory()->create();
+    $page = visit(route('blog.show', $post));
+    $page->script(<<<'JS'
+        Object.defineProperty(navigator, 'clipboard', {
+            configurable: true,
+            value: { writeText: async () => { throw new Error('Permission denied'); } },
+        });
+        JS);
+
+    $page->click('button[aria-label="Copy link"]')
+        ->assertSee("Couldn't copy. Use your browser's address bar.")
+        ->assertNoJavaScriptErrors();
+})->group('browser-smoke');
 
 test('accessibility checks reject small targets and misleading focus decoration', function (): void {
     $page = visit(route('home'));
