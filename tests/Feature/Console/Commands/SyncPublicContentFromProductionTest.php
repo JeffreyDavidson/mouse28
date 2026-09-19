@@ -1,8 +1,10 @@
 <?php
 
+use App\Console\Commands\SyncPublicContentFromProduction;
 use App\Models\Episode;
 use App\Models\Post;
 use App\Support\PublicContentArchive;
+use Illuminate\Console\CacheCommandMutex;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Process\PendingProcess;
@@ -12,6 +14,22 @@ use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
 
 pest()->use(RefreshDatabase::class);
+
+test('isolated sync refuses concurrent work through either command name', function (string $name): void {
+    Process::fake();
+    $command = app(SyncPublicContentFromProduction::class);
+    $mutex = app(CacheCommandMutex::class);
+    expect($mutex->create($command))->toBeTrue();
+
+    try {
+        $exitCode = Artisan::call($name, ['--isolated' => 1]);
+
+        expect($exitCode)->toBe(Command::FAILURE);
+        Process::assertNothingRan();
+    } finally {
+        $mutex->forget($command);
+    }
+})->with(['content:sync-from-production', 'content:sync-production']);
 
 test('sync stops before transferring media when a local draft collides', function (): void {
     // Arrange

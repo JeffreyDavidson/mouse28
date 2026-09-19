@@ -13,7 +13,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 
 pest()->use(RefreshDatabase::class);
 
-test('record scoped generation leaves other covers alone', function (string $type): void {
+test('record scoped generation leaves other covers alone', function (string $type, string $command): void {
     Storage::fake('public');
     $disk = Storage::disk('public');
     $disk->put("{$type}/selected.png", UploadedFile::fake()->image('selected.png', 1000, 800)->getContent());
@@ -21,13 +21,13 @@ test('record scoped generation leaves other covers alone', function (string $typ
     $selected = ($type === 'posts' ? Post::factory() : Episode::factory())->createOne(['cover_image' => "{$type}/selected.png"]);
     $other = ($type === 'posts' ? Post::factory() : Episode::factory())->createOne(['cover_image' => "{$type}/other.png"]);
 
-    $this->pendingCommand('content:generate-artwork', ['--type' => $type, '--id' => $selected->id])
+    $this->pendingCommand($command, ['--type' => $type, '--id' => $selected->id])
         ->expectsOutputToContain('Originals and content records were not changed.')
         ->assertSuccessful();
 
     expect(ResponsiveArtwork::srcset($selected->cover_image, square: $type === 'episodes'))->not->toBeNull()
         ->and(ResponsiveArtwork::srcset($other->cover_image, square: $type === 'episodes'))->toBeNull();
-})->with(['posts', 'episodes']);
+})->with(['posts', 'episodes'])->with(['content:generate-responsive-artwork', 'content:generate-artwork']);
 
 test('record scoped generation reports missing sources as a failure', function (): void {
     Storage::fake('public');

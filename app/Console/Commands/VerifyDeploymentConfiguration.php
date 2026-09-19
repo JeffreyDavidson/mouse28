@@ -6,9 +6,9 @@ use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
-#[Signature('app:verify-production')]
-#[Description('Verify that required production settings are safely configured')]
-class VerifyProductionConfiguration extends Command
+#[Signature('app:verify-deployment', aliases: ['app:verify-production'])]
+#[Description('Verify required settings for production or staging deployment')]
+class VerifyDeploymentConfiguration extends Command
 {
     public function handle(): int
     {
@@ -28,7 +28,7 @@ class VerifyProductionConfiguration extends Command
             [$this->isConfigured(config('filesystems.default')), 'FILESYSTEM_DISK must be configured.'],
             [$this->usesDeliveringMailer(config('mail.default')), 'MAIL_MAILER must use a delivering transport.'],
             [$this->isProductionEmail(config('mail.from.address')), 'MAIL_FROM_ADDRESS must use a production address.'],
-            [$this->isProductionEmail(config('mail.admin_address')), 'MAIL_ADMIN_ADDRESS must use a monitored production address.'],
+            [$this->hasProductionRecipients(config('mail.admin_address')), 'MAIL_ADMIN_ADDRESS must use monitored production addresses.'],
             [$this->isConfigured(config('services.resend.key')), 'RESEND_API_KEY must be configured.'],
             [$this->isConfigured(config('services.resend.audience_id')), 'RESEND_AUDIENCE_ID must be configured.'],
             [$this->isConfigured(config('services.turnstile.site_key')), 'TURNSTILE_SITE_KEY must be configured.'],
@@ -54,7 +54,7 @@ class VerifyProductionConfiguration extends Command
         );
 
         if ($failures !== []) {
-            $this->error('Production configuration is not ready:');
+            $this->error('Deployment configuration is not ready:');
 
             foreach ($failures as $failure) {
                 $this->line(" - {$failure}");
@@ -63,7 +63,7 @@ class VerifyProductionConfiguration extends Command
             return self::FAILURE;
         }
 
-        $this->info('Production configuration is ready.');
+        $this->info('Deployment configuration is ready.');
 
         return self::SUCCESS;
     }
@@ -100,8 +100,19 @@ class VerifyProductionConfiguration extends Command
     {
         return is_string($email)
             && filter_var($email, FILTER_VALIDATE_EMAIL) !== false
-            && ! str_ends_with($email, '@example.com')
-            && ! str_ends_with($email, '@example.test');
+            && ! str_ends_with(strtolower($email), '@example.com')
+            && ! str_ends_with(strtolower($email), '@example.test');
+    }
+
+    private function hasProductionRecipients(mixed $addresses): bool
+    {
+        if (! is_string($addresses)) {
+            return false;
+        }
+
+        $recipients = array_filter(array_map(trim(...), explode(',', $addresses)));
+
+        return $recipients !== [] && array_all($recipients, $this->isProductionEmail(...));
     }
 
     private function isTransistorFeedUrl(mixed $url): bool

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Posts\Pages;
 
+use App\Actions\GenerateResponsiveCover;
 use App\Filament\Resources\Posts\PostResource;
 use App\Models\Post;
 use App\Support\EditorialReadiness;
@@ -13,8 +14,8 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Date;
+use RuntimeException;
 
 /** @property Post $record */
 class EditPost extends EditRecord
@@ -32,18 +33,13 @@ class EditPost extends EditRecord
                 ->requiresConfirmation()
                 ->modalDescription('Generate missing responsive copies of this saved cover. The original image is preserved.')
                 ->visible(fn (): bool => $this->record->is_published && ($this->record->published_at?->isPast() ?? false) && filled($this->record->cover_image))
-                ->action(function (): void {
-                    $result = Artisan::call('content:generate-artwork', [
-                        '--type' => 'posts',
-                        '--id' => $this->record->getKey(),
-                        '--force' => true,
-                        '--no-interaction' => true,
-                    ]);
+                ->action(function (GenerateResponsiveCover $generateCover): void {
                     $notification = Notification::make();
-                    if ($result !== 0) {
-                        $notification->danger()->title('Artwork generation failed')->body('The original cover is unchanged. Check its format and image-driver support.');
-                    } else {
+                    try {
+                        $generateCover($this->record->refresh());
                         $notification->success()->title('Responsive artwork prepared');
+                    } catch (RuntimeException) {
+                        $notification->danger()->title('Artwork generation failed')->body('The original cover is unchanged. Check its format and image-driver support.');
                     }
                     $notification->send();
                 }),

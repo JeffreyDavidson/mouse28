@@ -13,28 +13,25 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Finder\SplFileInfo;
 
-#[Signature('content:attach-artwork')]
+#[Signature('content:attach-bundled-artwork', aliases: ['content:attach-artwork'])]
 #[Description('Attach the bundled Mouse28 artwork to matching content without replacing uploads')]
-class AttachContentArtwork extends Command
+class AttachBundledArtwork extends Command
 {
-    /** @var array<string, string> */
-    private const array EPISODE_ARTWORK = [
-        'trailer-meet-mouse28' => 'episodes/trailer-meet-mouse28.webp',
-        'meet-jeffrey-and-cassie-our-disney-story' => 'episodes/meet-jeffrey-and-cassie-our-disney-story.webp',
-    ];
-
     public function handle(): int
     {
         $sourceDirectory = Config::string('mouse28.content_artwork_path');
 
-        if (! File::isDirectory("{$sourceDirectory}/posts")) {
-            $this->error("Bundled post artwork directory is missing: {$sourceDirectory}/posts");
+        foreach (['posts', 'episodes'] as $type) {
+            if (! File::isDirectory("{$sourceDirectory}/{$type}")) {
+                $this->error("Bundled artwork directory is missing: {$sourceDirectory}/{$type}");
 
-            return self::FAILURE;
+                return self::FAILURE;
+            }
         }
 
-        $postArtwork = $this->postArtwork($sourceDirectory);
-        $artwork = [...$postArtwork, ...self::EPISODE_ARTWORK];
+        $postArtwork = $this->artwork($sourceDirectory, 'posts');
+        $episodeArtwork = $this->artwork($sourceDirectory, 'episodes');
+        $artwork = [...array_values($postArtwork), ...array_values($episodeArtwork)];
         $missingFiles = collect($artwork)->reject(
             fn (string $path): bool => File::isFile("{$sourceDirectory}/{$path}"),
         );
@@ -62,7 +59,7 @@ class AttachContentArtwork extends Command
         }
 
         $updated = $this->attach(Post::query(), $postArtwork)
-            + $this->attach(Episode::query(), self::EPISODE_ARTWORK);
+            + $this->attach(Episode::query(), $episodeArtwork);
 
         $this->info("Copied {$copied} artwork files and attached artwork to {$updated} content records.");
 
@@ -70,12 +67,12 @@ class AttachContentArtwork extends Command
     }
 
     /** @return array<string, string> */
-    private function postArtwork(string $sourceDirectory): array
+    private function artwork(string $sourceDirectory, string $type): array
     {
-        return collect(File::files("{$sourceDirectory}/posts"))
+        return collect(File::files("{$sourceDirectory}/{$type}"))
             ->filter(fn (SplFileInfo $file): bool => $file->getExtension() === 'webp')
             ->mapWithKeys(fn (SplFileInfo $file): array => [
-                $file->getBasename('.webp') => "posts/{$file->getFilename()}",
+                $file->getBasename('.webp') => "{$type}/{$file->getFilename()}",
             ])
             ->all();
     }

@@ -6,6 +6,7 @@ use App\Support\PublicContentArchive;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Console\Isolatable;
 use Illuminate\Contracts\Process\ProcessResult;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
@@ -14,9 +15,9 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Throwable;
 
-#[Signature('content:sync-production')]
+#[Signature('content:sync-from-production', aliases: ['content:sync-production'])]
 #[Description('Replace local published content and media with the public content currently on Mouse28 production')]
-class SyncProductionContent extends Command
+class SyncPublicContentFromProduction extends Command implements Isolatable
 {
     private const array SSH_OPTIONS = [
         '-o',
