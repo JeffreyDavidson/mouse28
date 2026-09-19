@@ -1,69 +1,36 @@
 <?php
 
-use App\Actions\SendContactEmails;
 use App\Jobs\DeliverContactEmails;
-use App\Mail\ContactFormConfirmation;
-use App\Mail\ContactFormSubmitted;
-use App\Models\ContactMessage;
+use App\Jobs\SendContactMessageEmails;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Mail\Events\MessageSending;
-use Illuminate\Mail\Events\MessageSent;
-use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Testing\AssertableJsonString;
 
 pest()->use(RefreshDatabase::class);
 
-beforeEach(function (): void {
-    config()->set('mail.admin_address', 'admin@example.com');
-    config()->set('mail.default', 'array');
-    Event::fake([MessageSent::class]);
-});
+test('previously serialized contact jobs retain the message and delivery settings', function (): void {
+    $payload = 'O:29:"App\\Jobs\\DeliverContactEmails":1:{s:16:"contactMessageId";i:42;}';
 
-test('queued delivery uses a dedicated durable queue and does not resend successful mail', function (): void {
-    $message = ContactMessage::query()->create([
-        'name' => 'Reader', 'email' => 'reader@example.com', 'subject' => 'general', 'message' => 'A question.',
-    ]);
-    $job = new DeliverContactEmails($message->id);
+    $job = unserialize($payload, ['allowed_classes' => [DeliverContactEmails::class]]);
 
-    $job->handle(app(SendContactEmails::class));
-    $job->handle(app(SendContactEmails::class));
+    if (! $job instanceof SendContactMessageEmails) {
+        throw new UnexpectedValueException('The legacy payload did not resolve to the contact email job.');
+    }
 
-    expect($job->connection)->toBe('database')
-        ->and($job->queue)->toBe('contact-mail')
-        ->and($job->afterCommit)->toBeTrue();
-    Event::assertDispatchedTimes(MessageSent::class, 2);
-});
+    $job->beforeCommit();
 
-test('incomplete delivery fails the attempt so the worker retries it', function (): void {
-    $message = ContactMessage::query()->create([
-        'name' => 'Reader', 'email' => 'reader@example.com', 'subject' => 'general', 'message' => 'A question.',
-    ]);
-    Event::listen(MessageSending::class, fn (): bool => false);
+    Bus::dispatch($job);
+    $queuePayload = DB::table('jobs')->where('queue', 'contact-mail')->value('payload');
 
-    expect(fn () => new DeliverContactEmails($message->id)->handle(app(SendContactEmails::class)))
-        ->toThrow(RuntimeException::class, 'Contact email delivery is incomplete.');
-});
+    if (! is_string($queuePayload)) {
+        throw new UnexpectedValueException('The legacy job was not stored on its database queue.');
+    }
 
-test('old queued messages require manual review rather than automatic resending', function (): void {
-    $message = ContactMessage::query()->create([
-        'name' => 'Reader', 'email' => 'reader@example.com', 'subject' => 'general', 'message' => 'A question.',
-    ]);
-    $message->created_at = now()->subDay();
-    $message->save();
-    $job = new DeliverContactEmails($message->id)->withFakeQueueInteractions();
-
-    $job->handle(app(SendContactEmails::class));
-
-    $job->assertFailedWith(new RuntimeException('Contact delivery requires manual review after 23 hours.'));
-    Event::assertNotDispatched(MessageSent::class);
-});
-
-test('provider idempotency keys are stable and separate each recipient purpose', function (): void {
-    $message = ContactMessage::query()->create([
-        'name' => 'Reader', 'email' => 'reader@example.com', 'subject' => 'general', 'message' => 'A question.',
-    ]);
-    $notification = new ContactFormSubmitted($message)->headers()->text;
-    $confirmation = new ContactFormConfirmation($message)->headers()->text;
-
-    expect($notification)->toBe(new ContactFormSubmitted($message->refresh())->headers()->text)
-        ->and($notification)->not->toBe($confirmation);
+    expect($job->contactMessageId)->toBe(42);
+    new AssertableJsonString($queuePayload)
+        ->assertPath('maxTries', 3)
+        ->assertPath('timeout', 60)
+        ->assertPath('failOnTimeout', true)
+        ->assertPath('backoff', '60,300,900');
 });

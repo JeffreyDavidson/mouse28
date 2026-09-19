@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\ContactMessages\Pages;
 
-use App\Actions\SendContactEmails;
 use App\Filament\Resources\ContactMessages\ContactMessageResource;
+use App\Jobs\SendContactMessageEmails;
 use App\Models\ContactMessage;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
@@ -14,6 +14,7 @@ use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Facades\Date;
 
 /** @property ContactMessage $record */
 class ViewContactMessage extends ViewRecord
@@ -85,22 +86,15 @@ class ViewContactMessage extends ViewRecord
                     && ($record->notification_sent_at === null || $record->confirmation_sent_at === null))
                 ->requiresConfirmation()
                 ->modalDescription('Only emails without a recorded successful send will be retried. A provider timeout can leave delivery uncertain; check the provider before retrying.')
-                ->action(function (ContactMessage $record, SendContactEmails $sendContactEmails): void {
-                    $sendContactEmails($record);
-                    $record->refresh();
-
-                    if ($record->notification_sent_at === null || $record->confirmation_sent_at === null) {
-                        Notification::make()
-                            ->title('Some emails remain unsent')
-                            ->body('Another send may be running, or the mail service could not accept the email. Check the mail service before retrying.')
-                            ->warning()
-                            ->send();
-
-                        return;
-                    }
+                ->disabled(fn (ContactMessage $record): bool => $record->created_at === null
+                    || $record->created_at->lt(Date::now()->subHours(23)))
+                ->tooltip('Retries are available for 23 hours after submission. Older messages require manual review with the mail provider.')
+                ->action(function (ContactMessage $record): void {
+                    SendContactMessageEmails::dispatch($record->id);
 
                     Notification::make()
-                        ->title('Emails sent to the mail service')
+                        ->title('Email delivery queued')
+                        ->body('Refresh this page shortly to check the delivery status.')
                         ->success()
                         ->send();
                 }),
