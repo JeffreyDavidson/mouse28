@@ -46,7 +46,12 @@ enum PostCategory: string implements HasColor, HasLabel
             self::EpisodeRecap => 'warning',
             self::FamilyLife => 'danger',
             self::AutismAwareness => 'primary',
-            default => 'gray',
+            self::DisneyNews,
+            self::FoodReviews,
+            self::ResortReviews,
+            self::DisneyPlus,
+            self::Merchandise,
+            self::General => 'gray',
         };
     }
 }
