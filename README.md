@@ -150,7 +150,7 @@ Dependabot vulnerability alerts remain enabled. CI audits the locked Composer an
 - Configure the application URL, database, mail, Resend, Turnstile, Transistor podcast feed, storage, cache, sessions, and queues.
 - Set `NIGHTWATCH_ENABLED=true` and `NIGHTWATCH_TOKEN` to enable Nightwatch. Keep request payload capture disabled and request sampling at or below `0.1`.
 - Set `SENTRY_LARAVEL_DSN`, `SENTRY_ENVIRONMENT=production`, and a deploy-specific `SENTRY_RELEASE` to enable error reporting. Leave PII disabled and tracing and profiling set to `0.0` until they are deliberately reviewed.
-- Run `php artisan app:verify-production` after loading production configuration and stop if it reports a failure.
+- Run `php artisan app:verify-deployment` after loading production configuration and stop if it reports a failure.
 - Run `php artisan migrate --force`.
 - Run `npm run build` before publishing the release artifact.
 - Ensure `public/storage` is linked when uploaded media is used.

@@ -38,12 +38,12 @@ beforeEach(function (): void {
     ]);
 });
 
-test('safe production configuration passes', function (): void {
-    $exitCode = Artisan::call('app:verify-production');
+test('safe production configuration passes through both command names', function (string $command): void {
+    $exitCode = Artisan::call($command);
 
     expect($exitCode)->toBe(Command::SUCCESS)
-        ->and(Artisan::output())->toContain('Production configuration is ready.');
-});
+        ->and(Artisan::output())->toContain('Deployment configuration is ready.');
+})->with(['app:verify-deployment', 'app:verify-production']);
 
 test('blank or non-string driver settings fail preflight', function (string $setting, string $message, mixed $value): void {
     config()->set($setting, $value);
@@ -53,7 +53,7 @@ test('blank or non-string driver settings fail preflight', function (string $set
 
     expect($exitCode)->toBe(Command::FAILURE)
         ->and($output)->toContain($message)
-        ->not->toContain('Production configuration is ready.');
+        ->not->toContain('Deployment configuration is ready.');
 })->with([
     'session' => ['session.driver', 'SESSION_DRIVER must use a persistent driver.'],
     'cache' => ['cache.default', 'CACHE_STORE must use a persistent driver.'],
@@ -80,7 +80,7 @@ test('safe staging configuration passes with isolated observability', function (
     $exitCode = Artisan::call('app:verify-production');
 
     expect($exitCode)->toBe(Command::SUCCESS)
-        ->and(Artisan::output())->toContain('Production configuration is ready.');
+        ->and(Artisan::output())->toContain('Deployment configuration is ready.');
 });
 
 test('unsafe production configuration reports every failure without exposing values', function (): void {
@@ -116,7 +116,7 @@ test('unsafe production configuration reports every failure without exposing val
 
     expect($exitCode)->toBe(Command::FAILURE)
         ->and($output)->toContain(
-            'Production configuration is not ready:',
+            'Deployment configuration is not ready:',
             'APP_DEBUG must be false.',
             'APP_URL must use the canonical HTTPS URL.',
             'SESSION_SECURE_COOKIE must be true.',
@@ -140,6 +140,23 @@ test('unsafe production configuration reports every failure without exposing val
         )
         ->not->toContain('admin@example.test');
 });
+
+test('administrator recipients are validated individually without exposing addresses', function (mixed $addresses, int $expected): void {
+    config()->set('mail.admin_address', $addresses);
+
+    $exitCode = Artisan::call('app:verify-deployment');
+    $output = Artisan::output();
+
+    expect($exitCode)->toBe($expected)
+        ->and($output)->not->toContain('first@mouse28.com', 'invalid', 'EXAMPLE.COM');
+})->with([
+    'multiple recipients' => ['first@mouse28.com, second@mouse28.com', Command::SUCCESS],
+    'whitespace and empty entries' => [' first@mouse28.com, , ', Command::SUCCESS],
+    'invalid recipient' => ['first@mouse28.com, invalid', Command::FAILURE],
+    'example recipient' => ['first@mouse28.com, test@EXAMPLE.COM', Command::FAILURE],
+    'empty recipients' => [' , ', Command::FAILURE],
+    'non-string recipients' => [null, Command::FAILURE],
+]);
 
 test('observability credentials are never exposed in verification output', function (): void {
     config()->set([

@@ -83,11 +83,11 @@ test('artwork attachment stops when a bundled file is missing', function (): voi
     config()->set('mouse28.content_artwork_path', storage_path('framework/testing/missing-artwork'));
 
     $this->pendingCommand('content:attach-artwork')
-        ->expectsOutputToContain('Bundled post artwork directory is missing:')
+        ->expectsOutputToContain('Bundled artwork directory is missing:')
         ->assertFailed();
 });
 
-test('new post artwork is discovered by its slug while concepts stay inactive', function (): void {
+test('new post and episode artwork is discovered by slug while concepts stay inactive', function (): void {
     Storage::fake('public');
 
     $sourceDirectory = storage_path('framework/testing/discovered-content-artwork');
@@ -98,6 +98,8 @@ test('new post artwork is discovered by its slug while concepts stay inactive', 
     File::put("{$sourceDirectory}/posts/a-new-park-story.webp", 'post artwork');
     File::put("{$sourceDirectory}/posts/ignored-cover.jpg", 'unsupported artwork');
     File::put("{$sourceDirectory}/concepts/concept-story.webp", 'concept artwork');
+    File::put("{$sourceDirectory}/episodes/a-new-park-story.webp", 'episode artwork');
+    $episode = Episode::factory()->create(['slug' => 'a-new-park-story', 'cover_image' => null]);
 
     foreach (['trailer-meet-mouse28', 'meet-jeffrey-and-cassie-our-disney-story'] as $episodeSlug) {
         File::put("{$sourceDirectory}/episodes/{$episodeSlug}.webp", 'episode artwork');
@@ -115,13 +117,14 @@ test('new post artwork is discovered by its slug while concepts stay inactive', 
     ]);
 
     try {
-        expect($this->pendingCommand('content:attach-artwork')->run())->toBe(Command::SUCCESS);
+        expect($this->pendingCommand('content:attach-bundled-artwork')->run())->toBe(Command::SUCCESS);
 
         Storage::disk('public')->assertExists('posts/a-new-park-story.webp');
         Storage::disk('public')->assertMissing('posts/ignored-cover.jpg');
         Storage::disk('public')->assertMissing('concepts/concept-story.webp');
 
         expect($post->refresh()->cover_image)->toBe('posts/a-new-park-story.webp')
+            ->and($episode->refresh()->cover_image)->toBe('episodes/a-new-park-story.webp')
             ->and($conceptPost->refresh()->cover_image)->toBeNull();
     } finally {
         File::deleteDirectory($sourceDirectory);

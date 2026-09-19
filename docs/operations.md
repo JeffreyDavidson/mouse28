@@ -7,7 +7,7 @@ Mouse28 is hosted on Laravel Forge. Use a separate staging site for deployment v
 1. Confirm the target commit or tag and review its migrations and storage changes.
 2. Confirm the staging or production environment uses persistent database and public-media paths.
 3. Create and independently verify a database backup and an uploaded-media backup.
-4. Load the target environment and run `php artisan app:verify-production`.
+4. Load the target environment and run `php artisan app:verify-deployment`.
 5. Stop when the preflight command reports any failure.
 
 Never copy live credentials into the repository, deployment logs, or local documentation.
@@ -15,7 +15,7 @@ Never copy live credentials into the repository, deployment logs, or local docum
 Staging runs with `APP_ENV=production` so production safeguards stay active. Set
 `APP_URL` and `MOUSE28_PRODUCTION_URL` to `https://staging.mouse28.com`, set
 `MOUSE28_DEPLOYMENT_ENVIRONMENT=staging`, and use matching isolated Nightwatch
-and Sentry environments before running `php artisan app:verify-production`.
+and Sentry environments before running `php artisan app:verify-deployment`.
 
 ## Branch and release workflow
 
@@ -42,9 +42,24 @@ Feature work still goes through squash-merged pull requests into `develop`.
 
 ## Syncing public content locally
 
-Run `php artisan content:sync-production` from the local Mouse28 checkout to replace local published posts, guides, episodes, podcast display metadata, and their referenced public media with the current production versions. The command uses the `cold-moon` SSH alias and `/home/forge/mouse28.com/current` site path by default; override them with `MOUSE28_PRODUCTION_SSH_HOST` and `MOUSE28_PRODUCTION_SITE_PATH` when the Forge target changes.
+Run `php artisan content:sync-from-production --isolated=1` from the local Mouse28 checkout to replace local published posts, guides, episodes, podcast display metadata, and their referenced public media with the current production versions. The command uses the `cold-moon` SSH alias and `/home/forge/mouse28.com/current` site path by default; override them with `MOUSE28_PRODUCTION_SSH_HOST` and `MOUSE28_PRODUCTION_SITE_PATH` when the Forge target changes.
 
 The sync is one-way and refuses to run when the current application environment is production. It never exports private users, subscribers, contact submissions, credentials, or environment-specific podcast email. Local drafts and scheduled content are preserved; stale currently published local records are soft deleted.
+
+## Application commands
+
+Use these descriptive command names for new scripts. Existing names remain aliases so deployed scripts continue to work.
+
+| Command | Purpose | Compatibility aliases |
+| --- | --- | --- |
+| `app:verify-deployment` | Validate production or staging configuration | `app:verify-production` |
+| `content:attach-bundled-artwork` | Attach bundled WebP files to matching post and episode slugs | `content:attach-artwork` |
+| `content:generate-responsive-artwork` | Generate missing responsive cover variants | `content:generate-artwork`, `content:generate-post-artwork` |
+| `content:sync-from-production --isolated=1` | Synchronize public content and media locally | `content:sync-production` |
+| `content:export-public` | Export published content to a JSON archive | — |
+| `content:import-public` | Import a public archive into a permitted environment | — |
+
+Use `--isolated=1` for sync so overlapping invocations stop with a nonzero exit code before remote processes or local writes. Both command names share the same isolation lock. The framework releases it on completion; interrupted locks expire after one hour. The existing Forge verification command remains supported through its alias; no deployment script changes are required.
 
 ## Contact mail queue deployment prerequisite
 
@@ -192,7 +207,7 @@ Laravel's destructive database commands (`db:wipe`, `migrate:fresh`, `migrate:re
 
 ## After deploying
 
-For responsive artwork, confirm GD WebP support and the persistent local public disk before running `php artisan content:generate-artwork --type=posts --force` or `php artisan content:generate-artwork --type=episodes --force` on the explicitly approved target. The legacy `content:generate-post-artwork` alias still defaults to posts only. These additive operations leave original covers and database records untouched; each must be separately approved under the production mutation rules. Run the appropriate type again after publishing/replacing covers. Without generated candidates the public site continues serving originals. Verify candidate URLs return 200 before claiming responsive-image savings on production. Post candidates use `/storage/posts/responsive/`; square episode candidates use `/storage/episodes/responsive/v1/`.
+For responsive artwork, confirm GD WebP support and the persistent local public disk before running `php artisan content:generate-responsive-artwork --type=posts --force` or `php artisan content:generate-responsive-artwork --type=episodes --force` on the explicitly approved target. The legacy `content:generate-post-artwork` alias still defaults to posts only. These additive operations leave original covers and database records untouched; each must be separately approved under the production mutation rules. Run the appropriate type again after publishing/replacing covers. Without generated candidates the public site continues serving originals. Verify candidate URLs return 200 before claiming responsive-image savings on production. Post candidates use `/storage/posts/responsive/`; square episode candidates use `/storage/episodes/responsive/v1/`.
 
 Without `--force`, the artwork command uses Laravel's native production confirmation prompt. Declining it, or running noninteractively without force, cancels generation. A console prompt or flag does not replace the operational approval above.
 

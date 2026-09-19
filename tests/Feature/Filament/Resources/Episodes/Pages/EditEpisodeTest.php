@@ -4,8 +4,10 @@ use App\Filament\Resources\Episodes\EpisodeResource;
 use App\Filament\Resources\Episodes\Pages\EditEpisode;
 use App\Models\Episode;
 use App\Models\User;
+use App\Support\ResponsiveArtwork;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
@@ -15,17 +17,29 @@ use function Pest\Livewire\livewire;
 pest()->use(RefreshDatabase::class);
 
 test('explicit artwork action generates only the saved record cover', function (): void {
+    Storage::fake('public');
+    Storage::disk('public')->put('episodes/cover.png', UploadedFile::fake()->image('cover.png', 1000, 800)->getContent());
+    Storage::disk('public')->put('episodes/other.png', UploadedFile::fake()->image('other.png', 1200, 800)->getContent());
     actingAs(User::factory()->admin()->create());
     $record = Episode::factory()->create(['cover_image' => 'episodes/cover.png']);
-    Artisan::shouldReceive('call')->once()
-        ->with('content:generate-artwork', [
-            '--type' => 'episodes', '--id' => $record->id,
-            '--force' => true, '--no-interaction' => true,
-        ])->andReturn(0);
+    $other = Episode::factory()->create(['cover_image' => 'episodes/other.png']);
 
     livewire(EditEpisode::class, ['record' => $record->getRouteKey()])
         ->callAction('generateArtwork')
         ->assertNotified('Responsive artwork prepared');
+
+    expect(ResponsiveArtwork::srcset($record->cover_image, square: true))->not->toBeNull()
+        ->and(ResponsiveArtwork::srcset($other->cover_image, square: true))->toBeNull();
+});
+
+test('artwork generation reports an unavailable source', function (): void {
+    Storage::fake('public');
+    actingAs(User::factory()->admin()->create());
+    $record = Episode::factory()->create(['cover_image' => 'episodes/missing.png']);
+
+    livewire(EditEpisode::class, ['record' => $record->getRouteKey()])
+        ->callAction('generateArtwork')
+        ->assertNotified('Artwork generation failed');
 });
 
 test('published URLs are preserved and draft slugs are validated', function (): void {

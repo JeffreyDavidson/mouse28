@@ -6,8 +6,10 @@ use App\Filament\Resources\Posts\Pages\EditPost;
 use App\Filament\Resources\Posts\PostResource;
 use App\Models\Post;
 use App\Models\User;
+use App\Support\ResponsiveArtwork;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
@@ -17,17 +19,29 @@ use function Pest\Livewire\livewire;
 pest()->use(RefreshDatabase::class);
 
 test('explicit artwork action generates only the saved record cover', function (): void {
+    Storage::fake('public');
+    Storage::disk('public')->put('posts/cover.png', UploadedFile::fake()->image('cover.png', 1000, 800)->getContent());
+    Storage::disk('public')->put('posts/other.png', UploadedFile::fake()->image('other.png', 1200, 800)->getContent());
     actingAs(User::factory()->admin()->create());
     $record = Post::factory()->create(['cover_image' => 'posts/cover.png']);
-    Artisan::shouldReceive('call')->once()
-        ->with('content:generate-artwork', [
-            '--type' => 'posts', '--id' => $record->id,
-            '--force' => true, '--no-interaction' => true,
-        ])->andReturn(0);
+    $other = Post::factory()->create(['cover_image' => 'posts/other.png']);
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->callAction('generateArtwork')
         ->assertNotified('Responsive artwork prepared');
+
+    expect(ResponsiveArtwork::srcset($record->cover_image, square: false))->not->toBeNull()
+        ->and(ResponsiveArtwork::srcset($other->cover_image, square: false))->toBeNull();
+});
+
+test('artwork generation reports an unavailable source', function (): void {
+    Storage::fake('public');
+    actingAs(User::factory()->admin()->create());
+    $record = Post::factory()->create(['cover_image' => 'posts/missing.png']);
+
+    livewire(EditPost::class, ['record' => $record->getRouteKey()])
+        ->callAction('generateArtwork')
+        ->assertNotified('Artwork generation failed');
 });
 
 test('published URLs cannot be changed by submitted editor state', function (): void {
