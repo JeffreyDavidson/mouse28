@@ -188,8 +188,6 @@ Every administrator must enroll an authenticator app and save their recovery
 codes; existing unenrolled administrators are routed to enrollment after signing
 in. Do not seed or manually fill MFA secrets on their behalf.
 
-Do not clean demo content as part of an unattended deployment. After verified backups and real-content review, `php artisan content:clean-seeded --force` removes only the documented demo slugs in one transaction.
-
 Laravel's destructive database commands (`db:wipe`, `migrate:fresh`, `migrate:refresh`, `migrate:reset`, and `migrate:rollback`) are prohibited when `APP_ENV=production`, even with `--force`. This includes Forge staging configured with that environment. Use forward migrations; do not disable this safeguard as a deployment or rollback shortcut.
 
 ## After deploying
