@@ -1,6 +1,5 @@
 <?php
 
-use App\Jobs\DeliverContactEmails;
 use App\Jobs\SendContactMessageEmails;
 use App\Mail\ContactFormConfirmation;
 use App\Mail\ContactFormSubmitted;
@@ -70,16 +69,14 @@ test('retry sends only the contact email that previously failed', function (): v
     Event::assertDispatched(MessageSent::class, fn (MessageSent $event): bool => str_starts_with($event->message->getSubject() ?? '', 'We got your message!'));
 });
 
-test('concurrent contact email sends are released while the message is locked', function (bool $legacy): void {
+test('concurrent contact email sends are released while the message is locked', function (): void {
     $message = ContactMessage::query()->create([
         'name' => 'Dale Cooper', 'email' => 'dale@example.com',
         'subject' => 'general', 'message' => 'A park question.',
     ]);
     $lock = Cache::lock("contact-emails:{$message->id}", 120);
     $lock->get();
-    $job = $legacy
-        ? new DeliverContactEmails($message->id)
-        : new SendContactMessageEmails($message->id);
+    $job = new SendContactMessageEmails($message->id);
     $job->withFakeQueueInteractions();
 
     try {
@@ -93,7 +90,7 @@ test('concurrent contact email sends are released while the message is locked', 
     } finally {
         $lock->release();
     }
-})->with(['current job' => false, 'legacy job' => true]);
+});
 
 test('cancelled contact emails are not recorded as sent and remain retryable', function (): void {
     $events = Event::fake([MessageSent::class]);
