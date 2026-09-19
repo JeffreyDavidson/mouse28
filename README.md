@@ -157,6 +157,5 @@ Dependabot vulnerability alerts remain enabled. CI audits the locked Composer an
 - Run `php artisan optimize` after environment configuration is final.
 - Confirm the scheduler and queue worker are supervised if production uses queued work.
 - Verify `/up`, `/`, `/blog`, `/episodes`, `/search?q=accessibility`, `/sitemap.xml`, `/rss/blog`, contact submission, and newsletter signup. Confirm `/rss/podcast` permanently redirects to the configured Transistor feed. When `GUIDES_ENABLED=true`, also verify `/guides`.
-- Use `php artisan content:clean-seeded --force` only after backups are verified and real content is ready; it removes only the known demo slugs.
 
 See [docs/architecture.md](docs/architecture.md) for application boundaries, [docs/content-model.md](docs/content-model.md) for editorial language, and [docs/operations.md](docs/operations.md) for the Forge deployment and rollback runbook.
