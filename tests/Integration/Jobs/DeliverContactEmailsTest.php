@@ -2,6 +2,12 @@
 
 use App\Jobs\DeliverContactEmails;
 use App\Jobs\SendContactMessageEmails;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Testing\AssertableJsonString;
+
+pest()->use(RefreshDatabase::class);
 
 test('previously serialized contact jobs retain the message and delivery settings', function (): void {
     $payload = 'O:29:"App\\Jobs\\DeliverContactEmails":1:{s:16:"contactMessageId";i:42;}';
@@ -12,7 +18,19 @@ test('previously serialized contact jobs retain the message and delivery setting
         throw new UnexpectedValueException('The legacy payload did not resolve to the contact email job.');
     }
 
-    expect($job->contactMessageId)->toBe(42)
-        ->and($job->tries)->toBe(3)
-        ->and($job->timeout)->toBe(60);
+    $job->beforeCommit();
+
+    Bus::dispatch($job);
+    $queuePayload = DB::table('jobs')->where('queue', 'contact-mail')->value('payload');
+
+    if (! is_string($queuePayload)) {
+        throw new UnexpectedValueException('The legacy job was not stored on its database queue.');
+    }
+
+    expect($job->contactMessageId)->toBe(42);
+    new AssertableJsonString($queuePayload)
+        ->assertPath('maxTries', 3)
+        ->assertPath('timeout', 60)
+        ->assertPath('failOnTimeout', true)
+        ->assertPath('backoff', '60,300,900');
 });

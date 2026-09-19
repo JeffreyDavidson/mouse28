@@ -8,6 +8,12 @@ use App\Models\ContactMessage;
 use Illuminate\Contracts\Mail\Mailer;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Queue\Attributes\Backoff;
+use Illuminate\Queue\Attributes\Connection;
+use Illuminate\Queue\Attributes\FailOnTimeout;
+use Illuminate\Queue\Attributes\Queue;
+use Illuminate\Queue\Attributes\Timeout;
+use Illuminate\Queue\Attributes\Tries;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Date;
@@ -15,23 +21,18 @@ use Illuminate\Support\Facades\Log;
 use RuntimeException;
 use Throwable;
 
+#[Connection('database')]
+#[Queue('contact-mail')]
+#[Tries(3)]
+#[Timeout(60)]
+#[FailOnTimeout]
+#[Backoff([60, 300, 900])]
 class SendContactMessageEmails implements ShouldQueue
 {
     use Queueable;
 
-    public int $tries = 3;
-
-    public int $timeout = 60;
-
-    public bool $failOnTimeout = true;
-
-    /** @var list<int> */
-    public array $backoff = [60, 300, 900];
-
     public function __construct(public int $contactMessageId)
     {
-        $this->onConnection('database');
-        $this->onQueue('contact-mail');
         $this->afterCommit();
     }
 

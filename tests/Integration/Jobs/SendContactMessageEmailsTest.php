@@ -8,8 +8,11 @@ use Illuminate\Contracts\Mail\Mailer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Mail\Events\MessageSent;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Testing\AssertableJsonString;
 
 pest()->use(RefreshDatabase::class);
 
@@ -137,10 +140,27 @@ test('queued delivery uses a dedicated durable queue and does not resend success
     $job->handle(app(Mailer::class));
     $job->handle(app(Mailer::class));
 
-    expect($job->connection)->toBe('database')
-        ->and($job->queue)->toBe('contact-mail')
-        ->and($job->afterCommit)->toBeTrue();
+    expect($job->afterCommit)->toBeTrue();
     Event::assertDispatchedTimes(MessageSent::class, 2);
+});
+
+test('queue attributes configure contact delivery routing and worker settings', function (): void {
+    $job = new SendContactMessageEmails(42);
+    expect($job->afterCommit)->toBeTrue();
+    $job->beforeCommit();
+
+    Bus::dispatch($job);
+    $payload = DB::table('jobs')->where('queue', 'contact-mail')->value('payload');
+
+    if (! is_string($payload)) {
+        throw new UnexpectedValueException('The contact job was not stored on its database queue.');
+    }
+
+    new AssertableJsonString($payload)
+        ->assertPath('maxTries', 3)
+        ->assertPath('timeout', 60)
+        ->assertPath('failOnTimeout', true)
+        ->assertPath('backoff', '60,300,900');
 });
 
 test('incomplete delivery fails the attempt so the worker retries it', function (): void {
