@@ -9,7 +9,7 @@
         "filament/filament": "^5.7",
         "filament/spatie-laravel-tags-plugin": "^5.0",
         "intervention/image": "^4.0",
-        "laravel/framework": "^13.23",
+        "laravel/framework": "^13.26",
         "laravel/head": "^0.2.1",
         "laravel/nightwatch": "^1.30",
         "laravel/tinker": "^3.0",
@@ -23,12 +23,12 @@
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.7",
         "christophrumpel/missing-livewire-assertions": "^4.0",
-        "driftingly/rector-laravel": "^2.5",
+        "driftingly/rector-laravel": "^2.6",
         "jasonmccreary/double": "^0.7.0",
         "larastan/larastan": "^3.10",
         "laravel/boost": "^2.4",
         "laravel/doctor": "^0.1.0",
-        "laravel/pail": "^1.2.2",
+        "laravel/pail": "^1.2.5",
         "laravel/pao": "^1.1",
         "laravel/pint": "^1.30.5",
         "laraveldaily/filacheck": "^1.2.4",
@@ -39,7 +39,7 @@
         "pestphp/pest": "^5.1",
         "pestphp/pest-plugin-agent": "^5.0",
         "pestphp/pest-plugin-arch": "^5.0",
-        "pestphp/pest-plugin-browser": "^5.0",
+        "pestphp/pest-plugin-browser": "^5.0.1",
         "pestphp/pest-plugin-faker": "^5.0",
         "pestphp/pest-plugin-laravel": "^5.0",
         "pestphp/pest-plugin-livewire": "^5.0",
@@ -138,10 +138,9 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": false,
+        "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
-            "php-http/discovery": true,
             "phpstan/extension-installer": true
         }
     },
