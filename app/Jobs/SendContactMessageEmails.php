@@ -6,7 +6,7 @@ use App\Mail\ContactFormConfirmation;
 use App\Mail\ContactFormSubmitted;
 use App\Models\ContactMessage;
 use Illuminate\Contracts\Mail\Mailer;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Queue\ShouldQueueAfterCommit;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Attributes\Backoff;
 use Illuminate\Queue\Attributes\Connection;
@@ -14,7 +14,7 @@ use Illuminate\Queue\Attributes\FailOnTimeout;
 use Illuminate\Queue\Attributes\Queue;
 use Illuminate\Queue\Attributes\Timeout;
 use Illuminate\Queue\Attributes\Tries;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Log;
@@ -27,13 +27,22 @@ use Throwable;
 #[Timeout(60)]
 #[FailOnTimeout]
 #[Backoff([60, 300, 900])]
-class SendContactMessageEmails implements ShouldQueue
+class SendContactMessageEmails implements ShouldQueueAfterCommit
 {
     use Queueable;
 
-    public function __construct(public int $contactMessageId)
+    public function __construct(public int $contactMessageId) {}
+
+    /** @return list<WithoutOverlapping> */
+    public function middleware(): array
     {
-        $this->afterCommit();
+        return [
+            new WithoutOverlapping("contact-emails:{$this->contactMessageId}")
+                ->withPrefix('')
+                ->shared()
+                ->releaseAfter(60)
+                ->expireAfter(120),
+        ];
     }
 
     public function handle(Mailer $mailer): void
@@ -50,19 +59,16 @@ class SendContactMessageEmails implements ShouldQueue
             return;
         }
 
-        Cache::lock("contact-emails:{$message->id}", 120)->get(function () use ($message, $mailer): void {
-            $message->refresh();
-            $message->email_attempted_at = Date::now();
-            $message->save();
+        $message->email_attempted_at = Date::now();
+        $message->save();
 
-            if ($message->notification_sent_at === null) {
-                $this->sendNotification($message, $mailer);
-            }
+        if ($message->notification_sent_at === null) {
+            $this->sendNotification($message, $mailer);
+        }
 
-            if ($message->confirmation_sent_at === null) {
-                $this->sendConfirmation($message, $mailer);
-            }
-        });
+        if ($message->confirmation_sent_at === null) {
+            $this->sendConfirmation($message, $mailer);
+        }
         $message->refresh();
         if ($message->notification_sent_at === null || $message->confirmation_sent_at === null) {
             throw new RuntimeException('Contact email delivery is incomplete.');

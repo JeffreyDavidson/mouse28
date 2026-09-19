@@ -1,5 +1,6 @@
 <?php
 
+use App\Jobs\DeliverContactEmails;
 use App\Jobs\SendContactMessageEmails;
 use App\Mail\ContactFormConfirmation;
 use App\Mail\ContactFormSubmitted;
@@ -69,23 +70,30 @@ test('retry sends only the contact email that previously failed', function (): v
     Event::assertDispatched(MessageSent::class, fn (MessageSent $event): bool => str_starts_with($event->message->getSubject() ?? '', 'We got your message!'));
 });
 
-test('concurrent contact email sends do not send while the message is locked', function (): void {
+test('concurrent contact email sends are released while the message is locked', function (bool $legacy): void {
     $message = ContactMessage::query()->create([
         'name' => 'Dale Cooper', 'email' => 'dale@example.com',
         'subject' => 'general', 'message' => 'A park question.',
     ]);
     $lock = Cache::lock("contact-emails:{$message->id}", 120);
     $lock->get();
+    $job = $legacy
+        ? new DeliverContactEmails($message->id)
+        : new SendContactMessageEmails($message->id);
+    $job->withFakeQueueInteractions();
 
     try {
-        expect(fn () => new SendContactMessageEmails($message->id)->handle(app(Mailer::class)))
-            ->toThrow(RuntimeException::class, 'Contact email delivery is incomplete.');
+        $job->middleware()[0]->handle($job, function (SendContactMessageEmails $job): void {
+            $job->handle(app(Mailer::class));
+        });
 
+        $job->assertReleased(60);
+        expect($message->refresh()->email_attempted_at)->toBeNull();
         Event::assertNotDispatched(MessageSent::class);
     } finally {
         $lock->release();
     }
-});
+})->with(['current job' => false, 'legacy job' => true]);
 
 test('cancelled contact emails are not recorded as sent and remain retryable', function (): void {
     $events = Event::fake([MessageSent::class]);
@@ -131,22 +139,63 @@ test('contact emails support multiple configured administrator addresses', funct
     Event::assertDispatched(MessageSent::class, fn (MessageSent $event): bool => count($event->message->getReplyTo()) === 2);
 });
 
-test('queued delivery uses a dedicated durable queue and does not resend successful mail', function (): void {
+test('delivery middleware holds and releases the shared lock without resending successful mail', function (): void {
     $message = ContactMessage::query()->create([
         'name' => 'Reader', 'email' => 'reader@example.com', 'subject' => 'general', 'message' => 'A question.',
     ]);
     $job = new SendContactMessageEmails($message->id);
 
-    $job->handle(app(Mailer::class));
-    $job->handle(app(Mailer::class));
+    $middleware = $job->middleware()[0];
+    $send = function (SendContactMessageEmails $job): void {
+        expect(Cache::lock("contact-emails:{$job->contactMessageId}", 120)->get())->toBeFalse();
+        $job->handle(app(Mailer::class));
+    };
 
-    expect($job->afterCommit)->toBeTrue();
+    $middleware->handle($job, $send);
+    $middleware->handle($job, $send);
+
+    expect($middleware->expiresAfter)->toBe(120)
+        ->and(Cache::lock("contact-emails:{$message->id}", 120)->get(fn (): bool => true))->toBeTrue();
     Event::assertDispatchedTimes(MessageSent::class, 2);
+});
+
+test('contact jobs are queued only after their transaction commits', function (): void {
+    DB::beginTransaction();
+
+    Bus::dispatch(new SendContactMessageEmails(42));
+
+    expect(DB::table('jobs')->count())->toBe(0);
+
+    DB::commit();
+
+    expect(DB::table('jobs')->where('queue', 'contact-mail')->count())->toBe(1);
+});
+
+test('contact jobs are discarded when their transaction rolls back', function (): void {
+    DB::beginTransaction();
+
+    Bus::dispatch(new SendContactMessageEmails(42));
+    DB::rollBack();
+    DB::transaction(function (): void {});
+
+    expect(DB::table('jobs')->count())->toBe(0);
+});
+
+test('delivery middleware releases the lock after an incomplete delivery', function (): void {
+    $message = ContactMessage::query()->create([
+        'name' => 'Reader', 'email' => 'reader@example.com', 'subject' => 'general', 'message' => 'A question.',
+    ]);
+    Event::listen(MessageSending::class, fn (): bool => false);
+    $job = new SendContactMessageEmails($message->id);
+
+    expect(fn () => $job->middleware()[0]->handle($job, function (SendContactMessageEmails $job): void {
+        $job->handle(app(Mailer::class));
+    }))->toThrow(RuntimeException::class, 'Contact email delivery is incomplete.')
+        ->and(Cache::lock("contact-emails:{$message->id}", 120)->get(fn (): bool => true))->toBeTrue();
 });
 
 test('queue attributes configure contact delivery routing and worker settings', function (): void {
     $job = new SendContactMessageEmails(42);
-    expect($job->afterCommit)->toBeTrue();
     $job->beforeCommit();
 
     Bus::dispatch($job);
