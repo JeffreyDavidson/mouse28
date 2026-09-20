@@ -15,6 +15,6 @@
     -->
 
     <div data-editorial-blog>
-        <livewire:blog-index />
+        <livewire:blog-archive />
     </div>
 </x-layouts.app>

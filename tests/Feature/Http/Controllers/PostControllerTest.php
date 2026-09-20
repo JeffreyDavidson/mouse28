@@ -1,6 +1,6 @@
 <?php
 
-use App\Livewire\BlogIndex;
+use App\Livewire\BlogArchive;
 use App\Models\Episode;
 use App\Models\Podcast;
 use App\Models\Post;
@@ -87,7 +87,7 @@ test('blog archive renders', function (): void {
     get(route('blog.index'))
         ->assertOk()
         ->assertSee('Blog')
-        ->assertSeeLivewire(BlogIndex::class);
+        ->assertSeeLivewire(BlogArchive::class);
 });
 
 test('blog navigation identifies Blog as the current destination', function (): void {
