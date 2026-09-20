@@ -16,7 +16,7 @@ test('guide index data filters published guides and builds category metadata', f
     $data = app(GuideIndexViewModel::class)->data($request);
 
     expect($data['category'])->toBe('accessibility')
-        ->and($data['guides']->getCollection()->modelKeys())
+        ->and($data['guides']->getCollection()->pluck('id')->all())
         ->toContain($matching->id)
         ->not->toContain($other->id)
         ->not->toContain($draft->id)

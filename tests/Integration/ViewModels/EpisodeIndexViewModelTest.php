@@ -12,7 +12,7 @@ test('episode index data includes published episodes and distribution data', fun
 
     $data = app(EpisodeIndexViewModel::class)->data();
 
-    expect($data['episodes']->getCollection()->modelKeys())
+    expect($data['episodes']->getCollection()->pluck('id')->all())
         ->toContain($published->id)
         ->not->toContain($draft->id)
         ->and($data['podcastLinks'])->toBeArray()
