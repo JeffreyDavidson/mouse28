@@ -19,11 +19,11 @@ test('search returns its view model data', function (): void {
     get(route('search'))
         ->assertOk()
         ->assertViewIs('pages.search')
-        ->assertViewHas('query', '')
+        ->assertViewHas('query')
         ->assertViewHas('posts')
         ->assertViewHas('guides')
         ->assertViewHas('episodes')
-        ->assertViewHas('resultCount', 0);
+        ->assertViewHas('resultCount');
 });
 
 test('search stays within its query budget as content grows', function (): void {

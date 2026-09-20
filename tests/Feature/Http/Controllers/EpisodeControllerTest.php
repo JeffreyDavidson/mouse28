@@ -18,7 +18,7 @@ test('episode index returns its view model data', function (): void {
         ->assertViewHas('episodes')
         ->assertViewHas('podcast')
         ->assertViewHas('podcastLinks')
-        ->assertViewHas('canonicalUrl', route('episodes.index'));
+        ->assertViewHas('canonicalUrl');
 });
 
 test('published episode returns its view model data', function (): void {

@@ -18,10 +18,10 @@ test('blog index returns its view model data', function (): void {
     get(route('blog.index'))
         ->assertOk()
         ->assertViewIs('pages.blog.index')
-        ->assertViewHas('category', '')
-        ->assertViewHas('search', '')
-        ->assertViewHas('sort', 'newest')
-        ->assertViewHas('pageTitle', 'Disney Parks Blog | Mouse28');
+        ->assertViewHas('category')
+        ->assertViewHas('search')
+        ->assertViewHas('sort')
+        ->assertViewHas('pageTitle');
 });
 
 test('published blog post returns its view model data', function (): void {

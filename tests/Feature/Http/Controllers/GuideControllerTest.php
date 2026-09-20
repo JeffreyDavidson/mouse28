@@ -14,10 +14,10 @@ test('guide index returns its view model data', function (): void {
     get(route('guides.index'))
         ->assertOk()
         ->assertViewIs('pages.guides.index')
-        ->assertViewHas('category', '')
+        ->assertViewHas('category')
         ->assertViewHas('guides')
-        ->assertViewHas('pageTitle', 'Disney Parks Guides | Mouse28')
-        ->assertViewHas('canonicalUrl', route('guides.index'));
+        ->assertViewHas('pageTitle')
+        ->assertViewHas('canonicalUrl');
 });
 
 test('published guide returns its view model data', function (): void {

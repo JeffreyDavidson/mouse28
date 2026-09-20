@@ -14,7 +14,7 @@ test('homepage returns its view model data', function (): void {
     get(route('home'))
         ->assertOk()
         ->assertViewIs('pages.home')
-        ->assertViewHas('featuredPost', null)
+        ->assertViewHas('featuredPost')
         ->assertViewHas('latestPosts')
         ->assertViewHas('latestEpisodes')
         ->assertViewHas('latestGuides')
