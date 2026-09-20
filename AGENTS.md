@@ -49,6 +49,7 @@ work in the existing Vite pipeline and do not introduce a second toolchain.
 - Squash merge feature, fix, refactor, chore, docs, and test branches into `develop` through pull requests.
 - Squash merge `hotfix/` branches into `main`; merge `release/` branches into `main` with regular merge commits. Do not rebase-merge pull requests.
 - Before merging, verify the pull request's head branch, base branch, and merge method.
+- After a pull request is merged, fetch with `--prune`, check out the pull request's local base branch, and delete the local PR branch. Only perform the cleanup when the worktree is clean, the base branch is available in the current worktree, and the merged PR branch has no post-merge commits; never delete a checked-out branch or a branch attached to another worktree.
 - Every new commit must follow [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/): `type: description`, with an optional scope (`type(scope): description`) and optional breaking-change marker (`type(scope)!: description`).
 - Use lowercase types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, or `revert`. Use `feat` for new features and `fix` for bug fixes; branch prefixes such as `feature/`, `hotfix/`, and `release/` are not commit types.
 - Write a concise, imperative description. Mark breaking changes with `!` before the colon or a `BREAKING CHANGE: description` footer.
