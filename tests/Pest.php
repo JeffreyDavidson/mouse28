@@ -7,6 +7,7 @@ use Tests\TestCase;
 
 use function Pest\Laravel\artisan;
 
+/** @param array<string, mixed> $parameters */
 function pendingCommand(string $command, array $parameters = []): PendingCommand
 {
     $pendingCommand = artisan($command, $parameters);
