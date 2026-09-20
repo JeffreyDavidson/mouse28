@@ -35,3 +35,7 @@ Name each test for the complete behavior it verifies. When a test covers unrelat
 ## Refactor during test audits
 
 Every test-suite audit should look for safe refactoring opportunities in addition to missing coverage. Check for duplicated setup and assertions, repeated helper logic, repeated datasets or input matrices, oversized test files, misleading names, and fixtures that can be reduced without weakening the scenario. Extract a helper, dataset, shared setup, or focused test file only when it makes the behavior easier to understand; do not add indirection merely to reduce line count. Preserve the existing assertions and execution boundaries while refactoring, then run the affected tests and the complete relevant suite.
+
+## Use Pest plugins deliberately
+
+Use the installed Pest plugins when they improve an existing test boundary: Laravel and Livewire helpers for application entry points, Arch for source contracts, Browser for real-browser behavior, PHPStan and Rector for test analysis, and type coverage for declared application types. Keep snapshots, test-time helpers, mutation testing, and agent-generation tools optional unless a concrete test need justifies them. TIA and mutation testing require a coverage extension; do not add them to required gates while the project runs without PCOV or Xdebug. Prefer named Composer scripts for recurring suite commands so local execution and CI use the same flags.
