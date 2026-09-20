@@ -19,6 +19,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | tests/Feature/** | .ai/rules/feature.md |
 | tests/Integration/ViewModels/** | .ai/rules/view-models.md |
 | tests/Integration/** | .ai/rules/integration.md |
+| tests/Unit/** | .ai/rules/unit.md |
 | ** | .ai/rules/general.md |
 | resources/views/components/layouts/app.blade.php | .ai/rules/layouts.md |
 | resources/{js,views/livewire}/** | .ai/rules/livewire.md |

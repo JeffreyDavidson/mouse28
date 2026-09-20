@@ -2,13 +2,11 @@
 
 use App\Enums\ContactTopic;
 
-test('contact topics expose separate admin and form labels', function (): void {
+test('contact topics expose admin labels', function (): void {
     $labels = [];
-    $formLabels = [];
 
     foreach (ContactTopic::cases() as $case) {
         $labels[$case->value] = $case->getLabel();
-        $formLabels[$case->value] = $case->contactFormLabel();
     }
 
     expect($labels)->toBe([
@@ -17,7 +15,17 @@ test('contact topics expose separate admin and form labels', function (): void {
         'collaboration' => 'Collaboration / Sponsorship',
         'guest' => 'Podcast Guest',
         'other' => 'Other',
-    ])->and($formLabels)->toBe([
+    ]);
+});
+
+test('contact topics expose contact form labels', function (): void {
+    $labels = [];
+
+    foreach (ContactTopic::cases() as $case) {
+        $labels[$case->value] = $case->contactFormLabel();
+    }
+
+    expect($labels)->toBe([
         'general' => 'General Question',
         'accessibility' => 'Park Accessibility Question',
         'collaboration' => 'Collaboration / Sponsorship',

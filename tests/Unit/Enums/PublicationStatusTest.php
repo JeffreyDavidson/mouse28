@@ -2,13 +2,11 @@
 
 use App\Enums\PublicationStatus;
 
-test('publication statuses expose explicit labels and colors', function (): void {
+test('publication statuses expose explicit labels', function (): void {
     $labels = [];
-    $colors = [];
 
     foreach (PublicationStatus::cases() as $case) {
         $labels[$case->value] = $case->getLabel();
-        $colors[$case->value] = $case->getColor();
     }
 
     expect($labels)->toBe([
@@ -16,7 +14,17 @@ test('publication statuses expose explicit labels and colors', function (): void
         'needs-publish-date' => 'Needs publish date',
         'scheduled' => 'Scheduled',
         'published' => 'Published',
-    ])->and($colors)->toBe([
+    ]);
+});
+
+test('publication statuses expose explicit colors', function (): void {
+    $colors = [];
+
+    foreach (PublicationStatus::cases() as $case) {
+        $colors[$case->value] = $case->getColor();
+    }
+
+    expect($colors)->toBe([
         'draft' => 'gray',
         'needs-publish-date' => 'warning',
         'scheduled' => 'warning',

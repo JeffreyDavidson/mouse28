@@ -2,7 +2,7 @@
 
 use App\Support\ArtworkSourceCache;
 
-test('source hashes are reused within a scope and refreshed in a new scope', function (): void {
+test('cache reuses a source hash per instance and recalculates it for a new instance', function (): void {
     $file = tempnam(sys_get_temp_dir(), 'artwork-cache-');
     file_put_contents($file, 'original');
     $cache = new ArtworkSourceCache;
