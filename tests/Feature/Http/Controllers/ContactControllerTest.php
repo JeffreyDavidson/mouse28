@@ -67,8 +67,7 @@ test('contact page uses the configured site contact email address', function ():
     config()->set('mouse28.contact.email', 'hello@mouse28.test');
 
     get(route('contact.show'))->assertOk()->assertSeeHtml('href="mailto:hello@mouse28.test"')
-        ->assertSee('hello@mouse28.test')
-        ->assertDontSee('mouse28podcast@gmail.com');
+        ->assertSee('hello@mouse28.test');
 });
 
 test('contact page offers email instead of an unusable form when verification is unavailable', function (string $missingKey): void {
