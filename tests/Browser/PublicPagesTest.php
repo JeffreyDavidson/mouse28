@@ -4,7 +4,7 @@ use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
 
-test('main public pages share one full footer signup', function (): void {
+test('public pages render one complete newsletter footer', function (): void {
     $post = Post::factory()->create();
     $episode = Episode::factory()->create();
 
@@ -85,7 +85,7 @@ function blogCardMotionObservedScript(): string
         JS;
 }
 
-test('public page renders without JavaScript errors', function (string $routeName, string $content): void {
+test('public pages render accessible typography and focus indicators', function (string $routeName, string $content): void {
     visit(route($routeName))
         ->assertSee($content)
         ->assertScript('document.fonts.check("16px Besley")', true)
@@ -172,11 +172,18 @@ test('published content detail pages have no accessibility issues', function ():
             ->assertScript($this->missingFocusIndicatorsScript(), '')
             ->assertNoJavaScriptErrors();
     }
+});
+
+test('episode transcript expands accessibly', function (): void {
+    $episode = Episode::factory()->create([
+        'audio_url' => 'https://cdn.example.com/accessible-episode.mp3',
+    ]);
 
     visit(route('episodes.show', $episode))
         ->click('Read Full Transcript')
         ->assertScript('document.querySelector("[aria-controls=episode-transcript]").ariaExpanded', 'true')
-        ->assertNoAccessibilityIssues();
+        ->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors();
 });
 
 test('mobile navigation opens and remains usable', function (): void {
