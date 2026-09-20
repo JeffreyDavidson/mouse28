@@ -1,4 +1,4 @@
-export function initializeBlogIndex(Livewire) {
+export function initializeBlogArchive(Livewire) {
     Livewire.hook('component.init', ({ component, cleanup }) => {
         if (!component.el.matches('[data-blog-browser]')) {
             return;
