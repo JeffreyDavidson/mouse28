@@ -4,6 +4,8 @@ use App\Support\ResponsiveArtwork;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
+covers(ResponsiveArtwork::class);
+
 test('responsive artwork preserves the supported derivative widths', function (): void {
     expect(ResponsiveArtwork::WIDTHS)->toBe([480, 640, 768, 1280]);
 });
