@@ -8,13 +8,23 @@ use App\Support\ResponsiveArtwork;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
+
+test('authenticated user can render the edit form', function (): void {
+    $episode = Episode::factory()->draft()->create();
+
+    actingAs(User::factory()->admin()->create());
+
+    get(EpisodeResource::getUrl('edit', ['record' => $episode]))
+        ->assertOk()
+        ->assertSee($episode->title)
+        ->assertSee('Save changes');
+});
 
 test('explicit artwork action generates only the saved record cover', function (): void {
     Storage::fake('public');
@@ -98,9 +108,10 @@ test('edit page offers a draft preview', function (): void {
 
     actingAs($admin);
 
-    get(EpisodeResource::getUrl('edit', ['record' => $episode]))
-        ->assertOk()
-        ->assertSee('Preview');
+    livewire(EditEpisode::class, ['record' => $episode->getRouteKey()])
+        ->assertActionVisible('preview')
+        ->assertActionHasUrl('preview', route('preview.episodes', $episode))
+        ->assertActionShouldOpenUrlInNewTab('preview');
 });
 
 test('ready drafts can be explicitly published and unpublished', function (): void {
@@ -113,14 +124,14 @@ test('ready drafts can be explicitly published and unpublished', function (): vo
 
     actingAs($admin);
 
-    Livewire::test(EditEpisode::class, ['record' => $record->getRouteKey()])
+    livewire(EditEpisode::class, ['record' => $record->getRouteKey()])
         ->callAction('publish')
         ->assertNotified();
 
     expect($record->refresh()->is_published)->toBeTrue()
         ->and($record->published_at)->not->toBeNull();
 
-    Livewire::test(EditEpisode::class, ['record' => $record->getRouteKey()])
+    livewire(EditEpisode::class, ['record' => $record->getRouteKey()])
         ->callAction('unpublish')
         ->assertNotified();
 

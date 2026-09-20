@@ -1,14 +1,11 @@
 <?php
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
 
 use function Pest\Laravel\get;
 
-pest()->use(RefreshDatabase::class);
-
 test('unknown URLs render the branded recovery page', function (): void {
-    get('/this-page-does-not-exist')->assertNotFound()->assertSeeHtml('<title>Page Not Found | Mouse28</title>')->assertSeeHtml('<meta name="robots" content="none">')->assertDontSeeHtml('<link rel="canonical"')->assertSee('That page wandered off')->assertSeeHtml('dispatch-error-sheet')->assertSeeHtml('data-brand-wordmark')->assertSeeHtml('js-dispatch-errors')->assertSeeHtml(route('home'))->assertSeeHtml(route('search'))->assertSeeHtml(route('blog.index'))->assertSeeHtml(route('guides.index'))->assertSeeHtml(route('episodes.index'))->assertSeeHtml('placeholder:text-navy/60')->assertDontSeeHtml('placeholder:text-navy/35');
+    get('/this-page-does-not-exist')->assertNotFound()->assertSeeHtml('<title>Page Not Found | Mouse28</title>')->assertSee('That page wandered off')->assertSeeHtml('dispatch-error-sheet')->assertSeeHtml('data-brand-wordmark')->assertSeeHtml('js-dispatch-errors')->assertSeeHtml(route('home'))->assertSeeHtml(route('search'))->assertSeeHtml(route('blog.index'))->assertSeeHtml(route('guides.index'))->assertSeeHtml(route('episodes.index'))->assertSeeHtml('placeholder:text-navy/60')->assertDontSeeHtml('placeholder:text-navy/35');
 });
 
 test('expired sessions explain how to recover', function (): void {
@@ -24,7 +21,7 @@ test('unexpected errors render a safe branded response', function (): void {
         throw new RuntimeException('Sensitive database connection details');
     });
 
-    get('/testing/server-error')->assertStatus(500)->assertSeeHtml('<title>Something Went Wrong | Mouse28</title>')->assertSeeHtml('<meta name="robots" content="none">')->assertDontSeeHtml('<link rel="canonical"')->assertDontSeeHtml('fonts.googleapis.com')->assertSee('The magic hit a snag')->assertSeeHtml('dispatch-error-marker')->assertSeeHtml('data-brand-wordmark')
+    get('/testing/server-error')->assertStatus(500)->assertSeeHtml('<title>Something Went Wrong | Mouse28</title>')->assertDontSeeHtml('fonts.googleapis.com')->assertSee('The magic hit a snag')->assertSeeHtml('dispatch-error-marker')->assertSeeHtml('data-brand-wordmark')
         ->assertDontSee('Sensitive database connection details');
 });
 

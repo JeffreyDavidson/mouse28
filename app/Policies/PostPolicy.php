@@ -6,6 +6,7 @@ namespace App\Policies;
 
 use App\Models\Post;
 use App\Models\User;
+use Illuminate\Auth\Access\Response;
 
 class PostPolicy
 {
@@ -17,6 +18,13 @@ class PostPolicy
     public function view(User $user, Post $post): bool
     {
         return $user->is_admin === true;
+    }
+
+    public function viewPublic(?User $user, Post $post): Response
+    {
+        return $post->is_published && $post->published_at?->isPast()
+            ? Response::allow()
+            : Response::denyAsNotFound();
     }
 
     public function create(User $user): bool

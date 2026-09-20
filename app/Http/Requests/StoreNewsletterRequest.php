@@ -30,6 +30,11 @@ class StoreNewsletterRequest extends FormRequest
 
     protected function getRedirectUrl(): string
     {
+        return $this->redirectUrl();
+    }
+
+    public function redirectUrl(): string
+    {
         return SafeReturnUrl::from($this, route('home')).'#newsletter';
     }
 }

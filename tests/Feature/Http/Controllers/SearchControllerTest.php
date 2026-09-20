@@ -15,6 +15,17 @@ use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
 
+test('search returns its view model data', function (): void {
+    get(route('search'))
+        ->assertOk()
+        ->assertViewIs('pages.search')
+        ->assertViewHas('query')
+        ->assertViewHas('posts')
+        ->assertViewHas('guides')
+        ->assertViewHas('episodes')
+        ->assertViewHas('resultCount');
+});
+
 test('search stays within its query budget as content grows', function (): void {
     config()->set('mouse28.guides_enabled', true);
     Post::factory()->count(30)->create(['title' => 'Disney planning']);
@@ -39,7 +50,9 @@ test('search query is limited to one hundred characters', function (): void {
     from(route('search'))
         ->get(route('search', ['q' => str_repeat('a', 101)]))
         ->assertRedirect(route('search'))
-        ->assertSessionHasErrors('q');
+        ->assertSessionHasErrors([
+            'q' => 'Search terms may not be longer than 100 characters.',
+        ]);
 });
 
 test('canonical URLs preserve an HTTP application origin', function (): void {

@@ -2,7 +2,6 @@
 
 use App\Enums\ContactTopic;
 use App\Jobs\SendContactMessageEmails;
-use App\Models\Podcast;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Bus;
@@ -15,6 +14,16 @@ use function Pest\Laravel\from;
 use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
+
+test('contact page displays its view model data', function (): void {
+    config()->set('mouse28.contact.email', 'contact@example.test');
+
+    get(route('contact.show'))
+        ->assertOk()
+        ->assertViewIs('pages.contact')
+        ->assertViewHas('contactEmail', 'contact@example.test')
+        ->assertViewHas('contactFormAvailable', true);
+});
 
 test('contact stays within its query budget', function (): void {
     $this->expectsDatabaseQueryCount(1);
@@ -75,13 +84,18 @@ test('contact page offers email instead of an unusable form when verification is
     config()->set('mouse28.contact.email', 'fallback@mouse28.test');
 
     get(route('contact.show'))
-        ->assertOk()->assertSee('Email us directly')->assertSeeHtml('href="mailto:fallback@mouse28.test"')->assertDontSeeHtml('action="'.route('contact.store').'"')->assertDontSeeHtml('data-action="contact-form"');
+        ->assertOk()
+        ->assertViewHas('contactFormAvailable', false)
+        ->assertSee('Email us directly')
+        ->assertSeeHtml('href="mailto:fallback@mouse28.test"')
+        ->assertDontSeeHtml('action="'.route('contact.store').'"')
+        ->assertDontSeeHtml('data-action="contact-form"');
 })->with([
     'missing site key' => 'site_key',
     'missing secret key' => 'secret_key',
 ]);
 
-test('valid contact submission requires successful turnstile verification', function (): void {
+test('valid contact submission stores the message and queues delivery', function (): void {
     Mail::fake();
 
     Http::fake([
@@ -111,6 +125,32 @@ test('valid contact submission requires successful turnstile verification', func
         && $request['secret'] === 'test-secret-key'
         && $request['response'] === 'turnstile-token');
 });
+
+test('contact submission rejects invalid input before verification or persistence', function (): void {
+    Http::fake();
+
+    from(route('contact.show'))
+        ->post(route('contact.store'), array_merge(contactPayload(), [
+            'email' => 'not-an-email',
+        ]))
+        ->assertRedirect(route('contact.show'))
+        ->assertSessionHasErrorsIn('contact', 'email');
+
+    assertDatabaseCount('contact_messages', 0);
+    Http::assertNothingSent();
+});
+
+test('contact submission rejects missing required fields before verification or persistence', function (string $field): void {
+    Http::fake();
+
+    from(route('contact.show'))
+        ->post(route('contact.store'), array_merge(contactPayload(), [$field => '']))
+        ->assertRedirect(route('contact.show'))
+        ->assertSessionHasErrorsIn('contact', $field);
+
+    assertDatabaseCount('contact_messages', 0);
+    Http::assertNothingSent();
+})->with(['name', 'subject', 'message']);
 
 test('contact submission rejects failed turnstile verification before persistence or mail', function (): void {
     Mail::fake();
@@ -223,19 +263,13 @@ test('contact form rate limit ignores spoofed forwarded IPs without throttling t
     get(route('contact.show'))->assertOk();
 });
 
-test('public index page renders', function (): void {
+test('contact page renders', function (): void {
     get(route('contact.show'))
         ->assertOk()
         ->assertSee('Send us a note');
 });
 
-test('landing page provides search and social metadata', function (): void {
-    Podcast::query()->create([
-        'name' => 'Mouse28 Weekly',
-        'description' => 'A weekly Disney parks podcast for accessibility-minded families.',
-        'cover_image' => 'podcasts/show-cover.jpg',
-    ]);
-
+test('contact page exposes SEO metadata', function (): void {
     get(route('contact.show'))->assertOk()->assertSeeHtml('<meta name="description" content="Contact Jeffrey and Cassie about Mouse28, Disney park accessibility, family travel, collaborations, or the podcast.">');
 });
 

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Config;
 
-class PodcastRssController
+class PodcastFeedRedirectController
 {
     public function __invoke(): RedirectResponse
     {

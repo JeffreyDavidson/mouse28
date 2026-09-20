@@ -5,6 +5,7 @@ use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 
 use function Pest\Laravel\from;
+use function Pest\Laravel\postJson;
 
 pest()->use(RefreshDatabase::class);
 
@@ -36,6 +37,21 @@ test('valid newsletter signup is sent to configured resend audience', function (
 
     Http::assertSent(fn (Request $request): bool => $request->url() === 'https://api.resend.com/audiences/audience-test-id/contacts'
         && $request['email'] === 'dale@example.com');
+});
+
+test('valid newsletter signup returns a successful JSON response', function (): void {
+    Http::fake([
+        'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response([
+            'success' => true,
+            'action' => 'newsletter',
+            'hostname' => 'mouse28.com',
+        ]),
+        'https://api.resend.com/audiences/audience-test-id/contacts' => Http::response([], 201),
+    ]);
+
+    postJson(route('newsletter.store'), newsletterPayload())
+        ->assertOk()
+        ->assertExactJson(['success' => true]);
 });
 
 test('newsletter errors and old input stay out of the contact form', function (): void {
@@ -105,7 +121,7 @@ test('newsletter returns a safe JSON response after a resend HTTP failure', func
         'https://api.resend.com/audiences/audience-test-id/contacts' => Http::response([], 503),
     ]);
 
-    $this->postJson(route('newsletter.store'), newsletterPayload())
+    postJson(route('newsletter.store'), newsletterPayload())
         ->assertUnprocessable()
         ->assertExactJson(['error' => 'Something went wrong.']);
 });
@@ -120,7 +136,7 @@ test('newsletter returns a safe JSON response after a resend connection failure'
         'https://api.resend.com/audiences/audience-test-id/contacts' => Http::failedConnection(),
     ]);
 
-    $this->postJson(route('newsletter.store'), newsletterPayload())
+    postJson(route('newsletter.store'), newsletterPayload())
         ->assertServerError()
         ->assertExactJson(['error' => 'Something went wrong.']);
 });

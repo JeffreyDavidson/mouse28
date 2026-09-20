@@ -90,7 +90,7 @@ test('query string filters update the visible stories', function (): void {
         ->assertViewHas('hasAnyPosts', true);
 });
 
-test('topic and reset actions preserve valid filter state', function (): void {
+test('invalid query filters are normalized on mount', function (): void {
     // Arrange
     Livewire::withQueryParams([
         'category' => 'not-a-category',
@@ -106,8 +106,19 @@ test('topic and reset actions preserve valid filter state', function (): void {
     $page->assertSet('category', '')
         ->assertSet('search', str_repeat('a', 100))
         ->assertSet('sort', 'newest');
+});
+
+test('selecting a category resets incompatible filters', function (): void {
+    // Arrange
+    Livewire::withQueryParams([
+        'category' => 'not-a-category',
+        'q' => str_repeat('a', 120),
+        'sort' => 'not-a-sort',
+        'page' => 4,
+    ]);
 
     // Act
+    $page = livewire(BlogArchive::class);
     $page->call('selectCategory', PostCategory::ParkAccessibility->value);
 
     // Assert
@@ -115,6 +126,16 @@ test('topic and reset actions preserve valid filter state', function (): void {
         ->assertSet('search', '')
         ->assertSet('sort', 'newest')
         ->assertDispatched('blog-metadata-updated');
+});
+
+test('clearing filters restores the default archive state', function (): void {
+    // Arrange
+    Livewire::withQueryParams([
+        'category' => PostCategory::ParkAccessibility->value,
+        'q' => 'accessible',
+        'sort' => 'oldest',
+    ]);
+    $page = livewire(BlogArchive::class);
 
     // Act
     $page->call('clearFilters');

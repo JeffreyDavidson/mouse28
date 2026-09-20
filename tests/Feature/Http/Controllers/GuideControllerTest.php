@@ -8,6 +8,29 @@ use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
 
+test('guide index returns its view model data', function (): void {
+    config()->set('mouse28.guides_enabled', true);
+
+    get(route('guides.index'))
+        ->assertOk()
+        ->assertViewIs('pages.guides.index')
+        ->assertViewHas('category')
+        ->assertViewHas('guides')
+        ->assertViewHas('pageTitle')
+        ->assertViewHas('canonicalUrl');
+});
+
+test('published guide returns its view model data', function (): void {
+    config()->set('mouse28.guides_enabled', true);
+    $guide = Guide::factory()->create();
+
+    get(route('guides.show', $guide))
+        ->assertOk()
+        ->assertViewIs('pages.guides.show')
+        ->assertViewHas('guide', fn (Guide $viewGuide): bool => $viewGuide->is($guide))
+        ->assertViewHas('relatedGuides');
+});
+
 test('guide pages stay within their query budget as content grows', function (string $page, int $queries): void {
     config()->set('mouse28.guides_enabled', true);
     $guide = Guide::factory()->create(['category' => 'accessibility']);
@@ -20,7 +43,7 @@ test('guide pages stay within their query budget as content grows', function (st
         ->assertOk();
 })->with(['archive' => ['index', 3], 'guide' => ['show', 3]]);
 
-test('public index page renders', function (): void {
+test('guide archive renders', function (): void {
     get(route('guides.index'))
         ->assertOk()
         ->assertSee('Park guides.');
@@ -75,6 +98,7 @@ test('only currently published content is publicly visible', function (): void {
         ->assertDontSee($draftGuide->title)
         ->assertDontSee($scheduledGuide->title);
 
+    get(route('guides.show', $draftGuide))->assertNotFound();
     get(route('guides.show', $scheduledGuide))->assertNotFound();
     get(route('guides.show', $publishedGuide))
         ->assertOk()
