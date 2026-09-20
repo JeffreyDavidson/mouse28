@@ -2,6 +2,8 @@
 
 use App\Support\PublicContentArchive;
 
+covers(PublicContentArchive::class);
+
 test('archive versions must match the supported integer version', function (mixed $version): void {
     $service = new PublicContentArchive;
     $archive = [
