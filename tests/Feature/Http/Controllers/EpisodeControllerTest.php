@@ -11,6 +11,27 @@ use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
 
+test('episode index returns its view model data', function (): void {
+    get(route('episodes.index'))
+        ->assertOk()
+        ->assertViewIs('pages.episodes.index')
+        ->assertViewHas('episodes')
+        ->assertViewHas('podcast')
+        ->assertViewHas('podcastLinks')
+        ->assertViewHas('canonicalUrl', route('episodes.index'));
+});
+
+test('published episode returns its view model data', function (): void {
+    $episode = Episode::factory()->create();
+
+    get(route('episodes.show', $episode))
+        ->assertOk()
+        ->assertViewIs('pages.episodes.show')
+        ->assertViewHas('episode', fn (Episode $viewEpisode): bool => $viewEpisode->is($episode))
+        ->assertViewHas('podcast')
+        ->assertViewHas('relatedPosts');
+});
+
 test('episode artwork uses available responsive candidates and falls back after replacement', function (): void {
     Storage::fake('public');
     $disk = Storage::disk('public');

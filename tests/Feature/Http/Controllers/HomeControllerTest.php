@@ -10,6 +10,17 @@ use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
 
+test('homepage returns its view model data', function (): void {
+    get(route('home'))
+        ->assertOk()
+        ->assertViewIs('pages.home')
+        ->assertViewHas('featuredPost', null)
+        ->assertViewHas('latestPosts')
+        ->assertViewHas('latestEpisodes')
+        ->assertViewHas('latestGuides')
+        ->assertViewHas('planningPosts');
+});
+
 test('homepage stays within its query budget as content grows', function (): void {
     config()->set('mouse28.guides_enabled', false);
     Post::factory()->count(30)->create();

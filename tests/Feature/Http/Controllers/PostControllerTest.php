@@ -14,6 +14,26 @@ use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
 
+test('blog index returns its view model data', function (): void {
+    get(route('blog.index'))
+        ->assertOk()
+        ->assertViewIs('pages.blog.index')
+        ->assertViewHas('category', '')
+        ->assertViewHas('search', '')
+        ->assertViewHas('sort', 'newest')
+        ->assertViewHas('pageTitle', 'Disney Parks Blog | Mouse28');
+});
+
+test('published blog post returns its view model data', function (): void {
+    $post = Post::factory()->create();
+
+    get(route('blog.show', $post))
+        ->assertOk()
+        ->assertViewIs('pages.blog.show')
+        ->assertViewHas('post', fn (Post $viewPost): bool => $viewPost->is($post))
+        ->assertViewHas('recentPosts');
+});
+
 test('blog pages stay within their query budget as content grows', function (string $page, int $queries): void {
     $episode = Episode::factory()->create();
     $post = Post::factory()->create(['episode_id' => $episode->id, 'category' => 'disney-tips']);

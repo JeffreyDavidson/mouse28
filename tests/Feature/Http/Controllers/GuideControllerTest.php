@@ -8,6 +8,29 @@ use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
 
+test('guide index returns its view model data', function (): void {
+    config()->set('mouse28.guides_enabled', true);
+
+    get(route('guides.index'))
+        ->assertOk()
+        ->assertViewIs('pages.guides.index')
+        ->assertViewHas('category', '')
+        ->assertViewHas('guides')
+        ->assertViewHas('pageTitle', 'Disney Parks Guides | Mouse28')
+        ->assertViewHas('canonicalUrl', route('guides.index'));
+});
+
+test('published guide returns its view model data', function (): void {
+    config()->set('mouse28.guides_enabled', true);
+    $guide = Guide::factory()->create();
+
+    get(route('guides.show', $guide))
+        ->assertOk()
+        ->assertViewIs('pages.guides.show')
+        ->assertViewHas('guide', fn (Guide $viewGuide): bool => $viewGuide->is($guide))
+        ->assertViewHas('relatedGuides');
+});
+
 test('guide pages stay within their query budget as content grows', function (string $page, int $queries): void {
     config()->set('mouse28.guides_enabled', true);
     $guide = Guide::factory()->create(['category' => 'accessibility']);
