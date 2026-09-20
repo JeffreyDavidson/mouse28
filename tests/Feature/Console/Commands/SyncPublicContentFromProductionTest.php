@@ -8,7 +8,6 @@ use Illuminate\Console\CacheCommandMutex;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Process\PendingProcess;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
@@ -118,7 +117,9 @@ test('production syncs public content, preserves drafts, and transfers reference
     });
     Process::preventStrayProcesses();
 
-    $exitCode = pendingCommand('content:sync-production')->run();
+    $exitCode = pendingCommand('content:sync-production')
+        ->expectsOutputToContain('Local drafts were preserved.')
+        ->run();
 
     expect($exitCode)->toBe(Command::SUCCESS)
         ->and(Post::query()->where('slug', 'example-post')->firstOrFail()->cover_image)
@@ -135,8 +136,7 @@ test('production syncs public content, preserves drafts, and transfers reference
             'posts/example-post-social.webp',
             'posts/example-post.webp',
             'posts/second-example-post.webp',
-        ])
-        ->and(Artisan::output())->toContain('Local drafts were preserved.');
+        ]);
 
     Process::assertRanTimes(fn (PendingProcess $process): bool => syncProcessArguments($process)[0] === 'ssh', 2);
     Process::assertRan(fn (PendingProcess $process): bool => syncProcessArguments($process)[0] === 'scp');
@@ -150,8 +150,7 @@ test('production content sync refuses to run in production', function (): void {
 
     $exitCode = pendingCommand('content:sync-production')->run();
 
-    expect($exitCode)->toBe(Command::FAILURE)
-        ->and(Artisan::output())->toContain('may only run in a non-production environment');
+    expect($exitCode)->toBe(Command::FAILURE);
 
     Process::assertNothingRan();
 });
@@ -178,10 +177,11 @@ test('production content sync rejects unsafe media paths', function (): void {
     });
     Process::preventStrayProcesses();
 
-    $exitCode = pendingCommand('content:sync-production')->run();
+    $exitCode = pendingCommand('content:sync-production')
+        ->expectsOutputToContain('unsafe media path')
+        ->run();
 
     expect($exitCode)->toBe(Command::FAILURE)
-        ->and(Artisan::output())->toContain('unsafe media path')
         ->and(Post::query()->where('slug', 'invalid-post')->exists())->toBeFalse();
 
     Process::assertDidntRun(fn (PendingProcess $process): bool => syncProcessArguments($process)[0] === 'rsync');

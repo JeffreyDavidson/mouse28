@@ -6,7 +6,6 @@ use App\Models\Podcast;
 use App\Models\Post;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 
 pest()->use(RefreshDatabase::class);
@@ -77,10 +76,11 @@ test('public content archive cannot be imported in production', function (): voi
     $exitCode = pendingCommand('content:import-public', [
         'path' => $archivePath,
         '--staging' => true,
-    ])->run();
+    ])
+        ->expectsOutputToContain('Public content cannot be imported into production.')
+        ->run();
 
-    expect($exitCode)->toBe(Command::FAILURE)
-        ->and(Artisan::output())->toContain('Public content cannot be imported into production.');
+    expect($exitCode)->toBe(Command::FAILURE);
 
     File::delete($archivePath);
 });

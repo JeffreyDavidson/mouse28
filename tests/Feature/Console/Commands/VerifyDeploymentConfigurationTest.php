@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Artisan;
 
 beforeEach(function (): void {
     config()->set([
@@ -39,21 +38,22 @@ beforeEach(function (): void {
 });
 
 test('safe production configuration passes through both command names', function (string $command): void {
-    $exitCode = pendingCommand($command)->run();
+    $exitCode = pendingCommand($command)
+        ->expectsOutputToContain('Deployment configuration is ready.')
+        ->run();
 
-    expect($exitCode)->toBe(Command::SUCCESS)
-        ->and(Artisan::output())->toContain('Deployment configuration is ready.');
+    expect($exitCode)->toBe(Command::SUCCESS);
 })->with(['app:verify-deployment', 'app:verify-production']);
 
 test('blank or non-string driver settings fail preflight', function (string $setting, string $message, mixed $value): void {
     config()->set($setting, $value);
 
-    $exitCode = pendingCommand('app:verify-production')->run();
-    $output = Artisan::output();
+    $exitCode = pendingCommand('app:verify-production')
+        ->expectsOutputToContain($message)
+        ->doesntExpectOutputToContain('Deployment configuration is ready.')
+        ->run();
 
-    expect($exitCode)->toBe(Command::FAILURE)
-        ->and($output)->toContain($message)
-        ->not->toContain('Deployment configuration is ready.');
+    expect($exitCode)->toBe(Command::FAILURE);
 })->with([
     'session' => ['session.driver', 'SESSION_DRIVER must use a persistent driver.'],
     'cache' => ['cache.default', 'CACHE_STORE must use a persistent driver.'],
@@ -77,10 +77,11 @@ test('safe staging configuration passes with isolated observability', function (
         'sentry.release' => 'staging-release',
     ]);
 
-    $exitCode = pendingCommand('app:verify-production')->run();
+    $exitCode = pendingCommand('app:verify-production')
+        ->expectsOutputToContain('Deployment configuration is ready.')
+        ->run();
 
-    expect($exitCode)->toBe(Command::SUCCESS)
-        ->and(Artisan::output())->toContain('Deployment configuration is ready.');
+    expect($exitCode)->toBe(Command::SUCCESS);
 });
 
 test('unsafe production configuration reports every failure without exposing values', function (): void {
@@ -111,44 +112,48 @@ test('unsafe production configuration reports every failure without exposing val
         'sentry.send_default_pii' => true,
     ]);
 
-    $exitCode = pendingCommand('app:verify-production')->run();
-    $output = Artisan::output();
+    $command = pendingCommand('app:verify-production');
+    foreach ([
+        'Deployment configuration is not ready:',
+        'APP_DEBUG must be false.',
+        'APP_URL must use the canonical HTTPS URL.',
+        'SESSION_SECURE_COOKIE must be true.',
+        'SESSION_DRIVER must use a persistent driver.',
+        'CACHE_STORE must use a persistent driver.',
+        'MAIL_MAILER must use a delivering transport.',
+        'RESEND_API_KEY must be configured.',
+        'TURNSTILE_SECRET_KEY must be configured.',
+        'TURNSTILE_ALLOWED_HOSTNAMES must include the canonical host.',
+        'PODCAST_RSS_URL must use a Transistor feed URL.',
+        'NIGHTWATCH_ENABLED must be true.',
+        'NIGHTWATCH_TOKEN must be configured.',
+        'NIGHTWATCH_CAPTURE_REQUEST_PAYLOAD must be false.',
+        'NIGHTWATCH_REQUEST_SAMPLE_RATE must be greater than 0 and no more than 0.1.',
+        'SENTRY_LARAVEL_DSN must be configured.',
+        'SENTRY_SEND_DEFAULT_PII must be false.',
+        'SENTRY_ENVIRONMENT must match MOUSE28_DEPLOYMENT_ENVIRONMENT.',
+        'SENTRY_RELEASE must be configured.',
+        'SENTRY_TRACES_SAMPLE_RATE must be 0.0 until tracing is deliberately enabled.',
+        'SENTRY_PROFILES_SAMPLE_RATE must be 0.0 until profiling is deliberately enabled.',
+    ] as $message) {
+        $command->expectsOutputToContain($message);
+    }
+    $command->doesntExpectOutputToContain('admin@example.test');
+    $exitCode = $command->run();
 
-    expect($exitCode)->toBe(Command::FAILURE)
-        ->and($output)->toContain(
-            'Deployment configuration is not ready:',
-            'APP_DEBUG must be false.',
-            'APP_URL must use the canonical HTTPS URL.',
-            'SESSION_SECURE_COOKIE must be true.',
-            'SESSION_DRIVER must use a persistent driver.',
-            'CACHE_STORE must use a persistent driver.',
-            'MAIL_MAILER must use a delivering transport.',
-            'RESEND_API_KEY must be configured.',
-            'TURNSTILE_SECRET_KEY must be configured.',
-            'TURNSTILE_ALLOWED_HOSTNAMES must include the canonical host.',
-            'PODCAST_RSS_URL must use a Transistor feed URL.',
-            'NIGHTWATCH_ENABLED must be true.',
-            'NIGHTWATCH_TOKEN must be configured.',
-            'NIGHTWATCH_CAPTURE_REQUEST_PAYLOAD must be false.',
-            'NIGHTWATCH_REQUEST_SAMPLE_RATE must be greater than 0 and no more than 0.1.',
-            'SENTRY_LARAVEL_DSN must be configured.',
-            'SENTRY_SEND_DEFAULT_PII must be false.',
-            'SENTRY_ENVIRONMENT must match MOUSE28_DEPLOYMENT_ENVIRONMENT.',
-            'SENTRY_RELEASE must be configured.',
-            'SENTRY_TRACES_SAMPLE_RATE must be 0.0 until tracing is deliberately enabled.',
-            'SENTRY_PROFILES_SAMPLE_RATE must be 0.0 until profiling is deliberately enabled.',
-        )
-        ->not->toContain('admin@example.test');
+    expect($exitCode)->toBe(Command::FAILURE);
 });
 
 test('administrator recipients are validated individually without exposing addresses', function (mixed $addresses, int $expected): void {
     config()->set('mail.admin_address', $addresses);
 
-    $exitCode = pendingCommand('app:verify-deployment')->run();
-    $output = Artisan::output();
+    $exitCode = pendingCommand('app:verify-deployment')
+        ->doesntExpectOutputToContain('first@mouse28.com')
+        ->doesntExpectOutputToContain('invalid')
+        ->doesntExpectOutputToContain('EXAMPLE.COM')
+        ->run();
 
-    expect($exitCode)->toBe($expected)
-        ->and($output)->not->toContain('first@mouse28.com', 'invalid', 'EXAMPLE.COM');
+    expect($exitCode)->toBe($expected);
 })->with([
     'multiple recipients' => ['first@mouse28.com, second@mouse28.com', Command::SUCCESS],
     'whitespace and empty entries' => [' first@mouse28.com, , ', Command::SUCCESS],
@@ -166,16 +171,12 @@ test('observability validation failures do not expose credentials', function ():
         'sentry.release' => null,
     ]);
 
-    $exitCode = pendingCommand('app:verify-production')->run();
-    $output = Artisan::output();
+    $exitCode = pendingCommand('app:verify-production')
+        ->expectsOutputToContain('SENTRY_ENVIRONMENT must match MOUSE28_DEPLOYMENT_ENVIRONMENT.')
+        ->expectsOutputToContain('SENTRY_RELEASE must be configured.')
+        ->doesntExpectOutputToContain('private-nightwatch-token')
+        ->doesntExpectOutputToContain('private-public-key')
+        ->run();
 
-    expect($exitCode)->toBe(Command::FAILURE)
-        ->and($output)->toContain(
-            'SENTRY_ENVIRONMENT must match MOUSE28_DEPLOYMENT_ENVIRONMENT.',
-            'SENTRY_RELEASE must be configured.',
-        )
-        ->not->toContain(
-            'private-nightwatch-token',
-            'private-public-key',
-        );
+    expect($exitCode)->toBe(Command::FAILURE);
 });
