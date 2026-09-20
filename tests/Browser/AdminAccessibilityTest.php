@@ -49,27 +49,6 @@ test('newsletter contact statuses remain readable on desktop and mobile', functi
         ->assertNoJavaScriptErrors();
 });
 
-function exposedAdminDecorativeGlyphCountScript(): string
-{
-    return <<<'JS'
-        (() => {
-            const glyphs = ['✦', '✧', '✨', '📅', '✏️'];
-            const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-            let count = 0;
-
-            while (walker.nextNode()) {
-                const parent = walker.currentNode.parentElement;
-
-                if (! parent?.closest('[aria-hidden="true"]') && glyphs.some((glyph) => walker.currentNode.textContent.includes(glyph))) {
-                    count++;
-                }
-            }
-
-            return count;
-        })()
-        JS;
-}
-
 function unexpectedAdminJavaScriptErrorCountScript(): string
 {
     return <<<'JS'
@@ -85,7 +64,7 @@ test('admin login exposes no unnamed artwork or decorative glyphs', function ():
         ->assertVisible('input[type="password"]')
         ->assertScript('document.documentElement.classList.contains(\'dark\')', true)
         ->assertScript('document.querySelectorAll(\'svg:not([aria-hidden="true"]):not([aria-label]):not([aria-labelledby]):not(:has(title))\').length', 0)
-        ->assertScript(exposedAdminDecorativeGlyphCountScript(), 0)
+        ->assertScript(browserDecorativeGlyphCountScript(['✦', '✧', '✨', '📅', '✏️']), 0)
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 });
@@ -150,7 +129,7 @@ test('authenticated admin pages expose no unnamed artwork or decorative glyphs',
             ->assertVisible('.fi-main')
             ->assertScript('document.documentElement.classList.contains(\'dark\')', true)
             ->assertScript('document.querySelectorAll(\'svg:not([aria-hidden="true"]):not([aria-label]):not([aria-labelledby]):not(:has(title))\').length', 0)
-            ->assertScript(exposedAdminDecorativeGlyphCountScript(), 0)
+            ->assertScript(browserDecorativeGlyphCountScript(['✦', '✧', '✨', '📅', '✏️']), 0)
             ->assertNoAccessibilityIssues()
             ->assertScript(unexpectedAdminJavaScriptErrorCountScript(), 0);
     }
