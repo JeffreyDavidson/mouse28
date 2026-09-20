@@ -79,9 +79,12 @@
         ],
         "test": [
             "@php artisan config:clear --ansi",
-            "@php artisan test --exclude-testsuite=Browser"
+            "@php artisan test --exclude-testsuite=Browser --fail-on-risky"
         ],
-        "test:browser": "@php artisan test --testsuite=Browser",
+        "test:architecture": "@php artisan test --compact --testsuite=Architecture --fail-on-risky",
+        "test:browser": "@php artisan test --testsuite=Browser --fail-on-risky",
+        "test:browser:compatibility": "@php artisan test --compact --testsuite=Browser --group=browser-compatibility --fail-on-risky",
+        "test:browser:smoke": "@php artisan test --compact --testsuite=Browser --group=browser-smoke --fail-on-risky",
         "lint": "vendor/bin/pint --blade",
         "test:lint": "vendor/bin/pint --blade --test",
         "check": [
@@ -98,7 +101,7 @@
             "@test",
             "@test:type-coverage",
             "npm run build",
-            "@php artisan test --compact --testsuite=Browser --group=browser-smoke",
+            "@test:browser:smoke",
             "git diff --check"
         ],
         "test:filacheck": "FILACHECK_DISABLE_AGENT_MODE=1 vendor/bin/filacheck",

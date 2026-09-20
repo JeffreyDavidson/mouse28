@@ -117,7 +117,7 @@ jobs:
         run: php artisan storage:link --no-interaction
 
       - name: Run focused browser regressions
-        run: php artisan test --compact --testsuite=Browser --group=browser-smoke
+        run: composer test:browser:smoke
 
       - name: Upload browser failure screenshots
         if: failure()
