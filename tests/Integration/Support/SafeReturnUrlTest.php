@@ -4,6 +4,8 @@ use App\Support\SafeReturnUrl;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 
+covers(SafeReturnUrl::class);
+
 beforeEach(function (): void {
     URL::forceRootUrl('https://mouse28.test');
     URL::forceScheme('https');
