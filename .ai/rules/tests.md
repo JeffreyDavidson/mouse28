@@ -22,3 +22,9 @@ In Feature tests, prefer Pest Laravel's function-style helpers for entering and 
 
 ## Isolate outbound integrations before tests boot
 Keep shared Http::preventStrayRequests() enabled; integration tests must explicitly fake outbound Laravel HTTP calls. Neutralize service credentials and monitoring in phpunit.xml using both server entries and forced env entries: forced env alone does not override inherited $_SERVER values read by Laravel. Tests may opt into fake integration settings using config()->set().
+
+## Keep factory setup behavior-focused
+When creating models in tests, define only factory attributes that affect the behavior under test or are asserted directly. Let factories provide unrelated defaults instead of restating unused properties.
+
+## Use the smallest effective fixture
+Create the minimum number of records needed to cross a behavior boundary or exercise a branch. For pagination, use only enough records to reach the next page; do not create arbitrary surplus rows.

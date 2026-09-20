@@ -45,6 +45,7 @@ The application can run locally without live third-party calls, but these featur
 - `NIGHTWATCH_ENABLED=true` and `NIGHTWATCH_TOKEN` enable production application monitoring. Request payload capture stays disabled, authenticated users are identified only by their internal ID, and the default request sample rate is 10%.
 - `SENTRY_LARAVEL_DSN` enables production error reporting. Keep `SENTRY_SEND_DEFAULT_PII=false`; tracing and profiling remain disabled until their sample rates are deliberately raised above `0.0`.
 - `GUIDES_ENABLED` controls public guide routes and discovery. It defaults to `false` while the guide library is being prepared.
+- `MOUSE28_BLOG_POSTS_PER_PAGE` controls the number of posts shown per archive page; it defaults to `12`.
 - `GUIDE_REVIEW_INTERVAL_DAYS` controls when durable guides are flagged for editorial review; it defaults to 180 days.
 
 Never commit live credentials. Keep them in the deployment environment.
