@@ -25,6 +25,4 @@ Assert what a user can observe: visible text, focus, keyboard interaction, URL s
 
 Keep browser JavaScript helpers small and named after the browser behavior they measure. Do not use browser tests to duplicate unit-level checks for helper functions or server-side tests for controllers and view models.
 
-## Refactor during browser audits
-
-Every browser-test audit should look for safe refactoring opportunities in addition to missing coverage. Check for duplicated page assertions, repeated browser scripts, repeated route matrices, oversized test files, tests whose names do not match their complete behavior, and setup that can be reduced without weakening the scenario. Extract a helper, dataset, or focused test file only when it makes the browser contract easier to understand; do not add indirection merely to reduce line count. Preserve the existing assertions and execution groups while refactoring, then run the affected group and the full Browser suite.
+Test audits follow the shared refactoring guidance in `.ai/rules/tests.md`. For Browser tests, apply it specifically to duplicated page assertions, browser scripts, route matrices, oversized files, and execution groups.

@@ -31,3 +31,7 @@ Create only the records and files needed to cross the behavior boundary under te
 
 ## Keep test names behavior-specific
 Name each test for the complete behavior it verifies. When a test covers unrelated behaviors, split it into focused test cases instead of hiding multiple responsibilities behind a broad name.
+
+## Refactor during test audits
+
+Every test-suite audit should look for safe refactoring opportunities in addition to missing coverage. Check for duplicated setup and assertions, repeated helper logic, repeated datasets or input matrices, oversized test files, misleading names, and fixtures that can be reduced without weakening the scenario. Extract a helper, dataset, shared setup, or focused test file only when it makes the behavior easier to understand; do not add indirection merely to reduce line count. Preserve the existing assertions and execution boundaries while refactoring, then run the affected tests and the complete relevant suite.
