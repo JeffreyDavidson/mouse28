@@ -161,11 +161,11 @@ focusFirstInvalidField();
 
 if (document.querySelector('[data-editorial-blog]')) {
     const { Alpine, Livewire } = await import('../../vendor/livewire/livewire/dist/livewire.esm');
-    const { initializeBlogIndex } = await import('./blog-index');
+    const { initializeBlogArchive } = await import('./blog-archive');
 
     window.Alpine = Alpine;
     registerAlpineComponents(Alpine);
-    initializeBlogIndex(Livewire);
+    initializeBlogArchive(Livewire);
     Livewire.start();
 } else {
     const { default: Alpine } = await import('alpinejs');

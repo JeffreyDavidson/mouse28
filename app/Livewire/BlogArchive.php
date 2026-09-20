@@ -12,7 +12,7 @@ use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class BlogIndex extends Component
+class BlogArchive extends Component
 {
     use WithPagination;
 
@@ -112,7 +112,7 @@ class BlogIndex extends Component
             ? $posts->getCollection()->reject(fn (Post $post): bool => $post->is($featuredPost))
             : $posts->getCollection();
 
-        return view('livewire.blog-index', [
+        return view('livewire.blog-archive', [
             'posts' => $posts,
             'featuredPost' => $featuredPost,
             'archivePosts' => $archivePosts,

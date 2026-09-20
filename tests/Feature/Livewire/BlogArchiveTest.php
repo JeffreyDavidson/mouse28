@@ -1,11 +1,13 @@
 <?php
 
-use App\Livewire\BlogIndex;
+use App\Livewire\BlogArchive;
 use App\Models\Post;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Livewire\Livewire;
+
+use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
 
@@ -13,7 +15,7 @@ test('equal publication dates have stable ordering across archive pages', functi
     $records = Post::factory()->count(25)->create(['published_at' => now()->subDay()]);
     $ids = $records->modelKeys();
     rsort($ids);
-    $page = Livewire::test(BlogIndex::class);
+    $page = livewire(BlogArchive::class);
 
     $page->assertViewHas('posts', fn (LengthAwarePaginator $posts): bool => $posts->getCollection()->pluck('id')->all() === array_slice($ids, 0, 12));
 
@@ -51,7 +53,7 @@ test('query string filters update the visible stories', function (): void {
     ]);
 
     // Act
-    $page = Livewire::test(BlogIndex::class);
+    $page = livewire(BlogArchive::class);
 
     // Assert
     $page->assertSeeInOrder([$oldestPost->title, $newestPost->title])
@@ -80,7 +82,7 @@ test('topic and reset actions preserve valid filter state', function (): void {
     ]);
 
     // Act
-    $page = Livewire::test(BlogIndex::class);
+    $page = livewire(BlogArchive::class);
 
     // Assert
     $page->assertSet('category', '')
@@ -119,7 +121,7 @@ test('featured story remains visible on subsequent archive pages', function (): 
     Livewire::withQueryParams(['page' => 2]);
 
     // Act
-    $page = Livewire::test(BlogIndex::class);
+    $page = livewire(BlogArchive::class);
 
     // Assert
     $page->assertSee($featuredPost->title);
@@ -132,7 +134,7 @@ test('featured story is independent of category search and sort filters', functi
     Post::factory()->draft()->create();
     Post::factory()->scheduled()->create();
 
-    $page = Livewire::test(BlogIndex::class);
+    $page = livewire(BlogArchive::class);
 
     // Act
     $page->call('selectCategory', 'park-accessibility');
