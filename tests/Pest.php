@@ -7,6 +7,8 @@ use Tests\TestCase;
 
 use function Pest\Laravel\artisan;
 
+require_once __DIR__.'/Browser/helpers.php';
+
 /** @param array<string, mixed> $parameters */
 function pendingCommand(string $command, array $parameters = []): PendingCommand
 {
