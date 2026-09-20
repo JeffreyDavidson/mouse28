@@ -39,6 +39,21 @@ test('valid newsletter signup is sent to configured resend audience', function (
         && $request['email'] === 'dale@example.com');
 });
 
+test('valid newsletter signup returns a successful JSON response', function (): void {
+    Http::fake([
+        'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response([
+            'success' => true,
+            'action' => 'newsletter',
+            'hostname' => 'mouse28.com',
+        ]),
+        'https://api.resend.com/audiences/audience-test-id/contacts' => Http::response([], 201),
+    ]);
+
+    postJson(route('newsletter.store'), newsletterPayload())
+        ->assertOk()
+        ->assertExactJson(['success' => true]);
+});
+
 test('newsletter errors and old input stay out of the contact form', function (): void {
     $response = from(route('contact.show'))
         ->followingRedirects()

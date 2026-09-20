@@ -43,7 +43,7 @@ test('guide pages stay within their query budget as content grows', function (st
         ->assertOk();
 })->with(['archive' => ['index', 3], 'guide' => ['show', 3]]);
 
-test('public index page renders', function (): void {
+test('guide archive renders', function (): void {
     get(route('guides.index'))
         ->assertOk()
         ->assertSee('Park guides.');
@@ -98,6 +98,7 @@ test('only currently published content is publicly visible', function (): void {
         ->assertDontSee($draftGuide->title)
         ->assertDontSee($scheduledGuide->title);
 
+    get(route('guides.show', $draftGuide))->assertNotFound();
     get(route('guides.show', $scheduledGuide))->assertNotFound();
     get(route('guides.show', $publishedGuide))
         ->assertOk()

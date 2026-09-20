@@ -9,6 +9,16 @@ use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
 
+test('guests and non administrators cannot preview episodes', function (): void {
+    $episode = Episode::factory()->draft()->create();
+
+    get(route('preview.episodes', $episode))->assertForbidden();
+
+    actingAs(User::factory()->create());
+
+    get(route('preview.episodes', $episode))->assertForbidden();
+});
+
 test('administrators can preview draft content without exposing structured data', function (): void {
     $admin = User::factory()->admin()->create();
     $episode = Episode::factory()->draft()->create();

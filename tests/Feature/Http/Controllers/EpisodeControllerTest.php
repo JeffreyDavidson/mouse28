@@ -59,7 +59,7 @@ test('podcast pages stay within their query budget as content grows', function (
         ->assertOk();
 })->with(['archive' => ['index', 3], 'episode' => ['show', 5]]);
 
-test('public index page renders', function (): void {
+test('episode archive renders', function (): void {
     get(route('episodes.index'))
         ->assertOk()->assertSee('The Mouse28 Podcast')->assertSeeHtml('src="/images/podcast/mouse28-cover.webp"');
 });
@@ -198,8 +198,10 @@ test('podcast index identifies episodes with a Transistor player as playable', f
 
 test('only currently published content is publicly visible', function (): void {
     $publishedEpisode = Episode::factory()->create(['title' => 'Published park episode']);
+    $draftEpisode = Episode::factory()->draft()->create(['title' => 'Draft park episode']);
     $scheduledEpisode = Episode::factory()->scheduled()->create(['title' => 'Scheduled park episode']);
 
+    get(route('episodes.show', $draftEpisode))->assertNotFound();
     get(route('episodes.show', $scheduledEpisode))->assertNotFound();
     get(route('episodes.show', $publishedEpisode))->assertOk();
 });

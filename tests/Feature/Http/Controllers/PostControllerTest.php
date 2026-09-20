@@ -83,7 +83,7 @@ test('hidden content uses the same recovery page without revealing its title', f
         ->assertDontSee($draftPost->title);
 });
 
-test('public index page renders', function (): void {
+test('blog archive renders', function (): void {
     get(route('blog.index'))
         ->assertOk()
         ->assertSee('Blog')
@@ -181,6 +181,7 @@ test('only currently published content is publicly visible', function (): void {
         ->assertDontSee($draftPost->title)
         ->assertDontSee($scheduledPost->title);
 
+    get(route('blog.show', $draftPost))->assertNotFound();
     get(route('blog.show', $scheduledPost))->assertNotFound();
 });
 

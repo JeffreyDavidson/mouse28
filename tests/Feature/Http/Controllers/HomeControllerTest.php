@@ -32,7 +32,7 @@ test('homepage stays within its query budget as content grows', function (): voi
         ->assertOk();
 });
 
-test('public index page renders', function (): void {
+test('homepage renders', function (): void {
     get(route('home'))
         ->assertOk()
         ->assertSee('Mouse28');

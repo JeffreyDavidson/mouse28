@@ -141,6 +141,18 @@ test('contact submission rejects invalid input before verification or persistenc
     Http::assertNothingSent();
 });
 
+test('contact submission rejects missing required fields before verification or persistence', function (string $field): void {
+    Http::fake();
+
+    from(route('contact.show'))
+        ->post(route('contact.store'), array_merge(contactPayload(), [$field => '']))
+        ->assertRedirect(route('contact.show'))
+        ->assertSessionHasErrorsIn('contact', $field);
+
+    assertDatabaseCount('contact_messages', 0);
+    Http::assertNothingSent();
+})->with(['name', 'subject', 'message']);
+
 test('contact submission rejects failed turnstile verification before persistence or mail', function (): void {
     Mail::fake();
 
