@@ -47,7 +47,6 @@ test('test paths mirror their application source', function (string $suite): voi
         'AboutTest.php' => 'routes/web.php',
         'PrivacyTest.php' => 'routes/web.php',
         'Config/SentryTest.php' => 'config/sentry.php',
-        'Database/Seeders/DatabaseSeederTest.php' => 'database/seeders/DatabaseSeeder.php',
         'Http/ExceptionHandlingTest.php' => 'bootstrap/app.php',
     ];
     $violations = [];
