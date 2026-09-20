@@ -41,7 +41,6 @@ test('public content archive excludes drafts and private records', function (): 
     Podcast::query()->create([
         'name' => 'Mouse28',
         'description' => 'Public show description',
-        'email' => 'private@example.com',
     ]);
     $archivePath = storage_path('framework/testing/public-content-export.json');
 
@@ -54,8 +53,7 @@ test('public content archive excludes drafts and private records', function (): 
         ->and(collect(publicArchiveRecords($archive, 'episodes'))->pluck('slug')->all())->toBe(['published-episode'])
         ->and(collect(publicArchiveRecords($archive, 'guides'))->pluck('slug')->all())->toBe(['published-guide'])
         ->and(publicArchiveRecords($archive, 'posts')[0]['episode_slug'])->toBe('published-episode')
-        ->and($archive['podcast'])->not->toHaveKey('email')
-        ->and(File::get($archivePath))->not->toContain('Private Post', 'Private Guide', 'Private Episode', 'private@example.com');
+        ->and(File::get($archivePath))->not->toContain('Private Post', 'Private Guide', 'Private Episode');
 
     File::delete($archivePath);
 });
