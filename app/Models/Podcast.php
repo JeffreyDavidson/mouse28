@@ -16,7 +16,6 @@ use Spatie\Activitylog\Support\LogOptions;
     'youtube_url',
     'instagram_url',
     'tiktok_url',
-    'email',
 ])]
 class Podcast extends Model
 {

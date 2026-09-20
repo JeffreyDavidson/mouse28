@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\File;
 
 pest()->use(RefreshDatabase::class);
 
-test('public content archive can be imported without replacing environment-specific podcast email', function (): void {
+test('public content archive can be imported without replacing local settings', function (): void {
     $archivePath = storage_path('framework/testing/public-content-import.json');
     File::put($archivePath, json_encode([
         'version' => 1,
@@ -81,7 +81,6 @@ test('public content archive can be imported without replacing environment-speci
     ], JSON_THROW_ON_ERROR));
     Podcast::query()->create([
         'name' => 'Staging Mouse28',
-        'email' => 'staging@example.com',
     ]);
 
     $exitCode = Artisan::call('content:import-public', ['path' => $archivePath]);
@@ -93,7 +92,6 @@ test('public content archive can be imported without replacing environment-speci
         ->and(Episode::query()->where('slug', 'synced-episode')->firstOrFail()->transistor_url)->toBe('https://share.transistor.fm/s/428d650c')
         ->and(Guide::query()->where('slug', 'synced-guide')->firstOrFail()->is_published)->toBeTrue()
         ->and(Podcast::query()->firstOrFail()->name)->toBe('Synced Mouse28')
-        ->and(Podcast::query()->firstOrFail()->email)->toBe('staging@example.com')
         ->and(Post::query()->count())->toBe(1)
         ->and(Guide::query()->count())->toBe(1)
         ->and(Episode::query()->count())->toBe(1)

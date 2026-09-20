@@ -31,6 +31,7 @@ beforeEach(function (): void {
     config()->set('services.turnstile.siteverify_url', 'https://challenges.cloudflare.com/turnstile/v0/siteverify');
     config()->set('services.turnstile.contact_action', 'contact-form');
     config()->set('services.turnstile.allowed_hostnames', ['mouse28.com', 'www.mouse28.com']);
+    config()->set('mouse28.contact.email', 'contact@mouse28.test');
 });
 
 test('contact page renders turnstile widget', function (): void {
@@ -62,20 +63,16 @@ test('contact errors and old input stay out of the newsletter form', function ()
     $response->assertSeeHtml('aria-describedby="email-error"')->assertDontSeeHtml('aria-describedby="newsletter-email-error"');
 });
 
-test('contact page uses the configured podcast email address', function (): void {
-    Podcast::query()->create([
-        'name' => 'Mouse28',
-        'email' => 'hello@mouse28.test',
-    ]);
+test('contact page uses the configured site contact email address', function (): void {
+    config()->set('mouse28.contact.email', 'hello@mouse28.test');
 
     get(route('contact.show'))->assertOk()->assertSeeHtml('href="mailto:hello@mouse28.test"')
-        ->assertSee('hello@mouse28.test')
-        ->assertDontSee('mouse28podcast@gmail.com');
+        ->assertSee('hello@mouse28.test');
 });
 
 test('contact page offers email instead of an unusable form when verification is unavailable', function (string $missingKey): void {
     config()->set("services.turnstile.{$missingKey}");
-    config()->set('mail.admin_address', 'fallback@mouse28.test');
+    config()->set('mouse28.contact.email', 'fallback@mouse28.test');
 
     get(route('contact.show'))
         ->assertOk()->assertSee('Email us directly')->assertSeeHtml('href="mailto:fallback@mouse28.test"')->assertDontSeeHtml('action="'.route('contact.store').'"')->assertDontSeeHtml('data-action="contact-form"');
