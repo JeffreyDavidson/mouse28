@@ -31,7 +31,7 @@ Mouse28 is a blog-first Disney parks and podcast site from Jeffrey and Cassie Da
    APP_URL=https://mouse28.test
    ```
 
-4. To create a local administrator while seeding sample content, set `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD`, then run `php artisan db:seed`. No administrator is created when either value is absent. Outside production, each seed run adds factory-generated posts, episodes, and guides in published, draft, and scheduled states. Production seeding creates only the configured administrator and baseline podcast settings.
+4. To create a local administrator, set `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD`, then run `php artisan db:seed`. No administrator is created when either value is absent. The default seeder never creates editorial content. When synthetic local content is useful for interface work, run `php artisan db:seed --class=SampleContentSeeder`; its records are explicitly labeled `Sample:` and are not publishable Mouse28 content.
 
 ## External services
 
