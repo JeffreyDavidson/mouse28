@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use App\Providers\AppServiceProvider;
+use App\Support\ArtworkSourceCache;
 use Illuminate\Database\Console\Migrations\FreshCommand;
 use Illuminate\Database\Console\Migrations\RefreshCommand;
 use Illuminate\Database\Console\Migrations\ResetCommand;
@@ -17,6 +18,16 @@ test('the application registers its service provider', function (): void {
 
     // Assert
     expect($provider)->toBeInstanceOf(AppServiceProvider::class);
+});
+
+test('artwork source cache is scoped to the application lifecycle', function (): void {
+    $first = app(ArtworkSourceCache::class);
+
+    app()->forgetScopedInstances();
+
+    $second = app(ArtworkSourceCache::class);
+
+    expect($second)->not->toBe($first);
 });
 
 test('destructive database command protection follows the application environment', function (string $environment, bool $prohibited): void {
