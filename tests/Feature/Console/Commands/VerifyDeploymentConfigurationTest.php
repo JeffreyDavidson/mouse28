@@ -39,7 +39,7 @@ beforeEach(function (): void {
 });
 
 test('safe production configuration passes through both command names', function (string $command): void {
-    $exitCode = Artisan::call($command);
+    $exitCode = pendingCommand($command)->run();
 
     expect($exitCode)->toBe(Command::SUCCESS)
         ->and(Artisan::output())->toContain('Deployment configuration is ready.');
@@ -48,7 +48,7 @@ test('safe production configuration passes through both command names', function
 test('blank or non-string driver settings fail preflight', function (string $setting, string $message, mixed $value): void {
     config()->set($setting, $value);
 
-    $exitCode = Artisan::call('app:verify-production');
+    $exitCode = pendingCommand('app:verify-production')->run();
     $output = Artisan::output();
 
     expect($exitCode)->toBe(Command::FAILURE)
@@ -77,7 +77,7 @@ test('safe staging configuration passes with isolated observability', function (
         'sentry.release' => 'staging-release',
     ]);
 
-    $exitCode = Artisan::call('app:verify-production');
+    $exitCode = pendingCommand('app:verify-production')->run();
 
     expect($exitCode)->toBe(Command::SUCCESS)
         ->and(Artisan::output())->toContain('Deployment configuration is ready.');
@@ -111,7 +111,7 @@ test('unsafe production configuration reports every failure without exposing val
         'sentry.send_default_pii' => true,
     ]);
 
-    $exitCode = Artisan::call('app:verify-production');
+    $exitCode = pendingCommand('app:verify-production')->run();
     $output = Artisan::output();
 
     expect($exitCode)->toBe(Command::FAILURE)
@@ -144,7 +144,7 @@ test('unsafe production configuration reports every failure without exposing val
 test('administrator recipients are validated individually without exposing addresses', function (mixed $addresses, int $expected): void {
     config()->set('mail.admin_address', $addresses);
 
-    $exitCode = Artisan::call('app:verify-deployment');
+    $exitCode = pendingCommand('app:verify-deployment')->run();
     $output = Artisan::output();
 
     expect($exitCode)->toBe($expected)
@@ -158,7 +158,7 @@ test('administrator recipients are validated individually without exposing addre
     'non-string recipients' => [null, Command::FAILURE],
 ]);
 
-test('observability credentials are never exposed in verification output', function (): void {
+test('observability validation failures do not expose credentials', function (): void {
     config()->set([
         'nightwatch.token' => 'private-nightwatch-token',
         'sentry.dsn' => 'https://private-public-key@example.ingest.sentry.io/123',
@@ -166,7 +166,7 @@ test('observability credentials are never exposed in verification output', funct
         'sentry.release' => null,
     ]);
 
-    $exitCode = Artisan::call('app:verify-production');
+    $exitCode = pendingCommand('app:verify-production')->run();
     $output = Artisan::output();
 
     expect($exitCode)->toBe(Command::FAILURE)

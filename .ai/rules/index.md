@@ -8,11 +8,13 @@ Before planning or editing, find the row whose globs match the file's path and r
 | bootstrap/app.php | .ai/rules/bootstrap.md |
 | app/{Support,Console/Commands}/**/*PublicContent*.php | .ai/rules/commands.md |
 | {app/Support/ResponsiveArtwork.php,app/Console/Commands/GenerateResponsiveArtwork.php,resources/views/components/post-artwork.blade.php} | .ai/rules/components.md |
+| tests/Feature/Console/Commands/** | .ai/rules/console-commands.md |
 | resources/content-artwork/** | .ai/rules/content-artwork.md |
 | app/Http/Controllers/** | .ai/rules/controllers.md |
 | app/Enums/** | .ai/rules/enums.md |
 | {app/Models/Episode.php,app/Filament/Resources/Episodes/**,resources/views/pages/episodes/**,config/podcast.php} | .ai/rules/episodes.md |
 | tests/Feature/Livewire/** | .ai/rules/feature-livewire.md |
+| tests/Feature/Filament/** | .ai/rules/filament.md |
 | tests/Feature/** | .ai/rules/feature.md |
 | ** | .ai/rules/general.md |
 | tests/Feature/Http/Controllers/** | .ai/rules/http-controllers.md |

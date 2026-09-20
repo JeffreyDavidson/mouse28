@@ -50,7 +50,9 @@ test('search query is limited to one hundred characters', function (): void {
     from(route('search'))
         ->get(route('search', ['q' => str_repeat('a', 101)]))
         ->assertRedirect(route('search'))
-        ->assertSessionHasErrors('q');
+        ->assertSessionHasErrors([
+            'q' => 'Search terms may not be longer than 100 characters.',
+        ]);
 });
 
 test('canonical URLs preserve an HTTP application origin', function (): void {

@@ -27,4 +27,7 @@ Keep shared Http::preventStrayRequests() enabled; integration tests must explici
 When creating models in tests, define only factory attributes that affect the behavior under test or are asserted directly. Let factories provide unrelated defaults instead of restating unused properties.
 
 ## Use the smallest effective fixture
-Create the minimum number of records needed to cross a behavior boundary or exercise a branch. For pagination, use only enough records to reach the next page; do not create arbitrary surplus rows.
+Create only the records and files needed to cross the behavior boundary under test. For pagination, use only enough records to reach the next page. Do not invoke unrelated commands or seed extra data merely to establish incidental state.
+
+## Keep test names behavior-specific
+Name each test for the complete behavior it verifies. When a test covers unrelated behaviors, split it into focused test cases instead of hiding multiple responsibilities behind a broad name.

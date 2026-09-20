@@ -2,7 +2,6 @@
 
 use App\Enums\ContactTopic;
 use App\Jobs\SendContactMessageEmails;
-use App\Models\Podcast;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Bus;
@@ -264,19 +263,13 @@ test('contact form rate limit ignores spoofed forwarded IPs without throttling t
     get(route('contact.show'))->assertOk();
 });
 
-test('public index page renders', function (): void {
+test('contact page renders', function (): void {
     get(route('contact.show'))
         ->assertOk()
         ->assertSee('Send us a note');
 });
 
-test('landing page provides search and social metadata', function (): void {
-    Podcast::query()->create([
-        'name' => 'Mouse28 Weekly',
-        'description' => 'A weekly Disney parks podcast for accessibility-minded families.',
-        'cover_image' => 'podcasts/show-cover.jpg',
-    ]);
-
+test('contact page exposes SEO metadata', function (): void {
     get(route('contact.show'))->assertOk()->assertSeeHtml('<meta name="description" content="Contact Jeffrey and Cassie about Mouse28, Disney park accessibility, family travel, collaborations, or the podcast.">');
 });
 

@@ -22,7 +22,7 @@ test('isolated sync refuses concurrent work through either command name', functi
     expect($mutex->create($command))->toBeTrue();
 
     try {
-        $exitCode = Artisan::call($name, ['--isolated' => 1]);
+        $exitCode = pendingCommand($name, ['--isolated' => 1])->run();
 
         expect($exitCode)->toBe(Command::FAILURE);
         Process::assertNothingRan();
@@ -50,7 +50,7 @@ test('sync stops before transferring media when a local draft collides', functio
     Process::preventStrayProcesses();
 
     // Act
-    $exitCode = Artisan::call('content:sync-production');
+    $exitCode = pendingCommand('content:sync-production')->run();
 
     // Assert
     expect($exitCode)->toBe(Command::FAILURE)
@@ -58,45 +58,38 @@ test('sync stops before transferring media when a local draft collides', functio
     Process::assertDidntRun(fn (PendingProcess $process): bool => syncProcessArguments($process)[0] === 'rsync');
 });
 
-test('production public content and referenced media can be synced locally', function (): void {
+test('production syncs public content, preserves drafts, and transfers referenced media', function (): void {
     Storage::fake('public');
     config()->set('mouse28.production_sync.ssh_host', 'cold-moon');
     config()->set('mouse28.production_sync.site_path', '/home/forge/mouse28.com/current');
 
-    $stalePost = Post::factory()->create(['slug' => 'stale-published-post']);
-    $localDraft = Post::factory()->draft()->create(['slug' => 'local-draft']);
+    $stalePost = Post::factory()->create(['slug' => 'stale-post']);
+    $localDraft = Post::factory()->draft()->create();
     $localEpisode = Episode::factory()->create([
-        'slug' => 'local-placeholder-episode',
         'episode_number' => 1,
     ]);
     $archive = publicContentArchive([
         'episodes' => [[
-            'title' => 'Production Episode',
-            'slug' => 'production-episode',
+            'title' => 'Example Episode',
+            'slug' => 'example-episode',
             'episode_number' => 1,
             'published_at' => now()->subDay()->toAtomString(),
         ]],
         'posts' => [
             [
-                'title' => 'Production Post',
-                'slug' => 'production-post',
-                'excerpt' => 'Published on production.',
-                'body' => '<p>Production body.</p>',
-                'cover_image' => 'posts/production-post.webp',
-                'category' => 'disney-tips',
-                'author' => 'both',
-                'episode_slug' => 'production-episode',
+                'title' => 'Example Post',
+                'slug' => 'example-post',
+                'body' => '',
+                'cover_image' => 'posts/example-post.webp',
+                'episode_slug' => 'example-episode',
                 'published_at' => now()->subDay()->toAtomString(),
-                'og_image' => 'posts/production-post-social.webp',
+                'og_image' => 'posts/example-post-social.webp',
             ],
             [
-                'title' => 'Second Production Post',
-                'slug' => 'second-production-post',
-                'excerpt' => 'Also published on production.',
-                'body' => '<p>Second production body.</p>',
-                'cover_image' => 'posts/second-production-post.webp',
-                'category' => 'family-life',
-                'author' => 'both',
+                'title' => 'Second Example Post',
+                'slug' => 'second-example-post',
+                'body' => '',
+                'cover_image' => 'posts/second-example-post.webp',
                 'published_at' => now()->subHours(2)->toAtomString(),
             ],
         ],
@@ -125,23 +118,23 @@ test('production public content and referenced media can be synced locally', fun
     });
     Process::preventStrayProcesses();
 
-    $exitCode = Artisan::call('content:sync-production');
+    $exitCode = pendingCommand('content:sync-production')->run();
 
     expect($exitCode)->toBe(Command::SUCCESS)
-        ->and(Post::query()->where('slug', 'production-post')->firstOrFail()->cover_image)
-        ->toBe('posts/production-post.webp')
+        ->and(Post::query()->where('slug', 'example-post')->firstOrFail()->cover_image)
+        ->toBe('posts/example-post.webp')
         ->and(Post::query()->whereKey($stalePost)->exists())->toBeFalse()
         ->and(Post::withTrashed()->find($stalePost->id)?->trashed())->toBeTrue()
         ->and($localDraft->fresh())->not->toBeNull()
         ->and(Episode::query()->count())->toBe(1)
         ->and(Episode::query()->firstOrFail()->id)->toBe($localEpisode->id)
-        ->and(Episode::query()->firstOrFail()->slug)->toBe('production-episode')
-        ->and(Post::query()->where('slug', 'production-post')->firstOrFail()->episode?->slug)
-        ->toBe('production-episode')
+        ->and(Episode::query()->firstOrFail()->slug)->toBe('example-episode')
+        ->and(Post::query()->where('slug', 'example-post')->firstOrFail()->episode?->slug)
+        ->toBe('example-episode')
         ->and($transferredMedia)->toBe([
-            'posts/production-post-social.webp',
-            'posts/production-post.webp',
-            'posts/second-production-post.webp',
+            'posts/example-post-social.webp',
+            'posts/example-post.webp',
+            'posts/second-example-post.webp',
         ])
         ->and(Artisan::output())->toContain('Local drafts were preserved.');
 
@@ -155,7 +148,7 @@ test('production content sync refuses to run in production', function (): void {
     Process::fake();
     Process::preventStrayProcesses();
 
-    $exitCode = Artisan::call('content:sync-production');
+    $exitCode = pendingCommand('content:sync-production')->run();
 
     expect($exitCode)->toBe(Command::FAILURE)
         ->and(Artisan::output())->toContain('may only run in a non-production environment');
@@ -168,8 +161,8 @@ test('production content sync rejects unsafe media paths', function (): void {
     config()->set('mouse28.production_sync.site_path', '/home/forge/mouse28.com/current');
     $archive = publicContentArchive([
         'posts' => [[
-            'title' => 'Unsafe Post',
-            'slug' => 'unsafe-post',
+            'title' => 'Invalid Post',
+            'slug' => 'invalid-post',
             'cover_image' => '../private/file.webp',
             'published_at' => now()->subDay()->toAtomString(),
         ]],
@@ -185,11 +178,11 @@ test('production content sync rejects unsafe media paths', function (): void {
     });
     Process::preventStrayProcesses();
 
-    $exitCode = Artisan::call('content:sync-production');
+    $exitCode = pendingCommand('content:sync-production')->run();
 
     expect($exitCode)->toBe(Command::FAILURE)
         ->and(Artisan::output())->toContain('unsafe media path')
-        ->and(Post::query()->where('slug', 'unsafe-post')->exists())->toBeFalse();
+        ->and(Post::query()->where('slug', 'invalid-post')->exists())->toBeFalse();
 
     Process::assertDidntRun(fn (PendingProcess $process): bool => syncProcessArguments($process)[0] === 'rsync');
 });

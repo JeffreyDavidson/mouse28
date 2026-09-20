@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Support\BlogRssFeed;
 use Illuminate\Http\Response;
 
-class RssController
+class BlogRssController
 {
     public function __invoke(BlogRssFeed $feed): Response
     {
