@@ -17,6 +17,21 @@ use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
 
+test('authenticated user can render the resource page', function (): void {
+    $message = ContactMessage::query()->create([
+        'name' => 'Dale Cooper',
+        'email' => 'dale@example.com',
+        'subject' => 'general',
+        'message' => 'A park question.',
+    ]);
+
+    actingAs(User::factory()->admin()->create());
+
+    get(ContactMessageResource::getUrl('view', ['record' => $message]))
+        ->assertOk()
+        ->assertSee('A park question.');
+});
+
 test('contact topics and free text retain readable admin labels', function (string $subject, string $label): void {
     $message = ContactMessage::query()->create([
         'name' => 'Dale Cooper',

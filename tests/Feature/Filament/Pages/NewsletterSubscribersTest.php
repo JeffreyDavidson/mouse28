@@ -5,7 +5,6 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -106,7 +105,7 @@ test('an administrator can explicitly refresh cached subscribers', function (): 
         ->push(['data' => [['email' => 'second@example.com']]]);
     actingAs(User::factory()->admin()->create());
 
-    Livewire::test(NewsletterSubscribers::class)
+    livewire(NewsletterSubscribers::class)
         ->assertSee('first@example.com')
         ->call('refreshSubscribers')
         ->assertNotified()
@@ -123,7 +122,7 @@ test('subscriber exports neutralize spreadsheet formulas', function (): void {
     ]);
     actingAs(User::factory()->admin()->create());
 
-    Livewire::test(NewsletterSubscribers::class)
+    livewire(NewsletterSubscribers::class)
         ->call('exportCsv')
         ->assertFileDownloaded(
             'newsletter-subscribers-'.now()->format('Y-m-d').'.csv',

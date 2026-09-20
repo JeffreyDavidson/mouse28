@@ -17,5 +17,8 @@ Jeffrey prefers GPT-5.6 Terra with Medium reasoning for focused test moves, asse
 ## Prefer Pest expectations for values
 Use Pest's expect() API for value and object assertions. Keep Laravel HTTP response, session, database/model, console, and Livewire assertion APIs when they express framework behavior directly; do not replace those fluent domain assertions with raw content or state checks.
 
+## Use Pest Laravel functions at application boundaries
+In Feature tests, prefer Pest Laravel's function-style helpers for entering and arranging application workflows: use `actingAs()`, `get()`, `post()`, `put()`, `patch()`, `delete()`, `assertAuthenticated()`, `assertGuest()`, `livewire()`, and related helpers instead of calling the equivalent `$this->` methods. Keep response, session, database, console, and Livewire assertion methods on the objects returned by those helpers. Use `$this` only when a framework API genuinely requires the underlying test instance or when no Pest helper exists.
+
 ## Isolate outbound integrations before tests boot
 Keep shared Http::preventStrayRequests() enabled; integration tests must explicitly fake outbound Laravel HTTP calls. Neutralize service credentials and monitoring in phpunit.xml using both server entries and forced env entries: forced env alone does not override inherited $_SERVER values read by Laravel. Tests may opt into fake integration settings using config()->set().

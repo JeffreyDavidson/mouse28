@@ -10,13 +10,23 @@ use App\Support\ResponsiveArtwork;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
+
+test('authenticated user can render the edit form', function (): void {
+    $post = Post::factory()->draft()->create();
+
+    actingAs(User::factory()->admin()->create());
+
+    get(PostResource::getUrl('edit', ['record' => $post]))
+        ->assertOk()
+        ->assertSee($post->title)
+        ->assertSee('Save changes');
+});
 
 test('explicit artwork action generates only the saved record cover', function (): void {
     Storage::fake('public');
@@ -87,14 +97,14 @@ test('ready drafts can be explicitly published and unpublished', function (): vo
 
     actingAs($admin);
 
-    Livewire::test(EditPost::class, ['record' => $record->getRouteKey()])
+    livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->callAction('publish')
         ->assertNotified();
 
     expect($record->refresh()->is_published)->toBeTrue()
         ->and($record->published_at)->not->toBeNull();
 
-    Livewire::test(EditPost::class, ['record' => $record->getRouteKey()])
+    livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->callAction('unpublish')
         ->assertNotified();
 
@@ -135,7 +145,7 @@ test('publishing is blocked until editorial requirements are complete', function
 
     actingAs($admin);
 
-    Livewire::test(EditPost::class, ['record' => $post->getRouteKey()])
+    livewire(EditPost::class, ['record' => $post->getRouteKey()])
         ->callAction('publish')
         ->assertNotified();
 
@@ -146,7 +156,7 @@ test('editor saves author and category selections as enums', function (): void {
     $record = Post::factory()->draft()->create();
     actingAs(User::factory()->admin()->create());
 
-    Livewire::test(EditPost::class, ['record' => $record->getRouteKey()])
+    livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->fillForm(['author' => 'jeffrey', 'category' => 'food-reviews'])
         ->call('save')
         ->assertHasNoFormErrors();

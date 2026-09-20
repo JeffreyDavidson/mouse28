@@ -16,6 +16,16 @@ use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
 
+test('contact page displays its view model data', function (): void {
+    config()->set('mouse28.contact.email', 'contact@example.test');
+
+    get(route('contact.show'))
+        ->assertOk()
+        ->assertViewIs('pages.contact')
+        ->assertViewHas('contactEmail', 'contact@example.test')
+        ->assertViewHas('contactFormAvailable', true);
+});
+
 test('contact stays within its query budget', function (): void {
     $this->expectsDatabaseQueryCount(1);
 
@@ -75,13 +85,18 @@ test('contact page offers email instead of an unusable form when verification is
     config()->set('mouse28.contact.email', 'fallback@mouse28.test');
 
     get(route('contact.show'))
-        ->assertOk()->assertSee('Email us directly')->assertSeeHtml('href="mailto:fallback@mouse28.test"')->assertDontSeeHtml('action="'.route('contact.store').'"')->assertDontSeeHtml('data-action="contact-form"');
+        ->assertOk()
+        ->assertViewHas('contactFormAvailable', false)
+        ->assertSee('Email us directly')
+        ->assertSeeHtml('href="mailto:fallback@mouse28.test"')
+        ->assertDontSeeHtml('action="'.route('contact.store').'"')
+        ->assertDontSeeHtml('data-action="contact-form"');
 })->with([
     'missing site key' => 'site_key',
     'missing secret key' => 'secret_key',
 ]);
 
-test('valid contact submission requires successful turnstile verification', function (): void {
+test('valid contact submission stores the message and queues delivery', function (): void {
     Mail::fake();
 
     Http::fake([
@@ -110,6 +125,20 @@ test('valid contact submission requires successful turnstile verification', func
     Http::assertSent(fn (Request $request): bool => $request->url() === 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
         && $request['secret'] === 'test-secret-key'
         && $request['response'] === 'turnstile-token');
+});
+
+test('contact submission rejects invalid input before verification or persistence', function (): void {
+    Http::fake();
+
+    from(route('contact.show'))
+        ->post(route('contact.store'), array_merge(contactPayload(), [
+            'email' => 'not-an-email',
+        ]))
+        ->assertRedirect(route('contact.show'))
+        ->assertSessionHasErrorsIn('contact', 'email');
+
+    assertDatabaseCount('contact_messages', 0);
+    Http::assertNothingSent();
 });
 
 test('contact submission rejects failed turnstile verification before persistence or mail', function (): void {

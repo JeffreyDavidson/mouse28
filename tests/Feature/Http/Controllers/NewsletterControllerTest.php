@@ -5,6 +5,7 @@ use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 
 use function Pest\Laravel\from;
+use function Pest\Laravel\postJson;
 
 pest()->use(RefreshDatabase::class);
 
@@ -105,7 +106,7 @@ test('newsletter returns a safe JSON response after a resend HTTP failure', func
         'https://api.resend.com/audiences/audience-test-id/contacts' => Http::response([], 503),
     ]);
 
-    $this->postJson(route('newsletter.store'), newsletterPayload())
+    postJson(route('newsletter.store'), newsletterPayload())
         ->assertUnprocessable()
         ->assertExactJson(['error' => 'Something went wrong.']);
 });
@@ -120,7 +121,7 @@ test('newsletter returns a safe JSON response after a resend connection failure'
         'https://api.resend.com/audiences/audience-test-id/contacts' => Http::failedConnection(),
     ]);
 
-    $this->postJson(route('newsletter.store'), newsletterPayload())
+    postJson(route('newsletter.store'), newsletterPayload())
         ->assertServerError()
         ->assertExactJson(['error' => 'Something went wrong.']);
 });

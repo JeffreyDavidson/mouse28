@@ -7,13 +7,23 @@ use App\Filament\Resources\Guides\Pages\EditGuide;
 use App\Models\Guide;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
+
+test('authenticated user can render the edit form', function (): void {
+    $guide = Guide::factory()->draft()->create();
+
+    actingAs(User::factory()->admin()->create());
+
+    get(GuideResource::getUrl('edit', ['record' => $guide]))
+        ->assertOk()
+        ->assertSee($guide->title)
+        ->assertSee('Save changes');
+});
 
 test('published URLs are preserved and draft slugs are validated', function (): void {
     actingAs(User::factory()->admin()->create());
@@ -54,14 +64,14 @@ test('ready drafts can be explicitly published and unpublished', function (): vo
 
     actingAs($admin);
 
-    Livewire::test(EditGuide::class, ['record' => $record->getRouteKey()])
+    livewire(EditGuide::class, ['record' => $record->getRouteKey()])
         ->callAction('publish')
         ->assertNotified();
 
     expect($record->refresh()->is_published)->toBeTrue()
         ->and($record->published_at)->not->toBeNull();
 
-    Livewire::test(EditGuide::class, ['record' => $record->getRouteKey()])
+    livewire(EditGuide::class, ['record' => $record->getRouteKey()])
         ->callAction('unpublish')
         ->assertNotified();
 
@@ -95,7 +105,7 @@ test('editor saves author and category selections as enums', function (): void {
     $record = Guide::factory()->draft()->create();
     actingAs(User::factory()->admin()->create());
 
-    Livewire::test(EditGuide::class, ['record' => $record->getRouteKey()])
+    livewire(EditGuide::class, ['record' => $record->getRouteKey()])
         ->fillForm(['author' => 'jeffrey', 'category' => 'family-planning'])
         ->call('save')
         ->assertHasNoFormErrors();

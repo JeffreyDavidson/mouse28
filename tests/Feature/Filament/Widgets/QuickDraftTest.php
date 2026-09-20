@@ -5,9 +5,9 @@ use App\Filament\Widgets\QuickDraft;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Livewire\Livewire;
 
 use function Pest\Laravel\actingAs;
+use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
 
@@ -19,7 +19,7 @@ test('duplicate maximum length titles keep generated slugs within the column lim
     }
     actingAs(User::factory()->admin()->create());
 
-    Livewire::test(QuickDraft::class)
+    livewire(QuickDraft::class)
         ->set('data.title', $title)
         ->call('saveDraft')
         ->assertNotified();
@@ -35,7 +35,7 @@ test('an administrator can save a post draft from the dashboard widget', functio
     ]);
     actingAs(User::factory()->admin()->create());
 
-    Livewire::test(QuickDraft::class)
+    livewire(QuickDraft::class)
         ->set('data.title', 'Sensory-Friendly Park Notes')
         ->set('data.notes', 'Ideas to develop for a future post.')
         ->call('saveDraft')
