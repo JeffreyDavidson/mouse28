@@ -6,6 +6,7 @@ use App\Enums\PostCategory;
 use App\Models\Post;
 use App\ViewModels\PostIndexViewModel;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Livewire\Attributes\Url;
@@ -102,7 +103,7 @@ class BlogArchive extends Component
             }))
             ->orderBy('published_at', $this->sort === 'oldest' ? 'asc' : 'desc')
             ->orderBy('id', $this->sort === 'oldest' ? 'asc' : 'desc')
-            ->paginate(12);
+            ->paginate(Config::integer('mouse28.blog_posts_per_page'));
 
         $featuredPost = $this->hasDefaultFilters() && $posts->currentPage() === 1
             ? $posts->first()
