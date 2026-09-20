@@ -21,6 +21,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | tests/Integration/** | .ai/rules/integration.md |
 | tests/Unit/** | .ai/rules/unit.md |
 | tests/Browser/** | .ai/rules/browser.md |
+| tests/Arch/** | .ai/rules/architecture.md |
 | ** | .ai/rules/general.md |
 | resources/views/components/layouts/app.blade.php | .ai/rules/layouts.md |
 | resources/{js,views/livewire}/** | .ai/rules/livewire.md |
