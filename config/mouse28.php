@@ -14,6 +14,8 @@ return [
 
     'guides_enabled' => env('GUIDES_ENABLED', false),
 
+    'blog_posts_per_page' => max(1, (int) env('MOUSE28_BLOG_POSTS_PER_PAGE', 12)),
+
     'contact' => [
         'email' => env('MOUSE28_CONTACT_EMAIL', 'hello@example.com'),
     ],

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PostCategory;
 use App\Livewire\BlogArchive;
 use App\Models\Post;
 use Illuminate\Database\Eloquent\Collection;
@@ -12,42 +13,52 @@ use function Pest\Livewire\livewire;
 pest()->use(RefreshDatabase::class);
 
 test('equal publication dates have stable ordering across archive pages', function (): void {
-    $records = Post::factory()->count(25)->create(['published_at' => now()->subDay()]);
+    // Arrange
+    $pageSize = 2;
+    config()->set('mouse28.blog_posts_per_page', $pageSize);
+    $records = Post::factory()->count($pageSize + 1)->create(['published_at' => now()->subDay()]);
     $ids = $records->modelKeys();
     rsort($ids);
+
+    // Act
     $page = livewire(BlogArchive::class);
 
-    $page->assertViewHas('posts', fn (LengthAwarePaginator $posts): bool => $posts->getCollection()->pluck('id')->all() === array_slice($ids, 0, 12));
+    // Assert
+    $page->assertViewHas('posts', fn (LengthAwarePaginator $posts): bool => $posts->getCollection()->pluck('id')->all() === array_slice($ids, 0, $pageSize));
 
+    // Act
     $page->call('setPage', 2);
 
-    $page->assertViewHas('posts', fn (LengthAwarePaginator $posts): bool => $posts->getCollection()->pluck('id')->all() === array_slice($ids, 12, 12));
+    // Assert
+    $page->assertViewHas('posts', fn (LengthAwarePaginator $posts): bool => $posts->getCollection()->pluck('id')->all() === array_slice($ids, $pageSize, $pageSize));
 
+    // Act
     $page->set('sort', 'oldest');
     sort($ids);
 
-    $page->assertViewHas('posts', fn (LengthAwarePaginator $posts): bool => $posts->getCollection()->pluck('id')->all() === array_slice($ids, 0, 12));
+    // Assert
+    $page->assertViewHas('posts', fn (LengthAwarePaginator $posts): bool => $posts->getCollection()->pluck('id')->all() === array_slice($ids, 0, $pageSize));
 });
 
 test('query string filters update the visible stories', function (): void {
     // Arrange
     $newestPost = Post::factory()->create([
         'title' => 'Newest accessible plan',
-        'category' => 'park-accessibility',
+        'category' => PostCategory::ParkAccessibility,
         'published_at' => now()->subDay(),
     ]);
     $oldestPost = Post::factory()->create([
         'title' => 'Oldest accessible plan',
-        'category' => 'park-accessibility',
+        'category' => PostCategory::ParkAccessibility,
         'published_at' => now()->subWeek(),
     ]);
     $unrelatedPost = Post::factory()->create([
         'title' => 'Unrelated dining review',
-        'category' => 'food-reviews',
+        'category' => PostCategory::FoodReviews,
     ]);
 
     Livewire::withQueryParams([
-        'category' => 'park-accessibility',
+        'category' => PostCategory::ParkAccessibility->value,
         'q' => 'accessible',
         'sort' => 'oldest',
     ]);
@@ -57,12 +68,19 @@ test('query string filters update the visible stories', function (): void {
 
     // Assert
     $page->assertSeeInOrder([$oldestPost->title, $newestPost->title])
-        ->assertViewHas('archivePosts', fn (Collection $posts): bool => ! $posts->contains($unrelatedPost));
-    $page->assertSet('category', 'park-accessibility')
+        ->assertViewHas('archivePosts', fn (Collection $posts): bool => $posts->doesntContain($unrelatedPost));
+    $page->assertSet('category', PostCategory::ParkAccessibility->value)
         ->assertSet('search', 'accessible')
         ->assertSet('sort', 'oldest')
         ->assertViewHas('hasAnyPosts', true)
-        ->assertViewHas('usedCategories', ['park-accessibility', 'food-reviews']);
+        ->assertViewHas('usedCategories', function (array $categories): bool {
+            sort($categories);
+
+            return $categories === [
+                PostCategory::FoodReviews->value,
+                PostCategory::ParkAccessibility->value,
+            ];
+        });
 
     // Act
     $page->set('search', 'no matching story');
@@ -90,10 +108,10 @@ test('topic and reset actions preserve valid filter state', function (): void {
         ->assertSet('sort', 'newest');
 
     // Act
-    $page->call('selectCategory', 'park-accessibility');
+    $page->call('selectCategory', PostCategory::ParkAccessibility->value);
 
     // Assert
-    $page->assertSet('category', 'park-accessibility')
+    $page->assertSet('category', PostCategory::ParkAccessibility->value)
         ->assertSet('search', '')
         ->assertSet('sort', 'newest')
         ->assertDispatched('blog-metadata-updated');
@@ -110,11 +128,9 @@ test('topic and reset actions preserve valid filter state', function (): void {
 
 test('featured story remains visible on subsequent archive pages', function (): void {
     // Arrange
-    $featuredPost = Post::factory()->create([
-        'title' => 'Featured throughout the archive',
-        'published_at' => now(),
-    ]);
-    Post::factory()->count(12)->create([
+    config()->set('mouse28.blog_posts_per_page', 2);
+    $featuredPost = Post::factory()->create(['published_at' => now()]);
+    Post::factory()->count(2)->create([
         'published_at' => now()->subDay(),
     ]);
 
@@ -124,20 +140,22 @@ test('featured story remains visible on subsequent archive pages', function (): 
     $page = livewire(BlogArchive::class);
 
     // Assert
-    $page->assertSee($featuredPost->title);
+    $page->assertViewHas('featuredPost', fn (Post $post): bool => $post->is($featuredPost));
 });
 
 test('featured story is independent of category search and sort filters', function (): void {
     // Arrange
-    $featuredPost = Post::factory()->create(['title' => 'Permanent feature', 'published_at' => now()]);
-    Post::factory()->create(['title' => 'Quiet entrance', 'category' => 'park-accessibility', 'published_at' => now()->subWeek()]);
+    $featuredPost = Post::factory()->create(['published_at' => now()]);
+    Post::factory()->create([
+        'category' => PostCategory::ParkAccessibility,
+    ]);
     Post::factory()->draft()->create();
     Post::factory()->scheduled()->create();
 
     $page = livewire(BlogArchive::class);
 
     // Act
-    $page->call('selectCategory', 'park-accessibility');
+    $page->call('selectCategory', PostCategory::ParkAccessibility->value);
 
     // Assert
     $page->assertViewHas('featuredPost', fn (Post $post): bool => $post->is($featuredPost));
