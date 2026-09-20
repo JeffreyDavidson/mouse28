@@ -82,9 +82,10 @@ test('edit page offers a draft preview', function (): void {
 
     actingAs($admin);
 
-    get(PostResource::getUrl('edit', ['record' => $post]))
-        ->assertOk()
-        ->assertSee('Preview');
+    livewire(EditPost::class, ['record' => $post->getRouteKey()])
+        ->assertActionVisible('preview')
+        ->assertActionHasUrl('preview', route('preview.posts', $post))
+        ->assertActionShouldOpenUrlInNewTab('preview');
 });
 
 test('ready drafts can be explicitly published and unpublished', function (): void {

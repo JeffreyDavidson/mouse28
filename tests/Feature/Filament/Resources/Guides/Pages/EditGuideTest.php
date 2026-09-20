@@ -49,9 +49,10 @@ test('edit page offers a draft preview', function (): void {
 
     actingAs($admin);
 
-    get(GuideResource::getUrl('edit', ['record' => $guide]))
-        ->assertOk()
-        ->assertSee('Preview');
+    livewire(EditGuide::class, ['record' => $guide->getRouteKey()])
+        ->assertActionVisible('preview')
+        ->assertActionHasUrl('preview', route('preview.guides', $guide))
+        ->assertActionShouldOpenUrlInNewTab('preview');
 });
 
 test('ready drafts can be explicitly published and unpublished', function (): void {

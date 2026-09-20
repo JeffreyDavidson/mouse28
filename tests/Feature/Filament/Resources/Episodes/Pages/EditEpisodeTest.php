@@ -108,9 +108,10 @@ test('edit page offers a draft preview', function (): void {
 
     actingAs($admin);
 
-    get(EpisodeResource::getUrl('edit', ['record' => $episode]))
-        ->assertOk()
-        ->assertSee('Preview');
+    livewire(EditEpisode::class, ['record' => $episode->getRouteKey()])
+        ->assertActionVisible('preview')
+        ->assertActionHasUrl('preview', route('preview.episodes', $episode))
+        ->assertActionShouldOpenUrlInNewTab('preview');
 });
 
 test('ready drafts can be explicitly published and unpublished', function (): void {
