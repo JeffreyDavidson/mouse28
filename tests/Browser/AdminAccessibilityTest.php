@@ -134,3 +134,15 @@ test('authenticated admin pages expose no unnamed artwork or decorative glyphs',
             ->assertScript(unexpectedAdminJavaScriptErrorCountScript(), 0);
     }
 });
+
+test('dashboard Quick Draft loads without Livewire entanglement errors', function (): void {
+    actingAs(User::factory()->admin()->create());
+
+    visit(Dashboard::getUrl(panel: 'admin'))
+        ->assertSee('Quick Draft')
+        ->assertVisible('input[placeholder="Post title..."]')
+        ->assertVisible('textarea[placeholder="Quick notes or ideas..."]')
+        ->assertScript(unexpectedAdminJavaScriptErrorCountScript(), 0)
+        ->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors();
+})->group('browser-smoke');
