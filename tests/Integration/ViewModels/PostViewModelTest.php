@@ -5,6 +5,8 @@ use App\Models\Post;
 use App\ViewModels\PostViewModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+covers(PostViewModel::class);
+
 pest()->use(RefreshDatabase::class);
 
 test('post data includes recent posts and only published episode relationships', function (): void {

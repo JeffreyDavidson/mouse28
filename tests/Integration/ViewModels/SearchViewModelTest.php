@@ -6,6 +6,8 @@ use App\Models\Post;
 use App\ViewModels\SearchViewModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+covers(SearchViewModel::class);
+
 pest()->use(RefreshDatabase::class);
 
 test('search results select only the fields rendered by the page', function (): void {
