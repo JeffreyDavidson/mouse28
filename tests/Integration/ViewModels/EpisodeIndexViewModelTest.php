@@ -4,6 +4,8 @@ use App\Models\Episode;
 use App\ViewModels\EpisodeIndexViewModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+covers(EpisodeIndexViewModel::class);
+
 pest()->use(RefreshDatabase::class);
 
 test('episode index data includes published episodes and distribution data', function (): void {

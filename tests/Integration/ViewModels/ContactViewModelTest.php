@@ -2,6 +2,8 @@
 
 use App\ViewModels\ContactViewModel;
 
+covers(ContactViewModel::class);
+
 test('contact payload uses the configured address and enables the form when Turnstile is configured', function (): void {
     config()->set([
         'mouse28.contact.email' => 'contact@example.test',

@@ -5,6 +5,8 @@ use App\ViewModels\GuideIndexViewModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 
+covers(GuideIndexViewModel::class);
+
 pest()->use(RefreshDatabase::class);
 
 test('guide index data filters published guides and builds category metadata', function (): void {
