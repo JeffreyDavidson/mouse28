@@ -108,6 +108,7 @@
         "test:type-coverage": "php -d memory_limit=2G vendor/bin/pest --type-coverage --min=100 --compact",
         "test:mutate": [
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/ArtworkSourceCache.php --filter='cache reuses a source hash'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/ResendAudience.php --filter='(subscriber|audience|provider|connection|subscription)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/PublicContentArchive.php --filter='archive'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/ResponsiveArtwork.php --filter='responsive artwork'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/SafeReturnUrl.php --filter='(referrers|same origin)'",
