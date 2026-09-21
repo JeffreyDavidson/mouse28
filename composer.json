@@ -114,7 +114,8 @@
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/PodcastLinks.php --filter='links include configured services'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/EditorialReadiness.php --filter='(publication status|readiness reports|episode readiness|complete content|sourced posts)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/ContentContinuation.php --filter='(related posts|continuation queries|related guides|episode)'",
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/BlogRssFeed.php --filter='blog feed'"
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/BlogRssFeed.php --filter='blog feed'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/SitemapDocument.php --filter='sitemap'"
         ],
         "analyse": "php -d memory_limit=2G vendor/bin/phpstan analyse --no-progress",
         "analyse:pest": "APP_ENV=testing php -d memory_limit=2G vendor/bin/phpstan analyse --configuration=phpstan-pest.neon --no-progress",
