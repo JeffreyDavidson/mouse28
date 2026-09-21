@@ -17,7 +17,9 @@ Staging runs with `APP_ENV=production` so production safeguards stay active. Set
 `MOUSE28_DEPLOYMENT_ENVIRONMENT=staging`, enable Telescope, and keep Nightwatch
 disabled. Use an isolated Sentry environment before running
 `php artisan app:verify-deployment`. Production enables Nightwatch instead of
-Telescope.
+Telescope. Telescope stores its staging entries in the application's database
+and is restricted to administrator accounts. New Debug Bar is restricted to the
+local environment and is not enabled on either Forge site.
 
 ## Branch and release workflow
 

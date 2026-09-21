@@ -32,6 +32,7 @@ beforeEach(function (): void {
         'nightwatch.capture_request_payload' => false,
         'nightwatch.sampling.requests' => 0.1,
         'telescope.enabled' => false,
+        'newdebugbar.environments' => ['local'],
         'sentry.dsn' => 'https://public-key@example.ingest.sentry.io/123',
         'sentry.environment' => 'production',
         'sentry.release' => 'production-release',
@@ -102,12 +103,14 @@ test('staging rejects production observability settings', function (): void {
         'nightwatch.enabled' => true,
         'nightwatch.token' => 'production-token',
         'telescope.enabled' => false,
+        'newdebugbar.environments' => ['local', 'staging'],
     ]);
 
     $exitCode = pendingCommand('app:verify-deployment')
         ->expectsOutputToContain('NIGHTWATCH_ENABLED must be false on staging.')
         ->expectsOutputToContain('NIGHTWATCH_TOKEN must be empty on staging.')
         ->expectsOutputToContain('TELESCOPE_ENABLED must be true on staging.')
+        ->expectsOutputToContain('NEWDEBUGBAR_ENVIRONMENTS must allow local only.')
         ->run();
 
     expect($exitCode)->toBe(Command::FAILURE);
