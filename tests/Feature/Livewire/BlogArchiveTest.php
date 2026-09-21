@@ -12,6 +12,8 @@ use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
 
+covers(BlogArchive::class);
+
 test('equal publication dates have stable ordering across archive pages', function (): void {
     // Arrange
     $pageSize = 2;
