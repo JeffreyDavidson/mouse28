@@ -106,7 +106,7 @@
         "test:filacheck": "FILACHECK_DISABLE_AGENT_MODE=1 vendor/bin/filacheck",
         "filacheck:fix": "FILACHECK_DISABLE_AGENT_MODE=1 vendor/bin/filacheck --fix --dirty",
         "test:type-coverage": "php -d memory_limit=2G vendor/bin/pest --type-coverage --min=100 --compact",
-        "test:mutate": "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --exclude-testsuite=Browser --class=App\\Support\\PublicContentArchive,App\\Support\\ResponsiveArtwork,App\\Support\\SafeReturnUrl --filter='(archive|responsive artwork|referrers|same origin)'",
+        "test:mutate": "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --exclude-testsuite=Browser --class=App\\Support\\PublicContentArchive,App\\Support\\ResponsiveArtwork,App\\Support\\SafeReturnUrl,App\\Support\\NewsletterResponse --filter='(archive|responsive artwork|referrers|same origin|successful JSON|successful redirects|error JSON|error redirects)'",
         "analyse": "php -d memory_limit=2G vendor/bin/phpstan analyse --no-progress",
         "analyse:pest": "APP_ENV=testing php -d memory_limit=2G vendor/bin/phpstan analyse --configuration=phpstan-pest.neon --no-progress",
         "rector": "vendor/bin/rector process",
