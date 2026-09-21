@@ -9,6 +9,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 pest()->use(RefreshDatabase::class);
 
+covers(ContentContinuation::class);
+
 beforeEach(function (): void {
     $this->freezeSecond();
 });
