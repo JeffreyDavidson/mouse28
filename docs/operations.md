@@ -14,8 +14,10 @@ Never copy live credentials into the repository, deployment logs, or local docum
 
 Staging runs with `APP_ENV=production` so production safeguards stay active. Set
 `APP_URL` and `MOUSE28_PRODUCTION_URL` to `https://staging.mouse28.com`, set
-`MOUSE28_DEPLOYMENT_ENVIRONMENT=staging`, and use matching isolated Nightwatch
-and Sentry environments before running `php artisan app:verify-deployment`.
+`MOUSE28_DEPLOYMENT_ENVIRONMENT=staging`, enable Telescope, and keep Nightwatch
+disabled. Use an isolated Sentry environment before running
+`php artisan app:verify-deployment`. Production enables Nightwatch instead of
+Telescope.
 
 ## Branch and release workflow
 

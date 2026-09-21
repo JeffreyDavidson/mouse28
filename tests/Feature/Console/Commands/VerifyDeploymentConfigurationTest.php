@@ -31,6 +31,7 @@ beforeEach(function (): void {
         'nightwatch.token' => 'nightwatch-production-token',
         'nightwatch.capture_request_payload' => false,
         'nightwatch.sampling.requests' => 0.1,
+        'telescope.enabled' => false,
         'sentry.dsn' => 'https://public-key@example.ingest.sentry.io/123',
         'sentry.environment' => 'production',
         'sentry.release' => 'production-release',
@@ -78,6 +79,9 @@ test('safe staging configuration passes with isolated observability', function (
         'services.turnstile.allowed_hostnames' => ['staging.mouse28.com'],
         'sentry.environment' => 'staging',
         'sentry.release' => 'staging-release',
+        'nightwatch.enabled' => false,
+        'nightwatch.token' => null,
+        'telescope.enabled' => true,
     ]);
 
     $exitCode = pendingCommand('app:verify-production')
@@ -85,6 +89,28 @@ test('safe staging configuration passes with isolated observability', function (
         ->run();
 
     expect($exitCode)->toBe(Command::SUCCESS);
+});
+
+test('staging rejects production observability settings', function (): void {
+    config()->set([
+        'app.url' => 'https://staging.mouse28.com',
+        'mouse28.production_url' => 'https://staging.mouse28.com',
+        'mouse28.deployment_environment' => 'staging',
+        'services.turnstile.allowed_hostnames' => ['staging.mouse28.com'],
+        'sentry.environment' => 'staging',
+        'sentry.release' => 'staging-release',
+        'nightwatch.enabled' => true,
+        'nightwatch.token' => 'production-token',
+        'telescope.enabled' => false,
+    ]);
+
+    $exitCode = pendingCommand('app:verify-deployment')
+        ->expectsOutputToContain('NIGHTWATCH_ENABLED must be false on staging.')
+        ->expectsOutputToContain('NIGHTWATCH_TOKEN must be empty on staging.')
+        ->expectsOutputToContain('TELESCOPE_ENABLED must be true on staging.')
+        ->run();
+
+    expect($exitCode)->toBe(Command::FAILURE);
 });
 
 test('unsafe production configuration reports every failure without exposing values', function (): void {
