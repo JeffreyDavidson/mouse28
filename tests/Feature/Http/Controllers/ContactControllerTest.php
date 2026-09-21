@@ -114,8 +114,10 @@ test('valid contact submission stores the message and queues delivery', function
         ->assertSessionHasNoErrors();
 
     assertDatabaseHas('contact_messages', [
+        'name' => 'Dale Cooper',
         'email' => 'dale@example.com',
         'subject' => 'Need help with Mouse28',
+        'message' => 'The contact form needs secure bot protection.',
     ]);
 
     Mail::assertNothingSent();
