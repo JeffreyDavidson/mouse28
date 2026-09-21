@@ -68,7 +68,10 @@ test('unenrolled administrators must set up authentication before accessing cont
     assert(is_array($arguments) && is_string($arguments['secret']));
 
     $setup
-        ->fillForm(['code' => AppAuthentication::make()->getCurrentCode($user, $arguments['secret'])], 'mountedActionSchema0')
+        ->fillForm([
+            'code' => AppAuthentication::make()->getCurrentCode($user, $arguments['secret']),
+            'password' => 'password',
+        ], 'mountedActionSchema0')
         ->callMountedAction()
         ->assertHasNoFormErrors();
 
