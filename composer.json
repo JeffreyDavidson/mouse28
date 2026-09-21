@@ -25,7 +25,7 @@
         "christophrumpel/missing-livewire-assertions": "^4.0",
         "driftingly/rector-laravel": "^2.6",
         "fakerphp/faker": "^1.24",
-        "jasonmccreary/double": "^0.7.0",
+        "jasonmccreary/double": "^0.10.2",
         "larastan/larastan": "^3.10",
         "laravel/boost": "^2.4",
         "laravel/doctor": "^0.1.0",
