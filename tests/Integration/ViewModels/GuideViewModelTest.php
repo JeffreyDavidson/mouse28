@@ -4,6 +4,8 @@ use App\Models\Guide;
 use App\ViewModels\GuideViewModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+covers(GuideViewModel::class);
+
 pest()->use(RefreshDatabase::class);
 
 test('guide data includes related guides and omits preview state by default', function (): void {

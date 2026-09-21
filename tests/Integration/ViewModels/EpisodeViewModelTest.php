@@ -5,6 +5,8 @@ use App\Models\Post;
 use App\ViewModels\EpisodeViewModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+covers(EpisodeViewModel::class);
+
 pest()->use(RefreshDatabase::class);
 
 test('episode data includes related published posts', function (): void {
