@@ -6,6 +6,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 pest()->use(RefreshDatabase::class);
 
+covers(BlogRssFeed::class);
+
 test('blog feed includes published metadata and excludes unpublished posts', function (): void {
     $published = Post::factory()->create([
         'title' => 'Accessible Park Planning',
