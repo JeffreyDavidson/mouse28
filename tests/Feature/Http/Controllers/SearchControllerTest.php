@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Requests\SearchRequest;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
@@ -12,6 +13,8 @@ use Illuminate\Support\Facades\URL;
 
 use function Pest\Laravel\from;
 use function Pest\Laravel\get;
+
+covers(SearchRequest::class);
 
 pest()->use(RefreshDatabase::class);
 

@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Testing\AssertableJsonString;
 
+covers(SendContactMessageEmails::class);
+
 pest()->use(RefreshDatabase::class);
 
 beforeEach(function (): void {

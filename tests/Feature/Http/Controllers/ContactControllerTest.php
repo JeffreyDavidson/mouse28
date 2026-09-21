@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\ContactTopic;
+use App\Http\Requests\StoreContactRequest;
 use App\Jobs\SendContactMessageEmails;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
@@ -12,6 +13,8 @@ use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\from;
 use function Pest\Laravel\get;
+
+covers(StoreContactRequest::class);
 
 pest()->use(RefreshDatabase::class);
 
