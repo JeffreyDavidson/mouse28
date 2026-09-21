@@ -31,6 +31,11 @@ class QuickDraft extends Widget implements HasForms
     /** @var array<string, mixed>|null */
     public ?array $data = [];
 
+    public function mount(): void
+    {
+        $this->form->fill();
+    }
+
     public function form(Schema $form): Schema
     {
         return $form
