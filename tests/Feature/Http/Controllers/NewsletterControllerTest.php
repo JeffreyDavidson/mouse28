@@ -1,11 +1,14 @@
 <?php
 
+use App\Http\Requests\StoreNewsletterRequest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 
 use function Pest\Laravel\from;
 use function Pest\Laravel\postJson;
+
+covers(StoreNewsletterRequest::class);
 
 pest()->use(RefreshDatabase::class);
 
