@@ -11,6 +11,14 @@ use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
 
+test('initializes the quick draft form state for Livewire entanglement', function (): void {
+    actingAs(User::factory()->admin()->create());
+
+    livewire(QuickDraft::class)
+        ->assertSet('data.title', null)
+        ->assertSet('data.notes', null);
+});
+
 test('duplicate maximum length titles keep generated slugs within the column limit', function (): void {
     $title = str_repeat('a', 255);
     Post::factory()->create(['slug' => $title]);
