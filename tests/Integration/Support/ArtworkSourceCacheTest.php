@@ -2,7 +2,9 @@
 
 use App\Support\ArtworkSourceCache;
 
-test('cache reuses a source hash per instance and recalculates it for a new instance', function (): void {
+covers(ArtworkSourceCache::class);
+
+test('cache reuses a source hash within an instance and recalculates it for a new instance', function (): void {
     $file = tempnam(sys_get_temp_dir(), 'artwork-cache-');
     file_put_contents($file, 'original');
     $cache = new ArtworkSourceCache;
