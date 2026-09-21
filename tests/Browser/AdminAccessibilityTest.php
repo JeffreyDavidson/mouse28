@@ -146,3 +146,18 @@ test('dashboard Quick Draft loads without Livewire entanglement errors', functio
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 })->group('browser-smoke');
+
+test('administrator can save a Quick Draft from the dashboard', function (): void {
+    actingAs(User::factory()->admin()->create());
+
+    visit(Dashboard::getUrl(panel: 'admin'))
+        ->fill('input[placeholder="Post title..."]', 'Browser Smoke Draft')
+        ->fill('textarea[placeholder="Quick notes or ideas..."]', 'Browser smoke test notes.')
+        ->click('button:has-text("Save Draft")')
+        ->assertSee('Draft saved!')
+        ->assertNoJavaScriptErrors();
+
+    visit(PostResource::getUrl())
+        ->assertSee('Browser Smoke Draft')
+        ->assertNoJavaScriptErrors();
+})->group('browser-smoke');
