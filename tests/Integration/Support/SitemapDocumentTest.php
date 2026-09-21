@@ -7,6 +7,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 pest()->use(RefreshDatabase::class);
 
+covers(SitemapDocument::class);
+
 test('sitemap includes published content links and excludes unpublished records', function (): void {
     config()->set('mouse28.guides_enabled', true);
     $post = Post::factory()->create();
