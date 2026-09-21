@@ -1,5 +1,6 @@
 <?php
 
+use App\Console\Commands\AttachBundledArtwork;
 use App\Models\Episode;
 use App\Models\Post;
 use Illuminate\Console\Command;
@@ -8,6 +9,8 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use JMac\Testing\Double;
+
+covers(AttachBundledArtwork::class);
 
 pest()->use(RefreshDatabase::class);
 
