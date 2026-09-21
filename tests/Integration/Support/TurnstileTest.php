@@ -5,6 +5,8 @@ use Illuminate\Http\Client\Request as ClientRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
+covers(Turnstile::class);
+
 beforeEach(function (): void {
     config()->set([
         'services.turnstile.secret_key' => 'test-secret',
