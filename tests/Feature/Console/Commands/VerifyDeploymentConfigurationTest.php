@@ -1,6 +1,9 @@
 <?php
 
+use App\Console\Commands\VerifyDeploymentConfiguration;
 use Illuminate\Console\Command;
+
+covers(VerifyDeploymentConfiguration::class);
 
 beforeEach(function (): void {
     config()->set([

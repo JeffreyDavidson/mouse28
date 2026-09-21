@@ -1,5 +1,6 @@
 <?php
 
+use App\Console\Commands\ExportPublicContent;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Podcast;
@@ -7,6 +8,8 @@ use App\Models\Post;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
+
+covers(ExportPublicContent::class);
 
 pest()->use(RefreshDatabase::class);
 
