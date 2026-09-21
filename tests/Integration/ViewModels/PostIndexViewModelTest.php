@@ -4,6 +4,8 @@ use App\ViewModels\PostIndexViewModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 
+covers(PostIndexViewModel::class);
+
 pest()->use(RefreshDatabase::class);
 
 test('blog index data normalizes filters and metadata', function (): void {
