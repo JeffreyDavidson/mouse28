@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Storage;
 
 pest()->use(RefreshDatabase::class);
 
+covers(GenerateResponsiveCover::class);
+
 test('failed derivative publication leaves no final or temporary file and can be retried', function (string $operation): void {
     $disk = Storage::fake('public');
     $original = UploadedFile::fake()->image('cover.png', 600, 400)->getContent();

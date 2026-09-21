@@ -1,9 +1,12 @@
 <?php
 
+use App\Http\Middleware\AddSecurityHeaders;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
 
 use function Pest\Laravel\get;
+
+covers(AddSecurityHeaders::class);
 
 pest()->use(RefreshDatabase::class);
 
