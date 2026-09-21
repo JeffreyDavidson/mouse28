@@ -15,6 +15,16 @@ class VerifyDeploymentConfiguration extends Command
         $appUrl = config('app.url');
         $canonicalUrl = config('mouse28.production_url');
         $deploymentEnvironment = config('mouse28.deployment_environment');
+        $observabilityChecks = $deploymentEnvironment === 'staging'
+            ? [
+                [config('nightwatch.enabled') === false, 'NIGHTWATCH_ENABLED must be false on staging.'],
+                [$this->isNotConfigured(config('nightwatch.token')), 'NIGHTWATCH_TOKEN must be empty on staging.'],
+                [config('telescope.enabled') === true, 'TELESCOPE_ENABLED must be true on staging.'],
+            ]
+            : [
+                [config('nightwatch.enabled') === true, 'NIGHTWATCH_ENABLED must be true.'],
+                [$this->isConfigured(config('nightwatch.token')), 'NIGHTWATCH_TOKEN must be configured.'],
+            ];
 
         $checks = [
             [config('app.env') === 'production', 'APP_ENV must be production.'],
@@ -35,8 +45,6 @@ class VerifyDeploymentConfiguration extends Command
             [$this->isConfigured(config('services.turnstile.secret_key')), 'TURNSTILE_SECRET_KEY must be configured.'],
             [$this->allowsCanonicalHost(config('services.turnstile.allowed_hostnames'), $canonicalUrl), 'TURNSTILE_ALLOWED_HOSTNAMES must include the canonical host.'],
             [$this->isTransistorFeedUrl(config('podcast.rss_url')), 'PODCAST_RSS_URL must use a Transistor feed URL.'],
-            [config('nightwatch.enabled') === true, 'NIGHTWATCH_ENABLED must be true.'],
-            [$this->isConfigured(config('nightwatch.token')), 'NIGHTWATCH_TOKEN must be configured.'],
             [config('nightwatch.capture_request_payload') === false, 'NIGHTWATCH_CAPTURE_REQUEST_PAYLOAD must be false.'],
             [$this->usesConservativeRequestSampling(config('nightwatch.sampling.requests')), 'NIGHTWATCH_REQUEST_SAMPLE_RATE must be greater than 0 and no more than 0.1.'],
             [$this->isConfigured(config('sentry.dsn')), 'SENTRY_LARAVEL_DSN must be configured.'],
@@ -46,6 +54,7 @@ class VerifyDeploymentConfiguration extends Command
             [$this->isConfigured(config('sentry.release')), 'SENTRY_RELEASE must be configured.'],
             [config('sentry.traces_sample_rate') === 0.0, 'SENTRY_TRACES_SAMPLE_RATE must be 0.0 until tracing is deliberately enabled.'],
             [config('sentry.profiles_sample_rate') === 0.0, 'SENTRY_PROFILES_SAMPLE_RATE must be 0.0 until profiling is deliberately enabled.'],
+            ...$observabilityChecks,
         ];
 
         $failures = array_map(
@@ -79,6 +88,11 @@ class VerifyDeploymentConfiguration extends Command
     private function isConfigured(mixed $value): bool
     {
         return is_string($value) && trim($value) !== '';
+    }
+
+    private function isNotConfigured(mixed $value): bool
+    {
+        return ! $this->isConfigured($value);
     }
 
     private function isDeploymentEnvironment(mixed $environment): bool
