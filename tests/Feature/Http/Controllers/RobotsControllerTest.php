@@ -1,6 +1,10 @@
 <?php
 
+use App\Support\RobotsDocument;
+
 use function Pest\Laravel\get;
+
+covers(RobotsDocument::class);
 
 test('robots policies keep private and generated routes out of crawlers', function (): void {
     $response = get(route('robots'))
