@@ -20,7 +20,7 @@ class QuickDraft extends Widget implements HasForms
     use InteractsWithForms;
 
     #[\Override]
-    protected static ?int $sort = 5;
+    protected static ?int $sort = 4;
 
     #[\Override]
     protected int|string|array $columnSpan = 1;

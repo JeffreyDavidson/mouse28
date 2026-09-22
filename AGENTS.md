@@ -79,6 +79,9 @@ reader-submitted story collection, moderation, or public story pages.
 
 ## Design System
 
+Read [DESIGN.md](DESIGN.md) before changing public or Filament interfaces. It
+defines the shared visual system and its application to the editorial workspace.
+
 - Navy: `#1a1040`
 - Light navy: `#2d1b69`
 - Purple: `#5b3e9e`

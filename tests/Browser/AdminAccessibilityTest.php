@@ -58,11 +58,35 @@ function unexpectedAdminJavaScriptErrorCountScript(): string
         JS;
 }
 
+test('dashboard remains readable with long content on desktop and mobile', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create(['name' => 'Alex Example']));
+    Post::factory()->draft()->create([
+        'title' => 'A sample story about making a family afternoon easier to plan',
+    ]);
+
+    // Act
+    $page = visit(Dashboard::getUrl(panel: 'admin'));
+
+    foreach ([1440, 390, 320] as $width) {
+        $page->resize($width, 1000);
+
+        // Assert
+        $page->assertSee('A sample story about making a family afternoon easier to plan')
+            ->assertSee('Quick Draft')
+            ->assertScript('getComputedStyle(document.querySelector("h1")).fontFamily.includes("Besley")', true)
+            ->assertScript('getComputedStyle(document.body).fontFamily.includes("Poppins")', true)
+            ->assertScript($this->horizontalOverflowScript(), 0)
+            ->assertNoAccessibilityIssues()
+            ->assertNoJavaScriptErrors();
+    }
+})->group('browser-smoke');
+
 test('admin login exposes no unnamed artwork or decorative glyphs', function (): void {
     visit(route('filament.admin.auth.login'))
         ->assertVisible('input[type="email"]')
         ->assertVisible('input[type="password"]')
-        ->assertScript('document.documentElement.classList.contains(\'dark\')', true)
+        ->assertScript('document.documentElement.classList.contains(\'dark\')', false)
         ->assertScript('document.querySelectorAll(\'svg:not([aria-hidden="true"]):not([aria-label]):not([aria-labelledby]):not(:has(title))\').length', 0)
         ->assertScript(browserDecorativeGlyphCountScript(['✦', '✧', '✨', '📅', '✏️']), 0)
         ->assertNoAccessibilityIssues()
@@ -127,7 +151,7 @@ test('authenticated admin pages expose no unnamed artwork or decorative glyphs',
         visit($url)
             ->assertPathIs($path)
             ->assertVisible('.fi-main')
-            ->assertScript('document.documentElement.classList.contains(\'dark\')', true)
+            ->assertScript('document.documentElement.classList.contains(\'dark\')', false)
             ->assertScript('document.querySelectorAll(\'svg:not([aria-hidden="true"]):not([aria-label]):not([aria-labelledby]):not(:has(title))\').length', 0)
             ->assertScript(browserDecorativeGlyphCountScript(['✦', '✧', '✨', '📅', '✏️']), 0)
             ->assertNoAccessibilityIssues()

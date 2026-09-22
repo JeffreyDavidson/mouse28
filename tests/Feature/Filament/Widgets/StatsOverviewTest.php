@@ -41,11 +41,6 @@ test('stats overview reports published content review needs drafts and active su
         'description' => $stat['description'],
     ])->all())->toBe([
         [
-            'label' => 'Guides',
-            'value' => 1,
-            'description' => 'Reviews current',
-        ],
-        [
             'label' => 'Blog Posts',
             'value' => 1,
             'description' => '1 need review',
@@ -54,6 +49,11 @@ test('stats overview reports published content review needs drafts and active su
             'label' => 'Episodes',
             'value' => 1,
             'description' => 'Published',
+        ],
+        [
+            'label' => 'Guides',
+            'value' => 1,
+            'description' => 'Reviews current',
         ],
         [
             'label' => 'Drafts',
