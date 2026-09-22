@@ -4,10 +4,11 @@
         $subscribers = $audience['subscribers'];
         $error = $audience['error'];
         $count = count($subscribers);
+        $perPage = $this->subscribersPerPage;
         $subscribers = new \Illuminate\Pagination\LengthAwarePaginator(
-            array_slice($subscribers, ($this->getPage() - 1) * 50, 50),
+            array_slice($subscribers, ($this->getPage() - 1) * $perPage, $perPage),
             $count,
-            50,
+            $perPage,
             $this->getPage(),
         );
     @endphp
@@ -129,7 +130,11 @@
                     </table>
                 </div>
             </div>
-            <x-filament::pagination :paginator="$subscribers" />
+            <x-filament::pagination
+                current-page-option-property="subscribersPerPage"
+                :page-options="\App\Filament\Pages\NewsletterSubscribers::SUBSCRIBERS_PER_PAGE_OPTIONS"
+                :paginator="$subscribers"
+            />
         </div>
     @endif
 </x-filament-panels::page>
