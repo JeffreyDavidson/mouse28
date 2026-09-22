@@ -9,6 +9,14 @@ covers(GuideIndexViewModel::class);
 
 pest()->use(RefreshDatabase::class);
 
+test('guide index data uses stable ID ordering for equal publication dates', function (): void {
+    $guides = Guide::factory()->count(2)->create(['published_at' => now()->subDay()]);
+
+    $data = app(GuideIndexViewModel::class)->data(Request::create('/guides'));
+
+    expect($data['guides']->getCollection()->pluck('id')->all())->toBe($guides->reverse()->pluck('id')->all());
+});
+
 test('guide index data filters published guides and builds category metadata', function (): void {
     $matching = Guide::factory()->create(['category' => 'accessibility']);
     $other = Guide::factory()->create(['category' => 'family-planning']);

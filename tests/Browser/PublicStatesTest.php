@@ -176,7 +176,7 @@ test('branded recovery pages remain accessible and actionable', function (): voi
             'rgb(26, 16, 64)',
         );
     $expired->assertSee('Your session took a break')
-        ->assertSee('Return to contact')
+        ->assertSee('Return to the site')
         ->assertDontSee('Private session details');
     $serverError->assertSee('The magic hit a snag')
         ->assertSee('Try again')

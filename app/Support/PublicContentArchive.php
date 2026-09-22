@@ -167,6 +167,7 @@ class PublicContentArchive
     public function assertSafeToSync(array $archive): void
     {
         $archive = $this->validate($archive);
+        $this->validateForPersistence($archive);
 
         foreach (['posts' => Post::class, 'guides' => Guide::class, 'episodes' => Episode::class] as $type => $model) {
             $identity = $type === 'episodes' ? 'episode_number' : 'slug';
@@ -386,6 +387,8 @@ class PublicContentArchive
             }
         }
         $rules['posts.*.episode_slug'] = ['nullable', 'string', 'max:255', 'regex:/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/'];
+        $rules['posts.*.body'] = ['present', 'string'];
+        $rules['guides.*.body'] = ['present', 'string'];
         $rules['posts.*.author'] = ['nullable', Rule::enum(ContentAuthor::class)];
         $rules['posts.*.category'] = ['nullable', Rule::enum(PostCategory::class)];
         $rules['guides.*.author'] = ['required', Rule::enum(ContentAuthor::class)];

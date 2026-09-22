@@ -28,6 +28,7 @@ class GuideIndexViewModel
             ->select(['id', 'slug', 'title', 'category', 'excerpt', 'body', 'cover_image'])
             ->when($category, fn (Builder $query): Builder => $query->where('category', $category))
             ->latest('published_at')
+            ->latest('id')
             ->paginate(12)
             ->withQueryString();
         $categoryLabel = $categoryEnum?->getLabel();

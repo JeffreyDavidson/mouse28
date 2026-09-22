@@ -15,6 +15,24 @@ use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
 
+test('previously published URLs stay locked after clearing the date and unpublishing', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $record = Episode::factory()->create(['slug' => 'original-public-url']);
+
+    livewire(EditEpisode::class, ['record' => $record->getRouteKey()])
+        ->fillForm(['published_at' => null])
+        ->call('save')
+        ->assertHasNoFormErrors();
+    $record->refresh()->update(['is_published' => false]);
+
+    livewire(EditEpisode::class, ['record' => $record->getRouteKey()])
+        ->fillForm(['slug' => 'replacement-url'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($record->refresh()->slug)->toBe('original-public-url');
+});
+
 test('authenticated user can render the edit form', function (): void {
     $episode = Episode::factory()->draft()->create();
 
@@ -52,10 +70,9 @@ test('artwork generation reports an unavailable source', function (): void {
         ->assertNotified('Artwork generation failed');
 });
 
-test('published URLs are preserved and draft slugs are validated', function (): void {
+test('published URLs cannot be changed by submitted editor state', function (): void {
     actingAs(User::factory()->admin()->create());
     $published = Episode::factory()->create(['slug' => 'permanent-url']);
-    $draft = Episode::factory()->draft()->create();
 
     livewire(EditEpisode::class, ['record' => $published->getRouteKey()])
         ->fillForm(['slug' => 'replacement-url'])
@@ -63,6 +80,12 @@ test('published URLs are preserved and draft slugs are validated', function (): 
         ->assertHasNoFormErrors();
 
     expect($published->refresh()->slug)->toBe('permanent-url');
+
+});
+
+test('draft slugs reject characters that cannot form public routes', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $draft = Episode::factory()->draft()->create();
 
     livewire(EditEpisode::class, ['record' => $draft->getRouteKey()])
         ->fillForm(['slug' => 'Invalid/URL'])
@@ -114,7 +137,7 @@ test('edit page offers a draft preview', function (): void {
         ->assertActionShouldOpenUrlInNewTab('preview');
 });
 
-test('ready drafts can be explicitly published and unpublished', function (): void {
+test('ready drafts can be explicitly published', function (): void {
     $admin = User::factory()->admin()->create();
     $record = Episode::factory()->draft()->create([
         'cover_image' => 'episodes/complete.jpg',
@@ -130,6 +153,12 @@ test('ready drafts can be explicitly published and unpublished', function (): vo
 
     expect($record->refresh()->is_published)->toBeTrue()
         ->and($record->published_at)->not->toBeNull();
+
+});
+
+test('published content can be explicitly unpublished', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $record = Episode::factory()->create();
 
     livewire(EditEpisode::class, ['record' => $record->getRouteKey()])
         ->callAction('unpublish')

@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 
 class ContentContinuation
@@ -69,8 +70,14 @@ class ContentContinuation
 
         return Episode::published()
             ->select(['id', 'slug', 'title'])
-            ->where('published_at', '<', $episode->published_at)
+            ->where(function (Builder $query) use ($episode): void {
+                $query->where('published_at', '<', $episode->published_at)
+                    ->orWhere(function (Builder $query) use ($episode): void {
+                        $query->where('published_at', $episode->published_at)->where('id', '<', $episode->id);
+                    });
+            })
             ->latest('published_at')
+            ->latest('id')
             ->first();
     }
 
@@ -82,8 +89,14 @@ class ContentContinuation
 
         return Episode::published()
             ->select(['id', 'slug', 'title'])
-            ->where('published_at', '>', $episode->published_at)
+            ->where(function (Builder $query) use ($episode): void {
+                $query->where('published_at', '>', $episode->published_at)
+                    ->orWhere(function (Builder $query) use ($episode): void {
+                        $query->where('published_at', $episode->published_at)->where('id', '>', $episode->id);
+                    });
+            })
             ->oldest('published_at')
+            ->oldest('id')
             ->first();
     }
 }

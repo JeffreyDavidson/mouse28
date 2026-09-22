@@ -18,6 +18,8 @@ return [
 
     'enabled' => env('TELESCOPE_ENABLED', false),
 
+    'retention_hours' => max(1, (int) env('TELESCOPE_RETENTION_HOURS', 48)),
+
     /*
     |--------------------------------------------------------------------------
     | Telescope Domain

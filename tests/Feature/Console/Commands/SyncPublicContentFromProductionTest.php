@@ -14,6 +14,31 @@ use Illuminate\Support\Facades\Storage;
 
 pest()->use(RefreshDatabase::class);
 
+test('sync rejects invalid content before replacing any local media', function (): void {
+    $disk = Storage::fake('public');
+    $disk->put('posts/cover.webp', 'original bytes');
+    $post = Post::factory()->create(['title' => 'Original', 'cover_image' => 'posts/cover.webp']);
+    $archive = app(PublicContentArchive::class)->export();
+    $archive['posts'][0]['title'] = 'Changed';
+    $archive['posts'][0]['body'] = null;
+    Process::fake(function (PendingProcess $process) use ($archive) {
+        $arguments = syncProcessArguments($process);
+        if ($arguments[0] === 'scp') {
+            File::put(array_last($arguments), json_encode($archive, JSON_THROW_ON_ERROR));
+        }
+
+        return Process::result();
+    });
+    Process::preventStrayProcesses();
+
+    pendingCommand('content:sync-from-production')
+        ->assertFailed();
+
+    Process::assertDidntRun(fn (PendingProcess $process): bool => syncProcessArguments($process)[0] === 'rsync');
+    expect($post->refresh()->title)->toBe('Original')
+        ->and($disk->get('posts/cover.webp'))->toBe('original bytes');
+});
+
 test('isolated sync refuses concurrent work through either command name', function (string $name): void {
     Process::fake();
     $command = app(SyncPublicContentFromProduction::class);

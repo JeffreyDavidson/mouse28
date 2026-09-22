@@ -5,6 +5,14 @@ use Illuminate\Console\Command;
 
 covers(VerifyDeploymentConfiguration::class);
 
+test('unsafe production configuration rejects an invalid public contact address', function (mixed $email): void {
+    config()->set('mouse28.contact.email', $email);
+
+    pendingCommand('app:verify-deployment')
+        ->expectsOutputToContain('MOUSE28_CONTACT_EMAIL must use a public contact address.')
+        ->assertFailed();
+})->with([null, '', 'invalid', 'hello@example.com', 'hello@example.test']);
+
 beforeEach(function (): void {
     config()->set([
         'app.env' => 'production',
@@ -21,6 +29,7 @@ beforeEach(function (): void {
         'mail.default' => 'resend',
         'mail.from.address' => 'hello@mouse28.com',
         'mail.admin_address' => 'admin@mouse28.com',
+        'mouse28.contact.email' => 'contact@mouse28.com',
         'services.resend.key' => 'resend-production-key',
         'services.resend.audience_id' => 'audience-id',
         'services.turnstile.site_key' => 'turnstile-site-key',
