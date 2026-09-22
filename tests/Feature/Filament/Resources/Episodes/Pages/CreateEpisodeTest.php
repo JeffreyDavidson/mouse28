@@ -12,6 +12,25 @@ use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
 
+test('episode creation validates required fields on the server', function (): void {
+    actingAs(User::factory()->admin()->create());
+
+    livewire(CreateEpisode::class)
+        ->fillForm(['title' => null, 'slug' => null, 'episode_number' => null])
+        ->call('create')
+        ->assertHasFormErrors(['title' => 'required', 'slug' => 'required', 'episode_number' => 'required']);
+});
+
+test('episode creation rejects a duplicate slug', function (): void {
+    Episode::factory()->create(['slug' => 'existing-episode', 'episode_number' => 1]);
+    actingAs(User::factory()->admin()->create());
+
+    livewire(CreateEpisode::class)
+        ->fillForm(['title' => 'Sample episode', 'slug' => 'existing-episode', 'episode_number' => 2])
+        ->call('create')
+        ->assertHasFormErrors(['slug' => 'unique']);
+});
+
 test('episode creation validates numeric and URL storage constraints', function (string $field, mixed $value, string $rule): void {
     // Arrange
     actingAs(User::factory()->admin()->create());

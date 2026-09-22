@@ -21,6 +21,26 @@ Telescope. Telescope stores its staging entries in the application's database
 and is restricted to administrator accounts. New Debug Bar is restricted to the
 local environment and is not enabled on either Forge site.
 
+Staging Telescope excludes contact/newsletter request batches (including SQL and
+exception entries) and redacts submitted contact fields and flashed old input from
+other recorded requests. `TELESCOPE_RETENTION_HOURS` defaults to 48. The application's
+daily, non-overlapping `telescope:prune` schedule runs only when Telescope is enabled
+and `MOUSE28_DEPLOYMENT_ENVIRONMENT=staging`. Verify Forge's scheduler invokes
+`php artisan schedule:run` for the staging site's current release before relying on
+this retention policy. This code change does not provision or change Forge cron.
+Contact-message retention remains manual and is unaffected.
+
+The audit-hardening release adds `slug_locked_at` to posts, guides, and episodes.
+Run its forward migration before serving the new editor. Existing past-dated URLs
+are conservatively locked, including unpublished and soft-deleted content. The
+lock is internal, not mass assignable. Editors can correct publication dates or
+unpublish without unlocking the permalink; intentional URL migrations need a
+separately reviewed redirect plan. Public content imports remain explicit canonical
+synchronization operations and do not export this local editor metadata.
+
+Deployment preflight validates `MOUSE28_CONTACT_EMAIL` separately from the sender
+and administrator recipients. It must not retain the example address.
+
 ## Branch and release workflow
 
 Keep the Forge sites configured to these source branches:

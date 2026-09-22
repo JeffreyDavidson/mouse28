@@ -328,6 +328,8 @@ test('article navigation scrolls to headings and back to the top with reduced mo
     $page->assertScript("window.matchMedia('(prefers-reduced-motion: reduce)').matches", true)
         ->assertAttribute('#back-to-top', 'aria-hidden', 'true')
         ->keys('[data-blog-toc-link][href="#section-1"]', 'Enter')
+        ->assertScript('window.location.hash', '#section-1')
+        ->assertScript('document.activeElement.id', 'section-1')
         ->assertScript('window.scrollY > 500', true)
         ->assertScript(<<<'JS'
             (() => {

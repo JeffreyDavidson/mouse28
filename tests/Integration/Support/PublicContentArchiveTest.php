@@ -59,6 +59,7 @@ test('invalid imported attributes leave all existing records unchanged', functio
     'invalid URL' => ['source_url', 'javascript:alert(1)'],
     'invalid media type' => ['cover_image', []],
     'invalid relation type' => ['episode_slug', []],
+    'null body' => ['body', null],
 ]);
 
 test('sync refuses unpublished identity collisions without changing content', function (PostFactory|GuideFactory|EpisodeFactory $factory, string $state): void {

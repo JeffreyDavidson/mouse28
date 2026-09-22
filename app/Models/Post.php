@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Enums\ContentAuthor;
 use App\Enums\PostCategory;
+use App\Support\ContentPermalink;
+use Carbon\CarbonInterface;
 use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -26,6 +28,7 @@ use Spatie\Tags\HasTags;
  * @property PostCategory|null $category
  * @property Carbon|null $last_reviewed_at
  * @property Carbon|null $published_at
+ * @property CarbonInterface|null $slug_locked_at
  * @property Carbon $updated_at
  * @property-read string $author_initials
  * @property-read string $author_name
@@ -64,6 +67,13 @@ class Post extends Model
     use HasFactory, HasTags, SoftDeletes;
 
     use LogsActivity;
+
+    protected static function booted(): void
+    {
+        static::saving(function (Post $content): void {
+            ContentPermalink::rememberPublication($content);
+        });
+    }
 
     public function getActivitylogOptions(): LogOptions
     {
@@ -228,6 +238,7 @@ class Post extends Model
             'is_published' => 'boolean',
             'last_reviewed_at' => 'date',
             'published_at' => 'datetime',
+            'slug_locked_at' => 'datetime',
         ];
     }
 }

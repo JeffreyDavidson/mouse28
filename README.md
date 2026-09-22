@@ -71,6 +71,21 @@ Run `composer check` for the required CI checks locally: dependency validation a
 
 Run `composer analyse:pest` for a focused test-analysis check. The full browser suite remains available through `composer test:browser`.
 
+`composer test:mutate` runs all mutation targets. CI distributes the same targets across
+`test:mutate:commands`, `test:mutate:delivery`, `test:mutate:views`,
+`test:mutate:content`, and `test:mutate:integrations`. Every group must pass the
+existing 100% covered-mutation threshold before the aggregate **Mutation testing**
+check succeeds. This measures the selected covered code, not all application behavior.
+
+Tests force an in-memory SQLite database, non-delivering integrations, and disabled
+monitoring even when the shell exports conflicting environment variables. The test
+bootstrap refuses cached or non-isolated database configuration before migrations.
+`composer test:mysql` is a separate compatibility lane for a **disposable** loopback
+MySQL database named `mouse28_test`, with the test-only user/password `mouse28_test`.
+CI provisions it in a MySQL 8.4 service container. Locally, provision an isolated
+instance first; `MOUSE28_TEST_MYSQL_PORT` selects its port. Never grant this test
+account access to any real database or expose it outside loopback.
+
 Individual commands:
 
 ```bash

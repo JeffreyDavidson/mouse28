@@ -40,6 +40,7 @@ class VerifyDeploymentConfiguration extends Command
             [$this->usesDeliveringMailer(config('mail.default')), 'MAIL_MAILER must use a delivering transport.'],
             [$this->isProductionEmail(config('mail.from.address')), 'MAIL_FROM_ADDRESS must use a production address.'],
             [$this->hasProductionRecipients(config('mail.admin_address')), 'MAIL_ADMIN_ADDRESS must use monitored production addresses.'],
+            [$this->isProductionEmail(config('mouse28.contact.email')), 'MOUSE28_CONTACT_EMAIL must use a public contact address.'],
             [$this->isConfigured(config('services.resend.key')), 'RESEND_API_KEY must be configured.'],
             [$this->isConfigured(config('services.resend.audience_id')), 'RESEND_AUDIENCE_ID must be configured.'],
             [$this->isConfigured(config('services.turnstile.site_key')), 'TURNSTILE_SITE_KEY must be configured.'],

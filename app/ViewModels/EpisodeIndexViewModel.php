@@ -24,6 +24,7 @@ class EpisodeIndexViewModel
         $episodes = Episode::published()
             ->select(['id', 'slug', 'title', 'description', 'published_at', 'duration_seconds', 'season_number', 'episode_number', 'transistor_url'])
             ->latest('published_at')
+            ->latest('id')
             ->paginate(12);
         $podcast = Podcast::info();
 

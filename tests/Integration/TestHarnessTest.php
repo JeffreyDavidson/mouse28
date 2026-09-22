@@ -3,6 +3,15 @@
 use Illuminate\Http\Client\StrayRequestException;
 use Illuminate\Support\Facades\Http;
 
+test('the test harness selects only its isolated database', function (): void {
+    $mysql = getenv('MOUSE28_TEST_MYSQL') === '1';
+    $connection = $mysql ? 'mysql' : 'sqlite';
+
+    expect(config('database.default'))->toBe($mysql ? 'mysql' : 'sqlite')
+        ->and(config('database.connections.'.$connection.'.database'))->toBe($mysql ? 'mouse28_test' : ':memory:')
+        ->and(config('telescope.enabled'))->toBeFalse();
+});
+
 test('the test harness rejects unfaked requests', function (): void {
     // Arrange
     expect(Http::preventingStrayRequests())->toBeTrue();

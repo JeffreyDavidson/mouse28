@@ -17,6 +17,24 @@ use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
 
+test('previously published URLs stay locked after clearing the date and unpublishing', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $record = Post::factory()->create(['slug' => 'original-public-url']);
+
+    livewire(EditPost::class, ['record' => $record->getRouteKey()])
+        ->fillForm(['published_at' => null])
+        ->call('save')
+        ->assertHasNoFormErrors();
+    $record->refresh()->update(['is_published' => false]);
+
+    livewire(EditPost::class, ['record' => $record->getRouteKey()])
+        ->fillForm(['slug' => 'replacement-url'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($record->refresh()->slug)->toBe('original-public-url');
+});
+
 test('authenticated user can render the edit form', function (): void {
     $post = Post::factory()->draft()->create();
 
@@ -88,7 +106,7 @@ test('edit page offers a draft preview', function (): void {
         ->assertActionShouldOpenUrlInNewTab('preview');
 });
 
-test('ready drafts can be explicitly published and unpublished', function (): void {
+test('ready drafts can be explicitly published', function (): void {
     $admin = User::factory()->admin()->create();
     $record = Post::factory()->draft()->create([
         'cover_image' => 'posts/complete.jpg',
@@ -104,6 +122,12 @@ test('ready drafts can be explicitly published and unpublished', function (): vo
 
     expect($record->refresh()->is_published)->toBeTrue()
         ->and($record->published_at)->not->toBeNull();
+
+});
+
+test('published content can be explicitly unpublished', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $record = Post::factory()->create();
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->callAction('unpublish')

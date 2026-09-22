@@ -40,3 +40,17 @@ test('contact confirmation renders the contact details safely', function (): voi
         ->and($html)->toContain(route('episodes.index'))
         ->and($html)->toContain(route('blog.index'));
 });
+
+test('confirmation email uses accessible current branding without external fonts', function (): void {
+    $message = new ContactMessage([
+        'name' => 'Sample Visitor',
+        'email' => 'visitor@example.com',
+        'subject' => 'general',
+        'message' => 'A sample question.',
+    ]);
+
+    $html = new ContactFormConfirmation($message)->render();
+
+    expect($html)->toContain('Besley', '<html lang="en">', 'role="presentation"')
+        ->not->toContain('Playfair', 'fonts.googleapis.com');
+});
