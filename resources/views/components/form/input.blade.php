@@ -21,7 +21,7 @@
 
 @if ($error)
     @if ($errorClass)
-        <x-form.error :id="$errorId" :message="$error" class="{{ $errorClass }}" />
+        <x-form.error :id="$errorId" :message="$error" :color-class="$errorClass" />
     @else
         <x-form.error :id="$errorId" :message="$error" />
     @endif
