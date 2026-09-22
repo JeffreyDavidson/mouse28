@@ -51,6 +51,7 @@ test('authenticated user can render podcast settings', function (): void {
     get(PodcastSettings::getUrl())
         ->assertOk()
         ->assertSee('Podcast Settings')
+        ->assertDontSeeHtml('fi-header-heading')
         ->assertSee('Distribution Links');
 });
 

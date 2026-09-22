@@ -146,5 +146,6 @@ test('authenticated user can render newsletter subscribers', function (): void {
         ->assertSee('Newsletter Subscribers')
         ->assertSee('Manage your newsletter audience')
         ->assertSee('No contacts yet')
+        ->assertDontSeeHtml('fi-header-heading')
         ->assertDontSee('✨');
 });

@@ -35,6 +35,9 @@ class PodcastSettings extends Page
     #[\Override]
     protected static ?string $title = 'Podcast Settings';
 
+    #[\Override]
+    protected ?string $heading = '';
+
     /** @var array<string, mixed>|null */
     public ?array $data = [];
 
