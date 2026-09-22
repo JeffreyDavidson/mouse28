@@ -43,7 +43,7 @@ class AdminPanelProvider extends PanelProvider
             ->profile()
             ->multiFactorAuthentication([
                 AppAuthentication::make()->recoverable(),
-            ], isRequired: true)
+            ], isRequired: fn (): bool => ! app()->isLocal())
             ->spa()
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->colors([
