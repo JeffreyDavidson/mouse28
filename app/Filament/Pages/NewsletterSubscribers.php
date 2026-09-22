@@ -33,6 +33,9 @@ class NewsletterSubscribers extends Page
     #[\Override]
     protected static ?string $title = 'Newsletter Subscribers';
 
+    #[\Override]
+    protected ?string $heading = '';
+
     public static function canAccess(): bool
     {
         return auth()->user()?->is_admin === true;
