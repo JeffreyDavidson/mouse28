@@ -1,5 +1,5 @@
 <x-filament-widgets::widget>
-    <div class="@container border-mouse-navy/15 border-b pb-8">
+    <x-filament.dashboard-panel content-class="mt-0" class="p-6 sm:p-8">
         <div class="flex flex-col gap-6 @3xl:flex-row @3xl:items-end @3xl:justify-between">
             <div class="min-w-0">
                 <h2 class="font-mouse-heading text-mouse-navy text-3xl font-semibold tracking-tight text-balance">
@@ -48,5 +48,5 @@
                 New Guide
             </x-filament::button>
         </div>
-    </div>
+    </x-filament.dashboard-panel>
 </x-filament-widgets::widget>

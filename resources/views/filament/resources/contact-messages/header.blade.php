@@ -8,10 +8,7 @@
     </x-slot:icon>
 
     <x-slot:stats>
-        <x-filament.resource-stat label="total">{{ $total }}</x-filament.resource-stat>
-
-        @if ($unread > 0)
-            <x-filament.resource-stat label="unread" tone="gold">{{ $unread }}</x-filament.resource-stat>
-        @endif
+        <x-filament.resource-stat label="Total">{{ $total }}</x-filament.resource-stat>
+        <x-filament.resource-stat label="Unread" tone="gold">{{ $unread }}</x-filament.resource-stat>
     </x-slot:stats>
 </x-filament.page-header>

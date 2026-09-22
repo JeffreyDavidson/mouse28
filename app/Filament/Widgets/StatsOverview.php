@@ -20,7 +20,7 @@ class StatsOverview extends Widget
     #[\Override]
     protected string $view = 'filament.widgets.stats-overview';
 
-    /** @return list<array{label: string, value: int, icon: Heroicon, description: string, color: string}> */
+    /** @return list<array{label: string, value: int, icon: Heroicon, description: string, color: 'gold'|'purple'|'purple-light'|'teal'}> */
     public function getStats(): array
     {
         $publishedPosts = Post::published()->count();
@@ -39,28 +39,28 @@ class StatsOverview extends Widget
                 'value' => $publishedPosts,
                 'icon' => Heroicon::OutlinedDocumentText,
                 'description' => $postsDueForReview > 0 ? "{$postsDueForReview} need review" : 'Reviews current',
-                'color' => '#5b3e9e',
+                'color' => 'purple',
             ],
             [
                 'label' => 'Episodes',
                 'value' => $publishedEpisodes,
                 'icon' => Heroicon::OutlinedMicrophone,
                 'description' => 'Published',
-                'color' => '#d4a843',
+                'color' => 'gold',
             ],
             [
                 'label' => 'Guides',
                 'value' => $publishedGuides,
                 'icon' => Heroicon::OutlinedBookOpen,
                 'description' => $guidesDueForReview > 0 ? "{$guidesDueForReview} need review" : 'Reviews current',
-                'color' => '#4a90a4',
+                'color' => 'teal',
             ],
             [
                 'label' => 'Drafts',
                 'value' => $drafts,
                 'icon' => Heroicon::OutlinedPencilSquare,
                 'description' => 'All content',
-                'color' => '#e8a838',
+                'color' => 'gold',
             ],
             [
                 'label' => 'Subscribers',
@@ -70,7 +70,7 @@ class StatsOverview extends Widget
                 )),
                 'icon' => Heroicon::OutlinedUsers,
                 'description' => $audience['error'] ? 'Unavailable' : 'Active newsletter subscribers',
-                'color' => '#7b5eb5',
+                'color' => 'purple-light',
             ],
         ];
     }

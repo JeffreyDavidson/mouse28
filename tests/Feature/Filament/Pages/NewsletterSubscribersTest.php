@@ -53,8 +53,8 @@ test('newsletter reporting separates subscription status from total contacts', f
     $audience = $page->instance()->getAudience();
 
     // Assert
-    $page->assertSee('active')
-        ->assertSee('total contacts')
+    $page->assertSee('Active')
+        ->assertSee('Total contacts')
         ->assertSee('Unsubscribed')
         ->assertSee('Unknown')
         ->assertSee('left@example.com');

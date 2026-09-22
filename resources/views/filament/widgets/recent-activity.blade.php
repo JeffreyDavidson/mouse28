@@ -10,8 +10,14 @@
                             class="hover:bg-mouse-cream -mx-2 flex min-h-12 items-start gap-3 rounded-lg px-2 py-4 transition-colors"
                         >
                             <x-filament::icon
-                                icon="heroicon-o-{{ $item['icon'] }}"
-                                class="text-mouse-purple mt-1 size-5 shrink-0"
+                                :icon="$item['icon']"
+                                @class([
+                                    'mt-1 size-5 shrink-0',
+                                    'text-mouse-purple' => $item['color'] === 'purple',
+                                    'text-mouse-gold-dark' => $item['color'] === 'gold',
+                                    'text-mouse-teal' => $item['color'] === 'teal',
+                                ])
+                                aria-hidden="true"
                             />
                             <div class="min-w-0 flex-1">
                                 <p class="text-mouse-navy text-base font-medium break-words @lg:text-sm">
