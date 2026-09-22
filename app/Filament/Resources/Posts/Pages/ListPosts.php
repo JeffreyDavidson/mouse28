@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Posts\Pages;
 
 use App\Filament\Resources\Posts\PostResource;
 use App\Models\Post;
-use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Contracts\View\View;
@@ -14,13 +13,6 @@ class ListPosts extends ListRecords
 {
     #[\Override]
     protected static string $resource = PostResource::class;
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            CreateAction::make(),
-        ];
-    }
 
     public function getTabs(): array
     {
@@ -41,12 +33,10 @@ class ListPosts extends ListRecords
 
     public function getHeader(): ?View
     {
-        $total = Post::count();
         $published = Post::published()->count();
         $drafts = Post::drafts()->count();
 
         return view('filament.resources.posts.header', [
-            'total' => $total,
             'published' => $published,
             'drafts' => $drafts,
             'createUrl' => PostResource::getUrl('create'),

@@ -59,7 +59,6 @@ test('header does not count scheduled guides as published', function (): void {
 
     expect($component->getHeader()?->getData())
         ->toMatchArray([
-            'total' => 3,
             'published' => 1,
             'drafts' => 1,
         ]);

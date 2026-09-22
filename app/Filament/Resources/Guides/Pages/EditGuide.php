@@ -12,6 +12,7 @@ use Filament\Actions\RestoreAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Date;
 
 /** @property Guide $record */
@@ -19,6 +20,14 @@ class EditGuide extends EditRecord
 {
     #[\Override]
     protected static string $resource = GuideResource::class;
+
+    public function getHeader(): ?View
+    {
+        return view('filament.resources.guides.form-header', [
+            'title' => 'Edit Guide',
+            'subtitle' => $this->record->title,
+        ]);
+    }
 
     protected function getHeaderActions(): array
     {

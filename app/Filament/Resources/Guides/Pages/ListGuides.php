@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Guides\Pages;
 
 use App\Filament\Resources\Guides\GuideResource;
 use App\Models\Guide;
-use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Contracts\View\View;
@@ -14,11 +13,6 @@ class ListGuides extends ListRecords
 {
     #[\Override]
     protected static string $resource = GuideResource::class;
-
-    protected function getHeaderActions(): array
-    {
-        return [CreateAction::make()];
-    }
 
     public function getTabs(): array
     {
@@ -39,12 +33,10 @@ class ListGuides extends ListRecords
 
     public function getHeader(): ?View
     {
-        $total = Guide::count();
         $published = Guide::published()->count();
         $drafts = Guide::drafts()->count();
 
         return view('filament.resources.guides.header', [
-            'total' => $total,
             'published' => $published,
             'drafts' => $drafts,
             'createUrl' => GuideResource::getUrl('create'),

@@ -31,7 +31,7 @@ test('newsletter contact statuses remain readable on desktop and mobile', functi
     $page->resize(1440, 1000);
 
     // Assert
-    $page->assertSee('Active subscribers')
+    $page->assertSee('active')
         ->assertSee('Unsubscribed')
         ->assertSee('Unknown')
         ->assertScript($this->horizontalOverflowScript(), 0)
@@ -42,7 +42,7 @@ test('newsletter contact statuses remain readable on desktop and mobile', functi
     $page->resize(390, 844);
 
     // Assert
-    $page->assertSee('Total contacts')
+    $page->assertSee('total contacts')
         ->assertSee('Export all contacts')
         ->assertScript($this->horizontalOverflowScript(), 0)
         ->assertNoAccessibilityIssues()

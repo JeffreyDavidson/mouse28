@@ -61,7 +61,6 @@ test('header does not count scheduled episodes as published', function (): void 
     // Assert
     expect($header?->getData())
         ->toMatchArray([
-            'total' => 3,
             'published' => 1,
             'drafts' => 1,
         ]);

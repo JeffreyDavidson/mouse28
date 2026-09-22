@@ -48,7 +48,8 @@ test('authenticated user can render the create form', function (): void {
 
     get(GuideResource::getUrl('create'))
         ->assertOk()
-        ->assertSee('Create Guide');
+        ->assertSee('Create Guide')
+        ->assertSee('Add a new accessibility guide');
 });
 
 test('create form explains editorial requirements', function (): void {
