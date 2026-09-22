@@ -1,7 +1,7 @@
 ---
 version: 1
 slug: "resources-views-home-blade-php"
-primary_target: "resources/views/home.blade.php"
+primary_target: "resources/views/pages/home.blade.php"
 related_targets: ["resources/views/components/layouts/app.blade.php","resources/css/app.css"]
 ---
 

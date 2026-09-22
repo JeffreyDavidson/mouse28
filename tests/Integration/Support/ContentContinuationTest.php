@@ -9,8 +9,19 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 pest()->use(RefreshDatabase::class);
 
+covers(ContentContinuation::class);
+
 beforeEach(function (): void {
     $this->freezeSecond();
+});
+
+test('episode neighbors use IDs to break equal publication dates', function (): void {
+    $previous = Episode::factory()->create(['published_at' => now()->subDay()]);
+    $current = Episode::factory()->create(['published_at' => $previous->published_at]);
+    $next = Episode::factory()->create(['published_at' => $previous->published_at]);
+
+    expect(ContentContinuation::previousEpisode($current)?->id)->toBe($previous->id)
+        ->and(ContentContinuation::nextEpisode($current)?->id)->toBe($next->id);
 });
 
 test('related posts prioritize category and fill remaining slots with recent posts', function (): void {

@@ -6,6 +6,8 @@ use App\Models\Post;
 use App\ViewModels\HomeViewModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+covers(HomeViewModel::class);
+
 pest()->use(RefreshDatabase::class);
 
 test('homepage content queries select only fields rendered by their cards', function (): void {

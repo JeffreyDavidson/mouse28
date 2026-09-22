@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Episode;
 use App\ViewModels\EpisodeIndexViewModel;
 use App\ViewModels\EpisodeViewModel;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class EpisodeController
@@ -16,7 +17,7 @@ class EpisodeController
 
     public function show(Episode $episode, EpisodeViewModel $viewModel): View
     {
-        abort_unless($episode->is_published && $episode->published_at?->isPast(), 404);
+        Gate::authorize('viewPublic', $episode);
 
         return view('pages.episodes.show', $viewModel->data($episode));
     }

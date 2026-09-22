@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\ViewModels\PostIndexViewModel;
 use App\ViewModels\PostViewModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class PostController
@@ -17,7 +18,7 @@ class PostController
 
     public function show(Post $post, PostViewModel $viewModel): View
     {
-        abort_unless($post->is_published && $post->published_at?->isPast(), 404);
+        Gate::authorize('viewPublic', $post);
 
         return view('pages.blog.show', $viewModel->data($post));
     }

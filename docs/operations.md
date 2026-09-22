@@ -7,15 +7,39 @@ Mouse28 is hosted on Laravel Forge. Use a separate staging site for deployment v
 1. Confirm the target commit or tag and review its migrations and storage changes.
 2. Confirm the staging or production environment uses persistent database and public-media paths.
 3. Create and independently verify a database backup and an uploaded-media backup.
-4. Load the target environment and run `php artisan app:verify-production`.
+4. Load the target environment and run `php artisan app:verify-deployment`.
 5. Stop when the preflight command reports any failure.
 
 Never copy live credentials into the repository, deployment logs, or local documentation.
 
 Staging runs with `APP_ENV=production` so production safeguards stay active. Set
 `APP_URL` and `MOUSE28_PRODUCTION_URL` to `https://staging.mouse28.com`, set
-`MOUSE28_DEPLOYMENT_ENVIRONMENT=staging`, and use matching isolated Nightwatch
-and Sentry environments before running `php artisan app:verify-production`.
+`MOUSE28_DEPLOYMENT_ENVIRONMENT=staging`, enable Telescope, and keep Nightwatch
+disabled. Use an isolated Sentry environment before running
+`php artisan app:verify-deployment`. Production enables Nightwatch instead of
+Telescope. Telescope stores its staging entries in the application's database
+and is restricted to administrator accounts. New Debug Bar is restricted to the
+local environment and is not enabled on either Forge site.
+
+Staging Telescope excludes contact/newsletter request batches (including SQL and
+exception entries) and redacts submitted contact fields and flashed old input from
+other recorded requests. `TELESCOPE_RETENTION_HOURS` defaults to 48. The application's
+daily, non-overlapping `telescope:prune` schedule runs only when Telescope is enabled
+and `MOUSE28_DEPLOYMENT_ENVIRONMENT=staging`. Verify Forge's scheduler invokes
+`php artisan schedule:run` for the staging site's current release before relying on
+this retention policy. This code change does not provision or change Forge cron.
+Contact-message retention remains manual and is unaffected.
+
+The audit-hardening release adds `slug_locked_at` to posts, guides, and episodes.
+Run its forward migration before serving the new editor. Existing past-dated URLs
+are conservatively locked, including unpublished and soft-deleted content. The
+lock is internal, not mass assignable. Editors can correct publication dates or
+unpublish without unlocking the permalink; intentional URL migrations need a
+separately reviewed redirect plan. Public content imports remain explicit canonical
+synchronization operations and do not export this local editor metadata.
+
+Deployment preflight validates `MOUSE28_CONTACT_EMAIL` separately from the sender
+and administrator recipients. It must not retain the example address.
 
 ## Branch and release workflow
 
@@ -42,9 +66,24 @@ Feature work still goes through squash-merged pull requests into `develop`.
 
 ## Syncing public content locally
 
-Run `php artisan content:sync-production` from the local Mouse28 checkout to replace local published posts, guides, episodes, podcast display metadata, and their referenced public media with the current production versions. The command uses the `cold-moon` SSH alias and `/home/forge/mouse28.com/current` site path by default; override them with `MOUSE28_PRODUCTION_SSH_HOST` and `MOUSE28_PRODUCTION_SITE_PATH` when the Forge target changes.
+Run `php artisan content:sync-from-production --isolated=1` from the local Mouse28 checkout to replace local published posts, guides, episodes, podcast display metadata, and their referenced public media with the current production versions. The command uses the `cold-moon` SSH alias and `/home/forge/mouse28.com/current` site path by default; override them with `MOUSE28_PRODUCTION_SSH_HOST` and `MOUSE28_PRODUCTION_SITE_PATH` when the Forge target changes.
 
 The sync is one-way and refuses to run when the current application environment is production. It never exports private users, subscribers, contact submissions, credentials, or environment-specific podcast email. Local drafts and scheduled content are preserved; stale currently published local records are soft deleted.
+
+## Application commands
+
+Use these descriptive command names for new scripts. Existing names remain aliases so deployed scripts continue to work.
+
+| Command | Purpose | Compatibility aliases |
+| --- | --- | --- |
+| `app:verify-deployment` | Validate production or staging configuration | `app:verify-production` |
+| `content:attach-bundled-artwork` | Attach bundled WebP files to matching post and episode slugs | `content:attach-artwork` |
+| `content:generate-responsive-artwork` | Generate missing responsive cover variants | `content:generate-artwork`, `content:generate-post-artwork` |
+| `content:sync-from-production --isolated=1` | Synchronize public content and media locally | `content:sync-production` |
+| `content:export-public` | Export published content to a JSON archive | — |
+| `content:import-public` | Import a public archive into a permitted environment | — |
+
+Use `--isolated=1` for sync so overlapping invocations stop with a nonzero exit code before remote processes or local writes. Both command names share the same isolation lock. The framework releases it on completion; interrupted locks expire after one hour. The existing Forge verification command remains supported through its alias; no deployment script changes are required.
 
 ## Contact mail queue deployment prerequisite
 
@@ -105,11 +144,32 @@ policy; unique dated snapshots are no longer retained indefinitely. No objects
 were manually deleted during verification. The existing seven-day Object Lock
 is a separate protection, not an indefinite-retention policy.
 
-Backup failures remain log-only: review `backup.log` and `last-success.json` on
-the server. Failure and independent missed-run alerts are approved but **not yet
-configured**; the monitoring service and notification destination must be selected
-before operational completion. The latest success marker was verified at
-07:15 UTC on September 18, 2026; that check does not replace ongoing monitoring.
+Forge monitors the job through the **Mouse28 verified off-site backup** heartbeat
+on the production site's Observe page. It expects the existing `15 7 * * *`
+schedule and allows 30 minutes after the expected run before notifying. A failed,
+stuck, or missed backup therefore produces a missing-check-in alert rather than
+an immediate exception email. This monitor runs outside the backup server.
+
+The job pings only after a fresh database and media backup has been uploaded and
+verified; retrying an older pending upload alone cannot report success. The
+endpoint is stored in the server-only `heartbeat-url` file with mode `0600`.
+Never commit or log this capability URL. The request has bounded timeouts and
+retries, does not follow redirects, and keeps its URL out of process arguments.
+A heartbeat delivery failure leaves the verified backup intact, returns failure,
+and logs only the generic notification stage. Inspect `backup.log` and
+`last-success.json` to distinguish backup failures from monitoring failures.
+
+Forge's account email is `jdavidsonwebdev@gmail.com`; email and in-app
+**Heartbeat check-in missed** notifications are enabled, with no servers muted.
+The built-in **Backup failed** preference concerns Forge-managed database backups,
+not this custom B2 job. Storage, encryption, retention, and cron remain unchanged.
+
+On September 18, 2026, all 13 synthetic safety tests passed locally and on the
+server. Fresh snapshot `20260918T213158Z` was verified at 21:32 UTC and Forge
+reported **Beating** after its success ping. An actual missed-run email has not
+been deliberately triggered or confirmed in the inbox. Original scripts are
+preserved as `backup.py.before-heartbeat` and `test_backup.py.before-heartbeat`
+in the private server installation for recovery.
 
 For recovery, first verify the manifest's ciphertext hashes, decrypt with the
 existing backup password and recorded OpenSSL parameters, then verify plaintext
@@ -167,13 +227,11 @@ Every administrator must enroll an authenticator app and save their recovery
 codes; existing unenrolled administrators are routed to enrollment after signing
 in. Do not seed or manually fill MFA secrets on their behalf.
 
-Do not clean demo content as part of an unattended deployment. After verified backups and real-content review, `php artisan content:clean-seeded --force` removes only the documented demo slugs in one transaction.
-
 Laravel's destructive database commands (`db:wipe`, `migrate:fresh`, `migrate:refresh`, `migrate:reset`, and `migrate:rollback`) are prohibited when `APP_ENV=production`, even with `--force`. This includes Forge staging configured with that environment. Use forward migrations; do not disable this safeguard as a deployment or rollback shortcut.
 
 ## After deploying
 
-For responsive artwork, confirm GD WebP support and the persistent local public disk before running `php artisan content:generate-artwork --type=posts --force` or `php artisan content:generate-artwork --type=episodes --force` on the explicitly approved target. The legacy `content:generate-post-artwork` alias still defaults to posts only. These additive operations leave original covers and database records untouched; each must be separately approved under the production mutation rules. Run the appropriate type again after publishing/replacing covers. Without generated candidates the public site continues serving originals. Verify candidate URLs return 200 before claiming responsive-image savings on production. Post candidates use `/storage/posts/responsive/`; square episode candidates use `/storage/episodes/responsive/v1/`.
+For responsive artwork, confirm GD WebP support and the persistent local public disk before running `php artisan content:generate-responsive-artwork --type=posts --force` or `php artisan content:generate-responsive-artwork --type=episodes --force` on the explicitly approved target. The legacy `content:generate-post-artwork` alias still defaults to posts only. These additive operations leave original covers and database records untouched; each must be separately approved under the production mutation rules. Run the appropriate type again after publishing/replacing covers. Without generated candidates the public site continues serving originals. Verify candidate URLs return 200 before claiming responsive-image savings on production. Post candidates use `/storage/posts/responsive/`; square episode candidates use `/storage/episodes/responsive/v1/`.
 
 Without `--force`, the artwork command uses Laravel's native production confirmation prompt. Declining it, or running noninteractively without force, cancels generation. A console prompt or flag does not replace the operational approval above.
 

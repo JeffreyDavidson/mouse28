@@ -9,6 +9,16 @@ use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
 
+test('guests and non administrators cannot preview guides', function (): void {
+    $guide = Guide::factory()->draft()->create();
+
+    get(route('preview.guides', $guide))->assertForbidden();
+
+    actingAs(User::factory()->create());
+
+    get(route('preview.guides', $guide))->assertForbidden();
+});
+
 test('administrators can preview draft content without exposing structured data', function (): void {
     $admin = User::factory()->admin()->create();
     $guide = Guide::factory()->draft()->create();
@@ -16,5 +26,11 @@ test('administrators can preview draft content without exposing structured data'
     actingAs($admin);
 
     get(route('preview.guides', $guide))
-        ->assertOk()->assertSee('Preview mode')->assertSeeHtml('noindex,nofollow')->assertDontSeeHtml('application/ld+json');
+        ->assertOk()
+        ->assertViewIs('pages.guides.show')
+        ->assertViewHas('guide', fn (Guide $viewGuide): bool => $viewGuide->is($guide))
+        ->assertViewHas('isPreview', true)
+        ->assertSee('Preview mode')
+        ->assertSeeHtml('noindex,nofollow')
+        ->assertDontSeeHtml('application/ld+json');
 });

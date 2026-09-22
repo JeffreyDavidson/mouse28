@@ -2,19 +2,41 @@
 
 namespace Tests;
 
+use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Testing\PendingCommand;
 use Illuminate\Testing\TestResponse;
 use Symfony\Component\HttpFoundation\Response;
 use UnexpectedValueException;
 
 abstract class TestCase extends BaseTestCase
 {
-    /** @param array<string, mixed> $parameters */
-    protected function pendingCommand(string $command, array $parameters = []): PendingCommand
+    public function createApplication(): Application
     {
-        return new PendingCommand($this, $this->app, $command, $parameters);
+        $app = parent::createApplication();
+
+        if (! $app->environment('testing') || $app->configurationIsCached()
+            || config('database.default') !== 'sqlite'
+            || config('database.connections.sqlite.database') !== ':memory:'
+            || filled(config('database.connections.sqlite.url'))) {
+            throw new UnexpectedValueException('Tests require uncached testing configuration and an isolated database.');
+        }
+
+        // Opt-in compatibility runs use only a disposable loopback database and test-only credentials.
+        if (getenv('MOUSE28_TEST_MYSQL') === '1') {
+            config()->set([
+                'database.default' => 'mysql',
+                'database.connections.mysql.url' => null,
+                'database.connections.mysql.host' => '127.0.0.1',
+                'database.connections.mysql.port' => getenv('MOUSE28_TEST_MYSQL_PORT') ?: '3306',
+                'database.connections.mysql.database' => 'mouse28_test',
+                'database.connections.mysql.username' => 'mouse28_test',
+                'database.connections.mysql.password' => 'mouse28_test',
+                'database.connections.mysql.unix_socket' => '',
+            ]);
+        }
+
+        return $app;
     }
 
     protected function setUp(): void

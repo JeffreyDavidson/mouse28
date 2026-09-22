@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Posts\Schemas;
 use App\Enums\ContentAuthor;
 use App\Enums\PostCategory;
 use App\Models\Post;
+use App\Support\ContentPermalink;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
@@ -49,8 +50,8 @@ class PostForm
                             }),
                         TextInput::make('slug')
                             ->regex('/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/')
-                            ->disabled(fn (?Post $record): bool => $record?->published_at?->isPast() ?? false)
-                            ->helperText('Lowercase words separated by hyphens. URLs are locked once their publication date has passed.')
+                            ->disabled(fn (?Post $record): bool => $record instanceof Post && ContentPermalink::isLocked($record))
+                            ->helperText('Lowercase words separated by hyphens. URLs stay locked after first publication, even when unpublished or rescheduled.')
                             ->required()
                             ->maxLength(255)
                             ->columnSpan(2)
@@ -81,7 +82,8 @@ class PostForm
                             ->rows(3)
                             ->maxLength(300)
                             ->helperText('Short summary shown in post listings.'),
-                        MarkdownEditor::make('body'),
+                        MarkdownEditor::make('body')
+                            ->dehydrateStateUsing(fn (?string $state): string => $state ?? ''),
                     ]),
 
                 Section::make('Review & Source')

@@ -7,11 +7,13 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Activitylog\Models\Activity;
 
+use function Pest\Laravel\actingAs;
+
 pest()->use(RefreshDatabase::class);
 
 test('post editorial changes record the actor and changed values only', function (): void {
     $editor = User::factory()->admin()->create();
-    \Pest\Laravel\actingAs($editor);
+    actingAs($editor);
     $record = Post::factory()->create(['title' => 'Original title']);
     $created = Activity::query()->latest('id')->firstOrFail();
 
@@ -23,7 +25,7 @@ test('post editorial changes record the actor and changed values only', function
         ->and($updated->log_name)->toBe('editorial')
         ->and($updated->causer_id)->toBe($editor->id)
         ->and($updated->subject_id)->toBe($record->id)
-        ->and($updated->attribute_changes?->all() ?? [])->toBe([
+        ->and($updated->attribute_changes?->all() ?? [])->toEqual([
             'attributes' => ['title' => 'Updated title'],
             'old' => ['title' => 'Original title'],
         ]);

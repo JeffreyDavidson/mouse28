@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Foundation\Inspiring;
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Schedule;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+Schedule::command('telescope:prune', ['--hours' => Config::integer('telescope.retention_hours')])
+    ->daily()
+    ->withoutOverlapping()
+    ->when(fn (): bool => Config::boolean('telescope.enabled') && Config::string('mouse28.deployment_environment') === 'staging');

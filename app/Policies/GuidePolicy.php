@@ -6,6 +6,7 @@ namespace App\Policies;
 
 use App\Models\Guide;
 use App\Models\User;
+use Illuminate\Auth\Access\Response;
 
 class GuidePolicy
 {
@@ -17,6 +18,13 @@ class GuidePolicy
     public function view(User $user, Guide $guide): bool
     {
         return $user->is_admin === true;
+    }
+
+    public function viewPublic(?User $user, Guide $guide): Response
+    {
+        return $guide->is_published && $guide->published_at?->isPast()
+            ? Response::allow()
+            : Response::denyAsNotFound();
     }
 
     public function create(User $user): bool

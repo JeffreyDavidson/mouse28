@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Requests\SearchRequest;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
@@ -13,7 +14,20 @@ use Illuminate\Support\Facades\URL;
 use function Pest\Laravel\from;
 use function Pest\Laravel\get;
 
+covers(SearchRequest::class);
+
 pest()->use(RefreshDatabase::class);
+
+test('search returns its view model data', function (): void {
+    get(route('search'))
+        ->assertOk()
+        ->assertViewIs('pages.search')
+        ->assertViewHas('query')
+        ->assertViewHas('posts')
+        ->assertViewHas('guides')
+        ->assertViewHas('episodes')
+        ->assertViewHas('resultCount');
+});
 
 test('search stays within its query budget as content grows', function (): void {
     config()->set('mouse28.guides_enabled', true);
@@ -39,7 +53,9 @@ test('search query is limited to one hundred characters', function (): void {
     from(route('search'))
         ->get(route('search', ['q' => str_repeat('a', 101)]))
         ->assertRedirect(route('search'))
-        ->assertSessionHasErrors('q');
+        ->assertSessionHasErrors([
+            'q' => 'Search terms may not be longer than 100 characters.',
+        ]);
 });
 
 test('canonical URLs preserve an HTTP application origin', function (): void {

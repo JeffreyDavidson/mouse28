@@ -7,6 +7,8 @@ use App\Models\Post;
 use App\Support\StructuredData;
 use Illuminate\Support\Carbon;
 
+covers(StructuredData::class);
+
 test('post structured data prioritizes metadata and the newest content timestamp', function (): void {
     $post = Post::factory()->make([
         'title' => 'Park Tips',

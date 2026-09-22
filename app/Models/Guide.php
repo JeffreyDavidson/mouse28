@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
+use App\Support\ContentPermalink;
+use Carbon\CarbonInterface;
 use Database\Factories\GuideFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -24,6 +26,7 @@ use Spatie\Tags\HasTags;
  * @property GuideCategory $category
  * @property Carbon|null $last_reviewed_at
  * @property Carbon|null $published_at
+ * @property CarbonInterface|null $slug_locked_at
  * @property Carbon $updated_at
  * @property-read string $author_name
  * @property-read string $category_label
@@ -60,6 +63,13 @@ class Guide extends Model
     use HasFactory, HasTags, SoftDeletes;
 
     use LogsActivity;
+
+    protected static function booted(): void
+    {
+        static::saving(function (Guide $content): void {
+            ContentPermalink::rememberPublication($content);
+        });
+    }
 
     public function getActivitylogOptions(): LogOptions
     {
@@ -188,6 +198,7 @@ class Guide extends Model
             'is_published' => 'boolean',
             'last_reviewed_at' => 'date',
             'published_at' => 'datetime',
+            'slug_locked_at' => 'datetime',
         ];
     }
 }

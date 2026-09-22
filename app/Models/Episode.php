@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Support\ContentPermalink;
+use Carbon\CarbonInterface;
 use Database\Factories\EpisodeFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -19,6 +21,7 @@ use Spatie\Tags\HasTags;
 
 /**
  * @property Carbon|null $published_at
+ * @property CarbonInterface|null $slug_locked_at
  * @property Carbon $updated_at
  * @property-read string|null $cover_image_url
  * @property-read string $formatted_duration
@@ -58,6 +61,13 @@ class Episode extends Model
     use HasFactory, HasTags, SoftDeletes;
 
     use LogsActivity;
+
+    protected static function booted(): void
+    {
+        static::saving(function (Episode $content): void {
+            ContentPermalink::rememberPublication($content);
+        });
+    }
 
     public function getActivitylogOptions(): LogOptions
     {
@@ -185,6 +195,7 @@ class Episode extends Model
         return [
             'is_published' => 'boolean',
             'published_at' => 'datetime',
+            'slug_locked_at' => 'datetime',
         ];
     }
 }

@@ -1,0 +1,223 @@
+<?php
+
+use App\Console\Commands\VerifyDeploymentConfiguration;
+use Illuminate\Console\Command;
+
+covers(VerifyDeploymentConfiguration::class);
+
+test('unsafe production configuration rejects an invalid public contact address', function (mixed $email): void {
+    config()->set('mouse28.contact.email', $email);
+
+    pendingCommand('app:verify-deployment')
+        ->expectsOutputToContain('MOUSE28_CONTACT_EMAIL must use a public contact address.')
+        ->assertFailed();
+})->with([null, '', 'invalid', 'hello@example.com', 'hello@example.test']);
+
+beforeEach(function (): void {
+    config()->set([
+        'app.env' => 'production',
+        'app.debug' => false,
+        'app.url' => 'https://mouse28.com',
+        'app.key' => 'base64:production-key',
+        'mouse28.production_url' => 'https://mouse28.com',
+        'mouse28.deployment_environment' => 'production',
+        'session.secure' => true,
+        'session.driver' => 'database',
+        'cache.default' => 'database',
+        'database.default' => 'sqlite',
+        'filesystems.default' => 'local',
+        'mail.default' => 'resend',
+        'mail.from.address' => 'hello@mouse28.com',
+        'mail.admin_address' => 'admin@mouse28.com',
+        'mouse28.contact.email' => 'contact@mouse28.com',
+        'services.resend.key' => 'resend-production-key',
+        'services.resend.audience_id' => 'audience-id',
+        'services.turnstile.site_key' => 'turnstile-site-key',
+        'services.turnstile.secret_key' => 'turnstile-secret-key',
+        'services.turnstile.allowed_hostnames' => ['mouse28.com', 'www.mouse28.com'],
+        'podcast.rss_url' => 'https://feeds.transistor.fm/mouse28',
+        'nightwatch.enabled' => true,
+        'nightwatch.token' => 'nightwatch-production-token',
+        'nightwatch.capture_request_payload' => false,
+        'nightwatch.sampling.requests' => 0.1,
+        'telescope.enabled' => false,
+        'newdebugbar.environments' => ['local'],
+        'sentry.dsn' => 'https://public-key@example.ingest.sentry.io/123',
+        'sentry.environment' => 'production',
+        'sentry.release' => 'production-release',
+        'sentry.traces_sample_rate' => 0.0,
+        'sentry.profiles_sample_rate' => 0.0,
+        'sentry.send_default_pii' => false,
+    ]);
+});
+
+test('safe production configuration passes through both command names', function (string $command): void {
+    $exitCode = pendingCommand($command)
+        ->expectsOutputToContain('Deployment configuration is ready.')
+        ->run();
+
+    expect($exitCode)->toBe(Command::SUCCESS);
+})->with(['app:verify-deployment', 'app:verify-production']);
+
+test('blank or non-string driver settings fail preflight', function (string $setting, string $message, mixed $value): void {
+    config()->set($setting, $value);
+
+    $exitCode = pendingCommand('app:verify-production')
+        ->expectsOutputToContain($message)
+        ->doesntExpectOutputToContain('Deployment configuration is ready.')
+        ->run();
+
+    expect($exitCode)->toBe(Command::FAILURE);
+})->with([
+    'session' => ['session.driver', 'SESSION_DRIVER must use a persistent driver.'],
+    'cache' => ['cache.default', 'CACHE_STORE must use a persistent driver.'],
+    'mail' => ['mail.default', 'MAIL_MAILER must use a delivering transport.'],
+])->with([
+    'empty' => [''],
+    'whitespace' => [" \t\n"],
+    'null' => [null],
+    'boolean' => [false],
+    'integer' => [123],
+    'array' => [[]],
+]);
+
+test('safe staging configuration passes with isolated observability', function (): void {
+    config()->set([
+        'app.url' => 'https://staging.mouse28.com',
+        'mouse28.production_url' => 'https://staging.mouse28.com',
+        'mouse28.deployment_environment' => 'staging',
+        'services.turnstile.allowed_hostnames' => ['staging.mouse28.com'],
+        'sentry.environment' => 'staging',
+        'sentry.release' => 'staging-release',
+        'nightwatch.enabled' => false,
+        'nightwatch.token' => null,
+        'telescope.enabled' => true,
+    ]);
+
+    $exitCode = pendingCommand('app:verify-production')
+        ->expectsOutputToContain('Deployment configuration is ready.')
+        ->run();
+
+    expect($exitCode)->toBe(Command::SUCCESS);
+});
+
+test('staging rejects production observability settings', function (): void {
+    config()->set([
+        'app.url' => 'https://staging.mouse28.com',
+        'mouse28.production_url' => 'https://staging.mouse28.com',
+        'mouse28.deployment_environment' => 'staging',
+        'services.turnstile.allowed_hostnames' => ['staging.mouse28.com'],
+        'sentry.environment' => 'staging',
+        'sentry.release' => 'staging-release',
+        'nightwatch.enabled' => true,
+        'nightwatch.token' => 'production-token',
+        'telescope.enabled' => false,
+        'newdebugbar.environments' => ['local', 'staging'],
+    ]);
+
+    $exitCode = pendingCommand('app:verify-deployment')
+        ->expectsOutputToContain('NIGHTWATCH_ENABLED must be false on staging.')
+        ->expectsOutputToContain('NIGHTWATCH_TOKEN must be empty on staging.')
+        ->expectsOutputToContain('TELESCOPE_ENABLED must be true on staging.')
+        ->expectsOutputToContain('NEWDEBUGBAR_ENVIRONMENTS must allow local only.')
+        ->run();
+
+    expect($exitCode)->toBe(Command::FAILURE);
+});
+
+test('unsafe production configuration reports every failure without exposing values', function (): void {
+    config()->set([
+        'app.debug' => true,
+        'app.url' => 'http://localhost',
+        'session.secure' => false,
+        'session.driver' => 'array',
+        'cache.default' => 'array',
+        'mail.default' => 'log',
+        'mail.from.address' => 'hello@example.com',
+        'mail.admin_address' => 'admin@example.test',
+        'services.resend.key' => null,
+        'services.resend.audience_id' => null,
+        'services.turnstile.site_key' => null,
+        'services.turnstile.secret_key' => null,
+        'services.turnstile.allowed_hostnames' => ['localhost'],
+        'podcast.rss_url' => 'https://example.com/mouse28.xml',
+        'nightwatch.enabled' => false,
+        'nightwatch.token' => null,
+        'nightwatch.capture_request_payload' => true,
+        'nightwatch.sampling.requests' => 1.0,
+        'sentry.dsn' => null,
+        'sentry.environment' => null,
+        'sentry.release' => null,
+        'sentry.traces_sample_rate' => 0.1,
+        'sentry.profiles_sample_rate' => 0.1,
+        'sentry.send_default_pii' => true,
+    ]);
+
+    $command = pendingCommand('app:verify-production');
+    foreach ([
+        'Deployment configuration is not ready:',
+        'APP_DEBUG must be false.',
+        'APP_URL must use the canonical HTTPS URL.',
+        'SESSION_SECURE_COOKIE must be true.',
+        'SESSION_DRIVER must use a persistent driver.',
+        'CACHE_STORE must use a persistent driver.',
+        'MAIL_MAILER must use a delivering transport.',
+        'RESEND_API_KEY must be configured.',
+        'TURNSTILE_SECRET_KEY must be configured.',
+        'TURNSTILE_ALLOWED_HOSTNAMES must include the canonical host.',
+        'PODCAST_RSS_URL must use a Transistor feed URL.',
+        'NIGHTWATCH_ENABLED must be true.',
+        'NIGHTWATCH_TOKEN must be configured.',
+        'NIGHTWATCH_CAPTURE_REQUEST_PAYLOAD must be false.',
+        'NIGHTWATCH_REQUEST_SAMPLE_RATE must be greater than 0 and no more than 0.1.',
+        'SENTRY_LARAVEL_DSN must be configured.',
+        'SENTRY_SEND_DEFAULT_PII must be false.',
+        'SENTRY_ENVIRONMENT must match MOUSE28_DEPLOYMENT_ENVIRONMENT.',
+        'SENTRY_RELEASE must be configured.',
+        'SENTRY_TRACES_SAMPLE_RATE must be 0.0 until tracing is deliberately enabled.',
+        'SENTRY_PROFILES_SAMPLE_RATE must be 0.0 until profiling is deliberately enabled.',
+    ] as $message) {
+        $command->expectsOutputToContain($message);
+    }
+    $command->doesntExpectOutputToContain('admin@example.test');
+    $exitCode = $command->run();
+
+    expect($exitCode)->toBe(Command::FAILURE);
+});
+
+test('administrator recipients are validated individually without exposing addresses', function (mixed $addresses, int $expected): void {
+    config()->set('mail.admin_address', $addresses);
+
+    $exitCode = pendingCommand('app:verify-deployment')
+        ->doesntExpectOutputToContain('first@mouse28.com')
+        ->doesntExpectOutputToContain('invalid')
+        ->doesntExpectOutputToContain('EXAMPLE.COM')
+        ->run();
+
+    expect($exitCode)->toBe($expected);
+})->with([
+    'multiple recipients' => ['first@mouse28.com, second@mouse28.com', Command::SUCCESS],
+    'whitespace and empty entries' => [' first@mouse28.com, , ', Command::SUCCESS],
+    'invalid recipient' => ['first@mouse28.com, invalid', Command::FAILURE],
+    'example recipient' => ['first@mouse28.com, test@EXAMPLE.COM', Command::FAILURE],
+    'empty recipients' => [' , ', Command::FAILURE],
+    'non-string recipients' => [null, Command::FAILURE],
+]);
+
+test('observability validation failures do not expose credentials', function (): void {
+    config()->set([
+        'nightwatch.token' => 'private-nightwatch-token',
+        'sentry.dsn' => 'https://private-public-key@example.ingest.sentry.io/123',
+        'sentry.environment' => 'staging',
+        'sentry.release' => null,
+    ]);
+
+    $exitCode = pendingCommand('app:verify-production')
+        ->expectsOutputToContain('SENTRY_ENVIRONMENT must match MOUSE28_DEPLOYMENT_ENVIRONMENT.')
+        ->expectsOutputToContain('SENTRY_RELEASE must be configured.')
+        ->doesntExpectOutputToContain('private-nightwatch-token')
+        ->doesntExpectOutputToContain('private-public-key')
+        ->run();
+
+    expect($exitCode)->toBe(Command::FAILURE);
+});

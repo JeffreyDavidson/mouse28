@@ -1,8 +1,8 @@
 <?php
 
 use App\Enums\ContactTopic;
-use App\Jobs\DeliverContactEmails;
-use App\Models\Podcast;
+use App\Http\Requests\StoreContactRequest;
+use App\Jobs\SendContactMessageEmails;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Bus;
@@ -14,7 +14,19 @@ use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\from;
 use function Pest\Laravel\get;
 
+covers(StoreContactRequest::class);
+
 pest()->use(RefreshDatabase::class);
+
+test('contact page displays its view model data', function (): void {
+    config()->set('mouse28.contact.email', 'contact@example.test');
+
+    get(route('contact.show'))
+        ->assertOk()
+        ->assertViewIs('pages.contact')
+        ->assertViewHas('contactEmail', 'contact@example.test')
+        ->assertViewHas('contactFormAvailable', true);
+});
 
 test('contact stays within its query budget', function (): void {
     $this->expectsDatabaseQueryCount(1);
@@ -24,13 +36,14 @@ test('contact stays within its query budget', function (): void {
 });
 
 beforeEach(function (): void {
-    Bus::fake([DeliverContactEmails::class]);
+    Bus::fake([SendContactMessageEmails::class]);
     config()->set('app.key', 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=');
     config()->set('services.turnstile.site_key', 'test-site-key');
     config()->set('services.turnstile.secret_key', 'test-secret-key');
     config()->set('services.turnstile.siteverify_url', 'https://challenges.cloudflare.com/turnstile/v0/siteverify');
     config()->set('services.turnstile.contact_action', 'contact-form');
     config()->set('services.turnstile.allowed_hostnames', ['mouse28.com', 'www.mouse28.com']);
+    config()->set('mouse28.contact.email', 'contact@mouse28.test');
 });
 
 test('contact page renders turnstile widget', function (): void {
@@ -62,29 +75,30 @@ test('contact errors and old input stay out of the newsletter form', function ()
     $response->assertSeeHtml('aria-describedby="email-error"')->assertDontSeeHtml('aria-describedby="newsletter-email-error"');
 });
 
-test('contact page uses the configured podcast email address', function (): void {
-    Podcast::query()->create([
-        'name' => 'Mouse28',
-        'email' => 'hello@mouse28.test',
-    ]);
+test('contact page uses the configured site contact email address', function (): void {
+    config()->set('mouse28.contact.email', 'hello@mouse28.test');
 
     get(route('contact.show'))->assertOk()->assertSeeHtml('href="mailto:hello@mouse28.test"')
-        ->assertSee('hello@mouse28.test')
-        ->assertDontSee('mouse28podcast@gmail.com');
+        ->assertSee('hello@mouse28.test');
 });
 
 test('contact page offers email instead of an unusable form when verification is unavailable', function (string $missingKey): void {
     config()->set("services.turnstile.{$missingKey}");
-    config()->set('mail.admin_address', 'fallback@mouse28.test');
+    config()->set('mouse28.contact.email', 'fallback@mouse28.test');
 
     get(route('contact.show'))
-        ->assertOk()->assertSee('Email us directly')->assertSeeHtml('href="mailto:fallback@mouse28.test"')->assertDontSeeHtml('action="'.route('contact.store').'"')->assertDontSeeHtml('data-action="contact-form"');
+        ->assertOk()
+        ->assertViewHas('contactFormAvailable', false)
+        ->assertSee('Email us directly')
+        ->assertSeeHtml('href="mailto:fallback@mouse28.test"')
+        ->assertDontSeeHtml('action="'.route('contact.store').'"')
+        ->assertDontSeeHtml('data-action="contact-form"');
 })->with([
     'missing site key' => 'site_key',
     'missing secret key' => 'secret_key',
 ]);
 
-test('valid contact submission requires successful turnstile verification', function (): void {
+test('valid contact submission stores the message and queues delivery', function (): void {
     Mail::fake();
 
     Http::fake([
@@ -103,17 +117,45 @@ test('valid contact submission requires successful turnstile verification', func
         ->assertSessionHasNoErrors();
 
     assertDatabaseHas('contact_messages', [
+        'name' => 'Dale Cooper',
         'email' => 'dale@example.com',
         'subject' => 'Need help with Mouse28',
+        'message' => 'The contact form needs secure bot protection.',
     ]);
 
     Mail::assertNothingSent();
-    Bus::assertDispatched(DeliverContactEmails::class);
+    Bus::assertDispatched(SendContactMessageEmails::class);
 
     Http::assertSent(fn (Request $request): bool => $request->url() === 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
         && $request['secret'] === 'test-secret-key'
         && $request['response'] === 'turnstile-token');
 });
+
+test('contact submission rejects invalid input before verification or persistence', function (): void {
+    Http::fake();
+
+    from(route('contact.show'))
+        ->post(route('contact.store'), array_merge(contactPayload(), [
+            'email' => 'not-an-email',
+        ]))
+        ->assertRedirect(route('contact.show'))
+        ->assertSessionHasErrorsIn('contact', 'email');
+
+    assertDatabaseCount('contact_messages', 0);
+    Http::assertNothingSent();
+});
+
+test('contact submission rejects missing required fields before verification or persistence', function (string $field): void {
+    Http::fake();
+
+    from(route('contact.show'))
+        ->post(route('contact.store'), array_merge(contactPayload(), [$field => '']))
+        ->assertRedirect(route('contact.show'))
+        ->assertSessionHasErrorsIn('contact', $field);
+
+    assertDatabaseCount('contact_messages', 0);
+    Http::assertNothingSent();
+})->with(['name', 'subject', 'message']);
 
 test('contact submission rejects failed turnstile verification before persistence or mail', function (): void {
     Mail::fake();
@@ -226,19 +268,13 @@ test('contact form rate limit ignores spoofed forwarded IPs without throttling t
     get(route('contact.show'))->assertOk();
 });
 
-test('public index page renders', function (): void {
+test('contact page renders', function (): void {
     get(route('contact.show'))
         ->assertOk()
         ->assertSee('Send us a note');
 });
 
-test('landing page provides search and social metadata', function (): void {
-    Podcast::query()->create([
-        'name' => 'Mouse28 Weekly',
-        'description' => 'A weekly Disney parks podcast for accessibility-minded families.',
-        'cover_image' => 'podcasts/show-cover.jpg',
-    ]);
-
+test('contact page exposes SEO metadata', function (): void {
     get(route('contact.show'))->assertOk()->assertSeeHtml('<meta name="description" content="Contact Jeffrey and Cassie about Mouse28, Disney park accessibility, family travel, collaborations, or the podcast.">');
 });
 

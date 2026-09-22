@@ -63,7 +63,7 @@ test('contact page offers an actionable email route when verification is unavail
         ->assertNoJavaScriptErrors();
 });
 
-test('newsletter validation and rate-limit feedback remain accessible', function (): void {
+test('newsletter validation feedback remains accessible', function (): void {
     $validationPage = visit(route('home'));
 
     $validationPage->script('document.querySelector(\'form[action$="/newsletter"]\').noValidate = true');
@@ -79,17 +79,20 @@ test('newsletter validation and rate-limit feedback remain accessible', function
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 
+})->group('browser-smoke');
+
+test('newsletter rate-limit feedback remains accessible', function (): void {
     for ($attempt = 0; $attempt < 5; $attempt++) {
         $this->post(route('newsletter.store'), ['email' => 'not-an-email']);
     }
 
     session()->flush();
 
-    $rateLimitPage = visit(route('home'));
+    $page = visit(route('home'));
 
-    $rateLimitPage->script('document.querySelector(\'form[action$="/newsletter"]\').noValidate = true');
+    $page->script('document.querySelector(\'form[action$="/newsletter"]\').noValidate = true');
 
-    $rateLimitPage->fill('#newsletter input[name="email"]', 'not-an-email')
+    $page->fill('#newsletter input[name="email"]', 'not-an-email')
         ->keys('form[action$="/newsletter"] button[type="submit"]', 'Enter')
         ->assertSee('Too many signup attempts. Please wait a minute and try again.')
         ->assertScript('document.querySelector("#newsletter [role=alert]") !== null')
@@ -173,7 +176,7 @@ test('branded recovery pages remain accessible and actionable', function (): voi
             'rgb(26, 16, 64)',
         );
     $expired->assertSee('Your session took a break')
-        ->assertSee('Return to contact')
+        ->assertSee('Return to the site')
         ->assertDontSee('Private session details');
     $serverError->assertSee('The magic hit a snag')
         ->assertSee('Try again')

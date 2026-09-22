@@ -1,17 +1,17 @@
 <?php
 
+use App\Http\Controllers\BlogRssController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EpisodeController;
 use App\Http\Controllers\GuideController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsletterController;
-use App\Http\Controllers\PodcastRssController;
+use App\Http\Controllers\PodcastFeedRedirectController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PreviewEpisodeController;
 use App\Http\Controllers\PreviewGuideController;
 use App\Http\Controllers\PreviewPostController;
 use App\Http\Controllers\RobotsController;
-use App\Http\Controllers\RssController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
@@ -36,5 +36,5 @@ Route::post('/newsletter', [NewsletterController::class, 'store'])->middleware('
 
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/robots.txt', RobotsController::class)->name('robots');
-Route::get('/rss/blog', RssController::class)->name('rss.blog');
-Route::get('/rss/podcast', PodcastRssController::class)->name('rss.podcast');
+Route::get('/rss/blog', BlogRssController::class)->name('rss.blog');
+Route::get('/rss/podcast', PodcastFeedRedirectController::class)->name('rss.podcast');

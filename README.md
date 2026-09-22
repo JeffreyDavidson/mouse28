@@ -31,7 +31,7 @@ Mouse28 is a blog-first Disney parks and podcast site from Jeffrey and Cassie Da
    APP_URL=https://mouse28.test
    ```
 
-4. To create a local administrator while seeding sample content, set `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD`, then run `php artisan db:seed`. No administrator is created when either value is absent. Outside production, each seed run adds factory-generated posts, episodes, and guides in published, draft, and scheduled states. Production seeding creates only the configured administrator and baseline podcast settings.
+4. To create a local administrator, set `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD`, then run `php artisan db:seed`. No administrator is created when either value is absent. The default seeder never creates editorial content. When synthetic local content is useful for interface work, run `php artisan db:seed --class=SampleContentSeeder`; its records are explicitly labeled `Sample:` and are not publishable Mouse28 content.
 
 ## External services
 
@@ -39,12 +39,13 @@ The application can run locally without live third-party calls, but these featur
 
 - `RESEND_API_KEY` and `RESEND_AUDIENCE_ID` power newsletter signup and the subscriber dashboard.
 - `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` protect contact and newsletter forms. `TURNSTILE_ALLOWED_HOSTNAMES` must contain the exact production and local hostnames.
-- `MAIL_*` and `MAIL_ADMIN_ADDRESS` deliver contact notifications and confirmations.
+- `MOUSE28_CONTACT_EMAIL` controls the public site contact address. `MAIL_*` and `MAIL_ADMIN_ADDRESS` deliver contact notifications and confirmations.
 - `PODCAST_RSS_URL` identifies the canonical Transistor feed. It defaults to the Mouse28 feed.
 - `FATHOM_SITE_ID` enables the optional analytics script.
 - `NIGHTWATCH_ENABLED=true` and `NIGHTWATCH_TOKEN` enable production application monitoring. Request payload capture stays disabled, authenticated users are identified only by their internal ID, and the default request sample rate is 10%.
 - `SENTRY_LARAVEL_DSN` enables production error reporting. Keep `SENTRY_SEND_DEFAULT_PII=false`; tracing and profiling remain disabled until their sample rates are deliberately raised above `0.0`.
 - `GUIDES_ENABLED` controls public guide routes and discovery. It defaults to `false` while the guide library is being prepared.
+- `MOUSE28_BLOG_POSTS_PER_PAGE` controls the number of posts shown per archive page; it defaults to `12`.
 - `GUIDE_REVIEW_INTERVAL_DAYS` controls when durable guides are flagged for editorial review; it defaults to 180 days.
 
 Never commit live credentials. Keep them in the deployment environment.
@@ -69,6 +70,21 @@ Published post, guide, and episode pages emit Schema.org content and breadcrumb 
 Run `composer check` for the required CI checks locally: dependency validation and audits, benchmark helper tests, formatting, FilaCheck, application and Pest static analysis, application and Pest Rector checks, non-browser tests, type coverage, an asset build, focused Chromium browser smoke tests, and diff whitespace validation. Install the locked Composer and Node dependencies and Chromium first. Audits require network access. The command stops at the first failure and does not apply formatting or Rector fixes; it does build assets and clear Laravel's config cache through `composer test`.
 
 Run `composer analyse:pest` for a focused test-analysis check. The full browser suite remains available through `composer test:browser`.
+
+`composer test:mutate` runs all mutation targets. CI distributes the same targets across
+`test:mutate:commands`, `test:mutate:delivery`, `test:mutate:views`,
+`test:mutate:content`, and `test:mutate:integrations`. Every group must pass the
+existing 100% covered-mutation threshold before the aggregate **Mutation testing**
+check succeeds. This measures the selected covered code, not all application behavior.
+
+Tests force an in-memory SQLite database, non-delivering integrations, and disabled
+monitoring even when the shell exports conflicting environment variables. The test
+bootstrap refuses cached or non-isolated database configuration before migrations.
+`composer test:mysql` is a separate compatibility lane for a **disposable** loopback
+MySQL database named `mouse28_test`, with the test-only user/password `mouse28_test`.
+CI provisions it in a MySQL 8.4 service container. Locally, provision an isolated
+instance first; `MOUSE28_TEST_MYSQL_PORT` selects its port. Never grant this test
+account access to any real database or expose it outside loopback.
 
 Individual commands:
 
@@ -150,13 +166,12 @@ Dependabot vulnerability alerts remain enabled. CI audits the locked Composer an
 - Configure the application URL, database, mail, Resend, Turnstile, Transistor podcast feed, storage, cache, sessions, and queues.
 - Set `NIGHTWATCH_ENABLED=true` and `NIGHTWATCH_TOKEN` to enable Nightwatch. Keep request payload capture disabled and request sampling at or below `0.1`.
 - Set `SENTRY_LARAVEL_DSN`, `SENTRY_ENVIRONMENT=production`, and a deploy-specific `SENTRY_RELEASE` to enable error reporting. Leave PII disabled and tracing and profiling set to `0.0` until they are deliberately reviewed.
-- Run `php artisan app:verify-production` after loading production configuration and stop if it reports a failure.
+- Run `php artisan app:verify-deployment` after loading production configuration and stop if it reports a failure.
 - Run `php artisan migrate --force`.
 - Run `npm run build` before publishing the release artifact.
 - Ensure `public/storage` is linked when uploaded media is used.
 - Run `php artisan optimize` after environment configuration is final.
 - Confirm the scheduler and queue worker are supervised if production uses queued work.
 - Verify `/up`, `/`, `/blog`, `/episodes`, `/search?q=accessibility`, `/sitemap.xml`, `/rss/blog`, contact submission, and newsletter signup. Confirm `/rss/podcast` permanently redirects to the configured Transistor feed. When `GUIDES_ENABLED=true`, also verify `/guides`.
-- Use `php artisan content:clean-seeded --force` only after backups are verified and real content is ready; it removes only the known demo slugs.
 
 See [docs/architecture.md](docs/architecture.md) for application boundaries, [docs/content-model.md](docs/content-model.md) for editorial language, and [docs/operations.md](docs/operations.md) for the Forge deployment and rollback runbook.

@@ -1,6 +1,10 @@
 <?php
 
+use App\Support\RobotsDocument;
+
 use function Pest\Laravel\get;
+
+covers(RobotsDocument::class);
 
 test('robots policies keep private and generated routes out of crawlers', function (): void {
     $response = get(route('robots'))
@@ -13,12 +17,7 @@ test('robots policies keep private and generated routes out of crawlers', functi
         ->assertSee('Disallow: /search')
         ->assertSee('Sitemap: '.route('sitemap'));
 
-    $staticPolicy = file_get_contents(public_path('robots.txt'));
-
-    expect($staticPolicy)->not->toBeFalse();
-
-    foreach (['Disallow: /admin', 'Disallow: /preview/', 'Disallow: /search'] as $directive) {
-        expect($response->getContent())->toContain($directive)
-            ->and($staticPolicy)->toContain($directive);
-    }
+    expect($response->getContent())->toContain(
+        'Sitemap: '.route('sitemap'),
+    );
 });

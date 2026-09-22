@@ -11,3 +11,6 @@ Official source and last-reviewed fields are optional for evergreen posts. Polic
 
 ## Create dates through Laravel's Date facade
 Use Illuminate\Support\Facades\Date for application date creation (Date::now(), Date::today(), Date::parse()) rather than global date helpers or direct Carbon static creation. Keep accurate Carbon/CarbonInterface object type declarations; Date is a facade, not an object type. Preserve current mutable-date behavior; do not configure immutability or convert objects merely to satisfy analysis.
+
+## Name configurable limits
+Do not hard-code behavior-affecting numeric limits or thresholds in application code. Define them as named configuration values with an environment-backed value and a safe default, then read them through the typed Config API.

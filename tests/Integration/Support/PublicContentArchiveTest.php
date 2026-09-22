@@ -59,6 +59,7 @@ test('invalid imported attributes leave all existing records unchanged', functio
     'invalid URL' => ['source_url', 'javascript:alert(1)'],
     'invalid media type' => ['cover_image', []],
     'invalid relation type' => ['episode_slug', []],
+    'null body' => ['body', null],
 ]);
 
 test('sync refuses unpublished identity collisions without changing content', function (PostFactory|GuideFactory|EpisodeFactory $factory, string $state): void {
@@ -160,3 +161,16 @@ test('invalid archive enum values roll back earlier imported records', function 
 
     expect($first->title)->toBe('Original first title');
 });
+
+test('archive validation requires guide enum values', function (string $field): void {
+    Guide::factory()->create();
+    $service = app(PublicContentArchive::class);
+    $archive = $service->export();
+    $archive['guides'][0][$field] = null;
+
+    expect(fn () => $service->import($archive))
+        ->toThrow(InvalidArgumentException::class, "{$field} field is required");
+})->with([
+    'author' => 'author',
+    'category' => 'category',
+]);

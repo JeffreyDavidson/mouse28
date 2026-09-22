@@ -2,7 +2,7 @@
 
 use App\Filament\Resources\Guides\GuideResource;
 
-test('resource exposes useful attributes to global search', function (): void {
+test('guide resource searches by title slug category and author', function (): void {
     $attributes = GuideResource::getGloballySearchableAttributes();
 
     expect($attributes)->toBe(['title', 'slug', 'category', 'author']);

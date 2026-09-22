@@ -1,0 +1,160 @@
+<?php
+
+namespace App\Console\Commands;
+
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
+use Illuminate\Console\Command;
+
+#[Signature('app:verify-deployment', aliases: ['app:verify-production'])]
+#[Description('Verify required settings for production or staging deployment')]
+class VerifyDeploymentConfiguration extends Command
+{
+    public function handle(): int
+    {
+        $appUrl = config('app.url');
+        $canonicalUrl = config('mouse28.production_url');
+        $deploymentEnvironment = config('mouse28.deployment_environment');
+        $observabilityChecks = $deploymentEnvironment === 'staging'
+            ? [
+                [config('nightwatch.enabled') === false, 'NIGHTWATCH_ENABLED must be false on staging.'],
+                [$this->isNotConfigured(config('nightwatch.token')), 'NIGHTWATCH_TOKEN must be empty on staging.'],
+                [config('telescope.enabled') === true, 'TELESCOPE_ENABLED must be true on staging.'],
+            ]
+            : [
+                [config('nightwatch.enabled') === true, 'NIGHTWATCH_ENABLED must be true.'],
+                [$this->isConfigured(config('nightwatch.token')), 'NIGHTWATCH_TOKEN must be configured.'],
+                [config('telescope.enabled') === false, 'TELESCOPE_ENABLED must be false in production.'],
+            ];
+
+        $checks = [
+            [config('app.env') === 'production', 'APP_ENV must be production.'],
+            [config('app.debug') === false, 'APP_DEBUG must be false.'],
+            [$this->isCanonicalHttpsUrl($appUrl, $canonicalUrl), 'APP_URL must use the canonical HTTPS URL.'],
+            [$this->isConfigured(config('app.key')), 'APP_KEY must be configured.'],
+            [config('session.secure') === true, 'SESSION_SECURE_COOKIE must be true.'],
+            [$this->usesPersistentDriver(config('session.driver')), 'SESSION_DRIVER must use a persistent driver.'],
+            [$this->usesPersistentDriver(config('cache.default')), 'CACHE_STORE must use a persistent driver.'],
+            [$this->isConfigured(config('database.default')), 'DB_CONNECTION must be configured.'],
+            [$this->isConfigured(config('filesystems.default')), 'FILESYSTEM_DISK must be configured.'],
+            [$this->usesDeliveringMailer(config('mail.default')), 'MAIL_MAILER must use a delivering transport.'],
+            [$this->isProductionEmail(config('mail.from.address')), 'MAIL_FROM_ADDRESS must use a production address.'],
+            [$this->hasProductionRecipients(config('mail.admin_address')), 'MAIL_ADMIN_ADDRESS must use monitored production addresses.'],
+            [$this->isProductionEmail(config('mouse28.contact.email')), 'MOUSE28_CONTACT_EMAIL must use a public contact address.'],
+            [$this->isConfigured(config('services.resend.key')), 'RESEND_API_KEY must be configured.'],
+            [$this->isConfigured(config('services.resend.audience_id')), 'RESEND_AUDIENCE_ID must be configured.'],
+            [$this->isConfigured(config('services.turnstile.site_key')), 'TURNSTILE_SITE_KEY must be configured.'],
+            [$this->isConfigured(config('services.turnstile.secret_key')), 'TURNSTILE_SECRET_KEY must be configured.'],
+            [$this->allowsCanonicalHost(config('services.turnstile.allowed_hostnames'), $canonicalUrl), 'TURNSTILE_ALLOWED_HOSTNAMES must include the canonical host.'],
+            [$this->isTransistorFeedUrl(config('podcast.rss_url')), 'PODCAST_RSS_URL must use a Transistor feed URL.'],
+            [config('newdebugbar.environments') === ['local'], 'NEWDEBUGBAR_ENVIRONMENTS must allow local only.'],
+            [config('nightwatch.capture_request_payload') === false, 'NIGHTWATCH_CAPTURE_REQUEST_PAYLOAD must be false.'],
+            [$this->usesConservativeRequestSampling(config('nightwatch.sampling.requests')), 'NIGHTWATCH_REQUEST_SAMPLE_RATE must be greater than 0 and no more than 0.1.'],
+            [$this->isConfigured(config('sentry.dsn')), 'SENTRY_LARAVEL_DSN must be configured.'],
+            [config('sentry.send_default_pii') === false, 'SENTRY_SEND_DEFAULT_PII must be false.'],
+            [$this->isDeploymentEnvironment($deploymentEnvironment), 'MOUSE28_DEPLOYMENT_ENVIRONMENT must be production or staging.'],
+            [config('sentry.environment') === $deploymentEnvironment, 'SENTRY_ENVIRONMENT must match MOUSE28_DEPLOYMENT_ENVIRONMENT.'],
+            [$this->isConfigured(config('sentry.release')), 'SENTRY_RELEASE must be configured.'],
+            [config('sentry.traces_sample_rate') === 0.0, 'SENTRY_TRACES_SAMPLE_RATE must be 0.0 until tracing is deliberately enabled.'],
+            [config('sentry.profiles_sample_rate') === 0.0, 'SENTRY_PROFILES_SAMPLE_RATE must be 0.0 until profiling is deliberately enabled.'],
+            ...$observabilityChecks,
+        ];
+
+        $failures = array_map(
+            fn (array $check): string => $check[1],
+            array_filter($checks, fn (array $check): bool => ! $check[0]),
+        );
+
+        if ($failures !== []) {
+            $this->error('Deployment configuration is not ready:');
+
+            foreach ($failures as $failure) {
+                $this->line(" - {$failure}");
+            }
+
+            return self::FAILURE;
+        }
+
+        $this->info('Deployment configuration is ready.');
+
+        return self::SUCCESS;
+    }
+
+    private function isCanonicalHttpsUrl(mixed $url, mixed $canonicalUrl): bool
+    {
+        return is_string($url)
+            && is_string($canonicalUrl)
+            && $url === $canonicalUrl
+            && str_starts_with($url, 'https://');
+    }
+
+    private function isConfigured(mixed $value): bool
+    {
+        return is_string($value) && trim($value) !== '';
+    }
+
+    private function isNotConfigured(mixed $value): bool
+    {
+        return ! $this->isConfigured($value);
+    }
+
+    private function isDeploymentEnvironment(mixed $environment): bool
+    {
+        return is_string($environment) && in_array($environment, ['production', 'staging'], true);
+    }
+
+    private function usesPersistentDriver(mixed $driver): bool
+    {
+        return $this->isConfigured($driver) && ! in_array($driver, ['array', 'null'], true);
+    }
+
+    private function usesDeliveringMailer(mixed $mailer): bool
+    {
+        return $this->isConfigured($mailer) && ! in_array($mailer, ['array', 'log'], true);
+    }
+
+    private function isProductionEmail(mixed $email): bool
+    {
+        return is_string($email)
+            && filter_var($email, FILTER_VALIDATE_EMAIL) !== false
+            && ! str_ends_with(strtolower($email), '@example.com')
+            && ! str_ends_with(strtolower($email), '@example.test');
+    }
+
+    private function hasProductionRecipients(mixed $addresses): bool
+    {
+        if (! is_string($addresses)) {
+            return false;
+        }
+
+        $recipients = array_filter(array_map(trim(...), explode(',', $addresses)));
+
+        return $recipients !== [] && array_all($recipients, $this->isProductionEmail(...));
+    }
+
+    private function isTransistorFeedUrl(mixed $url): bool
+    {
+        return is_string($url)
+            && parse_url($url, PHP_URL_SCHEME) === 'https'
+            && parse_url($url, PHP_URL_HOST) === 'feeds.transistor.fm'
+            && filled(trim((string) parse_url($url, PHP_URL_PATH), '/'));
+    }
+
+    private function allowsCanonicalHost(mixed $allowedHostnames, mixed $canonicalUrl): bool
+    {
+        if (! is_array($allowedHostnames) || ! is_string($canonicalUrl)) {
+            return false;
+        }
+
+        $canonicalHost = parse_url($canonicalUrl, PHP_URL_HOST);
+
+        return is_string($canonicalHost) && in_array($canonicalHost, $allowedHostnames, true);
+    }
+
+    private function usesConservativeRequestSampling(mixed $sampleRate): bool
+    {
+        return is_numeric($sampleRate)
+            && (float) $sampleRate > 0.0
+            && (float) $sampleRate <= 0.1;
+    }
+}

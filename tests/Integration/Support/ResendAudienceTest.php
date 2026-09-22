@@ -6,6 +6,8 @@ use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
+covers(ResendAudience::class);
+
 beforeEach(function (): void {
     config()->set('services.resend.audience_id', 'audience-test-id');
     config()->set('services.resend.key', 'resend-test-key');

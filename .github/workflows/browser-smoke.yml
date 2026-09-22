@@ -126,7 +126,7 @@ jobs:
         run: npm run build
 
       - name: Run compatibility tests
-        run: php artisan test --compact --testsuite=Browser --group=browser-compatibility --browser ${{ matrix.pest-browser }}
+        run: composer test:browser:compatibility -- --browser ${{ matrix.pest-browser }}
 
       - name: Upload browser failure screenshots
         if: failure()

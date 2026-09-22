@@ -3,6 +3,8 @@
 use App\Models\Podcast;
 use App\Support\PodcastLinks;
 
+covers(PodcastLinks::class);
+
 test('links include configured services and the RSS feed', function (): void {
     config()->set('podcast.rss_url', 'https://mouse28.test/podcast.xml');
     $podcast = new Podcast([

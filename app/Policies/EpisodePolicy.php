@@ -6,6 +6,7 @@ namespace App\Policies;
 
 use App\Models\Episode;
 use App\Models\User;
+use Illuminate\Auth\Access\Response;
 
 class EpisodePolicy
 {
@@ -17,6 +18,13 @@ class EpisodePolicy
     public function view(User $user, Episode $episode): bool
     {
         return $user->is_admin === true;
+    }
+
+    public function viewPublic(?User $user, Episode $episode): Response
+    {
+        return $episode->is_published && $episode->published_at?->isPast()
+            ? Response::allow()
+            : Response::denyAsNotFound();
     }
 
     public function create(User $user): bool

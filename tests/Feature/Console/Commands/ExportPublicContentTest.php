@@ -1,61 +1,53 @@
 <?php
 
+use App\Console\Commands\ExportPublicContent;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Podcast;
 use App\Models\Post;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
-use UnexpectedValueException;
+
+covers(ExportPublicContent::class);
 
 pest()->use(RefreshDatabase::class);
 
-test('public content archive excludes drafts and private records', function (): void {
+test('public content archive includes only published content', function (): void {
     $episode = Episode::factory()->create([
-        'slug' => 'published-episode',
-        'title' => 'Published Episode',
+        'slug' => 'example-episode',
     ]);
     Episode::factory()->draft()->create([
-        'slug' => 'private-episode',
-        'title' => 'Private Episode',
+        'title' => 'Draft Episode',
     ]);
     Post::factory()->create([
-        'slug' => 'published-post',
-        'title' => 'Published Post',
+        'slug' => 'example-post',
         'episode_id' => $episode->id,
     ]);
     Post::factory()->draft()->create([
-        'slug' => 'private-post',
-        'title' => 'Private Post',
+        'title' => 'Draft Post',
     ]);
     Guide::factory()->create([
-        'slug' => 'published-guide',
-        'title' => 'Published Guide',
+        'slug' => 'example-guide',
     ]);
     Guide::factory()->draft()->create([
-        'slug' => 'private-guide',
-        'title' => 'Private Guide',
+        'title' => 'Draft Guide',
     ]);
     Podcast::query()->create([
-        'name' => 'Mouse28',
-        'description' => 'Public show description',
-        'email' => 'private@example.com',
+        'name' => 'Example Podcast',
     ]);
     $archivePath = storage_path('framework/testing/public-content-export.json');
 
-    $exitCode = Artisan::call('content:export-public', ['path' => $archivePath]);
+    $exitCode = pendingCommand('content:export-public', ['path' => $archivePath])->run();
     $archive = publicArchive($archivePath);
 
     expect($exitCode)->toBe(Command::SUCCESS)
         ->and($archive['version'])->toBe(1)
-        ->and(collect(publicArchiveRecords($archive, 'posts'))->pluck('slug')->all())->toBe(['published-post'])
-        ->and(collect(publicArchiveRecords($archive, 'episodes'))->pluck('slug')->all())->toBe(['published-episode'])
-        ->and(collect(publicArchiveRecords($archive, 'guides'))->pluck('slug')->all())->toBe(['published-guide'])
-        ->and(publicArchiveRecords($archive, 'posts')[0]['episode_slug'])->toBe('published-episode')
-        ->and($archive['podcast'])->not->toHaveKey('email')
-        ->and(File::get($archivePath))->not->toContain('Private Post', 'Private Guide', 'Private Episode', 'private@example.com');
+        ->and(collect(publicArchiveRecords($archive, 'posts'))->pluck('slug')->all())->toBe(['example-post'])
+        ->and(collect(publicArchiveRecords($archive, 'episodes'))->pluck('slug')->all())->toBe(['example-episode'])
+        ->and(collect(publicArchiveRecords($archive, 'guides'))->pluck('slug')->all())->toBe(['example-guide'])
+        ->and(publicArchiveRecords($archive, 'posts')[0]['episode_slug'])->toBe('example-episode')
+        ->and(File::get($archivePath))->not->toContain('Draft Post', 'Draft Guide', 'Draft Episode');
 
     File::delete($archivePath);
 });

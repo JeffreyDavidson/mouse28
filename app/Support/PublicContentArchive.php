@@ -167,6 +167,7 @@ class PublicContentArchive
     public function assertSafeToSync(array $archive): void
     {
         $archive = $this->validate($archive);
+        $this->validateForPersistence($archive);
 
         foreach (['posts' => Post::class, 'guides' => Guide::class, 'episodes' => Episode::class] as $type => $model) {
             $identity = $type === 'episodes' ? 'episode_number' : 'slug';
@@ -375,7 +376,6 @@ class PublicContentArchive
             $rules["{$type}.*.slug"] = ['required', 'string', 'max:255', 'regex:/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/'];
             $rules["{$type}.*.published_at"] = ['required', 'date', 'before_or_equal:now'];
             $rules["{$type}.*.last_reviewed_at"] = ['nullable', 'date'];
-            $rules["{$type}.*.author"] = ['nullable', Rule::enum(ContentAuthor::class)];
             foreach (['excerpt', 'body', 'description', 'show_notes', 'transcript', 'meta_title', 'meta_description'] as $field) {
                 $rules["{$type}.*.{$field}"] = ['nullable', 'string'];
             }
@@ -387,8 +387,12 @@ class PublicContentArchive
             }
         }
         $rules['posts.*.episode_slug'] = ['nullable', 'string', 'max:255', 'regex:/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/'];
+        $rules['posts.*.body'] = ['present', 'string'];
+        $rules['guides.*.body'] = ['present', 'string'];
+        $rules['posts.*.author'] = ['nullable', Rule::enum(ContentAuthor::class)];
         $rules['posts.*.category'] = ['nullable', Rule::enum(PostCategory::class)];
-        $rules['guides.*.category'] = ['nullable', Rule::enum(GuideCategory::class)];
+        $rules['guides.*.author'] = ['required', Rule::enum(ContentAuthor::class)];
+        $rules['guides.*.category'] = ['required', Rule::enum(GuideCategory::class)];
         $rules['episodes.*.episode_number'] = ['required', 'integer', 'min:0', 'max:2147483647', 'distinct'];
         $rules['episodes.*.season_number'] = ['nullable', 'integer', 'min:0', 'max:4294967295'];
         $rules['episodes.*.duration_seconds'] = ['nullable', 'integer', 'min:0', 'max:2147483647'];

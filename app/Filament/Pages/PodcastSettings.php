@@ -47,7 +47,7 @@ class PodcastSettings extends Page
     {
         $podcast = Podcast::settings();
         $this->form->fill($podcast->only([
-            'name', 'email', 'description', 'cover_image',
+            'name', 'description', 'cover_image',
             'apple_url', 'spotify_url', 'youtube_url', 'instagram_url', 'tiktok_url',
         ]));
     }
@@ -71,7 +71,6 @@ class PodcastSettings extends Page
                     ->columns(2)
                     ->schema([
                         TextInput::make('name')->required()->maxLength(255),
-                        TextInput::make('email')->email()->maxLength(255),
                         Textarea::make('description')->rows(3)->columnSpanFull(),
                         FileUpload::make('cover_image')
                             ->image()

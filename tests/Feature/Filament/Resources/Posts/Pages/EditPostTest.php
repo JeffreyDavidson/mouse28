@@ -6,9 +6,10 @@ use App\Filament\Resources\Posts\Pages\EditPost;
 use App\Filament\Resources\Posts\PostResource;
 use App\Models\Post;
 use App\Models\User;
+use App\Support\ResponsiveArtwork;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Artisan;
-use Livewire\Livewire;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -16,18 +17,59 @@ use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
 
+test('previously published URLs stay locked after clearing the date and unpublishing', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $record = Post::factory()->create(['slug' => 'original-public-url']);
+
+    livewire(EditPost::class, ['record' => $record->getRouteKey()])
+        ->fillForm(['published_at' => null])
+        ->call('save')
+        ->assertHasNoFormErrors();
+    $record->refresh()->update(['is_published' => false]);
+
+    livewire(EditPost::class, ['record' => $record->getRouteKey()])
+        ->fillForm(['slug' => 'replacement-url'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($record->refresh()->slug)->toBe('original-public-url');
+});
+
+test('authenticated user can render the edit form', function (): void {
+    $post = Post::factory()->draft()->create();
+
+    actingAs(User::factory()->admin()->create());
+
+    get(PostResource::getUrl('edit', ['record' => $post]))
+        ->assertOk()
+        ->assertSee($post->title)
+        ->assertSee('Save changes');
+});
+
 test('explicit artwork action generates only the saved record cover', function (): void {
+    Storage::fake('public');
+    Storage::disk('public')->put('posts/cover.png', UploadedFile::fake()->image('cover.png', 1000, 800)->getContent());
+    Storage::disk('public')->put('posts/other.png', UploadedFile::fake()->image('other.png', 1200, 800)->getContent());
     actingAs(User::factory()->admin()->create());
     $record = Post::factory()->create(['cover_image' => 'posts/cover.png']);
-    Artisan::shouldReceive('call')->once()
-        ->with('content:generate-artwork', [
-            '--type' => 'posts', '--id' => $record->id,
-            '--force' => true, '--no-interaction' => true,
-        ])->andReturn(0);
+    $other = Post::factory()->create(['cover_image' => 'posts/other.png']);
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->callAction('generateArtwork')
         ->assertNotified('Responsive artwork prepared');
+
+    expect(ResponsiveArtwork::srcset($record->cover_image, square: false))->not->toBeNull()
+        ->and(ResponsiveArtwork::srcset($other->cover_image, square: false))->toBeNull();
+});
+
+test('artwork generation reports an unavailable source', function (): void {
+    Storage::fake('public');
+    actingAs(User::factory()->admin()->create());
+    $record = Post::factory()->create(['cover_image' => 'posts/missing.png']);
+
+    livewire(EditPost::class, ['record' => $record->getRouteKey()])
+        ->callAction('generateArtwork')
+        ->assertNotified('Artwork generation failed');
 });
 
 test('published URLs cannot be changed by submitted editor state', function (): void {
@@ -58,12 +100,13 @@ test('edit page offers a draft preview', function (): void {
 
     actingAs($admin);
 
-    get(PostResource::getUrl('edit', ['record' => $post]))
-        ->assertOk()
-        ->assertSee('Preview');
+    livewire(EditPost::class, ['record' => $post->getRouteKey()])
+        ->assertActionVisible('preview')
+        ->assertActionHasUrl('preview', route('preview.posts', $post))
+        ->assertActionShouldOpenUrlInNewTab('preview');
 });
 
-test('ready drafts can be explicitly published and unpublished', function (): void {
+test('ready drafts can be explicitly published', function (): void {
     $admin = User::factory()->admin()->create();
     $record = Post::factory()->draft()->create([
         'cover_image' => 'posts/complete.jpg',
@@ -73,14 +116,20 @@ test('ready drafts can be explicitly published and unpublished', function (): vo
 
     actingAs($admin);
 
-    Livewire::test(EditPost::class, ['record' => $record->getRouteKey()])
+    livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->callAction('publish')
         ->assertNotified();
 
     expect($record->refresh()->is_published)->toBeTrue()
         ->and($record->published_at)->not->toBeNull();
 
-    Livewire::test(EditPost::class, ['record' => $record->getRouteKey()])
+});
+
+test('published content can be explicitly unpublished', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $record = Post::factory()->create();
+
+    livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->callAction('unpublish')
         ->assertNotified();
 
@@ -121,7 +170,7 @@ test('publishing is blocked until editorial requirements are complete', function
 
     actingAs($admin);
 
-    Livewire::test(EditPost::class, ['record' => $post->getRouteKey()])
+    livewire(EditPost::class, ['record' => $post->getRouteKey()])
         ->callAction('publish')
         ->assertNotified();
 
@@ -132,7 +181,7 @@ test('editor saves author and category selections as enums', function (): void {
     $record = Post::factory()->draft()->create();
     actingAs(User::factory()->admin()->create());
 
-    Livewire::test(EditPost::class, ['record' => $record->getRouteKey()])
+    livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->fillForm(['author' => 'jeffrey', 'category' => 'food-reviews'])
         ->call('save')
         ->assertHasNoFormErrors();

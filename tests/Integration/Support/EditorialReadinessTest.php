@@ -9,6 +9,8 @@ use Database\Factories\EpisodeFactory;
 use Database\Factories\GuideFactory;
 use Database\Factories\PostFactory;
 
+covers(EditorialReadiness::class);
+
 test('publication status respects publication flags and dates', function (PostFactory|GuideFactory|EpisodeFactory $factory, bool $isPublished, ?int $offset, PublicationStatus $expected): void {
     $this->freezeSecond();
     $content = $factory->makeOne([
@@ -91,7 +93,7 @@ test('complete content is marked ready', function (): void {
 
 test('sourced posts require a matching official source and review date', function (): void {
     $missingReviewDate = Post::factory()->make([
-        'source_url' => 'https://disneyworld.disney.go.com/guest-services/disability-access-service/',
+        'source_url' => 'https://source.example/accessibility-guide',
         'last_reviewed_at' => null,
     ]);
     $missingSource = Post::factory()->make([

@@ -6,6 +6,8 @@ use App\Models\Post;
 use App\ViewModels\SearchViewModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+covers(SearchViewModel::class);
+
 pest()->use(RefreshDatabase::class);
 
 test('search results select only the fields rendered by the page', function (): void {
@@ -36,4 +38,18 @@ test('search results select only the fields rendered by the page', function (): 
         ->and($results['episodes']->sole()->getAttributes())
         ->toHaveKeys(['slug', 'episode_number', 'title', 'description'])
         ->not->toHaveKeys(['show_notes', 'transcript', 'meta_description']);
+});
+
+test('search omits guides when the feature is disabled', function (): void {
+    config()->set('mouse28.guides_enabled', false);
+
+    Guide::factory()->create(['title' => 'Sensory planning guide']);
+    Post::factory()->create(['title' => 'Sensory planning post']);
+    Episode::factory()->create(['title' => 'Sensory planning episode']);
+
+    $results = app(SearchViewModel::class)->data('Sensory planning');
+
+    expect($results['guides']->total())->toBe(0)
+        ->and($results['posts']->total())->toBe(1)
+        ->and($results['episodes']->total())->toBe(1);
 });

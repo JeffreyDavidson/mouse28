@@ -26,5 +26,11 @@ test('administrators can preview draft content without exposing structured data'
     actingAs($admin);
 
     get(route('preview.posts', $post))
-        ->assertOk()->assertSee('Preview mode')->assertSeeHtml('noindex,nofollow')->assertDontSeeHtml('application/ld+json');
+        ->assertOk()
+        ->assertViewIs('pages.blog.show')
+        ->assertViewHas('post', fn (Post $viewPost): bool => $viewPost->is($post))
+        ->assertViewHas('isPreview', true)
+        ->assertSee('Preview mode')
+        ->assertSeeHtml('noindex,nofollow')
+        ->assertDontSeeHtml('application/ld+json');
 });
