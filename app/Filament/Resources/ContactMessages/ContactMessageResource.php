@@ -11,7 +11,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
@@ -59,8 +58,6 @@ class ContactMessageResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->heading('All Messages')
-            ->description('View and manage messages from site visitors')
             ->columns([
                 TextColumn::make('name')
                     ->searchable()
@@ -78,9 +75,11 @@ class ContactMessageResource extends Resource
                 TextColumn::make('message')
                     ->limit(60)
                     ->wrap(),
-                IconColumn::make('is_read')
-                    ->boolean()
-                    ->label('Read'),
+                TextColumn::make('is_read')
+                    ->label('Status')
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Read' : 'Unread')
+                    ->badge()
+                    ->color(fn (bool $state): string => $state ? 'success' : 'warning'),
                 TextColumn::make('created_at')
                     ->dateTime('M j, Y g:i A')
                     ->sortable()
@@ -93,7 +92,7 @@ class ContactMessageResource extends Resource
                 SelectFilter::make('subject')
                     ->options(ContactTopic::class),
             ])
-            ->actions([
+            ->recordActions([
                 Action::make('markRead')
                     ->label('Mark Read')
                     ->icon(Heroicon::OutlinedCheck)

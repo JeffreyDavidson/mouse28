@@ -18,10 +18,11 @@
         class="mb-6"
     >
         <x-slot:icon>
-            <svg class="text-mouse-gold-light size-8" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="2" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
+            <x-filament::icon
+                :icon="\Filament\Support\Icons\Heroicon::OutlinedEnvelopeOpen"
+                class="text-mouse-gold-light size-8"
+                aria-hidden="true"
+            />
         </x-slot:icon>
 
         <x-slot:stats>
@@ -35,7 +36,7 @@
             <x-filament::button
                 wire:click="refreshSubscribers"
                 color="gray"
-                icon="heroicon-m-arrow-path"
+                :icon="\Filament\Support\Icons\Heroicon::OutlinedArrowPath"
                 class="min-h-12"
             >
                 Refresh
@@ -44,7 +45,7 @@
                 <x-filament::button
                     wire:click="exportCsv"
                     color="warning"
-                    icon="heroicon-m-arrow-down-tray"
+                    :icon="\Filament\Support\Icons\Heroicon::OutlinedArrowDownTray"
                     class="min-h-12"
                 >
                     Export all contacts
@@ -55,36 +56,32 @@
 
     @if ($error)
         <div
-            class="mb-6 flex items-start gap-3 rounded-2xl border border-red-600/30 bg-red-600/10 px-6 py-5 text-sm text-red-800"
+            class="fi-section border-danger-600/30 bg-danger-50 text-danger-800 mb-6 flex items-start gap-3 px-6 py-5 text-sm"
             role="alert"
         >
-            <svg class="mt-0.5 size-5 shrink-0 text-red-700" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10" />
-                <path d="M12 8v4M12 16h.01" />
-            </svg>
+            <x-filament::icon
+                :icon="\Filament\Support\Icons\Heroicon::OutlinedExclamationTriangle"
+                class="text-danger-700 mt-0.5 size-5 shrink-0"
+                aria-hidden="true"
+            />
             <span class="font-mouse-body">{{ $error }}</span>
         </div>
     @endif
 
     @if ($count === 0 && ! $error)
-        <div class="border-mouse-navy/15 rounded-2xl border bg-white px-6 py-16 text-center">
-            <svg class="text-mouse-gold/25 mx-auto mb-4 size-14" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2" y="4" width="20" height="16" rx="2" />
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
-            </svg>
-            <h3 class="font-mouse-heading text-mouse-navy text-xl font-bold">No contacts yet</h3>
-            <p class="font-mouse-body text-mouse-navy/75 mt-2 text-sm">
-                Share your newsletter signup link to start growing your audience.
-            </p>
-        </div>
+        <x-filament.empty-state
+            title="No contacts yet"
+            description="Share your newsletter signup link to start growing your audience."
+            :icon="\Filament\Support\Icons\Heroicon::OutlinedEnvelope"
+        />
     @elseif ($count > 0)
         <div
-            class="border-mouse-navy/15 focus-visible:outline-mouse-gold-light overflow-x-auto rounded-2xl border bg-white focus-visible:outline-2 focus-visible:outline-offset-2"
+            class="fi-ta-ctn focus-visible:outline-mouse-gold-light overflow-x-auto focus-visible:outline-2 focus-visible:outline-offset-2"
             role="region"
             aria-label="Newsletter contacts"
             tabindex="0"
         >
-            <table class="w-full min-w-160 border-collapse">
+            <table class="fi-ta-table w-full min-w-160 border-collapse">
                 <thead class="bg-mouse-cream-dark">
                     <tr>
                         <th
@@ -142,14 +139,15 @@
                                 @endif
                             </td>
                             <td class="border-mouse-navy/10 font-mouse-body text-mouse-navy border-b px-6 py-4 text-sm">
-                                <span @class([
-                                    'inline-flex rounded-full px-2.5 py-1 text-xs font-semibold',
-                                    'bg-success-50 text-success-700' => $subscriber['subscription_status'] === 'Subscribed',
-                                    'bg-danger-50 text-danger-700' => $subscriber['subscription_status'] === 'Unsubscribed',
-                                    'bg-gray-100 text-gray-700' => $subscriber['subscription_status'] === 'Unknown',
-                                ])>
+                                <x-filament::badge
+                                    :color="match ($subscriber['subscription_status']) {
+                                        'Subscribed' => 'success',
+                                        'Unsubscribed' => 'danger',
+                                        default => 'gray',
+                                    }"
+                                >
                                     {{ $subscriber['subscription_status'] }}
-                                </span>
+                                </x-filament::badge>
                             </td>
                         </tr>
                     @endforeach
