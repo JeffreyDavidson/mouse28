@@ -290,11 +290,19 @@
                         @csrf
                         <x-newsletter-protection honeypot-id="footer-newsletter-website" />
                         <div class="flex flex-col gap-2 sm:flex-row">
-                            <x-newsletter-email-field
-                                input-id="footer-newsletter-email"
+                            <x-form.input
+                                id="footer-newsletter-email"
+                                name="email"
+                                label="Email address"
+                                type="email"
+                                :value="$errors->newsletter->isNotEmpty() || session('newsletter_error') ? old('email') : ''"
+                                :error="$errors->newsletter->first('email')"
                                 error-id="footer-newsletter-email-error"
                                 input-class="focus:border-gold/50 focus:ring-gold/30 min-h-12 min-w-0 flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-2.5 text-base text-white transition-colors placeholder:text-white/60 focus:ring-1 focus:outline-none sm:text-sm"
                                 error-class="text-sm text-red-300"
+                                placeholder="your@email.com"
+                                autocomplete="email"
+                                required
                             />
                             <button
                                 type="submit"

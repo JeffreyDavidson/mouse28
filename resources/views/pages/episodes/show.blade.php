@@ -54,7 +54,7 @@
             </div>
 
             <div class="min-w-0 wrap-anywhere">
-                <x-archive-back-link href="{{ route('episodes.index') }}" label="All Episodes" />
+                <x-back-link href="{{ route('episodes.index') }}" label="All Episodes" />
 
                 <div class="text-cream/65 mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm" data-episode-meta>
                     <span class="text-gold font-semibold">Episode {{ $episode->episode_number }}</span>
@@ -119,27 +119,27 @@
                             @class(['flex flex-wrap gap-x-7 gap-y-1', 'mt-2' => $episode->transistor_embed_url])
                         >
                             @if ($appleUrl)
-                                <x-podcast-platform-link
+                                <x-external-resource-link
                                     :href="$appleUrl"
                                     label="Apple Podcasts"
                                     :description="$episode->apple_url ? 'Listen to this episode' : 'Visit the show'"
                                 />
                             @endif
                             @if ($spotifyUrl)
-                                <x-podcast-platform-link
+                                <x-external-resource-link
                                     :href="$spotifyUrl"
                                     label="Spotify"
                                     :description="$episode->spotify_url ? 'Listen to this episode' : 'Visit the show'"
                                 />
                             @endif
                             @if ($youtubeUrl)
-                                <x-podcast-platform-link
+                                <x-external-resource-link
                                     :href="$youtubeUrl"
                                     label="YouTube"
                                     :description="$episode->youtube_url ? 'Watch this episode' : 'Visit the channel'"
                                 />
                             @endif
-                            <x-podcast-platform-link
+                            <x-external-resource-link
                                 :href="config('podcast.rss_url')"
                                 label="RSS Feed"
                                 description="Subscribe in another podcast app"

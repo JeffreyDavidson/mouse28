@@ -29,11 +29,7 @@
         <header class="bg-navy text-cream">
             <div class="mx-auto grid max-w-[86rem] lg:grid-cols-[7fr_5fr]">
                 <div class="flex flex-col justify-center px-4 py-12 wrap-anywhere sm:px-6 sm:py-16 lg:px-12 lg:py-20 xl:px-20">
-                    <x-archive-back-link
-                        href="{{ route('guides.index') }}"
-                        label="Back to guides"
-                        class="text-cream/70"
-                    />
+                    <x-back-link href="{{ route('guides.index') }}" label="Back to guides" class="text-cream/70" />
                     <h1 class="font-heading mt-6 max-w-[18ch] text-4xl/[1.06] [font-weight:660] tracking-[-0.03em] text-balance sm:text-5xl lg:text-6xl">
                         {{ $guide->title }}
                     </h1>

@@ -35,11 +35,19 @@
         <form action="{{ route('newsletter.store') }}" method="POST" class="space-y-3">
             @csrf
             <x-newsletter-protection honeypot-id="card-newsletter-website" />
-            <x-newsletter-email-field
-                input-id="newsletter-email"
+            <x-form.input
+                id="newsletter-email"
+                name="email"
+                label="Email address"
+                type="email"
+                :value="$newsletterHasFeedback ? old('email') : ''"
+                :error="$newsletterErrors->first('email')"
                 error-id="newsletter-email-error"
                 input-class="focus:border-gold/40 focus:ring-gold/20 min-h-12 w-full rounded-xl border border-white/10 bg-white/8 px-4 py-3 text-base text-white transition-colors placeholder:text-white/60 focus:bg-white/12 focus:ring-2 focus:outline-none sm:text-sm"
                 error-class="text-left text-sm text-red-200"
+                placeholder="your@email.com"
+                autocomplete="email"
+                required
             />
             <button
                 type="submit"

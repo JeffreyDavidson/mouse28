@@ -116,38 +116,38 @@
 
                             <div class="grid gap-5 sm:grid-cols-2">
                                 <div>
-                                    <label for="name" class="mb-2 block text-sm font-semibold">Name</label>
-                                    <input
-                                        type="text"
+                                    <x-form.input
                                         id="name"
                                         name="name"
-                                        required
-                                        autocomplete="name"
-                                        value="{{ $contactHasFeedback ? old('name') : '' }}"
+                                        label="Name"
+                                        label-class="mb-2 block text-sm font-semibold"
+                                        :value="$contactHasFeedback ? old('name') : ''"
+                                        :error="$errors->contact->first('name')"
+                                        error-id="name-error"
+                                        type="text"
                                         placeholder="Your name"
-                                        @error('name', 'contact') aria-invalid="true" aria-describedby="name-error" @enderror
-                                        @if ($firstContactError === 'name') autofocus @endif
-                                        class="border-navy/20 bg-dark-cream/45 text-navy placeholder:text-navy/65 focus:border-purple focus:ring-purple/15 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
+                                        autocomplete="name"
+                                        required
+                                        input-class="border-navy/20 bg-dark-cream/45 text-navy placeholder:text-navy/65 focus:border-purple focus:ring-purple/15 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
                                     />
-                                    <x-field-error field="name" id="name-error" bag="contact" />
                                 </div>
 
                                 <div>
-                                    <label for="email" class="mb-2 block text-sm font-semibold">Email</label>
-                                    <input
-                                        type="email"
+                                    <x-form.input
                                         id="email"
                                         name="email"
-                                        required
+                                        label="Email"
+                                        label-class="mb-2 block text-sm font-semibold"
+                                        :value="$contactHasFeedback ? old('email') : ''"
+                                        :error="$errors->contact->first('email')"
+                                        error-id="email-error"
+                                        type="email"
+                                        placeholder="you@example.com"
                                         autocomplete="email"
                                         inputmode="email"
-                                        value="{{ $contactHasFeedback ? old('email') : '' }}"
-                                        placeholder="you@example.com"
-                                        @error('email', 'contact') aria-invalid="true" aria-describedby="email-error" @enderror
-                                        @if ($firstContactError === 'email') autofocus @endif
-                                        class="border-navy/20 bg-dark-cream/45 text-navy placeholder:text-navy/65 focus:border-purple focus:ring-purple/15 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
+                                        required
+                                        input-class="border-navy/20 bg-dark-cream/45 text-navy placeholder:text-navy/65 focus:border-purple focus:ring-purple/15 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
                                     />
-                                    <x-field-error field="email" id="email-error" bag="contact" />
                                 </div>
                             </div>
 
@@ -171,7 +171,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                <x-field-error field="subject" id="subject-error" bag="contact" />
+                                <x-form.error id="subject-error" :message="$errors->contact->first('subject')" />
                             </div>
 
                             <div>
@@ -186,7 +186,7 @@
                                     @if ($firstContactError === 'message') autofocus @endif
                                     class="border-navy/20 bg-dark-cream/45 text-navy placeholder:text-navy/65 focus:border-purple focus:ring-purple/15 min-h-44 w-full resize-y rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
                                 >{{ $contactHasFeedback ? old('message') : '' }}</textarea>
-                                <x-field-error field="message" id="message-error" bag="contact" />
+                                <x-form.error id="message-error" :message="$errors->contact->first('message')" />
                             </div>
 
                             <div>
@@ -203,7 +203,10 @@
                                         Contact verification is temporarily unavailable. Please try again later.
                                     </p>
                                 @endif
-                                <x-field-error field="cf-turnstile-response" id="turnstile-error" bag="contact" />
+                                <x-form.error
+                                    id="turnstile-error"
+                                    :message="$errors->contact->first('cf-turnstile-response')"
+                                />
                             </div>
 
                             <button

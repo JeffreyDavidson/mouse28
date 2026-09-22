@@ -33,7 +33,7 @@
     <section class="editorial-detail-hero bg-navy text-cream relative overflow-hidden">
         <div class="relative mx-auto grid max-w-[86rem] gap-10 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-[7fr_5fr] lg:items-center lg:gap-16 lg:py-20">
             <div class="min-w-0 wrap-anywhere">
-                <x-archive-back-link href="{{ route('blog.index') }}" label="Back to Blog" />
+                <x-back-link href="{{ route('blog.index') }}" label="Back to Blog" />
 
                 <div class="text-cream/65 mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
                     @if ($post->category)
