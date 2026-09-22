@@ -26,10 +26,10 @@
         </x-slot:icon>
 
         <x-slot:stats>
-            <x-filament.resource-stat label="active" tone="gold">
+            <x-filament.resource-stat label="Active" tone="gold">
                 {{ $audience['active_count'] }}
             </x-filament.resource-stat>
-            <x-filament.resource-stat label="total contacts"> {{ $count }} </x-filament.resource-stat>
+            <x-filament.resource-stat label="Total contacts"> {{ $count }} </x-filament.resource-stat>
         </x-slot:stats>
 
         <x-slot:actions>
@@ -55,17 +55,9 @@
     </x-filament.page-header>
 
     @if ($error)
-        <div
-            class="fi-section border-danger-600/30 bg-danger-50 text-danger-800 mb-6 flex items-start gap-3 px-6 py-5 text-sm"
-            role="alert"
-        >
-            <x-filament::icon
-                :icon="\Filament\Support\Icons\Heroicon::OutlinedExclamationTriangle"
-                class="text-danger-700 mt-0.5 size-5 shrink-0"
-                aria-hidden="true"
-            />
-            <span class="font-mouse-body">{{ $error }}</span>
-        </div>
+        <x-filament.alert :icon="\Filament\Support\Icons\Heroicon::OutlinedExclamationTriangle">
+            {{ $error }}
+        </x-filament.alert>
     @endif
 
     @if ($count === 0 && ! $error)

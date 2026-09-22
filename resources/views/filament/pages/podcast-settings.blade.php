@@ -13,5 +13,5 @@
         </x-slot:icon>
     </x-filament.page-header>
 
-    {{ $this->form }}
+    <div class="space-y-6">{{ $this->form }}</div>
 </x-filament-panels::page>

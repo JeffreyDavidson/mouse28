@@ -8,12 +8,8 @@
     </x-slot:icon>
 
     <x-slot:stats>
-        <x-filament.resource-stat label="published">{{ $published }}</x-filament.resource-stat>
-
-        @if ($drafts > 0)
-            <x-filament.resource-stat :label="str('draft')->plural($drafts)" tone="gold">
-                {{ $drafts }}</x-filament.resource-stat>
-        @endif
+        <x-filament.resource-stat label="Published">{{ $published }}</x-filament.resource-stat>
+        <x-filament.resource-stat label="Drafts" tone="gold">{{ $drafts }}</x-filament.resource-stat>
     </x-slot:stats>
 
     <x-slot:actions>
