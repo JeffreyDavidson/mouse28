@@ -20,7 +20,10 @@ test('subscriber pages are bounded while exports contain the whole audience', fu
     actingAs(User::factory()->admin()->create());
     $page = livewire(NewsletterSubscribers::class);
 
-    $page->assertSee('reader1@example.com')->assertDontSee('reader51@example.com');
+    $page->assertSee('reader1@example.com')
+        ->assertDontSee('reader51@example.com')
+        ->assertSeeHtml('fi-ta-header-cell')
+        ->assertSeeHtml('fi-pagination');
 
     $page->call('setPage', 2);
 
