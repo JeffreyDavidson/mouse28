@@ -127,23 +127,7 @@
                         </h2>
                         <div class="mt-9 grid gap-x-8 gap-y-12 md:grid-cols-3">
                             @foreach ($relatedGuides as $relatedGuide)
-                                <article class="group min-w-0">
-                                    <a
-                                        href="{{ route('guides.show', $relatedGuide) }}"
-                                        class="block overflow-hidden rounded-xl"
-                                    >
-                                        <x-guide-artwork
-                                            :guide="$relatedGuide"
-                                            class="aspect-[16/10] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]"
-                                        />
-                                    </a>
-                                    <p class="text-purple mt-5 text-sm font-semibold">
-                                        {{ $relatedGuide->category_label }}
-                                    </p>
-                                    <h3 class="font-heading group-hover:text-purple mt-2 text-2xl/[1.18] [font-weight:610] tracking-[-0.015em] text-balance transition-colors">
-                                        <a href="{{ route('guides.show', $relatedGuide) }}">{{ $relatedGuide->title }}</a>
-                                    </h3>
-                                </article>
+                                <x-guide-card :guide="$relatedGuide" variant="related" />
                             @endforeach
                         </div>
                     </div>

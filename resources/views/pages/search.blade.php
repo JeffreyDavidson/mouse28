@@ -122,93 +122,73 @@
 
                 <div class="space-y-12">
                     @if ($posts->total() > 0)
-                        <section aria-labelledby="post-results-heading">
-                            <div class="border-navy/10 mb-5 flex items-end justify-between gap-4 border-b pb-3">
-                                <h2 id="post-results-heading" class="font-heading text-navy text-3xl font-bold">
-                                    Blog posts
-                                </h2>
-                                <span class="text-navy/65 text-sm">{{ $posts->total() }} found</span>
-                            </div>
-                            <div class="grid gap-4 md:grid-cols-2">
-                                @foreach ($posts as $post)
-                                    <a
-                                        href="{{ route('blog.show', $post) }}"
-                                        class="dispatch-interactive-card group border-navy/5 block rounded-2xl border bg-white p-6 shadow-sm"
-                                    >
-                                        <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">{{ $post->category_label }}</span>
-                                        <h3 class="font-heading text-navy group-hover:text-purple mt-2 text-2xl font-bold transition-colors">
-                                            {{ $post->title }}
-                                        </h3>
-                                        @if ($post->excerpt)
-                                            <p class="text-navy/65 mt-3 text-sm/relaxed">
-                                                {{ Str::limit($post->excerpt, 150) }}
-                                            </p>
-                                        @endif
-                                    </a>
-                                @endforeach
-                            </div>
-                            <div class="episodes-pagination mt-8">{{ $posts->links() }}</div>
-                        </section>
+                        <x-search-results-section id="post-results-heading" title="Blog posts" :count="$posts->total()">
+                            @foreach ($posts as $post)
+                                <a
+                                    href="{{ route('blog.show', $post) }}"
+                                    class="dispatch-interactive-card group border-navy/5 block rounded-2xl border bg-white p-6 shadow-sm"
+                                >
+                                    <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">{{ $post->category_label }}</span>
+                                    <h3 class="font-heading text-navy group-hover:text-purple mt-2 text-2xl font-bold transition-colors">
+                                        {{ $post->title }}
+                                    </h3>
+                                    @if ($post->excerpt)
+                                        <p class="text-navy/65 mt-3 text-sm/relaxed">
+                                            {{ Str::limit($post->excerpt, 150) }}
+                                        </p>
+                                    @endif
+                                </a>
+                            @endforeach
+                            <x-slot:pagination>{{ $posts->links() }}</x-slot:pagination>
+                        </x-search-results-section>
                     @endif
 
                     @if ($guides->total() > 0)
-                        <section aria-labelledby="guide-results-heading">
-                            <div class="border-navy/10 mb-5 flex items-end justify-between gap-4 border-b pb-3">
-                                <h2 id="guide-results-heading" class="font-heading text-navy text-3xl font-bold">
-                                    Guides
-                                </h2>
-                                <span class="text-navy/65 text-sm">{{ $guides->total() }} found</span>
-                            </div>
-                            <div class="grid gap-4 md:grid-cols-2">
-                                @foreach ($guides as $guide)
-                                    <a
-                                        href="{{ route('guides.show', $guide) }}"
-                                        class="dispatch-interactive-card group border-navy/5 block rounded-2xl border bg-white p-6 shadow-sm"
-                                    >
-                                        <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">{{ $guide->category_label }}</span>
-                                        <h3 class="font-heading text-navy group-hover:text-purple mt-2 text-2xl font-bold transition-colors">
-                                            {{ $guide->title }}
-                                        </h3>
-                                        @if ($guide->excerpt)
-                                            <p class="text-navy/65 mt-3 text-sm/relaxed">
-                                                {{ Str::limit($guide->excerpt, 150) }}
-                                            </p>
-                                        @endif
-                                    </a>
-                                @endforeach
-                            </div>
-                            <div class="episodes-pagination mt-8">{{ $guides->links() }}</div>
-                        </section>
+                        <x-search-results-section id="guide-results-heading" title="Guides" :count="$guides->total()">
+                            @foreach ($guides as $guide)
+                                <a
+                                    href="{{ route('guides.show', $guide) }}"
+                                    class="dispatch-interactive-card group border-navy/5 block rounded-2xl border bg-white p-6 shadow-sm"
+                                >
+                                    <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">{{ $guide->category_label }}</span>
+                                    <h3 class="font-heading text-navy group-hover:text-purple mt-2 text-2xl font-bold transition-colors">
+                                        {{ $guide->title }}
+                                    </h3>
+                                    @if ($guide->excerpt)
+                                        <p class="text-navy/65 mt-3 text-sm/relaxed">
+                                            {{ Str::limit($guide->excerpt, 150) }}
+                                        </p>
+                                    @endif
+                                </a>
+                            @endforeach
+                            <x-slot:pagination>{{ $guides->links() }}</x-slot:pagination>
+                        </x-search-results-section>
                     @endif
 
                     @if ($episodes->total() > 0)
-                        <section aria-labelledby="episode-results-heading">
-                            <div class="border-navy/10 mb-5 flex items-end justify-between gap-4 border-b pb-3">
-                                <h2 id="episode-results-heading" class="font-heading text-navy text-3xl font-bold">
-                                    Podcast episodes
-                                </h2>
-                                <span class="text-navy/65 text-sm">{{ $episodes->total() }} found</span>
-                            </div>
-                            <div class="grid gap-4 md:grid-cols-2">
-                                @foreach ($episodes as $episode)
-                                    <a
-                                        href="{{ route('episodes.show', $episode) }}"
-                                        class="dispatch-interactive-card group border-navy/5 block rounded-2xl border bg-white p-6 shadow-sm"
-                                    >
-                                        <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">Episode {{ $episode->episode_number }}</span>
-                                        <h3 class="font-heading text-navy group-hover:text-purple mt-2 text-2xl font-bold transition-colors">
-                                            {{ $episode->title }}
-                                        </h3>
-                                        @if ($episode->description)
-                                            <p class="text-navy/65 mt-3 text-sm/relaxed">
-                                                {{ Str::limit($episode->description, 150) }}
-                                            </p>
-                                        @endif
-                                    </a>
-                                @endforeach
-                            </div>
-                            <div class="episodes-pagination mt-8">{{ $episodes->links() }}</div>
-                        </section>
+                        <x-search-results-section
+                            id="episode-results-heading"
+                            title="Podcast episodes"
+                            :count="$episodes->total()"
+                        >
+                            @foreach ($episodes as $episode)
+                                <a
+                                    href="{{ route('episodes.show', $episode) }}"
+                                    class="dispatch-interactive-card group border-navy/5 block rounded-2xl border bg-white p-6 shadow-sm"
+                                >
+                                    <span class="text-gold-ink text-xs font-bold tracking-widest uppercase">Episode {{ $episode->episode_number }}</span>
+                                    <h3 class="font-heading text-navy group-hover:text-purple mt-2 text-2xl font-bold transition-colors">
+                                        {{ $episode->title }}
+                                    </h3>
+                                    @if ($episode->description)
+                                        <p class="text-navy/65 mt-3 text-sm/relaxed">
+                                            {{ Str::limit($episode->description, 150) }}
+                                        </p>
+                                    @endif
+                                </a>
+                            @endforeach
+                            <x-slot:pagination>{{ $episodes->links() }}</x-slot:pagination>
+                        </x-search-results-section>
                     @endif
                 </div>
             @endif
