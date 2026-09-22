@@ -7,6 +7,7 @@ use App\Models\Guide;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 
 class ListGuides extends ListRecords
@@ -34,5 +35,19 @@ class ListGuides extends ListRecords
             'review-due' => Tab::make('Review due')
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('guides.id', Guide::query()->published()->reviewDue()->select('id'))),
         ];
+    }
+
+    public function getHeader(): ?View
+    {
+        $total = Guide::count();
+        $published = Guide::published()->count();
+        $drafts = Guide::drafts()->count();
+
+        return view('filament.resources.guides.header', [
+            'total' => $total,
+            'published' => $published,
+            'drafts' => $drafts,
+            'createUrl' => GuideResource::getUrl('create'),
+        ]);
     }
 }
