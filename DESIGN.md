@@ -100,6 +100,20 @@ The public site may use expressive headline scales. Admin headings use fixed rem
 
 The public article and illustrated-folio styles retain their existing context-specific scales. These are not the admin type ramp: maintain their responsive and print rules in `resources/css/app.css` rather than normalizing the public pages during an admin change.
 
+## Image & Artwork
+
+Images are editorial evidence and atmosphere, not interchangeable decoration. Preserve a clear subject, a deliberate crop, and enough negative space for adjacent or overlaid text. Keep important subjects away from extreme edges because the same source may appear as a wide cover, a 4:3 card, a square tile, or a social preview.
+
+- **Editorial covers:** use original, painterly Mouse28 artwork with storybook warmth and cinematic depth. Favor navy, aubergine, purple, lavender, antique gold, cream, and restrained olive or teal. Do not add readable titles, watermarks, borders, protected characters, logos, recognizable Disney landmarks, or other branded silhouettes.
+- **Canonical roles:** bundled post and episode artwork is prepared at `1731×909` (approximately 1.9:1); Filament post covers and custom social images use `1200×630` (the same visual ratio). Episode and podcast covers are square. Guide, archive, and profile imagery may use contextual 4:3, 16:10, 5:4, or portrait crops when the surrounding composition calls for them.
+- **Asset boundaries:** keep approved bundled artwork in `resources/content-artwork/posts` or `resources/content-artwork/episodes`; keep concepts in `resources/content-artwork/concepts`; keep public site photography and category artwork under `public/images`. Uploaded covers, generated responsive candidates, social images, and source artwork are distinct roles and should not be silently substituted for one another.
+- **Responsive delivery:** use `srcset` and `sizes` for generated candidates, retain the original source, and use `object-cover` only when the component owns the crop. Give images explicit dimensions or a stable aspect-ratio container to prevent layout shift. Hero images may be eager and high priority; other content images should be lazy by default.
+- **Accessibility:** artwork that repeats an adjacent story title is decorative and uses an empty `alt`; standalone podcast, profile, or informative images receive a concise description. Branded fallbacks and geometric placeholders remain `aria-hidden` and must never pretend to be the missing photograph.
+- **Fallbacks:** missing post artwork uses the category-aware editorial fallback; missing guide artwork uses its category illustration; missing podcast artwork falls back to the canonical Mouse28 show cover. A fallback should communicate the content category without inventing a photograph or claim.
+- **Editorial uploads:** accept JPEG, PNG, or WebP where the Filament field permits it, crop to the role's aspect ratio, and preserve the user's original cover. WebP is preferred for committed public artwork and responsive derivatives.
+
+The operational details for generating, attaching, caching, and verifying responsive artwork belong in `docs/operations.md`; component behavior and source-selection rules live with the relevant Blade component and `ResponsiveArtwork` support class.
+
 ## Layout
 
 Public pages preserve the blog-first hierarchy: hero, featured post, latest posts, optional guides, podcast, about, newsletter. Real photography and editorial artwork carry the public identity.
