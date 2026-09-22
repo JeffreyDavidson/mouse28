@@ -234,24 +234,7 @@
                 </h2>
                 <div class="mt-7 grid gap-8 sm:grid-cols-2">
                     @foreach ($recentPosts->take(2) as $next)
-                        <article class="group min-w-0">
-                            <a
-                                href="{{ route('blog.show', $next) }}"
-                                aria-label="Read {{ $next->title }}"
-                                class="block overflow-hidden rounded-xl"
-                            >
-                                <x-post-artwork
-                                    :post="$next"
-                                    :compact="true"
-                                    class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]"
-                                />
-                            </a>
-                            <p class="text-purple mt-4 text-sm font-semibold">{{ $next->category_label }}</p>
-                            <h3 class="font-heading text-navy group-hover:text-purple mt-1 text-2xl [font-weight:600] tracking-[-0.015em] transition-colors">
-                                <a href="{{ route('blog.show', $next) }}">{{ $next->title }}</a>
-                            </h3>
-                            <p class="text-navy/60 mt-2 text-sm">{{ $next->reading_time }} min read</p>
-                        </article>
+                        <x-post-card :post="$next" variant="related" />
                     @endforeach
                 </div>
             </section>
