@@ -2,7 +2,7 @@
     <x-slot:icon>
         <x-filament::icon
             :icon="\Filament\Support\Icons\Heroicon::OutlinedDocumentText"
-            class="text-mouse-gold-light size-6.5"
+            class="text-mouse-gold-light size-8"
             aria-hidden="true"
         />
     </x-slot:icon>
