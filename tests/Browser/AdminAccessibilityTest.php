@@ -234,3 +234,28 @@ test('administrator can edit an Episode from the resource form', function (): vo
         ->assertSee('Updated Browser Episode')
         ->assertNoJavaScriptErrors();
 })->group('browser-smoke');
+
+test('Post creation shows required category validation while preserving entered values', function (): void {
+    actingAs(User::factory()->admin()->create());
+
+    visit(PostResource::getUrl('create'))
+        ->fill('input[id="form.title"]', 'Browser Validation Post')
+        ->click('button[wire\\:target="create"]')
+        ->assertScript('document.querySelector(\'select[id="form.category"]\')?.validationMessage', 'Please select an item in the list.')
+        ->assertValue('input[id="form.title"]', 'Browser Validation Post')
+        ->assertNoJavaScriptErrors();
+})->group('browser-smoke');
+
+test('Episode creation shows duplicate number validation while preserving entered values', function (): void {
+    Episode::factory()->create(['episode_number' => 280]);
+    actingAs(User::factory()->admin()->create());
+
+    visit(EpisodeResource::getUrl('create'))
+        ->fill('input[id="form.title"]', 'Browser Duplicate Episode')
+        ->fill('input[id="form.slug"]', 'browser-duplicate-episode')
+        ->fill('input[id="form.episode_number"]', '280')
+        ->click('button[wire\\:target="create"]')
+        ->assertSee('The episode number has already been taken.')
+        ->assertValue('input[id="form.title"]', 'Browser Duplicate Episode')
+        ->assertNoJavaScriptErrors();
+})->group('browser-smoke');
