@@ -53,8 +53,8 @@ test('newsletter reporting separates subscription status from total contacts', f
     $audience = $page->instance()->getAudience();
 
     // Assert
-    $page->assertSee('Active subscribers')
-        ->assertSee('Total contacts')
+    $page->assertSee('active')
+        ->assertSee('total contacts')
         ->assertSee('Unsubscribed')
         ->assertSee('Unknown')
         ->assertSee('left@example.com');
@@ -143,5 +143,8 @@ test('authenticated user can render newsletter subscribers', function (): void {
     actingAs($user)
         ->get(NewsletterSubscribers::getUrl())
         ->assertOk()
-        ->assertSee('Newsletter Subscribers')->assertSee('No contacts yet')->assertSeeHtml('audience <span aria-hidden="true">✨</span>');
+        ->assertSee('Newsletter Subscribers')
+        ->assertSee('Manage your newsletter audience')
+        ->assertSee('No contacts yet')
+        ->assertDontSee('✨');
 });

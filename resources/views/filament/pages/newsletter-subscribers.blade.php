@@ -14,7 +14,7 @@
 
     <x-filament.page-header
         title="Newsletter Subscribers"
-        subtitle="All contacts, including unsubscribed · Resend · Cached 5 min"
+        subtitle="Manage your newsletter audience · Resend · Cached 5 min"
         class="mb-6"
     >
         <x-slot:icon>
@@ -25,10 +25,10 @@
         </x-slot:icon>
 
         <x-slot:stats>
-            <x-filament.resource-stat label="Active subscribers" tone="gold">
+            <x-filament.resource-stat label="active" tone="gold">
                 {{ $audience['active_count'] }}
             </x-filament.resource-stat>
-            <x-filament.resource-stat label="Total contacts"> {{ $count }} </x-filament.resource-stat>
+            <x-filament.resource-stat label="total contacts"> {{ $count }} </x-filament.resource-stat>
         </x-slot:stats>
 
         <x-slot:actions>
@@ -74,7 +74,7 @@
             </svg>
             <h3 class="font-mouse-heading text-mouse-navy text-xl font-bold">No contacts yet</h3>
             <p class="font-mouse-body text-mouse-navy/75 mt-2 text-sm">
-                Share your newsletter signup link to start growing your audience <span aria-hidden="true">✨</span>
+                Share your newsletter signup link to start growing your audience.
             </p>
         </div>
     @elseif ($count > 0)
@@ -142,13 +142,20 @@
                                 @endif
                             </td>
                             <td class="border-mouse-navy/10 font-mouse-body text-mouse-navy border-b px-6 py-4 text-sm">
-                                {{ $subscriber['subscription_status'] }}
+                                <span @class([
+                                    'inline-flex rounded-full px-2.5 py-1 text-xs font-semibold',
+                                    'bg-success-50 text-success-700' => $subscriber['subscription_status'] === 'Subscribed',
+                                    'bg-danger-50 text-danger-700' => $subscriber['subscription_status'] === 'Unsubscribed',
+                                    'bg-gray-100 text-gray-700' => $subscriber['subscription_status'] === 'Unknown',
+                                ])>
+                                    {{ $subscriber['subscription_status'] }}
+                                </span>
                             </td>
                         </tr>
                     @endforeach
                 </tbody>
             </table>
+            <div class="border-mouse-navy/10 px-6 py-4">{{ $subscribers->links() }}</div>
         </div>
-        {{ $subscribers->links() }}
     @endif
 </x-filament-panels::page>
