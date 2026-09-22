@@ -1,11 +1,23 @@
 {
     "schemaVersion": 2,
-    "generatedAt": "2026-09-22T18:09:03Z",
+    "generatedAt": "2026-09-22T21:12:44Z",
     "title": "Mouse28 Design System",
     "extensions": {
         "typographyMeta": {
             "heading": { "displayName": "Besley", "purpose": "Wordmark and editorial headings; locally hosted." },
-            "body": { "displayName": "Poppins", "purpose": "Body text, navigation, controls, and data; locally hosted." }
+            "body": { "displayName": "Poppins", "purpose": "Body text, navigation, controls, and data; locally hosted." },
+            "public-display": { "displayName": "Public editorial display", "purpose": "Expressive Besley scale for public hero, section, and article headings." },
+            "public-reading": { "displayName": "Public editorial reading", "purpose": "Context-specific Poppins scale for public summaries, metadata, and reading surfaces." }
+        },
+        "roundedMeta": {
+            "public-hairline": { "value": "1px", "purpose": "Fine editorial rules and image treatment details." },
+            "public-micro": { "value": "3px", "purpose": "Small decorative or image treatment corners." },
+            "public-tight": { "value": "4px", "purpose": "Compact public utility surfaces." },
+            "public-soft": { "value": "0.35rem", "purpose": "Soft public content treatment corners." },
+            "public-field": { "value": "0.6rem", "purpose": "Public form field corners." },
+            "public-compact": { "value": "0.625rem", "purpose": "Compact public card and media corners." },
+            "public-editorial": { "value": "0.875rem", "purpose": "Public editorial panel corners." },
+            "public-pill": { "value": "9999px", "role": "pill", "purpose": "Pill-shaped public controls and status treatments." }
         },
         "shadows": [
             { "name": "authentication", "value": "0 16px 48px rgb(26 16 64 / 18%)", "purpose": "Authentication surface against the navy background." }
