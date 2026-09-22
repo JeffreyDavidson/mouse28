@@ -73,7 +73,7 @@
             aria-label="Newsletter contacts"
             tabindex="0"
         >
-            <div class="fi-ta-content-ctn overflow-x-auto">
+            <div class="fi-ta-content-ctn overflow-x-auto" tabindex="0" aria-label="Newsletter contacts table">
                 <div class="fi-ta-content">
                     <table class="fi-ta-table w-full min-w-160">
                         <thead>
