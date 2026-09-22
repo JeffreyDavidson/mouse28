@@ -15,6 +15,12 @@ class NewsletterSubscribers extends Page
 {
     use WithPagination;
 
+    private const DEFAULT_SUBSCRIBERS_PER_PAGE = 50;
+
+    public const SUBSCRIBERS_PER_PAGE_OPTIONS = [10, 25, self::DEFAULT_SUBSCRIBERS_PER_PAGE];
+
+    public int $subscribersPerPage = self::DEFAULT_SUBSCRIBERS_PER_PAGE;
+
     #[\Override]
     protected string $view = 'filament.pages.newsletter-subscribers';
 
@@ -84,6 +90,15 @@ class NewsletterSubscribers extends Page
         }
 
         $notification->send();
+    }
+
+    public function updatedSubscribersPerPage(): void
+    {
+        if (! in_array($this->subscribersPerPage, self::SUBSCRIBERS_PER_PAGE_OPTIONS, true)) {
+            $this->subscribersPerPage = self::DEFAULT_SUBSCRIBERS_PER_PAGE;
+        }
+
+        $this->resetPage();
     }
 
     public function exportCsv(): StreamedResponse
