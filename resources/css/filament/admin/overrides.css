@@ -156,6 +156,10 @@
         margin: 0;
     }
 
+    .fi-body .fi-topbar .fi-user-menu-trigger {
+        @apply size-12 shrink-0;
+    }
+
     .fi-simple-main label:has(input[type='checkbox']) {
         display: flex;
         min-height: 3rem;
