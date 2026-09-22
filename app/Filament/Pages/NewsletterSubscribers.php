@@ -15,9 +15,9 @@ class NewsletterSubscribers extends Page
 {
     use WithPagination;
 
-    private const DEFAULT_SUBSCRIBERS_PER_PAGE = 50;
+    private const int DEFAULT_SUBSCRIBERS_PER_PAGE = 50;
 
-    public const SUBSCRIBERS_PER_PAGE_OPTIONS = [10, 25, self::DEFAULT_SUBSCRIBERS_PER_PAGE];
+    public const array SUBSCRIBERS_PER_PAGE_OPTIONS = [10, 25, self::DEFAULT_SUBSCRIBERS_PER_PAGE];
 
     public int $subscribersPerPage = self::DEFAULT_SUBSCRIBERS_PER_PAGE;
 
