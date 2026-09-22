@@ -6,13 +6,13 @@
 
 <div {{
     $attributes->class([
-        'relative rounded-2xl bg-mouse-navy p-5 sm:p-8',
+        'relative rounded-2xl bg-mouse-navy p-4 sm:px-8 sm:py-5',
     ])
 }}>
-    <div class="relative z-1 flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
-        <div class="flex items-center gap-4 sm:gap-6">
+    <div class="relative z-1 flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+        <div class="flex items-center gap-4 sm:gap-5">
             <div @class([
-                'flex size-14 shrink-0 items-center justify-center rounded-2xl sm:size-16',
+                'flex size-12 shrink-0 items-center justify-center rounded-xl sm:size-14',
                 'bg-mouse-purple/30' => $iconTone === 'purple',
                 'bg-mouse-gold/15' => $iconTone !== 'purple',
             ])>

@@ -85,7 +85,14 @@
 }
 
 .fi-ta-header,
-.fi-ta-header-toolbar,
+.fi-ta-header-toolbar {
+    background: white;
+}
+
+.fi-ta-header-toolbar {
+    border-bottom: 1px solid rgb(26 16 64 / 12%);
+}
+
 .fi-ta-table thead {
     background: var(--color-mouse-cream-dark);
 }
