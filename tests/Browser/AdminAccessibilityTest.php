@@ -161,3 +161,76 @@ test('administrator can save a Quick Draft from the dashboard', function (): voi
         ->assertSee('Browser Smoke Draft')
         ->assertNoJavaScriptErrors();
 })->group('browser-smoke');
+
+test('administrator can create a Post from the resource form', function (): void {
+    actingAs(User::factory()->admin()->create());
+
+    visit(PostResource::getUrl('create'))
+        ->fill('input[id="form.title"]', 'Browser Smoke Post')
+        ->fill('input[id="form.slug"]', 'browser-smoke-post')
+        ->select('select[id="form.category"]', 'disney-tips')
+        ->fill('textarea[aria-label="Body"]', 'A browser-created post body.')
+        ->click('button[wire\\:target="create"]')
+        ->assertSee('Created')
+        ->assertNoJavaScriptErrors();
+
+    visit(PostResource::getUrl())
+        ->assertSee('Browser Smoke Post')
+        ->assertNoJavaScriptErrors();
+})->group('browser-smoke');
+
+test('administrator can edit a Post from the resource form', function (): void {
+    $post = Post::factory()->draft()->create([
+        'title' => 'Original Browser Post',
+        'slug' => 'original-browser-post',
+    ]);
+
+    actingAs(User::factory()->admin()->create());
+
+    visit(PostResource::getUrl('edit', ['record' => $post]))
+        ->fill('input[id="form.title"]', 'Updated Browser Post')
+        ->fill('input[id="form.slug"]', 'updated-browser-post')
+        ->click('button[wire\\:target="save"]')
+        ->assertSee('Saved')
+        ->assertNoJavaScriptErrors();
+
+    visit(PostResource::getUrl())
+        ->assertSee('Updated Browser Post')
+        ->assertNoJavaScriptErrors();
+})->group('browser-smoke');
+
+test('administrator can create an Episode from the resource form', function (): void {
+    actingAs(User::factory()->admin()->create());
+
+    visit(EpisodeResource::getUrl('create'))
+        ->fill('input[id="form.title"]', 'Browser Smoke Episode')
+        ->fill('input[id="form.slug"]', 'browser-smoke-episode')
+        ->fill('input[id="form.episode_number"]', '280')
+        ->click('button[wire\\:target="create"]')
+        ->assertSee('Created')
+        ->assertNoJavaScriptErrors();
+
+    visit(EpisodeResource::getUrl())
+        ->assertSee('Browser Smoke Episode')
+        ->assertNoJavaScriptErrors();
+})->group('browser-smoke');
+
+test('administrator can edit an Episode from the resource form', function (): void {
+    $episode = Episode::factory()->draft()->create([
+        'title' => 'Original Browser Episode',
+        'slug' => 'original-browser-episode',
+    ]);
+
+    actingAs(User::factory()->admin()->create());
+
+    visit(EpisodeResource::getUrl('edit', ['record' => $episode]))
+        ->fill('input[id="form.title"]', 'Updated Browser Episode')
+        ->fill('input[id="form.slug"]', 'updated-browser-episode')
+        ->click('button[wire\\:target="save"]')
+        ->assertSee('Saved')
+        ->assertNoJavaScriptErrors();
+
+    visit(EpisodeResource::getUrl())
+        ->assertSee('Updated Browser Episode')
+        ->assertNoJavaScriptErrors();
+})->group('browser-smoke');
