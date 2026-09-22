@@ -20,7 +20,10 @@ test('subscriber pages are bounded while exports contain the whole audience', fu
     actingAs(User::factory()->admin()->create());
     $page = livewire(NewsletterSubscribers::class);
 
-    $page->assertSee('reader1@example.com')->assertDontSee('reader51@example.com');
+    $page->assertSee('reader1@example.com')
+        ->assertDontSee('reader51@example.com')
+        ->assertSeeHtml('fi-ta-header-cell')
+        ->assertSeeHtml('fi-pagination');
 
     $page->call('setPage', 2);
 
@@ -53,7 +56,7 @@ test('newsletter reporting separates subscription status from total contacts', f
     $audience = $page->instance()->getAudience();
 
     // Assert
-    $page->assertSee('Active subscribers')
+    $page->assertSee('Active')
         ->assertSee('Total contacts')
         ->assertSee('Unsubscribed')
         ->assertSee('Unknown')
@@ -143,5 +146,9 @@ test('authenticated user can render newsletter subscribers', function (): void {
     actingAs($user)
         ->get(NewsletterSubscribers::getUrl())
         ->assertOk()
-        ->assertSee('Newsletter Subscribers')->assertSee('No contacts yet')->assertSeeHtml('audience <span aria-hidden="true">✨</span>');
+        ->assertSee('Newsletter Subscribers')
+        ->assertSee('Manage your newsletter audience')
+        ->assertSee('No contacts yet')
+        ->assertDontSeeHtml('fi-header-heading')
+        ->assertDontSee('✨');
 });

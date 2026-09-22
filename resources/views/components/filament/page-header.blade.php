@@ -6,24 +6,13 @@
 
 <div {{
     $attributes->class([
-        'relative overflow-hidden rounded-2xl border border-mouse-gold/20 bg-linear-to-br from-mouse-navy via-mouse-navy-light to-mouse-purple p-5 sm:p-8',
+        'relative rounded-2xl bg-mouse-navy p-5 sm:px-8 sm:py-6',
     ])
 }}>
-    <div
-        class="pointer-events-none absolute top-[-30%] right-[-10%] size-62.5 bg-[radial-gradient(circle,rgba(212,168,67,0.12)_0%,transparent_70%)]"
-        aria-hidden="true"
-    ></div>
-    <span class="text-mouse-gold-light/25 pointer-events-none absolute top-[15%] right-[18%] text-xs" aria-hidden="true"
-        >✦</span>
-    <span
-        class="text-mouse-gold-light/20 pointer-events-none absolute right-[10%] bottom-[20%] text-base"
-        aria-hidden="true"
-    >✦</span>
-
-    <div class="relative z-1 flex flex-col gap-6 xl:flex-row xl:items-center xl:justify-between">
-        <div class="flex items-center gap-4 sm:gap-6">
+    <div class="relative z-1 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+        <div class="flex items-center gap-4 sm:gap-5">
             <div @class([
-                'flex size-14 shrink-0 items-center justify-center rounded-2xl sm:size-16',
+                'flex size-12 shrink-0 items-center justify-center rounded-xl sm:size-14',
                 'bg-mouse-purple/30' => $iconTone === 'purple',
                 'bg-mouse-gold/15' => $iconTone !== 'purple',
             ])>
@@ -31,8 +20,8 @@
             </div>
 
             <div>
-                <h2 class="font-mouse-heading text-mouse-gold-light text-xl font-bold sm:text-2xl">{{ $title }}</h2>
-                <p class="font-mouse-body text-mouse-cream/60 mt-1 text-sm">{{ $subtitle }}</p>
+                <h2 class="font-mouse-heading text-mouse-gold-light text-xl font-semibold sm:text-2xl">{{ $title }}</h2>
+                <p class="font-mouse-body text-mouse-cream/80 mt-1 text-sm">{{ $subtitle }}</p>
             </div>
         </div>
 

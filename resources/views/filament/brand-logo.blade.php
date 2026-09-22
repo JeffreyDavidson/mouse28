@@ -1,3 +1,1 @@
-<div class="font-mouse-heading text-mouse-gold-light text-[1.4rem] leading-tight font-extrabold tracking-[-0.02em]">
-    Mouse28
-</div>
+<div class="mouse28-admin-brand font-mouse-heading text-mouse-cream text-2xl font-semibold tracking-tight">Mouse28</div>

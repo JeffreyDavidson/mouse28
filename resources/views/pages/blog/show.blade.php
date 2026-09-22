@@ -22,9 +22,7 @@
     @endunless
 
     @if ($isPreview ?? false)
-        <div role="status" class="bg-gold text-navy px-4 py-3 text-center text-sm font-semibold">
-            Preview mode. This page is only visible to administrators.
-        </div>
+        <x-preview-banner />
     @endif
 
     <div
@@ -35,13 +33,7 @@
     <section class="editorial-detail-hero bg-navy text-cream relative overflow-hidden">
         <div class="relative mx-auto grid max-w-[86rem] gap-10 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-[7fr_5fr] lg:items-center lg:gap-16 lg:py-20">
             <div class="min-w-0 wrap-anywhere">
-                <a
-                    href="{{ route('blog.index') }}"
-                    class="text-cream/65 hover:text-gold inline-flex min-h-12 items-center gap-2 text-sm font-semibold transition-colors"
-                >
-                    <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-                    Back to Blog
-                </a>
+                <x-back-link href="{{ route('blog.index') }}" label="Back to Blog" />
 
                 <div class="text-cream/65 mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
                     @if ($post->category)
@@ -139,13 +131,10 @@
                 @endif
 
                 @if ($post->isReviewDue())
-                    <div
-                        role="note"
-                        class="mb-8 rounded-xl border border-amber-700/25 bg-amber-100 px-5 py-4 text-sm/7 text-amber-950"
-                    >
-                        This post is due for editorial review. Disney policies and park operations can change, so
-                        confirm current details with the official source before your visit.
-                    </div>
+                    <x-review-due-notice
+                        class="mb-8 border-amber-700/25 bg-amber-100 text-amber-950"
+                        message="This post is due for editorial review. Disney policies and park operations can change, so confirm current details with the official source before your visit."
+                    />
                 @endif
 
                 <div class="blog-article-content prose-navy prose text-navy/80 max-w-none text-[1.0625rem] leading-[1.85] wrap-anywhere">
@@ -161,17 +150,7 @@
                 </div>
 
                 @if ($post->source_url)
-                    <div class="border-navy/12 mt-12 border-y py-6">
-                        <p class="text-navy/65 text-sm/6">
-                            Policies can change. Review the official source before your visit.
-                        </p>
-                        <a
-                            href="{{ $post->source_url }}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="text-purple hover:text-navy mt-2 inline-flex min-h-12 items-center font-semibold underline underline-offset-8"
-                        >View official source</a>
-                    </div>
+                    <x-source-attribution class="mt-12" :url="$post->source_url" />
                 @endif
             </article>
 
@@ -228,33 +207,18 @@
         </div>
 
         @if ($recentPosts->count())
-            <section class="mx-auto mt-16 max-w-6xl px-4 sm:px-6" aria-labelledby="continue-reading" data-print-hidden>
-                <h2 id="continue-reading" class="font-heading text-navy text-3xl [font-weight:640]">
-                    Continue reading
-                </h2>
-                <div class="mt-7 grid gap-8 sm:grid-cols-2">
-                    @foreach ($recentPosts->take(2) as $next)
-                        <article class="group min-w-0">
-                            <a
-                                href="{{ route('blog.show', $next) }}"
-                                aria-label="Read {{ $next->title }}"
-                                class="block overflow-hidden rounded-xl"
-                            >
-                                <x-post-artwork
-                                    :post="$next"
-                                    :compact="true"
-                                    class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]"
-                                />
-                            </a>
-                            <p class="text-purple mt-4 text-sm font-semibold">{{ $next->category_label }}</p>
-                            <h3 class="font-heading text-navy group-hover:text-purple mt-1 text-2xl [font-weight:600] tracking-[-0.015em] transition-colors">
-                                <a href="{{ route('blog.show', $next) }}">{{ $next->title }}</a>
-                            </h3>
-                            <p class="text-navy/60 mt-2 text-sm">{{ $next->reading_time }} min read</p>
-                        </article>
-                    @endforeach
-                </div>
-            </section>
+            <x-related-content-section
+                title="Continue reading"
+                label-id="continue-reading"
+                grid-class="sm:grid-cols-2"
+                heading-class="font-heading text-navy text-3xl [font-weight:640]"
+                container-class="mx-auto max-w-6xl px-0"
+                class="mt-16 border-0"
+            >
+                @foreach ($recentPosts->take(2) as $next)
+                    <x-post-card :post="$next" variant="related" />
+                @endforeach
+            </x-related-content-section>
         @endif
     </section>
 

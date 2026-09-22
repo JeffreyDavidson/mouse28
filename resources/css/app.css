@@ -1,53 +1,6 @@
 @import 'tailwindcss';
+@import './fonts.css';
 @plugin '@tailwindcss/typography';
-
-@font-face {
-    font-family: 'Besley';
-    font-style: normal;
-    font-weight: 400 900;
-    font-display: swap;
-    src: url('/fonts/mouse28/besley-latin.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'Poppins';
-    font-style: normal;
-    font-weight: 300;
-    font-display: swap;
-    src: url('/fonts/mouse28/poppins-300.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'Poppins';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url('/fonts/mouse28/poppins-400.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'Poppins';
-    font-style: normal;
-    font-weight: 500;
-    font-display: swap;
-    src: url('/fonts/mouse28/poppins-500.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'Poppins';
-    font-style: normal;
-    font-weight: 600;
-    font-display: swap;
-    src: url('/fonts/mouse28/poppins-600.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'Poppins';
-    font-style: normal;
-    font-weight: 700;
-    font-display: swap;
-    src: url('/fonts/mouse28/poppins-700.woff2') format('woff2');
-}
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source not '../../storage';
@@ -102,10 +55,6 @@
             scroll-behavior: auto !important;
         }
 
-        .sparkle,
-        .sparkle-delay,
-        .sparkle-delay-2,
-        .cta-primary,
         .episodes-waveform-bar,
         .contact-check-circle,
         .contact-check-mark,
@@ -116,7 +65,6 @@
         .post-card,
         .post-card .card-img,
         .post-card .card-overlay,
-        .ticket,
         .blog-pagination span,
         .blog-pagination a,
         .blog-pagination button,
@@ -216,18 +164,6 @@
 
     .prose img {
         border-radius: 1rem;
-    }
-
-    .sparkle {
-        animation: sparkle 3s ease-in-out infinite;
-    }
-
-    .sparkle-delay {
-        animation: sparkle 3s ease-in-out 0.8s infinite;
-    }
-
-    .sparkle-delay-2 {
-        animation: sparkle 3s ease-in-out 1.6s infinite;
     }
 
     .dispatch-nav-link {
@@ -330,28 +266,7 @@
     }
 }
 
-@keyframes sparkle {
-    0%,
-    100% {
-        opacity: 0.2;
-        transform: scale(0.8) rotate(0deg);
-    }
-
-    50% {
-        opacity: 0.9;
-        transform: scale(1.15) rotate(15deg);
-    }
-}
-
 @layer components {
-    .cta-primary {
-        animation: gentle-pulse 3s ease-in-out infinite;
-    }
-
-    .cta-primary:hover {
-        animation: none;
-    }
-
     .card-shimmer::after {
         position: absolute;
         inset: 0;
@@ -392,73 +307,6 @@
         opacity: 1;
     }
 
-    .newsletter-input:focus {
-        box-shadow: 0 0 0 3px rgb(212 168 67 / 25%), 0 0 20px rgb(212 168 67 / 10%);
-    }
-
-    .ticket {
-        position: relative;
-        display: block;
-        overflow: hidden;
-        border-radius: 1rem;
-        text-decoration: none;
-        transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.4s ease;
-    }
-
-    .ticket:hover {
-        box-shadow: 0 20px 40px rgb(26 16 64 / 15%);
-        transform: translateY(-6px) rotate(-1deg);
-    }
-
-    .ticket-tear {
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        height: 20px;
-        background: radial-gradient(circle at 10px -5px, transparent 12px, currentColor 12px);
-        background-position: -5px bottom;
-        background-size: 20px 20px;
-    }
-
-    .ticket-hole {
-        position: absolute;
-        top: 50%;
-        right: 18px;
-        width: 22px;
-        height: 22px;
-        border: 2px dashed currentColor;
-        border-radius: 50%;
-        opacity: 0.3;
-        transform: translateY(-50%);
-    }
-
-    .ticket::before {
-        position: absolute;
-        top: 0;
-        right: 50px;
-        bottom: 0;
-        width: 1px;
-        background: repeating-linear-gradient(to bottom, transparent, transparent 4px, currentColor 4px, currentColor 8px);
-        content: '';
-        opacity: 0.15;
-    }
-
-    .hero-split {
-        display: grid;
-        min-height: 0;
-        grid-template-columns: 1fr;
-    }
-
-    .hero-split-text {
-        position: relative;
-        display: flex;
-        align-items: center;
-        overflow: hidden;
-        background: linear-gradient(135deg, var(--color-navy) 0%, var(--color-navy-light) 100%);
-        padding: 4rem 2rem;
-    }
-
     .hero-split-photo {
         position: relative;
         min-height: 300px;
@@ -486,27 +334,7 @@
     }
 }
 
-@keyframes gentle-pulse {
-    0%,
-    100% {
-        box-shadow: 0 4px 15px rgb(212 168 67 / 20%);
-    }
-
-    50% {
-        box-shadow: 0 4px 25px rgb(212 168 67 / 45%);
-    }
-}
-
 @media (min-width: 768px) {
-    .hero-split {
-        min-height: min(70vh, 640px);
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .hero-split-text {
-        padding: 4rem 3rem 4rem 0;
-    }
-
     .hero-split-photo::before {
         position: absolute;
         z-index: 2;
@@ -542,9 +370,6 @@
         animation: contact-check-mark 0.4s ease forwards 0.7s;
     }
 
-    .contact-select option {
-        background: var(--color-navy);
-    }
 }
 
 @property --blog-border-angle {

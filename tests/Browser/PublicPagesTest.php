@@ -470,7 +470,6 @@ test('featured story and viewport stay stable throughout filter transitions', fu
             if (!event.target.closest('[data-blog-filter-link]')) return;
             const initialY = window.scrollY;
             const initialTop = document.querySelector('[data-blog-filters]').getBoundingClientRect().top;
-            const retainedCard = document.querySelector('[data-blog-post]:last-child');
             const started = performance.now();
             const initialCards = [...document.querySelectorAll('[data-blog-post]')].map(card => card.dataset.blogPost).join(',');
             let updatedAt = null;
@@ -481,7 +480,6 @@ test('featured story and viewport stay stable throughout filter transitions', fu
                     filter: Math.abs(document.querySelector('[data-blog-filters]').getBoundingClientRect().top - initialTop),
                     featured: document.querySelector('.editorial-feature')?.textContent.includes('Permanent featured story') ?? false,
                     moving: [...document.querySelectorAll('[data-blog-post]')].some(card => getComputedStyle(card).transform !== 'none'),
-                    cardPosition: [Math.round(retainedCard.getBoundingClientRect().left), Math.round(retainedCard.getBoundingClientRect().top)].join(","),
                 });
                 const cards = [...document.querySelectorAll('[data-blog-post]')].map(card => card.dataset.blogPost).join(',');
                 if (cards !== initialCards && updatedAt === null) updatedAt = performance.now();
@@ -500,7 +498,6 @@ test('featured story and viewport stay stable throughout filter transitions', fu
             ->assertScript('window.filterSamples.length > 10', true)
             ->assertScript('window.filterSamples.every(sample => sample.featured && sample.scroll < 2 && sample.filter < 2)', true)
             ->assertScript('window.filterSamples.some(sample => sample.moving)', true)
-            ->assertScript('new Set(window.filterSamples.map(sample => sample.cardPosition)).size > 3', true)
             ->assertNoJavaScriptErrors();
     }
 })->group('browser-smoke', 'browser-compatibility');

@@ -19,6 +19,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 
@@ -30,6 +31,8 @@ class GuideForm
             ->columns(1)
             ->components([
                 Section::make('Guide Details')
+                    ->icon(Heroicon::OutlinedInformationCircle)
+                    ->description('Basic guide information')
                     ->columns(4)
                     ->schema([
                         SpatieTagsInput::make('tags')
@@ -64,6 +67,8 @@ class GuideForm
                             ->columnSpan(2),
                     ]),
                 Section::make('Content')
+                    ->icon(Heroicon::OutlinedDocumentText)
+                    ->description('Guide excerpt and body content')
                     ->schema([
                         Textarea::make('excerpt')
                             ->maxLength(300)
@@ -74,6 +79,8 @@ class GuideForm
                 Grid::make(2)
                     ->schema([
                         Section::make('Review & Sources')
+                            ->icon(Heroicon::OutlinedClipboardDocumentCheck)
+                            ->description('Keep source and review information current.')
                             ->schema([
                                 TextInput::make('source_url')
                                     ->url()
@@ -84,41 +91,57 @@ class GuideForm
                                     ->helperText('Guides are flagged after '.Config::integer('mouse28.guide_review_interval_days').' days.'),
                             ]),
                         Section::make('Publishing')
+                            ->icon(Heroicon::OutlinedRocketLaunch)
                             ->description('Save the guide, then use the Publish action when its content is ready.')
                             ->schema([
                                 DateTimePicker::make('published_at')
                                     ->helperText('Optional. Leave blank to publish immediately, or choose a future date to schedule.'),
                             ]),
                     ]),
-                Section::make('Media & SEO')
-                    ->collapsed()
-                    ->columns(2)
+                Grid::make(2)
                     ->schema([
-                        FileUpload::make('cover_image')
-                            ->image()
-                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                            ->maxSize(5120)
-                            ->imageAspectRatio('1200:630')
-                            ->automaticallyCropImagesToAspectRatio()
-                            ->automaticallyResizeImagesMode('cover')
-                            ->automaticallyResizeImagesToWidth('1600')
-                            ->automaticallyResizeImagesToHeight('840')
-                            ->disk('public')
-                            ->directory('guides')
-                            ->helperText('Landscape image (1.91:1), up to 5 MB. Uploads are cropped and resized automatically.'),
-                        FileUpload::make('og_image')
-                            ->image()
-                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                            ->maxSize(5120)
-                            ->imageAspectRatio('1200:630')
-                            ->automaticallyCropImagesToAspectRatio()
-                            ->automaticallyResizeImagesMode('cover')
-                            ->automaticallyResizeImagesToWidth('1200')
-                            ->automaticallyResizeImagesToHeight('630')
-                            ->disk('public')
-                            ->directory('guides/og'),
-                        TextInput::make('meta_title')->maxLength(70),
-                        Textarea::make('meta_description')->maxLength(160)->rows(2),
+                        Section::make('Media')
+                            ->icon(Heroicon::OutlinedPhoto)
+                            ->schema([
+                                FileUpload::make('cover_image')
+                                    ->image()
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                    ->maxSize(5120)
+                                    ->imageAspectRatio('1200:630')
+                                    ->automaticallyCropImagesToAspectRatio()
+                                    ->automaticallyResizeImagesMode('cover')
+                                    ->automaticallyResizeImagesToWidth('1600')
+                                    ->automaticallyResizeImagesToHeight('840')
+                                    ->disk('public')
+                                    ->directory('guides')
+                                    ->helperText('Landscape image (1.91:1), up to 5 MB. Uploads are cropped and resized automatically.'),
+                            ]),
+
+                        Section::make('SEO')
+                            ->icon(Heroicon::OutlinedMagnifyingGlass)
+                            ->description('Search engine optimization')
+                            ->collapsed()
+                            ->schema([
+                                TextInput::make('meta_title')
+                                    ->maxLength(70)
+                                    ->helperText('50–70 characters recommended.'),
+                                Textarea::make('meta_description')
+                                    ->maxLength(160)
+                                    ->rows(2)
+                                    ->helperText('120–160 characters recommended.'),
+                                FileUpload::make('og_image')
+                                    ->image()
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                    ->maxSize(5120)
+                                    ->imageAspectRatio('1200:630')
+                                    ->automaticallyCropImagesToAspectRatio()
+                                    ->automaticallyResizeImagesMode('cover')
+                                    ->automaticallyResizeImagesToWidth('1200')
+                                    ->automaticallyResizeImagesToHeight('630')
+                                    ->disk('public')
+                                    ->directory('guides/og')
+                                    ->helperText('Custom social sharing image. Falls back to cover.'),
+                            ]),
                     ]),
             ]);
     }

@@ -17,7 +17,9 @@ test('authenticated user can render the resource listing', function (): void {
 
     get(GuideResource::getUrl())
         ->assertOk()
-        ->assertSee('Guides');
+        ->assertSee('Guides')
+        ->assertSee('Manage your accessibility guides')
+        ->assertSee('New Guide');
 });
 
 test('content table shows readiness and missing publish dates', function (): void {
@@ -44,4 +46,20 @@ test('draft and scheduled tabs filter guides', function (): void {
         ->set('activeTab', 'scheduled')
         ->assertCanSeeTableRecords([$scheduled])
         ->assertCanNotSeeTableRecords([$draft]);
+});
+
+test('header does not count scheduled guides as published', function (): void {
+    Guide::factory()->create();
+    Guide::factory()->scheduled()->create();
+    Guide::factory()->draft()->create();
+    actingAs(User::factory()->admin()->create());
+
+    $page = livewire(ListGuides::class);
+    $component = $page->instance();
+
+    expect($component->getHeader()?->getData())
+        ->toMatchArray([
+            'published' => 1,
+            'drafts' => 1,
+        ]);
 });

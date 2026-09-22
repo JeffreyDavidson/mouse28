@@ -45,6 +45,18 @@ test('non admin user cannot access the admin panel', function (): void {
         ->assertForbidden();
 });
 
+test('multi factor authentication is optional in the local environment', function (): void {
+    app()->instance('env', 'local');
+
+    expect(Filament::getPanel('admin')->isMultiFactorAuthenticationRequired())->toBeFalse();
+});
+
+test('multi factor authentication is required outside the local environment', function (): void {
+    app()->instance('env', 'testing');
+
+    expect(Filament::getPanel('admin')->isMultiFactorAuthenticationRequired())->toBeTrue();
+});
+
 test('unenrolled administrators must set up authentication before accessing content', function (): void {
     $user = User::factory()->admin()->withoutAppAuthentication()->create();
 

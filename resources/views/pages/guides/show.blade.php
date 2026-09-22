@@ -22,19 +22,14 @@
     @endunless
 
     @if ($isPreview ?? false)
-        <div role="status" class="bg-gold text-navy px-4 py-3 text-center text-sm font-semibold">
-            Preview mode. This page is only visible to administrators.
-        </div>
+        <x-preview-banner />
     @endif
 
     <div data-guide-detail>
         <header class="bg-navy text-cream">
             <div class="mx-auto grid max-w-[86rem] lg:grid-cols-[7fr_5fr]">
                 <div class="flex flex-col justify-center px-4 py-12 wrap-anywhere sm:px-6 sm:py-16 lg:px-12 lg:py-20 xl:px-20">
-                    <a
-                        href="{{ route('guides.index') }}"
-                        class="text-cream/70 hover:text-gold inline-flex min-h-12 w-fit items-center text-sm font-semibold transition-colors"
-                    >Back to guides</a>
+                    <x-back-link href="{{ route('guides.index') }}" label="Back to guides" class="text-cream/70" />
                     <h1 class="font-heading mt-6 max-w-[18ch] text-4xl/[1.06] [font-weight:660] tracking-[-0.03em] text-balance sm:text-5xl lg:text-6xl">
                         {{ $guide->title }}
                     </h1>
@@ -83,29 +78,20 @@
                     </dl>
 
                     @if ($guide->source_url)
-                        <div class="mt-7">
-                            <p class="text-navy/65 text-sm/6">
-                                Policies can change. Check the official source before your visit.
-                            </p>
-                            <a
-                                href="{{ $guide->source_url }}"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="text-purple decoration-gold/70 hover:text-navy mt-3 inline-flex min-h-12 items-center font-semibold underline underline-offset-8 transition-colors"
-                            >View official source</a>
-                        </div>
+                        <x-source-attribution
+                            class="mt-7 border-0 py-0"
+                            :url="$guide->source_url"
+                            message="Policies can change. Check the official source before your visit."
+                        />
                     @endif
                 </aside>
 
                 <div>
                     @if ($guide->isReviewDue())
-                        <div
-                            role="note"
-                            class="border-gold/55 bg-gold/10 text-navy mb-8 rounded-xl border px-5 py-4 text-sm/7"
-                        >
-                            This guide is due for editorial review. Disney policies and park operations can change, so
-                            confirm current details with official Disney information before your visit.
-                        </div>
+                        <x-review-due-notice
+                            class="border-gold/55 bg-gold/10 text-navy mb-8"
+                            message="This guide is due for editorial review. Disney policies and park operations can change, so confirm current details with official Disney information before your visit."
+                        />
                     @endif
 
                     <article class="dispatch-reader-sheet relative rounded-xl bg-white p-6 shadow-[0_1.75rem_4rem_rgb(26_16_64/0.12)] sm:p-10 lg:p-14">
@@ -117,37 +103,15 @@
             </div>
 
             @if ($relatedGuides->isNotEmpty())
-                <section class="border-navy/10 border-t" aria-labelledby="related-guides-heading" data-print-hidden>
-                    <div class="mx-auto max-w-[86rem] px-4 py-14 sm:px-6 sm:py-18 lg:py-22">
-                        <h2
-                            id="related-guides-heading"
-                            class="font-heading text-4xl/[1.1] [font-weight:640] tracking-[-0.025em] text-balance sm:text-5xl"
-                        >
-                            Keep planning
-                        </h2>
-                        <div class="mt-9 grid gap-x-8 gap-y-12 md:grid-cols-3">
-                            @foreach ($relatedGuides as $relatedGuide)
-                                <article class="group min-w-0">
-                                    <a
-                                        href="{{ route('guides.show', $relatedGuide) }}"
-                                        class="block overflow-hidden rounded-xl"
-                                    >
-                                        <x-guide-artwork
-                                            :guide="$relatedGuide"
-                                            class="aspect-[16/10] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]"
-                                        />
-                                    </a>
-                                    <p class="text-purple mt-5 text-sm font-semibold">
-                                        {{ $relatedGuide->category_label }}
-                                    </p>
-                                    <h3 class="font-heading group-hover:text-purple mt-2 text-2xl/[1.18] [font-weight:610] tracking-[-0.015em] text-balance transition-colors">
-                                        <a href="{{ route('guides.show', $relatedGuide) }}">{{ $relatedGuide->title }}</a>
-                                    </h3>
-                                </article>
-                            @endforeach
-                        </div>
-                    </div>
-                </section>
+                <x-related-content-section
+                    title="Keep planning"
+                    label-id="related-guides-heading"
+                    class="border-navy/10 border-t border-b-0 py-14 sm:py-18 lg:py-22"
+                >
+                    @foreach ($relatedGuides as $relatedGuide)
+                        <x-guide-card :guide="$relatedGuide" variant="related" />
+                    @endforeach
+                </x-related-content-section>
             @endif
         </main>
     </div>
