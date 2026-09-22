@@ -170,3 +170,20 @@ test('dashboard Quick Draft loads without Livewire entanglement errors', functio
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 })->group('browser-smoke');
+
+test('episode resource header and table remain usable on narrow screens', function (): void {
+    actingAs(User::factory()->admin()->create());
+    Episode::factory()->create(['title' => 'Example Episode']);
+
+    $page = visit(EpisodeResource::getUrl());
+
+    foreach ([1440, 390] as $width) {
+        $page->resize($width, 1000);
+
+        $page->assertSee('Episodes')
+            ->assertSee('New Episode')
+            ->assertScript($this->horizontalOverflowScript(), 0)
+            ->assertNoAccessibilityIssues()
+            ->assertNoJavaScriptErrors();
+    }
+})->group('browser-smoke');
