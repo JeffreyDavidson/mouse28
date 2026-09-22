@@ -6,10 +6,10 @@
 
 <div {{
     $attributes->class([
-        'relative rounded-2xl bg-mouse-navy p-4 sm:px-8 sm:py-5',
+        'relative rounded-2xl bg-mouse-navy p-5 sm:px-8 sm:py-6',
     ])
 }}>
-    <div class="relative z-1 flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
+    <div class="relative z-1 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
         <div class="flex items-center gap-4 sm:gap-5">
             <div @class([
                 'flex size-12 shrink-0 items-center justify-center rounded-xl sm:size-14',
