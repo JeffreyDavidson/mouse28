@@ -49,6 +49,76 @@ test('newsletter contact statuses remain readable on desktop and mobile', functi
         ->assertNoJavaScriptErrors();
 });
 
+test('newsletter contact table and pagination use the full available width', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+    config()->set('services.resend.audience_id', 'audience-test-id');
+    config()->set('services.resend.key', 'resend-test-key');
+    Http::fake(['https://api.resend.com/*' => Http::response(['data' => [
+        ['email' => 'reader@example.com', 'unsubscribed' => false],
+    ]])]);
+
+    // Act
+    $page = visit(NewsletterSubscribers::getUrl());
+
+    foreach ([1440, 390, 320] as $width) {
+        $page->resize($width, 1000);
+
+        // Assert
+        $page->assertScript(<<<'JS'
+            (() => {
+                const container = document.querySelector('[aria-label="Newsletter contacts"]');
+                const table = document.querySelector('[aria-label="Newsletter contacts table"]');
+                const pagination = container?.querySelector('.fi-pagination');
+
+                if (! container || ! table || ! pagination) {
+                    return false;
+                }
+
+                const containerBounds = container.getBoundingClientRect();
+                const tableBounds = table.getBoundingClientRect();
+                const paginationBounds = pagination.getBoundingClientRect();
+
+                return tableBounds.width >= containerBounds.width - 4
+                    && paginationBounds.top >= tableBounds.bottom - 1;
+            })()
+            JS, true)
+            ->assertScript($this->horizontalOverflowScript(), 0)
+            ->assertNoAccessibilityIssues()
+            ->assertNoJavaScriptErrors();
+    }
+})->group('browser-smoke');
+
+test('mobile admin user menu meets the minimum touch target', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+
+    // Act
+    $page = visit(PodcastSettings::getUrl());
+
+    foreach ([390, 320] as $width) {
+        $page->resize($width, 844);
+
+        // Assert
+        $page->assertScript(<<<'JS'
+            (() => {
+                const trigger = document.querySelector('.fi-topbar .fi-user-menu-trigger');
+
+                if (! trigger) {
+                    return false;
+                }
+
+                const bounds = trigger.getBoundingClientRect();
+
+                return bounds.width >= 48 && bounds.height >= 48;
+            })()
+            JS, true)
+            ->assertScript($this->horizontalOverflowScript(), 0)
+            ->assertNoAccessibilityIssues()
+            ->assertNoJavaScriptErrors();
+    }
+})->group('browser-smoke');
+
 function unexpectedAdminJavaScriptErrorCountScript(): string
 {
     return <<<'JS'
