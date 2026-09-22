@@ -10,6 +10,7 @@ use App\Filament\Widgets\RecentActivity;
 use App\Filament\Widgets\StatsOverview;
 use App\Filament\Widgets\WelcomeBanner;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
+use Filament\FontProviders\LocalFontProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -36,7 +37,8 @@ class AdminPanelProvider extends PanelProvider
             ->brandName('Mouse28')
             ->brandLogo(view('filament.brand-logo'))
             ->darkModeBrandLogo(view('filament.brand-logo'))
-            ->darkMode(isForced: true)
+            ->darkMode(false)
+            ->font('Poppins', provider: LocalFontProvider::class)
             ->login(Login::class)
             ->profile()
             ->multiFactorAuthentication([
@@ -45,19 +47,7 @@ class AdminPanelProvider extends PanelProvider
             ->spa()
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->colors([
-                'primary' => [
-                    50 => '#fef9ef',
-                    100 => '#f5efe0',
-                    200 => '#e8d5b0',
-                    300 => '#d4a843',
-                    400 => '#b8922e',
-                    500 => '#5b3e9e',
-                    600 => '#3a2370',
-                    700 => '#2d1b69',
-                    800 => '#1a1040',
-                    900 => '#120b2e',
-                    950 => '#0a0620',
-                ],
+                'primary' => '#5b3e9e',
             ])
             ->navigationGroups([
                 NavigationGroup::make('Content'),

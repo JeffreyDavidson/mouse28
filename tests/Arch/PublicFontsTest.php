@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 test('external public fonts match the stylesheet and contain WOFF2 data', function (): void {
     $root = dirname(__DIR__, 2);
-    $stylesheet = file_get_contents($root.'/resources/css/app.css');
+    $stylesheet = file_get_contents($root.'/resources/css/fonts.css');
     $vite = file_get_contents($root.'/vite.config.js');
 
     if ($stylesheet === false || $vite === false) {

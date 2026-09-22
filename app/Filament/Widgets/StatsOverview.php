@@ -35,13 +35,6 @@ class StatsOverview extends Widget
 
         return [
             [
-                'label' => 'Guides',
-                'value' => $publishedGuides,
-                'icon' => Heroicon::OutlinedBookOpen,
-                'description' => $guidesDueForReview > 0 ? "{$guidesDueForReview} need review" : 'Reviews current',
-                'color' => '#4a90a4',
-            ],
-            [
                 'label' => 'Blog Posts',
                 'value' => $publishedPosts,
                 'icon' => Heroicon::OutlinedDocumentText,
@@ -54,6 +47,13 @@ class StatsOverview extends Widget
                 'icon' => Heroicon::OutlinedMicrophone,
                 'description' => 'Published',
                 'color' => '#d4a843',
+            ],
+            [
+                'label' => 'Guides',
+                'value' => $publishedGuides,
+                'icon' => Heroicon::OutlinedBookOpen,
+                'description' => $guidesDueForReview > 0 ? "{$guidesDueForReview} need review" : 'Reviews current',
+                'color' => '#4a90a4',
             ],
             [
                 'label' => 'Drafts',

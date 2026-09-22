@@ -1,0 +1,84 @@
+{
+    "schemaVersion": 2,
+    "generatedAt": "2026-09-22T00:00:00Z",
+    "title": "Mouse28 Design System",
+    "extensions": {
+        "typographyMeta": {
+            "heading": { "displayName": "Besley", "purpose": "Wordmark and editorial headings; locally hosted." },
+            "body": { "displayName": "Poppins", "purpose": "Body text, navigation, controls, and data; locally hosted." }
+        },
+        "shadows": [
+            { "name": "authentication", "value": "0 16px 48px rgb(26 16 64 / 18%)", "purpose": "Authentication surface against the navy background." }
+        ],
+        "motion": [
+            { "name": "reduced-motion", "value": "none", "purpose": "Admin animations and transitions stop when reduced motion is requested." }
+        ],
+        "breakpoints": [
+            { "name": "mobile-controls", "value": "640px" },
+            { "name": "five-metric-container", "value": "1024px" }
+        ]
+    },
+    "components": [
+        {
+            "name": "Dashboard panel",
+            "kind": "card",
+            "refersTo": "admin-panel",
+            "description": "A named work area with a quiet border and readable content.",
+            "html": "<section class=\"ds-panel\"><h2>Recent Activity</h2><p>Pick up where you left off.</p></section>",
+            "css": ".ds-panel{background:white;color:#1a1040;border:1px solid rgb(26 16 64 / 12%);border-radius:16px;padding:20px;font-family:Poppins,sans-serif}.ds-panel h2{font-family:Besley,Georgia,serif;font-size:20px;font-weight:600;margin:0}.ds-panel p{font-size:16px;color:rgb(26 16 64 / 75%);margin:8px 0 0}"
+        },
+        {
+            "name": "Admin navigation",
+            "kind": "nav",
+            "refersTo": "admin-navigation",
+            "description": "Cream selection inside navy navigation; gold keyboard focus.",
+            "html": "<nav class=\"ds-nav\" aria-label=\"Example navigation\"><a href=\"#dashboard\" aria-current=\"page\">Dashboard</a><a href=\"#posts\">Posts</a></nav>",
+            "css": ".ds-nav{padding:16px;background:#1a1040;font:14px Poppins,sans-serif}.ds-nav a{display:flex;align-items:center;min-height:48px;padding:0 12px;border-radius:8px;color:#fef9ef;text-decoration:none}.ds-nav a:hover{background:rgb(254 249 239 / 10%)}.ds-nav a[aria-current]{background:#fef9ef;color:#1a1040}.ds-nav a:focus-visible{outline:3px solid #f0c75e;outline-offset:3px}"
+        },
+        {
+            "name": "Native actions",
+            "kind": "button",
+            "description": "Schematic primary and secondary actions. Production uses x-filament::button with its generated primary palette and native loading, disabled, and hover states; do not copy preview CSS into the app.",
+            "html": "<div class=\"ds-actions\"><button type=\"button\" class=\"primary\">New Post</button><button type=\"button\">New Episode</button></div>",
+            "css": ".ds-actions{display:flex;flex-wrap:wrap;gap:12px}.ds-actions button{min-height:48px;padding:8px 16px;border-radius:8px;border:1px solid rgb(26 16 64 / 15%);background:white;color:#1a1040;font:500 14px Poppins,sans-serif}.ds-actions .primary{background:#5b3e9e;color:white}.ds-actions button:hover{filter:brightness(.95)}.ds-actions button:focus-visible{outline:3px solid #5b3e9e;outline-offset:3px}"
+        },
+        {
+            "name": "Native field",
+            "kind": "input",
+            "description": "A white editable surface with a persistent label. Production retains Filament field wrappers, validation, and disabled states.",
+            "html": "<label class=\"ds-field\">Title<input placeholder=\"Post title…\" /></label>",
+            "css": ".ds-field{display:grid;gap:8px;color:#1a1040;font:500 14px Poppins,sans-serif}.ds-field input{min-height:48px;box-sizing:border-box;padding:8px 12px;background:white;color:#1a1040;border:1px solid rgb(26 16 64 / 20%);border-radius:8px;font:400 16px Poppins,sans-serif}.ds-field input::placeholder{color:rgb(26 16 64 / 65%)}.ds-field input:focus-visible{outline:3px solid #5b3e9e;outline-offset:3px}"
+        },
+        {
+            "name": "Publication status",
+            "kind": "badge",
+            "description": "A textual status, not color alone. Production uses the enum's native Filament semantic color; this preview represents a neutral draft state.",
+            "html": "<span class=\"ds-badge\">Draft</span>",
+            "css": ".ds-badge{display:inline-block;padding:4px 8px;border-radius:8px;background:#f5efe0;color:#1a1040;font:500 12px Poppins,sans-serif}"
+        },
+        {
+            "name": "Editorial metric",
+            "kind": "custom",
+            "description": "A real value, an explicit label, and context without decorative charts.",
+            "html": "<dl class=\"ds-metric\"><dt>Drafts</dt><dd class=\"ds-value\">1</dd><dd>All content</dd></dl>",
+            "css": ".ds-metric{font:14px Poppins,sans-serif;background:#fef9ef;color:rgb(26 16 64 / 75%);padding-bottom:20px;border-bottom:1px solid rgb(26 16 64 / 15%)}.ds-metric dt{font-weight:500}.ds-metric dd{margin:4px 0 0}.ds-metric .ds-value{font-size:30px;font-weight:600;font-variant-numeric:tabular-nums;color:#1a1040;margin-top:8px}"
+        }
+    ],
+    "narrative": {
+        "northStar": "Park-Day Dispatch",
+        "overview": "Mouse28's established direction is Park-Day Dispatch: navy framing, cream editorial surfaces, gold details, purple actions, and real family stories. The public site feels like a carefully assembled trip-planning folio. The administration area is the editorial workspace behind that publication.",
+        "keyCharacteristics": ["Navy framing and cream editorial surfaces", "Locally hosted Besley and Poppins", "Native, predictable admin controls", "Accessible and responsive content"],
+        "rules": [],
+        "dos": [
+            "Do preserve keyboard access, readable contrast, meaningful headings, visible focus, mobile sizing, and reduced motion.",
+            "Do use the existing Vite entry points and shared Blade components; keep third-party CSS overrides in the admin theme.",
+            "Do verify desktop and mobile dashboard layouts, a resource table and editor, login, and custom subscriber screens after shared theme changes.",
+            "Do keep public and admin fonts and core palette aligned while allowing different information density."
+        ],
+        "donts": [
+            "Don't hide all Filament page headings globally or override every label with a brand color.",
+            "Don't replace native controls, authorization, MFA, or editorial workflows to achieve a visual effect.",
+            "Don't use decorative gold for small text on light backgrounds, external font CDNs, invented metrics, or production data as test fixtures."
+        ]
+    }
+}

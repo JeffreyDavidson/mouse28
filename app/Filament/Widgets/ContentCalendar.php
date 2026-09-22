@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Date;
 class ContentCalendar extends Widget
 {
     #[\Override]
-    protected static ?int $sort = 4;
+    protected static ?int $sort = 5;
 
     #[\Override]
     protected int|string|array $columnSpan = 1;

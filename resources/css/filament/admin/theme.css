@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap');
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
+@import '../../fonts.css';
 @import './overrides.css';
 
 @source '../../../../app/Filament/**/*';
@@ -15,6 +15,8 @@
     --color-mouse-gold-light: #f0c75e;
     --color-mouse-gold-dark: #b8922e;
     --color-mouse-cream: #fef9ef;
+    --color-mouse-cream-dark: #f5efe0;
+    --color-mouse-gold-ink: #805e10;
     --font-mouse-body: 'Poppins', ui-sans-serif, system-ui, sans-serif;
-    --font-mouse-heading: 'Playfair Display', ui-serif, Georgia, serif;
+    --font-mouse-heading: 'Besley', ui-serif, Georgia, serif;
 }
