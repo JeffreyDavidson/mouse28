@@ -129,11 +129,7 @@
                                         @if ($firstContactError === 'name') autofocus @endif
                                         class="border-navy/20 bg-dark-cream/45 text-navy placeholder:text-navy/65 focus:border-purple focus:ring-purple/15 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
                                     />
-                                    @error('name', 'contact')
-                                        <p id="name-error" role="alert" class="mt-2 text-sm text-red-800">
-                                            {{ $message }}
-                                        </p>
-                                    @enderror
+                                    <x-field-error field="name" id="name-error" bag="contact" />
                                 </div>
 
                                 <div>
@@ -151,11 +147,7 @@
                                         @if ($firstContactError === 'email') autofocus @endif
                                         class="border-navy/20 bg-dark-cream/45 text-navy placeholder:text-navy/65 focus:border-purple focus:ring-purple/15 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
                                     />
-                                    @error('email', 'contact')
-                                        <p id="email-error" role="alert" class="mt-2 text-sm text-red-800">
-                                            {{ $message }}
-                                        </p>
-                                    @enderror
+                                    <x-field-error field="email" id="email-error" bag="contact" />
                                 </div>
                             </div>
 
@@ -179,11 +171,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                @error('subject', 'contact')
-                                    <p id="subject-error" role="alert" class="mt-2 text-sm text-red-800">
-                                        {{ $message }}
-                                    </p>
-                                @enderror
+                                <x-field-error field="subject" id="subject-error" bag="contact" />
                             </div>
 
                             <div>
@@ -198,11 +186,7 @@
                                     @if ($firstContactError === 'message') autofocus @endif
                                     class="border-navy/20 bg-dark-cream/45 text-navy placeholder:text-navy/65 focus:border-purple focus:ring-purple/15 min-h-44 w-full resize-y rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
                                 >{{ $contactHasFeedback ? old('message') : '' }}</textarea>
-                                @error('message', 'contact')
-                                    <p id="message-error" role="alert" class="mt-2 text-sm text-red-800">
-                                        {{ $message }}
-                                    </p>
-                                @enderror
+                                <x-field-error field="message" id="message-error" bag="contact" />
                             </div>
 
                             <div>
@@ -219,11 +203,7 @@
                                         Contact verification is temporarily unavailable. Please try again later.
                                     </p>
                                 @endif
-                                @error('cf-turnstile-response', 'contact')
-                                    <p id="turnstile-error" role="alert" class="mt-2 text-sm text-red-800">
-                                        {{ $message }}
-                                    </p>
-                                @enderror
+                                <x-field-error field="cf-turnstile-response" id="turnstile-error" bag="contact" />
                             </div>
 
                             <button

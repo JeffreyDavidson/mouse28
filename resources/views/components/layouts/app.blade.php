@@ -290,18 +290,11 @@
                         @csrf
                         <x-newsletter-protection honeypot-id="footer-newsletter-website" />
                         <div class="flex flex-col gap-2 sm:flex-row">
-                            <label for="footer-newsletter-email" class="sr-only">Email address</label>
-                            <input
-                                id="footer-newsletter-email"
-                                type="email"
-                                name="email"
-                                value="{{ $errors->newsletter->isNotEmpty() || session('newsletter_error') ? old('email') : '' }}"
-                                placeholder="your@email.com"
-                                autocomplete="email"
-                                required
-                                @if ($errors->newsletter->has('email')) aria-invalid="true" aria-describedby="footer-newsletter-email-error" @endif
-                                @if ($errors->newsletter->has('email')) autofocus @endif
-                                class="focus:border-gold/50 focus:ring-gold/30 min-h-12 min-w-0 flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-2.5 text-base text-white transition-colors placeholder:text-white/60 focus:ring-1 focus:outline-none sm:text-sm"
+                            <x-newsletter-email-field
+                                input-id="footer-newsletter-email"
+                                error-id="footer-newsletter-email-error"
+                                input-class="focus:border-gold/50 focus:ring-gold/30 min-h-12 min-w-0 flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-2.5 text-base text-white transition-colors placeholder:text-white/60 focus:ring-1 focus:outline-none sm:text-sm"
+                                error-class="text-sm text-red-300"
                             />
                             <button
                                 type="submit"
@@ -310,11 +303,6 @@
                                 Subscribe
                             </button>
                         </div>
-                        @if ($errors->newsletter->has('email'))
-                            <p id="footer-newsletter-email-error" role="alert" class="text-sm text-red-300">
-                                {{ $errors->newsletter->first('email') }}
-                            </p>
-                        @endif
                         <p class="text-xs text-white/60">We use your email to send Mouse28 updates.</p>
                     </form>
                 </div>

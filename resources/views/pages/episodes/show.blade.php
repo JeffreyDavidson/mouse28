@@ -21,9 +21,7 @@
     @endunless
 
     @if ($isPreview ?? false)
-        <div role="status" class="bg-gold text-navy px-4 py-3 text-center text-sm font-semibold">
-            Preview mode. This page is only visible to administrators.
-        </div>
+        <x-preview-banner />
     @endif
 
     @php
@@ -56,13 +54,7 @@
             </div>
 
             <div class="min-w-0 wrap-anywhere">
-                <a
-                    href="{{ route('episodes.index') }}"
-                    class="text-cream/65 hover:text-gold inline-flex min-h-12 items-center gap-2 text-sm font-semibold transition-colors"
-                >
-                    <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-                    All Episodes
-                </a>
+                <x-archive-back-link href="{{ route('episodes.index') }}" label="All Episodes" />
 
                 <div class="text-cream/65 mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm" data-episode-meta>
                     <span class="text-gold font-semibold">Episode {{ $episode->episode_number }}</span>
@@ -127,47 +119,31 @@
                             @class(['flex flex-wrap gap-x-7 gap-y-1', 'mt-2' => $episode->transistor_embed_url])
                         >
                             @if ($appleUrl)
-                                <a
-                                    href="{{ $appleUrl }}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    class="text-gold hover:text-cream inline-flex min-h-12 flex-col justify-center gap-1.5"
-                                >
-                                    <span class="font-semibold underline underline-offset-8">Apple Podcasts</span>
-                                    <span class="text-cream/55 text-xs">{{ $episode->apple_url ? 'Listen to this episode' : 'Visit the show' }}</span>
-                                </a>
+                                <x-podcast-platform-link
+                                    :href="$appleUrl"
+                                    label="Apple Podcasts"
+                                    :description="$episode->apple_url ? 'Listen to this episode' : 'Visit the show'"
+                                />
                             @endif
                             @if ($spotifyUrl)
-                                <a
-                                    href="{{ $spotifyUrl }}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    class="text-gold hover:text-cream inline-flex min-h-12 flex-col justify-center gap-1.5"
-                                >
-                                    <span class="font-semibold underline underline-offset-8">Spotify</span>
-                                    <span class="text-cream/55 text-xs">{{ $episode->spotify_url ? 'Listen to this episode' : 'Visit the show' }}</span>
-                                </a>
+                                <x-podcast-platform-link
+                                    :href="$spotifyUrl"
+                                    label="Spotify"
+                                    :description="$episode->spotify_url ? 'Listen to this episode' : 'Visit the show'"
+                                />
                             @endif
                             @if ($youtubeUrl)
-                                <a
-                                    href="{{ $youtubeUrl }}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    class="text-gold hover:text-cream inline-flex min-h-12 flex-col justify-center gap-1.5"
-                                >
-                                    <span class="font-semibold underline underline-offset-8">YouTube</span>
-                                    <span class="text-cream/55 text-xs">{{ $episode->youtube_url ? 'Watch this episode' : 'Visit the channel' }}</span>
-                                </a>
+                                <x-podcast-platform-link
+                                    :href="$youtubeUrl"
+                                    label="YouTube"
+                                    :description="$episode->youtube_url ? 'Watch this episode' : 'Visit the channel'"
+                                />
                             @endif
-                            <a
-                                href="{{ config('podcast.rss_url') }}"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                class="text-gold hover:text-cream inline-flex min-h-12 flex-col justify-center gap-1.5"
-                            >
-                                <span class="font-semibold underline underline-offset-8">RSS Feed</span>
-                                <span class="text-cream/55 text-xs">Subscribe in another podcast app</span>
-                            </a>
+                            <x-podcast-platform-link
+                                :href="config('podcast.rss_url')"
+                                label="RSS Feed"
+                                description="Subscribe in another podcast app"
+                            />
                         </nav>
                     </div>
                 </section>
