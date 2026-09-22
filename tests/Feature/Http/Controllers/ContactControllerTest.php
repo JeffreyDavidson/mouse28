@@ -69,8 +69,8 @@ test('contact errors and old input stay out of the newsletter form', function ()
         ->assertOk();
 
     expect($response->getContent())
-        ->toMatch('/<input\s+type="email"\s+id="email"\s+name="email"\s+required\s+autocomplete="email"\s+inputmode="email"\s+value="not-an-email"/')
-        ->toMatch('/<input\s+id="footer-newsletter-email"\s+type="email"\s+name="email"\s+value=""/');
+        ->toMatch('/<input(?=[^>]*\bid="email")(?=[^>]*\btype="email")(?=[^>]*\bvalue="not-an-email")[^>]*>/')
+        ->toMatch('/<input(?=[^>]*\bid="footer-newsletter-email")(?=[^>]*\btype="email")(?=[^>]*\bvalue="")[^>]*>/');
 
     $response->assertSeeHtml('aria-describedby="email-error"')->assertDontSeeHtml('aria-describedby="newsletter-email-error"');
 });

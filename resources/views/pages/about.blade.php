@@ -161,77 +161,41 @@
                     </div>
 
                     <div class="border-gold/40 mt-12 grid border-y md:grid-cols-2 lg:mt-16">
-                        <article class="border-gold/40 py-10 md:border-r md:pr-10 lg:py-14 lg:pr-16">
-                            <img
-                                src="/images/jeffrey.webp"
-                                alt="Jeffrey Davidson in Epcot's Japan Pavilion"
-                                width="2048"
-                                height="2048"
-                                loading="lazy"
-                                decoding="async"
-                                class="aspect-[5/4] w-full rounded-xl object-cover object-center shadow-[0_1.5rem_3.5rem_rgb(26_16_64/0.14)]"
-                            />
-                            <h3 class="font-heading text-navy mt-8 text-4xl [font-weight:620] tracking-[-0.02em]">
-                                Jeffrey Davidson
-                            </h3>
-                            <p class="text-purple mt-2 font-semibold">Dad, software engineer, and Disney strategist</p>
-                            <div class="text-navy/70 mt-6 max-w-[62ch] space-y-4 text-base/7 text-pretty">
-                                <p>
-                                    Jeffrey is the planner and podcast editor, the person mapping a park route,
-                                    researching the details, and asking whether there is time for one more ride.
-                                </p>
-                                <p>
-                                    After more than 15 years building things on the internet, he brings the same care
-                                    for useful information to everything Mouse28 publishes.
-                                </p>
-                            </div>
-                            <dl class="border-navy/15 mt-7 grid gap-5 border-t pt-5 sm:grid-cols-2">
-                                <div>
-                                    <dt class="text-navy/55 text-sm">Favorite park</dt>
-                                    <dd class="text-navy mt-1 font-semibold">Epcot</dd>
-                                </div>
-                                <div>
-                                    <dt class="text-navy/55 text-sm">Behind the scenes</dt>
-                                    <dd class="text-navy mt-1 font-semibold">Planning and production</dd>
-                                </div>
-                            </dl>
-                        </article>
+                        <x-author-profile
+                            image="/images/jeffrey.webp"
+                            alt="Jeffrey Davidson in Epcot's Japan Pavilion"
+                            name="Jeffrey Davidson"
+                            role="Dad, software engineer, and Disney strategist"
+                            :facts="['Favorite park' => 'Epcot', 'Behind the scenes' => 'Planning and production']"
+                            class="md:border-r md:pr-10 lg:pr-16"
+                        >
+                            <p>
+                                Jeffrey is the planner and podcast editor, the person mapping a park route, researching
+                                the details, and asking whether there is time for one more ride.
+                            </p>
+                            <p>
+                                After more than 15 years building things on the internet, he brings the same care for
+                                useful information to everything Mouse28 publishes.
+                            </p>
+                        </x-author-profile>
 
-                        <article class="border-gold/40 border-t py-10 md:border-t-0 md:pl-10 lg:py-14 lg:pl-16">
-                            <img
-                                src="/images/cassie.webp"
-                                alt="Cassie Davidson at Magic Kingdom's Winnie the Pooh"
-                                width="2048"
-                                height="2048"
-                                loading="lazy"
-                                decoding="async"
-                                class="aspect-[5/4] w-full rounded-xl object-cover object-center shadow-[0_1.5rem_3.5rem_rgb(26_16_64/0.14)]"
-                            />
-                            <h3 class="font-heading text-navy mt-8 text-4xl [font-weight:620] tracking-[-0.02em]">
-                                Cassie Davidson
-                            </h3>
-                            <p class="text-purple mt-2 font-semibold">Mom, baker, and accessibility champion</p>
-                            <div class="text-navy/70 mt-6 max-w-[62ch] space-y-4 text-base/7 text-pretty">
-                                <p>
-                                    Cassie keeps every story grounded in what genuinely helps families. She brings
-                                    warmth, honesty, and the practical instinct to know when the plan needs to change.
-                                </p>
-                                <p>
-                                    Away from the parks, she runs a cottage food bakery, wrangles two huskies, and keeps
-                                    Mouse28's advice connected to real family life.
-                                </p>
-                            </div>
-                            <dl class="border-navy/15 mt-7 grid gap-5 border-t pt-5 sm:grid-cols-2">
-                                <div>
-                                    <dt class="text-navy/55 text-sm">Favorite park</dt>
-                                    <dd class="text-navy mt-1 font-semibold">Magic Kingdom</dd>
-                                </div>
-                                <div>
-                                    <dt class="text-navy/55 text-sm">Behind the scenes</dt>
-                                    <dd class="text-navy mt-1 font-semibold">Family perspective and care</dd>
-                                </div>
-                            </dl>
-                        </article>
+                        <x-author-profile
+                            image="/images/cassie.webp"
+                            alt="Cassie Davidson at Magic Kingdom's Winnie the Pooh"
+                            name="Cassie Davidson"
+                            role="Mom, baker, and accessibility champion"
+                            :facts="['Favorite park' => 'Magic Kingdom', 'Behind the scenes' => 'Family perspective and care']"
+                            class="border-t md:border-t-0 md:pl-10 lg:pl-16"
+                        >
+                            <p>
+                                Cassie keeps every story grounded in what genuinely helps families. She brings warmth,
+                                honesty, and the practical instinct to know when the plan needs to change.
+                            </p>
+                            <p>
+                                Away from the parks, she runs a cottage food bakery, wrangles two huskies, and keeps
+                                Mouse28's advice connected to real family life.
+                            </p>
+                        </x-author-profile>
                     </div>
                 </div>
             </section>

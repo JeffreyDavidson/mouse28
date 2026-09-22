@@ -35,24 +35,20 @@
         <form action="{{ route('newsletter.store') }}" method="POST" class="space-y-3">
             @csrf
             <x-newsletter-protection honeypot-id="card-newsletter-website" />
-            <label for="newsletter-email" class="sr-only">Email address</label>
-            <input
+            <x-form.input
                 id="newsletter-email"
-                type="email"
                 name="email"
-                value="{{ $newsletterHasFeedback ? old('email') : '' }}"
+                label="Email address"
+                type="email"
+                :value="$newsletterHasFeedback ? old('email') : ''"
+                :error="$newsletterErrors->first('email')"
+                error-id="newsletter-email-error"
+                input-class="focus:border-gold/40 focus:ring-gold/20 min-h-12 w-full rounded-xl border border-white/10 bg-white/8 px-4 py-3 text-base text-white transition-colors placeholder:text-white/60 focus:bg-white/12 focus:ring-2 focus:outline-none sm:text-sm"
+                error-class="text-left text-sm text-red-200"
                 placeholder="your@email.com"
                 autocomplete="email"
                 required
-                @if ($newsletterErrors->has('email')) aria-invalid="true" aria-describedby="newsletter-email-error" @endif
-                @if ($newsletterErrors->has('email')) autofocus @endif
-                class="focus:border-gold/40 focus:ring-gold/20 min-h-12 w-full rounded-xl border border-white/10 bg-white/8 px-4 py-3 text-base text-white transition-colors placeholder:text-white/60 focus:bg-white/12 focus:ring-2 focus:outline-none sm:text-sm"
             />
-            @if ($newsletterErrors->has('email'))
-                <p id="newsletter-email-error" role="alert" class="text-left text-sm text-red-200">
-                    {{ $newsletterErrors->first('email') }}
-                </p>
-            @endif
             <button
                 type="submit"
                 class="from-gold to-gold-light text-navy shadow-gold/20 min-h-12 w-full rounded-full bg-linear-to-r py-3 text-base font-bold shadow-lg transition-transform hover:-translate-y-0.5 sm:text-sm"
