@@ -34,3 +34,18 @@ test('contact topics and free text retain readable admin labels', function (stri
     'recognized topic' => ['guest', 'Podcast Guest'],
     'free text' => ['A custom question', 'A custom question'],
 ]);
+
+test('renders contact message previews with a two-line clamp', function (): void {
+    ContactMessage::query()->create([
+        'name' => 'Alex Example',
+        'email' => 'alex@example.com',
+        'subject' => 'A custom question',
+        'message' => 'A family wants to understand the attraction before visiting. More detail helps them prepare for the experience.',
+    ]);
+    actingAs(User::factory()->admin()->create());
+
+    get(ContactMessageResource::getUrl())
+        ->assertOk()
+        ->assertSeeHtml('A family wants to understand the attraction')
+        ->assertSeeHtml('--line-clamp: 2');
+});
