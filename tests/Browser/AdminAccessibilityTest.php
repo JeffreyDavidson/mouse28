@@ -153,6 +153,110 @@ function undersizedFilamentTouchTargetsScript(): string
         JS;
 }
 
+function filamentDropdownAriaStateScript(string $triggerSelector, bool $isExpanded): string
+{
+    $selector = var_export($triggerSelector, true);
+    $expanded = var_export($isExpanded ? 'true' : 'false', true);
+
+    return <<<JS
+        (() => {
+            const trigger = document.querySelector({$selector});
+            const wrapper = trigger?.closest('.fi-dropdown-trigger');
+            const panel = trigger?.closest('.fi-dropdown')?.querySelector('.fi-dropdown-panel');
+
+            return Boolean(trigger && wrapper && panel)
+                && trigger.tagName === 'BUTTON'
+                && ! wrapper.hasAttribute('aria-expanded')
+                && trigger.getAttribute('aria-expanded') === {$expanded}
+                && trigger.getAttribute('aria-controls') === panel.id;
+        })()
+        JS;
+}
+
+test('user menu keeps expanded state on its button and closes with Escape', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+
+    // Act
+    $page = visit(PodcastSettings::getUrl());
+    $page->click('.fi-user-menu-trigger');
+
+    // Assert
+    $page->assertScript(filamentDropdownAriaStateScript('.fi-user-menu .fi-user-menu-trigger', true), true)
+        ->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors()
+        ->keys(':focus', 'Escape')
+        ->assertScript(filamentDropdownAriaStateScript('.fi-user-menu .fi-user-menu-trigger', false), true);
+})->group('browser-smoke');
+
+test('column manager keeps expanded state on its button and closes with Escape', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+    Post::factory()->create();
+
+    // Act
+    $page = visit(PostResource::getUrl());
+    $page->click('button[aria-label="Column manager"]');
+
+    // Assert
+    $page->assertScript(filamentDropdownAriaStateScript('button[aria-label="Column manager"]', true), true)
+        ->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors()
+        ->keys(':focus', 'Escape')
+        ->assertScript(filamentDropdownAriaStateScript('button[aria-label="Column manager"]', false), true);
+})->group('browser-smoke');
+
+test('table pagination selects have an accessible name', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+    Post::factory()->create();
+
+    // Act
+    $page = visit(PostResource::getUrl());
+
+    // Assert
+    $page->assertScript(<<<'JS'
+        (() => {
+            const selects = [...document.querySelectorAll('.fi-pagination select')];
+
+            return selects.length > 0
+                && selects.every((select) => [...select.labels].some((label) => label.textContent.includes('Per page')));
+        })()
+        JS, true)
+        ->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors();
+})->group('browser-smoke');
+
+test('related episode combobox links its label and listbox and closes with Escape', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+    Episode::factory()->create(['title' => 'Example Episode']);
+
+    // Act
+    $page = visit(PostResource::getUrl('create'));
+    $page->click('button[role="combobox"][id="form.episode_id"]');
+
+    // Assert
+    $page->assertSee('Example Episode')
+        ->assertScript(<<<'JS'
+            (() => {
+                const combobox = document.querySelector('button[role="combobox"][id="form.episode_id"]');
+                const listbox = document.getElementById(combobox?.getAttribute('aria-controls') ?? '');
+                const label = document.querySelector('label[for="form.episode_id"]');
+
+                return Boolean(combobox && listbox && label)
+                    && combobox.getAttribute('aria-haspopup') === 'listbox'
+                    && combobox.getAttribute('aria-expanded') === 'true'
+                    && label.textContent.trim() === 'Related Episode'
+                    && listbox.getAttribute('role') === 'listbox'
+                    && listbox.querySelectorAll('[role="option"]').length > 0;
+            })()
+            JS, true)
+        ->assertNoJavaScriptErrors()
+        ->keys(':focus', 'Escape')
+        ->assertScript('document.getElementById("form.episode_id").getAttribute("aria-expanded")', 'false');
+})->group('browser-smoke');
+
 test('mobile resource status tabs scroll without overlapping labels', function (): void {
     // Arrange
     actingAs(User::factory()->admin()->create());
@@ -241,34 +345,12 @@ test('table filter dropdown keeps its expanded state on the trigger button', fun
 
     // Act
     $page = visit(PostResource::getUrl());
-    $page->assertScript(<<<'JS'
-        (() => {
-            const dropdown = document.querySelector('.fi-ta-filters-dropdown');
-            const wrapper = dropdown?.querySelector(':scope > .fi-dropdown-trigger');
-            const trigger = wrapper?.querySelector('button');
-
-            return Boolean(trigger)
-                && ! wrapper.hasAttribute('aria-expanded')
-                && trigger.getAttribute('aria-expanded') === 'false';
-        })()
-        JS, true);
+    $page->assertScript(filamentDropdownAriaStateScript('button[aria-label="Filter"]', false), true);
 
     $page->click('button[aria-label="Filter"]');
 
     // Assert
-    $page->assertScript(<<<'JS'
-        (() => {
-            const dropdown = document.querySelector('.fi-ta-filters-dropdown');
-            const wrapper = dropdown?.querySelector(':scope > .fi-dropdown-trigger');
-            const trigger = wrapper?.querySelector('button');
-            const panel = dropdown?.querySelector('.fi-dropdown-panel');
-
-            return Boolean(trigger && panel)
-                && ! wrapper.hasAttribute('aria-expanded')
-                && trigger.getAttribute('aria-expanded') === 'true'
-                && trigger.getAttribute('aria-controls') === panel.id;
-        })()
-        JS, true)
+    $page->assertScript(filamentDropdownAriaStateScript('button[aria-label="Filter"]', true), true)
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 
@@ -276,10 +358,7 @@ test('table filter dropdown keeps its expanded state on the trigger button', fun
     $page->click('button[aria-label="Filter"]');
 
     // Assert
-    $page->assertScript(<<<'JS'
-        (() => document.querySelector('.fi-ta-filters-dropdown .fi-dropdown-trigger button')
-            ?.getAttribute('aria-expanded') === 'false')()
-        JS, true);
+    $page->assertScript(filamentDropdownAriaStateScript('button[aria-label="Filter"]', false), true);
 })->group('browser-smoke');
 
 test('mobile Filament controls meet the minimum touch target across admin pages', function (): void {
