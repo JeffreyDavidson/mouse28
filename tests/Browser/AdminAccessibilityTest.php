@@ -234,6 +234,54 @@ test('mobile table filter reset and checkbox labels meet the minimum touch targe
     }
 })->group('browser-smoke');
 
+test('table filter dropdown keeps its expanded state on the trigger button', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+    Post::factory()->create();
+
+    // Act
+    $page = visit(PostResource::getUrl());
+    $page->assertScript(<<<'JS'
+        (() => {
+            const dropdown = document.querySelector('.fi-ta-filters-dropdown');
+            const wrapper = dropdown?.querySelector(':scope > .fi-dropdown-trigger');
+            const trigger = wrapper?.querySelector('button');
+
+            return Boolean(trigger)
+                && ! wrapper.hasAttribute('aria-expanded')
+                && trigger.getAttribute('aria-expanded') === 'false';
+        })()
+        JS, true);
+
+    $page->click('button[aria-label="Filter"]');
+
+    // Assert
+    $page->assertScript(<<<'JS'
+        (() => {
+            const dropdown = document.querySelector('.fi-ta-filters-dropdown');
+            const wrapper = dropdown?.querySelector(':scope > .fi-dropdown-trigger');
+            const trigger = wrapper?.querySelector('button');
+            const panel = dropdown?.querySelector('.fi-dropdown-panel');
+
+            return Boolean(trigger && panel)
+                && ! wrapper.hasAttribute('aria-expanded')
+                && trigger.getAttribute('aria-expanded') === 'true'
+                && trigger.getAttribute('aria-controls') === panel.id;
+        })()
+        JS, true)
+        ->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors();
+
+    // Act
+    $page->click('button[aria-label="Filter"]');
+
+    // Assert
+    $page->assertScript(<<<'JS'
+        (() => document.querySelector('.fi-ta-filters-dropdown .fi-dropdown-trigger button')
+            ?.getAttribute('aria-expanded') === 'false')()
+        JS, true);
+})->group('browser-smoke');
+
 test('mobile Filament controls meet the minimum touch target across admin pages', function (): void {
     // Arrange
     actingAs(User::factory()->admin()->create());
