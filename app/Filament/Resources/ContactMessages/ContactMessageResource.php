@@ -74,7 +74,8 @@ class ContactMessageResource extends Resource
                     ->color('warning'),
                 TextColumn::make('message')
                     ->limit(60)
-                    ->wrap(),
+                    ->wrap()
+                    ->lineClamp(2),
                 TextColumn::make('is_read')
                     ->label('Status')
                     ->formatStateUsing(fn (bool $state): string => $state ? 'Read' : 'Unread')
