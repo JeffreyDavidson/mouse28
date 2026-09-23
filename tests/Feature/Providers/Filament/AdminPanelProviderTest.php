@@ -7,14 +7,17 @@ use App\Filament\Widgets\RecentActivity;
 use App\Filament\Widgets\StatsOverview;
 use App\Filament\Widgets\WelcomeBanner;
 use App\Models\User;
+use App\Providers\Filament\AdminPanelProvider;
 use Filament\Actions\Testing\TestAction;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Auth\MultiFactor\Pages\SetUpRequiredMultiFactorAuthentication;
 use Filament\Auth\Pages\EditProfile;
 use Filament\Facades\Filament;
 use Filament\Pages\Dashboard;
+use Filament\Panel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Vite;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Livewire\livewire;
@@ -35,6 +38,18 @@ test('authenticated user can render the admin dashboard', function (): void {
     foreach ([WelcomeBanner::class, StatsOverview::class, RecentActivity::class, QuickDraft::class, ContentCalendar::class, InspirationWidget::class] as $widget) {
         $response->assertSeeLivewire($widget);
     }
+});
+
+test('admin panel registration does not require a built Vite manifest', function (): void {
+    Vite::useManifestFilename('missing-manifest.json');
+
+    try {
+        $panel = new AdminPanelProvider(app())->panel(Panel::make());
+    } finally {
+        Vite::useManifestFilename('manifest.json');
+    }
+
+    expect($panel->getId())->toBe('admin');
 });
 
 test('non admin user cannot access the admin panel', function (): void {
