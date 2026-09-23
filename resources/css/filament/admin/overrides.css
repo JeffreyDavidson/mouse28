@@ -154,8 +154,20 @@
         min-width: 3rem;
     }
 
+    .fi-body .fi-tabs-item {
+        @apply shrink-0;
+    }
+
     .fi-body .fi-ta-header-cell-sort-btn {
         min-width: 3rem;
+    }
+
+    .fi-body .fi-ta-filters .fi-ta-filters-header button {
+        @apply inline-flex min-h-12 min-w-12 items-center justify-center px-3;
+    }
+
+    .fi-body .fi-ta-filters .fi-fo-field-label:has(.fi-checkbox-input) {
+        @apply flex min-h-12 w-full items-center gap-3;
     }
 
     .fi-body .fi-fo-markdown-editor .editor-toolbar button {

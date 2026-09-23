@@ -153,6 +153,87 @@ function undersizedFilamentTouchTargetsScript(): string
         JS;
 }
 
+test('mobile resource status tabs scroll without overlapping labels', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+
+    $pages = [
+        PostResource::getUrl(),
+        EpisodeResource::getUrl(),
+        GuideResource::getUrl(),
+    ];
+
+    foreach ($pages as $url) {
+        $page = visit($url);
+
+        foreach ([390, 320] as $width) {
+            $page->resize($width, 844);
+
+            // Assert
+            $page->assertScript(<<<'JS'
+                (() => {
+                    const tabs = document.querySelector('.fi-tabs');
+                    const items = [...(tabs?.querySelectorAll('.fi-tabs-item') ?? [])];
+                    const labels = items.map((item) => {
+                        const label = item.querySelector('.fi-tabs-item-label') ?? item;
+                        const range = document.createRange();
+                        range.selectNodeContents(label);
+                        const bounds = range.getBoundingClientRect();
+
+                        return { left: bounds.left, right: bounds.right };
+                    });
+
+                    return items.length > 1
+                        && tabs.scrollWidth > tabs.clientWidth
+                        && labels.every((label, index) => index === 0 || label.left >= labels[index - 1].right);
+                })()
+                JS, true)
+                ->assertScript($this->horizontalOverflowScript(), 0)
+                ->assertNoAccessibilityIssues()
+                ->assertNoJavaScriptErrors();
+        }
+    }
+})->group('browser-smoke');
+
+test('mobile table filter reset and checkbox labels meet the minimum touch target', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+    Post::factory()->create();
+
+    // Act
+    $page = visit(PostResource::getUrl());
+
+    foreach ([390, 320] as $width) {
+        $page->resize($width, 844);
+        $page->click('button[aria-label="Filter"]');
+
+        // Assert
+        $page->assertScript(<<<'JS'
+            (() => {
+                const panel = [...document.querySelectorAll('.fi-ta-filters-dropdown .fi-dropdown-panel')]
+                    .find((element) => getComputedStyle(element).display !== 'none');
+
+                if (! panel) {
+                    return false;
+                }
+
+                const reset = panel.querySelector('.fi-ta-filters-header button');
+                const checkboxLabels = [...panel.querySelectorAll('.fi-ta-filters .fi-fo-field-label:has(.fi-checkbox-input)')];
+
+                return Boolean(reset)
+                    && checkboxLabels.length > 0
+                    && [reset, ...checkboxLabels].every((control) => {
+                        const bounds = control.getBoundingClientRect();
+
+                        return bounds.width >= 48 && bounds.height >= 48;
+                    });
+            })()
+            JS, true)
+            ->assertScript($this->horizontalOverflowScript(), 0)
+            ->assertNoJavaScriptErrors();
+    }
+})->group('browser-smoke');
+
 test('mobile Filament controls meet the minimum touch target across admin pages', function (): void {
     // Arrange
     actingAs(User::factory()->admin()->create());
