@@ -49,6 +49,406 @@ test('newsletter contact statuses remain readable on desktop and mobile', functi
         ->assertNoJavaScriptErrors();
 });
 
+test('newsletter contact table and pagination use the full available width', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+    config()->set('services.resend.audience_id', 'audience-test-id');
+    config()->set('services.resend.key', 'resend-test-key');
+    Http::fake(['https://api.resend.com/*' => Http::response(['data' => [
+        ['email' => 'reader@example.com', 'unsubscribed' => false],
+    ]])]);
+
+    // Act
+    $page = visit(NewsletterSubscribers::getUrl());
+
+    foreach ([1440, 390, 320] as $width) {
+        $page->resize($width, 1000);
+
+        // Assert
+        $page->assertScript(<<<'JS'
+            (() => {
+                const container = document.querySelector('[aria-label="Newsletter contacts"]');
+                const table = document.querySelector('[aria-label="Newsletter contacts table"]');
+                const pagination = container?.querySelector('.fi-pagination');
+
+                if (! container || ! table || ! pagination) {
+                    return false;
+                }
+
+                const containerBounds = container.getBoundingClientRect();
+                const tableBounds = table.getBoundingClientRect();
+                const paginationBounds = pagination.getBoundingClientRect();
+
+                return tableBounds.width >= containerBounds.width - 4
+                    && paginationBounds.top >= tableBounds.bottom - 1;
+            })()
+            JS, true)
+            ->assertScript($this->horizontalOverflowScript(), 0)
+            ->assertNoAccessibilityIssues()
+            ->assertNoJavaScriptErrors();
+    }
+})->group('browser-smoke');
+
+test('mobile admin user menu meets the minimum touch target', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+
+    // Act
+    $page = visit(PodcastSettings::getUrl());
+
+    foreach ([390, 320] as $width) {
+        $page->resize($width, 844);
+
+        // Assert
+        $page->assertScript(<<<'JS'
+            (() => {
+                const trigger = document.querySelector('.fi-topbar .fi-user-menu-trigger');
+
+                if (! trigger) {
+                    return false;
+                }
+
+                const bounds = trigger.getBoundingClientRect();
+
+                return bounds.width >= 48 && bounds.height >= 48;
+            })()
+            JS, true)
+            ->assertScript($this->horizontalOverflowScript(), 0)
+            ->assertNoAccessibilityIssues()
+            ->assertNoJavaScriptErrors();
+    }
+})->group('browser-smoke');
+
+function undersizedFilamentTouchTargetsScript(): string
+{
+    return <<<'JS'
+        (() => {
+            const selectors = [
+                '.fi-tabs-item',
+                '.fi-ta-header-cell-sort-btn',
+                '.fi-ta-header-toolbar .fi-icon-btn',
+                '.fi-fo-rich-editor-tool',
+                '.fi-fo-markdown-editor .editor-toolbar button',
+                '.fi-select-input-btn',
+                '.fi-pagination .fi-select-input',
+                '.fi-ac-link-action',
+            ];
+            const controls = document.querySelectorAll(selectors.join(','));
+
+            return [...controls].filter((control) => {
+                const bounds = control.getBoundingClientRect();
+                const styles = window.getComputedStyle(control);
+
+                return bounds.width > 0
+                    && bounds.height > 0
+                    && styles.visibility !== 'hidden'
+                    && ! control.closest('[aria-hidden="true"]')
+                    && (bounds.width < 48 || bounds.height < 48);
+            }).map((control) => {
+                const bounds = control.getBoundingClientRect();
+
+                return `${control.className} (${Math.round(bounds.width)}x${Math.round(bounds.height)})`;
+            }).join('|');
+        })()
+        JS;
+}
+
+function filamentDropdownAriaStateScript(string $triggerSelector, bool $isExpanded): string
+{
+    $selector = var_export($triggerSelector, true);
+    $expanded = var_export($isExpanded ? 'true' : 'false', true);
+
+    return <<<JS
+        (() => {
+            const trigger = document.querySelector({$selector});
+            const wrapper = trigger?.closest('.fi-dropdown-trigger');
+            const panel = trigger?.closest('.fi-dropdown')?.querySelector('.fi-dropdown-panel');
+
+            return Boolean(trigger && wrapper && panel)
+                && trigger.tagName === 'BUTTON'
+                && ! wrapper.hasAttribute('aria-expanded')
+                && trigger.getAttribute('aria-expanded') === {$expanded}
+                && trigger.getAttribute('aria-controls') === panel.id;
+        })()
+        JS;
+}
+
+test('user menu keeps expanded state on its button and closes with Escape', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+
+    // Act
+    $page = visit(PodcastSettings::getUrl());
+    $page->click('.fi-user-menu-trigger');
+
+    // Assert
+    $page->assertScript(filamentDropdownAriaStateScript('.fi-user-menu .fi-user-menu-trigger', true), true)
+        ->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors()
+        ->keys(':focus', 'Escape')
+        ->assertScript(filamentDropdownAriaStateScript('.fi-user-menu .fi-user-menu-trigger', false), true);
+})->group('browser-smoke');
+
+test('column manager keeps expanded state on its button and closes with Escape', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+    Post::factory()->create();
+
+    // Act
+    $page = visit(PostResource::getUrl());
+    $page->click('button[aria-label="Column manager"]');
+
+    // Assert
+    $page->assertScript(filamentDropdownAriaStateScript('button[aria-label="Column manager"]', true), true)
+        ->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors()
+        ->keys(':focus', 'Escape')
+        ->assertScript(filamentDropdownAriaStateScript('button[aria-label="Column manager"]', false), true);
+})->group('browser-smoke');
+
+test('table pagination selects have an accessible name', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+    Post::factory()->create();
+
+    // Act
+    $page = visit(PostResource::getUrl());
+
+    // Assert
+    $page->assertScript(<<<'JS'
+        (() => {
+            const selects = [...document.querySelectorAll('.fi-pagination select')];
+
+            return selects.length > 0
+                && selects.every((select) => [...select.labels].some((label) => label.textContent.includes('Per page')));
+        })()
+        JS, true)
+        ->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors();
+})->group('browser-smoke');
+
+test('related episode combobox exposes an accessible searchable listbox', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+    Episode::factory()->create(['title' => 'Example Episode']);
+
+    // Act
+    $page = visit(PostResource::getUrl('create'));
+    $page->click('button[role="combobox"][id="form.episode_id"]');
+
+    // Assert
+    $page->assertScript(<<<'JS'
+            (() => {
+                const searchInput = document.querySelector('.fi-select-input-search-ctn .fi-input');
+                const optionLabel = document.querySelector('.fi-select-input-option > span');
+                const expectedColor = 'rgb(26, 16, 64)';
+
+                return Boolean(searchInput && optionLabel)
+                    && getComputedStyle(searchInput, '::placeholder').color === expectedColor
+                    && getComputedStyle(optionLabel).color === expectedColor;
+            })()
+            JS, true);
+
+    $page->assertScript(<<<'JS'
+            (() => {
+                const combobox = document.querySelector('button[role="combobox"][id="form.episode_id"]');
+                const listbox = document.getElementById(combobox?.getAttribute('aria-controls') ?? '');
+                const label = document.querySelector('label[for="form.episode_id"]');
+                const dropdown = listbox?.closest('.fi-dropdown-panel');
+                const searchInput = dropdown?.querySelector('.fi-select-input-search-ctn input');
+
+                return Boolean(combobox && listbox && label && dropdown && searchInput)
+                    && combobox.getAttribute('aria-haspopup') === 'listbox'
+                    && combobox.getAttribute('aria-expanded') === 'true'
+                    && label.textContent.trim() === 'Related Episode'
+                    && listbox.tagName === 'UL'
+                    && listbox.getAttribute('role') === 'listbox'
+                    && !listbox.contains(searchInput)
+                    && dropdown.getAttribute('role') !== 'listbox'
+                    && listbox.querySelectorAll(':scope > li[role="option"]').length > 0;
+            })()
+            JS, true);
+
+    $page->wait(0.2);
+
+    $page->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors()
+        ->keys(':focus', 'ArrowDown')
+        ->assertScript(<<<'JS'
+            (() => {
+                const combobox = document.querySelector('#form\\.episode_id');
+                const listbox = document.getElementById(combobox?.getAttribute('aria-controls') ?? '');
+                const activeOptionId = listbox?.getAttribute('aria-activedescendant');
+
+                return Boolean(activeOptionId)
+                    && document.activeElement?.id === activeOptionId
+                    && !listbox.closest('.fi-dropdown-panel')?.hasAttribute('aria-activedescendant');
+            })()
+            JS, true)
+        ->keys(':focus', 'Escape')
+        ->assertScript('document.querySelector("#form\\\\.episode_id").getAttribute("aria-expanded")', 'false')
+        ->assertNoJavaScriptErrors();
+})->group('browser-smoke');
+
+test('mobile resource status tabs scroll without overlapping labels', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+
+    $pages = [
+        PostResource::getUrl(),
+        EpisodeResource::getUrl(),
+        GuideResource::getUrl(),
+    ];
+
+    foreach ($pages as $url) {
+        $page = visit($url);
+
+        foreach ([390, 320] as $width) {
+            $page->resize($width, 844);
+
+            // Assert
+            $page->assertScript(<<<'JS'
+                (() => {
+                    const tabs = document.querySelector('.fi-tabs');
+                    const items = [...(tabs?.querySelectorAll('.fi-tabs-item') ?? [])];
+                    const labels = items.map((item) => {
+                        const label = item.querySelector('.fi-tabs-item-label') ?? item;
+                        const range = document.createRange();
+                        range.selectNodeContents(label);
+                        const bounds = range.getBoundingClientRect();
+
+                        return { left: bounds.left, right: bounds.right };
+                    });
+
+                    return items.length > 1
+                        && tabs.scrollWidth > tabs.clientWidth
+                        && labels.every((label, index) => index === 0 || label.left >= labels[index - 1].right);
+                })()
+                JS, true)
+                ->assertScript($this->horizontalOverflowScript(), 0)
+                ->assertNoAccessibilityIssues()
+                ->assertNoJavaScriptErrors();
+        }
+    }
+})->group('browser-smoke');
+
+test('mobile table filter reset and checkbox labels meet the minimum touch target', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+    Post::factory()->create();
+
+    // Act
+    $page = visit(PostResource::getUrl());
+
+    foreach ([390, 320] as $width) {
+        $page->resize($width, 844);
+        $page->click('button[aria-label="Filter"]');
+
+        // Assert
+        $page->assertScript(<<<'JS'
+            (() => {
+                const panel = [...document.querySelectorAll('.fi-ta-filters-dropdown .fi-dropdown-panel')]
+                    .find((element) => getComputedStyle(element).display !== 'none');
+
+                if (! panel) {
+                    return false;
+                }
+
+                const reset = panel.querySelector('.fi-ta-filters-header button');
+                const checkboxLabels = [...panel.querySelectorAll('.fi-ta-filters .fi-fo-field-label:has(.fi-checkbox-input)')];
+
+                return Boolean(reset)
+                    && checkboxLabels.length > 0
+                    && [reset, ...checkboxLabels].every((control) => {
+                        const bounds = control.getBoundingClientRect();
+
+                        return bounds.width >= 48 && bounds.height >= 48;
+                    });
+            })()
+            JS, true)
+            ->assertScript($this->horizontalOverflowScript(), 0)
+            ->assertNoJavaScriptErrors();
+    }
+})->group('browser-smoke');
+
+test('table filter dropdown keeps its expanded state on the trigger button', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+    Post::factory()->create();
+
+    // Act
+    $page = visit(PostResource::getUrl());
+    $page->assertScript(filamentDropdownAriaStateScript('button[aria-label="Filter"]', false), true);
+
+    $page->click('button[aria-label="Filter"]');
+
+    // Assert
+    $page->assertScript(filamentDropdownAriaStateScript('button[aria-label="Filter"]', true), true)
+        ->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors();
+
+    // Act
+    $page->click('button[aria-label="Filter"]');
+
+    // Assert
+    $page->assertScript(filamentDropdownAriaStateScript('button[aria-label="Filter"]', false), true);
+})->group('browser-smoke');
+
+test('mobile Filament controls meet the minimum touch target across admin pages', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+    Post::factory()->create(['published_at' => now()]);
+    Episode::factory()->create();
+    Guide::factory()->create();
+    config()->set('services.resend.audience_id', 'audience-test-id');
+    config()->set('services.resend.key', 'resend-test-key');
+    Http::fake(['https://api.resend.com/*' => Http::response(['data' => [
+        ['email' => 'reader@example.com', 'unsubscribed' => false],
+    ]])]);
+
+    ContactMessage::query()->create([
+        'name' => 'Alex Example',
+        'email' => 'alex@example.com',
+        'subject' => 'accessibility',
+        'message' => 'Could you share your accessibility planning tips?',
+    ]);
+
+    $pages = [
+        [PostResource::getUrl(), '.fi-tabs-item'],
+        [PostResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
+        [PostResource::getUrl(), '.fi-ta-header-toolbar .fi-icon-btn'],
+        [EpisodeResource::getUrl(), '.fi-tabs-item'],
+        [EpisodeResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
+        [GuideResource::getUrl(), '.fi-tabs-item'],
+        [GuideResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
+        [ContactMessageResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
+        [ContactMessageResource::getUrl(), '.fi-ac-link-action'],
+        [PostResource::getUrl('create'), '.fi-select-input-btn'],
+        [PostResource::getUrl('create'), '.fi-fo-markdown-editor .editor-toolbar button'],
+        [GuideResource::getUrl('create'), '.fi-fo-markdown-editor .editor-toolbar button'],
+        [EpisodeResource::getUrl('create'), '.fi-fo-rich-editor-tool'],
+        [NewsletterSubscribers::getUrl(), '.fi-pagination .fi-select-input'],
+    ];
+
+    foreach ($pages as [$url, $expectedControl]) {
+        $page = visit($url);
+
+        foreach ([390, 320] as $width) {
+            $page->resize($width, 844);
+
+            // Assert
+            $page->assertScript(
+                'document.querySelectorAll('.json_encode($expectedControl).').length > 0',
+                true,
+            )
+                ->assertScript(undersizedFilamentTouchTargetsScript(), '')
+                ->assertScript($this->horizontalOverflowScript(), 0)
+                ->assertNoAccessibilityIssues()
+                ->assertNoJavaScriptErrors();
+        }
+    }
+})->group('browser-smoke');
+
 function unexpectedAdminJavaScriptErrorCountScript(): string
 {
     return <<<'JS'

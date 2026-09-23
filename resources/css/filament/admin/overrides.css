@@ -111,6 +111,15 @@
     opacity: 1;
 }
 
+.fi-body .fi-select-input-search-ctn .fi-input::placeholder,
+.fi-select-input-option > span {
+    color: var(--color-mouse-navy);
+}
+
+.fi-body .fi-select-input-search-ctn .fi-input::placeholder {
+    opacity: 1;
+}
+
 .fi-input,
 .fi-select-input,
 .fi-fo-textarea textarea {
@@ -141,8 +150,45 @@
     .fi-body .fi-select-input,
     .fi-body .fi-btn,
     .fi-body .fi-icon-btn,
+    .fi-body .fi-tabs-item,
+    .fi-body .fi-ta-header-cell-sort-btn,
+    .fi-body .fi-fo-rich-editor-tool,
+    .fi-body .fi-select-input-btn,
     .fi-sidebar-item-btn {
         min-height: 3rem;
+    }
+
+    .fi-body .fi-tabs-item,
+    .fi-body .fi-fo-rich-editor-tool {
+        min-width: 3rem;
+    }
+
+    .fi-body .fi-tabs-item {
+        @apply shrink-0;
+    }
+
+    .fi-body .fi-ta-header-cell-sort-btn {
+        min-width: 3rem;
+    }
+
+    .fi-body .fi-ta-filters .fi-ta-filters-header button {
+        @apply inline-flex min-h-12 min-w-12 items-center justify-center px-3;
+    }
+
+    .fi-body .fi-ta-filters .fi-fo-field-label:has(.fi-checkbox-input) {
+        @apply flex min-h-12 w-full items-center gap-3;
+    }
+
+    .fi-body .fi-fo-markdown-editor .editor-toolbar button {
+        min-height: 3rem;
+        min-width: 3rem;
+    }
+
+    .fi-body .fi-ac-link-action {
+        display: inline-flex;
+        min-height: 3rem;
+        min-width: 3rem;
+        align-items: center;
     }
 
     .fi-body .fi-input,
@@ -154,6 +200,10 @@
     .fi-body .fi-icon-btn {
         min-width: 3rem;
         margin: 0;
+    }
+
+    .fi-body .fi-topbar .fi-user-menu-trigger {
+        @apply size-12 shrink-0;
     }
 
     .fi-simple-main label:has(input[type='checkbox']) {

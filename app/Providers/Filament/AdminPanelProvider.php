@@ -19,11 +19,13 @@ use Filament\Navigation\NavigationGroup;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
@@ -46,6 +48,18 @@ class AdminPanelProvider extends PanelProvider
             ], isRequired: fn (): bool => ! app()->isLocal())
             ->spa()
             ->viteTheme('resources/css/filament/admin/theme.css')
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                static function (): string {
+                    $selectAccessibilityScript = Vite::asset('resources/js/filament/select-accessibility.js');
+
+                    if (! Vite::isRunningHot()) {
+                        $selectAccessibilityScript = parse_url($selectAccessibilityScript, PHP_URL_PATH) ?: $selectAccessibilityScript;
+                    }
+
+                    return '<script type="module" src="'.e($selectAccessibilityScript).'"></script>';
+                },
+            )
             ->colors([
                 'primary' => '#5b3e9e',
             ])

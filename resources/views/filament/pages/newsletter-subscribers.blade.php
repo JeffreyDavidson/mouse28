@@ -4,10 +4,11 @@
         $subscribers = $audience['subscribers'];
         $error = $audience['error'];
         $count = count($subscribers);
+        $perPage = $this->subscribersPerPage;
         $subscribers = new \Illuminate\Pagination\LengthAwarePaginator(
-            array_slice($subscribers, ($this->getPage() - 1) * 50, 50),
+            array_slice($subscribers, ($this->getPage() - 1) * $perPage, $perPage),
             $count,
-            50,
+            $perPage,
             $this->getPage(),
         );
     @endphp
@@ -73,63 +74,73 @@
             aria-label="Newsletter contacts"
             tabindex="0"
         >
-            <div class="fi-ta-content-ctn overflow-x-auto" tabindex="0" aria-label="Newsletter contacts table">
-                <div class="fi-ta-content">
-                    <table class="fi-ta-table w-full min-w-160">
-                        <thead>
-                            <tr>
-                                <th class="fi-ta-header-cell" scope="col">#</th>
-                                <th class="fi-ta-header-cell" scope="col">Email Address</th>
-                                <th class="fi-ta-header-cell" scope="col">Created</th>
-                                <th class="fi-ta-header-cell" scope="col">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($subscribers as $index => $subscriber)
-                                @php($createdAt = isset($subscriber['created_at']) ? \Carbon\Carbon::parse($subscriber['created_at']) : null)
-                                <tr class="fi-ta-row">
-                                    <td class="fi-ta-cell font-mouse-body text-mouse-navy/75 text-xs">
-                                        {{ $subscribers->firstItem() + $index }}
-                                    </td>
-                                    <td class="fi-ta-cell">
-                                        <div class="flex items-center gap-3">
-                                            <span
-                                                class="font-mouse-body from-mouse-purple text-mouse-gold-light to-mouse-navy-light flex size-9 shrink-0 items-center justify-center rounded-full bg-linear-to-br text-xs font-semibold"
-                                                aria-hidden="true"
-                                            >
-                                                {{ strtoupper(substr($subscriber['email'] ?? '?', 0, 1)) }}
-                                            </span>
-                                            <span class="font-mouse-body text-mouse-navy text-sm">{{ $subscriber['email'] ?? '—' }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="fi-ta-cell font-mouse-body text-mouse-navy/75 text-sm">
-                                        @if ($createdAt)
-                                            <time datetime="{{ $createdAt->toIso8601String() }}">
-                                                {{ $createdAt->format('M j, Y') }}
-                                                <span class="text-mouse-navy/75 ml-2 text-xs">{{ $createdAt->format('g:ia') }}</span>
-                                            </time>
-                                        @else
-                                            —
-                                        @endif
-                                    </td>
-                                    <td class="fi-ta-cell font-mouse-body text-mouse-navy text-sm">
-                                        <x-filament::badge
-                                            :color="match ($subscriber['subscription_status']) {
+            <div class="fi-ta-main">
+                <div
+                    class="fi-ta-content-ctn fi-fixed-positioning-context overflow-x-auto"
+                    tabindex="0"
+                    aria-label="Newsletter contacts table"
+                >
+                    <div class="fi-ta-content">
+                        <table class="fi-ta-table w-full min-w-160">
+                            <thead>
+                                <tr>
+                                    <th class="fi-ta-header-cell" scope="col">#</th>
+                                    <th class="fi-ta-header-cell" scope="col">Email Address</th>
+                                    <th class="fi-ta-header-cell" scope="col">Created</th>
+                                    <th class="fi-ta-header-cell" scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach ($subscribers as $index => $subscriber)
+                                    @php($createdAt = isset($subscriber['created_at']) ? \Carbon\Carbon::parse($subscriber['created_at']) : null)
+                                    <tr class="fi-ta-row">
+                                        <td class="fi-ta-cell font-mouse-body text-mouse-navy/75 text-xs">
+                                            {{ $subscribers->firstItem() + $index }}
+                                        </td>
+                                        <td class="fi-ta-cell">
+                                            <div class="flex items-center gap-3">
+                                                <span
+                                                    class="font-mouse-body from-mouse-purple text-mouse-gold-light to-mouse-navy-light flex size-9 shrink-0 items-center justify-center rounded-full bg-linear-to-br text-xs font-semibold"
+                                                    aria-hidden="true"
+                                                >
+                                                    {{ strtoupper(substr($subscriber['email'] ?? '?', 0, 1)) }}
+                                                </span>
+                                                <span class="font-mouse-body text-mouse-navy text-sm">{{ $subscriber['email'] ?? '—' }}</span>
+                                            </div>
+                                        </td>
+                                        <td class="fi-ta-cell font-mouse-body text-mouse-navy/75 text-sm">
+                                            @if ($createdAt)
+                                                <time datetime="{{ $createdAt->toIso8601String() }}">
+                                                    {{ $createdAt->format('M j, Y') }}
+                                                    <span class="text-mouse-navy/75 ml-2 text-xs">{{ $createdAt->format('g:ia') }}</span>
+                                                </time>
+                                            @else
+                                                —
+                                            @endif
+                                        </td>
+                                        <td class="fi-ta-cell font-mouse-body text-mouse-navy text-sm">
+                                            <x-filament::badge
+                                                :color="match ($subscriber['subscription_status']) {
                                                 'Subscribed' => 'success',
                                                 'Unsubscribed' => 'danger',
                                                 default => 'gray',
                                             }"
-                                        >
-                                            {{ $subscriber['subscription_status'] }}
-                                        </x-filament::badge>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                                            >
+                                                {{ $subscriber['subscription_status'] }}
+                                            </x-filament::badge>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+                <x-filament::pagination
+                    current-page-option-property="subscribersPerPage"
+                    :page-options="\App\Filament\Pages\NewsletterSubscribers::SUBSCRIBERS_PER_PAGE_OPTIONS"
+                    :paginator="$subscribers"
+                />
             </div>
-            <x-filament::pagination :paginator="$subscribers" />
         </div>
     @endif
 </x-filament-panels::page>

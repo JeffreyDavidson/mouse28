@@ -20,7 +20,7 @@
             </div>
 
             <div>
-                <h2 class="font-mouse-heading text-mouse-gold-light text-xl font-semibold sm:text-2xl">{{ $title }}</h2>
+                <h1 class="font-mouse-heading text-mouse-gold-light text-xl font-semibold sm:text-2xl">{{ $title }}</h1>
                 <p class="font-mouse-body text-mouse-cream/80 mt-1 text-sm">{{ $subtitle }}</p>
             </div>
         </div>
