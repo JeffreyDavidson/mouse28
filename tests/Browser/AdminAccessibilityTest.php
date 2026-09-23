@@ -126,8 +126,11 @@ function undersizedFilamentTouchTargetsScript(): string
             const selectors = [
                 '.fi-tabs-item',
                 '.fi-ta-header-cell-sort-btn',
+                '.fi-ta-header-toolbar .fi-icon-btn',
                 '.fi-fo-rich-editor-tool',
+                '.fi-fo-markdown-editor .editor-toolbar button',
                 '.fi-select-input-btn',
+                '.fi-pagination .fi-select-input',
                 '.fi-ac-link-action',
             ];
             const controls = document.querySelectorAll(selectors.join(','));
@@ -156,6 +159,12 @@ test('mobile Filament controls meet the minimum touch target across admin pages'
     Post::factory()->create(['published_at' => now()]);
     Episode::factory()->create();
     Guide::factory()->create();
+    config()->set('services.resend.audience_id', 'audience-test-id');
+    config()->set('services.resend.key', 'resend-test-key');
+    Http::fake(['https://api.resend.com/*' => Http::response(['data' => [
+        ['email' => 'reader@example.com', 'unsubscribed' => false],
+    ]])]);
+
     ContactMessage::query()->create([
         'name' => 'Alex Example',
         'email' => 'alex@example.com',
@@ -166,6 +175,7 @@ test('mobile Filament controls meet the minimum touch target across admin pages'
     $pages = [
         [PostResource::getUrl(), '.fi-tabs-item'],
         [PostResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
+        [PostResource::getUrl(), '.fi-ta-header-toolbar .fi-icon-btn'],
         [EpisodeResource::getUrl(), '.fi-tabs-item'],
         [EpisodeResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
         [GuideResource::getUrl(), '.fi-tabs-item'],
@@ -173,7 +183,10 @@ test('mobile Filament controls meet the minimum touch target across admin pages'
         [ContactMessageResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
         [ContactMessageResource::getUrl(), '.fi-ac-link-action'],
         [PostResource::getUrl('create'), '.fi-select-input-btn'],
+        [PostResource::getUrl('create'), '.fi-fo-markdown-editor .editor-toolbar button'],
+        [GuideResource::getUrl('create'), '.fi-fo-markdown-editor .editor-toolbar button'],
         [EpisodeResource::getUrl('create'), '.fi-fo-rich-editor-tool'],
+        [NewsletterSubscribers::getUrl(), '.fi-pagination .fi-select-input'],
     ];
 
     foreach ($pages as [$url, $expectedControl]) {
