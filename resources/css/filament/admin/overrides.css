@@ -158,6 +158,11 @@
         min-width: 3rem;
     }
 
+    .fi-body .fi-fo-markdown-editor .editor-toolbar button {
+        min-height: 3rem;
+        min-width: 3rem;
+    }
+
     .fi-body .fi-ac-link-action {
         display: inline-flex;
         min-height: 3rem;
