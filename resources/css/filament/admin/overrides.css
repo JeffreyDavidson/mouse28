@@ -111,6 +111,15 @@
     opacity: 1;
 }
 
+.fi-body .fi-select-input-search-ctn .fi-input::placeholder,
+.fi-body .fi-select-input-option > span {
+    color: var(--color-mouse-navy);
+}
+
+.fi-body .fi-select-input-search-ctn .fi-input::placeholder {
+    opacity: 1;
+}
+
 .fi-input,
 .fi-select-input,
 .fi-fo-textarea textarea {
