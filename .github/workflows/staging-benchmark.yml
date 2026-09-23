@@ -33,10 +33,23 @@ jobs:
             - name: Install Node dependencies
               run: npm ci
 
+            - name: Validate Cloudflare Access secrets
+              env:
+                  CLOUDFLARE_ACCESS_CLIENT_ID: ${{ secrets.CLOUDFLARE_ACCESS_CLIENT_ID }}
+                  CLOUDFLARE_ACCESS_CLIENT_SECRET: ${{ secrets.CLOUDFLARE_ACCESS_CLIENT_SECRET }}
+              run: |
+                  if [ -z "$CLOUDFLARE_ACCESS_CLIENT_ID" ] || [ -z "$CLOUDFLARE_ACCESS_CLIENT_SECRET" ]; then
+                      echo "::error::Configure both CLOUDFLARE_ACCESS_CLIENT_ID and CLOUDFLARE_ACCESS_CLIENT_SECRET repository secrets."
+                      exit 1
+                  fi
+
             - name: Install Chromium
               run: npx playwright install --with-deps chromium
 
             - name: Benchmark staging
+              env:
+                  CLOUDFLARE_ACCESS_CLIENT_ID: ${{ secrets.CLOUDFLARE_ACCESS_CLIENT_ID }}
+                  CLOUDFLARE_ACCESS_CLIENT_SECRET: ${{ secrets.CLOUDFLARE_ACCESS_CLIENT_SECRET }}
               run: >-
                   npm run benchmark:pages --
                   --base https://staging.mouse28.com

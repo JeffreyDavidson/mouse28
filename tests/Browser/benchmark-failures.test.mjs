@@ -26,6 +26,10 @@ test('reports unexpected document responses', () => {
     assert.deepEqual(benchmarkFailures({ ...healthy, path: '/guides', status: 500 }), ['document-status']);
 });
 
+test('reports redirects away from the benchmark origin', () => {
+    assert.deepEqual(benchmarkFailures({ ...healthy, authenticationRedirect: true }), ['authentication-redirect']);
+});
+
 test('reports navigation and JavaScript errors separately', () => {
     assert.deepEqual(benchmarkFailures({ path: '/', error: 'TimeoutError' }), ['navigation-error']);
     assert.deepEqual(benchmarkFailures({ ...healthy, pageErrors: 1 }), ['javascript-error']);

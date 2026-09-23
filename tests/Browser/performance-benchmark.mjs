@@ -3,6 +3,7 @@ import { writeFile } from 'node:fs/promises';
 import { chromium } from 'playwright';
 import { navigationTimings } from './navigation-timings.mjs';
 import { benchmarkFailures } from './benchmark-failures.mjs';
+import { cloudflareAccessHeadersForRequest } from './cloudflare-access-headers.mjs';
 
 const { values } = parseArgs({ options: {
     base: { type: 'string' },
@@ -19,6 +20,16 @@ const runs = Number(values.runs);
 if (!Number.isInteger(runs) || runs < 1 || runs > 5) throw new Error('--runs must be between 1 and 5.');
 if (!['desktop', 'slow-mobile'].includes(values.profile)) throw new Error('--profile must be desktop or slow-mobile.');
 const mobile = values.profile === 'slow-mobile';
+const accessCredentials = {
+    clientId: process.env.CLOUDFLARE_ACCESS_CLIENT_ID ?? '',
+    clientSecret: process.env.CLOUDFLARE_ACCESS_CLIENT_SECRET ?? '',
+};
+if (Boolean(accessCredentials.clientId) !== Boolean(accessCredentials.clientSecret)) {
+    throw new Error('Set both Cloudflare Access credentials or neither.');
+}
+if (accessCredentials.clientId && base.hostname !== 'staging.mouse28.com') {
+    throw new Error('Cloudflare Access credentials are only supported for staging.mouse28.com.');
+}
 const browser = await chromium.launch();
 const samples = [];
 const report = {
@@ -47,6 +58,12 @@ try {
         for (let run = 1; run <= runs; run++) {
             const context = await browser.newContext({ viewport: mobile ? { width: 390, height: 844 } : { width: 1440, height: 1000 }, deviceScaleFactor: mobile ? 2 : 1, isMobile: mobile, hasTouch: mobile });
             try {
+                if (accessCredentials.clientId) {
+                    await context.route(`${base.origin}/**`, async route => {
+                        const headers = cloudflareAccessHeadersForRequest(route.request().url(), base.origin, accessCredentials);
+                        await route.continue({ headers: { ...route.request().headers(), ...headers } });
+                    });
+                }
                 const page = await context.newPage();
                 const cdp = await context.newCDPSession(page);
                 await cdp.send('Network.enable');
@@ -112,7 +129,8 @@ try {
                                 incompleteImages: [...document.images].filter(img => !img.complete && img.getBoundingClientRect().top < innerHeight).length,
                                 largestResources: performance.getEntriesByType('resource').filter(entry => new URL(entry.name).origin === location.origin).sort((a, b) => b.transferSize - a.transferSize).slice(0, 5).map(entry => ({ path: new URL(entry.name).pathname, bytes: entry.transferSize, duration: Math.round(entry.duration) })) };
                         });
-                        const sample = { path, run, cache, status: response?.status(), ...metrics, ...navigationTimings(metrics.navigation), bytes, requests, pageErrors, errorOrigins, failures, assets: [...assets.values()] };
+                        const authenticationRedirect = response ? new URL(response.url()).origin !== base.origin : false;
+                        const sample = { path, run, cache, status: response?.status(), authenticationRedirect, ...metrics, ...navigationTimings(metrics.navigation), bytes, requests, pageErrors, errorOrigins, failures, assets: [...assets.values()] };
                         sample.failureReasons = benchmarkFailures(sample);
                         samples.push(sample);
                         if (sample.failureReasons.length > 0) process.exitCode = 1;
