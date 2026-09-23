@@ -1,0 +1,55 @@
+name: Staging performance benchmark
+
+on:
+    workflow_dispatch:
+    schedule:
+        - cron: '0 10 * * 2'
+
+permissions:
+    contents: read
+
+concurrency:
+    group: staging-performance-benchmark
+    cancel-in-progress: false
+
+jobs:
+    benchmark:
+        name: Public pages (slow mobile)
+        runs-on: ubuntu-latest
+        timeout-minutes: 45
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+              with:
+                  persist-credentials: false
+
+            - name: Setup Node
+              uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+              with:
+                  node-version: 22
+                  cache: npm
+
+            - name: Install Node dependencies
+              run: npm ci
+
+            - name: Install Chromium
+              run: npx playwright install --with-deps chromium
+
+            - name: Benchmark staging
+              run: >-
+                  npm run benchmark:pages --
+                  --base https://staging.mouse28.com
+                  --profile slow-mobile
+                  --runs 3
+                  --revision staging-current
+                  --output staging-performance.json
+
+            - name: Upload benchmark report
+              if: always()
+              uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+              with:
+                  name: staging-performance-${{ github.run_id }}
+                  path: staging-performance.json
+                  if-no-files-found: ignore
+                  retention-days: 90
