@@ -239,6 +239,18 @@ test('related episode combobox exposes an accessible searchable listbox', functi
     // Assert
     $page->assertScript(<<<'JS'
             (() => {
+                const searchInput = document.querySelector('.fi-select-input-search-ctn .fi-input');
+                const optionLabel = document.querySelector('.fi-select-input-option > span');
+                const expectedColor = 'rgb(26, 16, 64)';
+
+                return Boolean(searchInput && optionLabel)
+                    && getComputedStyle(searchInput, '::placeholder').color === expectedColor
+                    && getComputedStyle(optionLabel).color === expectedColor;
+            })()
+            JS, true);
+
+    $page->assertScript(<<<'JS'
+            (() => {
                 const combobox = document.querySelector('button[role="combobox"][id="form.episode_id"]');
                 const listbox = document.getElementById(combobox?.getAttribute('aria-controls') ?? '');
                 const label = document.querySelector('label[for="form.episode_id"]');
