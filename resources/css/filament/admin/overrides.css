@@ -112,7 +112,7 @@
 }
 
 .fi-body .fi-select-input-search-ctn .fi-input::placeholder,
-.fi-body .fi-select-input-option > span {
+.fi-select-input-option > span {
     color: var(--color-mouse-navy);
 }
 

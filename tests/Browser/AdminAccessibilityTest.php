@@ -267,8 +267,11 @@ test('related episode combobox exposes an accessible searchable listbox', functi
                     && dropdown.getAttribute('role') !== 'listbox'
                     && listbox.querySelectorAll(':scope > li[role="option"]').length > 0;
             })()
-            JS, true)
-        ->assertNoAccessibilityIssues()
+            JS, true);
+
+    $page->wait(0.2);
+
+    $page->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors()
         ->keys(':focus', 'ArrowDown')
         ->assertScript(<<<'JS'
