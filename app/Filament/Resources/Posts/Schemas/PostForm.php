@@ -71,6 +71,7 @@ class PostForm
                             ->searchable()
                             ->preload()
                             ->placeholder('None')
+                            ->extraAlpineAttributes(['data-mouse28-accessible-select' => true])
                             ->columnSpan(2),
                     ]),
 

@@ -227,7 +227,7 @@ test('table pagination selects have an accessible name', function (): void {
         ->assertNoJavaScriptErrors();
 })->group('browser-smoke');
 
-test('related episode combobox links its label and listbox and closes with Escape', function (): void {
+test('related episode combobox exposes an accessible searchable listbox', function (): void {
     // Arrange
     actingAs(User::factory()->admin()->create());
     Episode::factory()->create(['title' => 'Example Episode']);
@@ -237,24 +237,42 @@ test('related episode combobox links its label and listbox and closes with Escap
     $page->click('button[role="combobox"][id="form.episode_id"]');
 
     // Assert
-    $page->assertSee('Example Episode')
-        ->assertScript(<<<'JS'
+    $page->assertScript(<<<'JS'
             (() => {
                 const combobox = document.querySelector('button[role="combobox"][id="form.episode_id"]');
                 const listbox = document.getElementById(combobox?.getAttribute('aria-controls') ?? '');
                 const label = document.querySelector('label[for="form.episode_id"]');
+                const dropdown = listbox?.closest('.fi-dropdown-panel');
+                const searchInput = dropdown?.querySelector('.fi-select-input-search-ctn input');
 
-                return Boolean(combobox && listbox && label)
+                return Boolean(combobox && listbox && label && dropdown && searchInput)
                     && combobox.getAttribute('aria-haspopup') === 'listbox'
                     && combobox.getAttribute('aria-expanded') === 'true'
                     && label.textContent.trim() === 'Related Episode'
+                    && listbox.tagName === 'UL'
                     && listbox.getAttribute('role') === 'listbox'
-                    && listbox.querySelectorAll('[role="option"]').length > 0;
+                    && !listbox.contains(searchInput)
+                    && dropdown.getAttribute('role') !== 'listbox'
+                    && listbox.querySelectorAll(':scope > li[role="option"]').length > 0;
             })()
             JS, true)
+        ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors()
+        ->keys(':focus', 'ArrowDown')
+        ->assertScript(<<<'JS'
+            (() => {
+                const combobox = document.querySelector('#form\\.episode_id');
+                const listbox = document.getElementById(combobox?.getAttribute('aria-controls') ?? '');
+                const activeOptionId = listbox?.getAttribute('aria-activedescendant');
+
+                return Boolean(activeOptionId)
+                    && document.activeElement?.id === activeOptionId
+                    && !listbox.closest('.fi-dropdown-panel')?.hasAttribute('aria-activedescendant');
+            })()
+            JS, true)
         ->keys(':focus', 'Escape')
-        ->assertScript('document.getElementById("form.episode_id").getAttribute("aria-expanded")', 'false');
+        ->assertScript('document.querySelector("#form\\\\.episode_id").getAttribute("aria-expanded")', 'false')
+        ->assertNoJavaScriptErrors();
 })->group('browser-smoke');
 
 test('mobile resource status tabs scroll without overlapping labels', function (): void {
