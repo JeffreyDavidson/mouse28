@@ -1,6 +1,7 @@
 export function benchmarkFailures(sample) {
     const reasons = [];
     if (sample.error) reasons.push('navigation-error');
+    if (sample.authenticationRedirect) reasons.push('authentication-redirect');
     if (sample.pageErrors > 0) reasons.push('javascript-error');
     if (!sample.error && sample.status !== 200 && !(sample.path === '/guides' && sample.status === 404)) {
         reasons.push('document-status');
