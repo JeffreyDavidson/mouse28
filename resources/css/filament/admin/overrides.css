@@ -141,8 +141,28 @@
     .fi-body .fi-select-input,
     .fi-body .fi-btn,
     .fi-body .fi-icon-btn,
+    .fi-body .fi-tabs-item,
+    .fi-body .fi-ta-header-cell-sort-btn,
+    .fi-body .fi-fo-rich-editor-tool,
+    .fi-body .fi-select-input-btn,
     .fi-sidebar-item-btn {
         min-height: 3rem;
+    }
+
+    .fi-body .fi-tabs-item,
+    .fi-body .fi-fo-rich-editor-tool {
+        min-width: 3rem;
+    }
+
+    .fi-body .fi-ta-header-cell-sort-btn {
+        min-width: 3rem;
+    }
+
+    .fi-body .fi-ac-link-action {
+        display: inline-flex;
+        min-height: 3rem;
+        min-width: 3rem;
+        align-items: center;
     }
 
     .fi-body .fi-input,

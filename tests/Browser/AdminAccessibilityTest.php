@@ -119,6 +119,82 @@ test('mobile admin user menu meets the minimum touch target', function (): void 
     }
 })->group('browser-smoke');
 
+function undersizedFilamentTouchTargetsScript(): string
+{
+    return <<<'JS'
+        (() => {
+            const selectors = [
+                '.fi-tabs-item',
+                '.fi-ta-header-cell-sort-btn',
+                '.fi-fo-rich-editor-tool',
+                '.fi-select-input-btn',
+                '.fi-ac-link-action',
+            ];
+            const controls = document.querySelectorAll(selectors.join(','));
+
+            return [...controls].filter((control) => {
+                const bounds = control.getBoundingClientRect();
+                const styles = window.getComputedStyle(control);
+
+                return bounds.width > 0
+                    && bounds.height > 0
+                    && styles.visibility !== 'hidden'
+                    && ! control.closest('[aria-hidden="true"]')
+                    && (bounds.width < 48 || bounds.height < 48);
+            }).map((control) => {
+                const bounds = control.getBoundingClientRect();
+
+                return `${control.className} (${Math.round(bounds.width)}x${Math.round(bounds.height)})`;
+            }).join('|');
+        })()
+        JS;
+}
+
+test('mobile Filament controls meet the minimum touch target across admin pages', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+    Post::factory()->create(['published_at' => now()]);
+    Episode::factory()->create();
+    Guide::factory()->create();
+    ContactMessage::query()->create([
+        'name' => 'Alex Example',
+        'email' => 'alex@example.com',
+        'subject' => 'accessibility',
+        'message' => 'Could you share your accessibility planning tips?',
+    ]);
+
+    $pages = [
+        [PostResource::getUrl(), '.fi-tabs-item'],
+        [PostResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
+        [EpisodeResource::getUrl(), '.fi-tabs-item'],
+        [EpisodeResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
+        [GuideResource::getUrl(), '.fi-tabs-item'],
+        [GuideResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
+        [ContactMessageResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
+        [ContactMessageResource::getUrl(), '.fi-ac-link-action'],
+        [PostResource::getUrl('create'), '.fi-select-input-btn'],
+        [EpisodeResource::getUrl('create'), '.fi-fo-rich-editor-tool'],
+    ];
+
+    foreach ($pages as [$url, $expectedControl]) {
+        $page = visit($url);
+
+        foreach ([390, 320] as $width) {
+            $page->resize($width, 844);
+
+            // Assert
+            $page->assertScript(
+                'document.querySelectorAll('.json_encode($expectedControl).').length > 0',
+                true,
+            )
+                ->assertScript(undersizedFilamentTouchTargetsScript(), '')
+                ->assertScript($this->horizontalOverflowScript(), 0)
+                ->assertNoAccessibilityIssues()
+                ->assertNoJavaScriptErrors();
+        }
+    }
+})->group('browser-smoke');
+
 function unexpectedAdminJavaScriptErrorCountScript(): string
 {
     return <<<'JS'
