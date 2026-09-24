@@ -67,6 +67,28 @@ test('homepage podcast artwork uses one suitably sized image download', function
     '3x display retains the full-resolution cover' => [3, 'mouse28-cover.webp'],
 ]);
 
+test('podcast archive artwork uses one suitably sized image download', function (int $density, string $filename): void {
+    $page = visit(route('episodes.index'), [
+        'deviceScaleFactor' => $density,
+        'viewport' => ['width' => 390, 'height' => 844],
+    ]);
+
+    expect($page->script('window.devicePixelRatio'))->toBe($density)
+        ->and($page->script('document.querySelector(".podcast-cover-frame img").currentSrc'))
+        ->toEndWith('/images/podcast/'.$filename)
+        ->and($page->script('(() => { const image = document.querySelector(".podcast-cover-frame img"); return image.complete && image.naturalWidth > 0; })()'))
+        ->toBeTrue();
+
+    $page->assertScript(
+        'performance.getEntriesByType("resource").filter(resource => resource.name.includes("/images/podcast/mouse28-cover")).length',
+        1,
+    )->assertNoJavaScriptErrors();
+})->with([
+    '1x display selects the smallest bundled cover' => [1, 'mouse28-cover-640.webp'],
+    '2x display selects the medium bundled cover' => [2, 'mouse28-cover-768.webp'],
+    '3x display selects the full-resolution cover' => [3, 'mouse28-cover.webp'],
+]);
+
 test('core mobile navigation and search work without JavaScript', function (): void {
     $home = visit(route('home'), ['javaScriptEnabled' => false])
         ->on()
