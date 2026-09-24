@@ -14,6 +14,7 @@ pest()->use(RefreshDatabase::class);
 
 beforeEach(function (): void {
     config()->set('services.resend.key', 'resend-test-key');
+    config()->set('services.resend.enabled', true);
     config()->set('services.resend.audience_id', 'audience-test-id');
     config()->set('services.turnstile.site_key', 'turnstile-test-site-key');
     config()->set('services.turnstile.secret_key', 'turnstile-test-secret-key');
@@ -55,6 +56,23 @@ test('valid newsletter signup returns a successful JSON response', function (): 
     postJson(route('newsletter.store'), newsletterPayload())
         ->assertOk()
         ->assertExactJson(['success' => true]);
+});
+
+test('newsletter signup returns unavailable when the resend integration is disabled', function (): void {
+    config()->set('services.resend.enabled', false);
+    Http::fake([
+        'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response([
+            'success' => true,
+            'action' => 'newsletter',
+            'hostname' => 'mouse28.com',
+        ]),
+    ]);
+
+    postJson(route('newsletter.store'), newsletterPayload())
+        ->assertStatus(503)
+        ->assertExactJson(['error' => 'Something went wrong.']);
+
+    Http::assertNotSent(fn (Request $request): bool => str_contains($request->url(), 'api.resend.com'));
 });
 
 test('newsletter errors and old input stay out of the contact form', function (): void {

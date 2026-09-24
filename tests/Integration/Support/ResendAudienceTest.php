@@ -9,9 +9,37 @@ use Illuminate\Support\Facades\Http;
 covers(ResendAudience::class);
 
 beforeEach(function (): void {
+    config()->set('services.resend.enabled', true);
     config()->set('services.resend.audience_id', 'audience-test-id');
     config()->set('services.resend.key', 'resend-test-key');
     Cache::forget('newsletter_subscribers');
+});
+
+test('disabled integration never exposes cached or remote subscribers', function (): void {
+    Cache::put('newsletter_subscribers', [['email' => 'cached@example.com']], now()->addMinutes(5));
+    config()->set('services.resend.enabled', false);
+    Http::fake();
+
+    $result = app(ResendAudience::class)->get();
+
+    expect($result)->toBe([
+        'subscribers' => [],
+        'error' => 'The Resend integration is disabled.',
+    ])->and(Cache::has('newsletter_subscribers'))->toBeFalse();
+    Http::assertNothingSent();
+});
+
+test('disabled integration clears cached subscribers when explicitly refreshed', function (): void {
+    Cache::put('newsletter_subscribers', [['email' => 'cached@example.com']], now()->addMinutes(5));
+    config()->set('services.resend.enabled', false);
+    Http::fake();
+
+    $result = app(ResendAudience::class)->refresh();
+
+    expect($result['subscribers'])->toBeEmpty()
+        ->and($result['error'])->toBe('The Resend integration is disabled.')
+        ->and(Cache::has('newsletter_subscribers'))->toBeFalse();
+    Http::assertNothingSent();
 });
 
 test('all subscriber pages are retrieved before caching', function (): void {
@@ -180,6 +208,16 @@ test('a successful subscription adds the contact and invalidates cached audience
     expect($result)->toBe(NewsletterSubscriptionResult::Subscribed)
         ->and(Cache::has('newsletter_subscribers'))->toBeFalse();
     Http::assertSent(fn (Request $request): bool => $request['email'] === 'reader@example.com');
+});
+
+test('disabled integration rejects newsletter signup without contacting the provider', function (): void {
+    config()->set('services.resend.enabled', false);
+    Http::fake();
+
+    $result = app(ResendAudience::class)->subscribe('reader@example.com');
+
+    expect($result)->toBe(NewsletterSubscriptionResult::Disabled);
+    Http::assertNothingSent();
 });
 
 test('subscription failures distinguish configuration provider and connection errors', function (

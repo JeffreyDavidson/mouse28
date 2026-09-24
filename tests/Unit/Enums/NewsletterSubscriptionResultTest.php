@@ -11,6 +11,7 @@ test('newsletter subscription results retain their HTTP status mapping', functio
 
     expect($statusCodes)->toBe([
         'Subscribed' => 200,
+        'Disabled' => 503,
         'ConfigurationMissing' => 503,
         'ProviderRejected' => 422,
         'ConnectionFailed' => 500,

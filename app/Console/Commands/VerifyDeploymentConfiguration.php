@@ -15,6 +15,17 @@ class VerifyDeploymentConfiguration extends Command
         $appUrl = config('app.url');
         $canonicalUrl = config('mouse28.production_url');
         $deploymentEnvironment = config('mouse28.deployment_environment');
+        $integrationChecks = $deploymentEnvironment === 'staging'
+            ? [
+                [config('mail.default') === 'array', 'MAIL_MAILER must use the array transport on staging.'],
+                [config('services.resend.enabled') === false, 'RESEND_ENABLED must be false on staging.'],
+            ]
+            : [
+                [$this->usesDeliveringMailer(config('mail.default')), 'MAIL_MAILER must use a delivering transport.'],
+                [config('services.resend.enabled') === true, 'RESEND_ENABLED must be true in production.'],
+                [$this->isConfigured(config('services.resend.key')), 'RESEND_API_KEY must be configured.'],
+                [$this->isConfigured(config('services.resend.audience_id')), 'RESEND_AUDIENCE_ID must be configured.'],
+            ];
         $observabilityChecks = $deploymentEnvironment === 'staging'
             ? [
                 [config('nightwatch.enabled') === false, 'NIGHTWATCH_ENABLED must be false on staging.'],
@@ -37,12 +48,9 @@ class VerifyDeploymentConfiguration extends Command
             [$this->usesPersistentDriver(config('cache.default')), 'CACHE_STORE must use a persistent driver.'],
             [$this->isConfigured(config('database.default')), 'DB_CONNECTION must be configured.'],
             [$this->isConfigured(config('filesystems.default')), 'FILESYSTEM_DISK must be configured.'],
-            [$this->usesDeliveringMailer(config('mail.default')), 'MAIL_MAILER must use a delivering transport.'],
             [$this->isProductionEmail(config('mail.from.address')), 'MAIL_FROM_ADDRESS must use a production address.'],
             [$this->hasProductionRecipients(config('mail.admin_address')), 'MAIL_ADMIN_ADDRESS must use monitored production addresses.'],
             [$this->isProductionEmail(config('mouse28.contact.email')), 'MOUSE28_CONTACT_EMAIL must use a public contact address.'],
-            [$this->isConfigured(config('services.resend.key')), 'RESEND_API_KEY must be configured.'],
-            [$this->isConfigured(config('services.resend.audience_id')), 'RESEND_AUDIENCE_ID must be configured.'],
             [$this->isConfigured(config('services.turnstile.site_key')), 'TURNSTILE_SITE_KEY must be configured.'],
             [$this->isConfigured(config('services.turnstile.secret_key')), 'TURNSTILE_SECRET_KEY must be configured.'],
             [$this->allowsCanonicalHost(config('services.turnstile.allowed_hostnames'), $canonicalUrl), 'TURNSTILE_ALLOWED_HOSTNAMES must include the canonical host.'],
@@ -58,6 +66,7 @@ class VerifyDeploymentConfiguration extends Command
             [config('sentry.traces_sample_rate') === 0.0, 'SENTRY_TRACES_SAMPLE_RATE must be 0.0 until tracing is deliberately enabled.'],
             [config('sentry.profiles_sample_rate') === 0.0, 'SENTRY_PROFILES_SAMPLE_RATE must be 0.0 until profiling is deliberately enabled.'],
             ...$observabilityChecks,
+            ...$integrationChecks,
         ];
 
         $failures = array_map(
