@@ -27,6 +27,10 @@
                 <div class="podcast-cover-frame mx-auto w-full max-w-lg lg:mx-0">
                     <img
                         src="{{ $coverImage }}"
+                        @if (! $podcast->cover_image)
+                            srcset="/images/podcast/mouse28-cover-640.webp 640w, /images/podcast/mouse28-cover-768.webp 768w, /images/podcast/mouse28-cover.webp 1200w"
+                            sizes="(min-width: 544px) 512px, calc(100vw - 32px)"
+                        @endif
                         alt="Mouse28 podcast artwork"
                         width="1200"
                         height="1200"
