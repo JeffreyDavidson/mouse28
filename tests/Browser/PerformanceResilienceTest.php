@@ -139,6 +139,9 @@ test('mobile blog archive and article load responsive cover artwork without over
         throw new RuntimeException('The blog artwork browser fixture could not be loaded.');
     }
 
+    config(['filesystems.disks.public.url' => url('/storage')]);
+    Storage::forgetDisk('public');
+
     $disk = Storage::disk('public');
     $disk->put($coverPath, $cover);
 
@@ -181,12 +184,14 @@ test('mobile blog archive and article load responsive cover artwork without over
 
         visit(route('blog.index'), $viewport)
             ->assertSee($post->title)
+            ->waitForEvent('load')
             ->assertScript($this->horizontalOverflowScript(), 0)
             ->assertScript($responsiveArtworkLoadedScript, true)
             ->assertNoJavaScriptErrors();
 
         visit(route('blog.show', $post), $viewport)
             ->assertSee($post->title)
+            ->waitForEvent('load')
             ->assertScript($this->horizontalOverflowScript(), 0)
             ->assertScript($responsiveArtworkLoadedScript, true)
             ->assertNoJavaScriptErrors();
