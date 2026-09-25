@@ -132,6 +132,29 @@ test('podcast archive artwork uses one suitably sized image download', function 
     '3x display selects the full-resolution cover' => [3, 'mouse28-cover.webp'],
 ]);
 
+test('mobile podcast archive keeps the latest episode listening action above the fold', function (): void {
+    Episode::factory()->create([
+        'transistor_url' => 'https://share.transistor.fm/s/browserSmokeEpisode',
+    ]);
+
+    $page = visit(route('episodes.index'), [
+        'viewport' => ['width' => 390, 'height' => 844],
+        'deviceScaleFactor' => 1,
+    ]);
+
+    $page->assertSee('Listen now')
+        ->assertScript(<<<'JS'
+            (() => {
+                const action = [...document.querySelectorAll('.podcast-show-hero a')]
+                    .find((link) => link.textContent.trim() === 'Listen now');
+
+                return action !== undefined
+                    && action.getBoundingClientRect().bottom <= window.innerHeight;
+            })()
+            JS, true)
+        ->assertNoJavaScriptErrors();
+})->group('browser-smoke');
+
 test('mobile blog archive and article load responsive cover artwork without overflowing', function (): void {
     $coverPath = 'posts/browser-responsive-cover-'.Str::uuid().'.webp';
     $cover = file_get_contents(public_path('images/meet-jeffrey-and-cassie.webp'));
