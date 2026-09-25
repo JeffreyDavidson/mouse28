@@ -23,8 +23,8 @@
 
     <div data-podcast-archive>
         <section class="podcast-show-hero bg-navy text-cream relative overflow-hidden">
-            <div class="relative mx-auto grid max-w-[86rem] gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[5fr_7fr] lg:items-center lg:gap-16 lg:py-20">
-                <div class="podcast-cover-frame mx-auto w-full max-w-lg lg:mx-0">
+            <div class="relative mx-auto grid max-w-[86rem] gap-8 px-4 py-6 sm:gap-10 sm:px-6 sm:py-16 lg:grid-cols-[5fr_7fr] lg:items-center lg:gap-16 lg:py-20">
+                <div class="podcast-cover-frame mx-auto w-full max-w-64 sm:max-w-lg lg:mx-0">
                     <img
                         src="{{ $coverImage }}"
                         @if (! $podcast->cover_image)
@@ -40,16 +40,16 @@
                 </div>
 
                 <div class="max-w-3xl min-w-0 wrap-anywhere">
-                    <h1 class="font-heading text-5xl [font-weight:680] tracking-[-0.025em] text-balance sm:text-6xl">
+                    <h1 class="font-heading text-4xl [font-weight:680] tracking-[-0.025em] text-balance sm:text-6xl">
                         The Mouse28 Podcast
                     </h1>
-                    <p class="text-cream/75 mt-5 max-w-2xl text-base/7 text-pretty sm:text-lg/8">
+                    <p class="text-cream/75 mt-4 max-w-2xl text-base/7 text-pretty sm:mt-5 sm:text-lg/8">
                         Honest Disney conversations about accessibility, family life, favorite places, and what we learn
                         in the parks.
                     </p>
 
                     @if ($latestEpisode)
-                        <div class="border-gold/35 mt-8 border-y py-6">
+                        <div class="border-gold/35 mt-6 border-y py-5 sm:mt-8 sm:py-6">
                             <h2 class="font-heading text-2xl [font-weight:620] tracking-[-0.015em] text-balance sm:text-3xl">
                                 {{ $latestEpisode->title }}
                             </h2>
