@@ -29,6 +29,7 @@ test('about introduction groups its copy and preserves responsive safari artwork
         ->assertSeeHtml('lg:grid-cols-[5fr_7fr]')
         ->assertSeeHtml('aspect-[4/3]')
         ->assertSeeHtml('fetchpriority="high"')
+        ->assertSeeHtml('/images/hero-family-768.avif 768w')
         ->assertSeeHtml('/images/hero-family-768.webp 768w')
         ->assertSeeHtml('/images/hero-family.webp 1600w')
         ->assertDontSeeHtml('/images/hero-family.webp 2048w')
