@@ -71,6 +71,19 @@ test('homepage uses one newsletter form and responsive hero artwork', function (
     expect(substr_count($this->responseContent($response), 'action="'.route('newsletter.store').'"'))->toBe(1);
 });
 
+test('homepage preloads responsive AVIF hero artwork with a WebP fallback', function (): void {
+    get(route('home'))
+        ->assertOk()
+        ->assertSeeHtml('<link rel="preload" href="/images/hero-family-1600.avif" as="image" type="image/avif"')
+        ->assertSeeHtml('/images/hero-family-768.avif 768w')
+        ->assertSeeHtml('type="image/webp"')
+        ->assertSeeHtml('/images/hero-family-768.webp 768w');
+
+    foreach ([640, 768, 1024, 1600] as $width) {
+        expect(public_path("images/hero-family-{$width}.avif"))->toBeFile();
+    }
+});
+
 test('homepage offers a smaller bundled podcast cover without replacing the original', function (): void {
     get(route('home'))->assertOk()->assertSeeHtml('srcset="/images/podcast/mouse28-cover-640.webp 640w, /images/podcast/mouse28-cover.webp 1200w"')->assertSeeHtml('sizes="auto, 264px"');
 

@@ -7,10 +7,10 @@
     :dispatch-layout="true"
 >
     @php
-        \Laravel\Head\Facades\Head::link('preload', '/images/hero-family.webp', [
+        \Laravel\Head\Facades\Head::link('preload', '/images/hero-family-1600.avif', [
             'as' => 'image',
-            'type' => 'image/webp',
-            'imagesrcset' => '/images/hero-family-640.webp 640w, /images/hero-family-768.webp 768w, /images/hero-family-1024.webp 1024w, /images/hero-family.webp 1600w',
+            'type' => 'image/avif',
+            'imagesrcset' => '/images/hero-family-640.avif 640w, /images/hero-family-768.avif 768w, /images/hero-family-1024.avif 1024w, /images/hero-family-1600.avif 1600w',
             'imagesizes' => '(min-width: 1424px) 765px, (min-width: 1024px) calc(58.3333vw - 65.3333px), (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)',
             'fetchpriority' => 'high',
         ]);
@@ -41,6 +41,11 @@
                 <figure>
                     <div class="overflow-hidden rounded-xl">
                         <picture>
+                            <source
+                                type="image/avif"
+                                srcset="/images/hero-family-640.avif 640w, /images/hero-family-768.avif 768w, /images/hero-family-1024.avif 1024w, /images/hero-family-1600.avif 1600w"
+                                sizes="(min-width: 1424px) 765px, (min-width: 1024px) calc(58.3333vw - 65.3333px), (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
+                            />
                             <source
                                 srcset="/images/hero-family-640.webp 640w, /images/hero-family-768.webp 768w, /images/hero-family-1024.webp 1024w, /images/hero-family.webp 1600w"
                                 sizes="(min-width: 1424px) 765px, (min-width: 1024px) calc(58.3333vw - 65.3333px), (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"

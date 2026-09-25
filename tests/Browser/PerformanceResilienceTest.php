@@ -2,23 +2,24 @@
 
 use App\Models\Post;
 
-test('mobile visitors receive the responsive hero and a lean public script', function (): void {
+test('mobile visitors receive one preloaded responsive AVIF hero and a lean public script', function (): void {
     $page = visit(route('home'))
         ->on()
         ->mobile()
         ->resize(375, 812);
 
     $page->assertScript(
-        "document.querySelector('.hero-split-photo img').currentSrc.endsWith('/images/hero-family-768.webp')",
+        "document.querySelector('.hero-split-photo img').currentSrc.endsWith('/images/hero-family-768.avif')",
         true,
     )->assertScript(
         <<<'JS'
             (() => {
                 const preload = document.querySelector('head link[rel="preload"][as="image"]');
-                const source = document.querySelector('.hero-split-photo source');
+                const source = document.querySelector('.hero-split-photo source[type="image/avif"]');
 
                 return preload?.imageSrcset === source.srcset
                     && preload?.imageSizes === source.sizes
+                    && preload?.type === 'image/avif'
                     && preload?.fetchPriority === 'high';
             })()
             JS,
@@ -38,8 +39,9 @@ test('mobile visitors receive the responsive hero and a lean public script', fun
         true,
     )->assertScript(
         <<<'JS'
-            (() => ! performance.getEntriesByType('resource')
-                .some((resource) => resource.name.endsWith('/images/hero-family.webp')))()
+            (() => document.querySelector('.hero-split-photo source[type="image/webp"]') !== null
+                && ! performance.getEntriesByType('resource')
+                    .some((resource) => resource.name.endsWith('/images/hero-family.webp')))()
             JS,
         true,
     )->assertNoJavaScriptErrors();
@@ -56,7 +58,7 @@ test('mobile about visitors receive the preloaded responsive safari hero once', 
             (() => {
                 const image = document.querySelector('[data-about-editorial] header picture img');
 
-                return image?.currentSrc.endsWith('/images/hero-family-768.webp')
+                return image?.currentSrc.endsWith('/images/hero-family-768.avif')
                     && image.complete
                     && image.naturalWidth > 0;
             })()
@@ -66,10 +68,11 @@ test('mobile about visitors receive the preloaded responsive safari hero once', 
         <<<'JS'
             (() => {
                 const preload = document.querySelector('head link[rel="preload"][as="image"]');
-                const source = document.querySelector('[data-about-editorial] header picture source');
+                const source = document.querySelector('[data-about-editorial] header picture source[type="image/avif"]');
 
                 return preload?.imageSrcset === source.srcset
                     && preload?.imageSizes === source.sizes
+                    && preload?.type === 'image/avif'
                     && preload?.fetchPriority === 'high';
             })()
             JS,
