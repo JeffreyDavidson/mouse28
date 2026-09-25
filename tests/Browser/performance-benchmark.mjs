@@ -3,7 +3,8 @@ import { writeFile } from 'node:fs/promises';
 import { chromium } from 'playwright';
 import { navigationTimings } from './navigation-timings.mjs';
 import { benchmarkFailures } from './benchmark-failures.mjs';
-import { cloudflareAccessHeadersForRequest } from './cloudflare-access-headers.mjs';
+import { routeCloudflareAccessRequests } from './cloudflare-access-headers.mjs';
+import { discoverDetailPaths } from './benchmark-page-discovery.mjs';
 
 const { values } = parseArgs({ options: {
     base: { type: 'string' },
@@ -42,14 +43,7 @@ const report = {
 try {
     let paths = values.paths?.split(',') ?? ['/', '/blog', '/episodes', '/about', '/contact', '/search?q=disney', '/guides'];
     if (!values.paths) {
-        const discovery = await browser.newPage();
-        for (const [index, prefix] of [['/blog', '/blog/'], ['/episodes', '/episodes/'], ['/guides', '/guides/']]) {
-            const response = await discovery.goto(new URL(index, base.origin).href, { waitUntil: 'domcontentloaded', timeout: 30000 });
-            if (response?.status() !== 200) continue;
-            const path = await discovery.locator('main a[href]').evaluateAll((links, prefix) => links.map(link => new URL(link.href)).find(url => url.origin === location.origin && url.pathname.startsWith(prefix))?.pathname, prefix);
-            if (path) paths.push(path);
-        }
-        await discovery.close();
+        paths.push(...await discoverDetailPaths(browser, base.origin, accessCredentials));
     }
     paths = [...new Set(paths)];
     for (const path of paths) {
@@ -58,12 +52,7 @@ try {
         for (let run = 1; run <= runs; run++) {
             const context = await browser.newContext({ viewport: mobile ? { width: 390, height: 844 } : { width: 1440, height: 1000 }, deviceScaleFactor: mobile ? 2 : 1, isMobile: mobile, hasTouch: mobile });
             try {
-                if (accessCredentials.clientId) {
-                    await context.route(`${base.origin}/**`, async route => {
-                        const headers = cloudflareAccessHeadersForRequest(route.request().url(), base.origin, accessCredentials);
-                        await route.continue({ headers: { ...route.request().headers(), ...headers } });
-                    });
-                }
+                await routeCloudflareAccessRequests(context, base.origin, accessCredentials);
                 const page = await context.newPage();
                 const cdp = await context.newCDPSession(page);
                 await cdp.send('Network.enable');

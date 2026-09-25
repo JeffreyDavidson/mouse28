@@ -8,3 +8,15 @@ export function cloudflareAccessHeadersForRequest(requestUrl, protectedOrigin, c
         'cf-access-client-secret': credentials.clientSecret,
     };
 }
+
+export async function routeCloudflareAccessRequests(target, protectedOrigin, credentials) {
+    if (!credentials.clientId || !credentials.clientSecret) return;
+
+    await target.route(`${protectedOrigin}/**`, async route => {
+        const headers = cloudflareAccessHeadersForRequest(route.request().url(), protectedOrigin, credentials);
+
+        await route.continue({
+            headers: { ...route.request().headers(), ...headers },
+        });
+    });
+}
