@@ -29,7 +29,7 @@
                         src="{{ $coverImage }}"
                         @if (! $podcast->cover_image)
                             srcset="/images/podcast/mouse28-cover-640.webp 640w, /images/podcast/mouse28-cover-768.webp 768w, /images/podcast/mouse28-cover.webp 1200w"
-                            sizes="(min-width: 544px) 512px, calc(100vw - 32px)"
+                            sizes="(min-width: 64rem) min(32rem, calc((100vw - 7rem) * 5 / 12)), (min-width: 40rem) 32rem, min(16rem, calc(100vw - 2rem))"
                         @endif
                         alt="Mouse28 podcast artwork"
                         width="1200"

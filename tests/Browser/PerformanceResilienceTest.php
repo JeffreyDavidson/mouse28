@@ -110,13 +110,15 @@ test('homepage podcast artwork uses one suitably sized image download', function
     '3x display retains the full-resolution cover' => [3, 'mouse28-cover.webp'],
 ]);
 
-test('podcast archive artwork uses one suitably sized image download', function (int $density, string $filename): void {
+test('podcast archive artwork downloads one candidate sized for its rendered frame', function (int $viewportWidth, int $density, int $frameWidth, string $filename): void {
     $page = visit(route('episodes.index'), [
         'deviceScaleFactor' => $density,
-        'viewport' => ['width' => 390, 'height' => 844],
+        'viewport' => ['width' => $viewportWidth, 'height' => 844],
     ]);
 
     expect($page->script('window.devicePixelRatio'))->toBe($density)
+        ->and($page->script('document.querySelector(".podcast-cover-frame img").offsetWidth'))
+        ->toBe($frameWidth)
         ->and($page->script('document.querySelector(".podcast-cover-frame img").currentSrc'))
         ->toEndWith('/images/podcast/'.$filename)
         ->and($page->script('(() => { const image = document.querySelector(".podcast-cover-frame img"); return image.complete && image.naturalWidth > 0; })()'))
@@ -127,9 +129,14 @@ test('podcast archive artwork uses one suitably sized image download', function 
         1,
     )->assertNoJavaScriptErrors();
 })->with([
-    '1x display selects the smallest bundled cover' => [1, 'mouse28-cover-640.webp'],
-    '2x display selects the medium bundled cover' => [2, 'mouse28-cover-768.webp'],
-    '3x display selects the full-resolution cover' => [3, 'mouse28-cover.webp'],
+    'mobile at 1x' => [390, 1, 256, 'mouse28-cover-640.webp'],
+    'mobile at 2x' => [390, 2, 256, 'mouse28-cover-640.webp'],
+    'mobile at 3x' => [390, 3, 256, 'mouse28-cover-768.webp'],
+    'below the wider frame breakpoint' => [639, 2, 256, 'mouse28-cover-640.webp'],
+    'at the wider frame breakpoint' => [640, 2, 512, 'mouse28-cover.webp'],
+    'below the two-column breakpoint' => [1023, 2, 512, 'mouse28-cover.webp'],
+    'at the two-column breakpoint' => [1024, 2, 380, 'mouse28-cover-768.webp'],
+    'desktop capped frame' => [1440, 2, 512, 'mouse28-cover.webp'],
 ]);
 
 test('mobile podcast archive keeps the latest episode listening action above the fold', function (): void {
