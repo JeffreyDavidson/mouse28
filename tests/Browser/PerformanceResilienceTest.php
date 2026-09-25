@@ -1,6 +1,7 @@
 <?php
 
 use App\Actions\GenerateResponsiveCover;
+use App\Models\Episode;
 use App\Models\Post;
 use App\Support\ResponsiveArtwork;
 use Illuminate\Support\Facades\Storage;
@@ -200,6 +201,81 @@ test('mobile blog archive and article load responsive cover artwork without over
 
         foreach (ResponsiveArtwork::WIDTHS as $width) {
             $variantPath = ResponsiveArtwork::variantPath($coverHash, $width);
+            $disk->delete($variantPath);
+
+            if (isset($existingVariants[$variantPath])) {
+                $disk->put($variantPath, $existingVariants[$variantPath]);
+            }
+        }
+    }
+})->group('browser-smoke');
+
+test('mobile episode archive and detail fit the viewport and detail loads square responsive artwork', function (): void {
+    $coverPath = 'episodes/browser-responsive-cover-'.Str::uuid().'.webp';
+    $cover = file_get_contents(resource_path('content-artwork/episodes/trailer-meet-mouse28.webp'));
+
+    if ($cover === false) {
+        throw new RuntimeException('The episode artwork browser fixture could not be loaded.');
+    }
+
+    config(['filesystems.disks.public.url' => url('/storage')]);
+    Storage::forgetDisk('public');
+
+    $disk = Storage::disk('public');
+    $disk->put($coverPath, $cover);
+
+    $coverHash = hash('sha256', $cover);
+    $existingVariants = [];
+
+    foreach (ResponsiveArtwork::WIDTHS as $width) {
+        $variantPath = ResponsiveArtwork::variantPath($coverHash, $width, square: true);
+
+        if ($disk->exists($variantPath)) {
+            $existingVariants[$variantPath] = $disk->get($variantPath);
+        }
+    }
+
+    try {
+        $episode = Episode::factory()->create(['cover_image' => $coverPath]);
+
+        app(GenerateResponsiveCover::class)($episode);
+
+        $viewport = [
+            'viewport' => ['width' => 390, 'height' => 844],
+            'deviceScaleFactor' => 1,
+        ];
+
+        visit(route('episodes.index'), $viewport)
+            ->assertSee('The Mouse28 Podcast')
+            ->assertScript($this->horizontalOverflowScript(), 0)
+            ->assertNoJavaScriptErrors();
+
+        $sourceSelector = 'img[src$="/storage/'.$coverPath.'"]';
+        $responsiveArtworkLoadedScript = sprintf(
+            <<<'JS'
+                (() => {
+                    const image = document.querySelector(%s);
+                    const candidate = new URL(image?.currentSrc ?? window.location.href);
+
+                    return image?.complete === true
+                        && image.naturalWidth > 0
+                        && candidate.pathname.includes('/episodes/responsive/v1/');
+                })()
+                JS,
+            json_encode($sourceSelector, JSON_THROW_ON_ERROR),
+        );
+
+        visit(route('episodes.show', $episode), $viewport)
+            ->assertSee($episode->title)
+            ->waitForEvent('load')
+            ->assertScript($this->horizontalOverflowScript(), 0)
+            ->assertScript($responsiveArtworkLoadedScript, true)
+            ->assertNoJavaScriptErrors();
+    } finally {
+        $disk->delete($coverPath);
+
+        foreach (ResponsiveArtwork::WIDTHS as $width) {
+            $variantPath = ResponsiveArtwork::variantPath($coverHash, $width, square: true);
             $disk->delete($variantPath);
 
             if (isset($existingVariants[$variantPath])) {
