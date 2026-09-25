@@ -1,6 +1,10 @@
 <?php
 
+use App\Actions\GenerateResponsiveCover;
 use App\Models\Post;
+use App\Support\ResponsiveArtwork;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 test('mobile visitors receive one preloaded responsive AVIF hero and a lean public script', function (): void {
     $page = visit(route('home'))
@@ -126,6 +130,84 @@ test('podcast archive artwork uses one suitably sized image download', function 
     '2x display selects the medium bundled cover' => [2, 'mouse28-cover-768.webp'],
     '3x display selects the full-resolution cover' => [3, 'mouse28-cover.webp'],
 ]);
+
+test('mobile blog archive and article load responsive cover artwork without overflowing', function (): void {
+    $coverPath = 'posts/browser-responsive-cover-'.Str::uuid().'.webp';
+    $cover = file_get_contents(public_path('images/meet-jeffrey-and-cassie.webp'));
+
+    if ($cover === false) {
+        throw new RuntimeException('The blog artwork browser fixture could not be loaded.');
+    }
+
+    config(['filesystems.disks.public.url' => url('/storage')]);
+    Storage::forgetDisk('public');
+
+    $disk = Storage::disk('public');
+    $disk->put($coverPath, $cover);
+
+    $coverHash = hash('sha256', $cover);
+    $existingVariants = [];
+
+    foreach (ResponsiveArtwork::WIDTHS as $width) {
+        $variantPath = ResponsiveArtwork::variantPath($coverHash, $width);
+
+        if ($disk->exists($variantPath)) {
+            $existingVariants[$variantPath] = $disk->get($variantPath);
+        }
+    }
+
+    try {
+        $post = Post::factory()->create([
+            'title' => 'Responsive Park Planning',
+            'cover_image' => $coverPath,
+        ]);
+
+        app(GenerateResponsiveCover::class)($post);
+
+        $viewport = [
+            'viewport' => ['width' => 390, 'height' => 844],
+            'deviceScaleFactor' => 1,
+        ];
+        $sourceSelector = 'img[src$="/storage/'.$coverPath.'"]';
+        $responsiveArtworkLoadedScript = sprintf(
+            <<<'JS'
+                (() => {
+                    const image = document.querySelector(%s);
+
+                    return image?.complete === true
+                        && image.naturalWidth > 0
+                        && new URL(image.currentSrc).pathname.includes('/posts/responsive/');
+                })()
+                JS,
+            json_encode($sourceSelector, JSON_THROW_ON_ERROR),
+        );
+
+        visit(route('blog.index'), $viewport)
+            ->assertSee($post->title)
+            ->waitForEvent('load')
+            ->assertScript($this->horizontalOverflowScript(), 0)
+            ->assertScript($responsiveArtworkLoadedScript, true)
+            ->assertNoJavaScriptErrors();
+
+        visit(route('blog.show', $post), $viewport)
+            ->assertSee($post->title)
+            ->waitForEvent('load')
+            ->assertScript($this->horizontalOverflowScript(), 0)
+            ->assertScript($responsiveArtworkLoadedScript, true)
+            ->assertNoJavaScriptErrors();
+    } finally {
+        $disk->delete($coverPath);
+
+        foreach (ResponsiveArtwork::WIDTHS as $width) {
+            $variantPath = ResponsiveArtwork::variantPath($coverHash, $width);
+            $disk->delete($variantPath);
+
+            if (isset($existingVariants[$variantPath])) {
+                $disk->put($variantPath, $existingVariants[$variantPath]);
+            }
+        }
+    }
+})->group('browser-smoke');
 
 test('core mobile navigation and search work without JavaScript', function (): void {
     $home = visit(route('home'), ['javaScriptEnabled' => false])
