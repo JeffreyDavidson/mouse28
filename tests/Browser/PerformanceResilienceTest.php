@@ -45,6 +45,41 @@ test('mobile visitors receive the responsive hero and a lean public script', fun
     )->assertNoJavaScriptErrors();
 });
 
+test('mobile about visitors receive the preloaded responsive safari hero once', function (): void {
+    $page = visit(route('about'), [
+        'deviceScaleFactor' => 2,
+        'viewport' => ['width' => 390, 'height' => 844],
+    ]);
+
+    $page->assertScript(
+        <<<'JS'
+            (() => {
+                const image = document.querySelector('[data-about-editorial] header picture img');
+
+                return image?.currentSrc.endsWith('/images/hero-family-768.webp')
+                    && image.complete
+                    && image.naturalWidth > 0;
+            })()
+            JS,
+        true,
+    )->assertScript(
+        <<<'JS'
+            (() => {
+                const preload = document.querySelector('head link[rel="preload"][as="image"]');
+                const source = document.querySelector('[data-about-editorial] header picture source');
+
+                return preload?.imageSrcset === source.srcset
+                    && preload?.imageSizes === source.sizes
+                    && preload?.fetchPriority === 'high';
+            })()
+            JS,
+        true,
+    )->assertScript(
+        'performance.getEntriesByType("resource").filter(resource => resource.name.includes("/images/hero-family")).length',
+        1,
+    )->assertNoJavaScriptErrors();
+});
+
 test('homepage podcast artwork uses one suitably sized image download', function (int $density, string $filename): void {
     $page = visit(route('home'), ['deviceScaleFactor' => $density])
         ->resize(390, 844);
