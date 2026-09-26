@@ -32,3 +32,11 @@ test('guide index data filters published guides and builds category metadata', f
         ->not->toContain($draft->id)
         ->and($data['pageTitle'])->toContain('Accessibility');
 });
+
+test('guide index data uses the configured page size', function (): void {
+    config()->set('mouse28.guides_per_page', 2);
+
+    $data = app(GuideIndexViewModel::class)->data(Request::create(route('guides.index')));
+
+    expect($data['guides']->perPage())->toBe(2);
+});

@@ -262,3 +262,16 @@ function newsletterPayload(): array
         'cf-turnstile-response' => 'turnstile-token',
     ];
 }
+
+test('newsletter rate limit uses the configured attempts per minute', function (): void {
+    config()->set('mouse28.rate_limits.newsletter_per_minute', 1);
+    $payload = array_merge(newsletterPayload(), ['website_url' => 'https://spam.example']);
+
+    from(route('home'))
+        ->post(route('newsletter.store'), $payload)
+        ->assertSessionHasNoErrors();
+
+    from(route('home'))
+        ->post(route('newsletter.store'), $payload)
+        ->assertSessionHasErrorsIn('newsletter', 'newsletter_rate_limit');
+});

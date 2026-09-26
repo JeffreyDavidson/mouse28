@@ -73,3 +73,17 @@ test('search treats wildcard characters as literal text', function (string $quer
     'percent sign' => ['100%', 1],
     'underscore' => ['_', 0],
 ]);
+
+test('search results use the configured page size for each section', function (string $query): void {
+    config()->set('mouse28.guides_enabled', true);
+    config()->set('mouse28.search_results_per_page', 2);
+
+    $results = app(SearchViewModel::class)->data($query);
+
+    expect($results['posts']->perPage())->toBe(2)
+        ->and($results['guides']->perPage())->toBe(2)
+        ->and($results['episodes']->perPage())->toBe(2);
+})->with([
+    'with a query' => ['Castle'],
+    'without a query' => [''],
+]);

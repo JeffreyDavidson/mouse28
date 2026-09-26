@@ -8,6 +8,7 @@ use App\Models\Post;
 use App\Support\TextSearch;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Config;
 
 class SearchViewModel
 {
@@ -22,9 +23,10 @@ class SearchViewModel
      */
     public function data(string $query): array
     {
-        $posts = new LengthAwarePaginator((new Post)->newCollection(), 0, 6);
-        $guides = new LengthAwarePaginator((new Guide)->newCollection(), 0, 6);
-        $episodes = new LengthAwarePaginator((new Episode)->newCollection(), 0, 6);
+        $perPage = Config::integer('mouse28.search_results_per_page');
+        $posts = new LengthAwarePaginator((new Post)->newCollection(), 0, $perPage);
+        $guides = new LengthAwarePaginator((new Guide)->newCollection(), 0, $perPage);
+        $episodes = new LengthAwarePaginator((new Episode)->newCollection(), 0, $perPage);
 
         if ($query !== '') {
             $posts = Post::published()
@@ -32,7 +34,7 @@ class SearchViewModel
                 ->tap(fn (Builder $builder) => TextSearch::constrain($builder, ['title', 'excerpt', 'body'], $query))
                 ->latest('published_at')
                 ->latest('id')
-                ->paginate(6, pageName: 'postsPage')
+                ->paginate($perPage, pageName: 'postsPage')
                 ->withQueryString()
                 ->fragment('post-results-heading');
 
@@ -42,7 +44,7 @@ class SearchViewModel
                     ->tap(fn (Builder $builder) => TextSearch::constrain($builder, ['title', 'excerpt', 'body'], $query))
                     ->latest('published_at')
                     ->latest('id')
-                    ->paginate(6, pageName: 'guidesPage')
+                    ->paginate($perPage, pageName: 'guidesPage')
                     ->withQueryString()
                     ->fragment('guide-results-heading');
             }
@@ -52,7 +54,7 @@ class SearchViewModel
                 ->tap(fn (Builder $builder) => TextSearch::constrain($builder, ['title', 'description', 'show_notes', 'transcript'], $query))
                 ->latest('published_at')
                 ->latest('id')
-                ->paginate(6, pageName: 'episodesPage')
+                ->paginate($perPage, pageName: 'episodesPage')
                 ->withQueryString()
                 ->fragment('episode-results-heading');
         }
