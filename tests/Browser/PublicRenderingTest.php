@@ -26,6 +26,11 @@ test('public pages render accessible typography and focus indicators', function 
     'search' => ['search', 'Search'],
 ]);
 
+test('the footer newsletter field shows a focus indicator that stands out from the footer', function (): void {
+    visit(route('home'))
+        ->assertScript($this->focusIndicatorContrastScript('#footer-newsletter-email').' >= 3', true);
+});
+
 test('polished discovery and guide artwork remain usable on mobile', function (): void {
     $guide = Guide::factory()->create([
         'category' => 'accessibility',
