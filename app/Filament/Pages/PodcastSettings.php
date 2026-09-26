@@ -16,6 +16,7 @@ use Filament\Schemas\Components\Form;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Facades\Gate;
 
 /** @property-read Schema $form */
 class PodcastSettings extends Page
@@ -110,6 +111,7 @@ class PodcastSettings extends Page
                     Action::make('save')
                         ->label('Save Settings')
                         ->icon(Heroicon::OutlinedCheck)
+                        ->authorize('update', Podcast::info())
                         ->action(fn () => $this->save()),
                 ])->alignEnd(),
             ])
@@ -118,8 +120,9 @@ class PodcastSettings extends Page
 
     public function save(): void
     {
-        $data = $this->form->getState();
         $podcast = Podcast::settings();
+        Gate::authorize('update', $podcast);
+        $data = $this->form->getState();
         $podcast->update($data);
 
         Notification::make()

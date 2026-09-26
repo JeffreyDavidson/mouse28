@@ -97,6 +97,7 @@ class ContactMessageResource extends Resource
                 Action::make('markRead')
                     ->label('Mark Read')
                     ->icon(Heroicon::OutlinedCheck)
+                    ->authorize('update')
                     ->action(fn (ContactMessage $record) => $record->update(['is_read' => true]))
                     ->hidden(fn (ContactMessage $record) => $record->is_read),
                 Action::make('reply')

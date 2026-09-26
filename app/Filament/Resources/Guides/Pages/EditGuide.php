@@ -34,6 +34,7 @@ class EditGuide extends EditRecord
         return [
             Action::make('publish')
                 ->icon(Heroicon::OutlinedRocketLaunch)
+                ->authorize('update')
                 ->color('success')
                 ->requiresConfirmation()
                 ->visible(fn (): bool => ! $this->record->is_published)
@@ -60,6 +61,7 @@ class EditGuide extends EditRecord
                 }),
             Action::make('unpublish')
                 ->icon(Heroicon::OutlinedArrowUturnLeft)
+                ->authorize('update')
                 ->color('warning')
                 ->requiresConfirmation()
                 ->visible(fn (): bool => $this->record->is_published)
