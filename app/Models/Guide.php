@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
-use App\Support\ContentPermalink;
+use App\Models\Concerns\HasPublication;
 use Carbon\CarbonInterface;
 use Database\Factories\GuideFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -60,16 +60,9 @@ use Spatie\Tags\HasTags;
 class Guide extends Model
 {
     /** @use HasFactory<GuideFactory> */
-    use HasFactory, HasTags, SoftDeletes;
+    use HasFactory, HasPublication, HasTags, SoftDeletes;
 
     use LogsActivity;
-
-    protected static function booted(): void
-    {
-        static::saving(function (Guide $content): void {
-            ContentPermalink::rememberPublication($content);
-        });
-    }
 
     public function getActivitylogOptions(): LogOptions
     {
@@ -97,36 +90,12 @@ class Guide extends Model
 
     /** @param Builder<static> $query */
     #[Scope]
-    protected function published(Builder $query): void
-    {
-        $query->where('is_published', true)
-            ->whereNotNull('published_at')
-            ->where('published_at', '<=', Date::now());
-    }
-
-    /** @param Builder<static> $query */
-    #[Scope]
     protected function reviewDue(Builder $query): void
     {
         $query->where(function (Builder $query): void {
             $query->whereNull('last_reviewed_at')
                 ->orWhere('last_reviewed_at', '<', Date::today()->subDays(Config::integer('mouse28.guide_review_interval_days')));
         });
-    }
-
-    /** @param Builder<static> $query */
-    #[Scope]
-    protected function drafts(Builder $query): void
-    {
-        $query->where('is_published', false);
-    }
-
-    /** @param Builder<static> $query */
-    #[Scope]
-    protected function scheduled(Builder $query): void
-    {
-        $query->where('is_published', true)
-            ->where('published_at', '>', Date::now());
     }
 
     /** @param Builder<static> $query */
@@ -158,18 +127,6 @@ class Guide extends Model
     protected function categoryLabel(): Attribute
     {
         return Attribute::make(get: fn (): string => $this->category->getLabel());
-    }
-
-    /** @return Attribute<string|null, never> */
-    protected function coverImageUrl(): Attribute
-    {
-        return Attribute::make(get: fn (): ?string => $this->cover_image ? '/storage/'.$this->cover_image : null);
-    }
-
-    /** @return Attribute<string|null, never> */
-    protected function ogImageUrl(): Attribute
-    {
-        return Attribute::make(get: fn (): ?string => $this->og_image ? '/storage/'.$this->og_image : null);
     }
 
     /** @return Attribute<int, never> */

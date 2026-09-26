@@ -150,7 +150,7 @@ test('ready drafts can be explicitly published', function (): void {
 
     livewire(EditEpisode::class, ['record' => $record->getRouteKey()])
         ->callAction('publish')
-        ->assertNotified();
+        ->assertNotified('Episode published');
 
     expect($record->refresh()->is_published)->toBeTrue()
         ->and($record->published_at)->not->toBeNull();
@@ -163,7 +163,7 @@ test('published content can be explicitly unpublished', function (): void {
 
     livewire(EditEpisode::class, ['record' => $record->getRouteKey()])
         ->callAction('unpublish')
-        ->assertNotified();
+        ->assertNotified('Episode unpublished');
 
     expect($record->refresh()->is_published)->toBeFalse();
 });

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Support\ContentPermalink;
+use App\Models\Concerns\HasPublication;
 use Carbon\CarbonInterface;
 use Database\Factories\EpisodeFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -14,7 +14,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Date;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 use Spatie\Tags\HasTags;
@@ -58,16 +57,9 @@ use Spatie\Tags\HasTags;
 class Episode extends Model
 {
     /** @use HasFactory<EpisodeFactory> */
-    use HasFactory, HasTags, SoftDeletes;
+    use HasFactory, HasPublication, HasTags, SoftDeletes;
 
     use LogsActivity;
-
-    protected static function booted(): void
-    {
-        static::saving(function (Episode $content): void {
-            ContentPermalink::rememberPublication($content);
-        });
-    }
 
     public function getActivitylogOptions(): LogOptions
     {
@@ -105,30 +97,6 @@ class Episode extends Model
 
     /** @param Builder<static> $query */
     #[Scope]
-    protected function published(Builder $query): void
-    {
-        $query->where('is_published', true)
-            ->whereNotNull('published_at')
-            ->where('published_at', '<=', Date::now());
-    }
-
-    /** @param Builder<static> $query */
-    #[Scope]
-    protected function drafts(Builder $query): void
-    {
-        $query->where('is_published', false);
-    }
-
-    /** @param Builder<static> $query */
-    #[Scope]
-    protected function scheduled(Builder $query): void
-    {
-        $query->where('is_published', true)
-            ->where('published_at', '>', Date::now());
-    }
-
-    /** @param Builder<static> $query */
-    #[Scope]
     protected function needsAttention(Builder $query): void
     {
         $query->where(function (Builder $query): void {
@@ -144,18 +112,6 @@ class Episode extends Model
                 $query->where('is_published', true)->whereNull('published_at');
             });
         });
-    }
-
-    /** @return Attribute<string|null, never> */
-    protected function ogImageUrl(): Attribute
-    {
-        return Attribute::make(get: fn (): ?string => $this->og_image ? '/storage/'.$this->og_image : null);
-    }
-
-    /** @return Attribute<string|null, never> */
-    protected function coverImageUrl(): Attribute
-    {
-        return Attribute::make(get: fn (): ?string => $this->cover_image ? '/storage/'.$this->cover_image : null);
     }
 
     /** @return Attribute<string|null, never> */
