@@ -58,7 +58,7 @@
             </div>
         </header>
 
-        <main class="dispatch-page-field bg-cream">
+        <div class="dispatch-page-field bg-cream">
             <div class="mx-auto max-w-[86rem] px-4 py-10 sm:px-6 sm:py-14 lg:py-18">
                 <nav aria-label="Guide categories" class="border-navy/15 overflow-x-auto border-y">
                     <div class="flex min-w-max gap-7 sm:gap-9">
@@ -144,6 +144,6 @@
                     </section>
                 @endif
             </div>
-        </main>
+        </div>
     </div>
 </x-layouts.app>
