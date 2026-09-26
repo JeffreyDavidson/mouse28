@@ -340,3 +340,14 @@ test('form placeholders use readable text colors', function (): void {
 
     get(route('blog.index'))->assertOk()->assertSeeHtml('placeholder:text-navy/60')->assertSeeHtml('placeholder:text-white/60')->assertDontSeeHtml('placeholder:text-navy/25')->assertDontSeeHtml('placeholder:text-white/25')->assertDontSeeHtml('placeholder-white/');
 });
+
+test('post links that open a new tab announce it', function (): void {
+    $post = Post::factory()->create([
+        'source_url' => 'https://disneyworld.disney.go.com/guest-services/',
+        'last_reviewed_at' => now(),
+    ]);
+
+    $response = get(route('blog.show', $post))->assertOk();
+
+    expect($this->unannouncedNewTabLinks($response))->toBeEmpty();
+});

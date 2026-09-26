@@ -7,5 +7,6 @@
         target="_blank"
         rel="noopener noreferrer"
         class="text-purple hover:text-navy mt-2 inline-flex min-h-12 items-center font-semibold underline underline-offset-8"
-    >View official source</a>
+        >View official source<x-new-tab-notice
+    /></a>
 </div>

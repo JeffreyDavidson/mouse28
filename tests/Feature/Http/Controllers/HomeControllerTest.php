@@ -206,3 +206,9 @@ test('homepage newsletter form renders bot protection', function (): void {
 
     get(route('home'))->assertOk()->assertSeeHtml('data-action="newsletter"')->assertSeeHtml('data-appearance="interaction-only"')->assertSeeHtml('name="website_url"');
 });
+
+test('homepage links that open a new tab announce it', function (): void {
+    $response = get(route('home'))->assertOk();
+
+    expect($this->unannouncedNewTabLinks($response))->toBeEmpty();
+});
