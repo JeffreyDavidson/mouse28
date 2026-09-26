@@ -9,6 +9,7 @@ use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Config;
 
 class HomeViewModel
 {
@@ -35,14 +36,14 @@ class HomeViewModel
             ->latest('published_at')
             ->take(3)
             ->get();
-        $latestGuides = config('mouse28.guides_enabled')
+        $latestGuides = Config::boolean('mouse28.guides_enabled')
             ? Guide::published()
                 ->select(['id', 'slug', 'title', 'excerpt', 'category', 'cover_image'])
                 ->latest('published_at')
                 ->take(2)
                 ->get()
             : new Collection;
-        $planningPosts = config('mouse28.guides_enabled') && $latestGuides->isEmpty()
+        $planningPosts = Config::boolean('mouse28.guides_enabled') && $latestGuides->isEmpty()
             ? Post::published()
                 ->select(['id', 'slug', 'title', 'category', 'cover_image'])
                 ->whereIn('category', [PostCategory::ParkAccessibility, PostCategory::DisneyTips, PostCategory::AutismAwareness])

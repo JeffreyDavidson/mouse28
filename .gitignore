@@ -31,3 +31,6 @@ notes/
 /.impeccable/mocks/decision/
 /.impeccable/questions/
 /.impeccable/review/
+
+# Local agent planning notes.
+/tasks/
