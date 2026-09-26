@@ -8,7 +8,7 @@
         <a href="{{ route('guides.show', $guide) }}" class="block overflow-hidden rounded-xl">
             <x-guide-artwork
                 :guide="$guide"
-                class="aspect-[16/10] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]"
+                class="aspect-[16/10] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
             />
         </a>
         <p class="text-purple mt-5 text-sm font-semibold">{{ $guide->category_label }}</p>
@@ -25,7 +25,7 @@
         >
             <x-guide-artwork
                 :guide="$guide"
-                class="aspect-[16/10] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]"
+                class="aspect-[16/10] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
             />
         </a>
         <div class="pt-5 wrap-anywhere">
