@@ -82,7 +82,7 @@
             "@php artisan test --exclude-testsuite=Browser --fail-on-risky"
         ],
         "test:architecture": "@php artisan test --compact --testsuite=Architecture --fail-on-risky",
-        "test:mysql": "MOUSE28_TEST_MYSQL=1 php artisan test --compact tests/Integration/Models tests/Integration/Support/PublicContentArchiveTest.php tests/Integration/Support/ContentPermalinkTest.php tests/Feature/Filament/Resources/Posts/Pages/CreatePostTest.php tests/Feature/Filament/Resources/Episodes/Pages/CreateEpisodeTest.php tests/Feature/Filament/Resources/Guides/Pages/CreateGuideTest.php",
+        "test:mysql": "MOUSE28_TEST_MYSQL=1 php artisan test --compact tests/Integration/Models tests/Integration/Support/PublicContentArchiveTest.php tests/Integration/Support/ContentPermalinkTest.php tests/Integration/Support/TextSearchTest.php tests/Feature/Filament/Resources/Posts/Pages/CreatePostTest.php tests/Feature/Filament/Resources/Episodes/Pages/CreateEpisodeTest.php tests/Feature/Filament/Resources/Guides/Pages/CreateGuideTest.php",
         "test:browser": "@php artisan test --testsuite=Browser --fail-on-risky",
         "test:browser:compatibility": "@php artisan test --compact --testsuite=Browser --group=browser-compatibility --fail-on-risky",
         "test:browser:smoke": "@php artisan test --compact --testsuite=Browser --group=browser-smoke --fail-on-risky",
@@ -162,7 +162,8 @@
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/PodcastLinks.php --filter='links include configured services'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/BlogRssFeed.php --filter='blog feed'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/SitemapDocument.php --filter='sitemap'",
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/Turnstile.php --filter='(invalid credentials|verification|connection failure)'"
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/Turnstile.php --filter='(invalid credentials|verification|connection failure)'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/TextSearch.php --filter='text search'"
         ],
         "analyse": "php -d memory_limit=2G vendor/bin/phpstan analyse --no-progress",
         "analyse:pest": "APP_ENV=testing php -d memory_limit=2G vendor/bin/phpstan analyse --configuration=phpstan-pest.neon --no-progress",
