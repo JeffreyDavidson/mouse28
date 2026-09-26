@@ -38,7 +38,7 @@ class SearchViewModel
                 ->withQueryString()
                 ->fragment('post-results-heading');
 
-            if (config('mouse28.guides_enabled')) {
+            if (Config::boolean('mouse28.guides_enabled')) {
                 $guides = Guide::published()
                     ->select(['slug', 'title', 'excerpt', 'category'])
                     ->tap(fn (Builder $builder) => TextSearch::constrain($builder, ['title', 'excerpt', 'body'], $query))

@@ -12,7 +12,7 @@ return [
 
     'content_artwork_path' => resource_path('content-artwork'),
 
-    'guides_enabled' => env('GUIDES_ENABLED', false),
+    'guides_enabled' => filter_var(env('GUIDES_ENABLED', false), FILTER_VALIDATE_BOOL),
 
     'blog_posts_per_page' => max(1, (int) env('MOUSE28_BLOG_POSTS_PER_PAGE', 12)),
 
