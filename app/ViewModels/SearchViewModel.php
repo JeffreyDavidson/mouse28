@@ -5,6 +5,7 @@ namespace App\ViewModels;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
+use App\Support\TextSearch;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -28,11 +29,7 @@ class SearchViewModel
         if ($query !== '') {
             $posts = Post::published()
                 ->select(['slug', 'title', 'excerpt', 'category'])
-                ->where(function (Builder $builder) use ($query): void {
-                    $builder->where('title', 'like', "%{$query}%")
-                        ->orWhere('excerpt', 'like', "%{$query}%")
-                        ->orWhere('body', 'like', "%{$query}%");
-                })
+                ->tap(fn (Builder $builder) => TextSearch::constrain($builder, ['title', 'excerpt', 'body'], $query))
                 ->latest('published_at')
                 ->latest('id')
                 ->paginate(6, pageName: 'postsPage')
@@ -42,11 +39,7 @@ class SearchViewModel
             if (config('mouse28.guides_enabled')) {
                 $guides = Guide::published()
                     ->select(['slug', 'title', 'excerpt', 'category'])
-                    ->where(function (Builder $builder) use ($query): void {
-                        $builder->where('title', 'like', "%{$query}%")
-                            ->orWhere('excerpt', 'like', "%{$query}%")
-                            ->orWhere('body', 'like', "%{$query}%");
-                    })
+                    ->tap(fn (Builder $builder) => TextSearch::constrain($builder, ['title', 'excerpt', 'body'], $query))
                     ->latest('published_at')
                     ->latest('id')
                     ->paginate(6, pageName: 'guidesPage')
@@ -56,12 +49,7 @@ class SearchViewModel
 
             $episodes = Episode::published()
                 ->select(['slug', 'episode_number', 'title', 'description'])
-                ->where(function (Builder $builder) use ($query): void {
-                    $builder->where('title', 'like', "%{$query}%")
-                        ->orWhere('description', 'like', "%{$query}%")
-                        ->orWhere('show_notes', 'like', "%{$query}%")
-                        ->orWhere('transcript', 'like', "%{$query}%");
-                })
+                ->tap(fn (Builder $builder) => TextSearch::constrain($builder, ['title', 'description', 'show_notes', 'transcript'], $query))
                 ->latest('published_at')
                 ->latest('id')
                 ->paginate(6, pageName: 'episodesPage')

@@ -201,3 +201,15 @@ test('featured story is independent of category search and sort filters', functi
     // Assert
     $page->assertViewHas('featuredPost', fn (Post $post): bool => $post->is($featuredPost));
 });
+
+test('archive search treats wildcard characters as literal text', function (string $search, int $expectedCount): void {
+    Post::factory()->create(['title' => 'Magic Kingdom 100% guide', 'excerpt' => '', 'body' => '']);
+    Post::factory()->create(['title' => 'Magic Kingdom 1000 steps', 'excerpt' => '', 'body' => '']);
+
+    $page = livewire(BlogArchive::class, ['search' => $search]);
+
+    $page->assertViewHas('posts', fn (LengthAwarePaginator $posts): bool => $posts->total() === $expectedCount);
+})->with([
+    'percent sign' => ['100%', 1],
+    'underscore' => ['_', 0],
+]);
