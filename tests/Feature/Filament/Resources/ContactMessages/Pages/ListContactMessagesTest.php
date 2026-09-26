@@ -1,12 +1,15 @@
 <?php
 
 use App\Filament\Resources\ContactMessages\ContactMessageResource;
+use App\Filament\Resources\ContactMessages\Pages\ListContactMessages;
 use App\Models\ContactMessage;
 use App\Models\User;
+use Filament\Actions\Testing\TestAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
+use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
 
@@ -48,4 +51,17 @@ test('renders contact message previews with a two-line clamp', function (): void
         ->assertOk()
         ->assertSeeHtml('A family wants to understand the attraction')
         ->assertSeeHtml('--line-clamp: 2');
+});
+
+test('reply action opens an encoded mail draft', function (): void {
+    $message = ContactMessage::query()->create([
+        'name' => 'Dale Cooper',
+        'email' => 'dale@example.com',
+        'subject' => 'general',
+        'message' => 'A park question.',
+    ]);
+    actingAs(User::factory()->admin()->create());
+
+    livewire(ListContactMessages::class)
+        ->assertActionHasUrl(TestAction::make('reply')->table($message), 'mailto:dale@example.com?subject=Re%3A%20General%20Question');
 });

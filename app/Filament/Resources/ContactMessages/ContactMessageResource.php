@@ -102,7 +102,7 @@ class ContactMessageResource extends Resource
                 Action::make('reply')
                     ->label('Reply')
                     ->icon(Heroicon::OutlinedPaperAirplane)
-                    ->url(fn (ContactMessage $record): string => "mailto:{$record->email}?subject=".urlencode('Re: '.$record->subjectLabel()))
+                    ->url(fn (ContactMessage $record): string => $record->replyMailtoUrl())
                     ->openUrlInNewTab(),
                 DeleteAction::make(),
             ])
