@@ -20,6 +20,18 @@ class ContactMessage extends Model
         return ContactTopic::tryFrom($this->subject)?->getLabel() ?? ucfirst($this->subject);
     }
 
+    /**
+     * Build a reply draft link, percent-encoding values so spaces stay spaces and
+     * address characters such as `?` or `&` cannot add mailto header fields.
+     */
+    public function replyMailtoUrl(): string
+    {
+        $address = str_replace('%40', '@', rawurlencode($this->email));
+        $subject = rawurlencode("Re: {$this->subjectLabel()}");
+
+        return "mailto:{$address}?subject={$subject}";
+    }
+
     protected function casts(): array
     {
         return [

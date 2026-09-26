@@ -101,7 +101,7 @@ class ViewContactMessage extends ViewRecord
             Action::make('reply')
                 ->label('Reply')
                 ->icon(Heroicon::OutlinedPaperAirplane)
-                ->url(fn (): string => "mailto:{$this->record->email}?subject=".urlencode('Re: '.$this->record->subjectLabel()))
+                ->url(fn (): string => $this->record->replyMailtoUrl())
                 ->openUrlInNewTab(),
             DeleteAction::make(),
         ];
