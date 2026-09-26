@@ -22,7 +22,7 @@ class PostPolicy
 
     public function viewPublic(?User $user, Post $post): Response
     {
-        return $post->is_published && $post->published_at?->isPast()
+        return $post->isLive()
             ? Response::allow()
             : Response::denyAsNotFound();
     }

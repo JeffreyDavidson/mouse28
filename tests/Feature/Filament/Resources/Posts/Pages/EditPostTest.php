@@ -119,7 +119,7 @@ test('ready drafts can be explicitly published', function (): void {
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->callAction('publish')
-        ->assertNotified();
+        ->assertNotified('Post published');
 
     expect($record->refresh()->is_published)->toBeTrue()
         ->and($record->published_at)->not->toBeNull();
@@ -132,7 +132,7 @@ test('published content can be explicitly unpublished', function (): void {
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->callAction('unpublish')
-        ->assertNotified();
+        ->assertNotified('Post unpublished');
 
     expect($record->refresh()->is_published)->toBeFalse();
 });
@@ -173,7 +173,7 @@ test('publishing is blocked until editorial requirements are complete', function
 
     livewire(EditPost::class, ['record' => $post->getRouteKey()])
         ->callAction('publish')
-        ->assertNotified();
+        ->assertNotified('Post is not ready to publish');
 
     expect($post->refresh()->is_published)->toBeFalse();
 });
