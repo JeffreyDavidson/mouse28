@@ -7,6 +7,7 @@ use App\Filament\Resources\Guides\Pages\EditGuide;
 use App\Models\Guide;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Gate;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -90,7 +91,7 @@ test('ready drafts can be explicitly published', function (): void {
 
     livewire(EditGuide::class, ['record' => $record->getRouteKey()])
         ->callAction('publish')
-        ->assertNotified();
+        ->assertNotified('Guide published');
 
     expect($record->refresh()->is_published)->toBeTrue()
         ->and($record->published_at)->not->toBeNull();
@@ -103,7 +104,7 @@ test('published content can be explicitly unpublished', function (): void {
 
     livewire(EditGuide::class, ['record' => $record->getRouteKey()])
         ->callAction('unpublish')
-        ->assertNotified();
+        ->assertNotified('Guide unpublished');
 
     expect($record->refresh()->is_published)->toBeFalse();
 });
@@ -143,3 +144,16 @@ test('editor saves author and category selections as enums', function (): void {
     expect($record->refresh()->author)->toBe(ContentAuthor::Jeffrey)
         ->and($record->category)->toBe(GuideCategory::FamilyPlanning);
 });
+
+test('publishing actions require permission to update the guide', function (bool $isDraft, string $action): void {
+    actingAs(User::factory()->admin()->create());
+    $record = $isDraft ? Guide::factory()->draft()->create() : Guide::factory()->create();
+    $page = livewire(EditGuide::class, ['record' => $record->getRouteKey()]);
+
+    Gate::before(fn (User $user, string $ability): ?bool => $ability === 'update' ? false : null);
+
+    $page->assertActionHidden($action);
+})->with([
+    'publish' => [true, 'publish'],
+    'unpublish' => [false, 'unpublish'],
+]);

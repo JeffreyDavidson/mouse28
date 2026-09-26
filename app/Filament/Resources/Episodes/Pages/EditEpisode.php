@@ -3,9 +3,10 @@
 namespace App\Filament\Resources\Episodes\Pages;
 
 use App\Actions\GenerateResponsiveCover;
+use App\Filament\Actions\PublishContentAction;
+use App\Filament\Actions\UnpublishContentAction;
 use App\Filament\Resources\Episodes\EpisodeResource;
 use App\Models\Episode;
-use App\Support\EditorialReadiness;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
@@ -14,7 +15,6 @@ use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\View\View;
-use Illuminate\Support\Facades\Date;
 use RuntimeException;
 
 /** @property Episode $record */
@@ -32,7 +32,7 @@ class EditEpisode extends EditRecord
                 ->authorize('update')
                 ->requiresConfirmation()
                 ->modalDescription('Generate missing responsive copies of this saved cover. The original image is preserved.')
-                ->visible(fn (): bool => $this->record->is_published && ($this->record->published_at?->isPast() ?? false) && filled($this->record->cover_image))
+                ->visible(fn (): bool => $this->record->isLive() && filled($this->record->cover_image))
                 ->action(function (GenerateResponsiveCover $generateCover): void {
                     $notification = Notification::make();
                     try {
@@ -43,41 +43,8 @@ class EditEpisode extends EditRecord
                     }
                     $notification->send();
                 }),
-            Action::make('publish')
-                ->icon(Heroicon::OutlinedRocketLaunch)
-                ->color('success')
-                ->requiresConfirmation()
-                ->visible(fn (): bool => ! $this->record->is_published)
-                ->action(function (): void {
-                    $issues = EditorialReadiness::publishingIssues($this->record);
-
-                    if ($issues !== []) {
-                        Notification::make()
-                            ->danger()
-                            ->title('Episode is not ready to publish')
-                            ->body(implode(' · ', $issues))
-                            ->persistent()
-                            ->send();
-
-                        return;
-                    }
-
-                    $this->record->update([
-                        'is_published' => true,
-                        'published_at' => $this->record->published_at ?? Date::now(),
-                    ]);
-
-                    Notification::make()->success()->title('Episode published')->send();
-                }),
-            Action::make('unpublish')
-                ->icon(Heroicon::OutlinedArrowUturnLeft)
-                ->color('warning')
-                ->requiresConfirmation()
-                ->visible(fn (): bool => $this->record->is_published)
-                ->action(function (): void {
-                    $this->record->update(['is_published' => false]);
-                    Notification::make()->success()->title('Episode unpublished')->send();
-                }),
+            PublishContentAction::make(),
+            UnpublishContentAction::make(),
             Action::make('preview')
                 ->icon(Heroicon::OutlinedEye)
                 ->authorize('view')

@@ -25,3 +25,15 @@ test('contact subjects retain their stored value and readable label', function (
     'other' => ['other', 'Other'],
     'free text' => ['Need help with Mouse28', 'Need help with Mouse28'],
 ]);
+
+test('reply links percent-encode the address and subject for mail clients', function (string $email, string $subject, string $url): void {
+    $message = ContactMessage::query()->make([
+        'email' => $email,
+        'subject' => $subject,
+    ]);
+
+    expect($message->replyMailtoUrl())->toBe($url);
+})->with([
+    'spaces in the subject' => ['dale@example.com', 'general', 'mailto:dale@example.com?subject=Re%3A%20General%20Question'],
+    'query delimiters in the address' => ['dale?cc=x&y@example.com', 'other', 'mailto:dale%3Fcc%3Dx%26y@example.com?subject=Re%3A%20Other'],
+]);

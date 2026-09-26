@@ -22,7 +22,7 @@ class GuidePolicy
 
     public function viewPublic(?User $user, Guide $guide): Response
     {
-        return $guide->is_published && $guide->published_at?->isPast()
+        return $guide->isLive()
             ? Response::allow()
             : Response::denyAsNotFound();
     }

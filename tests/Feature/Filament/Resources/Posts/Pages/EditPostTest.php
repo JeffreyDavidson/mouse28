@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Support\ResponsiveArtwork;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\actingAs;
@@ -118,7 +119,7 @@ test('ready drafts can be explicitly published', function (): void {
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->callAction('publish')
-        ->assertNotified();
+        ->assertNotified('Post published');
 
     expect($record->refresh()->is_published)->toBeTrue()
         ->and($record->published_at)->not->toBeNull();
@@ -131,7 +132,7 @@ test('published content can be explicitly unpublished', function (): void {
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->callAction('unpublish')
-        ->assertNotified();
+        ->assertNotified('Post unpublished');
 
     expect($record->refresh()->is_published)->toBeFalse();
 });
@@ -172,7 +173,7 @@ test('publishing is blocked until editorial requirements are complete', function
 
     livewire(EditPost::class, ['record' => $post->getRouteKey()])
         ->callAction('publish')
-        ->assertNotified();
+        ->assertNotified('Post is not ready to publish');
 
     expect($post->refresh()->is_published)->toBeFalse();
 });
@@ -189,3 +190,16 @@ test('editor saves author and category selections as enums', function (): void {
     expect($record->refresh()->author)->toBe(ContentAuthor::Jeffrey)
         ->and($record->category)->toBe(PostCategory::FoodReviews);
 });
+
+test('publishing actions require permission to update the post', function (bool $isDraft, string $action): void {
+    actingAs(User::factory()->admin()->create());
+    $record = $isDraft ? Post::factory()->draft()->create() : Post::factory()->create();
+    $page = livewire(EditPost::class, ['record' => $record->getRouteKey()]);
+
+    Gate::before(fn (User $user, string $ability): ?bool => $ability === 'update' ? false : null);
+
+    $page->assertActionHidden($action);
+})->with([
+    'publish' => [true, 'publish'],
+    'unpublish' => [false, 'unpublish'],
+]);

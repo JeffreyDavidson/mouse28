@@ -5,6 +5,7 @@ use App\Models\Podcast;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\actingAs;
@@ -75,3 +76,16 @@ test('podcast cover uploads enforce the five megabyte limit', function (int $siz
     'at the limit' => [5120, true],
     'over the limit' => [5121, false],
 ]);
+
+test('podcast settings require permission to update the podcast', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $podcast = Podcast::settings();
+    $page = livewire(PodcastSettings::class);
+    Gate::before(fn (User $user, string $ability): ?bool => $ability === 'update' ? false : null);
+
+    $page->fillForm(['name' => 'Changed name']);
+    $page->call('save');
+
+    $page->assertForbidden();
+    expect($podcast->refresh()->name)->not->toBe('Changed name');
+});

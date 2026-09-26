@@ -46,6 +46,9 @@ The application can run locally without live third-party calls, but these featur
 - `SENTRY_LARAVEL_DSN` enables production error reporting. Keep `SENTRY_SEND_DEFAULT_PII=false`; tracing and profiling remain disabled until their sample rates are deliberately raised above `0.0`.
 - `GUIDES_ENABLED` controls public guide routes and discovery. It defaults to `false` while the guide library is being prepared.
 - `MOUSE28_BLOG_POSTS_PER_PAGE` controls the number of posts shown per archive page; it defaults to `12`.
+- `MOUSE28_EPISODES_PER_PAGE` and `MOUSE28_GUIDES_PER_PAGE` control the episode and guide archive page sizes; both default to `12`.
+- `MOUSE28_SEARCH_RESULTS_PER_PAGE` controls how many results each site search section shows per page; it defaults to `6`.
+- `MOUSE28_CONTACT_FORM_RATE_LIMIT` and `MOUSE28_NEWSLETTER_RATE_LIMIT` set the per-IP submissions allowed each minute; both default to `5`.
 - `GUIDE_REVIEW_INTERVAL_DAYS` controls when durable guides are flagged for editorial review; it defaults to 180 days.
 
 Never commit live credentials. Keep them in the deployment environment.

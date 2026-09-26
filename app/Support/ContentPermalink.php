@@ -12,8 +12,7 @@ class ContentPermalink
 {
     public static function isLocked(Post|Guide|Episode $content): bool
     {
-        return $content->slug_locked_at !== null
-            || ($content->is_published && ($content->published_at?->lte(Date::now()) ?? false));
+        return $content->slug_locked_at !== null || $content->isLive();
     }
 
     public static function rememberPublication(Post|Guide|Episode $content): void
@@ -35,7 +34,7 @@ class ContentPermalink
             return;
         }
 
-        if ($content->is_published && ($content->published_at?->lte(Date::now()) ?? false)) {
+        if ($content->isLive()) {
             $content->slug_locked_at = $content->published_at;
         }
     }

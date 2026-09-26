@@ -1,24 +1,30 @@
 <?php
 
+use App\Actions\GenerateResponsiveCover;
+use App\Models\Episode;
 use App\Models\Post;
+use App\Support\ResponsiveArtwork;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
-test('mobile visitors receive the responsive hero and a lean public script', function (): void {
+test('mobile visitors receive one preloaded responsive AVIF hero and a lean public script', function (): void {
     $page = visit(route('home'))
         ->on()
         ->mobile()
         ->resize(375, 812);
 
     $page->assertScript(
-        "document.querySelector('.hero-split-photo img').currentSrc.endsWith('/images/hero-family-768.webp')",
+        "document.querySelector('.hero-split-photo img').currentSrc.endsWith('/images/hero-family-768.avif')",
         true,
     )->assertScript(
         <<<'JS'
             (() => {
                 const preload = document.querySelector('head link[rel="preload"][as="image"]');
-                const source = document.querySelector('.hero-split-photo source');
+                const source = document.querySelector('.hero-split-photo source[type="image/avif"]');
 
                 return preload?.imageSrcset === source.srcset
                     && preload?.imageSizes === source.sizes
+                    && preload?.type === 'image/avif'
                     && preload?.fetchPriority === 'high';
             })()
             JS,
@@ -38,10 +44,47 @@ test('mobile visitors receive the responsive hero and a lean public script', fun
         true,
     )->assertScript(
         <<<'JS'
-            (() => ! performance.getEntriesByType('resource')
-                .some((resource) => resource.name.endsWith('/images/hero-family.webp')))()
+            (() => document.querySelector('.hero-split-photo source[type="image/webp"]') !== null
+                && ! performance.getEntriesByType('resource')
+                    .some((resource) => resource.name.endsWith('/images/hero-family.webp')))()
             JS,
         true,
+    )->assertNoJavaScriptErrors();
+});
+
+test('mobile about visitors receive the preloaded responsive safari hero once', function (): void {
+    $page = visit(route('about'), [
+        'deviceScaleFactor' => 2,
+        'viewport' => ['width' => 390, 'height' => 844],
+    ]);
+
+    $page->assertScript(
+        <<<'JS'
+            (() => {
+                const image = document.querySelector('[data-about-editorial] header picture img');
+
+                return image?.currentSrc.endsWith('/images/hero-family-768.avif')
+                    && image.complete
+                    && image.naturalWidth > 0;
+            })()
+            JS,
+        true,
+    )->assertScript(
+        <<<'JS'
+            (() => {
+                const preload = document.querySelector('head link[rel="preload"][as="image"]');
+                const source = document.querySelector('[data-about-editorial] header picture source[type="image/avif"]');
+
+                return preload?.imageSrcset === source.srcset
+                    && preload?.imageSizes === source.sizes
+                    && preload?.type === 'image/avif'
+                    && preload?.fetchPriority === 'high';
+            })()
+            JS,
+        true,
+    )->assertScript(
+        'performance.getEntriesByType("resource").filter(resource => resource.name.includes("/images/hero-family")).length',
+        1,
     )->assertNoJavaScriptErrors();
 });
 
@@ -66,6 +109,211 @@ test('homepage podcast artwork uses one suitably sized image download', function
     '2x display selects the smaller cover' => [2, 'mouse28-cover-640.webp'],
     '3x display retains the full-resolution cover' => [3, 'mouse28-cover.webp'],
 ]);
+
+test('podcast archive artwork downloads one candidate sized for its rendered frame', function (int $viewportWidth, int $density, int $frameWidth, string $filename): void {
+    $page = visit(route('episodes.index'), [
+        'deviceScaleFactor' => $density,
+        'viewport' => ['width' => $viewportWidth, 'height' => 844],
+    ]);
+
+    expect($page->script('window.devicePixelRatio'))->toBe($density)
+        ->and($page->script('document.querySelector(".podcast-cover-frame img").offsetWidth'))
+        ->toBe($frameWidth)
+        ->and($page->script('document.querySelector(".podcast-cover-frame img").currentSrc'))
+        ->toEndWith('/images/podcast/'.$filename)
+        ->and($page->script('(() => { const image = document.querySelector(".podcast-cover-frame img"); return image.complete && image.naturalWidth > 0; })()'))
+        ->toBeTrue();
+
+    $page->assertScript(
+        'performance.getEntriesByType("resource").filter(resource => resource.name.includes("/images/podcast/mouse28-cover")).length',
+        1,
+    )->assertNoJavaScriptErrors();
+})->with([
+    'mobile at 1x' => [390, 1, 256, 'mouse28-cover-640.webp'],
+    'mobile at 2x' => [390, 2, 256, 'mouse28-cover-640.webp'],
+    'mobile at 3x' => [390, 3, 256, 'mouse28-cover-768.webp'],
+    'below the wider frame breakpoint' => [639, 2, 256, 'mouse28-cover-640.webp'],
+    'at the wider frame breakpoint' => [640, 2, 512, 'mouse28-cover.webp'],
+    'below the two-column breakpoint' => [1023, 2, 512, 'mouse28-cover.webp'],
+    'at the two-column breakpoint' => [1024, 2, 380, 'mouse28-cover-768.webp'],
+    'desktop capped frame' => [1440, 2, 512, 'mouse28-cover.webp'],
+]);
+
+test('mobile podcast archive keeps the latest episode listening action above the fold', function (): void {
+    Episode::factory()->create([
+        'transistor_url' => 'https://share.transistor.fm/s/browserSmokeEpisode',
+    ]);
+
+    $page = visit(route('episodes.index'), [
+        'viewport' => ['width' => 390, 'height' => 844],
+        'deviceScaleFactor' => 1,
+    ]);
+
+    $page->assertSee('Listen now')
+        ->assertScript(<<<'JS'
+            (() => {
+                const action = [...document.querySelectorAll('.podcast-show-hero a')]
+                    .find((link) => link.textContent.trim() === 'Listen now');
+
+                return action !== undefined
+                    && action.getBoundingClientRect().bottom <= window.innerHeight;
+            })()
+            JS, true)
+        ->assertNoJavaScriptErrors();
+})->group('browser-smoke');
+
+test('mobile blog archive and article load responsive cover artwork without overflowing', function (): void {
+    $coverPath = 'posts/browser-responsive-cover-'.Str::uuid().'.webp';
+    $cover = file_get_contents(public_path('images/meet-jeffrey-and-cassie.webp'));
+
+    if ($cover === false) {
+        throw new RuntimeException('The blog artwork browser fixture could not be loaded.');
+    }
+
+    config(['filesystems.disks.public.url' => url('/storage')]);
+    Storage::forgetDisk('public');
+
+    $disk = Storage::disk('public');
+    $disk->put($coverPath, $cover);
+
+    $coverHash = hash('sha256', $cover);
+    $existingVariants = [];
+
+    foreach (ResponsiveArtwork::WIDTHS as $width) {
+        $variantPath = ResponsiveArtwork::variantPath($coverHash, $width);
+
+        if ($disk->exists($variantPath)) {
+            $existingVariants[$variantPath] = $disk->get($variantPath);
+        }
+    }
+
+    try {
+        $post = Post::factory()->create([
+            'title' => 'Responsive Park Planning',
+            'cover_image' => $coverPath,
+        ]);
+
+        app(GenerateResponsiveCover::class)($post);
+
+        $viewport = [
+            'viewport' => ['width' => 390, 'height' => 844],
+            'deviceScaleFactor' => 1,
+        ];
+        $sourceSelector = 'img[src$="/storage/'.$coverPath.'"]';
+        $responsiveArtworkLoadedScript = sprintf(
+            <<<'JS'
+                (() => {
+                    const image = document.querySelector(%s);
+
+                    return image?.complete === true
+                        && image.naturalWidth > 0
+                        && new URL(image.currentSrc).pathname.includes('/posts/responsive/');
+                })()
+                JS,
+            json_encode($sourceSelector, JSON_THROW_ON_ERROR),
+        );
+
+        visit(route('blog.index'), $viewport)
+            ->assertSee($post->title)
+            ->waitForEvent('load')
+            ->assertScript($this->horizontalOverflowScript(), 0)
+            ->assertScript($responsiveArtworkLoadedScript, true)
+            ->assertNoJavaScriptErrors();
+
+        visit(route('blog.show', $post), $viewport)
+            ->assertSee($post->title)
+            ->waitForEvent('load')
+            ->assertScript($this->horizontalOverflowScript(), 0)
+            ->assertScript($responsiveArtworkLoadedScript, true)
+            ->assertNoJavaScriptErrors();
+    } finally {
+        $disk->delete($coverPath);
+
+        foreach (ResponsiveArtwork::WIDTHS as $width) {
+            $variantPath = ResponsiveArtwork::variantPath($coverHash, $width);
+            $disk->delete($variantPath);
+
+            if (isset($existingVariants[$variantPath])) {
+                $disk->put($variantPath, $existingVariants[$variantPath]);
+            }
+        }
+    }
+})->group('browser-smoke');
+
+test('mobile episode archive and detail fit the viewport and detail loads square responsive artwork', function (): void {
+    $coverPath = 'episodes/browser-responsive-cover-'.Str::uuid().'.webp';
+    $cover = file_get_contents(resource_path('content-artwork/episodes/trailer-meet-mouse28.webp'));
+
+    if ($cover === false) {
+        throw new RuntimeException('The episode artwork browser fixture could not be loaded.');
+    }
+
+    config(['filesystems.disks.public.url' => url('/storage')]);
+    Storage::forgetDisk('public');
+
+    $disk = Storage::disk('public');
+    $disk->put($coverPath, $cover);
+
+    $coverHash = hash('sha256', $cover);
+    $existingVariants = [];
+
+    foreach (ResponsiveArtwork::WIDTHS as $width) {
+        $variantPath = ResponsiveArtwork::variantPath($coverHash, $width, square: true);
+
+        if ($disk->exists($variantPath)) {
+            $existingVariants[$variantPath] = $disk->get($variantPath);
+        }
+    }
+
+    try {
+        $episode = Episode::factory()->create(['cover_image' => $coverPath]);
+
+        app(GenerateResponsiveCover::class)($episode);
+
+        $viewport = [
+            'viewport' => ['width' => 390, 'height' => 844],
+            'deviceScaleFactor' => 1,
+        ];
+
+        visit(route('episodes.index'), $viewport)
+            ->assertSee('The Mouse28 Podcast')
+            ->assertScript($this->horizontalOverflowScript(), 0)
+            ->assertNoJavaScriptErrors();
+
+        $sourceSelector = 'img[src$="/storage/'.$coverPath.'"]';
+        $responsiveArtworkLoadedScript = sprintf(
+            <<<'JS'
+                (() => {
+                    const image = document.querySelector(%s);
+                    const candidate = new URL(image?.currentSrc ?? window.location.href);
+
+                    return image?.complete === true
+                        && image.naturalWidth > 0
+                        && candidate.pathname.includes('/episodes/responsive/v1/');
+                })()
+                JS,
+            json_encode($sourceSelector, JSON_THROW_ON_ERROR),
+        );
+
+        visit(route('episodes.show', $episode), $viewport)
+            ->assertSee($episode->title)
+            ->waitForEvent('load')
+            ->assertScript($this->horizontalOverflowScript(), 0)
+            ->assertScript($responsiveArtworkLoadedScript, true)
+            ->assertNoJavaScriptErrors();
+    } finally {
+        $disk->delete($coverPath);
+
+        foreach (ResponsiveArtwork::WIDTHS as $width) {
+            $variantPath = ResponsiveArtwork::variantPath($coverHash, $width, square: true);
+            $disk->delete($variantPath);
+
+            if (isset($existingVariants[$variantPath])) {
+                $disk->put($variantPath, $existingVariants[$variantPath]);
+            }
+        }
+    }
+})->group('browser-smoke');
 
 test('core mobile navigation and search work without JavaScript', function (): void {
     $home = visit(route('home'), ['javaScriptEnabled' => false])

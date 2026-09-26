@@ -111,3 +111,16 @@ test('tracked messages outside the retry window cannot queue admin retries', fun
 
     Bus::assertNotDispatched(SendContactMessageEmails::class);
 });
+
+test('reply action opens an encoded mail draft', function (): void {
+    $message = ContactMessage::query()->create([
+        'name' => 'Dale Cooper',
+        'email' => 'dale@example.com',
+        'subject' => 'general',
+        'message' => 'A park question.',
+    ]);
+    actingAs(User::factory()->admin()->create());
+
+    livewire(ViewContactMessage::class, ['record' => $message->getRouteKey()])
+        ->assertActionHasUrl('reply', 'mailto:dale@example.com?subject=Re%3A%20General%20Question');
+});

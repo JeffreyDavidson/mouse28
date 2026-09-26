@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Enums\PostCategory;
 use App\Models\Post;
+use App\Support\TextSearch;
 use App\ViewModels\PostIndexViewModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Config;
@@ -96,11 +97,7 @@ class BlogArchive extends Component
         $posts = Post::published()
             ->select($cardColumns)
             ->when($this->category, fn (Builder $query) => $query->where('category', $this->category))
-            ->when($this->search, fn (Builder $query) => $query->where(function (Builder $query): void {
-                $query->where('title', 'like', "%{$this->search}%")
-                    ->orWhere('excerpt', 'like', "%{$this->search}%")
-                    ->orWhere('body', 'like', "%{$this->search}%");
-            }))
+            ->when($this->search, fn (Builder $query) => TextSearch::constrain($query, ['title', 'excerpt', 'body'], $this->search))
             ->orderBy('published_at', $this->sort === 'oldest' ? 'asc' : 'desc')
             ->orderBy('id', $this->sort === 'oldest' ? 'asc' : 'desc')
             ->paginate(Config::integer('mouse28.blog_posts_per_page'));

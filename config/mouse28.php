@@ -12,9 +12,20 @@ return [
 
     'content_artwork_path' => resource_path('content-artwork'),
 
-    'guides_enabled' => env('GUIDES_ENABLED', false),
+    'guides_enabled' => filter_var(env('GUIDES_ENABLED', false), FILTER_VALIDATE_BOOL),
 
     'blog_posts_per_page' => max(1, (int) env('MOUSE28_BLOG_POSTS_PER_PAGE', 12)),
+
+    'episodes_per_page' => max(1, (int) env('MOUSE28_EPISODES_PER_PAGE', 12)),
+
+    'guides_per_page' => max(1, (int) env('MOUSE28_GUIDES_PER_PAGE', 12)),
+
+    'search_results_per_page' => max(1, (int) env('MOUSE28_SEARCH_RESULTS_PER_PAGE', 6)),
+
+    'rate_limits' => [
+        'contact_form_per_minute' => max(1, (int) env('MOUSE28_CONTACT_FORM_RATE_LIMIT', 5)),
+        'newsletter_per_minute' => max(1, (int) env('MOUSE28_NEWSLETTER_RATE_LIMIT', 5)),
+    ],
 
     'contact' => [
         'email' => env('MOUSE28_CONTACT_EMAIL', 'hello@example.com'),

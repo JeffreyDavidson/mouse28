@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
+use Illuminate\Support\Facades\Config;
 
 class SitemapDocument
 {
@@ -14,7 +15,7 @@ class SitemapDocument
         $episodes = Episode::published()->select(['slug', 'updated_at'])->latest('published_at')->get();
         $guides = (new Guide)->newCollection();
 
-        if (config('mouse28.guides_enabled')) {
+        if (Config::boolean('mouse28.guides_enabled')) {
             $guides = Guide::published()->select(['slug', 'updated_at'])->latest('published_at')->get();
         }
 
@@ -23,7 +24,7 @@ class SitemapDocument
 
         $staticRoutes = ['home', 'blog.index', 'episodes.index', 'about', 'contact.show', 'privacy'];
 
-        if (config('mouse28.guides_enabled')) {
+        if (Config::boolean('mouse28.guides_enabled')) {
             $staticRoutes[] = 'guides.index';
         }
 

@@ -28,3 +28,11 @@ test('episode index data includes published episodes and distribution data', fun
         ->and($data['podcastLinks'])->toBeArray()
         ->and($data['canonicalUrl'])->toBe(route('episodes.index'));
 });
+
+test('episode index data uses the configured page size', function (): void {
+    config()->set('mouse28.episodes_per_page', 2);
+
+    $data = app(EpisodeIndexViewModel::class)->data();
+
+    expect($data['episodes']->perPage())->toBe(2);
+});

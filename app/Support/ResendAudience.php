@@ -16,6 +16,12 @@ class ResendAudience
     /** @return array{subscribers: list<array<string, mixed>>, error: ?string} */
     public function get(): array
     {
+        if (! Config::boolean('services.resend.enabled')) {
+            Cache::forget(self::CACHE_KEY);
+
+            return $this->disabledAudience();
+        }
+
         $subscribers = Cache::get(self::CACHE_KEY);
 
         if (is_array($subscribers)) {
@@ -30,11 +36,19 @@ class ResendAudience
     {
         Cache::forget(self::CACHE_KEY);
 
+        if (! Config::boolean('services.resend.enabled')) {
+            return $this->disabledAudience();
+        }
+
         return $this->fetch();
     }
 
     public function subscribe(string $email): NewsletterSubscriptionResult
     {
+        if (! Config::boolean('services.resend.enabled')) {
+            return NewsletterSubscriptionResult::Disabled;
+        }
+
         $audienceId = config('services.resend.audience_id');
 
         if (! is_string($audienceId) || blank($audienceId)) {
@@ -118,6 +132,12 @@ class ResendAudience
 
         return ['subscribers' => [], 'error' => 'The audience exceeds the supported retrieval limit.'];
 
+    }
+
+    /** @return array{subscribers: list<array<string, mixed>>, error: string} */
+    private function disabledAudience(): array
+    {
+        return ['subscribers' => [], 'error' => 'The Resend integration is disabled.'];
     }
 
     /**

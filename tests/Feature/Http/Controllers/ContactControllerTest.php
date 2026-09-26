@@ -306,3 +306,16 @@ function contactPayload(): array
         'cf-turnstile-response' => 'turnstile-token',
     ];
 }
+
+test('contact form rate limit uses the configured attempts per minute', function (): void {
+    config()->set('mouse28.rate_limits.contact_form_per_minute', 1);
+    $payload = array_merge(contactPayload(), ['website_url' => 'https://spam.example']);
+
+    from(route('contact.show'))
+        ->post(route('contact.store'), $payload)
+        ->assertSessionHasNoErrors();
+
+    from(route('contact.show'))
+        ->post(route('contact.store'), $payload)
+        ->assertSessionHasErrorsIn('contact', 'contact_rate_limit');
+});

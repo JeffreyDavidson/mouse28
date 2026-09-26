@@ -7,6 +7,7 @@ use App\Models\Guide;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Config;
 
 class GuideIndexViewModel
 {
@@ -29,7 +30,7 @@ class GuideIndexViewModel
             ->when($category, fn (Builder $query): Builder => $query->where('category', $category))
             ->latest('published_at')
             ->latest('id')
-            ->paginate(12)
+            ->paginate(Config::integer('mouse28.guides_per_page'))
             ->withQueryString();
         $categoryLabel = $categoryEnum?->getLabel();
         $canonicalParameters = array_filter([

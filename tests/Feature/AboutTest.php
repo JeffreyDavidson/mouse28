@@ -23,7 +23,17 @@ test('public index page renders', function (): void {
 });
 
 test('about introduction groups its copy and preserves responsive safari artwork', function (): void {
-    $response = get(route('about'))->assertOk()->assertSeeHtml('aria-labelledby="about-heading"')->assertSeeHtml('lg:grid-cols-[5fr_7fr]')->assertSeeHtml('aspect-[4/3]')->assertSeeHtml('fetchpriority="high"')->assertSeeHtml("Kilimanjaro Safaris at Disney's Animal Kingdom");
+    $response = get(route('about'))
+        ->assertOk()
+        ->assertSeeHtml('aria-labelledby="about-heading"')
+        ->assertSeeHtml('lg:grid-cols-[5fr_7fr]')
+        ->assertSeeHtml('aspect-[4/3]')
+        ->assertSeeHtml('fetchpriority="high"')
+        ->assertSeeHtml('/images/hero-family-768.avif 768w')
+        ->assertSeeHtml('/images/hero-family-768.webp 768w')
+        ->assertSeeHtml('/images/hero-family.webp 1600w')
+        ->assertDontSeeHtml('/images/hero-family.webp 2048w')
+        ->assertSeeHtml("Kilimanjaro Safaris at Disney's Animal Kingdom");
 
     $document = HTMLDocument::createFromString($this->responseContent($response), LIBXML_NOERROR);
     $xpath = new XPath($document);

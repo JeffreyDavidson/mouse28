@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Support\ResponsiveArtwork;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\actingAs;
@@ -149,7 +150,7 @@ test('ready drafts can be explicitly published', function (): void {
 
     livewire(EditEpisode::class, ['record' => $record->getRouteKey()])
         ->callAction('publish')
-        ->assertNotified();
+        ->assertNotified('Episode published');
 
     expect($record->refresh()->is_published)->toBeTrue()
         ->and($record->published_at)->not->toBeNull();
@@ -162,7 +163,7 @@ test('published content can be explicitly unpublished', function (): void {
 
     livewire(EditEpisode::class, ['record' => $record->getRouteKey()])
         ->callAction('unpublish')
-        ->assertNotified();
+        ->assertNotified('Episode unpublished');
 
     expect($record->refresh()->is_published)->toBeFalse();
 });
@@ -189,3 +190,16 @@ test('deleted content leaves the public site and can be restored by an administr
     $this->assertNotSoftDeleted($record);
     $response->assertOk();
 });
+
+test('publishing actions require permission to update the episode', function (bool $isDraft, string $action): void {
+    actingAs(User::factory()->admin()->create());
+    $record = $isDraft ? Episode::factory()->draft()->create() : Episode::factory()->create();
+    $page = livewire(EditEpisode::class, ['record' => $record->getRouteKey()]);
+
+    Gate::before(fn (User $user, string $ability): ?bool => $ability === 'update' ? false : null);
+
+    $page->assertActionHidden($action);
+})->with([
+    'publish' => [true, 'publish'],
+    'unpublish' => [false, 'unpublish'],
+]);

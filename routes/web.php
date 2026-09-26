@@ -27,7 +27,7 @@ Route::get('/search', SearchController::class)->name('search');
 Route::get('/preview/posts/{post}', PreviewPostController::class)->name('preview.posts');
 Route::get('/preview/guides/{guide}', PreviewGuideController::class)->name('preview.guides');
 Route::get('/preview/episodes/{episode}', PreviewEpisodeController::class)->name('preview.episodes');
-Route::get('/about', fn () => view('pages.about'))->name('about');
+Route::view('/about', 'pages.about')->name('about');
 Route::view('/privacy', 'pages.privacy')->name('privacy');
 Route::get('/contact', [ContactController::class, 'show'])->name('contact.show');
 Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:contact-form')->name('contact.store');

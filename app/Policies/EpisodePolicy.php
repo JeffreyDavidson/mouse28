@@ -22,7 +22,7 @@ class EpisodePolicy
 
     public function viewPublic(?User $user, Episode $episode): Response
     {
-        return $episode->is_published && $episode->published_at?->isPast()
+        return $episode->isLive()
             ? Response::allow()
             : Response::denyAsNotFound();
     }
