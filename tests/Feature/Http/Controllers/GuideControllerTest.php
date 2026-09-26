@@ -2,6 +2,8 @@
 
 use App\Models\Guide;
 use App\Models\Podcast;
+use Dom\HTMLDocument;
+use Dom\XPath;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Laravel\get;
@@ -233,3 +235,17 @@ test('reading page uses the dispatch reading surface', function (): void {
 
     get(route('guides.show', $guide))->assertOk()->assertSeeHtml('data-guide-detail')->assertSeeHtml('dispatch-reader-sheet')->assertSeeHtml('guide-reading-column')->assertDontSee('—')->assertSeeHtml('/images/guides/'.$guide->category->value.'.webp');
 });
+
+test('guide pages expose a single main landmark', function (bool $showGuide): void {
+    config()->set('mouse28.guides_enabled', true);
+    $guide = Guide::factory()->create();
+
+    $response = get($showGuide ? route('guides.show', $guide) : route('guides.index'))->assertOk();
+
+    $document = HTMLDocument::createFromString($this->responseContent($response), LIBXML_NOERROR);
+
+    expect(new XPath($document)->query('//*[local-name()="main"]'))->toHaveCount(1);
+})->with([
+    'index' => [false],
+    'guide' => [true],
+]);

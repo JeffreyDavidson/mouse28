@@ -68,7 +68,7 @@
             </div>
         </header>
 
-        <main class="dispatch-page-field bg-cream">
+        <div class="dispatch-page-field bg-cream">
             <section class="mx-auto grid max-w-6xl gap-8 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[5fr_7fr] lg:gap-20 lg:py-28">
                 <h2 class="font-heading text-navy text-4xl [font-weight:640] tracking-[-0.025em] text-balance sm:text-5xl">
                     We stopped measuring a Disney day by how much we did.
@@ -231,6 +231,6 @@
                     >Explore Mouse28</a>
                 </div>
             </section>
-        </main>
+        </div>
     </div>
 </x-layouts.app>
