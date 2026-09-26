@@ -229,13 +229,15 @@
                         target="_blank"
                         rel="noopener"
                         class="text-purple inline-flex min-h-12 items-center underline underline-offset-8"
-                    >Post on X</a>
+                        >Post on X<x-new-tab-notice
+                    /></a>
                     <a
                         href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(route('episodes.show', $episode)) }}"
                         target="_blank"
                         rel="noopener"
                         class="text-purple inline-flex min-h-12 items-center underline underline-offset-8"
-                    >Share on Facebook</a>
+                        >Share on Facebook<x-new-tab-notice
+                    /></a>
                     <button
                         type="button"
                         x-data="copyLink"

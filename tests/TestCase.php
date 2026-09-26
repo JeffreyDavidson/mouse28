@@ -2,6 +2,9 @@
 
 namespace Tests;
 
+use Dom\Element;
+use Dom\HTMLDocument;
+use Dom\XPath;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Http;
@@ -46,6 +49,32 @@ abstract class TestCase extends BaseTestCase
         Http::preventStrayRequests();
 
         $this->withoutVite();
+    }
+
+    /**
+     * Returns the links that open a new tab without announcing it in their accessible text.
+     *
+     * @param  TestResponse<Response>  $response
+     * @return list<string>
+     */
+    protected function unannouncedNewTabLinks(TestResponse $response): array
+    {
+        $document = HTMLDocument::createFromString($this->responseContent($response), LIBXML_NOERROR);
+        $unannounced = [];
+
+        foreach (new XPath($document)->query('//*[local-name()="a"][@target="_blank"]') as $link) {
+            if (! $link instanceof Element) {
+                continue;
+            }
+
+            $accessibleText = "{$link->getAttribute('aria-label')} {$link->textContent}";
+
+            if (! str_contains(strtolower($accessibleText), 'new tab')) {
+                $unannounced[] = (string) $link->getAttribute('href');
+            }
+        }
+
+        return $unannounced;
     }
 
     /**

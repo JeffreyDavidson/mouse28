@@ -364,7 +364,8 @@
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
-                                >{{ $link['label'] }}</a>
+                                    >{{ $link['label'] }}<x-new-tab-notice
+                                /></a>
                             @endforeach
                         </div>
                     </div>
@@ -381,7 +382,8 @@
                         target="_blank"
                         rel="noopener noreferrer"
                         class="hover:text-gold inline-flex min-h-12 items-center underline underline-offset-4 transition-colors sm:min-h-6"
-                    >Infinity Digital</a>
+                        >Infinity Digital<x-new-tab-notice
+                    /></a>
                 </p>
             </div>
         </div>

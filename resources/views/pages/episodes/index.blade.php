@@ -86,7 +86,8 @@
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     class="border-cream/20 text-cream hover:border-gold hover:text-gold inline-flex min-h-12 items-center rounded-full border px-5 py-2.5 text-sm font-semibold transition-colors"
-                                >{{ $link['label'] }}</a>
+                                    >{{ $link['label'] }}<x-new-tab-notice
+                                /></a>
                             @endforeach
                         </nav>
                     @endif
