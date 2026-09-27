@@ -75,10 +75,10 @@ jobs:
         run: composer test:lint
 
       - name: Check Filament code
-        run: composer test:filacheck
+        run: composer test:filament
 
       - name: Run static analysis
-        run: composer analyse
+        run: composer test:types
 
       - name: Check automated refactoring
         run: composer test:rector
@@ -101,7 +101,7 @@ jobs:
           SESSION_DRIVER: array
           CACHE_STORE: array
           MAIL_MAILER: array
-        run: composer analyse:pest
+        run: composer test:types:pest
 
       - name: Run tests
         env:

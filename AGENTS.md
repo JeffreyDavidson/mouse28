@@ -106,7 +106,7 @@ Inspect `composer.json` and `package.json` before running project commands. Use
 formatting, static analysis, Rector, tests, type coverage, an asset build, and
 Chromium browser smoke tests. It requires installed dependencies, Chromium, and
 network access for audits. Both application and Pest static analysis run at
-`level: max` and are required in CI; run `composer analyse:pest` for a focused
+`level: max` and are required in CI; run `composer test:types:pest` for a focused
 test-analysis check.
 
 For small changes, run the relevant focused checks:
