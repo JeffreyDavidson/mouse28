@@ -131,3 +131,14 @@ test('multilingual and right to left content remains contained', function (): vo
             ->assertNoJavaScriptErrors();
     }
 });
+
+test('reduced motion preference keeps guide artwork still on hover', function (): void {
+    config()->set('mouse28.guides_enabled', true);
+    Guide::factory()->create(['cover_image' => null]);
+
+    $page = visit(route('guides.index'), ['reducedMotion' => 'reduce']);
+
+    $page->hover('[data-guide-artwork]')
+        ->assertScript('(({ transitionProperty, transitionDuration }) => transitionProperty === "none" || Number.parseFloat(transitionDuration) === 0)(getComputedStyle(document.querySelector("[data-guide-artwork]")))', true)
+        ->assertScript('["none", "1"].includes(getComputedStyle(document.querySelector("[data-guide-artwork]")).scale)', true);
+});
