@@ -70,7 +70,7 @@ Published post, guide, and episode pages emit Schema.org content and breadcrumb 
 
 ## Development commands
 
-Run `composer check` for the required CI checks locally: dependency validation and audits, benchmark helper tests, formatting, FilaCheck, application and Pest static analysis, application and Pest Rector checks, non-browser tests, type coverage, an asset build, focused Chromium browser smoke tests, and diff whitespace validation. Install the locked Composer and Node dependencies and Chromium first. Audits require network access. The command stops at the first failure and does not apply formatting or Rector fixes; it does build assets and clear Laravel's config cache through `composer test`.
+Run `composer check` for the required CI checks locally: dependency validation and audits, benchmark helper tests, PHP/Blade and JavaScript formatting (`npm run format:check`), FilaCheck, application and Pest static analysis, application and Pest Rector checks, non-browser tests, type coverage, an asset build checked against size budgets (`npm run test:assets`, `scripts/check-asset-budgets.mjs`), focused Chromium browser smoke tests, and diff whitespace validation. Install the locked Composer and Node dependencies and Chromium first. Audits require network access. The command stops at the first failure and does not apply formatting or Rector fixes; it does build assets and clear Laravel's config cache through `composer test`.
 
 Run `composer test:types:pest` for a focused test-analysis check. The full browser suite remains available through `composer test:browser`.
 

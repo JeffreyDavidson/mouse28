@@ -9,7 +9,10 @@
         "prepare": "git config core.hooksPath .githooks",
         "build": "vite build",
         "dev": "vite",
-        "benchmark:pages": "node tests/Browser/performance-benchmark.mjs"
+        "benchmark:pages": "node tests/Browser/performance-benchmark.mjs",
+        "format": "prettier --write \"resources/js/**/*.js\"",
+        "format:check": "prettier --check \"resources/js/**/*.js\"",
+        "test:assets": "node scripts/check-asset-budgets.mjs"
     },
     "devDependencies": {
         "@tailwindcss/typography": "^0.5.20",
