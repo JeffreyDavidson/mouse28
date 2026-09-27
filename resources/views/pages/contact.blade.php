@@ -19,7 +19,7 @@
         $firstContactError = $errors->contact->keys()[0] ?? null;
     @endphp
 
-    <main data-contact-editorial class="dispatch-page-field bg-cream text-navy">
+    <div data-contact-editorial class="dispatch-page-field bg-cream text-navy">
         @if (session('success'))
             <section class="mx-auto flex min-h-[70vh] max-w-6xl items-center px-4 py-16 sm:px-6 sm:py-20 lg:py-28">
                 <div class="max-w-3xl">
@@ -51,7 +51,7 @@
             </header>
 
             <section class="mx-auto grid max-w-6xl gap-12 px-4 py-14 sm:px-6 sm:py-18 lg:grid-cols-[4fr_8fr] lg:items-start lg:gap-20 lg:py-24">
-                <aside class="lg:sticky lg:top-28">
+                <div class="lg:sticky lg:top-28">
                     <h2 class="font-heading max-w-[13ch] text-3xl/[1.15] [font-weight:620] tracking-[-0.02em] text-balance sm:text-4xl">
                         What would you like to share?
                     </h2>
@@ -78,7 +78,7 @@
                             >Write to {{ $contactEmail }}</a>
                         </p>
                     @endif
-                </aside>
+                </div>
 
                 @if ($contactFormAvailable)
                     <div class="dispatch-letter-form rounded-xl bg-white p-5 shadow-[0_1.75rem_4rem_rgb(26_16_64/0.12)] sm:p-8 lg:p-10">
@@ -234,5 +234,5 @@
                 @endif
             </section>
         @endif
-    </main>
+    </div>
 </x-layouts.app>

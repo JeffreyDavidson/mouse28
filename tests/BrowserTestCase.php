@@ -63,6 +63,61 @@ abstract class BrowserTestCase extends TestCase
             JS;
     }
 
+    /**
+     * Returns the strongest contrast ratio between the focused element's outline or
+     * box-shadow colors and its nearest opaque background.
+     */
+    protected function focusIndicatorContrastScript(string $selector): string
+    {
+        $encodedSelector = json_encode($selector, JSON_THROW_ON_ERROR);
+
+        return <<<JS
+            (() => {
+                const canvas = document.createElement('canvas').getContext('2d', { willReadFrequently: true });
+                const toRgba = (color) => {
+                    canvas.clearRect(0, 0, 1, 1);
+                    canvas.fillStyle = color;
+                    canvas.fillRect(0, 0, 1, 1);
+                    const [r, g, b, a] = canvas.getImageData(0, 0, 1, 1).data;
+
+                    return { r, g, b, a: a / 255 };
+                };
+                const composite = (color, base) => ['r', 'g', 'b'].reduce((mixed, channel) => ({ ...mixed, [channel]: color[channel] * color.a + base[channel] * (1 - color.a) }), {});
+                const luminance = (color) => ['r', 'g', 'b']
+                    .map((channel) => color[channel] / 255)
+                    .map((value) => value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4)
+                    .reduce((total, value, index) => total + value * [0.2126, 0.7152, 0.0722][index], 0);
+                const contrast = (first, second) => {
+                    const [light, dark] = [luminance(first), luminance(second)].sort((a, b) => b - a);
+
+                    return (light + 0.05) / (dark + 0.05);
+                };
+
+                const element = document.querySelector({$encodedSelector});
+                let background = { r: 255, g: 255, b: 255, a: 1 };
+
+                for (let ancestor = element.parentElement; ancestor; ancestor = ancestor.parentElement) {
+                    const color = toRgba(getComputedStyle(ancestor).backgroundColor);
+
+                    if (color.a > 0.99) {
+                        background = color;
+                        break;
+                    }
+                }
+
+                element.focus();
+                const styles = getComputedStyle(element);
+                const indicators = [...styles.boxShadow.matchAll(/(?:rgba?|oklch|oklab|color|hsla?)\([^()]*(?:\([^()]*\)[^()]*)*\)/g)].map((match) => match[0]);
+
+                if (styles.outlineStyle !== 'none' && Number.parseFloat(styles.outlineWidth) > 0) {
+                    indicators.push(styles.outlineColor);
+                }
+
+                return Math.max(0, ...indicators.map(toRgba).filter((color) => color.a > 0).map((color) => contrast(composite(color, background), background)));
+            })()
+            JS;
+    }
+
     protected function missingFocusIndicatorsScript(): string
     {
         return <<<'JS'

@@ -8,4 +8,5 @@
 >
     <span class="font-semibold underline underline-offset-8">{{ $label }}</span>
     <span class="text-cream/55 text-xs">{{ $description }}</span>
+    <x-new-tab-notice />
 </a>

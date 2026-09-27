@@ -1846,6 +1846,7 @@
 
     body,
     main,
+    .dispatch-page-field,
     main section,
     main article {
         background: white !important;

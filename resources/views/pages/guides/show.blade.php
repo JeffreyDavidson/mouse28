@@ -56,7 +56,7 @@
             </div>
         </header>
 
-        <main class="dispatch-page-field bg-cream">
+        <div class="dispatch-page-field bg-cream">
             <div class="mx-auto grid max-w-6xl gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[4fr_8fr] lg:items-start lg:gap-16 lg:py-20">
                 <aside class="lg:sticky lg:top-28" data-print-hidden>
                     <h2 class="font-heading text-2xl [font-weight:620] tracking-[-0.015em]">About this guide</h2>
@@ -113,6 +113,6 @@
                     @endforeach
                 </x-related-content-section>
             @endif
-        </main>
+        </div>
     </div>
 </x-layouts.app>

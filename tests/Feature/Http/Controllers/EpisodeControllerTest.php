@@ -341,3 +341,15 @@ test('reading page uses the dispatch reading surface', function (): void {
     get(route('episodes.show', $episode))->assertOk()->assertSeeHtml('episode-detail-hero')->assertSeeHtml('dispatch-page-field')
         ->assertDontSee('—');
 });
+
+test('podcast links that open a new tab announce it', function (bool $showEpisode): void {
+    Podcast::settings()->update(['apple_url' => 'https://podcasts.apple.com/podcast/mouse28']);
+    $episode = Episode::factory()->create(['transistor_url' => 'https://share.transistor.fm/s/abc123']);
+
+    $response = get($showEpisode ? route('episodes.show', $episode) : route('episodes.index'))->assertOk();
+
+    expect($this->unannouncedNewTabLinks($response))->toBeEmpty();
+})->with([
+    'archive' => [false],
+    'episode' => [true],
+]);

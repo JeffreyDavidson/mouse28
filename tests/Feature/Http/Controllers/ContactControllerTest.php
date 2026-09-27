@@ -3,6 +3,8 @@
 use App\Enums\ContactTopic;
 use App\Http\Requests\StoreContactRequest;
 use App\Jobs\SendContactMessageEmails;
+use Dom\HTMLDocument;
+use Dom\XPath;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Bus;
@@ -318,4 +320,14 @@ test('contact form rate limit uses the configured attempts per minute', function
     from(route('contact.show'))
         ->post(route('contact.store'), $payload)
         ->assertSessionHasErrorsIn('contact', 'contact_rate_limit');
+});
+
+test('contact page exposes a single main landmark without nested complementary regions', function (): void {
+    $response = get(route('contact.show'))->assertOk();
+
+    $document = HTMLDocument::createFromString($this->responseContent($response), LIBXML_NOERROR);
+    $xpath = new XPath($document);
+
+    expect($xpath->query('//*[local-name()="main"]'))->toHaveCount(1)
+        ->and($xpath->query('//*[local-name()="main"]//*[local-name()="aside"]'))->toBeEmpty();
 });
