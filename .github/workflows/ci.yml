@@ -74,6 +74,9 @@ jobs:
       - name: Check PHP and Blade formatting
         run: composer test:lint
 
+      - name: Check JavaScript formatting
+        run: npm run format:check
+
       - name: Check Filament code
         run: composer test:filament
 
@@ -118,6 +121,9 @@ jobs:
 
       - name: Build assets
         run: npm run build
+
+      - name: Check asset budgets
+        run: npm run test:assets
 
       - name: Install Chromium for browser regressions
         run: npx playwright install --with-deps chromium

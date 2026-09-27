@@ -12,8 +12,8 @@ export function initializeBlogArchive(Livewire) {
         const storyCards = () => Array.from(root.querySelectorAll('[data-blog-post]'));
 
         const stopCardAnimations = () => {
-            storyCards().forEach((card) => {
-                card.getAnimations().forEach((animation) => animation.cancel());
+            storyCards().forEach(card => {
+                card.getAnimations().forEach(animation => animation.cancel());
                 card.style.removeProperty('will-change');
             });
         };
@@ -22,7 +22,7 @@ export function initializeBlogArchive(Livewire) {
             stopCardAnimations();
 
             return new Map(
-                storyCards().map((card) => {
+                storyCards().map(card => {
                     const bounds = card.getBoundingClientRect();
 
                     return [card.dataset.blogPost, { left: bounds.left, top: bounds.top }];
@@ -30,12 +30,12 @@ export function initializeBlogArchive(Livewire) {
             );
         };
 
-        const animateCardReflow = (previousPositions) => {
+        const animateCardReflow = previousPositions => {
             if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
                 return;
             }
 
-            storyCards().forEach((card) => {
+            storyCards().forEach(card => {
                 const previousPosition = previousPositions.get(card.dataset.blogPost);
 
                 if (!previousPosition) {
@@ -78,7 +78,7 @@ export function initializeBlogArchive(Livewire) {
             });
         };
 
-        const queueFilterTransition = (event) => {
+        const queueFilterTransition = event => {
             if (!(event.target instanceof Element) || !event.target.closest('[data-preserve-blog-filter-position]')) {
                 return;
             }
@@ -107,7 +107,7 @@ export function initializeBlogArchive(Livewire) {
             { signal: events.signal },
         );
 
-        ['click', 'input', 'change', 'submit'].forEach((eventName) => {
+        ['click', 'input', 'change', 'submit'].forEach(eventName => {
             root.addEventListener(eventName, queueFilterTransition, { capture: true, signal: events.signal });
         });
 

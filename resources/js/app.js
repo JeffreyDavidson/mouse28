@@ -105,7 +105,7 @@ function initializeBlogArticle() {
         link.textContent = heading.textContent;
         link.dataset.blogTocLink = '';
         link.className = `flex min-h-12 items-center border-l-2 border-navy/8 py-2 leading-[1.4] text-navy/65 no-underline transition-colors duration-200 hover:border-gold hover:text-gold-ink ${heading.tagName === 'H3' ? 'pl-8 text-xs' : 'pl-4 text-[0.8rem]'}`;
-        link.addEventListener('click', (event) => {
+        link.addEventListener('click', event => {
             event.preventDefault();
             window.history.pushState(null, '', `#${id}`);
             heading.tabIndex = -1;

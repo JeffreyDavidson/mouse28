@@ -103,8 +103,8 @@ represent them safely.
 
 Inspect `composer.json` and `package.json` before running project commands. Use
 `composer check` for the full local quality gate, including dependency audits,
-formatting, static analysis, Rector, tests, type coverage, an asset build, and
-Chromium browser smoke tests. It requires installed dependencies, Chromium, and
+PHP, Blade, and JavaScript formatting, static analysis, Rector, tests, type
+coverage, an asset build with size budgets, and Chromium browser smoke tests. It requires installed dependencies, Chromium, and
 network access for audits. Both application and Pest static analysis run at
 `level: max` and are required in CI; run `composer test:types:pest` for a focused
 test-analysis check.

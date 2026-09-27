@@ -35,7 +35,7 @@ test('composer check runs the shared gates in contract order', function (): void
     }
 
     $contractOrder = ['@composer validate', '@composer audit', 'npm audit', '@test:lint', '@test:filament', '@test:types', '@test:types:pest',
-        '@test:rector', '@test:rector:pest', '@test', '@test:type-coverage', 'npm run build', '@test:browser'];
+        '@test:rector', '@test:rector:pest', '@test', '@test:type-coverage', 'npm run build', 'npm run test:assets', '@test:browser'];
     $positions = array_map(function (string $gate) use ($steps): int|false {
         foreach ($steps as $index => $step) {
             if (is_string($step) && ($step === $gate || str_starts_with($step, "{$gate} ") || str_starts_with($step, "{$gate}:smoke"))) {
