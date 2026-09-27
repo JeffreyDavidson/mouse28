@@ -1,6 +1,6 @@
 ---
 paths:
-  - 'tests/Arch/**'
+  - 'tests/Architecture/**'
 ---
 
 # Architecture Tests
