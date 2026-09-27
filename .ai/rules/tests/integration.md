@@ -31,3 +31,6 @@ When a class intentionally selects a reduced column set, caches within a
 request, or branches on configuration, keep a focused assertion for that
 guarantee. Do not add query-count assertions to ordinary cases unless query
 count is the behavior being protected.
+
+## Test ViewModel payloads at the Integration boundary
+ViewModel Integration tests should cover payload assembly, filtering, pagination, relationships, configuration branches, selected fields, and preview data. Do not mock ViewModels merely to prove a controller called data().

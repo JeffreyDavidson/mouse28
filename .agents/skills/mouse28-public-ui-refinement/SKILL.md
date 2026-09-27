@@ -48,7 +48,7 @@ Compare three samples under matching conditions, reviewing medians, outliers, an
 
 ## Verify and Finish
 
-1. Add or update a focused Pest browser test when the refinement changes important visible behavior or guards against a reproduced regression. Assert user-visible outcomes rather than implementation classes, and use minimal synthetic fixtures as required by `.ai/rules/browser.md`.
+1. Add or update a focused Pest browser test when the refinement changes important visible behavior or guards against a reproduced regression. Assert user-visible outcomes rather than implementation classes, and use minimal synthetic fixtures as required by `.ai/rules/tests/browser.md`.
 2. Revisit the original viewport/state, both sides of an affected breakpoint, and a representative desktop size. Check only the relevant behavior and regressions. Capture and inspect comparable before/after screenshots for material visual changes after fonts and relevant images settle; screenshots are optional for delivery-only changes with unchanged geometry.
 3. Run focused tests and the asset build when applicable, plus `git diff --check`. Use the project's canonical commands in `AGENTS.md`.
 4. Finish when the agreed criteria pass and relevant checks show no unresolved regression. Use one review pass and a focused confirmation after corrections; continue only for a remaining failure or unresolved requirement. List worthwhile adjacent work separately, ordered by visitor impact and evidence, rather than starting another polishing cycle.
