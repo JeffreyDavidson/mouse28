@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 test('tests use Pest files within a registered suite', function (): void {
     $testRoot = dirname(__DIR__);
-    $registeredSuites = ['Arch', 'Browser', 'Feature', 'Integration', 'Unit'];
+    $registeredSuites = ['Architecture', 'Browser', 'Feature', 'Integration', 'Unit'];
     $violations = [];
 
     $iterator = new RecursiveIteratorIterator(
