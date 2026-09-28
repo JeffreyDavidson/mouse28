@@ -7,7 +7,6 @@ use App\Filament\Resources\Guides\Pages\EditGuide;
 use App\Models\Guide;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Gate;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -145,12 +144,13 @@ test('editor saves author and category selections as enums', function (): void {
         ->and($record->category)->toBe(GuideCategory::FamilyPlanning);
 });
 
-test('publishing actions require permission to update the guide', function (bool $isDraft, string $action): void {
-    actingAs(User::factory()->admin()->create());
+test('publishing actions disappear when admin access is revoked for the guide', function (bool $isDraft, string $action): void {
+    $admin = User::factory()->admin()->create();
+    actingAs($admin);
     $record = $isDraft ? Guide::factory()->draft()->create() : Guide::factory()->create();
     $page = livewire(EditGuide::class, ['record' => $record->getRouteKey()]);
 
-    Gate::before(fn (User $user, string $ability): ?bool => $ability === 'update' ? false : null);
+    $admin->is_admin = false;
 
     $page->assertActionHidden($action);
 })->with([

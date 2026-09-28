@@ -4,12 +4,14 @@ use App\Livewire\BlogArchive;
 use App\Models\Episode;
 use App\Models\Podcast;
 use App\Models\Post;
+use App\Models\User;
 use App\Support\ResponsiveArtwork;
 use Dom\HTMLDocument;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
+use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
@@ -351,3 +353,12 @@ test('post links that open a new tab announce it', function (): void {
 
     expect($this->unannouncedNewTabLinks($response))->toBeEmpty();
 });
+
+test('signed-in visitors see published posts but nobody sees drafts at public URLs', function (bool $isAdmin): void {
+    $published = Post::factory()->create();
+    $draft = Post::factory()->draft()->create();
+    actingAs($isAdmin ? User::factory()->admin()->create() : User::factory()->create());
+
+    get(route('blog.show', $published))->assertOk();
+    get(route('blog.show', $draft))->assertNotFound();
+})->with(['non-admin' => [false], 'admin' => [true]]);

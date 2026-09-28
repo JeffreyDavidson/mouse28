@@ -7,7 +7,6 @@ use App\ViewModels\GuideIndexViewModel;
 use App\ViewModels\GuideViewModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class GuideController
@@ -23,7 +22,7 @@ class GuideController
     {
         abort_if(! Config::boolean('mouse28.guides_enabled'), 404);
 
-        Gate::authorize('viewPublic', $guide);
+        abort_unless($guide->isLive(), 404);
 
         return view('pages.guides.show', $viewModel->data($guide));
     }

@@ -9,7 +9,6 @@ use App\Models\User;
 use App\Support\ResponsiveArtwork;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\actingAs;
@@ -191,12 +190,13 @@ test('editor saves author and category selections as enums', function (): void {
         ->and($record->category)->toBe(PostCategory::FoodReviews);
 });
 
-test('publishing actions require permission to update the post', function (bool $isDraft, string $action): void {
-    actingAs(User::factory()->admin()->create());
+test('publishing actions disappear when admin access is revoked for the post', function (bool $isDraft, string $action): void {
+    $admin = User::factory()->admin()->create();
+    actingAs($admin);
     $record = $isDraft ? Post::factory()->draft()->create() : Post::factory()->create();
     $page = livewire(EditPost::class, ['record' => $record->getRouteKey()]);
 
-    Gate::before(fn (User $user, string $ability): ?bool => $ability === 'update' ? false : null);
+    $admin->is_admin = false;
 
     $page->assertActionHidden($action);
 })->with([

@@ -6,7 +6,6 @@ use App\Models\Post;
 use App\ViewModels\PostIndexViewModel;
 use App\ViewModels\PostViewModel;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class PostController
@@ -18,7 +17,7 @@ class PostController
 
     public function show(Post $post, PostViewModel $viewModel): View
     {
-        Gate::authorize('viewPublic', $post);
+        abort_unless($post->isLive(), 404);
 
         return view('pages.blog.show', $viewModel->data($post));
     }
