@@ -7,6 +7,7 @@ use App\Support\SafeReturnUrl;
 use App\View\Composers\PodcastComposer;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -26,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         DB::prohibitDestructiveCommands($this->app->isProduction());
+        Model::preventLazyLoading(! $this->app->isProduction());
 
         Nightwatch::user(fn (Authenticatable $user): array => []);
 

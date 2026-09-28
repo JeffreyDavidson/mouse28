@@ -8,6 +8,7 @@ use Illuminate\Database\Console\Migrations\RefreshCommand;
 use Illuminate\Database\Console\Migrations\ResetCommand;
 use Illuminate\Database\Console\Migrations\RollbackCommand;
 use Illuminate\Database\Console\WipeCommand;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Laravel\Nightwatch\Core;
@@ -50,6 +51,24 @@ test('destructive database command protection follows the application environmen
         DB::prohibitDestructiveCommands(false);
     }
 })->with(['production' => ['production', true], 'local' => ['local', false], 'testing' => ['testing', false]]);
+
+test('lazy loading prevention follows the application environment', function (string $environment, bool $prevented): void {
+    // Arrange
+    $this->app->detectEnvironment(fn (): string => $environment);
+    $provider = new AppServiceProvider($this->app);
+    $previous = Model::preventsLazyLoading();
+
+    try {
+        // Act
+        $provider->boot();
+
+        // Assert
+        expect(Model::preventsLazyLoading())->toBe($prevented);
+    } finally {
+        Model::preventLazyLoading($previous);
+        DB::prohibitDestructiveCommands(false);
+    }
+})->with(['production' => ['production', false], 'local' => ['local', true], 'testing' => ['testing', true]]);
 
 test('production database protection cannot be bypassed with force', function (string $command): void {
     // Arrange
