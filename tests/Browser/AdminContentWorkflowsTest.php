@@ -34,6 +34,7 @@ test('administrator can create a Post from the resource form', function (): void
         ->fill('textarea[aria-label="Body"]', 'A browser-created post body.')
         ->click('button[wire\\:target="create"]')
         ->assertSee('Created')
+        ->assertScript(browserWaitForScript("location.pathname.endsWith('/edit') && document.readyState === 'complete'"), true)
         ->assertNoJavaScriptErrors();
 
     visit(PostResource::getUrl())
@@ -98,7 +99,7 @@ test('Post creation shows required category validation while preserving entered 
         ->fill('input[id="form.title"]', 'Browser Validation Post')
         ->fill('input[id="form.slug"]', 'browser-validation-post')
         ->click('button[wire\\:target="create"]')
-        ->assertScript('document.activeElement.id', 'form.category')
+        ->assertScript(browserWaitForScript("document.activeElement.id === 'form.category'"), true)
         ->assertSee('Create Post')
         ->assertDontSee('Created')
         ->assertValue('input[id="form.title"]', 'Browser Validation Post')
