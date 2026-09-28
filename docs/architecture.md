@@ -20,7 +20,7 @@ Posts, guides, and episodes share the `HasPublication` trait (`app/Models/Concer
 
 Site search is handled by the invokable `SearchController`. It searches published content independently with length-aware pagination per group (`mouse28.search_results_per_page`, default six) (`postsPage`, `guidesPage`, and `episodesPage`). Links preserve the query and other groups' pages; counts report all matching records. Publication date and ID provide stable ordering. Every query begins with the models' `published` scopes so drafts and scheduled content remain private. Search result pages are marked `noindex,follow` and are not included in the sitemap.
 
-Guides are retained as a dormant feature. `GUIDES_ENABLED` defaults to `false`; while disabled, guide archives and detail routes return 404 responses and guides are omitted from the homepage, shared navigation, search, and sitemap. Filament management and authorized preview routes remain available so the editorial library can be prepared before the public launch.
+Guides are retained as a dormant feature. `GUIDES_ENABLED` defaults to `false`; while disabled, guide archives and detail routes return 404 responses and guides are omitted from the homepage, shared navigation, search, and sitemap. Filament management and signed preview links remain available so the editorial library can be prepared before the public launch.
 
 `ContentContinuation` keeps detail pages connected without exposing unpublished records. Guide recommendations prioritize the current category and fill remaining spaces with recent guides, while episode pages link to the chronologically adjacent published episodes. Episode adjacency and episode/guide archive pagination break publication-date ties by ID. Article and guide category labels link back to their filtered indexes.
 
@@ -48,7 +48,7 @@ Production is the source of truth for published editorial content. `PublicConten
 
 Posts, guides, and episodes use Eloquent soft deletion. Deleted content disappears from public queries immediately, while Filament administrators can filter the trash, restore records, or explicitly confirm a permanent deletion. Resource route binding includes trashed records only inside the authorized panel recovery flow.
 
-Each content edit page links to an administrator-authorized preview route. Preview pages reuse the public templates, carry a visible preview banner, emit `noindex,nofollow`, and omit structured data. Every preview is authorized through its model policy, so drafts are not exposed by knowing their URL.
+Each content edit page's Preview action builds a shareable signed link with `App\Support\Content\PreviewUrlGenerator`: `URL::temporarySignedRoute` for `preview.post`, `preview.episode`, or `preview.guide` at `/preview/{type}/{slug}`, expiring after `mouse28.preview_link_hours` (24 by default). The routes sit behind the `signed` middleware, and the signature is the only authorization, so anyone holding an unexpired link can read that draft; unsigned, tampered, and expired links are refused. Changing a draft's slug invalidates links already shared. Preview pages reuse the public templates, carry a visible preview banner, emit `noindex,nofollow` (plus `X-Robots-Tag` and `no-store` headers), and omit structured data.
 
 The migration that introduces `is_admin` promotes existing accounts because every existing account had panel access under the previous behavior. New accounts default to non-administrators.
 

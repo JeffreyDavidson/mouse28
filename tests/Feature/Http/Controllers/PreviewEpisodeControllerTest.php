@@ -1,36 +1,46 @@
 <?php
 
 use App\Models\Episode;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\URL;
 
-use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
 
-test('guests and non administrators cannot preview episodes', function (): void {
+test('a signed preview link shows the draft to anyone holding it without exposing it to search', function (): void {
     $episode = Episode::factory()->draft()->create();
 
-    get(route('preview.episodes', $episode))->assertForbidden();
-
-    actingAs(User::factory()->create());
-
-    get(route('preview.episodes', $episode))->assertForbidden();
-});
-
-test('administrators can preview draft content without exposing structured data', function (): void {
-    $admin = User::factory()->admin()->create();
-    $episode = Episode::factory()->draft()->create();
-
-    actingAs($admin);
-
-    get(route('preview.episodes', $episode))
+    get(URL::temporarySignedRoute('preview.episode', Date::now()->addHour(), ['episode' => $episode]))
         ->assertOk()
         ->assertViewIs('pages.episodes.show')
         ->assertViewHas('episode', fn (Episode $viewEpisode): bool => $viewEpisode->is($episode))
         ->assertViewHas('isPreview', true)
         ->assertSee('Preview mode')
         ->assertSeeHtml('noindex,nofollow')
-        ->assertDontSeeHtml('application/ld+json');
+        ->assertDontSeeHtml('application/ld+json')
+        ->assertHeader('X-Robots-Tag', 'noindex, nofollow');
+});
+
+test('preview links must be signed, untampered, and unexpired', function (string $case): void {
+    $episode = Episode::factory()->draft()->create();
+    $signed = URL::temporarySignedRoute('preview.episode', Date::now()->addHour(), ['episode' => $episode]);
+    $url = match ($case) {
+        'unsigned' => route('preview.episode', $episode),
+        'tampered' => "{$signed}0",
+        default => $signed,
+    };
+
+    if ($case === 'expired') {
+        Date::setTestNow(Date::now()->addHours(2));
+    }
+
+    get($url)->assertForbidden();
+})->with(['unsigned', 'tampered', 'expired']);
+
+test('the former numeric preview address no longer shows the draft', function (): void {
+    $episode = Episode::factory()->draft()->create();
+
+    expect(get("/preview/episodes/{$episode->id}")->status())->toBeIn([403, 404]);
 });

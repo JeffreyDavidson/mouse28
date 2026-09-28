@@ -7,6 +7,7 @@ use App\Filament\Actions\PublishContentAction;
 use App\Filament\Actions\UnpublishContentAction;
 use App\Filament\Resources\Posts\PostResource;
 use App\Models\Post;
+use App\Support\Content\PreviewUrlGenerator;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
@@ -48,7 +49,7 @@ class EditPost extends EditRecord
             Action::make('preview')
                 ->icon(Heroicon::OutlinedEye)
                 ->authorize('view')
-                ->url(fn (): string => route('preview.posts', $this->record))
+                ->url(fn (PreviewUrlGenerator $previewUrls): string => $previewUrls->for($this->record))
                 ->openUrlInNewTab(),
             DeleteAction::make(),
             ForceDeleteAction::make(),
