@@ -7,7 +7,7 @@ use Illuminate\View\View;
 
 class HomeController
 {
-    public function index(HomeViewModel $viewModel): View
+    public function __invoke(HomeViewModel $viewModel): View
     {
         return view('pages.home', $viewModel->data());
     }

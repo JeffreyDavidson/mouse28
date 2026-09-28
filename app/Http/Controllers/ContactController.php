@@ -13,7 +13,7 @@ use Illuminate\View\View;
 
 class ContactController
 {
-    public function show(ContactViewModel $viewModel): View
+    public function create(ContactViewModel $viewModel): View
     {
         return view('pages.contact', $viewModel->data());
     }
