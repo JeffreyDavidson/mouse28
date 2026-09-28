@@ -1,36 +1,46 @@
 <?php
 
 use App\Models\Post;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\URL;
 
-use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
 
-test('preview routes reject guests and non admin users', function (): void {
+test('a signed preview link shows the draft to anyone holding it without exposing it to search', function (): void {
     $post = Post::factory()->draft()->create();
 
-    get(route('preview.posts', $post))->assertForbidden();
-
-    actingAs(User::factory()->create())
-        ->get(route('preview.posts', $post))
-        ->assertForbidden();
-});
-
-test('administrators can preview draft content without exposing structured data', function (): void {
-    $admin = User::factory()->admin()->create();
-    $post = Post::factory()->draft()->create();
-
-    actingAs($admin);
-
-    get(route('preview.posts', $post))
+    get(URL::temporarySignedRoute('preview.post', Date::now()->addHour(), ['post' => $post]))
         ->assertOk()
         ->assertViewIs('pages.blog.show')
         ->assertViewHas('post', fn (Post $viewPost): bool => $viewPost->is($post))
         ->assertViewHas('isPreview', true)
         ->assertSee('Preview mode')
         ->assertSeeHtml('noindex,nofollow')
-        ->assertDontSeeHtml('application/ld+json');
+        ->assertDontSeeHtml('application/ld+json')
+        ->assertHeader('X-Robots-Tag', 'noindex, nofollow');
+});
+
+test('preview links must be signed, untampered, and unexpired', function (string $case): void {
+    $post = Post::factory()->draft()->create();
+    $signed = URL::temporarySignedRoute('preview.post', Date::now()->addHour(), ['post' => $post]);
+    $url = match ($case) {
+        'unsigned' => route('preview.post', $post),
+        'tampered' => "{$signed}0",
+        default => $signed,
+    };
+
+    if ($case === 'expired') {
+        Date::setTestNow(Date::now()->addHours(2));
+    }
+
+    get($url)->assertForbidden();
+})->with(['unsigned', 'tampered', 'expired']);
+
+test('the former numeric preview address no longer shows the draft', function (): void {
+    $post = Post::factory()->draft()->create();
+
+    expect(get("/preview/posts/{$post->id}")->status())->toBeIn([403, 404]);
 });

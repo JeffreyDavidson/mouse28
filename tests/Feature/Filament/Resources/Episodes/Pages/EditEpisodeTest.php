@@ -7,7 +7,9 @@ use App\Models\User;
 use App\Support\ResponsiveArtwork;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -126,6 +128,7 @@ test('editing cannot take another episode number', function (): void {
 });
 
 test('edit page offers a draft preview', function (): void {
+    Date::setTestNow('2026-09-27 12:00:00');
     $admin = User::factory()->admin()->create();
     $episode = Episode::factory()->draft()->create();
 
@@ -133,7 +136,7 @@ test('edit page offers a draft preview', function (): void {
 
     livewire(EditEpisode::class, ['record' => $episode->getRouteKey()])
         ->assertActionVisible('preview')
-        ->assertActionHasUrl('preview', route('preview.episodes', $episode))
+        ->assertActionHasUrl('preview', URL::temporarySignedRoute('preview.episode', Date::now()->addHours(24), ['episode' => $episode]))
         ->assertActionShouldOpenUrlInNewTab('preview');
 });
 

@@ -7,6 +7,8 @@ use App\Filament\Resources\Guides\Pages\EditGuide;
 use App\Models\Guide;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\URL;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -67,6 +69,7 @@ test('draft slugs reject characters that cannot form public routes', function ()
 });
 
 test('edit page offers a draft preview', function (): void {
+    Date::setTestNow('2026-09-27 12:00:00');
     $admin = User::factory()->admin()->create();
     $guide = Guide::factory()->draft()->create();
 
@@ -74,7 +77,7 @@ test('edit page offers a draft preview', function (): void {
 
     livewire(EditGuide::class, ['record' => $guide->getRouteKey()])
         ->assertActionVisible('preview')
-        ->assertActionHasUrl('preview', route('preview.guides', $guide))
+        ->assertActionHasUrl('preview', URL::temporarySignedRoute('preview.guide', Date::now()->addHours(24), ['guide' => $guide]))
         ->assertActionShouldOpenUrlInNewTab('preview');
 });
 
