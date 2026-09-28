@@ -26,6 +26,33 @@ test('public pages render accessible typography and focus indicators', function 
     'search' => ['search', 'Search'],
 ]);
 
+test('public pages load without content security policy violations', function (string $page): void {
+    $post = Post::factory()->create(['source_url' => 'https://disneyworld.disney.go.com/guest-services/', 'last_reviewed_at' => now()]);
+    $episode = Episode::factory()->create(['transistor_url' => 'https://share.transistor.fm/s/abc123']);
+    $url = match ($page) {
+        'post' => route('blog.show', $post),
+        'episode' => route('episodes.show', $episode),
+        'search' => route('search', ['q' => $post->title]),
+        'missing' => url('/this-page-does-not-exist'),
+        default => route($page),
+    };
+
+    visit($url)
+        ->assertScript($this->contentSecurityPolicyViolationsScript(), '')
+        ->assertNoJavaScriptErrors();
+})->with(['home', 'blog.index', 'post', 'episodes.index', 'episode', 'about', 'contact.show', 'privacy', 'search', 'missing']);
+
+test('the throttled search page loads without content security policy violations', function (): void {
+    config()->set('mouse28.rate_limits.search_per_minute', 1);
+
+    visit(route('search', ['q' => 'castle']))->assertSee('Search');
+
+    visit(route('search', ['q' => 'castle']))
+        ->assertSee('Let’s take a breather')
+        ->assertScript($this->contentSecurityPolicyViolationsScript(), '')
+        ->assertNoJavaScriptErrors();
+});
+
 test('the footer newsletter field shows a focus indicator that stands out from the footer', function (): void {
     visit(route('home'))
         ->assertScript($this->focusIndicatorContrastScript('#footer-newsletter-email').' >= 3', true);

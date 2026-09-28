@@ -23,10 +23,12 @@ Route::get('/guides', [GuideController::class, 'index'])->name('guides.index');
 Route::get('/guides/{guide:slug}', [GuideController::class, 'show'])->name('guides.show');
 Route::get('/episodes', [EpisodeController::class, 'index'])->name('episodes.index');
 Route::get('/episodes/{episode:slug}', [EpisodeController::class, 'show'])->name('episodes.show');
-Route::get('/search', SearchController::class)->name('search');
-Route::get('/preview/posts/{post}', PreviewPostController::class)->name('preview.posts');
-Route::get('/preview/guides/{guide}', PreviewGuideController::class)->name('preview.guides');
-Route::get('/preview/episodes/{episode}', PreviewEpisodeController::class)->name('preview.episodes');
+Route::get('/search', SearchController::class)->middleware('throttle:search')->name('search');
+Route::middleware('signed')->prefix('preview')->group(function (): void {
+    Route::get('/posts/{post:slug}', PreviewPostController::class)->name('preview.post');
+    Route::get('/guides/{guide:slug}', PreviewGuideController::class)->name('preview.guide');
+    Route::get('/episodes/{episode:slug}', PreviewEpisodeController::class)->name('preview.episode');
+});
 Route::view('/about', 'pages.about')->name('about');
 Route::view('/privacy', 'pages.privacy')->name('privacy');
 Route::get('/contact', [ContactController::class, 'show'])->name('contact.show');

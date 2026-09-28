@@ -96,8 +96,8 @@ function observeSelect(select) {
 }
 
 function observeAddedSelects(records) {
-    records.forEach((record) => {
-        record.addedNodes.forEach((node) => {
+    records.forEach(record => {
+        record.addedNodes.forEach(node => {
             if (!(node instanceof Element)) {
                 return;
             }

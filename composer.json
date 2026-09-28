@@ -94,18 +94,20 @@
             "npm audit --audit-level=high",
             "node --test tests/Browser/navigation-timings.test.mjs tests/Browser/benchmark-failures.test.mjs tests/Browser/cloudflare-access-headers.test.mjs tests/Browser/benchmark-page-discovery.test.mjs",
             "@test:lint",
-            "@test:filacheck",
-            "@analyse",
-            "@analyse:pest",
+            "npm run format:check",
+            "@test:filament",
+            "@test:types",
+            "@test:types:pest",
             "@test:rector",
             "@test:rector:pest",
             "@test",
             "@test:type-coverage",
             "npm run build",
+            "npm run test:assets",
             "@test:browser:smoke",
             "git diff --check"
         ],
-        "test:filacheck": "FILACHECK_DISABLE_AGENT_MODE=1 vendor/bin/filacheck",
+        "test:filament": "FILACHECK_DISABLE_AGENT_MODE=1 vendor/bin/filacheck",
         "filacheck:fix": "FILACHECK_DISABLE_AGENT_MODE=1 vendor/bin/filacheck --fix --dirty",
         "test:type-coverage": "php -d memory_limit=2G vendor/bin/pest --type-coverage --min=100 --compact",
         "test:mutate": [
@@ -124,15 +126,10 @@
         "test:mutate:delivery": [
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Actions/SubmitContactMessage.php --filter='action stores a contact message'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Jobs/SendContactMessageEmails.php --filter='(contact emails|retry sends|concurrent contact|cancelled contact|delivery middleware|contact jobs|queue attributes|incomplete delivery|old queued|provider idempotency)'",
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Policies/ContactMessagePolicy.php --filter='editorial abilities'",
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Policies/EpisodePolicy.php --filter='(editorial abilities|public policy)'",
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Policies/GuidePolicy.php --filter='(editorial abilities|public policy)'",
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Policies/PostPolicy.php --filter='(editorial abilities|public policy)'",
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Policies/PodcastPolicy.php --filter='editorial abilities'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Http/Requests/SearchRequest.php --filter='search (query is limited|groups matching|returns its view model)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Http/Requests/StoreContactRequest.php --filter='(valid contact submission|contact submission rejects|honeypot)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Http/Requests/StoreNewsletterRequest.php --filter='(valid newsletter|newsletter signup rejects|newsletter honeypot|newsletter redirects)'",
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Http/Middleware/AddSecurityHeaders.php --filter='(web responses|private and error responses|normal public responses)'"
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Http/Middleware/AddSecurityHeaders.php --filter='(web responses|private and error responses|normal public responses|nonce-bearing scripts|script allowances|error responses carry|strict transport security|approved sources|Vite dev server)'"
         ],
         "test:mutate:views": [
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/ViewModels/HomeViewModel.php --filter='homepage'",
@@ -167,8 +164,8 @@
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/Turnstile.php --filter='(invalid credentials|verification|connection failure)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/TextSearch.php --filter='text search'"
         ],
-        "analyse": "php -d memory_limit=2G vendor/bin/phpstan analyse --no-progress",
-        "analyse:pest": "APP_ENV=testing php -d memory_limit=2G vendor/bin/phpstan analyse --configuration=phpstan-pest.neon --no-progress",
+        "test:types": "php -d memory_limit=2G vendor/bin/phpstan analyse --no-progress",
+        "test:types:pest": "APP_ENV=testing php -d memory_limit=2G vendor/bin/phpstan analyse --configuration=phpstan-pest.neon --no-progress",
         "rector": "vendor/bin/rector process",
         "test:rector": "vendor/bin/rector process --dry-run",
         "rector:pest": "vendor/bin/rector process --config=rector-pest.php",

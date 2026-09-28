@@ -9,8 +9,9 @@ use App\Models\User;
 use App\Support\ResponsiveArtwork;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -96,6 +97,7 @@ test('draft slugs reject characters that cannot form public routes', function ()
 });
 
 test('edit page offers a draft preview', function (): void {
+    Date::setTestNow('2026-09-27 12:00:00');
     $admin = User::factory()->admin()->create();
     $post = Post::factory()->draft()->create();
 
@@ -103,7 +105,7 @@ test('edit page offers a draft preview', function (): void {
 
     livewire(EditPost::class, ['record' => $post->getRouteKey()])
         ->assertActionVisible('preview')
-        ->assertActionHasUrl('preview', route('preview.posts', $post))
+        ->assertActionHasUrl('preview', URL::temporarySignedRoute('preview.post', Date::now()->addHours(24), ['post' => $post]))
         ->assertActionShouldOpenUrlInNewTab('preview');
 });
 
@@ -191,12 +193,13 @@ test('editor saves author and category selections as enums', function (): void {
         ->and($record->category)->toBe(PostCategory::FoodReviews);
 });
 
-test('publishing actions require permission to update the post', function (bool $isDraft, string $action): void {
-    actingAs(User::factory()->admin()->create());
+test('publishing actions disappear when admin access is revoked for the post', function (bool $isDraft, string $action): void {
+    $admin = User::factory()->admin()->create();
+    actingAs($admin);
     $record = $isDraft ? Post::factory()->draft()->create() : Post::factory()->create();
     $page = livewire(EditPost::class, ['record' => $record->getRouteKey()]);
 
-    Gate::before(fn (User $user, string $ability): ?bool => $ability === 'update' ? false : null);
+    $admin->is_admin = false;
 
     $page->assertActionHidden($action);
 })->with([

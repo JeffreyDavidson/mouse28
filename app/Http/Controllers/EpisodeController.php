@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Episode;
 use App\ViewModels\EpisodeIndexViewModel;
 use App\ViewModels\EpisodeViewModel;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class EpisodeController
@@ -17,7 +16,7 @@ class EpisodeController
 
     public function show(Episode $episode, EpisodeViewModel $viewModel): View
     {
-        Gate::authorize('viewPublic', $episode);
+        abort_unless($episode->isLive(), 404);
 
         return view('pages.episodes.show', $viewModel->data($episode));
     }

@@ -42,13 +42,15 @@ The application can run locally without live third-party calls, but these featur
 - `MOUSE28_CONTACT_EMAIL` controls the public site contact address. `MAIL_*` and `MAIL_ADMIN_ADDRESS` deliver contact notifications and confirmations.
 - `PODCAST_RSS_URL` identifies the canonical Transistor feed. It defaults to the Mouse28 feed.
 - `FATHOM_SITE_ID` enables the optional analytics script.
-- `NIGHTWATCH_ENABLED=true` and `NIGHTWATCH_TOKEN` enable production application monitoring. Request payload capture stays disabled, authenticated users are identified only by their internal ID, and the default request sample rate is 10%.
+- `NIGHTWATCH_ENABLED=true` and `NIGHTWATCH_TOKEN` enable production application monitoring. Request payload capture stays disabled, authenticated users are identified only by an `APP_KEY`-keyed digest of their ID, and the `app/Support/Monitoring` redactors strip request, query, cache, and exception details, and the default request sample rate is 10%.
 - `SENTRY_LARAVEL_DSN` enables production error reporting. Keep `SENTRY_SEND_DEFAULT_PII=false`; tracing and profiling remain disabled until their sample rates are deliberately raised above `0.0`.
 - `GUIDES_ENABLED` controls public guide routes and discovery. It defaults to `false` while the guide library is being prepared.
 - `MOUSE28_BLOG_POSTS_PER_PAGE` controls the number of posts shown per archive page; it defaults to `12`.
 - `MOUSE28_EPISODES_PER_PAGE` and `MOUSE28_GUIDES_PER_PAGE` control the episode and guide archive page sizes; both default to `12`.
 - `MOUSE28_SEARCH_RESULTS_PER_PAGE` controls how many results each site search section shows per page; it defaults to `6`.
 - `MOUSE28_CONTACT_FORM_RATE_LIMIT` and `MOUSE28_NEWSLETTER_RATE_LIMIT` set the per-IP submissions allowed each minute; both default to `5`.
+- `MOUSE28_PREVIEW_LINK_HOURS` sets how long shareable preview links stay valid; it defaults to `24`.
+- `MOUSE28_SEARCH_RATE_LIMIT` sets the per-IP searches allowed each minute; it defaults to `30`, and empty searches are never throttled.
 - `GUIDE_REVIEW_INTERVAL_DAYS` controls when durable guides are flagged for editorial review; it defaults to 180 days.
 
 Never commit live credentials. Keep them in the deployment environment.
@@ -70,9 +72,9 @@ Published post, guide, and episode pages emit Schema.org content and breadcrumb 
 
 ## Development commands
 
-Run `composer check` for the required CI checks locally: dependency validation and audits, benchmark helper tests, formatting, FilaCheck, application and Pest static analysis, application and Pest Rector checks, non-browser tests, type coverage, an asset build, focused Chromium browser smoke tests, and diff whitespace validation. Install the locked Composer and Node dependencies and Chromium first. Audits require network access. The command stops at the first failure and does not apply formatting or Rector fixes; it does build assets and clear Laravel's config cache through `composer test`.
+Run `composer check` for the required CI checks locally: dependency validation and audits, benchmark helper tests, PHP/Blade and JavaScript formatting (`npm run format:check`), FilaCheck, application and Pest static analysis, application and Pest Rector checks, non-browser tests, type coverage, an asset build checked against size budgets (`npm run test:assets`, `scripts/check-asset-budgets.mjs`), focused Chromium browser smoke tests, and diff whitespace validation. Install the locked Composer and Node dependencies and Chromium first. Audits require network access. The command stops at the first failure and does not apply formatting or Rector fixes; it does build assets and clear Laravel's config cache through `composer test`.
 
-Run `composer analyse:pest` for a focused test-analysis check. The full browser suite remains available through `composer test:browser`.
+Run `composer test:types:pest` for a focused test-analysis check. The full browser suite remains available through `composer test:browser`.
 
 `composer test:mutate` runs all mutation targets. CI distributes the same targets across
 `test:mutate:commands`, `test:mutate:delivery`, `test:mutate:views`,
@@ -96,9 +98,9 @@ composer validate --strict --no-check-publish
 composer audit --locked --format=plain
 npm audit --audit-level=high
 composer test:lint
-composer test:filacheck
-composer analyse
-composer analyse:pest
+composer test:filament
+composer test:types
+composer test:types:pest
 composer test:rector
 composer test
 composer test:browser
@@ -107,8 +109,8 @@ git diff --check
 ```
 
 Run `composer lint` to apply PHP and Blade formatting fixes, or `composer test:lint` to check without changing files. The pre-commit hook performs PHP syntax and formatting checks; `composer check` runs the broader checks explicitly. Blade formatting is enabled by default through `pint.json` and requires the locked Prettier, Blade, and Tailwind formatting packages.
-Run `composer test:filacheck` for a read-only check of Filament code for deprecated APIs and common implementation issues. This wrapper disables FilaCheck Pro's agent mode, which can otherwise enable automatic fixes even without `--fix`.
-Use `composer filacheck:fix` only when intentionally applying fixes to files with uncommitted Git changes. Review the resulting diff and rerun the affected tests and `composer test:filacheck` before committing.
+Run `composer test:filament` for a read-only check of Filament code for deprecated APIs and common implementation issues. This wrapper disables FilaCheck Pro's agent mode, which can otherwise enable automatic fixes even without `--fix`.
+Use `composer filacheck:fix` only when intentionally applying fixes to files with uncommitted Git changes. Review the resulting diff and rerun the affected tests and `composer test:filament` before committing.
 Run `npx playwright install chromium` once before the local browser suite. A focused `browser-smoke` group runs in pull-request and main-branch CI, and failures fail the required Test and build job. The full Chromium browser suite runs weekly, on demand, and for release tags; the `browser-compatibility` group checks reading, print presentation, and key interactions in Firefox and WebKit. Browser jobs upload available failure screenshots from `tests/Browser/Screenshots` as GitHub Actions artifacts, retained for seven days with separate artifact names for each browser.
 
 `composer test` runs the unit, integration, feature, and architecture suites; browser tests use the separate `composer test:browser` command. Rector uses its default parallel processing. Agent sandboxes must allow the local sockets used by Rector and Pest.
@@ -118,17 +120,17 @@ Run `npx playwright install chromium` once before the local browser suite. A foc
 Test-only analysis uses separate configurations so the existing application checks remain unchanged:
 
 ```bash
-composer analyse:pest
+composer test:types:pest
 composer test:rector:pest
 ```
 
 `phpstan.neon` and `phpstan-pest.neon` analyze application code and tests separately at maximum level, with independent caches under `storage/framework/cache`. Both use `treatPhpDocTypesAsCertain: false`. Composer's PHPStan extension installer registers Larastan and the Pest plugin automatically; Larastan also boots the application, so neither config needs duplicate extension includes or an explicit `bootstrapFiles` entry. `rector-pest.php` applies PHP and installed Laravel upgrade rules plus Pest's coding-style rules, scoped only to `tests/`.
 
-`composer analyse:pest` sets `APP_ENV=testing` for the analysis process so Livewire registers its test-only response assertions. Use the Composer command, or set the same environment variable when invoking PHPStan directly. This does not change `.env` or the application analysis command.
+`composer test:types:pest` sets `APP_ENV=testing` for the analysis process so Livewire registers its test-only response assertions. Use the Composer command, or set the same environment variable when invoking PHPStan directly. This does not change `.env` or the application analysis command.
 
 `tests/pest-livewire.stub` supplies the component-specific return type missing from Pest Livewire 5.0's `livewire()` helper, retaining the generic `Component` fallback for named components. It is loaded only by Pest PHPStan analysis, never at runtime. Revisit the stub when the plugin supplies equivalent typing upstream.
 
-`composer analyse:pest` is required in CI and included in `composer check`. CI runs it after Laravel preparation, using an in-memory SQLite connection and test service drivers. A nonzero exit code fails the quality gate. It remains separate from `composer test`; neither analysis configuration uses a PHPStan baseline.
+`composer test:types:pest` is required in CI and included in `composer check`. CI runs it after Laravel preparation, using an in-memory SQLite connection and test service drivers. A nonzero exit code fails the quality gate. It remains separate from `composer test`; neither analysis configuration uses a PHPStan baseline.
 
 `composer test:rector:pest` is a required, read-only CI step alongside the application Rector check. Proposed changes or errors fail CI; CI never applies rewrites. Its reviewed configuration excludes rewrites from strict empty-array comparisons to broad emptiness checks, and from `is_file()` to an existence-only assertion. Run `composer rector:pest` only to deliberately apply the proposed test changes, then inspect the diff and rerun the affected tests. Preserve Arrange / Act / Assert boundaries and framework-specific assertions when reviewing rewrites.
 
@@ -140,7 +142,7 @@ Choose the suite by what the test exercises:
 - `Browser`: real-browser interactions and rendering.
 - `Arch`: source structure and architectural contracts.
 
-Unit, Integration, and Feature paths mirror their owning `app/` classes. A class can have tests in more than one suite when they exercise different boundaries. For example, database casts belong in `tests/Integration/Models/PostTest.php`, while public post behavior belongs in `tests/Feature/Http/Controllers/PostControllerTest.php`. Split mixed files by boundary and owner. Choose that owner from the behavior being asserted, not a fixture model or internal collaborator. Page-specific response checks belong with their controller or Filament page; shared navigation and metadata checks belong with the layout. Blade and configuration tests without an application class use explicit source mappings in `tests/Arch/TestOrganizationTest.php`.
+Unit, Integration, and Feature paths mirror their owning `app/` classes. A class can have tests in more than one suite when they exercise different boundaries. For example, database casts belong in `tests/Integration/Models/PostTest.php`, while public post behavior belongs in `tests/Feature/Http/Controllers/PostControllerTest.php`. Split mixed files by boundary and owner. Choose that owner from the behavior being asserted, not a fixture model or internal collaborator. Page-specific response checks belong with their controller or Filament page; shared navigation and metadata checks belong with the layout. Blade and configuration tests without an application class use explicit source mappings in `tests/Architecture/TestOrganizationTest.php`.
 
 Run a suite independently with `php artisan test --compact --testsuite=Unit` (or `Integration`, `Feature`, or `Architecture`).
 

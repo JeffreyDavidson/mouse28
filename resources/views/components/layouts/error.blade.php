@@ -73,7 +73,7 @@
             <x-brand-wordmark compact />
         </a>
     </footer>
-    <script>
+    <script nonce="{{ Vite::cspNonce() }}">
         document.addEventListener('DOMContentLoaded', function () {
             if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
             document.documentElement.classList.add('js-dispatch-errors');

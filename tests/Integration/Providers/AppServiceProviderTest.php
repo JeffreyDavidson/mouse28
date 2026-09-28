@@ -8,6 +8,7 @@ use Illuminate\Database\Console\Migrations\RefreshCommand;
 use Illuminate\Database\Console\Migrations\ResetCommand;
 use Illuminate\Database\Console\Migrations\RollbackCommand;
 use Illuminate\Database\Console\WipeCommand;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Laravel\Nightwatch\Core;
@@ -51,6 +52,24 @@ test('destructive database command protection follows the application environmen
     }
 })->with(['production' => ['production', true], 'local' => ['local', false], 'testing' => ['testing', false]]);
 
+test('lazy loading prevention follows the application environment', function (string $environment, bool $prevented): void {
+    // Arrange
+    $this->app->detectEnvironment(fn (): string => $environment);
+    $provider = new AppServiceProvider($this->app);
+    $previous = Model::preventsLazyLoading();
+
+    try {
+        // Act
+        $provider->boot();
+
+        // Assert
+        expect(Model::preventsLazyLoading())->toBe($prevented);
+    } finally {
+        Model::preventLazyLoading($previous);
+        DB::prohibitDestructiveCommands(false);
+    }
+})->with(['production' => ['production', false], 'local' => ['local', true], 'testing' => ['testing', true]]);
+
 test('production database protection cannot be bypassed with force', function (string $command): void {
     // Arrange
     $this->app->detectEnvironment(fn (): string => 'production');
@@ -71,9 +90,10 @@ test('production database protection cannot be bypassed with force', function (s
     }
 })->with(['db:wipe', 'migrate:fresh', 'migrate:refresh', 'migrate:reset', 'migrate:rollback']);
 
-test('Nightwatch identifies administrators without sending their profile details', function (): void {
+test('Nightwatch identifies administrators by a keyed digest without their profile details', function (): void {
     // Arrange
-    $admin = User::factory()->admin()->make();
+    $admin = User::factory()->admin()->make(['id' => 42, 'name' => 'Private Administrator', 'email' => 'private@example.test']);
+    config()->set('app.key', 'private-application-key');
     $resolver = app(Core::class)->userDetailsResolver
         ?? throw new UnexpectedValueException('The Nightwatch user resolver is not registered.');
 
@@ -81,5 +101,6 @@ test('Nightwatch identifies administrators without sending their profile details
     $userDetails = $resolver($admin);
 
     // Assert
-    expect($userDetails)->toBeEmpty();
+    expect($userDetails)->toBe(['id' => hash_hmac('sha256', '42', 'private-application-key')])
+        ->and(serialize($userDetails))->not->toContain('Private Administrator', 'private@example.test');
 });

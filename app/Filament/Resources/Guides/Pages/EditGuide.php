@@ -6,6 +6,7 @@ use App\Filament\Actions\PublishContentAction;
 use App\Filament\Actions\UnpublishContentAction;
 use App\Filament\Resources\Guides\GuideResource;
 use App\Models\Guide;
+use App\Support\Content\PreviewUrlGenerator;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
@@ -36,7 +37,7 @@ class EditGuide extends EditRecord
             Action::make('preview')
                 ->icon(Heroicon::OutlinedEye)
                 ->authorize('view')
-                ->url(fn (): string => route('preview.guides', $this->record))
+                ->url(fn (PreviewUrlGenerator $previewUrls): string => $previewUrls->for($this->record))
                 ->openUrlInNewTab(),
             DeleteAction::make(),
             ForceDeleteAction::make(),

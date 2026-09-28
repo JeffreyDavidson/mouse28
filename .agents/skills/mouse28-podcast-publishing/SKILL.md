@@ -9,7 +9,7 @@ Treat Transistor as the podcast host and Mouse28 as the editorial companion. Tra
 
 ## Establish Current State
 
-- Read `.ai/rules/episodes.md`, `README.md`, and the episode model and Filament resource before changing repository code or content behavior.
+- Read `.ai/rules/models.md` (Transistor hosting rule), `README.md`, and the episode model and Filament resource before changing repository code or content behavior.
 - Inspect the actual Transistor episode and corresponding Mouse28 record when access is available. Do not infer whether an episode is a draft, scheduled, published, or already distributed.
 - Preserve original audio and transcript exports. Do not overwrite a source recording with an edited or compressed delivery file.
 - Ask for missing editorial choices only when they materially affect publication, such as the final title, publish time, explicit-content status, or approval of a transcript.

@@ -2,11 +2,13 @@
 
 use App\Models\Episode;
 use App\Models\Podcast;
+use App\Models\User;
 use App\Support\ResponsiveArtwork;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
+use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
@@ -126,7 +128,7 @@ test('published episode detail page renders', function (): void {
 
     get(route('episodes.show', $episode))
         ->assertOk()->assertSee($episode->title)->assertSeeHtml('Our favorite planning strategies')->assertSeeHtml('episode-detail-hero')
-        ->assertSee('Listen to this episode')->assertDontSee('Now Playing')->assertSeeHtml('title="Listen to Planning a Sensory-Friendly Visit"')->assertSeeHtml('data-episode-layout="rich"')->assertSeeHtml('id="episode-transcript"')->assertSeeHtml('aria-controls="episode-transcript"')->assertSeeHtml(':aria-expanded="expanded.toString()"');
+        ->assertSee('Listen to this episode')->assertDontSee('Now Playing')->assertSeeHtml('title="Listen to Planning a Sensory-Friendly Visit"')->assertSeeHtml('data-episode-layout="rich"')->assertSeeHtml('id="episode-transcript"')->assertSeeHtml('aria-controls="episode-transcript"')->assertSeeHtml(':aria-expanded="expandedState"');
 });
 
 test('episode pages sanitize rich show notes and transcripts', function (): void {
@@ -353,3 +355,12 @@ test('podcast links that open a new tab announce it', function (bool $showEpisod
     'archive' => [false],
     'episode' => [true],
 ]);
+
+test('signed-in visitors see published episodes but nobody sees drafts at public URLs', function (bool $isAdmin): void {
+    $published = Episode::factory()->create();
+    $draft = Episode::factory()->draft()->create();
+    actingAs($isAdmin ? User::factory()->admin()->create() : User::factory()->create());
+
+    get(route('episodes.show', $published))->assertOk();
+    get(route('episodes.show', $draft))->assertNotFound();
+})->with(['non-admin' => [false], 'admin' => [true]]);
