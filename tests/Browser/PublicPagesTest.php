@@ -80,7 +80,8 @@ test('blog filters and sorting animate stories without reloading or moving the c
         'category' => 'food-reviews',
     ]);
 
-    $page = visit(route('blog.index'));
+    $page = visit(route('blog.index'))
+        ->assertScript(browserLivewireReadyScript('[data-blog-browser]'), true);
 
     $page->assertScript("document.querySelector('[data-blog-status][role=status][aria-live=polite]') !== null", true);
     $page->script(observeBlogCardMotionScript());
@@ -162,7 +163,8 @@ test('blog filters update without spatial card motion when reduced motion is pre
         'published_at' => now()->subDays(3),
     ]);
 
-    $page = visit(route('blog.index'), ['reducedMotion' => 'reduce']);
+    $page = visit(route('blog.index'), ['reducedMotion' => 'reduce'])
+        ->assertScript(browserLivewireReadyScript('[data-blog-browser]'), true);
 
     $page->assertScript("document.querySelector('[data-blog-status][role=status][aria-live=polite]') !== null", true);
     $page->script(observeBlogCardMotionScript());
@@ -184,7 +186,8 @@ test('blog pagination keeps the featured story visible', function (): void {
         'published_at' => now()->subDay(),
     ]);
 
-    $page = visit(route('blog.index'));
+    $page = visit(route('blog.index'))
+        ->assertScript(browserLivewireReadyScript('[data-blog-browser]'), true);
 
     $page
         ->click('button[aria-label="Go to page 2"]')
@@ -463,7 +466,7 @@ test('featured story and viewport stay stable throughout filter transitions', fu
     Post::factory()->count(3)->create(['category' => 'park-accessibility', 'published_at' => now()->subWeek()]);
 
     $page = visit(route('blog.index'))
-        ->assertScript(browserWaitForScript("document.querySelector('[data-blog-browser]')?.__livewire !== undefined"), true);
+        ->assertScript(browserLivewireReadyScript('[data-blog-browser]'), true);
     $page->script(<<<'JS'
         window.scrollTo({ top: document.querySelector('[data-blog-filters]').getBoundingClientRect().top + window.scrollY - 120, behavior: 'instant' });
         window.filterSamples = [];

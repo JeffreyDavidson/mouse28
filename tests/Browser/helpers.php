@@ -51,3 +51,14 @@ function browserWaitForScript(string $condition, int $timeoutMilliseconds = 1000
         }
         JS;
 }
+
+/**
+ * Build a script that resolves true once the Livewire component at the selector has booted.
+ *
+ * Livewire loads asynchronously, so interactions before it boots fall back to plain links
+ * or inert buttons.
+ */
+function browserLivewireReadyScript(string $selector): string
+{
+    return browserWaitForScript("document.querySelector('{$selector}')?.__livewire !== undefined");
+}
