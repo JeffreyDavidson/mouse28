@@ -2,10 +2,10 @@
 
 use App\Models\Episode;
 use App\Models\Post;
-use App\ViewModels\PostViewModel;
+use App\ViewModels\PostShowViewModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-covers(PostViewModel::class);
+covers(PostShowViewModel::class);
 
 pest()->use(RefreshDatabase::class);
 
@@ -16,8 +16,8 @@ test('post data includes recent posts and only published episode relationships',
     $unpublishedEpisode = Episode::factory()->draft()->create();
 
     $previewPost = Post::factory()->draft()->create(['episode_id' => $unpublishedEpisode->id]);
-    $data = app(PostViewModel::class)->data($post);
-    $previewData = app(PostViewModel::class)->data($previewPost, preview: true);
+    $data = app(PostShowViewModel::class)->data($post);
+    $previewData = app(PostShowViewModel::class)->data($previewPost, preview: true);
 
     expect($data['post']->relationLoaded('episode'))->toBeTrue()
         ->and($data['post']->episode?->is($publishedEpisode))->toBeTrue()

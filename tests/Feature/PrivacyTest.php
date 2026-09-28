@@ -14,7 +14,7 @@ test('privacy information explains collection retention and available contact op
         ->assertSee('Resend')
         ->assertSee('Cloudflare Turnstile')
         ->assertSee('Transistor')
-        ->assertSee('Sentry')->assertSee('Nightwatch')->assertSeeHtml('href="'.route('contact.show').'"');
+        ->assertSee('Sentry')->assertSee('Nightwatch')->assertSeeHtml('href="'.route('contact.create').'"');
 });
 
 test('privacy information is discoverable from the shared footer and sitemap', function (): void {

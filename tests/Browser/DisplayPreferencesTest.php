@@ -17,7 +17,7 @@ test('public pages reflow with two hundred percent text sizing', function (): vo
         route('guides.index'),
         route('episodes.index'),
         route('about'),
-        route('contact.show'),
+        route('contact.create'),
         route('search', ['q' => 'parks']),
         route('blog.show', $post),
         route('guides.show', $guide),
@@ -80,7 +80,7 @@ test('forced colors preserve focus indicators and page structure', function (): 
     $pages = visit([
         route('home'),
         route('blog.index'),
-        route('contact.show'),
+        route('contact.create'),
     ], ['forcedColors' => 'active']);
     $pages->resize(1280, 900);
 

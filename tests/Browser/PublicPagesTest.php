@@ -15,7 +15,7 @@ test('public pages render one complete newsletter footer', function (): void {
         route('episodes.index'),
         route('episodes.show', $episode),
         route('about'),
-        route('contact.show'),
+        route('contact.create'),
         route('privacy'),
     ])
         ->assertScript('document.querySelectorAll("footer").length', 1)
@@ -276,7 +276,7 @@ test('public pages remain usable at mobile widths', function (): void {
         route('guides.index'),
         route('episodes.index'),
         route('about'),
-        route('contact.show'),
+        route('contact.create'),
         route('privacy'),
         route('blog.show', $post),
         route('episodes.show', $episode),

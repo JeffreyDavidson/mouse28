@@ -21,7 +21,7 @@ test('public pages render accessible typography and focus indicators', function 
     'guides' => ['guides.index', 'Guides'],
     'podcast' => ['episodes.index', 'Podcast'],
     'about' => ['about', 'About'],
-    'contact' => ['contact.show', 'Contact'],
+    'contact' => ['contact.create', 'Contact'],
     'privacy' => ['privacy', 'Privacy information'],
     'search' => ['search', 'Search'],
 ]);
@@ -40,7 +40,7 @@ test('public pages load without content security policy violations', function (s
     visit($url)
         ->assertScript($this->contentSecurityPolicyViolationsScript(), '')
         ->assertNoJavaScriptErrors();
-})->with(['home', 'blog.index', 'post', 'episodes.index', 'episode', 'about', 'contact.show', 'privacy', 'search', 'missing']);
+})->with(['home', 'blog.index', 'post', 'episodes.index', 'episode', 'about', 'contact.create', 'privacy', 'search', 'missing']);
 
 test('the throttled search page loads without content security policy violations', function (): void {
     config()->set('mouse28.rate_limits.search_per_minute', 1);

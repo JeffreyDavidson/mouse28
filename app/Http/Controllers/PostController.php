@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\ViewModels\PostIndexViewModel;
-use App\ViewModels\PostViewModel;
+use App\ViewModels\PostShowViewModel;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -15,7 +15,7 @@ class PostController
         return view('pages.blog.index', $viewModel->data($request));
     }
 
-    public function show(Post $post, PostViewModel $viewModel): View
+    public function show(Post $post, PostShowViewModel $viewModel): View
     {
         abort_unless($post->isLive(), 404);
 

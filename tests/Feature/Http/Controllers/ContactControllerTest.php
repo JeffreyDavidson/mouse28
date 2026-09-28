@@ -23,7 +23,7 @@ pest()->use(RefreshDatabase::class);
 test('contact page displays its view model data', function (): void {
     config()->set('mouse28.contact.email', 'contact@example.test');
 
-    get(route('contact.show'))
+    get(route('contact.create'))
         ->assertOk()
         ->assertViewIs('pages.contact')
         ->assertViewHas('contactEmail', 'contact@example.test')
@@ -33,7 +33,7 @@ test('contact page displays its view model data', function (): void {
 test('contact stays within its query budget', function (): void {
     $this->expectsDatabaseQueryCount(1);
 
-    get(route('contact.show'))
+    get(route('contact.create'))
         ->assertOk();
 });
 
@@ -49,7 +49,7 @@ beforeEach(function (): void {
 });
 
 test('contact page renders turnstile widget', function (): void {
-    $response = get(route('contact.show'))->assertOk()->assertSeeHtml('https://challenges.cloudflare.com/turnstile/v0/api.js')->assertSeeHtml('class="cf-turnstile"')->assertSeeHtml('data-sitekey="test-site-key"')->assertSeeHtml('data-action="contact-form"')->assertSeeHtml('data-appearance="interaction-only"')
+    $response = get(route('contact.create'))->assertOk()->assertSeeHtml('https://challenges.cloudflare.com/turnstile/v0/api.js')->assertSeeHtml('class="cf-turnstile"')->assertSeeHtml('data-sitekey="test-site-key"')->assertSeeHtml('data-action="contact-form"')->assertSeeHtml('data-appearance="interaction-only"')
         ->assertSee('Park Accessibility Question')
         ->assertSee('Guest on the Podcast')
         ->assertDontSee('Share Your Story')->assertDontSee('Family Disney stories')->assertDontSeeHtml('value="story"');
@@ -59,7 +59,7 @@ test('contact page renders turnstile widget', function (): void {
 });
 
 test('contact errors and old input stay out of the newsletter form', function (): void {
-    $response = from(route('contact.show'))
+    $response = from(route('contact.create'))
         ->followingRedirects()
         ->post(route('contact.store'), [
             'name' => 'Dale Cooper',
@@ -80,7 +80,7 @@ test('contact errors and old input stay out of the newsletter form', function ()
 test('contact page uses the configured site contact email address', function (): void {
     config()->set('mouse28.contact.email', 'hello@mouse28.test');
 
-    get(route('contact.show'))->assertOk()->assertSeeHtml('href="mailto:hello@mouse28.test"')
+    get(route('contact.create'))->assertOk()->assertSeeHtml('href="mailto:hello@mouse28.test"')
         ->assertSee('hello@mouse28.test');
 });
 
@@ -88,7 +88,7 @@ test('contact page offers email instead of an unusable form when verification is
     config()->set("services.turnstile.{$missingKey}");
     config()->set('mouse28.contact.email', 'fallback@mouse28.test');
 
-    get(route('contact.show'))
+    get(route('contact.create'))
         ->assertOk()
         ->assertViewHas('contactFormAvailable', false)
         ->assertSee('Email us directly')
@@ -111,10 +111,10 @@ test('valid contact submission stores the message and queues delivery', function
         ]),
     ]);
 
-    $response = from(route('contact.show'))
+    $response = from(route('contact.create'))
         ->post(route('contact.store'), contactPayload());
 
-    $response->assertRedirect(route('contact.show'))
+    $response->assertRedirect(route('contact.create'))
         ->assertSessionHas('success', true)
         ->assertSessionHasNoErrors();
 
@@ -136,11 +136,11 @@ test('valid contact submission stores the message and queues delivery', function
 test('contact submission rejects invalid input before verification or persistence', function (): void {
     Http::fake();
 
-    from(route('contact.show'))
+    from(route('contact.create'))
         ->post(route('contact.store'), array_merge(contactPayload(), [
             'email' => 'not-an-email',
         ]))
-        ->assertRedirect(route('contact.show'))
+        ->assertRedirect(route('contact.create'))
         ->assertSessionHasErrorsIn('contact', 'email');
 
     assertDatabaseCount('contact_messages', 0);
@@ -150,9 +150,9 @@ test('contact submission rejects invalid input before verification or persistenc
 test('contact submission rejects missing required fields before verification or persistence', function (string $field): void {
     Http::fake();
 
-    from(route('contact.show'))
+    from(route('contact.create'))
         ->post(route('contact.store'), array_merge(contactPayload(), [$field => '']))
-        ->assertRedirect(route('contact.show'))
+        ->assertRedirect(route('contact.create'))
         ->assertSessionHasErrorsIn('contact', $field);
 
     assertDatabaseCount('contact_messages', 0);
@@ -166,9 +166,9 @@ test('contact submission rejects failed turnstile verification before persistenc
         'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response(['success' => false]),
     ]);
 
-    from(route('contact.show'))
+    from(route('contact.create'))
         ->post(route('contact.store'), contactPayload())
-        ->assertRedirect(route('contact.show'))
+        ->assertRedirect(route('contact.create'))
         ->assertSessionHasErrorsIn('contact', 'cf-turnstile-response');
 
     assertDatabaseCount('contact_messages', 0);
@@ -182,9 +182,9 @@ test('contact submission rejects invalid turnstile metadata before persistence o
         'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response($turnstileResponse),
     ]);
 
-    from(route('contact.show'))
+    from(route('contact.create'))
         ->post(route('contact.store'), array_merge(contactPayload(), ['email' => $email]))
-        ->assertRedirect(route('contact.show'))
+        ->assertRedirect(route('contact.create'))
         ->assertSessionHasErrorsIn('contact', 'cf-turnstile-response');
 
     assertDatabaseCount('contact_messages', 0);
@@ -212,9 +212,9 @@ test('contact submission rejects missing turnstile secret before persistence or 
     Mail::fake();
     config()->set('services.turnstile.secret_key');
 
-    from(route('contact.show'))
+    from(route('contact.create'))
         ->post(route('contact.store'), contactPayload())
-        ->assertRedirect(route('contact.show'))
+        ->assertRedirect(route('contact.create'))
         ->assertSessionHasErrorsIn('contact', 'cf-turnstile-response');
 
     assertDatabaseCount('contact_messages', 0);
@@ -225,11 +225,11 @@ test('contact submission rejects missing turnstile secret before persistence or 
 test('honeypot silently accepts bot submissions without persistence or mail', function (): void {
     Mail::fake();
 
-    from(route('contact.show'))
+    from(route('contact.create'))
         ->post(route('contact.store'), array_merge(contactPayload(), [
-            'website_url' => 'https://spam.example',
+            'website' => 'https://spam.example',
         ]))
-        ->assertRedirect(route('contact.show'))
+        ->assertRedirect(route('contact.create'))
         ->assertSessionHas('success', true);
 
     assertDatabaseCount('contact_messages', 0);
@@ -249,7 +249,7 @@ test('contact form rate limit ignores spoofed forwarded IPs without throttling t
     ]);
 
     for ($attempt = 0; $attempt < 5; $attempt++) {
-        from(route('contact.show'))
+        from(route('contact.create'))
             ->withServerVariables(['REMOTE_ADDR' => '198.51.100.10'])
             ->withHeaders(['X-Forwarded-For' => "203.0.113.{$attempt}"])
             ->post(route('contact.store'), array_merge(contactPayload(), [
@@ -258,43 +258,43 @@ test('contact form rate limit ignores spoofed forwarded IPs without throttling t
             ->assertSessionHasNoErrors();
     }
 
-    from(route('contact.show'))
+    from(route('contact.create'))
         ->withServerVariables(['REMOTE_ADDR' => '198.51.100.10'])
         ->withHeaders(['X-Forwarded-For' => '203.0.113.99'])
         ->post(route('contact.store'), array_merge(contactPayload(), [
             'email' => 'dale-rate-limit@example.com',
         ]))
-        ->assertRedirect(route('contact.show'))
+        ->assertRedirect(route('contact.create'))
         ->assertSessionHasErrorsIn('contact', 'contact_rate_limit');
 
-    get(route('contact.show'))->assertOk();
+    get(route('contact.create'))->assertOk();
 });
 
 test('contact page renders', function (): void {
-    get(route('contact.show'))
+    get(route('contact.create'))
         ->assertOk()
         ->assertSee('Send us a note');
 });
 
 test('contact page exposes SEO metadata', function (): void {
-    get(route('contact.show'))->assertOk()->assertSeeHtml('<meta name="description" content="Contact Jeffrey and Cassie about Mouse28, Disney park accessibility, family travel, collaborations, or the podcast.">');
+    get(route('contact.create'))->assertOk()->assertSeeHtml('<meta name="description" content="Contact Jeffrey and Cassie about Mouse28, Disney park accessibility, family travel, collaborations, or the podcast.">');
 });
 
 test('page copy and metadata avoid em dashes', function (): void {
-    get(route('contact.show'))
+    get(route('contact.create'))
         ->assertOk()
         ->assertDontSee('—');
 });
 
 test('page uses the dispatch editorial system', function (): void {
-    get(route('contact.show'))->assertOk()->assertSeeHtml('data-brand-wordmark')->assertSeeHtml('dispatch-letter-form')->assertSeeHtml('js-dispatch-pages');
+    get(route('contact.create'))->assertOk()->assertSeeHtml('data-brand-wordmark')->assertSeeHtml('dispatch-letter-form')->assertSeeHtml('js-dispatch-pages');
 });
 
 test('form placeholders use readable text colors', function (): void {
     config()->set('services.turnstile.site_key', 'test-site-key');
     config()->set('services.turnstile.secret_key', 'test-secret-key');
 
-    get(route('contact.show'))->assertOk()->assertSeeHtml('placeholder:text-navy/65')->assertDontSeeHtml('placeholder:text-navy/30');
+    get(route('contact.create'))->assertOk()->assertSeeHtml('placeholder:text-navy/65')->assertDontSeeHtml('placeholder:text-navy/30');
 });
 
 /** @return array<string, string> */
@@ -311,19 +311,19 @@ function contactPayload(): array
 
 test('contact form rate limit uses the configured attempts per minute', function (): void {
     config()->set('mouse28.rate_limits.contact_form_per_minute', 1);
-    $payload = array_merge(contactPayload(), ['website_url' => 'https://spam.example']);
+    $payload = array_merge(contactPayload(), ['website' => 'https://spam.example']);
 
-    from(route('contact.show'))
+    from(route('contact.create'))
         ->post(route('contact.store'), $payload)
         ->assertSessionHasNoErrors();
 
-    from(route('contact.show'))
+    from(route('contact.create'))
         ->post(route('contact.store'), $payload)
         ->assertSessionHasErrorsIn('contact', 'contact_rate_limit');
 });
 
 test('contact page exposes a single main landmark without nested complementary regions', function (): void {
-    $response = get(route('contact.show'))->assertOk();
+    $response = get(route('contact.create'))->assertOk();
 
     $document = HTMLDocument::createFromString($this->responseContent($response), LIBXML_NOERROR);
     $xpath = new XPath($document);

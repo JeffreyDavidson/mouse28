@@ -1,10 +1,10 @@
 <?php
 
 use App\Models\Guide;
-use App\ViewModels\GuideViewModel;
+use App\ViewModels\GuideShowViewModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-covers(GuideViewModel::class);
+covers(GuideShowViewModel::class);
 
 pest()->use(RefreshDatabase::class);
 
@@ -12,7 +12,7 @@ test('guide data includes related guides and omits preview state by default', fu
     $guide = Guide::factory()->create(['category' => 'accessibility']);
     $relatedGuide = Guide::factory()->create(['category' => 'accessibility']);
 
-    $data = app(GuideViewModel::class)->data($guide);
+    $data = app(GuideShowViewModel::class)->data($guide);
 
     expect($data['guide']->is($guide))->toBeTrue()
         ->and($data['relatedGuides']->modelKeys())->toContain($relatedGuide->id)
@@ -22,6 +22,6 @@ test('guide data includes related guides and omits preview state by default', fu
 test('guide preview data marks the payload as a preview', function (): void {
     $guide = Guide::factory()->draft()->create();
 
-    expect(app(GuideViewModel::class)->data($guide, preview: true))
+    expect(app(GuideShowViewModel::class)->data($guide, preview: true))
         ->toHaveKey('isPreview', true);
 });

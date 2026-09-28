@@ -31,7 +31,7 @@ Route::middleware('signed')->prefix('preview')->group(function (): void {
 });
 Route::view('/about', 'pages.about')->name('about');
 Route::view('/privacy', 'pages.privacy')->name('privacy');
-Route::get('/contact', [ContactController::class, 'create'])->name('contact.show');
+Route::get('/contact', [ContactController::class, 'create'])->name('contact.create');
 Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:contact-form')->name('contact.store');
 
 Route::post('/newsletter', [NewsletterController::class, 'store'])->middleware('throttle:newsletter')->name('newsletter.store');

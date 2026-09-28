@@ -18,7 +18,7 @@ class StoreContactRequest extends FormRequest
     /** @return array<string, list<string>> */
     public function rules(): array
     {
-        if ($this->filled('website_url')) {
+        if ($this->filled('website')) {
             return [];
         }
 
@@ -45,6 +45,6 @@ class StoreContactRequest extends FormRequest
 
     protected function getRedirectUrl(): string
     {
-        return route('contact.show');
+        return route('contact.create');
     }
 }

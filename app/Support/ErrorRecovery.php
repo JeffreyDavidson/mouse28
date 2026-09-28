@@ -13,7 +13,7 @@ class ErrorRecovery
     public static function for(Request $request, int $status): array
     {
         if ($request->is('contact')) {
-            return ['url' => route('contact.show'), 'label' => 'Return to contact'];
+            return ['url' => route('contact.create'), 'label' => 'Return to contact'];
         }
 
         if ($request->is('newsletter')) {

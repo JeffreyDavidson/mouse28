@@ -390,7 +390,7 @@
                             class="dispatch-button bg-navy text-cream hover:bg-navy-light inline-flex min-h-12 items-center px-6 py-3 text-base font-semibold sm:text-sm"
                             >Our Full Story</a
                         ><a
-                            href="{{ route('contact.show') }}"
+                            href="{{ route('contact.create') }}"
                             class="text-purple decoration-gold/70 hover:text-navy inline-flex min-h-12 items-center text-base font-semibold underline underline-offset-8 sm:text-sm"
                             >Say hello</a>
                     </div>
