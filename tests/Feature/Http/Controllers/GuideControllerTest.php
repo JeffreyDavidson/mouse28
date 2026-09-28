@@ -2,10 +2,12 @@
 
 use App\Models\Guide;
 use App\Models\Podcast;
+use App\Models\User;
 use Dom\HTMLDocument;
 use Dom\XPath;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
@@ -249,3 +251,13 @@ test('guide pages expose a single main landmark', function (bool $showGuide): vo
     'index' => [false],
     'guide' => [true],
 ]);
+
+test('signed-in visitors see published guides but nobody sees drafts at public URLs', function (bool $isAdmin): void {
+    config()->set('mouse28.guides_enabled', true);
+    $published = Guide::factory()->create();
+    $draft = Guide::factory()->draft()->create();
+    actingAs($isAdmin ? User::factory()->admin()->create() : User::factory()->create());
+
+    get(route('guides.show', $published))->assertOk();
+    get(route('guides.show', $draft))->assertNotFound();
+})->with(['non-admin' => [false], 'admin' => [true]]);

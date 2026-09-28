@@ -33,3 +33,10 @@ test('existing users have app authentication disabled until enrollment', functio
         ->and($user->getAppAuthenticationSecret())->toBeNull()
         ->and($user->getAppAuthenticationRecoveryCodes())->toBeNull();
 });
+
+test('new users are not administrators until explicitly promoted', function (): void {
+    $user = User::factory()->create();
+
+    expect((new User)->is_admin)->toBeFalse()
+        ->and($user->is_admin)->toBeFalse();
+});

@@ -3,9 +3,9 @@
 use App\Filament\Pages\PodcastSettings;
 use App\Models\Podcast;
 use App\Models\User;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\actingAs;
@@ -77,15 +77,13 @@ test('podcast cover uploads enforce the five megabyte limit', function (int $siz
     'over the limit' => [5121, false],
 ]);
 
-test('podcast settings require permission to update the podcast', function (): void {
-    actingAs(User::factory()->admin()->create());
+test('podcast settings cannot be saved once admin access is revoked', function (): void {
+    $admin = User::factory()->admin()->create();
+    actingAs($admin);
     $podcast = Podcast::settings();
-    $page = livewire(PodcastSettings::class);
-    Gate::before(fn (User $user, string $ability): ?bool => $ability === 'update' ? false : null);
+    $page = livewire(PodcastSettings::class)->fillForm(['name' => 'Changed name']);
+    $admin->is_admin = false;
 
-    $page->fillForm(['name' => 'Changed name']);
-    $page->call('save');
-
-    $page->assertForbidden();
-    expect($podcast->refresh()->name)->not->toBe('Changed name');
+    expect(fn () => $page->instance()->save())->toThrow(AuthorizationException::class)
+        ->and($podcast->refresh()->name)->not->toBe('Changed name');
 });

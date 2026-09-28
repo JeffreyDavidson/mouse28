@@ -7,7 +7,6 @@ use App\Models\User;
 use App\Support\ResponsiveArtwork;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\actingAs;
@@ -191,12 +190,13 @@ test('deleted content leaves the public site and can be restored by an administr
     $response->assertOk();
 });
 
-test('publishing actions require permission to update the episode', function (bool $isDraft, string $action): void {
-    actingAs(User::factory()->admin()->create());
+test('publishing actions disappear when admin access is revoked for the episode', function (bool $isDraft, string $action): void {
+    $admin = User::factory()->admin()->create();
+    actingAs($admin);
     $record = $isDraft ? Episode::factory()->draft()->create() : Episode::factory()->create();
     $page = livewire(EditEpisode::class, ['record' => $record->getRouteKey()]);
 
-    Gate::before(fn (User $user, string $ability): ?bool => $ability === 'update' ? false : null);
+    $admin->is_admin = false;
 
     $page->assertActionHidden($action);
 })->with([

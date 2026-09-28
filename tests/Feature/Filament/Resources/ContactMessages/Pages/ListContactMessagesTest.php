@@ -6,7 +6,6 @@ use App\Models\ContactMessage;
 use App\Models\User;
 use Filament\Actions\Testing\TestAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Gate;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -67,16 +66,18 @@ test('reply action opens an encoded mail draft', function (): void {
         ->assertActionHasUrl(TestAction::make('reply')->table($message), 'mailto:dale@example.com?subject=Re%3A%20General%20Question');
 });
 
-test('mark read action requires permission to update the message', function (): void {
-    actingAs(User::factory()->admin()->create());
-    Gate::before(fn (User $user, string $ability): ?bool => $ability === 'update' ? false : null);
+test('mark read action disappears when admin access is revoked', function (): void {
+    $admin = User::factory()->admin()->create();
+    actingAs($admin);
     $message = ContactMessage::query()->create([
         'name' => 'Dale Cooper',
         'email' => 'dale@example.com',
         'subject' => 'general',
         'message' => 'A park question.',
     ]);
+    $page = livewire(ListContactMessages::class);
 
-    livewire(ListContactMessages::class)
-        ->assertActionHidden(TestAction::make('markRead')->table($message));
+    $admin->is_admin = false;
+
+    $page->assertActionHidden(TestAction::make('markRead')->table($message));
 });

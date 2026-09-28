@@ -29,6 +29,16 @@ use Illuminate\Notifications\Notifiable;
 ])]
 class User extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery
 {
+    /**
+     * New users start without admin access, matching the column default, so authorization never sees a null flag.
+     *
+     * @var array<string, mixed>
+     */
+    #[\Override]
+    protected $attributes = [
+        'is_admin' => false,
+    ];
+
     public function canAccessPanel(Panel $panel): bool
     {
         return $this->is_admin === true;
