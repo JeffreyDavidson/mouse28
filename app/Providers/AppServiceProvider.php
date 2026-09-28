@@ -45,5 +45,13 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('newsletter', fn (Request $request) => Limit::perMinute(Config::integer('mouse28.rate_limits.newsletter_per_minute'))->by($request->ip())->response(fn (Request $request) => redirect(SafeReturnUrl::from($request, route('home')).'#newsletter')
             ->withErrors(['newsletter_rate_limit' => 'Too many signup attempts. Please wait a minute and try again.'], 'newsletter')
             ->withInput($request->only('email'))));
+
+        RateLimiter::for('search', function (Request $request): Limit {
+            if (blank($request->query('q'))) {
+                return Limit::none();
+            }
+
+            return Limit::perMinute(Config::integer('mouse28.rate_limits.search_per_minute'))->by($request->ip());
+        });
     }
 }

@@ -170,3 +170,24 @@ test('page copy and metadata avoid em dashes', function (): void {
 test('page uses the dispatch editorial system', function (): void {
     get(route('search'))->assertOk()->assertSeeHtml('data-brand-wordmark')->assertSeeHtml('dispatch-page-field')->assertSeeHtml('js-dispatch-pages');
 });
+
+test('repeated searches from one visitor are throttled with the branded page', function (): void {
+    config()->set('mouse28.rate_limits.search_per_minute', 1);
+
+    get(route('search', ['q' => 'castle']))->assertOk();
+
+    get(route('search', ['q' => 'castle']))
+        ->assertTooManyRequests()
+        ->assertSeeHtml('<title>Too Many Requests | Mouse28</title>');
+});
+
+test('blank searches are never throttled', function (string $query): void {
+    config()->set('mouse28.rate_limits.search_per_minute', 1);
+
+    get(route('search', ['q' => $query]))->assertOk();
+    get(route('search', ['q' => $query]))->assertOk();
+    get(route('search', ['q' => $query]))->assertOk();
+})->with([
+    'empty' => [''],
+    'whitespace' => ['   '],
+]);

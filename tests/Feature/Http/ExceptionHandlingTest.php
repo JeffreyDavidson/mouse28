@@ -51,3 +51,10 @@ test('maintenance responses offer a safe retry path', function (): void {
     get('/testing/maintenance')->assertStatus(503)->assertSeeHtml('<title>We’ll Be Right Back | Mouse28</title>')->assertSee('We’re making a little magic')->assertSeeHtml('dispatch-error-sheet')->assertSeeHtml('/testing/maintenance')
         ->assertDontSee('Private maintenance details');
 });
+
+test('throttled requests explain how to recover without being indexed', function (): void {
+    Route::get('/testing/throttled', fn () => abort(429, 'Private throttle details'));
+
+    get('/testing/throttled')->assertTooManyRequests()->assertSeeHtml('<title>Too Many Requests | Mouse28</title>')->assertSee('Let’s take a breather')->assertSeeHtml('dispatch-error-sheet')->assertSee('Try again')->assertHeader('X-Robots-Tag', 'noindex, nofollow')
+        ->assertDontSee('Private throttle details');
+});

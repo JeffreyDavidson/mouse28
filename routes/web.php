@@ -23,7 +23,7 @@ Route::get('/guides', [GuideController::class, 'index'])->name('guides.index');
 Route::get('/guides/{guide:slug}', [GuideController::class, 'show'])->name('guides.show');
 Route::get('/episodes', [EpisodeController::class, 'index'])->name('episodes.index');
 Route::get('/episodes/{episode:slug}', [EpisodeController::class, 'show'])->name('episodes.show');
-Route::get('/search', SearchController::class)->name('search');
+Route::get('/search', SearchController::class)->middleware('throttle:search')->name('search');
 Route::get('/preview/posts/{post}', PreviewPostController::class)->name('preview.posts');
 Route::get('/preview/guides/{guide}', PreviewGuideController::class)->name('preview.guides');
 Route::get('/preview/episodes/{episode}', PreviewEpisodeController::class)->name('preview.episodes');
