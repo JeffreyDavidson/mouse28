@@ -99,6 +99,16 @@ Do not backfill historical contacts. New jobs automatically retry only within
 retry; Resend retains idempotency keys for 24 hours, not indefinitely. No production
 worker or deployment is created by the application changes themselves.
 
+## Runtime health monitoring
+
+`/up` always checks the database. Runtime heartbeats are off by default (`RUNTIME_HEALTH_ENABLED=false`). Before enabling them on a site:
+
+1. Add a Forge scheduler for that site's current release (`php artisan schedule:run` every minute). As of 2026-09-27, Forge shows no scheduler for `mouse28.com` or `staging.mouse28.com`.
+2. Add a supervised worker for the default queue (`php artisan queue:work database`). The existing `contact-mail` worker does not consume it.
+3. Set `RUNTIME_HEALTH_ENABLED=true` (and optionally `RUNTIME_HEALTH_MAX_AGE`, default 300 seconds), deploy, wait a few minutes, and confirm `/up` returns `{"status":"up"}`.
+
+If either heartbeat goes stale, `/up` returns `500` with `{"status":"down"}`.
+
 ## Off-site backups
 
 Mouse28's off-site backup job runs as `forge` on `cold-moon`, independently of

@@ -3,25 +3,43 @@
 namespace App\Providers;
 
 use App\Support\ArtworkSourceCache;
+use App\Support\Monitoring\Health\RuntimeHealthMonitor;
+use App\Support\Monitoring\Nightwatch\RedactNightwatchCacheEvent;
+use App\Support\Monitoring\Nightwatch\RedactNightwatchCommand;
+use App\Support\Monitoring\Nightwatch\RedactNightwatchException;
+use App\Support\Monitoring\Nightwatch\RedactNightwatchOutgoingRequest;
+use App\Support\Monitoring\Nightwatch\RedactNightwatchQuery;
+use App\Support\Monitoring\Nightwatch\RedactNightwatchRequest;
+use App\Support\Monitoring\Nightwatch\ResolveNightwatchUser;
+use App\Support\Monitoring\Sentry\RedactSentryBreadcrumb;
+use App\Support\Monitoring\Sentry\RedactSentryEvent;
 use App\Support\SafeReturnUrl;
 use App\View\Composers\PodcastComposer;
 use Illuminate\Cache\RateLimiting\Limit;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Events\DiagnosingHealth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Nightwatch\Facades\Nightwatch;
+use Sentry\ClientBuilder;
 
 class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
         $this->app->scoped(ArtworkSourceCache::class);
+
+        $this->app->afterResolving(ClientBuilder::class, function (ClientBuilder $clientBuilder): void {
+            $options = $clientBuilder->getOptions();
+            $options->setBeforeSendCallback($this->app->make(RedactSentryEvent::class));
+            $options->setBeforeBreadcrumbCallback($this->app->make(RedactSentryBreadcrumb::class));
+        });
     }
 
     public function boot(): void
@@ -29,7 +47,23 @@ class AppServiceProvider extends ServiceProvider
         DB::prohibitDestructiveCommands($this->app->isProduction());
         Model::preventLazyLoading(! $this->app->isProduction());
 
-        Nightwatch::user(fn (Authenticatable $user): array => []);
+        Nightwatch::user(app(ResolveNightwatchUser::class));
+        Nightwatch::redactCacheEvents(app(RedactNightwatchCacheEvent::class));
+        Nightwatch::redactCommands(app(RedactNightwatchCommand::class));
+        Nightwatch::redactExceptions(app(RedactNightwatchException::class));
+        Nightwatch::redactOutgoingRequests(app(RedactNightwatchOutgoingRequest::class));
+        Nightwatch::redactQueries(app(RedactNightwatchQuery::class));
+        Nightwatch::redactRequests(app(RedactNightwatchRequest::class));
+
+        Event::listen(DiagnosingHealth::class, function (): void {
+            $migrations = DB::table('migrations');
+            $migrations->limit(1);
+            $migrations->exists();
+
+            if (Config::boolean('health.runtime.enabled')) {
+                app(RuntimeHealthMonitor::class)->ensureHealthy();
+            }
+        });
 
         View::composer('components.layouts.app', PodcastComposer::class);
 

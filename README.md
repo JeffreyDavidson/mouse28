@@ -42,7 +42,7 @@ The application can run locally without live third-party calls, but these featur
 - `MOUSE28_CONTACT_EMAIL` controls the public site contact address. `MAIL_*` and `MAIL_ADMIN_ADDRESS` deliver contact notifications and confirmations.
 - `PODCAST_RSS_URL` identifies the canonical Transistor feed. It defaults to the Mouse28 feed.
 - `FATHOM_SITE_ID` enables the optional analytics script.
-- `NIGHTWATCH_ENABLED=true` and `NIGHTWATCH_TOKEN` enable production application monitoring. Request payload capture stays disabled, authenticated users are identified only by their internal ID, and the default request sample rate is 10%.
+- `NIGHTWATCH_ENABLED=true` and `NIGHTWATCH_TOKEN` enable production application monitoring. Request payload capture stays disabled, authenticated users are identified only by an `APP_KEY`-keyed digest of their ID, and the `app/Support/Monitoring` redactors strip request, query, cache, and exception details, and the default request sample rate is 10%.
 - `SENTRY_LARAVEL_DSN` enables production error reporting. Keep `SENTRY_SEND_DEFAULT_PII=false`; tracing and profiling remain disabled until their sample rates are deliberately raised above `0.0`.
 - `GUIDES_ENABLED` controls public guide routes and discovery. It defaults to `false` while the guide library is being prepared.
 - `MOUSE28_BLOG_POSTS_PER_PAGE` controls the number of posts shown per archive page; it defaults to `12`.
