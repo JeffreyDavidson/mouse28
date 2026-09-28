@@ -194,26 +194,26 @@
                     Transcript
                 </h2>
                 @if ($episode->transcript)
-                    <div class="mt-6" x-data="{ expanded: false }">
+                    <div class="mt-6" x-data="transcriptToggle">
                         <div
                             id="episode-transcript"
                             tabindex="0"
                             class="episode-transcript-content max-h-[600px] wrap-anywhere"
-                            :class="{ 'max-h-none': expanded }"
+                            :class="contentClass"
                         >
                             {!! str($episode->transcript)->sanitizeHtml() !!}
                         </div>
-                        <div class="relative" x-show="! expanded" x-cloak>
+                        <div class="relative" x-show="collapsed" x-cloak>
                             <div class="from-cream pointer-events-none absolute inset-x-0 bottom-full h-20 bg-linear-to-t to-transparent"></div>
                         </div>
                         <button
                             type="button"
-                            @click="expanded = ! expanded"
-                            :aria-expanded="expanded.toString()"
+                            @click="toggle"
+                            :aria-expanded="expandedState"
                             aria-controls="episode-transcript"
                             class="border-navy/15 text-purple hover:border-purple mt-5 min-h-12 w-full rounded-xl border px-5 py-3 text-center font-semibold transition-colors"
                         >
-                            <span x-text="expanded ? 'Collapse Transcript' : 'Read Full Transcript'">Read Full Transcript</span>
+                            <span x-text="buttonLabel">Read Full Transcript</span>
                         </button>
                     </div>
                 @else
@@ -244,7 +244,7 @@
                         x-on:click="copy"
                         class="text-purple inline-flex min-h-12 items-center underline underline-offset-8"
                     >
-                        <span x-show="! isFeedbackVisible">Copy Link</span>
+                        <span x-show="isFeedbackHidden">Copy Link</span>
                         <span
                             x-cloak
                             x-show="isFeedbackVisible"

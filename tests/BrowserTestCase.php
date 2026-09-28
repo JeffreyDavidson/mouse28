@@ -64,6 +64,28 @@ abstract class BrowserTestCase extends TestCase
     }
 
     /**
+     * Resolves to the page's content security policy violations, including those
+     * reported before this script ran, as "directive blocked-uri" entries.
+     */
+    protected function contentSecurityPolicyViolationsScript(): string
+    {
+        return <<<'JS'
+            new Promise((resolve) => {
+                const violations = [];
+                const observer = new ReportingObserver((reports) => {
+                    reports.forEach((report) => violations.push(`${report.body.effectiveDirective} ${report.body.blockedURL}`));
+                }, { types: ['csp-violation'], buffered: true });
+
+                observer.observe();
+                window.setTimeout(() => {
+                    observer.disconnect();
+                    resolve(violations.join('|'));
+                }, 500);
+            })
+            JS;
+    }
+
+    /**
      * Returns the strongest contrast ratio between the focused element's outline or
      * box-shadow colors and its nearest opaque background.
      */
