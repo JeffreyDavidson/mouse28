@@ -103,7 +103,7 @@ worker or deployment is created by the application changes themselves.
 
 `/up` always checks the database. Runtime heartbeats are off by default (`RUNTIME_HEALTH_ENABLED=false`). Before enabling them on a site:
 
-1. Add a Forge scheduler for that site's current release (`php artisan schedule:run` every minute). As of 2026-09-27, Forge shows no scheduler for `mouse28.com` or `staging.mouse28.com`.
+1. Confirm the site's Forge scheduler is running. Since 2026-09-28 each site has one Forge scheduled job, **Mouse28 Scheduler** and **Mouse28 Staging Scheduler**, running `php8.5 /home/forge/<site>/current/artisan schedule:run` every minute as `forge`. Forge installs these in `/etc/crontab`, not in the `forge` user's crontab, and logs to `/home/forge/.forge/scheduled-<id>.log`. A former hand-added production entry in the `forge` crontab was removed to avoid running the scheduler twice; the prior crontab is saved as `/home/forge/backups/crontab.before-scheduler-cleanup-20260928T152816Z`. Keep exactly one scheduler per site.
 2. Add a supervised worker for the default queue (`php artisan queue:work database`). The existing `contact-mail` worker does not consume it.
 3. Set `RUNTIME_HEALTH_ENABLED=true` (and optionally `RUNTIME_HEALTH_MAX_AGE`, default 300 seconds), deploy, wait a few minutes, and confirm `/up` returns `{"status":"up"}`.
 
