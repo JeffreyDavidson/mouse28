@@ -27,8 +27,86 @@ function registerAlpineComponents(Alpine) {
             }, duration);
         },
 
+        get isFeedbackHidden() {
+            return !this.isFeedbackVisible;
+        },
+
         destroy() {
             window.clearTimeout(this.feedbackTimer);
+        },
+    }));
+
+    // The CSP build evaluates only property and method references, so state changes live here.
+    Alpine.data('mobileNavigation', () => ({
+        open: false,
+
+        revealToggle() {
+            this.$el.hidden = false;
+        },
+
+        toggle() {
+            this.open = !this.open;
+        },
+
+        close() {
+            this.open = false;
+        },
+
+        closeAndRestoreFocus() {
+            if (!this.open) {
+                return;
+            }
+
+            this.open = false;
+            this.$nextTick(() => this.$refs.mobileNavigationToggle.focus());
+        },
+
+        get expandedState() {
+            return this.open.toString();
+        },
+
+        get hiddenState() {
+            return this.open ? 'false' : 'true';
+        },
+
+        get toggleLabel() {
+            return this.open ? 'Close navigation menu' : 'Open navigation menu';
+        },
+
+        get topLineClass() {
+            return this.open ? 'top-[23px] rotate-45' : 'top-[15px] rotate-0';
+        },
+
+        get middleLineClass() {
+            return this.open ? 'opacity-0' : 'opacity-100';
+        },
+
+        get bottomLineClass() {
+            return this.open ? 'top-[23px] -rotate-45' : 'top-[31px] rotate-0';
+        },
+    }));
+
+    Alpine.data('transcriptToggle', () => ({
+        expanded: false,
+
+        toggle() {
+            this.expanded = !this.expanded;
+        },
+
+        get collapsed() {
+            return !this.expanded;
+        },
+
+        get expandedState() {
+            return this.expanded.toString();
+        },
+
+        get contentClass() {
+            return { 'max-h-none': this.expanded };
+        },
+
+        get buttonLabel() {
+            return this.expanded ? 'Collapse Transcript' : 'Read Full Transcript';
         },
     }));
 }
@@ -163,7 +241,7 @@ initializeBlogArticle();
 focusFirstInvalidField();
 
 if (document.querySelector('[data-editorial-blog]')) {
-    const { Alpine, Livewire } = await import('../../vendor/livewire/livewire/dist/livewire.esm');
+    const { Alpine, Livewire } = await import('../../vendor/livewire/livewire/dist/livewire.csp.esm');
     const { initializeBlogArchive } = await import('./blog-archive');
 
     window.Alpine = Alpine;
@@ -171,7 +249,7 @@ if (document.querySelector('[data-editorial-blog]')) {
     initializeBlogArchive(Livewire);
     Livewire.start();
 } else {
-    const { default: Alpine } = await import('alpinejs');
+    const { default: Alpine } = await import('@alpinejs/csp');
 
     window.Alpine = Alpine;
     registerAlpineComponents(Alpine);

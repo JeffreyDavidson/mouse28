@@ -76,13 +76,8 @@
         <nav
             class="dispatch-cloth border-gold/25 border-b"
             aria-label="Primary navigation"
-            x-data="{ open: false }"
-            @keydown.escape.window="
-                if (open) {
-                    open = false;
-                    $nextTick(() => $refs.mobileNavigationToggle.focus());
-                }
-            "
+            x-data="mobileNavigation"
+            @keydown.escape.window="closeAndRestoreFocus"
         >
             <div class="{{ $dispatchLayout ? 'max-w-[86rem]' : 'max-w-6xl' }} mx-auto px-4 sm:px-6">
                 <div class="flex {{ $dispatchLayout ? 'h-20' : 'h-16' }} items-center justify-between">
@@ -137,24 +132,24 @@
                         type="button"
                         hidden
                         x-ref="mobileNavigationToggle"
-                        x-init="$el.hidden = false"
-                        @click="open = ! open"
-                        :aria-expanded="open.toString()"
+                        x-init="revealToggle"
+                        @click="toggle"
+                        :aria-expanded="expandedState"
                         aria-controls="mobile-navigation"
                         class="hover:text-gold relative -mr-3 size-12 text-white/80 transition-colors md:hidden"
-                        :aria-label="open ? 'Close navigation menu' : 'Open navigation menu'"
+                        :aria-label="toggleLabel"
                     >
                         <span
                             class="hamburger-line absolute left-3 h-0.5 w-6 origin-center rounded bg-current"
-                            :class="open ? 'top-[23px] rotate-45' : 'top-[15px] rotate-0'"
+                            :class="topLineClass"
                         ></span>
                         <span
                             class="hamburger-line absolute top-[23px] left-3 h-0.5 w-6 rounded bg-current"
-                            :class="open ? 'opacity-0' : 'opacity-100'"
+                            :class="middleLineClass"
                         ></span>
                         <span
                             class="hamburger-line absolute left-3 h-0.5 w-6 origin-center rounded bg-current"
-                            :class="open ? 'top-[23px] -rotate-45' : 'top-[31px] rotate-0'"
+                            :class="bottomLineClass"
                         ></span>
                     </button>
                 </div>
@@ -195,8 +190,8 @@
                 <div
                     id="mobile-navigation"
                     x-show="open"
-                    :aria-hidden="open ? 'false' : 'true'"
-                    @click.outside="open = false"
+                    :aria-hidden="hiddenState"
+                    @click.outside="close"
                     x-transition:enter="transition ease-out duration-200"
                     x-transition:enter-start="opacity-0 -translate-y-2"
                     x-transition:enter-end="opacity-100 translate-y-0"
@@ -389,13 +384,13 @@
         </div>
     </footer>
     @if ($dispatchLayout)
-        <script>
+        <script nonce="{{ Vite::cspNonce() }}">
             document.addEventListener('DOMContentLoaded', function () {
                 if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
                 document.documentElement.classList.add('js-dispatch-pages');
             });
         </script>
     @endif
-    @livewireScriptConfig
+    @livewireScriptConfig(['nonce' => Vite::cspNonce()])
 </body>
 </html>

@@ -7,7 +7,7 @@ const manifest = JSON.parse(readFileSync('public/build/manifest.json', 'utf8'));
 // Built assets are measured gzipped; images and fonts are measured as stored files.
 const budgets = [
     { entry: 'resources/css/app.css', label: 'Public stylesheet', maxGzipBytes: 24 * 1024 },
-    { entry: 'resources/js/app.js', label: 'Public JavaScript', maxGzipBytes: 2.5 * 1024 },
+    { entry: 'resources/js/app.js', label: 'Public JavaScript', maxGzipBytes: 2.75 * 1024 },
     { entry: 'resources/css/filament/admin/theme.css', label: 'Filament admin theme', maxGzipBytes: 73 * 1024 },
     { entry: 'resources/js/filament/select-accessibility.js', label: 'Filament select accessibility', maxGzipBytes: 1024 },
     { file: 'public/images/hero-family-640.avif', label: 'Hero (640px AVIF)', maxBytes: 30 * 1024 },

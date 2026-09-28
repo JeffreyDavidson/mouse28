@@ -134,7 +134,7 @@
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Http/Requests/SearchRequest.php --filter='search (query is limited|groups matching|returns its view model)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Http/Requests/StoreContactRequest.php --filter='(valid contact submission|contact submission rejects|honeypot)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Http/Requests/StoreNewsletterRequest.php --filter='(valid newsletter|newsletter signup rejects|newsletter honeypot|newsletter redirects)'",
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Http/Middleware/AddSecurityHeaders.php --filter='(web responses|private and error responses|normal public responses)'"
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Http/Middleware/AddSecurityHeaders.php --filter='(web responses|private and error responses|normal public responses|nonce-bearing scripts|script allowances|error responses carry|strict transport security|approved sources|Vite dev server)'"
         ],
         "test:mutate:views": [
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/ViewModels/HomeViewModel.php --filter='homepage'",

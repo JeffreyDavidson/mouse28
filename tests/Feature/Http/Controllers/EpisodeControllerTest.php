@@ -126,7 +126,7 @@ test('published episode detail page renders', function (): void {
 
     get(route('episodes.show', $episode))
         ->assertOk()->assertSee($episode->title)->assertSeeHtml('Our favorite planning strategies')->assertSeeHtml('episode-detail-hero')
-        ->assertSee('Listen to this episode')->assertDontSee('Now Playing')->assertSeeHtml('title="Listen to Planning a Sensory-Friendly Visit"')->assertSeeHtml('data-episode-layout="rich"')->assertSeeHtml('id="episode-transcript"')->assertSeeHtml('aria-controls="episode-transcript"')->assertSeeHtml(':aria-expanded="expanded.toString()"');
+        ->assertSee('Listen to this episode')->assertDontSee('Now Playing')->assertSeeHtml('title="Listen to Planning a Sensory-Friendly Visit"')->assertSeeHtml('data-episode-layout="rich"')->assertSeeHtml('id="episode-transcript"')->assertSeeHtml('aria-controls="episode-transcript"')->assertSeeHtml(':aria-expanded="expandedState"');
 });
 
 test('episode pages sanitize rich show notes and transcripts', function (): void {
