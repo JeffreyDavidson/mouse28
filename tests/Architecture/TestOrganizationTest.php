@@ -51,6 +51,7 @@ test('test paths mirror their application source', function (string $suite): voi
         'Config/SentryTest.php' => 'config/sentry.php',
         'Config/Mouse28Test.php' => 'config/mouse28.php',
         'Http/ExceptionHandlingTest.php' => 'bootstrap/app.php',
+        'HealthTest.php' => 'app/Providers/AppServiceProvider.php',
     ];
     $violations = [];
     $iterator = new RecursiveIteratorIterator(
