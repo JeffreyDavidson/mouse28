@@ -42,6 +42,17 @@ test('public pages load without content security policy violations', function (s
         ->assertNoJavaScriptErrors();
 })->with(['home', 'blog.index', 'post', 'episodes.index', 'episode', 'about', 'contact.show', 'privacy', 'search', 'missing']);
 
+test('the throttled search page loads without content security policy violations', function (): void {
+    config()->set('mouse28.rate_limits.search_per_minute', 1);
+
+    visit(route('search', ['q' => 'castle']))->assertSee('Search');
+
+    visit(route('search', ['q' => 'castle']))
+        ->assertSee('Let’s take a breather')
+        ->assertScript($this->contentSecurityPolicyViolationsScript(), '')
+        ->assertNoJavaScriptErrors();
+});
+
 test('the footer newsletter field shows a focus indicator that stands out from the footer', function (): void {
     visit(route('home'))
         ->assertScript($this->focusIndicatorContrastScript('#footer-newsletter-email').' >= 3', true);
