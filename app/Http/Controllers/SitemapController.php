@@ -7,7 +7,7 @@ use Illuminate\Http\Response;
 
 class SitemapController
 {
-    public function index(SitemapDocument $sitemap): Response
+    public function __invoke(SitemapDocument $sitemap): Response
     {
         return response($sitemap->content(), 200, ['Content-Type' => 'application/xml']);
     }
