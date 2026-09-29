@@ -15,9 +15,10 @@ main → CI → staging verification → explicit production approval
 fast-forward develop to main
 ```
 
-This process matches The Laravel Architect's. It is inactive until the
-repository variable `STAGED_RELEASES_ENABLED` is `true`; until then, follow the
-"Branch and release workflow" section of `operations.md`.
+This process matches The Laravel Architect's and has been in force since
+2026-09-29, when the repository variable `STAGED_RELEASES_ENABLED` was set to
+`true`. The Forge and Cloudflare setup behind it is recorded in "Staged release
+setup" in `operations.md`.
 
 ## Naming
 

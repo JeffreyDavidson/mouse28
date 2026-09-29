@@ -43,20 +43,12 @@ and administrator recipients. It must not retain the example address.
 
 ## Branch and release workflow
 
-This merge-triggered workflow applies until the staged release pipeline in
-[`releases.md`](releases.md) is enabled (see "Staged release setup" below).
-Until then, keep the Forge sites configured to these source branches:
-
-- `staging.mouse28.com` tracks `develop` for normal integration work.
-- `mouse28.com` tracks `main` for production releases.
-
-Before a release, create `release/YYYY.MM.DD` from the up-to-date `develop`
-branch and open a release pull request into `main`. Confirm its head, base,
-checks, and Conventional Commit subject. Approve and merge it with a regular
-merge commit; Forge's configured deployment starts from that merge. Do not
-manually trigger a second deployment or repoint staging for routine releases.
-When checking staging, record its deployed revision: a newer `develop` is not
-proof that an older release candidate passed verification.
+The staged release pipeline described in [`releases.md`](releases.md) has been in
+force since 2026-09-29. Both Forge sites track `main` with push-to-deploy **off**;
+merging to `main` does not deploy anything. Staging deploys only after successful
+push CI on `main` or a `release/**` branch, and production deploys only through
+the approved `Promote production` workflow. Do not use the Forge Deploy button: the
+installed scripts fail closed without a pinned revision.
 
 After production verification, synchronize `main` into `develop` when Jeffrey
 explicitly requests it: fetch the remote branches, update the local `develop`,
@@ -71,90 +63,104 @@ Feature work still goes through squash-merged pull requests into `develop`.
 
 The staged pipeline (`deploy-staging.yml`, `promote-production.yml`,
 `staging-smoke.yml`, `production-smoke.yml` and `scripts/forge-deployment.mjs`)
-matches The Laravel Architect's and stays inactive until the repository variable
-`STAGED_RELEASES_ENABLED` is `true`. Every step below changes Forge, Nginx,
-Cloudflare or GitHub settings and needs Jeffrey's explicit approval, one step
-at a time. Staging first, then production.
+matches The Laravel Architect's. It is enabled by the repository variable
+`STAGED_RELEASES_ENABLED=true` (set 2026-09-29); deleting the variable switches it
+off. Any change to the settings below needs Jeffrey's explicit approval.
 
 Targets in organization `jeffrey-davidson`, server `cold-moon` (753072), shared
 with The Laravel Architect: staging `staging.mouse28.com` (site 3396232) and
 production `mouse28.com` (site 3064716).
 
-1. **GitHub environments.** Create `staging` and `production`. `production`
-   requires Jeffrey as reviewer and allows self-approval; no administrator
-   bypass.
-2. **Secrets.** Store each site's own Forge deploy hook as its environment's
-   `FORGE_DEPLOY_HOOK`. Never use the production hook in staging. Store a
-   Cloudflare Access service token, authorized only for the staging application,
-   as `CF_ACCESS_CLIENT_ID` and `CF_ACCESS_CLIENT_SECRET` in both environments:
-   production promotion reads staging to revalidate the approved candidate.
-   Never paste tokens into chat, logs, repository files or workflow inputs.
-3. **Cloudflare.** Bypass caching for `/deployment.json` and `/up` on both hosts.
-   Keep staging behind Access.
-4. **Nginx (both sites).** Validate before each reload and preserve the shared
-   security headers (see the Nginx 1.26 `add_header` note below):
-   - Add an exact revision-marker location:
+The first staging deployment through the pipeline succeeded on 2026-09-29 (run
+36623049256, revision `e82d29f`, Forge deployment 78939264). Production
+promotion and the production script have not run yet; verify them with the first
+release under the pipeline.
 
-     ```nginx
-     location = /deployment.json {
-         try_files $uri =404;
-         add_header Cache-Control "no-store" always;
-     }
-     ```
+### GitHub
 
-   - Remove Forge's default `location = /robots.txt { ... }` block. With it,
-     Nginx looks for a static file, falls back to `error_page 404 /index.php`, and
-     serves the application's robots document with HTTP **404**, which crawlers
-     treat as "no rules". Production returned 404 for `/robots.txt` on
-     2026-09-28. After the change, `/robots.txt` must return 200.
-5. **Forge deploy script.** Compare the live script with the one below and carry
-   over any Mouse28-specific step it lacks before installing it. It replaces the
-   merge-triggered script and fails closed for Deploy-button requests without a
-   pinned revision.
-6. **Forge site settings.** Both sites use branch `main` with push-to-deploy
-   **off**. Staging currently tracks `develop`; after this step it serves only
-   release candidates and `main`.
-7. **Enable.** Set `STAGED_RELEASES_ENABLED=true`, rerun the latest successful push
-   CI on `main`, and confirm `Deploy staging` verifies the marker, `/up` and the
-   smoke suite. Promote production only when Jeffrey asks.
+- Environments: `staging` and `production`. `production` requires Jeffrey as
+  reviewer, allows self-approval, and has no administrator bypass.
+- Secrets in **both** environments: `FORGE_DEPLOY_HOOK` (each site's own hook;
+  never use the production hook in staging), `CF_ACCESS_CLIENT_ID` and
+  `CF_ACCESS_CLIENT_SECRET`. Production promotion rechecks staging, so both
+  environments hold the **staging** Access token. `mouse28.com` itself is not
+  behind Cloudflare Access.
+- Never paste tokens or hook URLs into chat, logs, repository files or workflow
+  inputs. Forge's Deployments page shows the deploy-hook URL, token included, in its
+  page text: read that page with element inspection, not page-text extraction.
 
-Deployment verification does not wait for runtime heartbeats until a
-default-queue worker exists (see "Runtime health monitoring").
+### Cloudflare
 
-### Pinned Forge deploy script
+- **Access:** the staging application ("Mouse28 Staging") allows the GitHub
+  deployment token through its own **Service Auth** policy, "Mouse28 GitHub Staging
+  Deployments", which includes only the "Mouse28 GitHub staging deployments" token.
+  Do not edit the shared "GitHub Staging Deployment Checks" policy: other
+  applications use it, and adding a token there widens their access. A token that
+  no attached policy includes gets the Access login redirect (HTTP 302) on every
+  route.
+- **Cache:** a Cache Rule bypasses the cache for
+  `(http.request.uri.path eq "/deployment.json") or (http.request.uri.path eq "/up")`
+  on the whole zone, so both hosts are covered. The deployment client also rejects
+  a cached marker.
 
-Forge's `forge_deploy_commit` parameter is metadata, not checkout pinning. The
-separate `revision` and `source_branch` hook parameters become
-`FORGE_VAR_REVISION` and `FORGE_VAR_SOURCE_BRANCH`; the script validates both
-before running application code. Staging accepts `main` or a numbered
-`release/YYYY.MM.N` source branch; production accepts only `main`. The source
-branch must still point at the exact tested revision before checkout.
+### Nginx (both sites, Forge → site → Edit Nginx configuration)
+
+Validate before each reload; Forge rejects an invalid file and keeps the old one.
+Forge trims trailing blank lines when it saves.
+
+- Under the favicon locations, add the revision-marker location as one line:
+
+  ```nginx
+  location = /deployment.json { try_files $uri =404; add_header Cache-Control "no-store" always; }
+  ```
+
+  A location-level `add_header` replaces the server-level headers for that response
+  (see the Nginx 1.26 note under "After deploying"). The marker carries only a
+  revision and a deployment ID, so it does not repeat them.
+- Remove Forge's default `location = /robots.txt { access_log off; log_not_found off; }`
+  line. With it, Nginx looks for a static file, falls back to
+  `error_page 404 /index.php`, and serves the application's robots document with
+  HTTP **404**, which crawlers treat as "no rules". Production returned 404 for
+  `/robots.txt` until 2026-09-29. `/robots.txt` must now return 200 on both hosts.
+
+### Forge site settings
+
+- Git branch `main` on both sites (staging previously tracked `develop`). Changing
+  the branch asks for the Forge account password.
+- Push-to-deploy **off**. On the Deployments page the toggle is part of the same
+  form as the deploy script and only persists after **Save**.
+- The deploy script on each site is the one below. Both fail before creating a
+  release when `FORGE_VAR_REVISION`, `FORGE_VAR_SOURCE_BRANCH` or the site
+  identity does not match. Forge's `forge_deploy_commit` parameter is metadata,
+  not checkout pinning; the separate `revision` and `source_branch` hook
+  parameters become `FORGE_VAR_REVISION` and `FORGE_VAR_SOURCE_BRANCH`. Staging
+  accepts `main` or a numbered `release/YYYY.MM.N`; production accepts only `main`.
+- Sites are pinned by `FORGE_SITE_ID` alone. Whether `FORGE_SITE_ROOT` is the site
+  folder or its `current` directory is not documented for this layout, so the
+  scripts do not rely on it.
+- The deployment marker is written only after activation and the health checks.
+  In production it must be written **before** the cleanup step, which changes
+  directory.
+- Runtime heartbeats are not part of deployment verification until a default-queue
+  worker exists (see "Runtime health monitoring").
+
+### Installed staging deploy script (site 3396232)
 
 ```bash
 set -e
 
 test "$FORGE_SITE_BRANCH" = main
-case "$FORGE_SITE_ID" in
-    3396232)
-        test "$FORGE_SITE_ROOT" = /home/forge/staging.mouse28.com
-        [[ "${FORGE_VAR_SOURCE_BRANCH:-}" = main || "${FORGE_VAR_SOURCE_BRANCH:-}" =~ ^release/[0-9]{4}\.(0[1-9]|1[0-2])\.[0-9]+$ ]]
-        mouse28_domain=staging.mouse28.com
-        ;;
-    3064716)
-        test "$FORGE_SITE_ROOT" = /home/forge/mouse28.com
-        test "${FORGE_VAR_SOURCE_BRANCH:-}" = main
-        mouse28_domain=mouse28.com
-        ;;
-    *) exit 1 ;;
-esac
+test "$FORGE_SITE_ID" = 3396232
+[[ "${FORGE_VAR_SOURCE_BRANCH:-}" = main || "${FORGE_VAR_SOURCE_BRANCH:-}" =~ ^release/[0-9]{4}\.(0[1-9]|1[0-2])\.[0-9]+$ ]]
 [[ "${FORGE_VAR_REVISION:-}" =~ ^[a-f0-9]{40}$ ]]
 test "$FORGE_DEPLOY_COMMIT" = "$FORGE_VAR_REVISION"
 
 $CREATE_RELEASE()
+
 cd $FORGE_RELEASE_DIRECTORY
 
 if test "$(git rev-parse --is-shallow-repository)" = true; then
-    git fetch --unshallow origin
+git fetch --unshallow origin
 fi
 git fetch --no-tags origin "$FORGE_VAR_SOURCE_BRANCH:refs/remotes/origin/$FORGE_VAR_SOURCE_BRANCH"
 test "$(git rev-parse "origin/$FORGE_VAR_SOURCE_BRANCH")" = "$FORGE_VAR_REVISION"
@@ -164,42 +170,115 @@ test ! -e public/deployment.json
 
 $FORGE_COMPOSER install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
+npm ci
+npm run build
 $FORGE_PHP artisan optimize
-$FORGE_PHP artisan app:verify-deployment --no-interaction --no-ansi
+$FORGE_PHP artisan app:verify-deployment --no-interaction
+$FORGE_PHP artisan storage:link
 $FORGE_PHP artisan migrate --force
 
-export NODE_OPTIONS="--max-old-space-size=1024"
-npm ci --production=false
-npm run build
-
-rm -f public/storage
-$FORGE_PHP artisan storage:link
-
 $ACTIVATE_RELEASE()
+
 $RESTART_QUEUES()
 
-# Bounded local checks through the site's own server name, bypassing Cloudflare.
 mouse28_verified=false
 for mouse28_attempt in $(seq 1 12); do
-    if curl --silent --fail --max-time 10 --output /dev/null --resolve "$mouse28_domain:443:127.0.0.1" "https://$mouse28_domain/up" &&
-        curl --silent --fail --max-time 10 --output /dev/null --resolve "$mouse28_domain:443:127.0.0.1" "https://$mouse28_domain/"; then
-        mouse28_verified=true
-        break
-    fi
-    sleep 5
+if curl --silent --fail --insecure --max-time 10 --output /dev/null --resolve "staging.mouse28.com:443:127.0.0.1" "https://staging.mouse28.com/up"; then
+mouse28_verified=true
+break
+fi
+sleep 5
 done
 test "$mouse28_verified" = true
 test "$(readlink -f "$FORGE_SITE_PATH")" = "$(pwd -P)"
 [[ "$FORGE_DEPLOYMENT_ID" =~ ^[1-9][0-9]*$ ]]
-# This is the completion signal. Publish only after activation and verification.
-printf '{"revision":"%s","deployment_id":"%s"}\n' \
-    "$FORGE_VAR_REVISION" "$FORGE_DEPLOYMENT_ID" > public/deployment.json.tmp
+printf '{"revision":"%s","deployment_id":"%s"}\n' "$FORGE_VAR_REVISION" "$FORGE_DEPLOYMENT_ID" > public/deployment.json.tmp
 mv public/deployment.json.tmp public/deployment.json
 ```
 
-`$ACTIVATE_RELEASE()` keeps the previous release serving traffic until every
-preparation step succeeds; `$RESTART_QUEUES()` must follow activation so workers
-run the active release.
+The local health check calls the site's own name on 127.0.0.1, bypassing Cloudflare
+and Access; `--insecure` is acceptable there because the request never leaves the
+server.
+
+### Installed production deploy script (site 3064716)
+
+Production's script predates the pipeline. The pins, the checkout block and the
+marker block were added to it; every other line is the original.
+
+```bash
+set -e
+
+test "$FORGE_SITE_BRANCH" = main
+test "$FORGE_SITE_ID" = 3064716
+test "${FORGE_VAR_SOURCE_BRANCH:-}" = main
+[[ "${FORGE_VAR_REVISION:-}" =~ ^[a-f0-9]{40}$ ]]
+test "$FORGE_DEPLOY_COMMIT" = "$FORGE_VAR_REVISION"
+
+$CREATE_RELEASE()
+
+cd $FORGE_RELEASE_DIRECTORY
+
+if test "$(git rev-parse --is-shallow-repository)" = true; then
+git fetch --unshallow origin
+fi
+git fetch --no-tags origin "$FORGE_VAR_SOURCE_BRANCH:refs/remotes/origin/$FORGE_VAR_SOURCE_BRANCH"
+test "$(git rev-parse "origin/$FORGE_VAR_SOURCE_BRANCH")" = "$FORGE_VAR_REVISION"
+git checkout --detach "$FORGE_VAR_REVISION"
+test "$(git rev-parse HEAD)" = "$FORGE_VAR_REVISION"
+test ! -e public/deployment.json
+
+SENTRY_RELEASE="${FORGE_DEPLOY_COMMIT:-$(git rev-parse HEAD)}"
+if grep -q '^SENTRY_RELEASE=' .env; then
+    sed -i "s/^SENTRY_RELEASE=.*/SENTRY_RELEASE=${SENTRY_RELEASE}/" .env
+else
+    echo "SENTRY_RELEASE=${SENTRY_RELEASE}" >> .env
+fi
+
+# PHP
+$FORGE_COMPOSER install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+$FORGE_PHP artisan optimize
+$FORGE_PHP artisan app:verify-production --no-interaction
+$FORGE_PHP artisan storage:link --force
+$FORGE_PHP artisan migrate --force
+
+# JS — with memory cap for Next.js builds
+export NODE_OPTIONS="--max-old-space-size=1024"
+npm ci --production=false
+npm run build
+
+# Activate only if everything succeeded
+$ACTIVATE_RELEASE()
+
+# Verify the activated application before removing recovery releases.
+for MOUSE28_HEALTH_PATH in /up /; do
+    MOUSE28_HEALTH_STATUS=$(curl --silent --show-error --fail \
+        --connect-timeout 5 --max-time 15 --retry 2 --retry-delay 2 --retry-max-time 45 \
+        --header "Cache-Control: no-cache" --output /dev/null --write-out "%{http_code}" \
+        "https://mouse28.com${MOUSE28_HEALTH_PATH}") || exit 1
+    if [ "$MOUSE28_HEALTH_STATUS" != "200" ]; then
+        echo "Deployment health check failed: ${MOUSE28_HEALTH_PATH} returned HTTP ${MOUSE28_HEALTH_STATUS}" >&2
+        exit 1
+    fi
+done
+
+# Publish the deployment marker only after activation and the health checks pass.
+test "$(readlink -f "$FORGE_SITE_PATH")" = "$(pwd -P)"
+[[ "$FORGE_DEPLOYMENT_ID" =~ ^[1-9][0-9]*$ ]]
+printf '{"revision":"%s","deployment_id":"%s"}\n' "$FORGE_VAR_REVISION" "$FORGE_DEPLOYMENT_ID" > public/deployment.json.tmp
+mv public/deployment.json.tmp public/deployment.json
+
+# Cleanup old releases (keep last 5)
+cd $FORGE_SITE_PATH
+ls -dt releases/* | tail -n +6 | xargs rm -rf 2>/dev/null || true
+
+$RESTART_QUEUES()
+
+echo "Deploy complete: $(date)"
+```
+
+To roll a script back, paste the previous version into Forge, keep push-to-deploy
+off unless the earlier merge-triggered deployment is deliberately restored, and confirm the
+site's branch setting.
 
 ## Syncing public content locally
 
@@ -357,13 +436,14 @@ than overwriting a newer crontab, to avoid losing unrelated jobs.
 
 ## Deploying
 
-The Forge deployment should install locked Composer dependencies, install locked Node dependencies, build assets, run forward-only migrations, link public storage, refresh optimized caches, and restart workers only when queued jobs are introduced.
+The Forge deployment should install locked Composer dependencies, install locked Node dependencies, build assets, run forward-only migrations, link public storage, refresh optimized caches, and restart queue workers after the release is activated.
 
 The production Forge script runs `php artisan app:verify-production --no-interaction`
 after optimization, before migrations, and stops on failure. Immediately after
 release activation, bounded HTTP checks require `/up` and `/` to return exactly
-200 before release cleanup proceeds. These checks are part of the normal
-merge-triggered deployment; changing the script does not itself deploy the site.
+200 before the deployment marker is published and release cleanup proceeds. These
+checks are part of every pipeline deployment; changing the script does not itself
+deploy the site.
 A failed post-activation check marks the deployment failed and preserves recovery
 artifacts, but does not automatically roll back the active release or database.
 Future changes to the live Forge script require separate approval.
