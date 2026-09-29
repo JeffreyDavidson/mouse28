@@ -1,18 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Actions;
 
-use App\Models\Episode;
-use App\Models\Guide;
-use App\Models\Post;
-use App\Support\EditorialReadiness;
+use App\Contracts\Publishable;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
-use Illuminate\Support\Facades\Date;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+use Livewire\Component;
 
 /**
- * Publishes a draft once it passes the editorial readiness checks, keeping any scheduled date.
+ * Publishes content once its required details are present, keeping any scheduled date.
  */
 class PublishContentAction extends Action
 {
@@ -29,10 +31,10 @@ class PublishContentAction extends Action
             ->authorize('update')
             ->color('success')
             ->requiresConfirmation()
-            ->visible(fn (Post|Guide|Episode $record): bool => ! $record->is_published)
-            ->action(function (Post|Guide|Episode $record): void {
-                $contentType = class_basename($record);
-                $issues = EditorialReadiness::publishingIssues($record);
+            ->visible(fn (Publishable $record): bool => ! $record->isPublished() && ! $record->isScheduled())
+            ->action(function (Model&Publishable $record, Component $livewire): void {
+                $contentType = Str::headline(class_basename($record));
+                $issues = $record->publishingIssues();
 
                 if ($issues !== []) {
                     Notification::make()
@@ -45,12 +47,16 @@ class PublishContentAction extends Action
                     return;
                 }
 
-                $record->update([
-                    'is_published' => true,
-                    'published_at' => $record->published_at ?? Date::now(),
-                ]);
+                $record->publish();
 
-                Notification::make()->success()->title("{$contentType} published")->send();
+                if ($livewire instanceof EditRecord) {
+                    $livewire->refreshFormData(array_keys($record->getChanges()));
+                }
+
+                Notification::make()
+                    ->success()
+                    ->title("{$contentType} published")
+                    ->send();
             });
     }
 }

@@ -76,7 +76,7 @@ test('newsletter signup returns unavailable when the resend integration is disab
 });
 
 test('newsletter errors and old input stay out of the contact form', function (): void {
-    $response = from(route('contact.show'))
+    $response = from(route('contact.create'))
         ->followingRedirects()
         ->post(route('newsletter.store'), [
             'email' => 'not-an-email',

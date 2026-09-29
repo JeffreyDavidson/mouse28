@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\Publishable;
 use App\Models\Concerns\HasPublication;
 use Carbon\CarbonInterface;
 use Database\Factories\EpisodeFactory;
@@ -54,7 +55,7 @@ use Spatie\Tags\HasTags;
     'meta_description',
     'og_image',
 ])]
-class Episode extends Model
+class Episode extends Model implements Publishable
 {
     /** @use HasFactory<EpisodeFactory> */
     use HasFactory, HasPublication, HasTags, SoftDeletes;
@@ -153,5 +154,18 @@ class Episode extends Model
             'published_at' => 'datetime',
             'slug_locked_at' => 'datetime',
         ];
+    }
+
+    /**
+     * The details that must be present before publishing; the rest of the readiness checklist is advisory.
+     *
+     * @return list<string>
+     */
+    public function publishingIssues(): array
+    {
+        return array_values(array_filter([
+            blank($this->description) ? 'Add a description' : null,
+            blank($this->transistor_url) ? 'Add the Transistor episode URL' : null,
+        ]));
     }
 }

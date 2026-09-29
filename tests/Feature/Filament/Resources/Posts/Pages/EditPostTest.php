@@ -109,12 +109,12 @@ test('edit page offers a draft preview', function (): void {
         ->assertActionShouldOpenUrlInNewTab('preview');
 });
 
-test('ready drafts can be explicitly published', function (): void {
+test('drafts with their required details can be published while advisory details are missing', function (): void {
     $admin = User::factory()->admin()->create();
     $record = Post::factory()->draft()->create([
-        'cover_image' => 'posts/complete.jpg',
-        'meta_title' => 'Complete post title',
-        'meta_description' => 'Complete post description',
+        'cover_image' => null,
+        'meta_title' => null,
+        'meta_description' => null,
     ]);
 
     actingAs($admin);
@@ -206,3 +206,33 @@ test('publishing actions disappear when admin access is revoked for the post', f
     'publish' => [true, 'publish'],
     'unpublish' => [false, 'unpublish'],
 ]);
+
+test('publishing actions follow whether the post is a draft, live, or scheduled', function (bool $isPublished, ?string $publishedAt, bool $canPublish): void {
+    actingAs(User::factory()->admin()->create());
+    $post = Post::factory()->create(['is_published' => $isPublished, 'published_at' => $publishedAt]);
+
+    $page = livewire(EditPost::class, ['record' => $post->getRouteKey()]);
+
+    $canPublish
+        ? $page->assertActionVisible('publish')->assertActionHidden('unpublish')
+        : $page->assertActionHidden('publish')->assertActionVisible('unpublish');
+})->with([
+    'draft' => [false, null, true],
+    'live' => [true, '2000-01-01 09:00:00', false],
+    'scheduled' => [true, '2999-01-01 09:00:00', false],
+    'published without a date' => [true, null, true],
+]);
+
+test('saving after publishing keeps the publication date the action set', function (): void {
+    Date::setTestNow('2026-09-25 12:00:00');
+    actingAs(User::factory()->admin()->create());
+    $post = Post::factory()->draft()->create();
+
+    livewire(EditPost::class, ['record' => $post->getRouteKey()])
+        ->callAction('publish')
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($post->refresh()->is_published)->toBeTrue()
+        ->and($post->published_at?->toDateTimeString())->toBe('2026-09-25 12:00:00');
+});

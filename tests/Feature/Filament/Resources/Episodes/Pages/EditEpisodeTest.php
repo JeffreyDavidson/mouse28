@@ -140,12 +140,13 @@ test('edit page offers a draft preview', function (): void {
         ->assertActionShouldOpenUrlInNewTab('preview');
 });
 
-test('ready drafts can be explicitly published', function (): void {
+test('drafts with their required details can be published while advisory details are missing', function (): void {
     $admin = User::factory()->admin()->create();
     $record = Episode::factory()->draft()->create([
-        'cover_image' => 'episodes/complete.jpg',
-        'meta_title' => 'Complete episode title',
-        'meta_description' => 'Complete episode description',
+        'transistor_url' => 'https://share.transistor.fm/s/428d650c',
+        'cover_image' => null,
+        'meta_title' => null,
+        'meta_description' => null,
     ]);
 
     actingAs($admin);
@@ -206,3 +207,14 @@ test('publishing actions disappear when admin access is revoked for the episode'
     'publish' => [true, 'publish'],
     'unpublish' => [false, 'unpublish'],
 ]);
+
+test('episodes cannot be published without a Transistor episode URL', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $episode = Episode::factory()->draft()->create(['transistor_url' => null]);
+
+    livewire(EditEpisode::class, ['record' => $episode->getRouteKey()])
+        ->callAction('publish')
+        ->assertNotified('Episode is not ready to publish');
+
+    expect($episode->refresh()->is_published)->toBeFalse();
+});

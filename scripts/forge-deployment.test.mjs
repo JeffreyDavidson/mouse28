@@ -1,0 +1,525 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { readFileSync } from 'node:fs';
+import {
+    accessCredentialDiagnostics,
+    diagnoseAccess,
+    diagnosticFailureReason,
+    deployRelease,
+    deploymentHook,
+    readMarker,
+    requestHeaders,
+    transportFailureMetadata,
+    transportFailureReason,
+    validateRevision,
+    verifyRelease,
+} from './forge-deployment.mjs';
+
+const revision = 'a'.repeat(40);
+const access = { clientId: 'test-client', clientSecret: 'test-secret' };
+const hook = 'https://forge.laravel.com/servers/753072/sites/3396232/deploy/http?token=test-token';
+const marker = (id = 1, sha = revision) =>
+    Response.json({ revision: sha, deployment_id: id }, { headers: { 'Cache-Control': 'no-store' } });
+
+test('staging workflow uses the guarded deployment operation instead of a separate mutation and wait', () => {
+    const workflow = readFileSync(new URL('../.github/workflows/deploy-staging.yml', import.meta.url), 'utf8');
+    assert.match(workflow, /node scripts\/forge-deployment\.mjs deploy staging "\$EXPECTED_REVISION"/);
+    assert.doesNotMatch(workflow, /--request (?:POST|OPTIONS)|forge-deployment\.mjs wait staging/);
+});
+
+test('staging recovers from an unverified Forge trigger with read-only checks', () => {
+    const workflow = readFileSync(new URL('../.github/workflows/deploy-staging.yml', import.meta.url), 'utf8');
+    const deployStep = workflow.match(/- name: Deploy and verify the tested revision[\s\S]*?(?=\n            - name:)/)?.[0];
+    const recoveryStep = workflow.match(/- name: Recover by verifying the currently served revision[\s\S]*?(?=\n            - name:)/)?.[0];
+    const promotion = readFileSync(new URL('../.github/workflows/promote-production.yml', import.meta.url), 'utf8');
+
+    assert.ok(deployStep);
+    assert.match(deployStep, /continue-on-error: true/);
+    assert.ok(recoveryStep);
+    assert.match(recoveryStep, /if: steps\.deployment\.outcome == 'failure'/);
+    assert.match(recoveryStep, /forge-deployment\.mjs verify staging "\$EXPECTED_REVISION"/);
+    assert.doesNotMatch(recoveryStep, /FORGE_DEPLOY_HOOK|forge-deployment\.mjs deploy/);
+    assert.match(workflow, /Run application smoke checks[\s\S]*?Recheck the serving revision after smoke tests/);
+    assert.match(promotion, /\.event == "workflow_run"/);
+});
+
+test('release safeguards keep feature integration, pre-merge staging, and production promotion on their intended refs', () => {
+    const ci = readFileSync(new URL('../.github/workflows/ci.yml', import.meta.url), 'utf8');
+    const staging = readFileSync(new URL('../.github/workflows/deploy-staging.yml', import.meta.url), 'utf8');
+    const production = readFileSync(new URL('../.github/workflows/promote-production.yml', import.meta.url), 'utf8');
+    const releases = readFileSync(new URL('../docs/releases.md', import.meta.url), 'utf8');
+    const operations = readFileSync(new URL('../docs/operations.md', import.meta.url), 'utf8');
+    const deploymentClient = readFileSync(new URL('./forge-deployment.mjs', import.meta.url), 'utf8');
+
+    assert.match(ci, /on:\n  pull_request:\n  push:\n    branches:\n      - main\n      - 'release\/\*\*'\n/);
+    assert.match(staging, /branches: \[main, 'release\/\*\*'\]/);
+    assert.match(staging, /startsWith\(github\.event\.workflow_run\.head_branch, 'release\/'\)/);
+    assert.match(staging, /SOURCE_BRANCH: \$\{\{ github\.event\.workflow_run\.head_branch \}\}/);
+    assert.match(
+        staging,
+        /git fetch --no-tags origin "\$SOURCE_BRANCH:refs\/remotes\/origin\/\$SOURCE_BRANCH"[\s\S]*?origin\/\$SOURCE_BRANCH/,
+    );
+    assert.match(deploymentClient, /sourceBranch: process\.env\.SOURCE_BRANCH \?\? 'main'/);
+    assert.match(production, /github\.ref == 'refs\/heads\/main'/);
+    assert.match(production, /\.head_branch == "main"/);
+    assert.match(releases, /git merge-base --is-ancestor origin\/develop origin\/main/);
+    assert.match(releases, /git merge --ff-only origin\/main/);
+    assert.doesNotMatch(releases, /git push --force/);
+    assert.ok(
+        operations.includes(
+            'git fetch --no-tags origin "$FORGE_VAR_SOURCE_BRANCH:refs/remotes/origin/$FORGE_VAR_SOURCE_BRANCH"',
+        ),
+    );
+    assert.ok(operations.includes('test "$(git rev-parse "origin/$FORGE_VAR_SOURCE_BRANCH")" = "$FORGE_VAR_REVISION"'));
+    assert.ok(
+        operations.includes(
+            '[[ "${FORGE_VAR_SOURCE_BRANCH:-}" = main || "${FORGE_VAR_SOURCE_BRANCH:-}" =~ ^release/[0-9]{4}\\.(0[1-9]|1[0-2])\\.[0-9]+$ ]]',
+        ),
+    );
+    assert.ok(operations.includes('test "${FORGE_VAR_SOURCE_BRANCH:-}" = main'));
+});
+
+test('rejects a production hook before any staging deployment network request', async () => {
+    let requests = 0;
+    await assert.rejects(
+        deployRelease('staging', revision, {
+            ...access,
+            hook: hook.replace('3396232', '3064716'),
+            fetch: async () => {
+                requests++;
+                return marker();
+            },
+        }),
+        /intended server and site/,
+    );
+    assert.equal(requests, 0);
+});
+
+test('times out a same-revision redeployment when the deployment ID never changes', async () => {
+    let time = 0;
+    let triggers = 0;
+    await assert.rejects(
+        deployRelease('staging', revision, {
+            ...access,
+            hook,
+            now: () => time,
+            delay: async () => {
+                time += 60_000;
+            },
+            fetch: async (url, init) => {
+                if (init.method === 'POST') {
+                    triggers++;
+                    return new Response('accepted');
+                }
+                return marker(1);
+            },
+        }),
+        /completion was not verified/,
+    );
+    assert.equal(triggers, 1);
+});
+
+test('requires full immutable revisions', () => {
+    for (const invalid of ['main', 'abc123', '', undefined, 'A'.repeat(40), `a;${revision}`]) {
+        assert.throws(() => validateRevision(invalid));
+    }
+    assert.equal(validateRevision(revision), revision);
+});
+
+test('requires staging credentials and never includes them in production requests', () => {
+    assert.throws(() => requestHeaders('staging', {}));
+    assert.throws(() => requestHeaders('staging', { clientId: 'only-one' }));
+    assert.throws(() => requestHeaders('unknown', access));
+    assert.equal(requestHeaders('staging', access)['CF-Access-Client-Secret'], 'test-secret');
+    assert.equal(requestHeaders('production', access)['CF-Access-Client-Secret'], undefined);
+});
+
+test('reports safe Access credential diagnostics without exposing values', () => {
+    const diagnostics = accessCredentialDiagnostics({
+        clientId: 'client-id.access',
+        clientSecret: 'secret-value',
+    });
+
+    assert.deepEqual(diagnostics, {
+        clientId: {
+            present: true,
+            length: 16,
+            hasWhitespace: false,
+            hasLeadingOrTrailingWhitespace: false,
+            hasHeaderPrefix: false,
+            formatLooksValid: true,
+        },
+        clientSecret: {
+            present: true,
+            length: 12,
+            hasWhitespace: false,
+            hasLeadingOrTrailingWhitespace: false,
+            hasHeaderPrefix: false,
+        },
+    });
+});
+
+test('uses the stable health endpoint for Access diagnostics', async () => {
+    let requestedUrl;
+
+    await diagnoseAccess('staging', {
+        ...access,
+        fetch: async url => {
+            requestedUrl = url;
+
+            return new Response('', { status: 200 });
+        },
+    });
+
+    assert.equal(requestedUrl, 'https://staging.mouse28.com/up');
+});
+
+test('fails the Access diagnostic for unavailable or rejected staging credentials', () => {
+    assert.equal(
+        diagnosticFailureReason('staging', {
+            credentials: accessCredentialDiagnostics(),
+            error: 'Staging requires both Cloudflare Access credentials.',
+        }),
+        'Staging requires both Cloudflare Access credentials.',
+    );
+    assert.equal(
+        diagnosticFailureReason('staging', {
+            credentials: accessCredentialDiagnostics(access),
+            response: { status: 403 },
+        }),
+        'Cloudflare Access diagnostic returned HTTP 403.',
+    );
+    assert.equal(
+        diagnosticFailureReason('production', {
+            credentials: accessCredentialDiagnostics(),
+            error: 'ignored for production',
+        }),
+        null,
+    );
+});
+
+test('requires an HTTP 200 response before the staging diagnostic can succeed', () => {
+    for (const status of [undefined, null, 0, 99, 600, '200', 204, 302, 403, 500]) {
+        const failure = diagnosticFailureReason('staging', {
+            credentials: accessCredentialDiagnostics(access),
+            response: { status },
+        });
+
+        assert.equal(typeof failure, 'string', `Unexpected success for status ${status}`);
+    }
+
+    assert.equal(
+        diagnosticFailureReason('staging', {
+            credentials: accessCredentialDiagnostics(access),
+            response: { status: 200 },
+        }),
+        null,
+    );
+});
+
+test('constrains hook credentials to the exact Forge target and supplies a separate checkout revision', () => {
+    for (const invalid of [
+        hook.replace('https:', 'http:'),
+        hook.replace('forge.laravel.com', 'example.com'),
+        hook.replace('3396232', '3064716'),
+        hook.replace('753072', '1'),
+        hook.split('?')[0],
+    ]) {
+        assert.throws(() => deploymentHook('staging', revision, invalid));
+    }
+    const url = deploymentHook('staging', revision, hook);
+    assert.equal(url.searchParams.get('revision'), revision);
+    assert.equal(url.searchParams.get('forge_deploy_commit'), revision);
+    assert.equal(url.searchParams.get('forge_deploy_branch'), 'main');
+    assert.equal(url.searchParams.get('source_branch'), 'main');
+});
+
+test('staging accepts only exact main or calendar release source branches while production remains main-only', () => {
+    const releaseBranch = 'release/2026.09.34';
+    const stagingUrl = deploymentHook('staging', revision, hook, releaseBranch);
+    const productionHook = hook.replace('3396232', '3064716');
+
+    assert.equal(stagingUrl.searchParams.get('source_branch'), releaseBranch);
+    assert.equal(stagingUrl.searchParams.get('forge_deploy_branch'), 'main');
+    assert.throws(
+        () => deploymentHook('production', revision, productionHook, releaseBranch),
+        /Source branch is not allowed/,
+    );
+
+    for (const invalidBranch of [null, 'feature/unsafe', 'release/2026.13.1', 'release/2026.09.34;touch']) {
+        assert.throws(() => deploymentHook('staging', revision, hook, invalidBranch), /Source branch is not allowed/);
+    }
+});
+
+test('rejects redirects and hides transport errors that could contain credentials', async () => {
+    await assert.rejects(
+        readMarker('staging', {
+            ...access,
+            fetch: async (url, init) => {
+                assert.equal(new URL(url).origin, 'https://staging.mouse28.com');
+                assert.equal(init.redirect, 'error');
+                throw new Error('test-secret');
+            },
+        }),
+        error => !error.message.includes('test-secret'),
+    );
+});
+
+test('classifies transport failures without exposing error details', () => {
+    assert.equal(transportFailureReason({ cause: { code: 'ENOTFOUND' } }), 'DNS resolution');
+    assert.equal(transportFailureReason({ cause: { code: 'CERT_HAS_EXPIRED' } }), 'TLS negotiation');
+    assert.equal(transportFailureReason({ name: 'TimeoutError' }), 'timeout');
+    assert.equal(transportFailureReason({ cause: { code: 'ECONNRESET' } }), 'connection failure');
+    assert.equal(transportFailureReason(new Error('test-secret')), 'network failure');
+});
+
+test('reports only safe transport metadata', () => {
+    assert.equal(
+        transportFailureMetadata({ name: 'TypeError', code: 'UND_ERR_SOCKET', cause: { code: 'ECONNRESET' } }),
+        '; error=TypeError, code=UND_ERR_SOCKET, cause=ECONNRESET',
+    );
+    assert.equal(transportFailureMetadata(new Error('test-secret')), '; error=Error');
+    assert.equal(transportFailureMetadata({ message: 'test-secret', code: 'not-safe' }), '');
+});
+
+test('reports a Forge hook redirect without following it', async () => {
+    await assert.rejects(
+        deployRelease('staging', revision, {
+            ...access,
+            hook,
+            fetch: async (url, init) => {
+                if (init.method === 'POST') {
+                    assert.equal(init.redirect, 'manual');
+                    return new Response('', { status: 302 });
+                }
+
+                return marker();
+            },
+        }),
+        /Forge rejected the deployment trigger \(HTTP 302\)/,
+    );
+});
+
+test('rejects missing, malformed and authentication-page release markers', async () => {
+    for (const response of [
+        new Response('', { status: 302 }),
+        new Response('login', { headers: { 'Cache-Control': 'no-store' } }),
+        marker(1, 'main'),
+        marker('invalid'),
+    ]) {
+        await assert.rejects(readMarker('staging', { ...access, fetch: async () => response }));
+    }
+});
+
+test('rejects a different revision before checking health', async () => {
+    let calls = 0;
+    await assert.rejects(
+        verifyRelease('staging', revision, {
+            ...access,
+            fetch: async () => {
+                calls++;
+                return marker(1, 'b'.repeat(40));
+            },
+        }),
+        /does not match/,
+    );
+    assert.equal(calls, 1);
+});
+
+test('rejects cached release evidence', async () => {
+    for (const headers of [
+        {},
+        { 'Cache-Control': 'public, max-age=3600' },
+        { 'Cache-Control': 'no-store', Age: '60' },
+        { 'Cache-Control': 'no-store', 'CF-Cache-Status': 'HIT' },
+    ]) {
+        await assert.rejects(
+            readMarker('staging', {
+                ...access,
+                fetch: async () => Response.json({ revision, deployment_id: 1 }, { headers }),
+            }),
+            /uncached/,
+        );
+    }
+});
+
+test('requires successful health as well as a matching revision', async () => {
+    const responses = [marker(), new Response('', { status: 503 })];
+    await assert.rejects(
+        verifyRelease('staging', revision, { ...access, fetch: async () => responses.shift() }),
+        /health/,
+    );
+});
+
+test('deploys a release branch SHA and triggers Forge only once', async () => {
+    const responses = [marker(1), new Response('accepted'), marker(1), marker(2), marker(2), new Response('healthy')];
+    const requests = [];
+    const result = await deployRelease('staging', revision, {
+        ...access,
+        hook,
+        sourceBranch: 'release/2026.09.34',
+        delay: async () => {},
+        fetch: async (url, init) => {
+            requests.push({ url, init });
+            return responses.shift();
+        },
+    });
+    assert.equal(result.deployment_id, 2);
+    assert.equal(requests.filter(request => request.init.method === 'POST').length, 1);
+    const trigger = requests.find(request => request.init.method === 'POST');
+    assert.equal(trigger.init.headers, undefined);
+    assert.equal(new URL(trigger.url).searchParams.get('source_branch'), 'release/2026.09.34');
+    assert.equal(new URL(trigger.url).searchParams.get('forge_deploy_branch'), 'main');
+});
+
+test('waits through transient release marker responses', async () => {
+    const responses = [
+        new Response('', { status: 400 }),
+        new Response('accepted'),
+        new Response('', { status: 400 }),
+        marker(2),
+        marker(2),
+        new Response('healthy'),
+    ];
+
+    const result = await deployRelease('staging', revision, {
+        ...access,
+        hook,
+        delay: async () => {},
+        fetch: async () => responses.shift(),
+    });
+
+    assert.equal(result.deployment_id, 2);
+});
+
+test('waits through transient health responses after a new release marker', async () => {
+    const responses = [
+        marker(1),
+        new Response('accepted'),
+        marker(2),
+        marker(2),
+        new Response('', { status: 502 }),
+        marker(2),
+        marker(2),
+        new Response('healthy'),
+    ];
+
+    const result = await deployRelease('staging', revision, {
+        ...access,
+        hook,
+        delay: async () => {},
+        fetch: async () => responses.shift(),
+    });
+
+    assert.equal(result.deployment_id, 2);
+});
+
+test('uses curl for Forge triggers when configured', async () => {
+    const responses = [marker(1), marker(2), marker(2), new Response('healthy')];
+    let curlCalls = 0;
+
+    const result = await deployRelease('staging', revision, {
+        ...access,
+        hook,
+        triggerTransport: 'curl',
+        delay: async () => {},
+        curl: async (command, args) => {
+            curlCalls++;
+            assert.equal(command, 'curl');
+            assert.deepEqual(args.slice(0, 2), ['--silent', '--show-error']);
+            assert.equal(
+                args.at(-1).startsWith('https://forge.laravel.com/servers/753072/sites/3396232/deploy/http?'),
+                true,
+            );
+            return { stdout: '202' };
+        },
+        fetch: async () => responses.shift(),
+    });
+
+    assert.equal(result.deployment_id, 2);
+    assert.equal(curlCalls, 1);
+});
+
+test('uses curl for release verification when configured', async () => {
+    const body = JSON.stringify({ revision, deployment_id: 2 });
+    const result = await readMarker('staging', {
+        ...access,
+        readTransport: 'curl',
+        curl: async (command, args) => {
+            assert.equal(command, 'curl');
+            assert.equal(args.includes('--dump-header'), true);
+            assert.equal(args.at(-1), 'https://staging.mouse28.com/deployment.json');
+
+            return {
+                stdout: `HTTP/2 200\r\ncache-control: no-store\r\nage: 0\r\ncf-cache-status: MISS\r\n\r\n${body}\n__DEPLOYMENT_STATUS__:200\n`,
+            };
+        },
+    });
+
+    assert.deepEqual(result, { revision, deployment_id: 2 });
+});
+
+test('does not trigger production when staging no longer matches approval', async () => {
+    let calls = 0;
+    await assert.rejects(
+        deployRelease('production', revision, {
+            ...access,
+            hook: hook.replace('3396232', '3064716'),
+            fetch: async (url, init) => {
+                calls++;
+                assert.notEqual(init.method, 'POST');
+                return marker(1, 'b'.repeat(40));
+            },
+        }),
+        /does not match/,
+    );
+    assert.equal(calls, 1);
+});
+
+test('does not retry a rejected or uncertain Forge trigger', async () => {
+    for (const rejected of [true, false]) {
+        let posts = 0;
+        await assert.rejects(
+            deployRelease('staging', revision, {
+                ...access,
+                hook,
+                fetch: async (url, init) => {
+                    if (init.method !== 'POST') {
+                        return marker();
+                    }
+                    posts++;
+                    if (rejected) {
+                        return new Response('', { status: 500 });
+                    }
+                    throw new Error(`Failed request to ${hook}`);
+                },
+            }),
+            error => !error.message.includes('test-token'),
+        );
+        assert.equal(posts, 1);
+    }
+});
+
+test('times out without retrying an accepted deployment', async () => {
+    let time = 0;
+    let posts = 0;
+    await assert.rejects(
+        deployRelease('staging', revision, {
+            ...access,
+            hook,
+            now: () => time,
+            delay: async () => {
+                time += 12 * 60 * 1000;
+            },
+            fetch: async (url, init) => {
+                if (init.method === 'POST') {
+                    posts++;
+                    return new Response('accepted');
+                }
+                return marker(1);
+            },
+        }),
+        /11 minutes/,
+    );
+    assert.equal(posts, 1);
+});

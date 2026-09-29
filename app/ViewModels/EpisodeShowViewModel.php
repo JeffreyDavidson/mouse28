@@ -8,7 +8,7 @@ use App\Models\Post;
 use App\Support\ContentContinuation;
 use Illuminate\Database\Eloquent\Collection;
 
-class EpisodeViewModel
+class EpisodeShowViewModel
 {
     /**
      * @return array{

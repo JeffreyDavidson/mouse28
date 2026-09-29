@@ -3,7 +3,7 @@
     description="Contact Jeffrey and Cassie about Mouse28, Disney park accessibility, family travel, collaborations, or the podcast."
     og-title="Contact Mouse28"
     og-description="Get in touch with Jeffrey and Cassie about Disney park accessibility, family travel, collaborations, or the Mouse28 podcast."
-    :canonical="route('contact.show')"
+    :canonical="route('contact.create')"
     :dispatch-layout="true"
 >
     <!--
@@ -104,14 +104,8 @@
                             @endif
 
                             <div class="absolute top-[-9999px] left-[-9999px]" aria-hidden="true">
-                                <label for="website_url">Website</label>
-                                <input
-                                    type="text"
-                                    id="website_url"
-                                    name="website_url"
-                                    tabindex="-1"
-                                    autocomplete="off"
-                                />
+                                <label for="website">Website</label>
+                                <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
                             </div>
 
                             <div class="grid gap-5 sm:grid-cols-2">

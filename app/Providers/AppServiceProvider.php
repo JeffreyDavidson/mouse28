@@ -72,7 +72,7 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
-        RateLimiter::for('contact-form', fn (Request $request) => Limit::perMinute(Config::integer('mouse28.rate_limits.contact_form_per_minute'))->by($request->ip())->response(fn (Request $request) => redirect()->route('contact.show')
+        RateLimiter::for('contact-form', fn (Request $request) => Limit::perMinute(Config::integer('mouse28.rate_limits.contact_form_per_minute'))->by($request->ip())->response(fn (Request $request) => redirect()->route('contact.create')
             ->withErrors(['contact_rate_limit' => 'Too many contact attempts. Please wait a minute and try again.'], 'contact')
             ->withInput($request->only(['name', 'email', 'subject', 'message']))));
 

@@ -8,7 +8,7 @@ use App\Models\Guide;
 use App\Support\ContentContinuation;
 use Illuminate\Database\Eloquent\Collection;
 
-class GuideViewModel
+class GuideShowViewModel
 {
     /**
      * @return array{

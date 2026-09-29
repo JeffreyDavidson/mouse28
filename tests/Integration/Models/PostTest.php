@@ -151,3 +151,23 @@ test('author initials are derived from the display name', function (?ContentAuth
     'both authors' => [ContentAuthor::Both, 'J&C'],
     'Mouse28 team fallback' => [null, 'MT'],
 ]);
+
+test('posts are ready to publish with content, an excerpt, and a category', function (): void {
+    $post = Post::factory()->draft()->make([
+        'cover_image' => null,
+        'meta_title' => null,
+        'meta_description' => null,
+    ]);
+
+    expect($post->publishingIssues())->toBeEmpty();
+});
+
+test('posts cannot be published without each required detail', function (string $attribute, string $issue): void {
+    $post = Post::factory()->draft()->make([$attribute => null]);
+
+    expect($post->publishingIssues())->toBe([$issue]);
+})->with([
+    'content' => ['body', 'Add post content'],
+    'excerpt' => ['excerpt', 'Add an excerpt'],
+    'category' => ['category', 'Choose a category'],
+]);

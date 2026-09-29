@@ -1,0 +1,43 @@
+name: Staging smoke
+
+on:
+  schedule:
+    - cron: '37 */12 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: staging-smoke
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    if: vars.STAGED_RELEASES_ENABLED == 'true'
+    name: Staging
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: staging
+
+    steps:
+      - name: Checkout staging baseline
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: main
+
+      - uses: ./.github/actions/deployment-runtime
+        with:
+          composer-username: ${{ secrets.FILAMENTEXAMPLES_COMPOSER_USERNAME }}
+          composer-password: ${{ secrets.FILAMENTEXAMPLES_COMPOSER_PASSWORD }}
+
+      - name: Run bounded staging smoke tests
+        env:
+          PRODUCTION_BASE_URL: https://staging.mouse28.com
+          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+        run: |
+          # The smoke tests boot the test app, which reads .env. An empty file avoids a
+          # missing-file warning; configuration still comes from phpunit.xml and this step.
+          touch .env
+          vendor/bin/pest tests/Feature/Http/ProductionSmokeTest.php --group=production --compact --display-warnings --display-deprecations

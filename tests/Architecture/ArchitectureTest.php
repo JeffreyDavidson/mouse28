@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\ContactController;
 use Filament\Resources\Resource;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Http\FormRequest;
@@ -78,6 +79,17 @@ test('view model classes use the ViewModel suffix', function () use ($viewModelF
     expect($violations)->toBeEmpty('View model classes must end with ViewModel.');
 });
 
+test('shared content view models are named for their model and page', function () use ($viewModelFiles): void {
+    $violations = collect($viewModelFiles)
+        ->map(fn (string $file): string => basename($file, '.php'))
+        ->filter(fn (string $class): bool => preg_match('/^(Post|Episode|Guide)/', $class) === 1)
+        ->reject(fn (string $class): bool => preg_match('/^(Post|Episode|Guide)(Index|Show)ViewModel$/', $class) === 1)
+        ->values()
+        ->all();
+
+    expect($violations)->toBeEmpty('Shared content view models must be named {Model}{Index|Show}ViewModel.');
+});
+
 $resourceRoot = __DIR__.'/../../app/Filament/Resources/';
 $resourceClasses = collect(glob($resourceRoot.'*/*Resource.php') ?: [])
     ->map(fn (string $file): string => 'App\\Filament\\Resources\\'.str_replace(
@@ -122,4 +134,30 @@ foreach ($controllerClasses as $controllerClass) {
             'Expected only __invoke() or resource methods; found: '.implode(', ', $publicMethods),
         );
     });
+
+    test(class_basename($controllerClass).' is invokable when it has a single non-store action', function () use ($controllerClass): void {
+        $reflection = new ReflectionClass($controllerClass);
+        $publicMethods = collect($reflection->getMethods(ReflectionMethod::IS_PUBLIC))
+            ->filter(fn (ReflectionMethod $method): bool => $method->class === $controllerClass)
+            ->reject(fn (ReflectionMethod $method): bool => $method->isStatic() || $method->isConstructor())
+            ->map(fn (ReflectionMethod $method): string => $method->name)
+            ->values()
+            ->all();
+
+        expect(count($publicMethods) !== 1 || in_array($publicMethods[0], ['__invoke', 'store'], true))->toBeTrue(
+            "Single-action controllers must use __invoke(); found: {$publicMethods[0]}",
+        );
+    });
 }
+
+test('ContactController serves the form through create and store', function (): void {
+    $publicMethods = collect(new ReflectionClass(ContactController::class)->getMethods(ReflectionMethod::IS_PUBLIC))
+        ->filter(fn (ReflectionMethod $method): bool => $method->class === ContactController::class)
+        ->reject(fn (ReflectionMethod $method): bool => $method->isConstructor())
+        ->map(fn (ReflectionMethod $method): string => $method->name)
+        ->sort()
+        ->values()
+        ->all();
+
+    expect($publicMethods)->toBe(['create', 'store']);
+});

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\Publishable;
 use App\Enums\ContentAuthor;
 use App\Enums\PostCategory;
 use App\Models\Concerns\HasPublication;
@@ -61,7 +62,7 @@ use Spatie\Tags\HasTags;
     'meta_description',
     'og_image',
 ])]
-class Post extends Model
+class Post extends Model implements Publishable
 {
     /** @use HasFactory<PostFactory> */
     use HasFactory, HasPublication, HasTags, SoftDeletes;
@@ -197,5 +198,19 @@ class Post extends Model
             'published_at' => 'datetime',
             'slug_locked_at' => 'datetime',
         ];
+    }
+
+    /**
+     * The details that must be present before publishing; the rest of the readiness checklist is advisory.
+     *
+     * @return list<string>
+     */
+    public function publishingIssues(): array
+    {
+        return array_values(array_filter([
+            blank($this->body) ? 'Add post content' : null,
+            blank($this->excerpt) ? 'Add an excerpt' : null,
+            blank($this->category) ? 'Choose a category' : null,
+        ]));
     }
 }

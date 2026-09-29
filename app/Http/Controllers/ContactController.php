@@ -13,7 +13,7 @@ use Illuminate\View\View;
 
 class ContactController
 {
-    public function show(ContactViewModel $viewModel): View
+    public function create(ContactViewModel $viewModel): View
     {
         return view('pages.contact', $viewModel->data());
     }
@@ -23,8 +23,8 @@ class ContactController
         Turnstile $turnstile,
         SubmitContactMessage $submitContactMessage,
     ): RedirectResponse {
-        if ($request->filled('website_url')) {
-            return redirect()->route('contact.show')->with('success', true);
+        if ($request->filled('website')) {
+            return redirect()->route('contact.create')->with('success', true);
         }
 
         if (! $turnstile->passes($request, Config::string('services.turnstile.contact_action'))) {
@@ -35,6 +35,6 @@ class ContactController
 
         $submitContactMessage($request->messageAttributes());
 
-        return redirect()->route('contact.show')->with('success', true);
+        return redirect()->route('contact.create')->with('success', true);
     }
 }

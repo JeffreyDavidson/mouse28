@@ -324,7 +324,7 @@ test('core mobile navigation and search work without JavaScript', function (): v
     $home->assertVisible('#no-script-navigation')
         ->assertVisible('#no-script-navigation a[href="'.route('blog.index').'"]')
         ->assertVisible('#no-script-navigation a[href="'.route('episodes.index').'"]')
-        ->assertVisible('#no-script-navigation a[href="'.route('contact.show').'"]');
+        ->assertVisible('#no-script-navigation a[href="'.route('contact.create').'"]');
 
     visit(route('search'), ['javaScriptEnabled' => false])
         ->fill('#site-search', 'accessible parks')

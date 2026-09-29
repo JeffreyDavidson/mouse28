@@ -23,3 +23,42 @@ function browserDecorativeGlyphCountScript(array $glyphs): string
         })()
         JS;
 }
+
+/**
+ * Build a script that resolves true once the condition holds, or false after the timeout.
+ *
+ * Pest's assertScript() evaluates once, so interactions that finish asynchronously
+ * must be awaited in the browser instead of sampled immediately.
+ */
+function browserWaitForScript(string $condition, int $timeoutMilliseconds = 10000): string
+{
+    return <<<JS
+        function() {
+            return new Promise((resolve) => {
+                const deadline = performance.now() + {$timeoutMilliseconds};
+                const check = () => {
+                    if ({$condition}) {
+                        resolve(true);
+                    } else if (performance.now() > deadline) {
+                        resolve(false);
+                    } else {
+                        setTimeout(check, 25);
+                    }
+                };
+
+                check();
+            });
+        }
+        JS;
+}
+
+/**
+ * Build a script that resolves true once the Livewire component at the selector has booted.
+ *
+ * Livewire loads asynchronously, so interactions before it boots fall back to plain links
+ * or inert buttons.
+ */
+function browserLivewireReadyScript(string $selector): string
+{
+    return browserWaitForScript("document.querySelector('{$selector}')?.__livewire !== undefined");
+}

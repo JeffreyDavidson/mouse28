@@ -15,7 +15,7 @@ test('public pages render one complete newsletter footer', function (): void {
         route('episodes.index'),
         route('episodes.show', $episode),
         route('about'),
-        route('contact.show'),
+        route('contact.create'),
         route('privacy'),
     ])
         ->assertScript('document.querySelectorAll("footer").length', 1)
@@ -80,7 +80,8 @@ test('blog filters and sorting animate stories without reloading or moving the c
         'category' => 'food-reviews',
     ]);
 
-    $page = visit(route('blog.index'));
+    $page = visit(route('blog.index'))
+        ->assertScript(browserLivewireReadyScript('[data-blog-browser]'), true);
 
     $page->assertScript("document.querySelector('[data-blog-status][role=status][aria-live=polite]') !== null", true);
     $page->script(observeBlogCardMotionScript());
@@ -162,7 +163,8 @@ test('blog filters update without spatial card motion when reduced motion is pre
         'published_at' => now()->subDays(3),
     ]);
 
-    $page = visit(route('blog.index'), ['reducedMotion' => 'reduce']);
+    $page = visit(route('blog.index'), ['reducedMotion' => 'reduce'])
+        ->assertScript(browserLivewireReadyScript('[data-blog-browser]'), true);
 
     $page->assertScript("document.querySelector('[data-blog-status][role=status][aria-live=polite]') !== null", true);
     $page->script(observeBlogCardMotionScript());
@@ -184,7 +186,8 @@ test('blog pagination keeps the featured story visible', function (): void {
         'published_at' => now()->subDay(),
     ]);
 
-    $page = visit(route('blog.index'));
+    $page = visit(route('blog.index'))
+        ->assertScript(browserLivewireReadyScript('[data-blog-browser]'), true);
 
     $page
         ->click('button[aria-label="Go to page 2"]')
@@ -273,7 +276,7 @@ test('public pages remain usable at mobile widths', function (): void {
         route('guides.index'),
         route('episodes.index'),
         route('about'),
-        route('contact.show'),
+        route('contact.create'),
         route('privacy'),
         route('blog.show', $post),
         route('episodes.show', $episode),
@@ -462,7 +465,8 @@ test('featured story and viewport stay stable throughout filter transitions', fu
     Post::factory()->create(['category' => 'food-reviews', 'published_at' => now()->subDay()]);
     Post::factory()->count(3)->create(['category' => 'park-accessibility', 'published_at' => now()->subWeek()]);
 
-    $page = visit(route('blog.index'));
+    $page = visit(route('blog.index'))
+        ->assertScript(browserLivewireReadyScript('[data-blog-browser]'), true);
     $page->script(<<<'JS'
         window.scrollTo({ top: document.querySelector('[data-blog-filters]').getBoundingClientRect().top + window.scrollY - 120, behavior: 'instant' });
         window.filterSamples = [];
@@ -494,7 +498,7 @@ test('featured story and viewport stay stable throughout filter transitions', fu
     foreach (['a[data-blog-filter-link][href*="park-accessibility"]', 'a[data-blog-filter-link][href$="/blog"]'] as $selector) {
         $page
             ->click($selector)
-            ->assertScript('window.filterSamplingDone', true)
+            ->assertScript(browserWaitForScript('window.filterSamplingDone === true', 15000), true)
             ->assertScript('window.filterSamples.length > 10', true)
             ->assertScript('window.filterSamples.every(sample => sample.featured && sample.scroll < 2 && sample.filter < 2)', true)
             ->assertScript('window.filterSamples.some(sample => sample.moving)', true)

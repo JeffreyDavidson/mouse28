@@ -1,0 +1,94 @@
+name: Deploy staging
+
+on:
+    workflow_run:
+        workflows: [CI]
+        types: [completed]
+        branches: [main, 'release/**']
+
+concurrency:
+    group: release-promotion
+    cancel-in-progress: false
+
+permissions:
+    contents: read
+    deployments: write
+
+jobs:
+    staging:
+        if: >-
+            vars.STAGED_RELEASES_ENABLED == 'true' &&
+            github.event.workflow_run.conclusion == 'success' &&
+            github.event.workflow_run.event == 'push' &&
+            (github.event.workflow_run.head_branch == 'main' || startsWith(github.event.workflow_run.head_branch, 'release/')) &&
+            github.event.workflow_run.head_repository.full_name == github.repository
+        name: Stage ${{ github.event.workflow_run.head_sha }}
+        runs-on: ubuntu-latest
+        timeout-minutes: 25
+        environment: staging
+        env:
+            EXPECTED_REVISION: ${{ github.event.workflow_run.head_sha }}
+            SOURCE_BRANCH: ${{ github.event.workflow_run.head_branch }}
+        steps:
+            - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+              with:
+                  ref: ${{ github.event.workflow_run.head_sha }}
+                  fetch-depth: 0
+            - name: Reject obsolete candidates
+              run: |
+                  test "$(git rev-parse HEAD)" = "$EXPECTED_REVISION"
+                  git fetch --no-tags origin "$SOURCE_BRANCH:refs/remotes/origin/$SOURCE_BRANCH"
+                  test "$(git rev-parse "origin/$SOURCE_BRANCH")" = "$EXPECTED_REVISION"
+            - uses: ./.github/actions/deployment-runtime
+              with:
+                  composer-username: ${{ secrets.FILAMENTEXAMPLES_COMPOSER_USERNAME }}
+                  composer-password: ${{ secrets.FILAMENTEXAMPLES_COMPOSER_PASSWORD }}
+            - name: Check Forge runner connectivity
+              run: >-
+                  curl --silent --show-error --connect-timeout 10 --max-time 15
+                  --output /dev/null
+                  --write-out 'Forge reachability: HTTP %{http_code}; remote_ip=%{remote_ip}; ssl_verify=%{ssl_verify_result}\n'
+                  https://forge.laravel.com
+            - name: Diagnose staging Access credentials
+              env:
+                  CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+                  CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+              run: node scripts/forge-deployment.mjs diagnose staging "$EXPECTED_REVISION"
+            - name: Deploy and verify the tested revision
+              id: deployment
+              # Forge can finish after the verification window. If verification times
+              # out, let the read-only recovery check determine the actual state.
+              continue-on-error: true
+              env:
+                  FORGE_DEPLOY_HOOK: ${{ secrets.FORGE_DEPLOY_HOOK }}
+                  CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+                  CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+              run: node scripts/forge-deployment.mjs deploy staging "$EXPECTED_REVISION"
+            - name: Recover by verifying the currently served revision
+              if: steps.deployment.outcome == 'failure'
+              env:
+                  CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+                  CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+              run: node scripts/forge-deployment.mjs verify staging "$EXPECTED_REVISION"
+            - name: Run application smoke checks
+              env:
+                  PRODUCTION_BASE_URL: https://staging.mouse28.com
+                  CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+                  CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+              run: |
+                  # The smoke tests boot the test app, which reads .env. An empty file avoids a
+                  # missing-file warning; configuration still comes from phpunit.xml and this step.
+                  touch .env
+                  vendor/bin/pest tests/Feature/Http/ProductionSmokeTest.php --group=production --compact --display-warnings --display-deprecations
+            - name: Recheck the serving revision after smoke tests
+              env:
+                  CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
+                  CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
+                  DEPLOYMENT_OUTCOME: ${{ steps.deployment.outcome }}
+              run: |
+                  node scripts/forge-deployment.mjs verify staging "$EXPECTED_REVISION"
+                  if [[ "$DEPLOYMENT_OUTCOME" == "failure" ]]; then
+                    printf 'Forge deployment was not verified before the 11-minute deadline; read-only verification, smoke checks, and the final revision check passed for `%s`. Review this revision before manual production promotion.\n' "$EXPECTED_REVISION" >> "$GITHUB_STEP_SUMMARY"
+                  else
+                    printf 'Staging verified: `%s`. Review this revision before manual production promotion.\n' "$EXPECTED_REVISION" >> "$GITHUB_STEP_SUMMARY"
+                  fi

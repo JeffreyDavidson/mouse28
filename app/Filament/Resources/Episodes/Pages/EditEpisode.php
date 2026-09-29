@@ -33,7 +33,7 @@ class EditEpisode extends EditRecord
                 ->authorize('update')
                 ->requiresConfirmation()
                 ->modalDescription('Generate missing responsive copies of this saved cover. The original image is preserved.')
-                ->visible(fn (): bool => $this->record->isLive() && filled($this->record->cover_image))
+                ->visible(fn (): bool => $this->record->isPublished() && filled($this->record->cover_image))
                 ->action(function (GenerateResponsiveCover $generateCover): void {
                     $notification = Notification::make();
                     try {
