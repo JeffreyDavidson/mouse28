@@ -6,6 +6,7 @@ use App\Contracts\Publishable;
 use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
 use App\Models\Concerns\HasPublication;
+use App\Models\Concerns\HasTagsUntilForceDeleted;
 use Carbon\CarbonInterface;
 use Database\Factories\GuideFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -20,7 +21,6 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Date;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
-use Spatie\Tags\HasTags;
 
 /**
  * @property ContentAuthor|null $author
@@ -61,7 +61,7 @@ use Spatie\Tags\HasTags;
 class Guide extends Model implements Publishable
 {
     /** @use HasFactory<GuideFactory> */
-    use HasFactory, HasPublication, HasTags, SoftDeletes;
+    use HasFactory, HasPublication, HasTagsUntilForceDeleted, SoftDeletes;
 
     use LogsActivity;
 
