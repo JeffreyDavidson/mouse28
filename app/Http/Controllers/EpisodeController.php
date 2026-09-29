@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Episode;
 use App\ViewModels\EpisodeIndexViewModel;
-use App\ViewModels\EpisodeViewModel;
+use App\ViewModels\EpisodeShowViewModel;
 use Illuminate\View\View;
 
 class EpisodeController
@@ -14,7 +14,7 @@ class EpisodeController
         return view('pages.episodes.index', $viewModel->data());
     }
 
-    public function show(Episode $episode, EpisodeViewModel $viewModel): View
+    public function show(Episode $episode, EpisodeShowViewModel $viewModel): View
     {
         abort_unless($episode->isLive(), 404);
 

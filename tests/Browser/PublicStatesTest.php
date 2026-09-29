@@ -56,7 +56,7 @@ test('search validation identifies and focuses the invalid query', function (): 
 })->group('browser-smoke');
 
 test('contact page offers an actionable email route when verification is unavailable', function (): void {
-    visit(route('contact.show'))
+    visit(route('contact.create'))
         ->assertSee('Email us directly')
         ->assertVisible('.dispatch-letter-form a[href^="mailto:"]')
         ->assertNoAccessibilityIssues()

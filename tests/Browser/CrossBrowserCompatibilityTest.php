@@ -31,7 +31,7 @@ test('public reading and form surfaces work across supported browsers', function
         route('blog.index') => 'Blog',
         route('guides.index') => 'Guides',
         route('episodes.index') => 'Podcast',
-        route('contact.show') => 'Contact',
+        route('contact.create') => 'Contact',
         route('blog.show', $post) => $post->title,
         route('guides.show', $guide) => $guide->title,
         route('episodes.show', $episode) => $episode->title,
@@ -43,7 +43,7 @@ test('public reading and form surfaces work across supported browsers', function
             ->assertNoJavaScriptErrors();
     }
 
-    visit(route('contact.show'))
+    visit(route('contact.create'))
         ->assertScript('document.querySelector("#subject").tagName', 'SELECT')
         ->assertScript('document.querySelector("#subject").disabled', false);
 

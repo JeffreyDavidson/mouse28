@@ -79,6 +79,17 @@ test('view model classes use the ViewModel suffix', function () use ($viewModelF
     expect($violations)->toBeEmpty('View model classes must end with ViewModel.');
 });
 
+test('shared content view models are named for their model and page', function () use ($viewModelFiles): void {
+    $violations = collect($viewModelFiles)
+        ->map(fn (string $file): string => basename($file, '.php'))
+        ->filter(fn (string $class): bool => preg_match('/^(Post|Episode|Guide)/', $class) === 1)
+        ->reject(fn (string $class): bool => preg_match('/^(Post|Episode|Guide)(Index|Show)ViewModel$/', $class) === 1)
+        ->values()
+        ->all();
+
+    expect($violations)->toBeEmpty('Shared content view models must be named {Model}{Index|Show}ViewModel.');
+});
+
 $resourceRoot = __DIR__.'/../../app/Filament/Resources/';
 $resourceClasses = collect(glob($resourceRoot.'*/*Resource.php') ?: [])
     ->map(fn (string $file): string => 'App\\Filament\\Resources\\'.str_replace(

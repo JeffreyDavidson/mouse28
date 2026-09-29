@@ -113,7 +113,7 @@
                             class="dispatch-nav-link inline-flex min-h-12 items-center text-sm font-medium tracking-wide"
                         >About</a>
                         <a
-                            href="{{ route('contact.show') }}"
+                            href="{{ route('contact.create') }}"
                             @if (request()->routeIs('contact.*')) aria-current="page" @endif
                             class="dispatch-nav-link inline-flex min-h-12 items-center text-sm font-medium tracking-wide"
                         >Contact</a>
@@ -176,7 +176,7 @@
                             class="inline-flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium text-white/80"
                         >About</a>
                         <a
-                            href="{{ route('contact.show') }}"
+                            href="{{ route('contact.create') }}"
                             class="inline-flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium text-white/80"
                         >Contact</a>
                         <a
@@ -223,7 +223,7 @@
                             class="{{ request()->routeIs('about') ? 'text-gold bg-white/5' : 'text-white/80' }} flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium transition-colors hover:bg-white/5 hover:text-gold"
                         >About</a>
                         <a
-                            href="{{ route('contact.show') }}"
+                            href="{{ route('contact.create') }}"
                             @if (request()->routeIs('contact.*')) aria-current="page" @endif
                             class="{{ request()->routeIs('contact.*') ? 'text-gold bg-white/5' : 'text-white/80' }} flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium transition-colors hover:bg-white/5 hover:text-gold"
                         >Contact</a>
@@ -346,7 +346,7 @@
                         </h2>
                         <div class="flex flex-col gap-1 text-base sm:text-sm">
                             <a
-                                href="{{ route('contact.show') }}"
+                                href="{{ route('contact.create') }}"
                                 class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
                             >Contact Us</a>
                             <a

@@ -8,7 +8,7 @@ test('error recovery uses safe form destinations instead of untrusted referrers'
 
     expect(ErrorRecovery::for($request, 500)['url'])->toBe(route($route).$fragment);
 })->with([
-    'contact' => ['/contact', 'contact.show', ''],
+    'contact' => ['/contact', 'contact.create', ''],
     'newsletter' => ['/newsletter', 'home', '#newsletter'],
     'unknown POST' => ['/unknown-post', 'home', ''],
     'Livewire POST' => ['/livewire/update', 'home', ''],

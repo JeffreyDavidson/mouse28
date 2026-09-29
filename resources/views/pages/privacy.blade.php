@@ -53,8 +53,8 @@
 
             <h2>Questions or deletion requests</h2>
             <p>
-                Use our <a href="{{ route('contact.show') }}">contact page</a> or the email address listed there to ask
-                about your information, unsubscribe, or request deletion. Tell us which email address or message the
+                Use our <a href="{{ route('contact.create') }}">contact page</a> or the email address listed there to
+                ask about your information, unsubscribe, or request deletion. Tell us which email address or message the
                 request concerns, without sending additional sensitive information.
             </p>
             <p>
