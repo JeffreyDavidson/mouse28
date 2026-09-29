@@ -54,15 +54,6 @@ class EditorialReadiness
     }
 
     /** @return list<string> */
-    public static function publishingIssues(Post|Guide|Episode $content): array
-    {
-        return array_values(array_filter(
-            self::issues($content),
-            fn (string $issue): bool => $issue !== 'Set a publish date',
-        ));
-    }
-
-    /** @return list<string> */
     private static function postIssues(Post $post): array
     {
         return array_values(array_filter([

@@ -97,3 +97,24 @@ test('content enums round trip through their existing database strings', functio
         ->and($record->toArray()['category'])->toBe('family-planning')
         ->and($record->author_name)->toBe('Jeffrey & Cassie');
 });
+
+test('guides are ready to publish with content, an excerpt, an official source, and a review date', function (): void {
+    $guide = Guide::factory()->draft()->make([
+        'cover_image' => null,
+        'meta_title' => null,
+        'meta_description' => null,
+    ]);
+
+    expect($guide->publishingIssues())->toBeEmpty();
+});
+
+test('guides cannot be published without each required detail', function (string $attribute, string $issue): void {
+    $guide = Guide::factory()->draft()->make([$attribute => null]);
+
+    expect($guide->publishingIssues())->toBe([$issue]);
+})->with([
+    'content' => ['body', 'Add guide content'],
+    'excerpt' => ['excerpt', 'Add an excerpt'],
+    'official source' => ['source_url', 'Add an official source'],
+    'review date' => ['last_reviewed_at', 'Set the review date'],
+]);

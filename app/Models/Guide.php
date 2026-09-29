@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Contracts\Publishable;
 use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
 use App\Models\Concerns\HasPublication;
@@ -57,7 +58,7 @@ use Spatie\Tags\HasTags;
     'meta_description',
     'og_image',
 ])]
-class Guide extends Model
+class Guide extends Model implements Publishable
 {
     /** @use HasFactory<GuideFactory> */
     use HasFactory, HasPublication, HasTags, SoftDeletes;
@@ -157,5 +158,20 @@ class Guide extends Model
             'published_at' => 'datetime',
             'slug_locked_at' => 'datetime',
         ];
+    }
+
+    /**
+     * The details that must be present before publishing; the rest of the readiness checklist is advisory.
+     *
+     * @return list<string>
+     */
+    public function publishingIssues(): array
+    {
+        return array_values(array_filter([
+            blank($this->body) ? 'Add guide content' : null,
+            blank($this->excerpt) ? 'Add an excerpt' : null,
+            blank($this->source_url) ? 'Add an official source' : null,
+            blank($this->last_reviewed_at) ? 'Set the review date' : null,
+        ]));
     }
 }

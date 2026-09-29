@@ -22,7 +22,7 @@ class GuideController
     {
         abort_if(! Config::boolean('mouse28.guides_enabled'), 404);
 
-        abort_unless($guide->isLive(), 404);
+        abort_unless($guide->isPublished(), 404);
 
         return view('pages.guides.show', $viewModel->data($guide));
     }

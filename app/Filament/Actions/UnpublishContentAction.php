@@ -1,16 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Actions;
 
-use App\Models\Episode;
-use App\Models\Guide;
-use App\Models\Post;
+use App\Contracts\Publishable;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
+use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
+use Livewire\Component;
 
 /**
- * Takes published content off the public site while keeping its locked permalink.
+ * Takes live or scheduled content back to draft while keeping its publish date and permalink.
  */
 class UnpublishContentAction extends Action
 {
@@ -27,11 +31,18 @@ class UnpublishContentAction extends Action
             ->authorize('update')
             ->color('warning')
             ->requiresConfirmation()
-            ->visible(fn (Post|Guide|Episode $record): bool => $record->is_published)
-            ->action(function (Post|Guide|Episode $record): void {
-                $record->update(['is_published' => false]);
+            ->visible(fn (Publishable $record): bool => $record->isPublished() || $record->isScheduled())
+            ->action(function (Model&Publishable $record, Component $livewire): void {
+                $record->unpublish();
 
-                Notification::make()->success()->title(class_basename($record).' unpublished')->send();
+                if ($livewire instanceof EditRecord) {
+                    $livewire->refreshFormData(array_keys($record->getChanges()));
+                }
+
+                Notification::make()
+                    ->success()
+                    ->title(Str::headline(class_basename($record)).' unpublished')
+                    ->send();
             });
     }
 }
