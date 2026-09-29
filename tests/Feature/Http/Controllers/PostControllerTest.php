@@ -215,7 +215,7 @@ test('blog search category sorting and pagination preserve filters', function ()
 });
 
 test('editorial review information is shown on the public page', function (): void {
-    config()->set('mouse28.post_review_interval_days', 180);
+    config()->set('content.post_review_interval_days', 180);
 
     $currentPost = Post::factory()->create([
         'source_url' => 'https://disneyworld.disney.go.com/guest-services/disability-access-service/',

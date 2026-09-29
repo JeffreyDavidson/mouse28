@@ -101,7 +101,7 @@ class PostForm
                         DatePicker::make('last_reviewed_at')
                             ->label('Last Reviewed')
                             ->required(fn (Get $get): bool => filled($get('source_url')))
-                            ->helperText('Sourced posts are flagged after '.Config::integer('mouse28.post_review_interval_days').' days.'),
+                            ->helperText('Sourced posts are flagged after '.Config::integer('content.post_review_interval_days').' days.'),
                     ]),
 
                 Grid::make(2)

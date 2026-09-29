@@ -2,6 +2,7 @@
 
 use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
+use App\Enums\SourceReviewStatus;
 use App\Models\Guide;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -43,7 +44,7 @@ test('guide editorial changes record the actor and changed values only', functio
 
 test('editorial review dates determine the review queue', function (): void {
     $this->freezeTime();
-    config()->set('mouse28.guide_review_interval_days', 180);
+    config()->set('content.guide_review_interval_days', 180);
 
     $currentGuide = Guide::factory()->create([
         'last_reviewed_at' => now()->subDays(30),
@@ -118,3 +119,26 @@ test('guides cannot be published without each required detail', function (string
     'official source' => ['source_url', 'Add an official source'],
     'review date' => ['last_reviewed_at', 'Set the review date'],
 ]);
+
+test('guides are always tracked for review and never report an untracked source', function (?int $reviewedDaysAgo, SourceReviewStatus $status): void {
+    $this->freezeTime();
+    config()->set('content.guide_review_interval_days', 180);
+    $guide = Guide::factory()->make([
+        'last_reviewed_at' => $reviewedDaysAgo === null ? null : today()->subDays($reviewedDaysAgo),
+    ]);
+
+    expect($guide->sourceReviewStatus())->toBe($status);
+})->with([
+    'never reviewed' => [null, SourceReviewStatus::ReviewDue],
+    'reviewed within the interval' => [179, SourceReviewStatus::Current],
+    'reviewed on the interval boundary' => [180, SourceReviewStatus::Current],
+    'reviewed past the interval' => [181, SourceReviewStatus::ReviewDue],
+]);
+
+test('the guide review interval comes from content configuration', function (): void {
+    $this->freezeTime();
+    config()->set('content.guide_review_interval_days', 30);
+    $guide = Guide::factory()->make(['last_reviewed_at' => today()->subDays(31)]);
+
+    expect($guide->isReviewDue())->toBeTrue();
+});

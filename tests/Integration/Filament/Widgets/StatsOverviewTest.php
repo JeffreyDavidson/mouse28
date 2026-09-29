@@ -55,7 +55,7 @@ test('published statistics exclude scheduled content', function (): void {
 });
 
 test('dashboard signals when a sourced published post is due for review', function (): void {
-    config()->set('mouse28.post_review_interval_days', 180);
+    config()->set('content.post_review_interval_days', 180);
     Post::factory()->create([
         'source_url' => 'https://example.test/official-source',
         'last_reviewed_at' => Date::today()->subDays(181),

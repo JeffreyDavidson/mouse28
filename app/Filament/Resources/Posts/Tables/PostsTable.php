@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Posts\Tables;
 use App\Enums\ContentAuthor;
 use App\Enums\PostCategory;
 use App\Enums\PublicationStatus;
+use App\Enums\SourceReviewStatus;
 use App\Models\Post;
 use App\Support\EditorialReadiness;
 use Filament\Actions\BulkActionGroup;
@@ -44,14 +45,10 @@ class PostsTable
                     ->sortable()
                     ->placeholder('Not tracked')
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('review_status')
+                TextColumn::make('source_review_status')
                     ->label('Review')
+                    ->state(fn (Post $record): SourceReviewStatus => $record->sourceReviewStatus())
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'Current' => 'success',
-                        'Review due' => 'warning',
-                        default => 'gray',
-                    })
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('readiness')
                     ->label('Readiness')

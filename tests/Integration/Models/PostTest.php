@@ -2,6 +2,7 @@
 
 use App\Enums\ContentAuthor;
 use App\Enums\PostCategory;
+use App\Enums\SourceReviewStatus;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -43,7 +44,7 @@ test('post editorial changes record the actor and changed values only', function
 
 test('editorial review dates determine the review queue', function (): void {
     $this->freezeTime();
-    config()->set('mouse28.post_review_interval_days', 180);
+    config()->set('content.post_review_interval_days', 180);
 
     $currentPost = Post::factory()->create([
         'source_url' => 'https://disneyworld.disney.go.com/guest-services/disability-access-service/',
@@ -171,3 +172,31 @@ test('posts cannot be published without each required detail', function (string 
     'excerpt' => ['excerpt', 'Add an excerpt'],
     'category' => ['category', 'Choose a category'],
 ]);
+
+test('posts report the freshness of their official source', function (?string $sourceUrl, ?int $reviewedDaysAgo, SourceReviewStatus $status): void {
+    $this->freezeTime();
+    config()->set('content.post_review_interval_days', 180);
+    $post = Post::factory()->make([
+        'source_url' => $sourceUrl,
+        'last_reviewed_at' => $reviewedDaysAgo === null ? null : today()->subDays($reviewedDaysAgo),
+    ]);
+
+    expect($post->sourceReviewStatus())->toBe($status);
+})->with([
+    'no source' => [null, null, SourceReviewStatus::NotTracked],
+    'source never reviewed' => ['https://example.test/source', null, SourceReviewStatus::ReviewDue],
+    'reviewed within the interval' => ['https://example.test/source', 179, SourceReviewStatus::Current],
+    'reviewed on the interval boundary' => ['https://example.test/source', 180, SourceReviewStatus::Current],
+    'reviewed past the interval' => ['https://example.test/source', 181, SourceReviewStatus::ReviewDue],
+]);
+
+test('the post review interval comes from content configuration', function (): void {
+    $this->freezeTime();
+    config()->set('content.post_review_interval_days', 30);
+    $post = Post::factory()->make([
+        'source_url' => 'https://example.test/source',
+        'last_reviewed_at' => today()->subDays(31),
+    ]);
+
+    expect($post->isReviewDue())->toBeTrue();
+});

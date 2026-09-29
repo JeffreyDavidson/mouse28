@@ -63,3 +63,15 @@ test('header does not count scheduled guides as published', function (): void {
             'drafts' => 1,
         ]);
 });
+
+test('the review due filter and source review column show guides that need review', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $due = Guide::factory()->create(['last_reviewed_at' => null]);
+    $current = Guide::factory()->create(['last_reviewed_at' => today()]);
+
+    livewire(ListGuides::class)
+        ->filterTable('review_due')
+        ->assertCanSeeTableRecords([$due])
+        ->assertCanNotSeeTableRecords([$current])
+        ->assertTableColumnExists('source_review_status');
+});

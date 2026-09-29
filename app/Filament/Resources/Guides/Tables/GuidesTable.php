@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Guides\Tables;
 use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
 use App\Enums\PublicationStatus;
+use App\Enums\SourceReviewStatus;
 use App\Models\Guide;
 use App\Support\EditorialReadiness;
 use Filament\Actions\BulkActionGroup;
@@ -30,10 +31,10 @@ class GuidesTable
                 TextColumn::make('category')
                     ->badge(),
                 TextColumn::make('last_reviewed_at')->date()->sortable()->placeholder('Not reviewed'),
-                TextColumn::make('review_status')
+                TextColumn::make('source_review_status')
                     ->label('Review')
-                    ->badge()
-                    ->color(fn (string $state): string => $state === 'Current' ? 'success' : 'warning'),
+                    ->state(fn (Guide $record): SourceReviewStatus => $record->sourceReviewStatus())
+                    ->badge(),
                 TextColumn::make('readiness')
                     ->label('Readiness')
                     ->badge()
