@@ -17,7 +17,7 @@ test('tests use Pest files within a registered suite', function (): void {
         }
 
         $relativePath = str_replace($testRoot.DIRECTORY_SEPARATOR, '', $file->getPathname());
-        if (in_array($relativePath, ['BrowserTestCase.php', 'Pest.php', 'TestCase.php'], true)) {
+        if (in_array($relativePath, ['BrowserTestCase.php', 'Pest.php', 'TestCase.php', 'Support/DeploymentSmokeClient.php'], true)) {
             continue;
         }
 
@@ -52,6 +52,8 @@ test('test paths mirror their application source', function (string $suite): voi
         'Config/Mouse28Test.php' => 'config/mouse28.php',
         'Http/ExceptionHandlingTest.php' => 'bootstrap/app.php',
         'HealthTest.php' => 'app/Providers/AppServiceProvider.php',
+        'Http/ProductionSmokeTest.php' => 'routes/web.php',
+        'Support/DeploymentSmokeClientTest.php' => 'tests/Support/DeploymentSmokeClient.php',
     ];
     $violations = [];
     $iterator = new RecursiveIteratorIterator(
