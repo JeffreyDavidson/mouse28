@@ -37,7 +37,7 @@ class EditPost extends EditRecord
                 ->action(function (GenerateResponsiveCover $generateCover): void {
                     $notification = Notification::make();
                     try {
-                        $generateCover($this->record->refresh());
+                        $generateCover->handle($this->record->refresh());
                         $notification->success()->title('Responsive artwork prepared');
                     } catch (RuntimeException) {
                         $notification->danger()->title('Artwork generation failed')->body('The original cover is unchanged. Check its format and image-driver support.');

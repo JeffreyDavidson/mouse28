@@ -20,13 +20,13 @@ test('failed derivative publication leaves no final or temporary file and can be
     $failingDisk->shouldReceive($operation)->once()->andReturnFalse();
     Storage::set('public', $failingDisk);
 
-    expect(fn () => app(GenerateResponsiveCover::class)($record))
+    expect(fn () => app(GenerateResponsiveCover::class)->handle($record))
         ->toThrow(RuntimeException::class, 'Unable to publish responsive image.')
         ->and($disk->allFiles())->toBe(['posts/cover.png'])
         ->and($disk->get('posts/cover.png'))->toBe($original);
     Storage::set('public', $disk);
 
-    $count = app(GenerateResponsiveCover::class)($record);
+    $count = app(GenerateResponsiveCover::class)->handle($record);
 
     expect($count)->toBe(1)
         ->and($disk->exists(ResponsiveArtwork::variantPath(hash('sha256', $original), 480)))->toBeTrue();
@@ -36,7 +36,7 @@ test('cover generation refuses unpublished records', function (string $state): v
     $disk = Storage::fake('public');
     $record = $state === 'draft' ? Post::factory()->draft()->create() : Post::factory()->scheduled()->create();
 
-    expect(fn () => app(GenerateResponsiveCover::class)($record))
+    expect(fn () => app(GenerateResponsiveCover::class)->handle($record))
         ->toThrow(RuntimeException::class, 'Only published covers can be generated.')
         ->and($disk->allFiles())->toBeEmpty();
 })->with(['draft', 'scheduled']);
@@ -46,8 +46,8 @@ test('cover generation publishes a complete WebP and reuses it on retry', functi
     $disk->put('posts/cover.png', UploadedFile::fake()->image('cover.png', 600, 400)->getContent());
     $record = Post::factory()->create(['cover_image' => 'posts/cover.png']);
 
-    $count = app(GenerateResponsiveCover::class)($record);
-    $retryCount = app(GenerateResponsiveCover::class)($record);
+    $count = app(GenerateResponsiveCover::class)->handle($record);
+    $retryCount = app(GenerateResponsiveCover::class)->handle($record);
 
     expect($count)->toBe(1)
         ->and($retryCount)->toBe(0)

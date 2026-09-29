@@ -66,7 +66,7 @@ class GenerateResponsiveArtwork extends Command
             }
 
             try {
-                $generated += $generateCover($record);
+                $generated += $generateCover->handle($record);
             } catch (RuntimeException) {
                 $this->error("Could not generate artwork for {$this->option('type')} record {$record->id}; original retained.");
                 $failed = true;
