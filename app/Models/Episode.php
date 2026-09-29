@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Contracts\Publishable;
 use App\Models\Concerns\HasPublication;
+use App\Models\Concerns\HasTagsUntilForceDeleted;
 use Carbon\CarbonInterface;
 use Database\Factories\EpisodeFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -17,7 +18,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
-use Spatie\Tags\HasTags;
 
 /**
  * @property Carbon|null $published_at
@@ -58,7 +58,7 @@ use Spatie\Tags\HasTags;
 class Episode extends Model implements Publishable
 {
     /** @use HasFactory<EpisodeFactory> */
-    use HasFactory, HasPublication, HasTags, SoftDeletes;
+    use HasFactory, HasPublication, HasTagsUntilForceDeleted, SoftDeletes;
 
     use LogsActivity;
 
