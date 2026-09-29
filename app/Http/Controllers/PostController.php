@@ -17,7 +17,7 @@ class PostController
 
     public function show(Post $post, PostShowViewModel $viewModel): View
     {
-        abort_unless($post->isLive(), 404);
+        abort_unless($post->isPublished(), 404);
 
         return view('pages.blog.show', $viewModel->data($post));
     }

@@ -21,9 +21,27 @@ trait HasPublication
         });
     }
 
-    public function isLive(): bool
+    public function isPublished(): bool
     {
         return $this->is_published && ($this->published_at?->lte(Date::now()) ?? false);
+    }
+
+    public function isScheduled(): bool
+    {
+        return $this->is_published && ($this->published_at?->isAfter(Date::now()) ?? false);
+    }
+
+    public function publish(): void
+    {
+        $this->update([
+            'is_published' => true,
+            'published_at' => $this->published_at ?? Date::now(),
+        ]);
+    }
+
+    public function unpublish(): void
+    {
+        $this->update(['is_published' => false]);
     }
 
     /** @param Builder<static> $query */

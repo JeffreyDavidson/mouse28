@@ -14,7 +14,7 @@ class GenerateResponsiveCover
 {
     public function __invoke(Post|Episode $record): int
     {
-        if (! $record->isLive()) {
+        if (! $record->isPublished()) {
             throw new RuntimeException('Only published covers can be generated.');
         }
 

@@ -81,12 +81,12 @@ test('edit page offers a draft preview', function (): void {
         ->assertActionShouldOpenUrlInNewTab('preview');
 });
 
-test('ready drafts can be explicitly published', function (): void {
+test('drafts with their required details can be published while advisory details are missing', function (): void {
     $admin = User::factory()->admin()->create();
     $record = Guide::factory()->draft()->create([
-        'cover_image' => 'guides/complete.jpg',
-        'meta_title' => 'Complete guide title',
-        'meta_description' => 'Complete guide description',
+        'cover_image' => null,
+        'meta_title' => null,
+        'meta_description' => null,
     ]);
 
     actingAs($admin);

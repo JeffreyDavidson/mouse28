@@ -16,7 +16,7 @@ class EpisodeController
 
     public function show(Episode $episode, EpisodeShowViewModel $viewModel): View
     {
-        abort_unless($episode->isLive(), 404);
+        abort_unless($episode->isPublished(), 404);
 
         return view('pages.episodes.show', $viewModel->data($episode));
     }

@@ -38,3 +38,28 @@ test('episode editorial changes record the actor and changed values only', funct
     expect(Activity::query()->pluck('event')->all())
         ->toBe(['created', 'updated', 'deleted', 'restored']);
 });
+
+test('episodes are ready to publish with a description and a Transistor episode URL', function (): void {
+    $episode = Episode::factory()->draft()->make([
+        'transistor_url' => 'https://share.transistor.fm/s/428d650c',
+        'show_notes' => null,
+        'cover_image' => null,
+        'duration_seconds' => null,
+        'meta_title' => null,
+        'meta_description' => null,
+    ]);
+
+    expect($episode->publishingIssues())->toBeEmpty();
+});
+
+test('episodes cannot be published without each required detail', function (string $attribute, string $issue): void {
+    $episode = Episode::factory()->draft()->make([
+        'transistor_url' => 'https://share.transistor.fm/s/428d650c',
+        $attribute => null,
+    ]);
+
+    expect($episode->publishingIssues())->toBe([$issue]);
+})->with([
+    'description' => ['description', 'Add a description'],
+    'Transistor episode URL' => ['transistor_url', 'Add the Transistor episode URL'],
+]);
