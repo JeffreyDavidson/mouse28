@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Contracts\Publishable;
 use App\Enums\ContentAuthor;
 use App\Enums\PostCategory;
+use App\Enums\SourceReviewStatus;
 use App\Models\Concerns\HasPublication;
 use App\Models\Concerns\HasTagsUntilForceDeleted;
 use Carbon\CarbonInterface;
@@ -37,7 +38,6 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property-read string|null $cover_image_url
  * @property-read string|null $og_image_url
  * @property-read int $reading_time
- * @property-read string $review_status
  *
  * @method static Builder<static> drafts()
  * @method static Builder<static> needsAttention()
@@ -100,14 +100,19 @@ class Post extends Model implements Publishable
         return $this->belongsTo(Episode::class);
     }
 
-    /** @param Builder<static> $query */
+    /**
+     * Posts whose official source has never been reviewed or was last reviewed longer
+     * ago than the configured interval.
+     *
+     * @param  Builder<static>  $query
+     */
     #[Scope]
     protected function reviewDue(Builder $query): void
     {
         $query->whereNotNull('source_url')
             ->where(function (Builder $query): void {
                 $query->whereNull('last_reviewed_at')
-                    ->orWhere('last_reviewed_at', '<', Date::today()->subDays(Config::integer('mouse28.post_review_interval_days')));
+                    ->orWhere('last_reviewed_at', '<', $this->reviewCutoff());
             });
     }
 
@@ -169,23 +174,26 @@ class Post extends Model implements Publishable
         return Attribute::make(get: fn (): string => $this->category?->getLabel() ?? '');
     }
 
-    /** @return Attribute<string, never> */
-    protected function reviewStatus(): Attribute
-    {
-        return Attribute::make(get: function (): string {
-            if (blank($this->source_url)) {
-                return 'Not tracked';
-            }
-
-            return $this->isReviewDue() ? 'Review due' : 'Current';
-        });
-    }
-
     public function isReviewDue(): bool
     {
         return filled($this->source_url)
-            && (! $this->last_reviewed_at
-                || $this->last_reviewed_at->lt(Date::today()->subDays(Config::integer('mouse28.post_review_interval_days'))));
+            && (! $this->last_reviewed_at || $this->last_reviewed_at->lt($this->reviewCutoff()));
+    }
+
+    public function sourceReviewStatus(): SourceReviewStatus
+    {
+        if (blank($this->source_url)) {
+            return SourceReviewStatus::NotTracked;
+        }
+
+        return $this->isReviewDue()
+            ? SourceReviewStatus::ReviewDue
+            : SourceReviewStatus::Current;
+    }
+
+    private function reviewCutoff(): CarbonInterface
+    {
+        return Date::today()->subDays(Config::integer('content.post_review_interval_days'));
     }
 
     protected function casts(): array

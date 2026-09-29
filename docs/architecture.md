@@ -74,7 +74,7 @@ The blog archive is a class-based Livewire component. Publication-date ties are 
 
 `PodcastComposer` supplies show-level metadata to the shared public layout component, while episode ViewModels supply it to episode content views. The homepage receives its shared podcast links from the layout composer. Apple Podcasts, Spotify, and YouTube links configured in Podcast Settings are the public source of truth and are omitted when unavailable. Episode-specific destinations override show-level links on episode pages. RSS always points to the configured Transistor feed. These read paths share a request-scoped `Podcast::info()` result and never create a settings row.
 
-Guide freshness is controlled by `GUIDE_REVIEW_INTERVAL_DAYS`, with a 180-day default. Missing or older review dates are surfaced to editors and produce a public verification notice because accessibility and park-operation details can change.
+Guide freshness is controlled by `GUIDE_REVIEW_INTERVAL_DAYS`, with a 180-day default. Missing or older review dates are surfaced to editors and produce a public verification notice because accessibility and park-operation details can change. Post source freshness is controlled by `POST_REVIEW_INTERVAL_DAYS` (also 180 days); both intervals live in `config/content.php`, shared with The Laravel Architect. `Post::sourceReviewStatus()` and `Guide::sourceReviewStatus()` return the shared `App\Enums\SourceReviewStatus` (`NotTracked`, `Current`, `ReviewDue`), which supplies the badge label and color in the Filament tables. A post with no official source is `NotTracked`; a guide is always tracked, so it is only ever `Current` or `ReviewDue`.
 
 ## Frontend and accessibility
 
