@@ -62,6 +62,8 @@ Contact submissions use a separate Turnstile action and rate limiter, store the 
 
 Turnstile tokens are verified by `App\Services\TurnstileVerifier` (shared with The Laravel Architect, plus one guard: the token must be text, so array or numeric tokens fail without a network call). It fails closed when the token, expected action, secret, or verification URL is blank, compares hostnames ignoring case, surrounding spaces, and a trailing dot, and returns `false` on connection failures.
 
+Application Actions live in `app/Actions` and expose a public `handle()` method, matching The Laravel Architect; they are never invokable, and an architecture test enforces it. Today they are `SubmitContactMessage` and `GenerateResponsiveCover`. Filament's own Action classes in `app/Filament/Actions` are separate.
+
 The contact job declares after-commit dispatch through `ShouldQueueAfterCommit`. Laravel's `WithoutOverlapping` middleware owns the shared `contact-emails:{id}` lock, retaining compatibility with legacy jobs and workers. Contention releases the job for retry after 60 seconds and still consumes an attempt; the lock expires after 120 seconds. Sending must run through the queue middleware, not a direct `handle()` call.
 
 Contact and newsletter submissions use separate named validation bags, and their views only restore old input when feedback belongs to that form. Newsletter return URLs are restricted to the configured application origin, with the homepage footer's `#newsletter` anchor as the fallback.

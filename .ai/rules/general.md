@@ -19,3 +19,6 @@ Do not hard-code behavior-affecting numeric limits or thresholds in application 
 
 ## Let Forge Nginx resolve trusted client IPs
 The current Forge topology resolves trusted Cloudflare proxies in Nginx and passes the result as REMOTE_ADDR. Do not enable blanket Laravel trustProxies('*'): client-supplied forwarded headers can undermine IP-based contact/newsletter throttles. Reassess trusted proxies explicitly if the hosting topology changes.
+
+## Write Actions with handle()
+Classes in `app/Actions` expose a public, non-static `handle()` method and are never invokable (`__invoke`). Call them as `$action->handle(...)`. This matches The Laravel Architect's Actions, and `ArchitectureTest` enforces it. Filament's own Action classes in `app/Filament/Actions` are separate.

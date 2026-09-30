@@ -33,7 +33,7 @@ class ContactController
             ])->errorBag('contact');
         }
 
-        $submitContactMessage($request->messageAttributes());
+        $submitContactMessage->handle($request->messageAttributes());
 
         return redirect()->route('contact.create')->with('success', true);
     }
