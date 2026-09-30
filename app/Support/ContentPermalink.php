@@ -4,18 +4,19 @@ namespace App\Support;
 
 use App\Models\Episode;
 use App\Models\Guide;
+use App\Models\NewsletterIssue;
 use App\Models\Post;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\Date;
 
 class ContentPermalink
 {
-    public static function isLocked(Post|Guide|Episode $content): bool
+    public static function isLocked(Post|Guide|Episode|NewsletterIssue $content): bool
     {
         return $content->slug_locked_at !== null || $content->isPublished();
     }
 
-    public static function rememberPublication(Post|Guide|Episode $content): void
+    public static function rememberPublication(Post|Guide|Episode|NewsletterIssue $content): void
     {
         $originalLock = $content->getOriginal('slug_locked_at');
         $originalDate = $content->getOriginal('published_at');

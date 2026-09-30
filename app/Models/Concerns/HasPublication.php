@@ -5,7 +5,6 @@ namespace App\Models\Concerns;
 use App\Support\ContentPermalink;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\Date;
 
 /**
@@ -66,17 +65,5 @@ trait HasPublication
     {
         $query->where('is_published', true)
             ->where('published_at', '>', Date::now());
-    }
-
-    /** @return Attribute<string|null, never> */
-    protected function coverImageUrl(): Attribute
-    {
-        return Attribute::make(get: fn (): ?string => $this->cover_image ? "/storage/{$this->cover_image}" : null);
-    }
-
-    /** @return Attribute<string|null, never> */
-    protected function ogImageUrl(): Attribute
-    {
-        return Attribute::make(get: fn (): ?string => $this->og_image ? "/storage/{$this->og_image}" : null);
     }
 }
