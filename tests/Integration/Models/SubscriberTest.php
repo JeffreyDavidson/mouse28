@@ -8,7 +8,7 @@ covers(Subscriber::class);
 
 pest()->use(RefreshDatabase::class);
 
-test('only confirmed subscriptions that have not unsubscribed are active', function (): void {
+test('only confirmed sign-ups that have not unsubscribed are active', function (): void {
     $active = Subscriber::factory()->create();
     $pending = Subscriber::factory()->pending()->create();
     $unsubscribed = Subscriber::factory()->unsubscribed()->create();
@@ -41,7 +41,7 @@ test('the verification token hash is hidden from serialization', function (): vo
         ->not->toHaveKey('verification_token_hash');
 });
 
-test('stale subscribers are prunable', function (int $subscribedDaysAgo, ?int $verifiedDaysAgo, ?int $unsubscribedDaysAgo): void {
+test('stale readers are prunable', function (int $subscribedDaysAgo, ?int $verifiedDaysAgo, ?int $unsubscribedDaysAgo): void {
     $this->freezeTime();
     $subscriber = Subscriber::factory()->create([
         'subscribed_at' => Date::now()->subDays($subscribedDaysAgo),
@@ -55,7 +55,7 @@ test('stale subscribers are prunable', function (int $subscribedDaysAgo, ?int $v
     'unsubscribed past the grace period' => [365, 365, 31],
 ]);
 
-test('current subscribers are kept when pruning', function (int $subscribedDaysAgo, ?int $verifiedDaysAgo, ?int $unsubscribedDaysAgo): void {
+test('current readers are kept when pruning', function (int $subscribedDaysAgo, ?int $verifiedDaysAgo, ?int $unsubscribedDaysAgo): void {
     $this->freezeTime();
     Subscriber::factory()->create([
         'subscribed_at' => Date::now()->subDays($subscribedDaysAgo),

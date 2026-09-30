@@ -44,7 +44,7 @@ test('the runtime heartbeat records the scheduler and probes the queue', functio
     Queue::assertPushed(RecordQueueHeartbeat::class);
 });
 
-test('stale newsletter subscribers are pruned daily on one server', function (): void {
+test('stale newsletter readers are pruned daily on one server', function (): void {
     $event = collect(app(Schedule::class)->events())->sole(fn (Event $event): bool => str_contains((string) $event->command, 'model:prune'));
 
     expect($event->expression)->toBe('0 0 * * *')

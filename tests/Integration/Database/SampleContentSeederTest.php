@@ -8,7 +8,7 @@ covers(SampleContentSeeder::class);
 
 pest()->use(RefreshDatabase::class);
 
-test('the sample seeder creates one active, one pending, and one unsubscribed subscriber', function (): void {
+test('the sample seeder creates one active, one pending, and one unsubscribed reader', function (): void {
     $this->seed(SampleContentSeeder::class);
 
     expect(Subscriber::query()->count())->toBe(3)
@@ -17,7 +17,7 @@ test('the sample seeder creates one active, one pending, and one unsubscribed su
         ->and(Subscriber::query()->where('email', 'sample-former-reader@example.test')->sole()->unsubscribed_at)->not->toBeNull();
 });
 
-test('running the sample seeder twice does not duplicate subscribers', function (): void {
+test('running the sample seeder twice does not duplicate readers', function (): void {
     $this->seed(SampleContentSeeder::class);
     $this->seed(SampleContentSeeder::class);
 
