@@ -5,7 +5,10 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\EpisodeController;
 use App\Http\Controllers\GuideController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NewsletterConfirmationController;
 use App\Http\Controllers\NewsletterController;
+use App\Http\Controllers\NewsletterOneClickUnsubscriptionController;
+use App\Http\Controllers\NewsletterUnsubscriptionController;
 use App\Http\Controllers\PodcastFeedRedirectController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PreviewEpisodeController;
@@ -14,6 +17,7 @@ use App\Http\Controllers\PreviewPostController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Middleware\EnsureValidNewsletterConfirmationToken;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
@@ -35,6 +39,21 @@ Route::get('/contact', [ContactController::class, 'create'])->name('contact.crea
 Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:contact-form')->name('contact.store');
 
 Route::post('/newsletter', [NewsletterController::class, 'store'])->middleware('throttle:newsletter')->name('newsletter.store');
+Route::get('/newsletter/confirm/{subscriber}/{token}', [NewsletterConfirmationController::class, 'create'])
+    ->middleware(['signed', EnsureValidNewsletterConfirmationToken::class, 'throttle:newsletter-confirm'])
+    ->name('newsletter.confirm');
+Route::post('/newsletter/confirm/{subscriber}/{token}', [NewsletterConfirmationController::class, 'store'])
+    ->middleware(['signed', EnsureValidNewsletterConfirmationToken::class, 'throttle:newsletter-confirm'])
+    ->name('newsletter.confirm.store');
+Route::get('/newsletter/unsubscribe/{subscriber}', [NewsletterUnsubscriptionController::class, 'create'])
+    ->middleware(['signed', 'throttle:newsletter-confirm'])
+    ->name('newsletter.unsubscribe');
+Route::delete('/newsletter/unsubscribe/{subscriber}', [NewsletterUnsubscriptionController::class, 'destroy'])
+    ->middleware(['signed', 'throttle:newsletter-confirm'])
+    ->name('newsletter.unsubscribe.store');
+Route::post('/newsletter/unsubscribe/{subscriber}', NewsletterOneClickUnsubscriptionController::class)
+    ->middleware(['signed', 'throttle:newsletter-confirm'])
+    ->name('newsletter.unsubscribe.oneClick');
 
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 // Served like a static file (no session cookies, publicly cacheable) so crawlers and caches keep it.

@@ -25,6 +25,7 @@ return [
     'rate_limits' => [
         'contact_form_per_minute' => max(1, (int) env('MOUSE28_CONTACT_FORM_RATE_LIMIT', 5)),
         'newsletter_per_minute' => max(1, (int) env('MOUSE28_NEWSLETTER_RATE_LIMIT', 5)),
+        'newsletter_confirm_per_minute' => max(1, (int) env('MOUSE28_NEWSLETTER_CONFIRM_RATE_LIMIT', 10)),
         'search_per_minute' => max(1, (int) env('MOUSE28_SEARCH_RATE_LIMIT', 30)),
     ],
 

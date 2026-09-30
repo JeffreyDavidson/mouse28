@@ -49,6 +49,7 @@ The application can run locally without live third-party calls, but these featur
 - `MOUSE28_EPISODES_PER_PAGE` and `MOUSE28_GUIDES_PER_PAGE` control the episode and guide archive page sizes; both default to `12`.
 - `MOUSE28_SEARCH_RESULTS_PER_PAGE` controls how many results each site search section shows per page; it defaults to `6`.
 - `MOUSE28_CONTACT_FORM_RATE_LIMIT` and `MOUSE28_NEWSLETTER_RATE_LIMIT` set the per-IP submissions allowed each minute; both default to `5`.
+- `MOUSE28_NEWSLETTER_CONFIRM_RATE_LIMIT` sets the per-IP newsletter confirmation and unsubscribe requests allowed each minute; it defaults to `10`.
 - `MOUSE28_PREVIEW_LINK_HOURS` sets how long shareable preview links stay valid; it defaults to `24`.
 - `MOUSE28_SEARCH_RATE_LIMIT` sets the per-IP searches allowed each minute; it defaults to `30`, and empty searches are never throttled.
 - `GUIDE_REVIEW_INTERVAL_DAYS` controls when durable guides are flagged for editorial review; it defaults to 180 days.
