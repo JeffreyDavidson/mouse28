@@ -2,16 +2,18 @@
 
 use App\Models\Episode;
 use App\Models\Guide;
+use App\Models\NewsletterIssue;
 use App\Models\Post;
 use App\Support\ContentPermalink;
 use Database\Factories\EpisodeFactory;
 use Database\Factories\GuideFactory;
+use Database\Factories\NewsletterIssueFactory;
 use Database\Factories\PostFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 pest()->use(RefreshDatabase::class);
 
-test('content locks its URL at first publication and retains that lock when rescheduled', function (PostFactory|GuideFactory|EpisodeFactory $factory): void {
+test('content locks its URL at first publication and retains that lock when rescheduled', function (PostFactory|GuideFactory|EpisodeFactory|NewsletterIssueFactory $factory): void {
     $this->freezeSecond();
     $content = $factory->draft()->createOne();
     expect(ContentPermalink::isLocked($content))->toBeFalse();
@@ -26,6 +28,7 @@ test('content locks its URL at first publication and retains that lock when resc
     'post' => fn () => Post::factory(),
     'guide' => fn () => Guide::factory(),
     'episode' => fn () => Episode::factory(),
+    'newsletter issue' => fn () => NewsletterIssue::factory(),
 ]);
 
 test('a scheduled record remembers having gone live before its date is cleared', function (): void {

@@ -150,7 +150,8 @@
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/ResponsiveArtwork.php --filter='responsive artwork'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/EditorialReadiness.php --filter='(publication status|readiness reports|episode readiness|complete content|sourced posts)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/ContentContinuation.php --filter='(related posts|continuation queries|related guides|episode)'",
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Models/Concerns/HasPublication.php --filter='(content is live|publication scopes|image paths)'"
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Models/Concerns/HasPublication.php --filter='(content is live|publication scopes)'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Models/Concerns/HasCoverImages.php --filter='image paths'"
         ],
         "test:mutate:integrations": [
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/ResendAudience.php --filter='(subscriber|audience|provider|connection|subscription)'",

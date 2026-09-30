@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Contracts\Publishable;
+use App\Models\Concerns\HasCoverImages;
 use App\Models\Concerns\HasPublication;
 use App\Models\Concerns\HasTagsUntilForceDeleted;
 use Carbon\CarbonInterface;
@@ -58,7 +59,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class Episode extends Model implements Publishable
 {
     /** @use HasFactory<EpisodeFactory> */
-    use HasFactory, HasPublication, HasTagsUntilForceDeleted, SoftDeletes;
+    use HasCoverImages, HasFactory, HasPublication, HasTagsUntilForceDeleted, SoftDeletes;
 
     use LogsActivity;
 
