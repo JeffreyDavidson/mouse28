@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Enums\NewsletterSubscriptionResult;
 use App\Http\Requests\StoreNewsletterRequest;
+use App\Services\TurnstileVerifier;
 use App\Support\NewsletterResponse;
 use App\Support\ResendAudience;
-use App\Support\Turnstile;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Config;
@@ -16,7 +16,7 @@ class NewsletterController
 {
     public function store(
         StoreNewsletterRequest $request,
-        Turnstile $turnstile,
+        TurnstileVerifier $turnstile,
         ResendAudience $audience,
         NewsletterResponse $response,
     ): JsonResponse|RedirectResponse {

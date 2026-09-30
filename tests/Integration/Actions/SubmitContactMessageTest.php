@@ -22,7 +22,7 @@ test('action stores a contact message and dispatches email delivery', function (
         'message' => 'Please help with this park question.',
     ];
 
-    app(SubmitContactMessage::class)($attributes);
+    app(SubmitContactMessage::class)->handle($attributes);
 
     assertDatabaseHas('contact_messages', $attributes);
     $message = ContactMessage::query()->sole();

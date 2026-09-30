@@ -65,3 +65,15 @@ test('header does not count scheduled posts as published', function (): void {
             'drafts' => 1,
         ]);
 });
+
+test('the review due filter and source review column show sources that need review', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $due = Post::factory()->create(['source_url' => 'https://example.test/source', 'last_reviewed_at' => null]);
+    $current = Post::factory()->create(['source_url' => 'https://example.test/source', 'last_reviewed_at' => today()]);
+
+    livewire(ListPosts::class)
+        ->filterTable('review_due')
+        ->assertCanSeeTableRecords([$due])
+        ->assertCanNotSeeTableRecords([$current])
+        ->assertTableColumnExists('source_review_status');
+});

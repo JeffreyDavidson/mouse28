@@ -34,10 +34,23 @@ arch('controllers do not send mail directly')
     ->expect(Mail::class)
     ->not->toBeUsedIn('App\Http\Controllers');
 
-arch('actions are invokable classes')
-    ->expect('App\Actions')
-    ->toBeClasses()
-    ->toHaveMethod('__invoke');
+// Same rule as The Laravel Architect's ActionArchitectureTest, without booting the application.
+$actionsDirectory = (string) realpath(__DIR__.'/../../app/Actions');
+$actionClasses = collect(glob($actionsDirectory.'/{,*/,*/*/}*.php', GLOB_BRACE) ?: [])
+    ->map(fn (string $file): string => 'App\\Actions\\'.str_replace('/', '\\', substr($file, strlen($actionsDirectory) + 1, -4)))
+    ->filter(fn (string $class): bool => class_exists($class))
+    ->values();
+
+foreach ($actionClasses as $actionClass) {
+    test(class_basename($actionClass).' exposes handle() instead of __invoke()', function () use ($actionClass): void {
+        $reflection = new ReflectionClass($actionClass);
+        $handle = $reflection->hasMethod('handle') ? $reflection->getMethod('handle') : null;
+
+        expect($reflection->hasMethod('__invoke'))->toBeFalse("{$actionClass} must not be invokable.")
+            ->and($handle?->isPublic())->toBeTrue("{$actionClass} must define a public handle().")
+            ->and($handle?->isStatic())->toBeFalse("{$actionClass}::handle must be an instance method.");
+    });
+}
 
 $commandClasses = collect(glob(__DIR__.'/../../app/Console/Commands/*.php') ?: [])
     ->map(fn (string $file): string => 'App\\Console\\Commands\\'.basename($file, '.php'))

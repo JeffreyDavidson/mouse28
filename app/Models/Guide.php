@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Contracts\Publishable;
 use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
+use App\Enums\SourceReviewStatus;
 use App\Models\Concerns\HasPublication;
 use App\Models\Concerns\HasTagsUntilForceDeleted;
 use Carbon\CarbonInterface;
@@ -34,7 +35,6 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property-read string|null $cover_image_url
  * @property-read string|null $og_image_url
  * @property-read int $reading_time
- * @property-read string $review_status
  *
  * @method static Builder<static> drafts()
  * @method static Builder<static> needsAttention()
@@ -89,13 +89,18 @@ class Guide extends Model implements Publishable
             ->dontLogEmptyChanges();
     }
 
-    /** @param Builder<static> $query */
+    /**
+     * Guides that have never been reviewed or were last reviewed longer ago than the
+     * configured interval.
+     *
+     * @param  Builder<static>  $query
+     */
     #[Scope]
     protected function reviewDue(Builder $query): void
     {
         $query->where(function (Builder $query): void {
             $query->whereNull('last_reviewed_at')
-                ->orWhere('last_reviewed_at', '<', Date::today()->subDays(Config::integer('mouse28.guide_review_interval_days')));
+                ->orWhere('last_reviewed_at', '<', $this->reviewCutoff());
         });
     }
 
@@ -136,16 +141,24 @@ class Guide extends Model implements Publishable
         return Attribute::make(get: fn (): int => max(1, (int) ceil(str_word_count(strip_tags($this->body)) / 200)));
     }
 
-    /** @return Attribute<string, never> */
-    protected function reviewStatus(): Attribute
-    {
-        return Attribute::make(get: fn (): string => $this->isReviewDue() ? 'Review due' : 'Current');
-    }
-
     public function isReviewDue(): bool
     {
-        return ! $this->last_reviewed_at
-            || $this->last_reviewed_at->lt(Date::today()->subDays(Config::integer('mouse28.guide_review_interval_days')));
+        return ! $this->last_reviewed_at || $this->last_reviewed_at->lt($this->reviewCutoff());
+    }
+
+    /**
+     * Guides are always tracked for review, so unlike posts they are never "not tracked".
+     */
+    public function sourceReviewStatus(): SourceReviewStatus
+    {
+        return $this->isReviewDue()
+            ? SourceReviewStatus::ReviewDue
+            : SourceReviewStatus::Current;
+    }
+
+    private function reviewCutoff(): CarbonInterface
+    {
+        return Date::today()->subDays(Config::integer('content.guide_review_interval_days'));
     }
 
     protected function casts(): array

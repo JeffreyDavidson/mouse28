@@ -52,6 +52,7 @@ The application can run locally without live third-party calls, but these featur
 - `MOUSE28_PREVIEW_LINK_HOURS` sets how long shareable preview links stay valid; it defaults to `24`.
 - `MOUSE28_SEARCH_RATE_LIMIT` sets the per-IP searches allowed each minute; it defaults to `30`, and empty searches are never throttled.
 - `GUIDE_REVIEW_INTERVAL_DAYS` controls when durable guides are flagged for editorial review; it defaults to 180 days.
+- `POST_REVIEW_INTERVAL_DAYS` controls when posts with an official source are flagged for editorial review; it defaults to 180 days. Both intervals are read from `config/content.php`.
 
 Never commit live credentials. Keep them in the deployment environment.
 

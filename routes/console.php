@@ -9,7 +9,7 @@ use Laravel\Nightwatch\Console\Sample;
 Schedule::command('telescope:prune', ['--hours' => Config::integer('telescope.retention_hours')])
     ->daily()
     ->withoutOverlapping()
-    ->when(fn (): bool => Config::boolean('telescope.enabled') && Config::string('mouse28.deployment_environment') === 'staging');
+    ->when(fn (): bool => Config::boolean('telescope.enabled') && Config::string('app.deployment_environment') === 'staging');
 
 // Records the scheduler heartbeat and probes the queue. Enable only when a scheduler cron and a default-queue worker run.
 Schedule::call(function (RuntimeHealthMonitor $runtimeHealthMonitor): void {

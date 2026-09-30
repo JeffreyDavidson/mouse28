@@ -131,7 +131,7 @@ test('a valid category limits the guide index to matching published guides', fun
 });
 
 test('editorial review information is shown on the public page', function (): void {
-    config()->set('mouse28.guide_review_interval_days', 180);
+    config()->set('content.guide_review_interval_days', 180);
 
     $currentGuide = Guide::factory()->create([
         'last_reviewed_at' => now()->subDays(30),

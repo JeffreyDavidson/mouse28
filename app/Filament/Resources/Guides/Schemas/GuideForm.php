@@ -88,7 +88,7 @@ class GuideForm
                                     ->helperText('Link to the official policy or primary source.'),
                                 DatePicker::make('last_reviewed_at')
                                     ->label('Last Reviewed')
-                                    ->helperText('Guides are flagged after '.Config::integer('mouse28.guide_review_interval_days').' days.'),
+                                    ->helperText('Guides are flagged after '.Config::integer('content.guide_review_interval_days').' days.'),
                             ]),
                         Section::make('Publishing')
                             ->icon(Heroicon::OutlinedRocketLaunch)

@@ -12,7 +12,7 @@ use RuntimeException;
 
 class GenerateResponsiveCover
 {
-    public function __invoke(Post|Episode $record): int
+    public function handle(Post|Episode $record): int
     {
         if (! $record->isPublished()) {
             throw new RuntimeException('Only published covers can be generated.');

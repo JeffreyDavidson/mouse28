@@ -236,3 +236,32 @@ test('saving after publishing keeps the publication date the action set', functi
     expect($post->refresh()->is_published)->toBeTrue()
         ->and($post->published_at?->toDateTimeString())->toBe('2026-09-25 12:00:00');
 });
+
+test('the official source and its review date are saved together', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $post = Post::factory()->draft()->create();
+
+    livewire(EditPost::class, ['record' => $post->getRouteKey()])
+        ->fillForm([
+            'source_url' => 'https://example.test/official-source',
+            'last_reviewed_at' => Date::today()->toDateString(),
+        ])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($post->refresh()->source_url)->toBe('https://example.test/official-source')
+        ->and($post->last_reviewed_at?->isToday())->toBeTrue();
+});
+
+test('the official source and its review date are required together', function (array $data, string $missing): void {
+    actingAs(User::factory()->admin()->create());
+    $post = Post::factory()->draft()->create(['source_url' => null, 'last_reviewed_at' => null]);
+
+    livewire(EditPost::class, ['record' => $post->getRouteKey()])
+        ->fillForm($data)
+        ->call('save')
+        ->assertHasFormErrors([$missing => 'required']);
+})->with([
+    'source without a review date' => [['source_url' => 'https://example.test/official-source'], 'last_reviewed_at'],
+    'review date without a source' => [['last_reviewed_at' => '2026-09-01'], 'source_url'],
+]);

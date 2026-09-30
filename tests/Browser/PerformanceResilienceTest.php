@@ -193,7 +193,7 @@ test('mobile blog archive and article load responsive cover artwork without over
             'cover_image' => $coverPath,
         ]);
 
-        app(GenerateResponsiveCover::class)($post);
+        app(GenerateResponsiveCover::class)->handle($post);
 
         $viewport = [
             'viewport' => ['width' => 390, 'height' => 844],
@@ -268,7 +268,7 @@ test('mobile episode archive and detail fit the viewport and detail loads square
     try {
         $episode = Episode::factory()->create(['cover_image' => $coverPath]);
 
-        app(GenerateResponsiveCover::class)($episode);
+        app(GenerateResponsiveCover::class)->handle($episode);
 
         $viewport = [
             'viewport' => ['width' => 390, 'height' => 844],

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\SubmitContactMessage;
 use App\Http\Requests\StoreContactRequest;
-use App\Support\Turnstile;
+use App\Services\TurnstileVerifier;
 use App\ViewModels\ContactViewModel;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Config;
@@ -20,7 +20,7 @@ class ContactController
 
     public function store(
         StoreContactRequest $request,
-        Turnstile $turnstile,
+        TurnstileVerifier $turnstile,
         SubmitContactMessage $submitContactMessage,
     ): RedirectResponse {
         if ($request->filled('website')) {
@@ -33,7 +33,7 @@ class ContactController
             ])->errorBag('contact');
         }
 
-        $submitContactMessage($request->messageAttributes());
+        $submitContactMessage->handle($request->messageAttributes());
 
         return redirect()->route('contact.create')->with('success', true);
     }

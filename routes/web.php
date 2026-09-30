@@ -37,6 +37,9 @@ Route::post('/contact', [ContactController::class, 'store'])->middleware('thrott
 Route::post('/newsletter', [NewsletterController::class, 'store'])->middleware('throttle:newsletter')->name('newsletter.store');
 
 Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
-Route::get('/robots.txt', RobotsController::class)->name('robots');
+// Served like a static file (no session cookies, publicly cacheable) so crawlers and caches keep it.
+Route::get('/robots.txt', RobotsController::class)
+    ->withoutMiddleware('web')
+    ->name('robots');
 Route::get('/rss/blog', BlogRssController::class)->name('rss.blog');
 Route::get('/rss/podcast', PodcastFeedRedirectController::class)->name('rss.podcast');
