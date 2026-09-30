@@ -4,11 +4,13 @@ use App\Filament\Pages\PodcastSettings;
 use App\Filament\Resources\ContactMessages\ContactMessageResource;
 use App\Filament\Resources\Episodes\EpisodeResource;
 use App\Filament\Resources\Guides\GuideResource;
+use App\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
 use App\Filament\Resources\Posts\PostResource;
 use App\Filament\Resources\Subscribers\SubscriberResource;
 use App\Models\ContactMessage;
 use App\Models\Episode;
 use App\Models\Guide;
+use App\Models\NewsletterIssue;
 use App\Models\Post;
 use App\Models\Subscriber;
 use App\Models\User;
@@ -392,6 +394,7 @@ test('mobile Filament controls meet the minimum touch target across admin pages'
     Post::factory()->create(['published_at' => now()]);
     Episode::factory()->create();
     Guide::factory()->create();
+    NewsletterIssue::factory()->create();
     Subscriber::factory()->create();
 
     ContactMessage::query()->create([
@@ -409,11 +412,14 @@ test('mobile Filament controls meet the minimum touch target across admin pages'
         [EpisodeResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
         [GuideResource::getUrl(), '.fi-tabs-item'],
         [GuideResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
+        [NewsletterIssueResource::getUrl(), '.fi-tabs-item'],
+        [NewsletterIssueResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
         [ContactMessageResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
         [ContactMessageResource::getUrl(), '.fi-ac-link-action'],
         [PostResource::getUrl('create'), '.fi-select-input-btn'],
         [PostResource::getUrl('create'), '.fi-fo-markdown-editor .editor-toolbar button'],
         [GuideResource::getUrl('create'), '.fi-fo-markdown-editor .editor-toolbar button'],
+        [NewsletterIssueResource::getUrl('create'), '.fi-fo-markdown-editor .editor-toolbar button'],
         [EpisodeResource::getUrl('create'), '.fi-fo-rich-editor-tool'],
         [SubscriberResource::getUrl(), '.fi-pagination .fi-select-input'],
     ];
@@ -507,6 +513,7 @@ test('authenticated admin pages expose no unnamed artwork or decorative glyphs',
     $post = Post::factory()->create();
     $guide = Guide::factory()->create();
     $episode = Episode::factory()->create();
+    $issue = NewsletterIssue::factory()->create();
     $contactMessage = ContactMessage::query()->create([
         'name' => 'Park Guest',
         'email' => 'guest@example.com',
@@ -529,6 +536,9 @@ test('authenticated admin pages expose no unnamed artwork or decorative glyphs',
         EpisodeResource::getUrl(),
         EpisodeResource::getUrl('create'),
         EpisodeResource::getUrl('edit', ['record' => $episode]),
+        NewsletterIssueResource::getUrl(),
+        NewsletterIssueResource::getUrl('create'),
+        NewsletterIssueResource::getUrl('edit', ['record' => $issue]),
         ContactMessageResource::getUrl(),
         ContactMessageResource::getUrl('view', ['record' => $contactMessage]),
     ];
