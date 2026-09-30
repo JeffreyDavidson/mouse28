@@ -73,7 +73,7 @@ test('podcast pages render one newsletter signup', function (): void {
         $response = get($url)->assertOk()->assertSeeHtml('id="footer-newsletter-email"')
             ->assertSee('Connect');
 
-        expect(substr_count($this->responseContent($response), 'action="'.route('newsletter.store').'"'))->toBe(1);
+        expect(substr_count($this->responseContent($response), 'action="'.route('newsletter.subscribe').'"'))->toBe(1);
     }
 });
 

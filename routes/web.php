@@ -6,8 +6,8 @@ use App\Http\Controllers\EpisodeController;
 use App\Http\Controllers\GuideController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsletterConfirmationController;
-use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\NewsletterOneClickUnsubscriptionController;
+use App\Http\Controllers\NewsletterSubscriptionController;
 use App\Http\Controllers\NewsletterUnsubscriptionController;
 use App\Http\Controllers\PodcastFeedRedirectController;
 use App\Http\Controllers\PostController;
@@ -38,7 +38,7 @@ Route::view('/privacy', 'pages.privacy')->name('privacy');
 Route::get('/contact', [ContactController::class, 'create'])->name('contact.create');
 Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:contact-form')->name('contact.store');
 
-Route::post('/newsletter', [NewsletterController::class, 'store'])->middleware('throttle:newsletter')->name('newsletter.store');
+Route::post('/newsletter', [NewsletterSubscriptionController::class, 'store'])->middleware('throttle:newsletter')->name('newsletter.subscribe');
 Route::get('/newsletter/confirm/{subscriber}/{token}', [NewsletterConfirmationController::class, 'create'])
     ->middleware(['signed', EnsureValidNewsletterConfirmationToken::class, 'throttle:newsletter-confirm'])
     ->name('newsletter.confirm');

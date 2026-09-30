@@ -128,7 +128,7 @@
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Jobs/SendContactMessageEmails.php --filter='(contact emails|retry sends|concurrent contact|cancelled contact|delivery middleware|contact jobs|queue attributes|incomplete delivery|old queued|provider idempotency)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Http/Requests/SearchRequest.php --filter='search (query is limited|groups matching|returns its view model)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Http/Requests/StoreContactRequest.php --filter='(valid contact submission|contact submission rejects|honeypot)'",
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Http/Requests/StoreNewsletterRequest.php --filter='(valid newsletter|newsletter signup rejects|newsletter honeypot|newsletter redirects)'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Http/Requests/SubscribeNewsletterRequest.php --filter='(newsletter sign-up|newsletter honeypot|newsletter redirects)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Http/Middleware/AddSecurityHeaders.php --filter='(web responses|private and error responses|normal public responses|nonce-bearing scripts|script allowances|error responses carry|strict transport security|approved sources|Vite dev server)'"
         ],
         "test:mutate:views": [
@@ -157,7 +157,6 @@
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/StructuredData.php --filter='structured data'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Actions/GenerateRobotsTxt.php --filter='(robots|crawlers|crawlable)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/SafeReturnUrl.php --filter='(referrers|same origin)'",
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/NewsletterResponse.php --filter='(successful JSON|successful redirects|error JSON|error redirects)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/PodcastLinks.php --filter='links include configured services'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/BlogRssFeed.php --filter='blog feed'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/SitemapDocument.php --filter='sitemap'",
