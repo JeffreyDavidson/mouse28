@@ -16,6 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->append(AddSecurityHeaders::class);
+        // Mail providers post RFC 8058 one-click unsubscribes without a session; the signed URL is the credential.
+        $middleware->preventRequestForgery(except: ['newsletter/unsubscribe/*']);
         // Forge's Nginx resolves trusted proxy addresses before setting REMOTE_ADDR.
     })
     ->withExceptions(function (Exceptions $exceptions): void {

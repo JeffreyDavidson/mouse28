@@ -10,7 +10,6 @@ use Illuminate\Mail\PendingMail;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
@@ -33,11 +32,6 @@ function queuedConfirmationUrl(): string
 
 beforeEach(function (): void {
     Mail::fake();
-
-    // The real confirmation route ships with the public sign-up flow.
-    Route::get('/newsletter/confirm/{subscriber}/{token}', fn (): string => 'stand-in')
-        ->name('newsletter.confirm');
-    Route::getRoutes()->refreshNameLookups();
 });
 
 test('a new sign-up is stored pending and its confirmation is queued', function (): void {
