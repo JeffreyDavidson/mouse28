@@ -5,7 +5,7 @@ namespace App\Filament\Widgets;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
-use App\Support\ResendAudience;
+use App\Models\Subscriber;
 use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\Widget;
 
@@ -31,7 +31,6 @@ class StatsOverview extends Widget
         $drafts = Post::where('is_published', false)->count()
             + Episode::where('is_published', false)->count()
             + Guide::where('is_published', false)->count();
-        $audience = app(ResendAudience::class)->get();
 
         return [
             [
@@ -64,12 +63,9 @@ class StatsOverview extends Widget
             ],
             [
                 'label' => 'Subscribers',
-                'value' => count(array_filter(
-                    $audience['subscribers'],
-                    static fn (array $subscriber): bool => ($subscriber['unsubscribed'] ?? null) === false,
-                )),
+                'value' => Subscriber::active()->count(),
                 'icon' => Heroicon::OutlinedUsers,
-                'description' => $audience['error'] ? 'Unavailable' : 'Active newsletter subscribers',
+                'description' => 'Active newsletter subscribers',
                 'color' => 'purple-light',
             ],
         ];
