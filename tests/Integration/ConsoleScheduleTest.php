@@ -1,6 +1,7 @@
 <?php
 
 use App\Jobs\RecordQueueHeartbeat;
+use App\Models\Subscriber;
 use App\Support\Monitoring\Health\RuntimeHealthMonitor;
 use Illuminate\Console\Scheduling\Event;
 use Illuminate\Console\Scheduling\Schedule;
@@ -41,4 +42,13 @@ test('the runtime heartbeat records the scheduler and probes the queue', functio
 
     expect(Cache::get(RuntimeHealthMonitor::SCHEDULER_HEARTBEAT_KEY))->toBe(Date::now()->getTimestamp());
     Queue::assertPushed(RecordQueueHeartbeat::class);
+});
+
+test('stale newsletter subscribers are pruned daily on one server', function (): void {
+    $event = collect(app(Schedule::class)->events())->sole(fn (Event $event): bool => str_contains((string) $event->command, 'model:prune'));
+
+    expect($event->expression)->toBe('0 0 * * *')
+        ->and($event->command)->toContain('model:prune', "--model='".Subscriber::class."'")
+        ->and($event->withoutOverlapping)->toBeTrue()
+        ->and($event->onOneServer)->toBeTrue();
 });
