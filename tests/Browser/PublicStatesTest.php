@@ -83,7 +83,7 @@ test('newsletter validation feedback remains accessible', function (): void {
 
 test('newsletter rate-limit feedback remains accessible', function (): void {
     for ($attempt = 0; $attempt < 5; $attempt++) {
-        $this->post(route('newsletter.store'), ['email' => 'not-an-email']);
+        $this->post(route('newsletter.subscribe'), ['email' => 'not-an-email']);
     }
 
     session()->flush();

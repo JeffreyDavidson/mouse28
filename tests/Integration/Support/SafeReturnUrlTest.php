@@ -12,7 +12,7 @@ beforeEach(function (): void {
 });
 
 test('unsafe or missing referrers use the supplied fallback', function (?string $referrer): void {
-    $request = Request::create(route('newsletter.store'), 'POST');
+    $request = Request::create(route('newsletter.subscribe'), 'POST');
     if ($referrer !== null) {
         $request->headers->set('referer', $referrer);
     }
@@ -32,7 +32,7 @@ test('unsafe or missing referrers use the supplied fallback', function (?string 
 ]);
 
 test('same origin referrers preserve their path and query while removing fragments', function (string $referrer, string $expected): void {
-    $request = Request::create(route('newsletter.store'), 'POST');
+    $request = Request::create(route('newsletter.subscribe'), 'POST');
     $request->headers->set('referer', $referrer);
 
     $returnUrl = SafeReturnUrl::from($request, 'https://mouse28.test/');

@@ -24,8 +24,10 @@
 
             <h2>When you subscribe</h2>
             <p>
-                Your email address is sent to Resend, our email and newsletter provider, to manage your subscription and
-                send Mouse28 updates. You can unsubscribe using the link in a newsletter or contact us for help.
+                We store your email address on Mouse28's own server and email you a link to confirm that you want
+                Mouse28 updates. Addresses that are never confirmed are deleted after 7 days. Resend, our email
+                provider, only delivers the emails we send. You can unsubscribe using the link in any newsletter or
+                contact us for help, and addresses that unsubscribe are deleted after 30 days.
             </p>
 
             <h2>Services used by the site</h2>

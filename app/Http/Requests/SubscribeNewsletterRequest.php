@@ -9,7 +9,7 @@ use Illuminate\Foundation\Http\Attributes\ErrorBag;
 use Illuminate\Foundation\Http\FormRequest;
 
 #[ErrorBag('newsletter')]
-class StoreNewsletterRequest extends FormRequest
+class SubscribeNewsletterRequest extends FormRequest
 {
     public function authorize(): bool
     {
