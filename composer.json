@@ -155,7 +155,7 @@
         "test:mutate:integrations": [
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/ResendAudience.php --filter='(subscriber|audience|provider|connection|subscription)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/StructuredData.php --filter='structured data'",
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/RobotsDocument.php --filter='robots'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Actions/GenerateRobotsTxt.php --filter='(robots|crawlers|crawlable)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/SafeReturnUrl.php --filter='(referrers|same origin)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/NewsletterResponse.php --filter='(successful JSON|successful redirects|error JSON|error redirects)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/PodcastLinks.php --filter='links include configured services'",

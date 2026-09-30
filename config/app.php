@@ -28,6 +28,8 @@ return [
 
     'env' => env('APP_ENV', 'production'),
 
+    'deployment_environment' => env('MOUSE28_DEPLOYMENT_ENVIRONMENT', 'production'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode
