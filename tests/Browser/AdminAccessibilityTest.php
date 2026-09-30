@@ -292,7 +292,6 @@ test('mobile resource status tabs scroll without overlapping labels', function (
         PostResource::getUrl(),
         EpisodeResource::getUrl(),
         GuideResource::getUrl(),
-        NewsletterIssueResource::getUrl(),
     ];
 
     foreach ($pages as $url) {
@@ -395,6 +394,7 @@ test('mobile Filament controls meet the minimum touch target across admin pages'
     Post::factory()->create(['published_at' => now()]);
     Episode::factory()->create();
     Guide::factory()->create();
+    NewsletterIssue::factory()->create();
     Subscriber::factory()->create();
 
     ContactMessage::query()->create([
@@ -412,11 +412,14 @@ test('mobile Filament controls meet the minimum touch target across admin pages'
         [EpisodeResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
         [GuideResource::getUrl(), '.fi-tabs-item'],
         [GuideResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
+        [NewsletterIssueResource::getUrl(), '.fi-tabs-item'],
+        [NewsletterIssueResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
         [ContactMessageResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
         [ContactMessageResource::getUrl(), '.fi-ac-link-action'],
         [PostResource::getUrl('create'), '.fi-select-input-btn'],
         [PostResource::getUrl('create'), '.fi-fo-markdown-editor .editor-toolbar button'],
         [GuideResource::getUrl('create'), '.fi-fo-markdown-editor .editor-toolbar button'],
+        [NewsletterIssueResource::getUrl('create'), '.fi-fo-markdown-editor .editor-toolbar button'],
         [EpisodeResource::getUrl('create'), '.fi-fo-rich-editor-tool'],
         [SubscriberResource::getUrl(), '.fi-pagination .fi-select-input'],
     ];
