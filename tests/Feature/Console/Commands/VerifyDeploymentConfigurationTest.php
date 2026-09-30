@@ -20,7 +20,7 @@ beforeEach(function (): void {
         'app.url' => 'https://mouse28.com',
         'app.key' => 'base64:production-key',
         'mouse28.production_url' => 'https://mouse28.com',
-        'mouse28.deployment_environment' => 'production',
+        'app.deployment_environment' => 'production',
         'session.secure' => true,
         'session.driver' => 'database',
         'cache.default' => 'database',
@@ -86,7 +86,7 @@ test('safe staging configuration passes with isolated observability', function (
     config()->set([
         'app.url' => 'https://staging.mouse28.com',
         'mouse28.production_url' => 'https://staging.mouse28.com',
-        'mouse28.deployment_environment' => 'staging',
+        'app.deployment_environment' => 'staging',
         'mail.default' => 'array',
         'services.resend.enabled' => false,
         'services.turnstile.allowed_hostnames' => ['staging.mouse28.com'],
@@ -110,7 +110,7 @@ test('staging rejects live mail and resend integrations', function (): void {
     config()->set([
         'app.url' => 'https://staging.mouse28.com',
         'mouse28.production_url' => 'https://staging.mouse28.com',
-        'mouse28.deployment_environment' => 'staging',
+        'app.deployment_environment' => 'staging',
         'services.turnstile.allowed_hostnames' => ['staging.mouse28.com'],
         'sentry.environment' => 'staging',
         'sentry.release' => 'staging-release',
@@ -131,7 +131,7 @@ test('staging rejects production observability settings', function (): void {
     config()->set([
         'app.url' => 'https://staging.mouse28.com',
         'mouse28.production_url' => 'https://staging.mouse28.com',
-        'mouse28.deployment_environment' => 'staging',
+        'app.deployment_environment' => 'staging',
         'services.turnstile.allowed_hostnames' => ['staging.mouse28.com'],
         'sentry.environment' => 'staging',
         'sentry.release' => 'staging-release',

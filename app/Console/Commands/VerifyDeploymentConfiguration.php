@@ -14,7 +14,7 @@ class VerifyDeploymentConfiguration extends Command
     {
         $appUrl = config('app.url');
         $canonicalUrl = config('mouse28.production_url');
-        $deploymentEnvironment = config('mouse28.deployment_environment');
+        $deploymentEnvironment = config('app.deployment_environment');
         $integrationChecks = $deploymentEnvironment === 'staging'
             ? [
                 [config('mail.default') === 'array', 'MAIL_MAILER must use the array transport on staging.'],
