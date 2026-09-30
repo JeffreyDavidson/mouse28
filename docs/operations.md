@@ -307,8 +307,19 @@ Use these descriptive command names for new scripts. Existing names remain alias
 | `content:sync-from-production --isolated=1` | Synchronize public content and media locally | `content:sync-production` |
 | `content:export-public` | Export published content to a JSON archive | — |
 | `content:import-public` | Import a public archive into a permitted environment | — |
+| `newsletter:import-resend-subscribers` | Import contacts still subscribed in Resend as confirmed subscribers (dry run unless `--apply`) | — |
 
 Use `--isolated=1` for sync so overlapping invocations stop with a nonzero exit code before remote processes or local writes. Both command names share the same isolation lock. The framework releases it on completion; interrupted locks expire after one hour. The existing Forge verification command remains supported through its alias; no deployment script changes are required.
+
+## Importing Resend newsletter contacts
+
+Before double opt-in, sign-ups were stored only in the Resend audience. After the release that ships the `subscribers` table, import them once from the production server (site release directory):
+
+1. `php artisan newsletter:import-resend-subscribers` is a dry run. It prints how many contacts it would import, how many already exist, and how many it skips (unsubscribed in Resend, or unreadable). Compare "Would import" with the audience's subscribed contacts in Resend.
+2. `php artisan newsletter:import-resend-subscribers --apply` writes them as confirmed subscribers, dated from their Resend sign-up. They are not sent a confirmation email.
+3. Check Newsletter Subscribers in the admin (status Active) and the dashboard "Subscribers" count.
+
+The command only adds addresses that have no subscriber row, so it never changes anyone who signed up or unsubscribed through the newsletter form, and it is safe to run again. It fails without writing when Resend is disabled, unconfigured or unreachable. It reads Resend through `RESEND_API_KEY` and `RESEND_AUDIENCE_ID`; keep both until the import has run, then the audience code can be removed.
 
 ## Contact mail queue deployment prerequisite
 
