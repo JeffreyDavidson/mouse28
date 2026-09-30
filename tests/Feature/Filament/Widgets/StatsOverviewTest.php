@@ -4,24 +4,17 @@ use App\Filament\Widgets\StatsOverview;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
+use App\Models\Subscriber;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Http;
 
 use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
 
 test('stats overview reports published content review needs drafts and active subscribers', function (): void {
-    Http::fake([
-        'https://api.resend.com/*' => Http::response(['data' => [
-            ['email' => 'active@example.com', 'unsubscribed' => false],
-            ['email' => 'unsubscribed@example.com', 'unsubscribed' => true],
-        ]]),
-    ]);
-    config()->set([
-        'services.resend.audience_id' => 'test-audience',
-        'services.resend.key' => 'test-key',
-    ]);
+    Subscriber::factory()->create();
+    Subscriber::factory()->pending()->create();
+    Subscriber::factory()->unsubscribed()->create();
 
     Post::factory()->create([
         'source_url' => 'https://example.com/source',
@@ -66,22 +59,4 @@ test('stats overview reports published content review needs drafts and active su
             'description' => 'Active newsletter subscribers',
         ],
     ]);
-});
-
-test('stats overview reports unavailable subscribers when the provider fails', function (): void {
-    Http::fake([
-        'https://api.resend.com/*' => Http::response([], 503),
-    ]);
-    config()->set([
-        'services.resend.audience_id' => 'test-audience',
-        'services.resend.key' => 'test-key',
-    ]);
-
-    $stats = livewire(StatsOverview::class)->instance()->getStats();
-
-    expect(collect($stats)->firstWhere('label', 'Subscribers'))
-        ->toMatchArray([
-            'value' => 0,
-            'description' => 'Unavailable',
-        ]);
 });
