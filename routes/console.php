@@ -1,6 +1,7 @@
 <?php
 
 use App\Jobs\RecordQueueHeartbeat;
+use App\Models\Subscriber;
 use App\Support\Monitoring\Health\RuntimeHealthMonitor;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Schedule;
@@ -10,6 +11,11 @@ Schedule::command('telescope:prune', ['--hours' => Config::integer('telescope.re
     ->daily()
     ->withoutOverlapping()
     ->when(fn (): bool => Config::boolean('telescope.enabled') && Config::string('app.deployment_environment') === 'staging');
+
+Schedule::command('model:prune', ['--model' => [Subscriber::class]])
+    ->daily()
+    ->withoutOverlapping()
+    ->onOneServer();
 
 // Records the scheduler heartbeat and probes the queue. Enable only when a scheduler cron and a default-queue worker run.
 Schedule::call(function (RuntimeHealthMonitor $runtimeHealthMonitor): void {

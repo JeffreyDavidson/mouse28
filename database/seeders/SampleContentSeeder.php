@@ -8,6 +8,7 @@ use App\Enums\PostCategory;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
+use App\Models\Subscriber;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 
@@ -33,6 +34,21 @@ class SampleContentSeeder extends Seeder
         $this->guide('sample-guide-draft-outline', 'Sample Guide 02: Draft Outline', GuideCategory::ParkStrategy, false);
         $this->guide('sample-guide-scheduled-reference', 'Sample Guide 03: Scheduled Reference', GuideCategory::FoodReviews, true, now()->addDay());
 
+        $this->subscriber('sample-active-reader@example.test', confirmed: true);
+        $this->subscriber('sample-pending-reader@example.test', confirmed: false);
+        $this->subscriber('sample-former-reader@example.test', confirmed: true, unsubscribed: true);
+    }
+
+    private function subscriber(string $email, bool $confirmed, bool $unsubscribed = false): Subscriber
+    {
+        return Subscriber::query()->updateOrCreate(
+            ['email' => $email],
+            [
+                'subscribed_at' => now(),
+                'verified_at' => $confirmed ? now() : null,
+                'unsubscribed_at' => $unsubscribed ? now() : null,
+            ],
+        );
     }
 
     private function episode(string $slug, string $title, int $episodeNumber, bool $isPublished, ?Carbon $publishedAt = null): Episode
