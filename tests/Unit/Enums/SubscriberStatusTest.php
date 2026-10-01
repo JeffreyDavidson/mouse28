@@ -14,5 +14,6 @@ test('subscriber statuses expose explicit labels colors and icons', function ():
         'active' => ['Active', 'success', Heroicon::OutlinedCheckCircle],
         'pending' => ['Pending confirmation', 'warning', Heroicon::OutlinedClock],
         'unsubscribed' => ['Unsubscribed', 'gray', Heroicon::OutlinedXCircle],
+        'suppressed' => ['Suppressed', 'danger', Heroicon::OutlinedNoSymbol],
     ]);
 });

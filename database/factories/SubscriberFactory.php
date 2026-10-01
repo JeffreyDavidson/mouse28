@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\SuppressionReason;
 use App\Models\Subscriber;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Date;
@@ -40,6 +41,16 @@ class SubscriberFactory extends Factory
     {
         return $this->state(fn (): array => [
             'unsubscribed_at' => Date::now(),
+        ]);
+    }
+
+    /** An address that stopped receiving mail after a bounce or complaint. */
+    public function suppressed(SuppressionReason $reason = SuppressionReason::Bounced): static
+    {
+        return $this->state(fn (): array => [
+            'unsubscribed_at' => Date::now(),
+            'suppressed_at' => Date::now(),
+            'suppression_reason' => $reason,
         ]);
     }
 }

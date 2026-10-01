@@ -23,12 +23,13 @@ test('administrators see every reader with a readable status', function (): void
     $active = Subscriber::factory()->create();
     $pending = Subscriber::factory()->pending()->create();
     $unsubscribed = Subscriber::factory()->unsubscribed()->create();
+    $suppressed = Subscriber::factory()->suppressed()->create();
 
     get(SubscriberResource::getUrl())
         ->assertOk()
         ->assertSee('Newsletter Subscribers')
-        ->assertSee([$active->email, $pending->email, $unsubscribed->email])
-        ->assertSee(['Active', 'Pending confirmation', 'Unsubscribed']);
+        ->assertSee([$active->email, $pending->email, $unsubscribed->email, $suppressed->email])
+        ->assertSee(['Active', 'Pending confirmation', 'Unsubscribed', 'Suppressed']);
 });
 
 test('the status filter narrows the list', function (string $status, string $visible): void {
@@ -36,6 +37,7 @@ test('the status filter narrows the list', function (string $status, string $vis
         'active' => Subscriber::factory()->create(),
         'pending' => Subscriber::factory()->pending()->create(),
         'unsubscribed' => Subscriber::factory()->unsubscribed()->create(),
+        'suppressed' => Subscriber::factory()->suppressed()->create(),
     ];
 
     livewire(ListSubscribers::class)
@@ -46,6 +48,7 @@ test('the status filter narrows the list', function (string $status, string $vis
     'active' => ['active', 'active'],
     'pending' => ['pending', 'pending'],
     'unsubscribed' => ['unsubscribed', 'unsubscribed'],
+    'suppressed' => ['suppressed', 'suppressed'],
 ]);
 
 test('readers can be found by email', function (): void {
@@ -62,10 +65,11 @@ test('the header counts readers by status', function (): void {
     Subscriber::factory()->count(2)->create();
     Subscriber::factory()->pending()->create();
     Subscriber::factory()->unsubscribed()->create();
+    Subscriber::factory()->suppressed()->create();
 
     $header = livewire(ListSubscribers::class)->instance()->getHeader();
 
-    expect($header?->getData())->toMatchArray(['active' => 2, 'pending' => 1, 'unsubscribed' => 1]);
+    expect($header?->getData())->toMatchArray(['active' => 2, 'pending' => 1, 'unsubscribed' => 1, 'suppressed' => 1]);
 });
 
 test('readers arrive only through the public form', function (): void {

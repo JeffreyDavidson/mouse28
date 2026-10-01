@@ -16,10 +16,12 @@ enum SubscriberStatus: string implements HasColor, HasIcon, HasLabel
     case Active = 'active';
     case Pending = 'pending';
     case Unsubscribed = 'unsubscribed';
+    case Suppressed = 'suppressed';
 
     public static function for(Subscriber $subscriber): self
     {
         return match (true) {
+            $subscriber->suppressed_at !== null => self::Suppressed,
             $subscriber->unsubscribed_at !== null => self::Unsubscribed,
             $subscriber->verified_at === null => self::Pending,
             default => self::Active,
@@ -32,7 +34,8 @@ enum SubscriberStatus: string implements HasColor, HasIcon, HasLabel
         match ($this) {
             self::Active => $query->active(),
             self::Pending => $query->whereNull('verified_at')->whereNull('unsubscribed_at'),
-            self::Unsubscribed => $query->whereNotNull('unsubscribed_at'),
+            self::Unsubscribed => $query->whereNotNull('unsubscribed_at')->whereNull('suppressed_at'),
+            self::Suppressed => $query->whereNotNull('suppressed_at'),
         };
     }
 
@@ -42,6 +45,7 @@ enum SubscriberStatus: string implements HasColor, HasIcon, HasLabel
             self::Active => 'Active',
             self::Pending => 'Pending confirmation',
             self::Unsubscribed => 'Unsubscribed',
+            self::Suppressed => 'Suppressed',
         };
     }
 
@@ -51,6 +55,7 @@ enum SubscriberStatus: string implements HasColor, HasIcon, HasLabel
             self::Active => 'success',
             self::Pending => 'warning',
             self::Unsubscribed => 'gray',
+            self::Suppressed => 'danger',
         };
     }
 
@@ -60,6 +65,7 @@ enum SubscriberStatus: string implements HasColor, HasIcon, HasLabel
             self::Active => Heroicon::OutlinedCheckCircle,
             self::Pending => Heroicon::OutlinedClock,
             self::Unsubscribed => Heroicon::OutlinedXCircle,
+            self::Suppressed => Heroicon::OutlinedNoSymbol,
         };
     }
 }
