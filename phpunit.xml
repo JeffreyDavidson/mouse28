@@ -31,7 +31,6 @@
         <!-- Laravel also reads inherited server variables; env overrides alone do not replace them. -->
         <server name="MAIL_MAILER" value="array"/>
         <server name="RESEND_API_KEY" value=""/>
-        <server name="RESEND_AUDIENCE_ID" value=""/>
         <server name="TURNSTILE_SITE_KEY" value=""/>
         <server name="TURNSTILE_SECRET_KEY" value=""/>
         <server name="FATHOM_SITE_ID" value=""/>
@@ -60,7 +59,6 @@
         <env name="DB_URL" value="" force="true"/>
         <env name="MAIL_MAILER" value="array" force="true"/>
         <env name="RESEND_API_KEY" value="" force="true"/>
-        <env name="RESEND_AUDIENCE_ID" value="" force="true"/>
         <env name="TURNSTILE_SITE_KEY" value="" force="true"/>
         <env name="TURNSTILE_SECRET_KEY" value="" force="true"/>
         <env name="FATHOM_SITE_ID" value="" force="true"/>

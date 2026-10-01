@@ -197,7 +197,6 @@ test('landing page provides search and social metadata', function (): void {
 
 test('homepage newsletter form renders bot protection', function (): void {
     config()->set('services.resend.key', 'resend-test-key');
-    config()->set('services.resend.audience_id', 'audience-test-id');
     config()->set('services.turnstile.site_key', 'turnstile-test-site-key');
     config()->set('services.turnstile.secret_key', 'turnstile-test-secret-key');
     config()->set('services.turnstile.siteverify_url', 'https://challenges.cloudflare.com/turnstile/v0/siteverify');

@@ -37,9 +37,7 @@ beforeEach(function (): void {
         'mail.from.address' => 'hello@mouse28.com',
         'mail.admin_address' => 'admin@mouse28.com',
         'mouse28.contact.email' => 'contact@mouse28.com',
-        'services.resend.enabled' => true,
         'services.resend.key' => 'resend-production-key',
-        'services.resend.audience_id' => 'audience-id',
         'services.turnstile.site_key' => 'turnstile-site-key',
         'services.turnstile.secret_key' => 'turnstile-secret-key',
         'services.turnstile.allowed_hostnames' => ['mouse28.com', 'www.mouse28.com'],
@@ -95,10 +93,8 @@ test('safe staging configuration passes with isolated observability', function (
         'mouse28.production_url' => 'https://staging.mouse28.com',
         'app.deployment_environment' => 'staging',
         'mail.default' => 'array',
-        'services.resend.enabled' => false,
         'services.turnstile.allowed_hostnames' => ['staging.mouse28.com'],
         'services.resend.key' => null,
-        'services.resend.audience_id' => null,
         'sentry.environment' => 'staging',
         'sentry.release' => 'staging-release',
         'nightwatch.enabled' => false,
@@ -113,7 +109,7 @@ test('safe staging configuration passes with isolated observability', function (
     expect($exitCode)->toBe(Command::SUCCESS);
 });
 
-test('staging rejects live mail and resend integrations', function (): void {
+test('staging rejects a live mail transport', function (): void {
     config()->set([
         'app.url' => 'https://staging.mouse28.com',
         'mouse28.production_url' => 'https://staging.mouse28.com',
@@ -125,12 +121,10 @@ test('staging rejects live mail and resend integrations', function (): void {
         'nightwatch.token' => null,
         'telescope.enabled' => true,
         'mail.default' => 'resend',
-        'services.resend.enabled' => true,
     ]);
 
     pendingCommand('app:verify-deployment')
         ->expectsOutputToContain('MAIL_MAILER must use the array transport on staging.')
-        ->expectsOutputToContain('RESEND_ENABLED must be false on staging.')
         ->assertFailed();
 });
 
@@ -169,8 +163,6 @@ test('unsafe production configuration reports every failure without exposing val
         'mail.from.address' => 'hello@example.com',
         'mail.admin_address' => 'admin@example.test',
         'services.resend.key' => null,
-        'services.resend.enabled' => false,
-        'services.resend.audience_id' => null,
         'services.turnstile.site_key' => null,
         'services.turnstile.secret_key' => null,
         'services.turnstile.allowed_hostnames' => ['localhost'],
@@ -197,7 +189,6 @@ test('unsafe production configuration reports every failure without exposing val
         'CACHE_STORE must use a persistent driver.',
         'MAIL_MAILER must use a delivering transport.',
         'RESEND_API_KEY must be configured.',
-        'RESEND_ENABLED must be true in production.',
         'TURNSTILE_SECRET_KEY must be configured.',
         'TURNSTILE_ALLOWED_HOSTNAMES must include the canonical host.',
         'PODCAST_RSS_URL must use a Transistor feed URL.',

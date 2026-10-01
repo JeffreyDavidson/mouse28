@@ -48,7 +48,6 @@ test('test credentials are empty', function (string $key): void {
     expect($isEmpty)->toBeTrue();
 })->with([
     'services.resend.key',
-    'services.resend.audience_id',
     'services.turnstile.site_key',
     'services.turnstile.secret_key',
     'services.fathom.site_id',

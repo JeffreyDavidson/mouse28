@@ -22,13 +22,10 @@ class VerifyDeploymentConfiguration extends Command
         $integrationChecks = $deploymentEnvironment === 'staging'
             ? [
                 [config('mail.default') === 'array', 'MAIL_MAILER must use the array transport on staging.'],
-                [config('services.resend.enabled') === false, 'RESEND_ENABLED must be false on staging.'],
             ]
             : [
                 [$this->usesDeliveringMailer(config('mail.default')), 'MAIL_MAILER must use a delivering transport.'],
-                [config('services.resend.enabled') === true, 'RESEND_ENABLED must be true in production.'],
                 [$this->isConfigured(config('services.resend.key')), 'RESEND_API_KEY must be configured.'],
-                [$this->isConfigured(config('services.resend.audience_id')), 'RESEND_AUDIENCE_ID must be configured.'],
             ];
         $observabilityChecks = $deploymentEnvironment === 'staging'
             ? [

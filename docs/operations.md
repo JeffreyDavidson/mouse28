@@ -309,23 +309,18 @@ Use these descriptive command names for new scripts. Existing names remain alias
 | `content:sync-from-production --isolated=1` | Synchronize public content and media locally | `content:sync-production` |
 | `content:export-public` | Export published content to a JSON archive | — |
 | `content:import-public` | Import a public archive into a permitted environment | — |
-| `newsletter:import-resend-subscribers` | Import contacts still subscribed in Resend as confirmed subscribers (dry run unless `--apply`) | — |
 
 Use `--isolated=1` for sync so overlapping invocations stop with a nonzero exit code before remote processes or local writes. Both command names share the same isolation lock. The framework releases it on completion; interrupted locks expire after one hour. The existing Forge verification command remains supported through its alias; no deployment script changes are required.
 
-## Importing Resend newsletter contacts
+## Legacy Resend newsletter audience
 
-Before double opt-in, sign-ups were stored only in the Resend audience. After the release that ships the `subscribers` table, import them once from the production server (site release directory):
+Before double opt-in, sign-ups were stored only in a Resend audience. The one-time import command (`newsletter:import-resend-subscribers`, available in tag `v2026.10.1`) was dry-run on production on 2026-10-01 and would have imported 10 contacts, but most were spam sign-ups from the old unverified form, so the import was skipped: real readers sign up again through the confirmed form. The command and the code that read the audience were removed. The audience itself and its contacts live in the Resend dashboard and are owner-managed: delete the spam contacts, or the whole Mouse28 audience (not Ringside's), so Resend holds no subscriber data.
 
-1. `php artisan newsletter:import-resend-subscribers` is a dry run. It prints how many contacts it would import, how many already exist, and how many it skips (unsubscribed in Resend, or unreadable). Compare "Would import" with the audience's subscribed contacts in Resend.
-2. `php artisan newsletter:import-resend-subscribers --apply` writes them as confirmed subscribers, dated from their Resend sign-up. They are not sent a confirmation email.
-3. Check Newsletter Subscribers in the admin (status Active) and the dashboard "Subscribers" count.
+The application only uses Resend to send email. Its `RESEND_API_KEY` is the only Resend setting; the former `RESEND_ENABLED` and `RESEND_AUDIENCE_ID` variables are unused and can be removed from the Forge environment files. Prefer a sending-only key restricted to the `mouse28.com` domain; a full-access key is only needed for contact or audience management.
 
-The command only adds addresses that have no subscriber row, so it never changes anyone who signed up or unsubscribed through the newsletter form, and it is safe to run again. It fails without writing when Resend is disabled, unconfigured or unreachable. It reads Resend through `RESEND_API_KEY` and `RESEND_AUDIENCE_ID`; keep both until the import has run, then the audience code can be removed.
+## Newsletter queue workers
 
-## Newsletter queue prerequisite
-
-Newsletter sign-up confirmations and issue deliveries are queued on the **default** queue (database connection), which no production worker currently consumes; the Forge worker only runs `--queue=contact-mail`. Before releasing the newsletter work, change that worker to `php artisan queue:work database --queue=default,contact-mail --timeout=60 --tries=3` (keep `retry_after` above 60 seconds and restart workers after each deployment), then confirm on staging that a new sign-up receives its confirmation email. Issue emails are rate limited to `MOUSE28_NEWSLETTER_DELIVERY_RATE_LIMIT` per second (default 5) and retried for up to a day, so a large send simply takes a few minutes. To send an issue: publish it, use "Send test email" to check the email, then "Send to subscribers" (it cannot be undone), and watch the delivery count on the issue's edit page.
+Newsletter sign-up confirmations and issue deliveries are queued on the **default** queue (database connection). Production and staging each run two supervised workers in Forge: the original contact-mail worker (`--queue=contact-mail`) and a "Default queue worker" (`queue:work database --queue=default --sleep=3 --timeout=60 --tries=3`, added 2026-10-01). Keep `retry_after` above 60 seconds and restart workers after each deployment. Issue emails are rate limited to `MOUSE28_NEWSLETTER_DELIVERY_RATE_LIMIT` per second (default 5) and retried for up to a day, so a large send simply takes a few minutes. To send an issue: publish it, use "Send test email" to check the email, then "Send to subscribers" (it cannot be undone), and watch the delivery count on the issue's edit page. Staging never delivers email, so verify real delivery in production.
 
 ## Contact mail queue deployment prerequisite
 
