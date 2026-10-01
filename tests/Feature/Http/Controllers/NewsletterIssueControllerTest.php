@@ -99,9 +99,9 @@ test('the feed address is never mistaken for an issue', function (): void {
         ->assertHeader('Content-Type', 'application/rss+xml; charset=UTF-8');
 });
 
-test('the shared footer links to the newsletter archive', function (): void {
+test('the footer sign-up offers the newsletter archive', function (): void {
     get(route('home'))
         ->assertOk()
         ->assertSeeHtml('href="'.route('newsletter.index').'"')
-        ->assertSee('Newsletter Archive');
+        ->assertSee('Read past issues');
 });

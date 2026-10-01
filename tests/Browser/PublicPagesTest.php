@@ -31,6 +31,24 @@ test('public pages render one complete newsletter footer', function (): void {
         ->assertNoJavaScriptErrors();
 });
 
+test('the footer link columns stay side by side on wide screens', function (): void {
+    $page = visit(route('home'));
+
+    foreach ([1440, 1920] as $width) {
+        $page->resize($width, 900)
+            ->assertScript(<<<'JS'
+                (() => {
+                    const headings = [...document.querySelectorAll('footer h2')]
+                        .filter((heading) => ['Explore', 'Connect'].includes(heading.textContent.trim()));
+
+                    return headings.length === 2
+                        && Math.abs(headings[0].getBoundingClientRect().top - headings[1].getBoundingClientRect().top) < 2;
+                })()
+                JS, true)
+            ->assertNoJavaScriptErrors();
+    }
+});
+
 test('the newsletter archive and issue pages fit small screens without accessibility issues', function (): void {
     $issue = NewsletterIssue::factory()->create(['content' => "## A heading\n\nSome *formatted* text with a [link](https://example.test)."]);
 
