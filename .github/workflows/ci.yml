@@ -18,7 +18,7 @@ jobs:
   application:
     name: Application tests and build
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Checkout
@@ -126,7 +126,24 @@ jobs:
       - name: Check asset budgets
         run: npm run test:assets
 
+      - name: Cache Chromium for browser regressions
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: playwright-${{ runner.os }}-
+
+      # The package mirror occasionally stalls (one run spent 12 minutes here), so cap each
+      # attempt and try once more instead of letting the whole job run out of time.
       - name: Install Chromium for browser regressions
+        id: chromium
+        timeout-minutes: 5
+        continue-on-error: true
+        run: npx playwright install --with-deps chromium
+
+      - name: Retry the Chromium install
+        if: steps.chromium.outcome == 'failure'
+        timeout-minutes: 5
         run: npx playwright install --with-deps chromium
 
       - name: Link public storage
