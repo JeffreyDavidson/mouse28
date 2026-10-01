@@ -16,7 +16,8 @@ class ErrorRecovery
             return ['url' => route('contact.create'), 'label' => 'Return to contact'];
         }
 
-        if ($request->is('newsletter')) {
+        // The archive lives at /newsletter too, so only the sign-up form's own requests return to it.
+        if ($request->is('newsletter') && ! $request->isMethodSafe()) {
             return ['url' => route('home').'#newsletter', 'label' => 'Return to newsletter'];
         }
 

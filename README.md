@@ -37,7 +37,7 @@ Mouse28 is a blog-first Disney parks and podcast site from Jeffrey and Cassie Da
 
 The application can run locally without live third-party calls, but these features require production configuration:
 
-- `RESEND_API_KEY` and `RESEND_AUDIENCE_ID` power newsletter signup and the subscriber dashboard.
+- `RESEND_API_KEY` and `RESEND_AUDIENCE_ID` are only needed for the one-time import of legacy newsletter contacts; sign-ups are stored in the database.
 - `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` protect contact and newsletter forms. `TURNSTILE_ALLOWED_HOSTNAMES` must contain the exact production and local hostnames.
 - `MOUSE28_CONTACT_EMAIL` controls the public site contact address. `MAIL_*` and `MAIL_ADMIN_ADDRESS` deliver contact notifications and confirmations.
 - `PODCAST_RSS_URL` identifies the canonical Transistor feed. It defaults to the Mouse28 feed.
@@ -48,7 +48,10 @@ The application can run locally without live third-party calls, but these featur
 - `MOUSE28_BLOG_POSTS_PER_PAGE` controls the number of posts shown per archive page; it defaults to `12`.
 - `MOUSE28_EPISODES_PER_PAGE` and `MOUSE28_GUIDES_PER_PAGE` control the episode and guide archive page sizes; both default to `12`.
 - `MOUSE28_SEARCH_RESULTS_PER_PAGE` controls how many results each site search section shows per page; it defaults to `6`.
+- `MOUSE28_NEWSLETTER_ISSUES_PER_PAGE` and `MOUSE28_NEWSLETTER_FEED_ITEMS` set the newsletter archive page size and the number of newest issues in `/newsletter/rss`; they default to `12` and `20`.
 - `MOUSE28_CONTACT_FORM_RATE_LIMIT` and `MOUSE28_NEWSLETTER_RATE_LIMIT` set the per-IP submissions allowed each minute; both default to `5`.
+- `MOUSE28_NEWSLETTER_CONFIRM_RATE_LIMIT` sets the per-IP newsletter confirmation and unsubscribe requests allowed each minute; it defaults to `10`.
+- `MOUSE28_NEWSLETTER_DELIVERY_RATE_LIMIT` sets how many newsletter issue emails are sent each second; it defaults to `5`, half of Resend's default of 10 per second, so contact mail keeps headroom.
 - `MOUSE28_PREVIEW_LINK_HOURS` sets how long shareable preview links stay valid; it defaults to `24`.
 - `MOUSE28_SEARCH_RATE_LIMIT` sets the per-IP searches allowed each minute; it defaults to `30`, and empty searches are never throttled.
 - `GUIDE_REVIEW_INTERVAL_DAYS` controls when durable guides are flagged for editorial review; it defaults to 180 days.

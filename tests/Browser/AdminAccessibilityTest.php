@@ -1,39 +1,38 @@
 <?php
 
-use App\Filament\Pages\NewsletterSubscribers;
 use App\Filament\Pages\PodcastSettings;
 use App\Filament\Resources\ContactMessages\ContactMessageResource;
 use App\Filament\Resources\Episodes\EpisodeResource;
 use App\Filament\Resources\Guides\GuideResource;
+use App\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
 use App\Filament\Resources\Posts\PostResource;
+use App\Filament\Resources\Subscribers\SubscriberResource;
 use App\Models\ContactMessage;
 use App\Models\Episode;
 use App\Models\Guide;
+use App\Models\NewsletterIssue;
 use App\Models\Post;
+use App\Models\Subscriber;
 use App\Models\User;
 use Filament\Pages\Dashboard;
-use Illuminate\Support\Facades\Http;
 
 use function Pest\Laravel\actingAs;
 
-test('newsletter contact statuses remain readable on desktop and mobile', function (): void {
+test('newsletter subscriber statuses remain readable on desktop and mobile', function (): void {
     // Arrange
     actingAs(User::factory()->admin()->create());
-    config()->set('services.resend.audience_id', 'audience-test-id');
-    Http::fake(['https://api.resend.com/*' => Http::response(['data' => [
-        ['email' => 'active@example.com', 'unsubscribed' => false],
-        ['email' => 'left@example.com', 'unsubscribed' => true],
-        ['email' => 'unknown@example.com'],
-    ]])]);
+    Subscriber::factory()->create(['email' => 'active@example.com']);
+    Subscriber::factory()->pending()->create(['email' => 'waiting@example.com']);
+    Subscriber::factory()->unsubscribed()->create(['email' => 'left@example.com']);
 
     // Act
-    $page = visit(NewsletterSubscribers::getUrl());
+    $page = visit(SubscriberResource::getUrl());
     $page->resize(1440, 1000);
 
     // Assert
-    $page->assertSee('active')
+    $page->assertSee('active@example.com')
+        ->assertSee('Pending confirmation')
         ->assertSee('Unsubscribed')
-        ->assertSee('Unknown')
         ->assertScript($this->horizontalOverflowScript(), 0)
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
@@ -42,24 +41,19 @@ test('newsletter contact statuses remain readable on desktop and mobile', functi
     $page->resize(390, 844);
 
     // Assert
-    $page->assertSee('total contacts')
-        ->assertSee('Export all contacts')
+    $page->assertSee('Newsletter Subscribers')
         ->assertScript($this->horizontalOverflowScript(), 0)
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 });
 
-test('newsletter contact table and pagination use the full available width', function (): void {
+test('newsletter subscriber table and pagination use the full available width', function (): void {
     // Arrange
     actingAs(User::factory()->admin()->create());
-    config()->set('services.resend.audience_id', 'audience-test-id');
-    config()->set('services.resend.key', 'resend-test-key');
-    Http::fake(['https://api.resend.com/*' => Http::response(['data' => [
-        ['email' => 'reader@example.com', 'unsubscribed' => false],
-    ]])]);
+    Subscriber::factory()->create();
 
     // Act
-    $page = visit(NewsletterSubscribers::getUrl());
+    $page = visit(SubscriberResource::getUrl());
 
     foreach ([1440, 390, 320] as $width) {
         $page->resize($width, 1000);
@@ -67,8 +61,8 @@ test('newsletter contact table and pagination use the full available width', fun
         // Assert
         $page->assertScript(<<<'JS'
             (() => {
-                const container = document.querySelector('[aria-label="Newsletter contacts"]');
-                const table = document.querySelector('[aria-label="Newsletter contacts table"]');
+                const container = document.querySelector('.fi-ta-ctn');
+                const table = document.querySelector('.fi-ta-table');
                 const pagination = container?.querySelector('.fi-pagination');
 
                 if (! container || ! table || ! pagination) {
@@ -400,11 +394,8 @@ test('mobile Filament controls meet the minimum touch target across admin pages'
     Post::factory()->create(['published_at' => now()]);
     Episode::factory()->create();
     Guide::factory()->create();
-    config()->set('services.resend.audience_id', 'audience-test-id');
-    config()->set('services.resend.key', 'resend-test-key');
-    Http::fake(['https://api.resend.com/*' => Http::response(['data' => [
-        ['email' => 'reader@example.com', 'unsubscribed' => false],
-    ]])]);
+    NewsletterIssue::factory()->create();
+    Subscriber::factory()->create();
 
     ContactMessage::query()->create([
         'name' => 'Alex Example',
@@ -421,13 +412,16 @@ test('mobile Filament controls meet the minimum touch target across admin pages'
         [EpisodeResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
         [GuideResource::getUrl(), '.fi-tabs-item'],
         [GuideResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
+        [NewsletterIssueResource::getUrl(), '.fi-tabs-item'],
+        [NewsletterIssueResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
         [ContactMessageResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
         [ContactMessageResource::getUrl(), '.fi-ac-link-action'],
         [PostResource::getUrl('create'), '.fi-select-input-btn'],
         [PostResource::getUrl('create'), '.fi-fo-markdown-editor .editor-toolbar button'],
         [GuideResource::getUrl('create'), '.fi-fo-markdown-editor .editor-toolbar button'],
+        [NewsletterIssueResource::getUrl('create'), '.fi-fo-markdown-editor .editor-toolbar button'],
         [EpisodeResource::getUrl('create'), '.fi-fo-rich-editor-tool'],
-        [NewsletterSubscribers::getUrl(), '.fi-pagination .fi-select-input'],
+        [SubscriberResource::getUrl(), '.fi-pagination .fi-select-input'],
     ];
 
     foreach ($pages as [$url, $expectedControl]) {
@@ -519,6 +513,7 @@ test('authenticated admin pages expose no unnamed artwork or decorative glyphs',
     $post = Post::factory()->create();
     $guide = Guide::factory()->create();
     $episode = Episode::factory()->create();
+    $issue = NewsletterIssue::factory()->create();
     $contactMessage = ContactMessage::query()->create([
         'name' => 'Park Guest',
         'email' => 'guest@example.com',
@@ -530,7 +525,7 @@ test('authenticated admin pages expose no unnamed artwork or decorative glyphs',
 
     $urls = [
         Dashboard::getUrl(panel: 'admin'),
-        NewsletterSubscribers::getUrl(),
+        SubscriberResource::getUrl(),
         PodcastSettings::getUrl(),
         PostResource::getUrl(),
         PostResource::getUrl('create'),
@@ -541,6 +536,9 @@ test('authenticated admin pages expose no unnamed artwork or decorative glyphs',
         EpisodeResource::getUrl(),
         EpisodeResource::getUrl('create'),
         EpisodeResource::getUrl('edit', ['record' => $episode]),
+        NewsletterIssueResource::getUrl(),
+        NewsletterIssueResource::getUrl('create'),
+        NewsletterIssueResource::getUrl('edit', ['record' => $issue]),
         ContactMessageResource::getUrl(),
         ContactMessageResource::getUrl('view', ['record' => $contactMessage]),
     ];

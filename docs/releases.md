@@ -24,8 +24,9 @@ setup" in `operations.md`.
 
 Releases use a monthly counter that starts at zero: branch `release/YYYY.MM.N`
 and annotated tag `vYYYY.MM.N` (for example, `release/2026.10.0` and
-`v2026.10.0`). Tags up to September 2026 (`v2026.09.1` to `v2026.09.29`) are
-dates, not counters; `v2026.09.29` is the last date-based tag.
+`v2026.10.0`). Tags up to September 2026 (`v2026.09.1` to `v2026.09.30`) are
+dates, not counters; `v2026.09.30` is the last date-based tag and `v2026.10.0`
+is the first counter-numbered release.
 
 ## Cut and validate a release
 

@@ -52,6 +52,7 @@ test('test paths mirror their application source', function (string $suite): voi
         'Config/Mouse28Test.php' => 'config/mouse28.php',
         'Http/ExceptionHandlingTest.php' => 'bootstrap/app.php',
         'HealthTest.php' => 'app/Providers/AppServiceProvider.php',
+        'Database/SampleContentSeederTest.php' => 'database/seeders/SampleContentSeeder.php',
         'Http/ProductionSmokeTest.php' => 'routes/web.php',
         'Support/DeploymentSmokeClientTest.php' => 'tests/Support/DeploymentSmokeClient.php',
     ];

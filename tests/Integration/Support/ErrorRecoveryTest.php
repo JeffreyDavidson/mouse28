@@ -13,3 +13,9 @@ test('error recovery uses safe form destinations instead of untrusted referrers'
     'unknown POST' => ['/unknown-post', 'home', ''],
     'Livewire POST' => ['/livewire/update', 'home', ''],
 ]);
+
+test('the newsletter archive offers a retry instead of the sign-up form', function (): void {
+    $request = Request::create('/newsletter', 'GET');
+
+    expect(ErrorRecovery::for($request, 500)['label'])->toBe('Try again');
+});

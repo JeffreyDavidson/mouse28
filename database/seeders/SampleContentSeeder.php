@@ -7,7 +7,9 @@ use App\Enums\GuideCategory;
 use App\Enums\PostCategory;
 use App\Models\Episode;
 use App\Models\Guide;
+use App\Models\NewsletterIssue;
 use App\Models\Post;
+use App\Models\Subscriber;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 
@@ -33,6 +35,39 @@ class SampleContentSeeder extends Seeder
         $this->guide('sample-guide-draft-outline', 'Sample Guide 02: Draft Outline', GuideCategory::ParkStrategy, false);
         $this->guide('sample-guide-scheduled-reference', 'Sample Guide 03: Scheduled Reference', GuideCategory::FoodReviews, true, now()->addDay());
 
+        $this->issue('sample-issue-monthly-update', 'Sample Issue 01: Monthly Update', true, now()->subDay());
+        $this->issue('sample-issue-draft-outline', 'Sample Issue 02: Draft Outline', false);
+        $this->issue('sample-issue-scheduled-note', 'Sample Issue 03: Scheduled Note', true, now()->addDay());
+
+        $this->subscriber('sample-active-reader@example.test', confirmed: true);
+        $this->subscriber('sample-pending-reader@example.test', confirmed: false);
+        $this->subscriber('sample-former-reader@example.test', confirmed: true, unsubscribed: true);
+    }
+
+    private function issue(string $slug, string $title, bool $isPublished, ?Carbon $publishedAt = null): NewsletterIssue
+    {
+        return NewsletterIssue::query()->updateOrCreate(
+            ['slug' => $slug],
+            [
+                'title' => $title,
+                'excerpt' => 'This sample record exists to exercise the newsletter workflow.',
+                'content' => 'Synthetic development content for testing the issue list, archive and emails.',
+                'is_published' => $isPublished,
+                'published_at' => $publishedAt,
+            ],
+        );
+    }
+
+    private function subscriber(string $email, bool $confirmed, bool $unsubscribed = false): Subscriber
+    {
+        return Subscriber::query()->updateOrCreate(
+            ['email' => $email],
+            [
+                'subscribed_at' => now(),
+                'verified_at' => $confirmed ? now() : null,
+                'unsubscribed_at' => $unsubscribed ? now() : null,
+            ],
+        );
     }
 
     private function episode(string $slug, string $title, int $episodeNumber, bool $isPublished, ?Carbon $publishedAt = null): Episode

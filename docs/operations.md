@@ -71,10 +71,13 @@ Targets in organization `jeffrey-davidson`, server `cold-moon` (753072), shared
 with The Laravel Architect: staging `staging.mouse28.com` (site 3396232) and
 production `mouse28.com` (site 3064716).
 
-The first staging deployment through the pipeline succeeded on 2026-09-29 (run
-36623049256, revision `e82d29f`, Forge deployment 78939264). Production
-promotion and the production script have not run yet; verify them with the first
-release under the pipeline.
+The pipeline has deployed both sites. The first staging deployment succeeded on
+2026-09-29 (run 36623049256, revision `e82d29f`, Forge deployment 78939264). The
+first production promotion (release `v2026.09.30`, run 36633297973, Forge
+deployment 78945158) succeeded on its second attempt: the first failed safely at
+the staging recheck because the production environment's Access token was missing
+from the Cloudflare policy, before any deployment was triggered. Release
+`v2026.10.0` (Forge deployment 78957195) promoted first time.
 
 ### GitHub
 
@@ -82,9 +85,14 @@ release under the pipeline.
   reviewer, allows self-approval, and has no administrator bypass.
 - Secrets in **both** environments: `FORGE_DEPLOY_HOOK` (each site's own hook;
   never use the production hook in staging), `CF_ACCESS_CLIENT_ID` and
-  `CF_ACCESS_CLIENT_SECRET`. Production promotion rechecks staging, so both
-  environments hold the **staging** Access token. `mouse28.com` itself is not
-  behind Cloudflare Access.
+  `CF_ACCESS_CLIENT_SECRET`. Production promotion rechecks staging, so the token in
+  the `production` environment must also be allowed into the staging application.
+  Each environment may hold its own token (today "Mouse28 GitHub staging
+  deployments" in `staging` and "Mouse28 Github production deployments" in
+  `production`) as long as the Cloudflare policy below includes both. A token that
+  the policy omits makes `Promote production` fail at its staging recheck with
+  "Release marker returned HTTP 302" before it triggers any deployment (this
+  happened on 2026-09-29). `mouse28.com` itself is not behind Cloudflare Access.
 - Never paste tokens or hook URLs into chat, logs, repository files or workflow
   inputs. Forge's Deployments page shows the deploy-hook URL, token included, in its
   page text: read that page with element inspection, not page-text extraction.
@@ -93,7 +101,8 @@ release under the pipeline.
 
 - **Access:** the staging application ("Mouse28 Staging") allows the GitHub
   deployment token through its own **Service Auth** policy, "Mouse28 GitHub Staging
-  Deployments", which includes only the "Mouse28 GitHub staging deployments" token.
+  Deployments", which includes the "Mouse28 GitHub staging deployments" and "Mouse28 Github
+  production deployments" tokens.
   Do not edit the shared "GitHub Staging Deployment Checks" policy: other
   applications use it, and adding a token there widens their access. A token that
   no attached policy includes gets the Access login redirect (HTTP 302) on every
@@ -298,8 +307,23 @@ Use these descriptive command names for new scripts. Existing names remain alias
 | `content:sync-from-production --isolated=1` | Synchronize public content and media locally | `content:sync-production` |
 | `content:export-public` | Export published content to a JSON archive | — |
 | `content:import-public` | Import a public archive into a permitted environment | — |
+| `newsletter:import-resend-subscribers` | Import contacts still subscribed in Resend as confirmed subscribers (dry run unless `--apply`) | — |
 
 Use `--isolated=1` for sync so overlapping invocations stop with a nonzero exit code before remote processes or local writes. Both command names share the same isolation lock. The framework releases it on completion; interrupted locks expire after one hour. The existing Forge verification command remains supported through its alias; no deployment script changes are required.
+
+## Importing Resend newsletter contacts
+
+Before double opt-in, sign-ups were stored only in the Resend audience. After the release that ships the `subscribers` table, import them once from the production server (site release directory):
+
+1. `php artisan newsletter:import-resend-subscribers` is a dry run. It prints how many contacts it would import, how many already exist, and how many it skips (unsubscribed in Resend, or unreadable). Compare "Would import" with the audience's subscribed contacts in Resend.
+2. `php artisan newsletter:import-resend-subscribers --apply` writes them as confirmed subscribers, dated from their Resend sign-up. They are not sent a confirmation email.
+3. Check Newsletter Subscribers in the admin (status Active) and the dashboard "Subscribers" count.
+
+The command only adds addresses that have no subscriber row, so it never changes anyone who signed up or unsubscribed through the newsletter form, and it is safe to run again. It fails without writing when Resend is disabled, unconfigured or unreachable. It reads Resend through `RESEND_API_KEY` and `RESEND_AUDIENCE_ID`; keep both until the import has run, then the audience code can be removed.
+
+## Newsletter queue prerequisite
+
+Newsletter sign-up confirmations and issue deliveries are queued on the **default** queue (database connection), which no production worker currently consumes; the Forge worker only runs `--queue=contact-mail`. Before releasing the newsletter work, change that worker to `php artisan queue:work database --queue=default,contact-mail --timeout=60 --tries=3` (keep `retry_after` above 60 seconds and restart workers after each deployment), then confirm on staging that a new sign-up receives its confirmation email. Issue emails are rate limited to `MOUSE28_NEWSLETTER_DELIVERY_RATE_LIMIT` per second (default 5) and retried for up to a day, so a large send simply takes a few minutes. To send an issue: publish it, use "Send test email" to check the email, then "Send to subscribers" (it cannot be undone), and watch the delivery count on the issue's edit page.
 
 ## Contact mail queue deployment prerequisite
 

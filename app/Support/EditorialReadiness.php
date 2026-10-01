@@ -7,11 +7,12 @@ namespace App\Support;
 use App\Enums\PublicationStatus;
 use App\Models\Episode;
 use App\Models\Guide;
+use App\Models\NewsletterIssue;
 use App\Models\Post;
 
 class EditorialReadiness
 {
-    public static function status(Post|Guide|Episode $content): PublicationStatus
+    public static function status(Post|Guide|Episode|NewsletterIssue $content): PublicationStatus
     {
         if (! $content->is_published) {
             return PublicationStatus::Draft;

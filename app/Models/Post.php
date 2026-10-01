@@ -6,6 +6,7 @@ use App\Contracts\Publishable;
 use App\Enums\ContentAuthor;
 use App\Enums\PostCategory;
 use App\Enums\SourceReviewStatus;
+use App\Models\Concerns\HasCoverImages;
 use App\Models\Concerns\HasPublication;
 use App\Models\Concerns\HasTagsUntilForceDeleted;
 use Carbon\CarbonInterface;
@@ -65,7 +66,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class Post extends Model implements Publishable
 {
     /** @use HasFactory<PostFactory> */
-    use HasFactory, HasPublication, HasTagsUntilForceDeleted, SoftDeletes;
+    use HasCoverImages, HasFactory, HasPublication, HasTagsUntilForceDeleted, SoftDeletes;
 
     use LogsActivity;
 

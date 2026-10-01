@@ -6,6 +6,7 @@ use App\Contracts\Publishable;
 use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
 use App\Enums\SourceReviewStatus;
+use App\Models\Concerns\HasCoverImages;
 use App\Models\Concerns\HasPublication;
 use App\Models\Concerns\HasTagsUntilForceDeleted;
 use Carbon\CarbonInterface;
@@ -61,7 +62,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class Guide extends Model implements Publishable
 {
     /** @use HasFactory<GuideFactory> */
-    use HasFactory, HasPublication, HasTagsUntilForceDeleted, SoftDeletes;
+    use HasCoverImages, HasFactory, HasPublication, HasTagsUntilForceDeleted, SoftDeletes;
 
     use LogsActivity;
 

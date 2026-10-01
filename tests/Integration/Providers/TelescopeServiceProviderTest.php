@@ -41,6 +41,8 @@ test('sensitive form batches are excluded even when exceptions contain submitted
 })->with([
     'contact' => ['/contact', false],
     'newsletter' => ['/newsletter', false],
+    'newsletter confirmation' => ['/newsletter/confirm/1/token', false],
+    'newsletter unsubscribe' => ['/newsletter/unsubscribe/1', false],
     'unrelated request' => ['/other', true],
 ]);
 

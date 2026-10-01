@@ -4,38 +4,24 @@ use App\Filament\Widgets\StatsOverview;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
+use App\Models\Subscriber;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Date;
-use Illuminate\Support\Facades\Http;
 
 pest()->use(RefreshDatabase::class);
 
-test('subscriber statistics count only explicitly active contacts', function (): void {
-    config()->set('services.resend.audience_id', 'audience-test-id');
-    Cache::forget('newsletter_subscribers');
-    Http::fake([
-        'https://api.resend.com/*' => Http::response(['data' => [
-            ['email' => 'active@example.com', 'unsubscribed' => false],
-            ['email' => 'unsubscribed@example.com', 'unsubscribed' => true],
-            ['email' => 'unknown@example.com'],
-            ['email' => 'invalid@example.com', 'unsubscribed' => 'false'],
-        ]]),
-    ]);
+test('subscriber statistics count only confirmed readers who have not unsubscribed', function (): void {
+    Subscriber::factory()->count(2)->create();
+    Subscriber::factory()->pending()->create();
+    Subscriber::factory()->unsubscribed()->create();
 
     $stat = collect(app(StatsOverview::class)->getStats())->sole('label', 'Subscribers');
 
-    expect($stat['value'])->toBe(1)
+    expect($stat['value'])->toBe(2)
         ->and($stat['description'])->toBe('Active newsletter subscribers');
 });
 
 test('published statistics exclude scheduled content', function (): void {
-    config()->set('services.resend.audience_id', 'audience-test-id');
-    Cache::forget('newsletter_subscribers');
-    Http::fake([
-        'https://api.resend.com/*' => Http::response(['data' => []]),
-    ]);
-
     Post::factory()->create();
     Post::factory()->scheduled()->create();
     Post::factory()->draft()->create();
