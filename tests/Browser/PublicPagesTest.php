@@ -29,7 +29,7 @@ test('public pages render one complete newsletter footer', function (): void {
         ->assertAttribute('footer a[href="https://infinitydigital.dev"]', 'rel', 'noopener noreferrer')
         ->assertAttribute('footer a[href="https://infinitydigital.dev"]', 'target', '_blank')
         ->assertNoJavaScriptErrors();
-});
+})->group('browser-smoke');
 
 test('the newsletter archive and issue pages fit small screens without accessibility issues', function (): void {
     $issue = NewsletterIssue::factory()->create(['content' => "## A heading\n\nSome *formatted* text with a [link](https://example.test)."]);
@@ -44,7 +44,7 @@ test('the newsletter archive and issue pages fit small screens without accessibi
                 ->assertNoJavaScriptErrors();
         }
     }
-});
+})->group('browser-smoke');
 
 function observeBlogCardMotionScript(): string
 {

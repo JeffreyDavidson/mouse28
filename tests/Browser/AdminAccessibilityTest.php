@@ -45,7 +45,7 @@ test('newsletter subscriber statuses remain readable on desktop and mobile', fun
         ->assertScript($this->horizontalOverflowScript(), 0)
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
-});
+})->group('browser-smoke');
 
 test('newsletter subscriber table and pagination use the full available width', function (): void {
     // Arrange
@@ -555,7 +555,7 @@ test('authenticated admin pages expose no unnamed artwork or decorative glyphs',
             ->assertNoAccessibilityIssues()
             ->assertScript(unexpectedAdminJavaScriptErrorCountScript(), 0);
     }
-});
+})->group('browser-smoke');
 
 test('dashboard Quick Draft loads without Livewire entanglement errors', function (): void {
     actingAs(User::factory()->admin()->create());
