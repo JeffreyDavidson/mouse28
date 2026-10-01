@@ -76,6 +76,17 @@ and `/up`, runs the HTTP smoke suite against the deployed revision, then checks
 the marker again. A redirect to Cloudflare Access login is a failure, not a
 successful application response.
 
+Staging never delivers email: its `MAIL_MAILER` is `array` (and `RESEND_ENABLED`
+is false), which `app:verify-deployment` requires, so confirmation, test and
+newsletter emails are discarded there even though the queue and worker run them.
+Verify the pipeline on staging (sign-up stored, jobs consumed, no failed jobs,
+pages and admin) and verify real delivery in production in a safe order: sign up
+with an address you control and confirm it, send an issue's "Send test email"
+(admin addresses only), and only then send to readers. A staging admin login that
+fails with a server error ("The MAC is invalid") means a stored two-factor secret
+was encrypted with a different `APP_KEY`; the preflight check described in
+`operations.md` reports it.
+
 For production approval, choose the successful staging run created for the
 merged `main` SHA. A newer staging deployment invalidates a pending manual
 review; select and review the new revision before promotion.
