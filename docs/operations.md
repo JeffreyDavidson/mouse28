@@ -356,7 +356,7 @@ If either heartbeat goes stale, `/up` returns `500` with `{"status":"down"}`.
 Mouse28's off-site backup job runs as `forge` on `cold-moon`, independently of
 Forge's paid database-backup feature and application deployments. The daily cron
 schedule is **07:15 UTC** (03:15 New York during daylight-saving time). Its private
-installation is `/home/forge/mouse28-offsite-backup`:
+installation is `/home/forge/backups/.control/mouse28-offsite` (it was `/home/forge/mouse28-offsite-backup` until the 2026-09-23 centralization under `/home/forge/backups`):
 
 - `backup.py` orchestrates the backup; `export-database.php` reads the active
   release's Laravel database configuration without printing credentials.
@@ -365,7 +365,7 @@ installation is `/home/forge/mouse28-offsite-backup`:
   existing Mouse28 backup password, retained separately in the original secret
   stores for recovery; this server file must not be its only surviving copy.
 - `last-success.json` records the latest verified snapshot. Scheduled output goes
-  to `backup.log`, with generic failure stages rather than credentials or data.
+  to `/home/forge/backups/logs/mouse28-offsite.log`, with generic failure stages rather than credentials or data.
 - `test_backup.py` provides isolated safety tests using synthetic data.
 
 Each run exports a transactional MySQL dump and archives only persistent public
@@ -408,7 +408,7 @@ endpoint is stored in the server-only `heartbeat-url` file with mode `0600`.
 Never commit or log this capability URL. The request has bounded timeouts and
 retries, does not follow redirects, and keeps its URL out of process arguments.
 A heartbeat delivery failure leaves the verified backup intact, returns failure,
-and logs only the generic notification stage. Inspect `backup.log` and
+and logs only the generic notification stage. Inspect `/home/forge/backups/logs/mouse28-offsite.log` and
 `last-success.json` to distinguish backup failures from monitoring failures.
 
 Forge's account email is `jdavidsonwebdev@gmail.com`; email and in-app
@@ -422,6 +422,24 @@ reported **Beating** after its success ping. An actual missed-run email has not
 been deliberately triggered or confirmed in the inbox. Original scripts are
 preserved as `backup.py.before-heartbeat` and `test_backup.py.before-heartbeat`
 in the private server installation for recovery.
+
+The upload step shells out to the AWS CLI. It now uses **AWS CLI v2, installed for
+the `forge` user** at `/home/forge/.local/bin/aws` (a self-contained bundle, so a
+system Python upgrade cannot break it); `backup.py` calls that path. The `forge` user
+has no passwordless `sudo`, so a system-wide install is not possible from Forge
+commands. The previous script is kept as `backup.py.before-aws-v2`.
+
+Incident, 2026-09-25 to 2026-10-01: the Ubuntu/Python upgrade on 2026-09-24
+(15:36 UTC) left the old pip-installed `/usr/local/bin/aws` (CLI v1, shebang
+`/usr/bin/python3`) without its `awscli` module, so every run failed at "upload and
+verify encrypted backup" and then "retry pending encrypted uploads" (a stuck pending
+bundle is retried first and blocks new ones). The Forge heartbeat showed *Missing*
+for a week. It was diagnosed with `/usr/local/bin/aws --version`
+(`ModuleNotFoundError: No module named 'awscli'`), repaired by the user-level v2
+install and the one-line path change, and a manual run uploaded the stuck
+`20260925T071502Z` bundle and a fresh `20261001T185413Z` snapshot. If the heartbeat
+goes missing again, first run `/home/forge/.local/bin/aws --version`, then read the
+log's last lines, then list `/home/forge/backups/production/mouse28.com/offsite/pending`.
 
 For recovery, first verify the manifest's ciphertext hashes, decrypt with the
 existing backup password and recorded OpenSSL parameters, then verify plaintext
@@ -457,7 +475,7 @@ connected server's data directory and disabled networking before importing.
 The removed Mac automation is not an active fallback. Reinstating it requires
 explicit approval and rebuilding its deleted files before enabling a launch agent;
 avoid running duplicate schedules. A pre-migration server crontab is preserved at
-`/home/forge/mouse28-offsite-backup/crontab.before-migration`; compare it rather
+`/home/forge/backups/.control/mouse28-offsite/crontab.before-migration`; compare it rather
 than overwriting a newer crontab, to avoid losing unrelated jobs.
 
 ## Deploying
