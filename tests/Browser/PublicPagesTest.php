@@ -2,11 +2,13 @@
 
 use App\Models\Episode;
 use App\Models\Guide;
+use App\Models\NewsletterIssue;
 use App\Models\Post;
 
 test('public pages render one complete newsletter footer', function (): void {
     $post = Post::factory()->create();
     $episode = Episode::factory()->create();
+    $issue = NewsletterIssue::factory()->create();
 
     visit([
         route('home'),
@@ -14,6 +16,8 @@ test('public pages render one complete newsletter footer', function (): void {
         route('blog.show', $post),
         route('episodes.index'),
         route('episodes.show', $episode),
+        route('newsletter.index'),
+        route('newsletter.issue', $issue),
         route('about'),
         route('contact.create'),
         route('privacy'),
@@ -25,6 +29,21 @@ test('public pages render one complete newsletter footer', function (): void {
         ->assertAttribute('footer a[href="https://infinitydigital.dev"]', 'rel', 'noopener noreferrer')
         ->assertAttribute('footer a[href="https://infinitydigital.dev"]', 'target', '_blank')
         ->assertNoJavaScriptErrors();
+});
+
+test('the newsletter archive and issue pages fit small screens without accessibility issues', function (): void {
+    $issue = NewsletterIssue::factory()->create(['content' => "## A heading\n\nSome *formatted* text with a [link](https://example.test)."]);
+
+    foreach ([route('newsletter.index'), route('newsletter.issue', $issue)] as $url) {
+        $page = visit($url);
+
+        foreach ([1440, 390, 320] as $width) {
+            $page->resize($width, 900)
+                ->assertScript($this->horizontalOverflowScript(), 0)
+                ->assertNoAccessibilityIssues()
+                ->assertNoJavaScriptErrors();
+        }
+    }
 });
 
 function observeBlogCardMotionScript(): string

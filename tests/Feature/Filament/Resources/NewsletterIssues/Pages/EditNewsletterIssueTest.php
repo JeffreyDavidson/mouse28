@@ -5,6 +5,8 @@ use App\Filament\Resources\NewsletterIssues\Pages\EditNewsletterIssue;
 use App\Models\NewsletterIssue;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\URL;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -114,3 +116,13 @@ test('publishing actions disappear when admin access is revoked', function (bool
     'publish' => [true, 'publish'],
     'unpublish' => [false, 'unpublish'],
 ]);
+
+test('the edit page offers a preview link that opens in a new tab', function (): void {
+    Date::setTestNow('2026-09-27 12:00:00');
+    $issue = NewsletterIssue::factory()->draft()->create();
+
+    livewire(EditNewsletterIssue::class, ['record' => $issue->getRouteKey()])
+        ->assertActionVisible('preview')
+        ->assertActionHasUrl('preview', URL::temporarySignedRoute('preview.newsletter-issue', Date::now()->addHours(24), ['newsletterIssue' => $issue]))
+        ->assertActionShouldOpenUrlInNewTab('preview');
+});

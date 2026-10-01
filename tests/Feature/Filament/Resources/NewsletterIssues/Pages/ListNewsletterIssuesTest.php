@@ -4,7 +4,10 @@ use App\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
 use App\Filament\Resources\NewsletterIssues\Pages\ListNewsletterIssues;
 use App\Models\NewsletterIssue;
 use App\Models\User;
+use Filament\Actions\Testing\TestAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\URL;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -68,6 +71,16 @@ test('issues can be found by title', function (): void {
         ->searchTable('Sensory')
         ->assertCanSeeTableRecords([$match])
         ->assertCanNotSeeTableRecords([$other]);
+});
+
+test('the list links live issues to the site and drafts to a preview', function (): void {
+    Date::setTestNow('2026-09-27 12:00:00');
+    $live = NewsletterIssue::factory()->create();
+    $draft = NewsletterIssue::factory()->draft()->create();
+
+    livewire(ListNewsletterIssues::class)
+        ->assertActionHasUrl(TestAction::make('view_on_site')->table($live), route('newsletter.issue', $live))
+        ->assertActionHasUrl(TestAction::make('view_on_site')->table($draft), URL::temporarySignedRoute('preview.newsletter-issue', Date::now()->addHours(24), ['newsletterIssue' => $draft]));
 });
 
 test('other users cannot reach the issue list', function (): void {
