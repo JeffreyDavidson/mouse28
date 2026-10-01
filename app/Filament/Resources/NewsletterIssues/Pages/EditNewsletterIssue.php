@@ -2,18 +2,23 @@
 
 namespace App\Filament\Resources\NewsletterIssues\Pages;
 
+use App\Actions\SendNewsletterIssue;
+use App\Actions\SendNewsletterIssueTestEmail;
 use App\Filament\Actions\PublishContentAction;
 use App\Filament\Actions\UnpublishContentAction;
 use App\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
 use App\Models\NewsletterIssue;
+use App\Models\Subscriber;
 use App\Support\Content\PreviewUrlGenerator;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Str;
 
 /** @property NewsletterIssue $record */
 class EditNewsletterIssue extends EditRecord
@@ -25,8 +30,20 @@ class EditNewsletterIssue extends EditRecord
     {
         return view('filament.resources.newsletter-issues.form-header', [
             'title' => 'Edit Issue',
-            'subtitle' => $this->record->title,
+            'subtitle' => implode(' · ', array_filter([$this->record->title, $this->deliverySummary()])),
         ]);
+    }
+
+    private function deliverySummary(): ?string
+    {
+        if (! $this->record->wasSent()) {
+            return null;
+        }
+
+        $total = $this->record->deliveries()->count();
+        $delivered = $this->record->deliveries()->whereNotNull('sent_at')->count();
+
+        return "Sent {$this->record->sent_at?->format('M j, Y')}. Delivered to {$delivered} of {$total} ".Str::plural('subscriber', $total).'.';
     }
 
     protected function getHeaderActions(): array
@@ -39,6 +56,51 @@ class EditNewsletterIssue extends EditRecord
                 ->authorize('view')
                 ->url(fn (PreviewUrlGenerator $previewUrls): string => $previewUrls->for($this->record))
                 ->openUrlInNewTab(),
+            Action::make('sendTestEmail')
+                ->label('Send test email')
+                ->icon(Heroicon::OutlinedEnvelope)
+                ->color('gray')
+                ->authorize('update')
+                ->action(function (SendNewsletterIssueTestEmail $sendTestEmail): void {
+                    $recipients = implode(', ', $sendTestEmail->handle($this->record));
+
+                    Notification::make()
+                        ->success()
+                        ->title("Test email sent to {$recipients}")
+                        ->send();
+                }),
+            Action::make('sendToSubscribers')
+                ->label('Send to subscribers')
+                ->icon(Heroicon::OutlinedPaperAirplane)
+                ->authorize('update')
+                ->visible(fn (): bool => $this->record->isPublished() && ! $this->record->wasSent())
+                ->requiresConfirmation()
+                ->modalHeading('Send this issue to subscribers?')
+                ->modalDescription(function (): string {
+                    $count = Subscriber::query()->active()->count();
+
+                    return "This emails the issue to {$count} active ".Str::plural('subscriber', $count).'. It cannot be undone.';
+                })
+                ->modalSubmitActionLabel('Send')
+                ->action(function (SendNewsletterIssue $sendIssue): void {
+                    if (! Subscriber::query()->active()->exists()) {
+                        Notification::make()
+                            ->warning()
+                            ->title('There are no active subscribers to send to')
+                            ->send();
+
+                        return;
+                    }
+
+                    $queued = $sendIssue->handle($this->record);
+
+                    $this->refreshFormData(['sent_at']);
+
+                    Notification::make()
+                        ->success()
+                        ->title("Queued for {$queued} ".Str::plural('subscriber', $queued))
+                        ->send();
+                }),
             DeleteAction::make(),
             ForceDeleteAction::make(),
             RestoreAction::make(),

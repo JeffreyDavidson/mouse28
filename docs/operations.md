@@ -321,6 +321,10 @@ Before double opt-in, sign-ups were stored only in the Resend audience. After th
 
 The command only adds addresses that have no subscriber row, so it never changes anyone who signed up or unsubscribed through the newsletter form, and it is safe to run again. It fails without writing when Resend is disabled, unconfigured or unreachable. It reads Resend through `RESEND_API_KEY` and `RESEND_AUDIENCE_ID`; keep both until the import has run, then the audience code can be removed.
 
+## Newsletter queue prerequisite
+
+Newsletter sign-up confirmations and issue deliveries are queued on the **default** queue (database connection), which no production worker currently consumes; the Forge worker only runs `--queue=contact-mail`. Before releasing the newsletter work, change that worker to `php artisan queue:work database --queue=default,contact-mail --timeout=60 --tries=3` (keep `retry_after` above 60 seconds and restart workers after each deployment), then confirm on staging that a new sign-up receives its confirmation email. Issue emails are rate limited to `MOUSE28_NEWSLETTER_DELIVERY_RATE_LIMIT` per second (default 5) and retried for up to a day, so a large send simply takes a few minutes. To send an issue: publish it, use "Send test email" to check the email, then "Send to subscribers" (it cannot be undone), and watch the delivery count on the issue's edit page.
+
 ## Contact mail queue deployment prerequisite
 
 Before deploying queued contact delivery, configure a supervised Forge worker:

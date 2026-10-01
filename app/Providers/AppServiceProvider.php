@@ -80,6 +80,8 @@ class AppServiceProvider extends ServiceProvider
             ->withErrors(['newsletter_rate_limit' => 'Too many signup attempts. Please wait a minute and try again.'], 'newsletter')
             ->withInput($request->only('email'))));
 
+        RateLimiter::for('newsletter-delivery', fn (): Limit => Limit::perSecond(Config::integer('mouse28.rate_limits.newsletter_delivery_per_second')));
+
         RateLimiter::for('newsletter-confirm', fn (Request $request): Limit => Limit::perMinute(Config::integer('mouse28.rate_limits.newsletter_confirm_per_minute'))->by($request->ip()));
 
         RateLimiter::for('search', function (Request $request): Limit {

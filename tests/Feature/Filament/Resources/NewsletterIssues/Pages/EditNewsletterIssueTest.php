@@ -2,10 +2,14 @@
 
 use App\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
 use App\Filament\Resources\NewsletterIssues\Pages\EditNewsletterIssue;
+use App\Mail\NewsletterIssueMail;
+use App\Models\NewsletterDelivery;
 use App\Models\NewsletterIssue;
+use App\Models\Subscriber;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 
 use function Pest\Laravel\actingAs;
@@ -126,3 +130,74 @@ test('the edit page offers a preview link that opens in a new tab', function ():
         ->assertActionHasUrl('preview', URL::temporarySignedRoute('preview.newsletter-issue', Date::now()->addHours(24), ['newsletterIssue' => $issue]))
         ->assertActionShouldOpenUrlInNewTab('preview');
 });
+
+test('sending is offered only for live issues that have not been sent', function (NewsletterIssue $issue, bool $visible): void {
+    $page = livewire(EditNewsletterIssue::class, ['record' => $issue->getRouteKey()]);
+
+    $visible
+        ? $page->assertActionVisible('sendToSubscribers')
+        : $page->assertActionHidden('sendToSubscribers');
+})->with([
+    'live' => [fn (): NewsletterIssue => NewsletterIssue::factory()->create(), true],
+    'draft' => [fn (): NewsletterIssue => NewsletterIssue::factory()->draft()->create(), false],
+    'scheduled' => [fn (): NewsletterIssue => NewsletterIssue::factory()->scheduled()->create(), false],
+    'already sent' => [fn (): NewsletterIssue => NewsletterIssue::factory()->sent()->create(), false],
+]);
+
+test('sending queues the issue for active readers only', function (): void {
+    Subscriber::factory()->create();
+    Subscriber::factory()->pending()->create();
+    $issue = NewsletterIssue::factory()->create();
+
+    livewire(EditNewsletterIssue::class, ['record' => $issue->getRouteKey()])
+        ->callAction('sendToSubscribers')
+        ->assertNotified('Queued for 1 subscriber');
+
+    expect($issue->refresh()->wasSent())->toBeTrue();
+    $this->assertDatabaseCount('newsletter_deliveries', 1);
+});
+
+test('sending explains when nobody is subscribed and keeps the issue unsent', function (): void {
+    Subscriber::factory()->pending()->create();
+    $issue = NewsletterIssue::factory()->create();
+
+    livewire(EditNewsletterIssue::class, ['record' => $issue->getRouteKey()])
+        ->callAction('sendToSubscribers')
+        ->assertNotified('There are no active subscribers to send to');
+
+    expect($issue->refresh()->wasSent())->toBeFalse();
+    $this->assertDatabaseCount('newsletter_deliveries', 0);
+});
+
+test('a test email goes to the admin addresses even for a draft', function (): void {
+    Mail::fake();
+    config()->set('mail.admin_address', 'owner@example.test');
+    $issue = NewsletterIssue::factory()->draft()->create();
+
+    livewire(EditNewsletterIssue::class, ['record' => $issue->getRouteKey()])
+        ->callAction('sendTestEmail')
+        ->assertNotified('Test email sent to owner@example.test');
+
+    Mail::assertSent(NewsletterIssueMail::class, fn (NewsletterIssueMail $mail): bool => $mail->hasTo('owner@example.test'));
+    expect($issue->refresh()->wasSent())->toBeFalse();
+});
+
+test('a sent issue shows how many deliveries have gone out', function (): void {
+    $issue = NewsletterIssue::factory()->sent()->create();
+    NewsletterDelivery::factory()->for($issue)->sent()->create();
+    NewsletterDelivery::factory()->for($issue)->create();
+
+    livewire(EditNewsletterIssue::class, ['record' => $issue->getRouteKey()])
+        ->assertSee('Delivered to 1 of 2 subscribers');
+});
+
+test('sending actions disappear when admin access is revoked', function (string $action): void {
+    $admin = User::factory()->admin()->create();
+    actingAs($admin);
+    $issue = NewsletterIssue::factory()->create();
+    $page = livewire(EditNewsletterIssue::class, ['record' => $issue->getRouteKey()]);
+
+    $admin->is_admin = false;
+
+    $page->assertActionHidden($action);
+})->with(['sendToSubscribers', 'sendTestEmail']);

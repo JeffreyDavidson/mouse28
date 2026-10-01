@@ -38,6 +38,11 @@ class NewsletterIssuesTable
                     ->date()
                     ->placeholder('Not published')
                     ->sortable(),
+                TextColumn::make('sent_at')
+                    ->label('Sent')
+                    ->date()
+                    ->placeholder('Not sent')
+                    ->sortable(),
                 TextColumn::make('updated_at')
                     ->label('Updated')
                     ->since()

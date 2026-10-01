@@ -83,6 +83,13 @@ test('the list links live issues to the site and drafts to a preview', function 
         ->assertActionHasUrl(TestAction::make('view_on_site')->table($draft), URL::temporarySignedRoute('preview.newsletter-issue', Date::now()->addHours(24), ['newsletterIssue' => $draft]));
 });
 
+test('the list shows whether each issue has been sent', function (): void {
+    NewsletterIssue::factory()->sent()->create();
+    NewsletterIssue::factory()->create();
+
+    livewire(ListNewsletterIssues::class)->assertSee(['Sent', 'Not sent']);
+});
+
 test('other users cannot reach the issue list', function (): void {
     actingAs(User::factory()->create());
 
