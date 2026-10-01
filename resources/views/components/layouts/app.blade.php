@@ -306,6 +306,10 @@
                             We email you a link to confirm. Your address is only used for Mouse28 updates.
                         </p>
                     </form>
+                    <a
+                        href="{{ route('newsletter.index') }}"
+                        class="hover:text-gold mt-2 inline-flex min-h-12 items-center text-base text-white/70 underline underline-offset-4 transition-colors sm:min-h-6 sm:text-sm"
+                    >Read past issues</a>
                 </div>
 
                 {{-- Links (right side) --}}
@@ -330,10 +334,6 @@
                                 href="{{ route('episodes.index') }}"
                                 class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
                             >Podcast</a>
-                            <a
-                                href="{{ route('newsletter.index') }}"
-                                class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
-                            >Newsletter Archive</a>
                             <a
                                 href="{{ route('about') }}"
                                 class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
