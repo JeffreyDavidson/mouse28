@@ -3,6 +3,7 @@
 use App\Models\User;
 use App\Providers\AppServiceProvider;
 use App\Support\ArtworkSourceCache;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Console\Migrations\FreshCommand;
 use Illuminate\Database\Console\Migrations\RefreshCommand;
 use Illuminate\Database\Console\Migrations\ResetCommand;
@@ -11,6 +12,7 @@ use Illuminate\Database\Console\WipeCommand;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\RateLimiter;
 use Laravel\Nightwatch\Core;
 
 test('the application registers its service provider', function (): void {
@@ -103,4 +105,17 @@ test('Nightwatch identifies administrators by a keyed digest without their profi
     // Assert
     expect($userDetails)->toBe(['id' => hash_hmac('sha256', '42', 'private-application-key')])
         ->and(serialize($userDetails))->not->toContain('Private Administrator', 'private@example.test');
+});
+
+test('newsletter deliveries are limited to the configured emails per second', function (): void {
+    config()->set('mouse28.rate_limits.newsletter_delivery_per_second', 3);
+    $resolver = RateLimiter::limiter('newsletter-delivery');
+    $limit = $resolver instanceof Closure ? $resolver() : null;
+
+    if (! $limit instanceof Limit) {
+        throw new LogicException('The newsletter-delivery limiter must resolve to a limit.');
+    }
+
+    expect($limit->maxAttempts)->toBe(3)
+        ->and($limit->decaySeconds)->toBe(1);
 });

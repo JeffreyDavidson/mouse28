@@ -101,7 +101,8 @@
     background: white;
 }
 
-.fi-in-placeholder {
+.fi-in-placeholder,
+.fi-ta-placeholder {
     color: rgb(26 16 64 / 75%);
 }
 

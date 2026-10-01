@@ -51,6 +51,7 @@ The application can run locally without live third-party calls, but these featur
 - `MOUSE28_NEWSLETTER_ISSUES_PER_PAGE` and `MOUSE28_NEWSLETTER_FEED_ITEMS` set the newsletter archive page size and the number of newest issues in `/newsletter/rss`; they default to `12` and `20`.
 - `MOUSE28_CONTACT_FORM_RATE_LIMIT` and `MOUSE28_NEWSLETTER_RATE_LIMIT` set the per-IP submissions allowed each minute; both default to `5`.
 - `MOUSE28_NEWSLETTER_CONFIRM_RATE_LIMIT` sets the per-IP newsletter confirmation and unsubscribe requests allowed each minute; it defaults to `10`.
+- `MOUSE28_NEWSLETTER_DELIVERY_RATE_LIMIT` sets how many newsletter issue emails are sent each second; it defaults to `5`, half of Resend's default of 10 per second, so contact mail keeps headroom.
 - `MOUSE28_PREVIEW_LINK_HOURS` sets how long shareable preview links stay valid; it defaults to `24`.
 - `MOUSE28_SEARCH_RATE_LIMIT` sets the per-IP searches allowed each minute; it defaults to `30`, and empty searches are never throttled.
 - `GUIDE_REVIEW_INTERVAL_DAYS` controls when durable guides are flagged for editorial review; it defaults to 180 days.
