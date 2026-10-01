@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Guide;
+use App\Models\NewsletterIssue;
 use App\Models\Post;
 use App\Support\SitemapDocument;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -34,4 +35,18 @@ test('sitemap omits guide routes and records when guides are disabled', function
     expect($content)
         ->not->toContain(route('guides.index'))
         ->not->toContain(route('guides.show', $guide));
+});
+
+test('sitemap lists the newsletter archive and only live issues', function (): void {
+    $live = NewsletterIssue::factory()->create();
+    $draft = NewsletterIssue::factory()->draft()->create();
+    $scheduled = NewsletterIssue::factory()->scheduled()->create();
+
+    $content = app(SitemapDocument::class)->content();
+
+    expect($content)
+        ->toContain(route('newsletter.index'))
+        ->toContain(route('newsletter.issue', $live))
+        ->not->toContain($draft->slug)
+        ->not->toContain($scheduled->slug);
 });

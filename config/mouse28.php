@@ -18,6 +18,10 @@ return [
 
     'guides_per_page' => max(1, (int) env('MOUSE28_GUIDES_PER_PAGE', 12)),
 
+    'newsletter_issues_per_page' => max(1, (int) env('MOUSE28_NEWSLETTER_ISSUES_PER_PAGE', 12)),
+
+    'newsletter_feed_items' => max(1, (int) env('MOUSE28_NEWSLETTER_FEED_ITEMS', 20)),
+
     'search_results_per_page' => max(1, (int) env('MOUSE28_SEARCH_RESULTS_PER_PAGE', 6)),
 
     'preview_link_hours' => max(1, (int) env('MOUSE28_PREVIEW_LINK_HOURS', 24)),

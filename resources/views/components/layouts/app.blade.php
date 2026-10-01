@@ -331,6 +331,10 @@
                                 class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
                             >Podcast</a>
                             <a
+                                href="{{ route('newsletter.index') }}"
+                                class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
+                            >Newsletter Archive</a>
+                            <a
                                 href="{{ route('about') }}"
                                 class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
                             >About Us</a>

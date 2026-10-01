@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Models\Episode;
 use App\Models\Guide;
+use App\Models\NewsletterIssue;
 use App\Models\Post;
 use Illuminate\Support\Facades\Config;
 
@@ -13,6 +14,7 @@ class SitemapDocument
     {
         $posts = Post::published()->select(['slug', 'updated_at'])->latest('published_at')->get();
         $episodes = Episode::published()->select(['slug', 'updated_at'])->latest('published_at')->get();
+        $issues = NewsletterIssue::published()->select(['slug', 'updated_at'])->latest('published_at')->get();
         $guides = (new Guide)->newCollection();
 
         if (Config::boolean('mouse28.guides_enabled')) {
@@ -22,7 +24,7 @@ class SitemapDocument
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';
         $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
-        $staticRoutes = ['home', 'blog.index', 'episodes.index', 'about', 'contact.create', 'privacy'];
+        $staticRoutes = ['home', 'blog.index', 'episodes.index', 'newsletter.index', 'about', 'contact.create', 'privacy'];
 
         if (Config::boolean('mouse28.guides_enabled')) {
             $staticRoutes[] = 'guides.index';
@@ -50,6 +52,16 @@ class SitemapDocument
             $xml .= '<url><loc>'.route('episodes.show', $episode).'</loc>';
             $xml .= '<lastmod>'.$episode->updated_at->toW3cString().'</lastmod>';
             $xml .= '<changefreq>monthly</changefreq><priority>0.7</priority></url>';
+        }
+
+        foreach ($issues as $issue) {
+            if ($issue->updated_at === null) {
+                continue;
+            }
+
+            $xml .= '<url><loc>'.route('newsletter.issue', $issue).'</loc>';
+            $xml .= '<lastmod>'.$issue->updated_at->toW3cString().'</lastmod>';
+            $xml .= '<changefreq>monthly</changefreq><priority>0.6</priority></url>';
         }
 
         foreach ($guides as $guide) {

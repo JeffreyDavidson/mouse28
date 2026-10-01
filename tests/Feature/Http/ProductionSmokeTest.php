@@ -39,6 +39,8 @@ test('the deployed site serves the critical public routes', function (string $ro
     '/blog',
     '/contact',
     '/episodes',
+    '/newsletter',
+    '/newsletter/rss',
     '/privacy',
     '/robots.txt',
     '/rss/blog',
