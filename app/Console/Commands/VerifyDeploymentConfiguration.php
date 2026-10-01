@@ -5,6 +5,10 @@ namespace App\Console\Commands;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 #[Signature('app:verify-deployment', aliases: ['app:verify-production'])]
 #[Description('Verify required settings for production or staging deployment')]
@@ -38,11 +42,14 @@ class VerifyDeploymentConfiguration extends Command
                 [config('telescope.enabled') === false, 'TELESCOPE_ENABLED must be false in production.'],
             ];
 
+        $unreadableTwoFactorValues = $this->unreadableTwoFactorValues();
+
         $checks = [
             [config('app.env') === 'production', 'APP_ENV must be production.'],
             [config('app.debug') === false, 'APP_DEBUG must be false.'],
             [$this->isCanonicalHttpsUrl($appUrl, $canonicalUrl), 'APP_URL must use the canonical HTTPS URL.'],
             [$this->isConfigured(config('app.key')), 'APP_KEY must be configured.'],
+            [$unreadableTwoFactorValues === 0, "Stored two-factor secrets cannot be decrypted with APP_KEY ({$unreadableTwoFactorValues} ".str('value')->plural($unreadableTwoFactorValues).'); clear them or restore the previous key.'],
             [config('session.secure') === true, 'SESSION_SECURE_COOKIE must be true.'],
             [$this->usesPersistentDriver(config('session.driver')), 'SESSION_DRIVER must use a persistent driver.'],
             [$this->usesPersistentDriver(config('cache.default')), 'CACHE_STORE must use a persistent driver.'],
@@ -87,6 +94,39 @@ class VerifyDeploymentConfiguration extends Command
         $this->info('Deployment configuration is ready.');
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Two-factor secrets are encrypted with APP_KEY; a key that cannot read them makes the
+     * admin login fail with a server error, so count the stored values it cannot decrypt.
+     */
+    private function unreadableTwoFactorValues(): int
+    {
+        $columns = ['app_authentication_secret', 'app_authentication_recovery_codes'];
+
+        if (! Schema::hasTable('users') || ! Schema::hasColumns('users', $columns)) {
+            return 0;
+        }
+
+        $unreadable = 0;
+
+        foreach (DB::table('users')->get($columns) as $user) {
+            foreach ($columns as $column) {
+                $value = $user->{$column};
+
+                if (! is_string($value) || $value === '') {
+                    continue;
+                }
+
+                try {
+                    Crypt::decryptString($value);
+                } catch (DecryptException) {
+                    $unreadable++;
+                }
+            }
+        }
+
+        return $unreadable;
     }
 
     private function isCanonicalHttpsUrl(mixed $url, mixed $canonicalUrl): bool

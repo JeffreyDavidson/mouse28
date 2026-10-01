@@ -12,6 +12,8 @@ Mouse28 is hosted on Laravel Forge. Use a separate staging site for deployment v
 
 Never copy live credentials into the repository, deployment logs, or local documentation.
 
+The preflight also tries to decrypt every stored two-factor secret and recovery code with the site's `APP_KEY`. Values encrypted under a different key make the admin login fail with a server error ("The MAC is invalid"), so the preflight fails and reports how many values are unreadable, without printing them. Clear those columns for the affected users, or restore the key they were encrypted with, then re-enrol two-factor authentication.
+
 Staging runs with `APP_ENV=production` so production safeguards stay active. Set
 `APP_URL` and `MOUSE28_PRODUCTION_URL` to `https://staging.mouse28.com`, set
 `MOUSE28_DEPLOYMENT_ENVIRONMENT=staging`, enable Telescope, and keep Nightwatch

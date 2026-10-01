@@ -1,9 +1,16 @@
 <?php
 
 use App\Console\Commands\VerifyDeploymentConfiguration;
+use App\Models\User;
 use Illuminate\Console\Command;
+use Illuminate\Encryption\Encrypter;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 
 covers(VerifyDeploymentConfiguration::class);
+
+pest()->use(RefreshDatabase::class);
 
 test('unsafe production configuration rejects an invalid public contact address', function (mixed $email): void {
     config()->set('mouse28.contact.email', $email);
@@ -248,4 +255,43 @@ test('observability validation failures do not expose credentials', function ():
         ->run();
 
     expect($exitCode)->toBe(Command::FAILURE);
+});
+
+/** The shared setup uses a placeholder key, so give the encrypter a real one. */
+function useRealApplicationKey(): void
+{
+    config()->set('app.key', 'base64:'.base64_encode(random_bytes(32)));
+    app()->forgetInstance('encrypter');
+    Crypt::clearResolvedInstance('encrypter');
+}
+
+test('stored two-factor values that the application key can read pass preflight', function (string $column): void {
+    useRealApplicationKey();
+    $user = User::factory()->admin()->create();
+    DB::table('users')->where('id', $user->id)->update([$column => Crypt::encryptString('readable-value')]);
+
+    pendingCommand('app:verify-deployment')
+        ->expectsOutputToContain('Deployment configuration is ready.')
+        ->assertSuccessful();
+})->with(['app_authentication_secret', 'app_authentication_recovery_codes']);
+
+test('two-factor values stored under another key fail preflight without exposing them', function (string $column): void {
+    useRealApplicationKey();
+    $user = User::factory()->admin()->create();
+    $foreign = new Encrypter(random_bytes(32), 'aes-256-cbc')->encryptString('foreign-value');
+    DB::table('users')->where('id', $user->id)->update([$column => $foreign]);
+
+    pendingCommand('app:verify-deployment')
+        ->expectsOutputToContain('Stored two-factor secrets cannot be decrypted with APP_KEY (1 value);')
+        ->doesntExpectOutputToContain($foreign)
+        ->assertFailed();
+})->with(['app_authentication_secret', 'app_authentication_recovery_codes']);
+
+test('accounts without two-factor values do not affect preflight', function (): void {
+    useRealApplicationKey();
+    User::factory()->admin()->create();
+
+    pendingCommand('app:verify-deployment')
+        ->expectsOutputToContain('Deployment configuration is ready.')
+        ->assertSuccessful();
 });
