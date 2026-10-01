@@ -76,8 +76,8 @@ and `/up`, runs the HTTP smoke suite against the deployed revision, then checks
 the marker again. A redirect to Cloudflare Access login is a failure, not a
 successful application response.
 
-Staging never delivers email: its `MAIL_MAILER` is `array` (and `RESEND_ENABLED`
-is false), which `app:verify-deployment` requires, so confirmation, test and
+Staging never delivers email: its `MAIL_MAILER` is `array`, which
+`app:verify-deployment` requires, so confirmation, test and
 newsletter emails are discarded there even though the queue and worker run them.
 Verify the pipeline on staging (sign-up stored, jobs consumed, no failed jobs,
 pages and admin) and verify real delivery in production in a safe order: sign up

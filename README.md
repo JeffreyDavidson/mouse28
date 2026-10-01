@@ -37,7 +37,7 @@ Mouse28 is a blog-first Disney parks and podcast site from Jeffrey and Cassie Da
 
 The application can run locally without live third-party calls, but these features require production configuration:
 
-- `RESEND_API_KEY` and `RESEND_AUDIENCE_ID` are only needed for the one-time import of legacy newsletter contacts; sign-ups are stored in the database.
+- `RESEND_API_KEY` is used to send email through Resend (contact mail, newsletter confirmations and issues). Subscribers are stored in the database, not in Resend.
 - `TURNSTILE_SITE_KEY` and `TURNSTILE_SECRET_KEY` protect contact and newsletter forms. `TURNSTILE_ALLOWED_HOSTNAMES` must contain the exact production and local hostnames.
 - `MOUSE28_CONTACT_EMAIL` controls the public site contact address. `MAIL_*` and `MAIL_ADMIN_ADDRESS` deliver contact notifications and confirmations.
 - `PODCAST_RSS_URL` identifies the canonical Transistor feed. It defaults to the Mouse28 feed.
