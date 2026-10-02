@@ -1,13 +1,14 @@
 <?php
 
+use App\Enums\ContactType;
 use App\Filament\Pages\PodcastSettings;
-use App\Filament\Resources\ContactMessages\ContactMessageResource;
+use App\Filament\Resources\ContactInquiries\ContactInquiryResource;
 use App\Filament\Resources\Episodes\EpisodeResource;
 use App\Filament\Resources\Guides\GuideResource;
 use App\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
 use App\Filament\Resources\Posts\PostResource;
 use App\Filament\Resources\Subscribers\SubscriberResource;
-use App\Models\ContactMessage;
+use App\Models\ContactInquiry;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\NewsletterIssue;
@@ -397,10 +398,10 @@ test('mobile Filament controls meet the minimum touch target across admin pages'
     NewsletterIssue::factory()->create();
     Subscriber::factory()->create();
 
-    ContactMessage::query()->create([
+    ContactInquiry::factory()->create([
         'name' => 'Alex Example',
         'email' => 'alex@example.com',
-        'subject' => 'accessibility',
+        'type' => ContactType::Accessibility,
         'message' => 'Could you share your accessibility planning tips?',
     ]);
 
@@ -414,8 +415,8 @@ test('mobile Filament controls meet the minimum touch target across admin pages'
         [GuideResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
         [NewsletterIssueResource::getUrl(), '.fi-tabs-item'],
         [NewsletterIssueResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
-        [ContactMessageResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
-        [ContactMessageResource::getUrl(), '.fi-ac-link-action'],
+        [ContactInquiryResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
+        [ContactInquiryResource::getUrl(), '.fi-ac-link-action'],
         [PostResource::getUrl('create'), '.fi-select-input-btn'],
         [PostResource::getUrl('create'), '.fi-fo-markdown-editor .editor-toolbar button'],
         [GuideResource::getUrl('create'), '.fi-fo-markdown-editor .editor-toolbar button'],
@@ -514,10 +515,10 @@ test('authenticated admin pages expose no unnamed artwork or decorative glyphs',
     $guide = Guide::factory()->create();
     $episode = Episode::factory()->create();
     $issue = NewsletterIssue::factory()->create();
-    $contactMessage = ContactMessage::query()->create([
+    $contactInquiry = ContactInquiry::factory()->create([
         'name' => 'Park Guest',
         'email' => 'guest@example.com',
-        'subject' => 'accessibility',
+        'type' => ContactType::Accessibility,
         'message' => 'Could you share your accessibility planning tips?',
     ]);
 
@@ -539,8 +540,8 @@ test('authenticated admin pages expose no unnamed artwork or decorative glyphs',
         NewsletterIssueResource::getUrl(),
         NewsletterIssueResource::getUrl('create'),
         NewsletterIssueResource::getUrl('edit', ['record' => $issue]),
-        ContactMessageResource::getUrl(),
-        ContactMessageResource::getUrl('view', ['record' => $contactMessage]),
+        ContactInquiryResource::getUrl(),
+        ContactInquiryResource::getUrl('view', ['record' => $contactInquiry]),
     ];
 
     foreach ($urls as $url) {

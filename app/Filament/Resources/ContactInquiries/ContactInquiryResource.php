@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Filament\Resources\ContactMessages;
+namespace App\Filament\Resources\ContactInquiries;
 
-use App\Enums\ContactTopic;
-use App\Filament\Resources\ContactMessages\Pages\ListContactMessages;
-use App\Models\ContactMessage;
+use App\Enums\ContactInquiryStatus;
+use App\Enums\ContactType;
+use App\Filament\Resources\ContactInquiries\Pages\ListContactInquiries;
+use App\Filament\Resources\ContactInquiries\Pages\ViewContactInquiry;
+use App\Models\ContactInquiry;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
@@ -13,18 +15,23 @@ use Filament\Resources\Resource;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 
-class ContactMessageResource extends Resource
+class ContactInquiryResource extends Resource
 {
     #[\Override]
-    protected static ?string $model = ContactMessage::class;
+    protected static ?string $model = ContactInquiry::class;
 
     #[\Override]
     protected static ?string $recordTitleAttribute = 'name';
+
+    /**
+     * Names, emails and messages are encrypted at rest, so the database cannot search them.
+     */
+    #[\Override]
+    protected static bool $isGloballySearchable = false;
 
     #[\Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedEnvelope;
@@ -35,17 +42,12 @@ class ContactMessageResource extends Resource
     #[\Override]
     protected static ?int $navigationSort = 1;
 
-    public static function getGloballySearchableAttributes(): array
-    {
-        return ['name', 'email', 'subject'];
-    }
-
     public static function getNavigationBadge(): ?string
     {
         $count = Cache::store('array')->remember(
-            'filament.contact-messages.unread-count',
+            'filament.contact-inquiries.new-count',
             60,
-            fn (): int => ContactMessage::query()->where('is_read', false)->count(),
+            fn (): int => ContactInquiry::query()->where('status', ContactInquiryStatus::New)->count(),
         );
 
         return $count > 0 ? (string) $count : null;
@@ -61,27 +63,22 @@ class ContactMessageResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->searchable()
-                    ->sortable()
-                    ->weight(fn (ContactMessage $record): string => $record->is_read ? 'normal' : 'bold')
+                    ->weight(fn (ContactInquiry $record): string => $record->status === ContactInquiryStatus::New ? 'bold' : 'normal')
                     ->icon(Heroicon::OutlinedUser),
                 TextColumn::make('email')
-                    ->searchable()
                     ->copyable()
                     ->icon(Heroicon::OutlinedEnvelope),
-                TextColumn::make('subject')
-                    ->formatStateUsing(fn (ContactMessage $record): string => $record->subjectLabel())
+                // Name, email and message are encrypted, so the stored type is the only searchable text.
+                TextColumn::make('type')
+                    ->searchable()
                     ->badge()
                     ->color('warning'),
                 TextColumn::make('message')
                     ->limit(60)
                     ->wrap()
                     ->lineClamp(2),
-                TextColumn::make('is_read')
-                    ->label('Status')
-                    ->formatStateUsing(fn (bool $state): string => $state ? 'Read' : 'Unread')
-                    ->badge()
-                    ->color(fn (bool $state): string => $state ? 'success' : 'warning'),
+                TextColumn::make('status')
+                    ->badge(),
                 TextColumn::make('created_at')
                     ->dateTime('M j, Y g:i A')
                     ->sortable()
@@ -89,22 +86,17 @@ class ContactMessageResource extends Resource
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([
-                TernaryFilter::make('is_read')
-                    ->label('Read Status'),
-                SelectFilter::make('subject')
-                    ->options(ContactTopic::class),
+                SelectFilter::make('status')
+                    ->options(ContactInquiryStatus::class),
+                SelectFilter::make('type')
+                    ->options(ContactType::class),
             ])
             ->recordActions([
-                Action::make('markRead')
-                    ->label('Mark Read')
-                    ->icon(Heroicon::OutlinedCheck)
-                    ->authorize('update')
-                    ->action(fn (ContactMessage $record) => $record->update(['is_read' => true]))
-                    ->hidden(fn (ContactMessage $record) => $record->is_read),
+                static::markResolvedAction(),
                 Action::make('reply')
                     ->label('Reply')
                     ->icon(Heroicon::OutlinedPaperAirplane)
-                    ->url(fn (ContactMessage $record): string => $record->replyMailtoUrl())
+                    ->url(fn (ContactInquiry $record): string => $record->replyMailtoUrl())
                     ->openUrlInNewTab(),
                 DeleteAction::make(),
             ])
@@ -113,8 +105,18 @@ class ContactMessageResource extends Resource
             ]);
     }
 
+    public static function markResolvedAction(): Action
+    {
+        return Action::make('markResolved')
+            ->label('Mark Resolved')
+            ->icon(Heroicon::OutlinedCheck)
+            ->authorize('update')
+            ->action(fn (ContactInquiry $record) => $record->update(['status' => ContactInquiryStatus::Resolved]))
+            ->hidden(fn (ContactInquiry $record): bool => $record->status === ContactInquiryStatus::Resolved);
+    }
+
     /**
-     * Messages arrive only through the public contact form.
+     * Inquiries arrive only through the public contact form.
      */
     public static function canCreate(): bool
     {
@@ -129,8 +131,8 @@ class ContactMessageResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => ListContactMessages::route('/'),
-            'view' => Pages\ViewContactMessage::route('/{record}'),
+            'index' => ListContactInquiries::route('/'),
+            'view' => ViewContactInquiry::route('/{record}'),
         ];
     }
 }

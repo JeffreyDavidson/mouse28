@@ -1,21 +1,23 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Mail;
 
-use App\Models\ContactMessage;
-use Illuminate\Bus\Queueable;
+use App\Models\ContactInquiry;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Mailables\Headers;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Config;
 
-class ContactFormConfirmation extends Mailable
+/**
+ * Confirms a contact inquiry to its sender. Sent by SendContactInquiryEmails, which
+ * records the send so retries never deliver it twice.
+ */
+class ContactMessageConfirmation extends Mailable
 {
-    use Queueable, SerializesModels;
-
-    public function __construct(public ContactMessage $contactMessage) {}
+    public function __construct(public readonly ContactInquiry $inquiry) {}
 
     public function envelope(): Envelope
     {
@@ -34,8 +36,14 @@ class ContactFormConfirmation extends Mailable
 
     public function headers(): Headers
     {
+        $fingerprint = hash('sha256', implode('|', [
+            Config::string('app.url'),
+            $this->inquiry->id,
+            $this->inquiry->created_at?->toISOString(),
+        ]));
+
         return new Headers(text: [
-            'Resend-Idempotency-Key' => 'mouse28-contact-'.hash('sha256', Config::string('app.url').'|'.$this->contactMessage->id.'|'.$this->contactMessage->created_at?->toISOString()).'-confirmation',
+            'Resend-Idempotency-Key' => "mouse28-contact-{$fingerprint}-confirmation",
         ]);
     }
 }

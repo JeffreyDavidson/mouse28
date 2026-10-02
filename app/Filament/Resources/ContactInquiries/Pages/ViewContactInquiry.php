@@ -1,33 +1,35 @@
 <?php
 
-namespace App\Filament\Resources\ContactMessages\Pages;
+namespace App\Filament\Resources\ContactInquiries\Pages;
 
-use App\Filament\Resources\ContactMessages\ContactMessageResource;
-use App\Jobs\SendContactMessageEmails;
-use App\Models\ContactMessage;
+use App\Enums\ContactInquiryStatus;
+use App\Filament\Resources\ContactInquiries\ContactInquiryResource;
+use App\Jobs\SendContactInquiryEmails;
+use App\Models\ContactInquiry;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
-use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use Illuminate\Support\Facades\Date;
 
-/** @property ContactMessage $record */
-class ViewContactMessage extends ViewRecord
+/** @property ContactInquiry $record */
+class ViewContactInquiry extends ViewRecord
 {
     #[\Override]
-    protected static string $resource = ContactMessageResource::class;
+    protected static string $resource = ContactInquiryResource::class;
 
+    /**
+     * Opening a new inquiry moves it to in progress, as opening a message used to mark it read.
+     */
     public function mount(int|string $record): void
     {
         parent::mount($record);
 
-        if (! $this->record->is_read) {
-            $this->record->update(['is_read' => true]);
+        if ($this->record->status === ContactInquiryStatus::New) {
+            $this->record->update(['status' => ContactInquiryStatus::InProgress]);
         }
     }
 
@@ -41,16 +43,14 @@ class ViewContactMessage extends ViewRecord
                     TextEntry::make('email')
                         ->icon(Heroicon::OutlinedEnvelope)
                         ->copyable(),
-                    TextEntry::make('subject')
-                        ->formatStateUsing(fn (ContactMessage $record): string => $record->subjectLabel())
+                    TextEntry::make('type')
                         ->badge()
                         ->color('warning'),
                     TextEntry::make('created_at')
                         ->dateTime('M j, Y g:i A')
                         ->label('Received'),
-                    IconEntry::make('is_read')
-                        ->boolean()
-                        ->label('Read'),
+                    TextEntry::make('status')
+                        ->badge(),
                 ])
                 ->columns(2),
             Section::make('Message')
@@ -65,11 +65,11 @@ class ViewContactMessage extends ViewRecord
                     TextEntry::make('notification_sent_at')
                         ->label('Administrator notification sent')
                         ->dateTime('M j, Y g:i A')
-                        ->placeholder(fn (ContactMessage $record): string => $record->email_attempted_at === null ? 'Not tracked' : 'Not sent'),
+                        ->placeholder(fn (ContactInquiry $record): string => $record->email_attempted_at === null ? 'Not tracked' : 'Not sent'),
                     TextEntry::make('confirmation_sent_at')
                         ->label('Sender confirmation sent')
                         ->dateTime('M j, Y g:i A')
-                        ->placeholder(fn (ContactMessage $record): string => $record->email_attempted_at === null ? 'Not tracked' : 'Not sent'),
+                        ->placeholder(fn (ContactInquiry $record): string => $record->email_attempted_at === null ? 'Not tracked' : 'Not sent'),
                 ])
                 ->columns(2),
         ]);
@@ -82,15 +82,14 @@ class ViewContactMessage extends ViewRecord
                 ->label('Retry unsent emails')
                 ->icon(Heroicon::OutlinedArrowPath)
                 ->authorize('update')
-                ->visible(fn (ContactMessage $record): bool => $record->email_attempted_at !== null
+                ->visible(fn (ContactInquiry $record): bool => $record->email_attempted_at !== null
                     && ($record->notification_sent_at === null || $record->confirmation_sent_at === null))
                 ->requiresConfirmation()
                 ->modalDescription('Only emails without a recorded successful send will be retried. A provider timeout can leave delivery uncertain; check the provider before retrying.')
-                ->disabled(fn (ContactMessage $record): bool => $record->created_at === null
-                    || $record->created_at->lt(Date::now()->subHours(23)))
+                ->disabled(fn (ContactInquiry $record): bool => ! $record->canRetryEmails())
                 ->tooltip('Retries are available for 23 hours after submission. Older messages require manual review with the mail provider.')
-                ->action(function (ContactMessage $record): void {
-                    SendContactMessageEmails::dispatch($record->id);
+                ->action(function (ContactInquiry $record): void {
+                    dispatch(new SendContactInquiryEmails($record->id));
 
                     Notification::make()
                         ->title('Email delivery queued')
@@ -98,6 +97,7 @@ class ViewContactMessage extends ViewRecord
                         ->success()
                         ->send();
                 }),
+            ContactInquiryResource::markResolvedAction(),
             Action::make('reply')
                 ->label('Reply')
                 ->icon(Heroicon::OutlinedPaperAirplane)
