@@ -44,8 +44,8 @@ test('public reading and form surfaces work across supported browsers', function
     }
 
     visit(route('contact.create'))
-        ->assertScript('document.querySelector("#subject").tagName', 'SELECT')
-        ->assertScript('document.querySelector("#subject").disabled', false);
+        ->assertScript('document.querySelector("#type").tagName', 'SELECT')
+        ->assertScript('document.querySelector("#type").disabled', false);
 
     visit(route('episodes.show', $episode))
         ->assertScript('document.querySelector("iframe").src', 'https://share.transistor.fm/e/428d650c')

@@ -1,8 +1,11 @@
 <?php
 
-use App\Enums\ContactTopic;
+use App\Enums\ContactType;
+use App\Enums\SocialPlatform;
 use App\Http\Requests\StoreContactRequest;
-use App\Jobs\SendContactMessageEmails;
+use App\Jobs\SendContactInquiryEmails;
+use App\Models\ContactInquiry;
+use App\Models\SocialProfile;
 use Dom\HTMLDocument;
 use Dom\XPath;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -12,7 +15,6 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 
 use function Pest\Laravel\assertDatabaseCount;
-use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\from;
 use function Pest\Laravel\get;
 
@@ -31,14 +33,15 @@ test('contact page displays its view model data', function (): void {
 });
 
 test('contact stays within its query budget', function (): void {
-    $this->expectsDatabaseQueryCount(1);
+    // Podcast data for the layout, plus the footer and contact-page social profiles.
+    $this->expectsDatabaseQueryCount(3);
 
     get(route('contact.create'))
         ->assertOk();
 });
 
 beforeEach(function (): void {
-    Bus::fake([SendContactMessageEmails::class]);
+    Bus::fake([SendContactInquiryEmails::class]);
     config()->set('app.key', 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=');
     config()->set('services.turnstile.site_key', 'test-site-key');
     config()->set('services.turnstile.secret_key', 'test-secret-key');
@@ -55,7 +58,7 @@ test('contact page renders turnstile widget', function (): void {
         ->assertDontSee('Share Your Story')->assertDontSee('Family Disney stories')->assertDontSeeHtml('value="story"');
 
     expect(substr_count((string) $response->getContent(), 'https://challenges.cloudflare.com/turnstile/v0/api.js'))->toBe(1)
-        ->and(array_column(ContactTopic::cases(), 'value'))->not->toContain('story');
+        ->and(array_column(ContactType::cases(), 'value'))->not->toContain('story');
 });
 
 test('contact errors and old input stay out of the newsletter form', function (): void {
@@ -64,7 +67,7 @@ test('contact errors and old input stay out of the newsletter form', function ()
         ->post(route('contact.store'), [
             'name' => 'Dale Cooper',
             'email' => 'not-an-email',
-            'subject' => 'general',
+            'type' => 'general',
             'message' => 'Please help with this park question.',
             'cf-turnstile-response' => 'unused-token',
         ])
@@ -118,15 +121,15 @@ test('valid contact submission stores the message and queues delivery', function
         ->assertSessionHas('success', true)
         ->assertSessionHasNoErrors();
 
-    assertDatabaseHas('contact_messages', [
-        'name' => 'Dale Cooper',
-        'email' => 'dale@example.com',
-        'subject' => 'Need help with Mouse28',
-        'message' => 'The contact form needs secure bot protection.',
-    ]);
+    $inquiry = ContactInquiry::query()->sole();
+    expect($inquiry)
+        ->name->toBe('Dale Cooper')
+        ->email->toBe('dale@example.com')
+        ->type->toBe(ContactType::Accessibility)
+        ->message->toBe('The contact form needs secure bot protection.');
 
     Mail::assertNothingSent();
-    Bus::assertDispatched(SendContactMessageEmails::class);
+    Bus::assertDispatched(SendContactInquiryEmails::class, fn (SendContactInquiryEmails $job): bool => $job->contactInquiryId === $inquiry->id);
 
     Http::assertSent(fn (Request $request): bool => $request->url() === 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
         && $request['secret'] === 'test-secret-key'
@@ -143,7 +146,7 @@ test('contact submission rejects invalid input before verification or persistenc
         ->assertRedirect(route('contact.create'))
         ->assertSessionHasErrorsIn('contact', 'email');
 
-    assertDatabaseCount('contact_messages', 0);
+    assertDatabaseCount('contact_inquiries', 0);
     Http::assertNothingSent();
 });
 
@@ -155,9 +158,35 @@ test('contact submission rejects missing required fields before verification or 
         ->assertRedirect(route('contact.create'))
         ->assertSessionHasErrorsIn('contact', $field);
 
-    assertDatabaseCount('contact_messages', 0);
+    assertDatabaseCount('contact_inquiries', 0);
     Http::assertNothingSent();
-})->with(['name', 'subject', 'message']);
+})->with(['name', 'type', 'message']);
+
+test('contact submission rejects an unknown contact type before verification or persistence', function (string $type): void {
+    Http::fake();
+
+    from(route('contact.create'))
+        ->post(route('contact.store'), array_merge(contactPayload(), ['type' => $type]))
+        ->assertRedirect(route('contact.create'))
+        ->assertSessionHasErrorsIn('contact', 'type')
+        ->assertSessionHasInput('type', $type);
+
+    assertDatabaseCount('contact_inquiries', 0);
+    Http::assertNothingSent();
+})->with([
+    'free text' => 'Need help with Mouse28',
+    'retired story topic' => 'story',
+]);
+
+test('contact page keeps the chosen type after a validation error', function (): void {
+    $response = from(route('contact.create'))
+        ->followingRedirects()
+        ->post(route('contact.store'), array_merge(contactPayload(), ['type' => 'guest', 'email' => 'not-an-email']))
+        ->assertOk()
+        ->assertSeeHtml('name="type"');
+
+    expect($response->getContent())->toMatch('/<option\s+value="guest"\s+selected/');
+});
 
 test('contact submission rejects failed turnstile verification before persistence or mail', function (): void {
     Mail::fake();
@@ -171,7 +200,7 @@ test('contact submission rejects failed turnstile verification before persistenc
         ->assertRedirect(route('contact.create'))
         ->assertSessionHasErrorsIn('contact', 'cf-turnstile-response');
 
-    assertDatabaseCount('contact_messages', 0);
+    assertDatabaseCount('contact_inquiries', 0);
     Mail::assertNothingSent();
 });
 
@@ -187,7 +216,7 @@ test('contact submission rejects invalid turnstile metadata before persistence o
         ->assertRedirect(route('contact.create'))
         ->assertSessionHasErrorsIn('contact', 'cf-turnstile-response');
 
-    assertDatabaseCount('contact_messages', 0);
+    assertDatabaseCount('contact_inquiries', 0);
     Mail::assertNothingSent();
 })->with([
     'wrong hostname' => [
@@ -217,7 +246,7 @@ test('contact submission rejects missing turnstile secret before persistence or 
         ->assertRedirect(route('contact.create'))
         ->assertSessionHasErrorsIn('contact', 'cf-turnstile-response');
 
-    assertDatabaseCount('contact_messages', 0);
+    assertDatabaseCount('contact_inquiries', 0);
     Mail::assertNothingSent();
     Http::assertNothingSent();
 });
@@ -232,7 +261,7 @@ test('honeypot silently accepts bot submissions without persistence or mail', fu
         ->assertRedirect(route('contact.create'))
         ->assertSessionHas('success', true);
 
-    assertDatabaseCount('contact_messages', 0);
+    assertDatabaseCount('contact_inquiries', 0);
     Mail::assertNothingSent();
     Http::assertNothingSent();
 });
@@ -303,7 +332,7 @@ function contactPayload(): array
     return [
         'name' => 'Dale Cooper',
         'email' => 'dale@example.com',
-        'subject' => 'Need help with Mouse28',
+        'type' => 'accessibility',
         'message' => 'The contact form needs secure bot protection.',
         'cf-turnstile-response' => 'turnstile-token',
     ];
@@ -330,4 +359,23 @@ test('contact page exposes a single main landmark without nested complementary r
 
     expect($xpath->query('//*[local-name()="main"]'))->toHaveCount(1)
         ->and($xpath->query('//*[local-name()="main"]//*[local-name()="aside"]'))->toBeEmpty();
+});
+
+test('the contact page lists enabled contact profiles using their label', function (): void {
+    SocialProfile::factory()->onContactPage()->create([
+        'platform' => SocialPlatform::Facebook,
+        'url' => 'https://facebook.com/mouse28',
+        'label' => 'Mouse28 on Facebook',
+    ]);
+    SocialProfile::factory()->onContactPage()->create([
+        'platform' => SocialPlatform::Instagram,
+        'url' => 'https://instagram.com/mouse28',
+    ]);
+    SocialProfile::factory()->onContactPage()->create(['url' => 'https://disabled.example.com/a', 'is_enabled' => false]);
+
+    get(route('contact.create'))
+        ->assertOk()
+        ->assertSee(['Mouse28 on Facebook', 'Instagram'])
+        ->assertSeeHtml('href="https://facebook.com/mouse28"')
+        ->assertDontSee('disabled.example.com');
 });

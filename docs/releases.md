@@ -32,7 +32,10 @@ is the first counter-numbered release.
 
 1. Choose the next calendar release number and cut `release/YYYY.MM.N` from
    `develop`. Do not use release branches for routine feature, fix,
-   performance, documentation, or dependency work.
+   performance, documentation, or dependency work. Before cutting, check
+   `operations.md` for rollout steps owed by the included changes (for
+   example, "Rollout of contact inquiries": default-queue worker and backup
+   confirmed before release, `contact-mail` worker retired after).
 2. Pause merges into `develop` while the release is under validation. Keep the
    branch frozen until its release PR is merged or the release is cancelled.
    If validation finds a release-specific defect, prepare a focused fix branch

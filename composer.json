@@ -82,7 +82,7 @@
             "@php artisan test --exclude-testsuite=Browser --fail-on-risky"
         ],
         "test:architecture": "@php artisan test --compact --testsuite=Architecture --fail-on-risky",
-        "test:mysql": "MOUSE28_TEST_MYSQL=1 php artisan test --compact tests/Integration/Models tests/Integration/Support/PublicContentArchiveTest.php tests/Integration/Support/ContentPermalinkTest.php tests/Integration/Support/TextSearchTest.php tests/Feature/Filament/Resources/Posts/Pages/CreatePostTest.php tests/Feature/Filament/Resources/Episodes/Pages/CreateEpisodeTest.php tests/Feature/Filament/Resources/Guides/Pages/CreateGuideTest.php",
+        "test:mysql": "MOUSE28_TEST_MYSQL=1 php artisan test --compact tests/Integration/Models tests/Integration/Database/Migrations tests/Integration/Support/PublicContentArchiveTest.php tests/Integration/Support/ContentPermalinkTest.php tests/Integration/Support/TextSearchTest.php tests/Feature/Filament/Resources/Posts/Pages/CreatePostTest.php tests/Feature/Filament/Resources/Episodes/Pages/CreateEpisodeTest.php tests/Feature/Filament/Resources/Guides/Pages/CreateGuideTest.php",
         "test:browser": "@php artisan test --testsuite=Browser --fail-on-risky",
         "test:browser:compatibility": "@php artisan test --compact --testsuite=Browser --group=browser-compatibility --fail-on-risky",
         "test:browser:smoke": "@php artisan test --compact --testsuite=Browser --group=browser-smoke --fail-on-risky",
@@ -124,8 +124,9 @@
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Console/Commands/VerifyDeploymentConfiguration.php --filter='(safe production configuration|blank or non-string driver|safe staging configuration|unsafe production configuration|administrator recipients|observability validation)'"
         ],
         "test:mutate:delivery": [
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Actions/SubmitContactMessage.php --filter='action stores a contact message'",
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Jobs/SendContactMessageEmails.php --filter='(contact emails|retry sends|concurrent contact|cancelled contact|delivery middleware|contact jobs|queue attributes|incomplete delivery|old queued|provider idempotency)'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Actions/SendContactMessage.php --filter='action (stores|rolls back|refuses)'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Jobs/SendContactInquiryEmails.php --filter='(contact emails|retry sends|concurrent contact|cancelled contact|delivery middleware|contact jobs|queue attributes|queued contact jobs|incomplete delivery|old queued|provider idempotency)'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Jobs/SendContactMessageEmails.php --filter='legacy contact-mail jobs'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Http/Requests/SearchRequest.php --filter='search (query is limited|groups matching|returns its view model)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Http/Requests/StoreContactRequest.php --filter='(valid contact submission|contact submission rejects|honeypot)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Http/Requests/SubscribeNewsletterRequest.php --filter='(newsletter sign-up|newsletter honeypot|newsletter redirects)'",

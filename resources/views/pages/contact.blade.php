@@ -69,6 +69,22 @@
                         <li class="py-4">Collaboration and partnerships</li>
                     </ul>
 
+                    @if ($socialProfiles->isNotEmpty())
+                        <p class="text-navy/65 mt-8 text-sm/6">
+                            Find us on
+                            @foreach ($socialProfiles as $profile)
+                                <a
+                                    href="{{ $profile->url }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="text-purple decoration-gold/70 hover:text-navy font-semibold underline underline-offset-4 transition-colors"
+                                    >{{ $profile->label ?: $profile->platform->getLabel() }}<x-new-tab-notice
+                                /></a>
+                                @if (! $loop->last) , @endif
+                            @endforeach
+                        </p>
+                    @endif
+
                     @if ($contactFormAvailable)
                         <p class="text-navy/65 mt-8 text-sm/6">
                             Prefer email?
@@ -146,26 +162,26 @@
                             </div>
 
                             <div>
-                                <label for="subject" class="mb-2 block text-sm font-semibold">Topic</label>
+                                <label for="type" class="mb-2 block text-sm font-semibold">Topic</label>
                                 <select
-                                    id="subject"
-                                    name="subject"
+                                    id="type"
+                                    name="type"
                                     required
-                                    @error('subject', 'contact') aria-invalid="true" aria-describedby="subject-error" @enderror
-                                    @if ($firstContactError === 'subject') autofocus @endif
+                                    @error('type', 'contact') aria-invalid="true" aria-describedby="type-error" @enderror
+                                    @if ($firstContactError === 'type') autofocus @endif
                                     class="border-navy/20 bg-dark-cream/45 text-navy focus:border-purple focus:ring-purple/15 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
                                 >
                                     <option value="">Choose a topic...</option>
-                                    @foreach (\App\Enums\ContactTopic::cases() as $topic)
+                                    @foreach (\App\Enums\ContactType::cases() as $type)
                                         <option
-                                            value="{{ $topic->value }}"
-                                            @selected($contactHasFeedback && old('subject') === $topic->value)
+                                            value="{{ $type->value }}"
+                                            @selected($contactHasFeedback && old('type') === $type->value)
                                         >
-                                            {{ $topic->contactFormLabel() }}
+                                            {{ $type->contactFormLabel() }}
                                         </option>
                                     @endforeach
                                 </select>
-                                <x-form.error id="subject-error" :message="$errors->contact->first('subject')" />
+                                <x-form.error id="type-error" :message="$errors->contact->first('type')" />
                             </div>
 
                             <div>

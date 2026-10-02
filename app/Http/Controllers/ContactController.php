@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\SubmitContactMessage;
+use App\Actions\SendContactMessage;
 use App\Http\Requests\StoreContactRequest;
 use App\Services\TurnstileVerifier;
 use App\ViewModels\ContactViewModel;
@@ -21,7 +21,7 @@ class ContactController
     public function store(
         StoreContactRequest $request,
         TurnstileVerifier $turnstile,
-        SubmitContactMessage $submitContactMessage,
+        SendContactMessage $sendContactMessage,
     ): RedirectResponse {
         if ($request->filled('website')) {
             return redirect()->route('contact.create')->with('success', true);
@@ -33,7 +33,7 @@ class ContactController
             ])->errorBag('contact');
         }
 
-        $submitContactMessage->handle($request->messageAttributes());
+        $sendContactMessage->handle($request->toData());
 
         return redirect()->route('contact.create')->with('success', true);
     }

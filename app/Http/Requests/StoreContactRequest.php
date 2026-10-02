@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Data\ContactMessageData;
+use App\Enums\ContactType;
 use Illuminate\Foundation\Http\Attributes\ErrorBag;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Enum;
 
 #[ErrorBag('contact')]
 class StoreContactRequest extends FormRequest
@@ -15,7 +19,7 @@ class StoreContactRequest extends FormRequest
         return true;
     }
 
-    /** @return array<string, list<string>> */
+    /** @return array<string, list<string|Enum>> */
     public function rules(): array
     {
         if ($this->filled('website')) {
@@ -25,22 +29,21 @@ class StoreContactRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255'],
-            'subject' => ['required', 'string', 'max:255'],
+            'type' => ['required', 'string', Rule::enum(ContactType::class)],
             'message' => ['required', 'string', 'max:5000'],
         ];
     }
 
-    /** @return array{name: string, email: string, subject: string, message: string} */
-    public function messageAttributes(): array
+    public function toData(): ContactMessageData
     {
         $validated = $this->safe();
 
-        return [
-            'name' => $validated->string('name')->toString(),
-            'email' => $validated->string('email')->toString(),
-            'subject' => $validated->string('subject')->toString(),
-            'message' => $validated->string('message')->toString(),
-        ];
+        return new ContactMessageData(
+            name: $validated->string('name')->toString(),
+            email: $validated->string('email')->toString(),
+            type: ContactType::from($validated->string('type')->toString()),
+            message: $validated->string('message')->toString(),
+        );
     }
 
     protected function getRedirectUrl(): string

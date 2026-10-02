@@ -53,6 +53,8 @@ test('test paths mirror their application source', function (string $suite): voi
         'Http/ExceptionHandlingTest.php' => 'bootstrap/app.php',
         'HealthTest.php' => 'app/Providers/AppServiceProvider.php',
         'Database/SampleContentSeederTest.php' => 'database/seeders/SampleContentSeeder.php',
+        'Database/Migrations/CopyContactMessagesToContactInquiriesTest.php' => 'database/migrations/2026_10_02_164233_copy_contact_messages_to_contact_inquiries.php',
+        'Database/Migrations/CreateSocialProfilesTableTest.php' => 'database/migrations/2026_10_02_173351_create_social_profiles_table.php',
         'Http/ProductionSmokeTest.php' => 'routes/web.php',
         'Support/DeploymentSmokeClientTest.php' => 'tests/Support/DeploymentSmokeClient.php',
     ];

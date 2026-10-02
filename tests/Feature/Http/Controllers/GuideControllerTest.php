@@ -41,11 +41,12 @@ test('guide pages stay within their query budget as content grows', function (st
     Guide::factory()->count(30)->create(['category' => 'accessibility']);
     $url = $page === 'index' ? route('guides.index') : route('guides.show', $guide);
 
+    // Includes one query for the footer social links.
     $this->expectsDatabaseQueryCount($queries);
 
     get($url)
         ->assertOk();
-})->with(['archive' => ['index', 3], 'guide' => ['show', 3]]);
+})->with(['archive' => ['index', 4], 'guide' => ['show', 4]]);
 
 test('guide archive renders', function (): void {
     get(route('guides.index'))

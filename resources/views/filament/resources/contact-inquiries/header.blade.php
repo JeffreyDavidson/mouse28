@@ -1,0 +1,14 @@
+<x-filament.page-header title="Contact Inquiries" subtitle="Messages from your site visitors" class="mb-6">
+    <x-slot:icon>
+        <x-filament::icon
+            :icon="\Filament\Support\Icons\Heroicon::OutlinedEnvelope"
+            class="text-mouse-gold-light size-8"
+            aria-hidden="true"
+        />
+    </x-slot:icon>
+
+    <x-slot:stats>
+        <x-filament.resource-stat label="Total">{{ $total }}</x-filament.resource-stat>
+        <x-filament.resource-stat label="New" tone="gold">{{ $new }}</x-filament.resource-stat>
+    </x-slot:stats>
+</x-filament.page-header>
