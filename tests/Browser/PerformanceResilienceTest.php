@@ -150,15 +150,15 @@ test('mobile podcast archive keeps the latest episode listening action above the
     ]);
 
     $page->assertSee('Listen now')
-        ->assertScript(<<<'JS'
-            (() => {
+        ->assertScript(browserWaitForScript(<<<'JS'
+            document.fonts.status === 'loaded' && (() => {
                 const action = [...document.querySelectorAll('.podcast-show-hero a')]
                     .find((link) => link.textContent.trim() === 'Listen now');
 
                 return action !== undefined
                     && action.getBoundingClientRect().bottom <= window.innerHeight;
             })()
-            JS, true)
+            JS), true)
         ->assertNoJavaScriptErrors();
 })->group('browser-smoke');
 

@@ -62,3 +62,13 @@ function browserLivewireReadyScript(string $selector): string
 {
     return browserWaitForScript("document.querySelector('{$selector}')?.__livewire !== undefined");
 }
+
+/**
+ * Build a script that resolves true once Alpine has initialised the component at the selector.
+ *
+ * Alpine starts after the page loads, so interactions before it boots reach an inert element.
+ */
+function browserAlpineReadyScript(string $selector): string
+{
+    return browserWaitForScript("document.querySelector('{$selector}')?._x_dataStack !== undefined");
+}
