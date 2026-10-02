@@ -12,6 +12,8 @@ Mouse28 is hosted on Laravel Forge. Use a separate staging site for deployment v
 
 Never copy live credentials into the repository, deployment logs, or local documentation.
 
+The preflight also tries to decrypt every stored two-factor secret and recovery code with the site's `APP_KEY`. Values encrypted under a different key make the admin login fail with a server error ("The MAC is invalid"), so the preflight fails and reports how many values are unreadable, without printing them. Clear those columns for the affected users, or restore the key they were encrypted with, then re-enrol two-factor authentication.
+
 Staging runs with `APP_ENV=production` so production safeguards stay active. Set
 `APP_URL` and `MOUSE28_PRODUCTION_URL` to `https://staging.mouse28.com`, set
 `MOUSE28_DEPLOYMENT_ENVIRONMENT=staging`, enable Telescope, and keep Nightwatch
@@ -307,23 +309,28 @@ Use these descriptive command names for new scripts. Existing names remain alias
 | `content:sync-from-production --isolated=1` | Synchronize public content and media locally | `content:sync-production` |
 | `content:export-public` | Export published content to a JSON archive | — |
 | `content:import-public` | Import a public archive into a permitted environment | — |
-| `newsletter:import-resend-subscribers` | Import contacts still subscribed in Resend as confirmed subscribers (dry run unless `--apply`) | — |
 
 Use `--isolated=1` for sync so overlapping invocations stop with a nonzero exit code before remote processes or local writes. Both command names share the same isolation lock. The framework releases it on completion; interrupted locks expire after one hour. The existing Forge verification command remains supported through its alias; no deployment script changes are required.
 
-## Importing Resend newsletter contacts
+## Resend bounce and complaint webhook
 
-Before double opt-in, sign-ups were stored only in the Resend audience. After the release that ships the `subscribers` table, import them once from the production server (site release directory):
+Resend reports bounces and spam complaints to `POST https://mouse28.com/webhooks/resend`; the application then suppresses those addresses so they are never mailed again (see `docs/architecture.md`). To set it up on production:
 
-1. `php artisan newsletter:import-resend-subscribers` is a dry run. It prints how many contacts it would import, how many already exist, and how many it skips (unsubscribed in Resend, or unreadable). Compare "Would import" with the audience's subscribed contacts in Resend.
-2. `php artisan newsletter:import-resend-subscribers --apply` writes them as confirmed subscribers, dated from their Resend sign-up. They are not sent a confirmation email.
-3. Check Newsletter Subscribers in the admin (status Active) and the dashboard "Subscribers" count.
+1. In the Resend dashboard, open Webhooks, add `https://mouse28.com/webhooks/resend` and select `email.bounced`, `email.complained` and `email.suppressed`. Resend webhooks are account-wide, so events for the other projects' mail also arrive; they are ignored unless the address is a Mouse28 subscriber.
+2. Copy the signing secret (`whsec_...`) into the production environment as `RESEND_WEBHOOK_SECRET` in Forge, then deploy or refresh the config cache and restart the queue workers.
+3. Send a test event from the Resend dashboard and confirm a 2xx in its delivery log. A 503 means the secret is not loaded; a 403 means the secret does not match this webhook.
 
-The command only adds addresses that have no subscriber row, so it never changes anyone who signed up or unsubscribed through the newsletter form, and it is safe to run again. It fails without writing when Resend is disabled, unconfigured or unreachable. It reads Resend through `RESEND_API_KEY` and `RESEND_AUDIENCE_ID`; keep both until the import has run, then the audience code can be removed.
+`app:verify-deployment` does not require the secret, so a release can ship before the webhook exists. Staging never sends email and needs no webhook.
 
-## Newsletter queue prerequisite
+## Legacy Resend newsletter audience
 
-Newsletter sign-up confirmations and issue deliveries are queued on the **default** queue (database connection), which no production worker currently consumes; the Forge worker only runs `--queue=contact-mail`. Before releasing the newsletter work, change that worker to `php artisan queue:work database --queue=default,contact-mail --timeout=60 --tries=3` (keep `retry_after` above 60 seconds and restart workers after each deployment), then confirm on staging that a new sign-up receives its confirmation email. Issue emails are rate limited to `MOUSE28_NEWSLETTER_DELIVERY_RATE_LIMIT` per second (default 5) and retried for up to a day, so a large send simply takes a few minutes. To send an issue: publish it, use "Send test email" to check the email, then "Send to subscribers" (it cannot be undone), and watch the delivery count on the issue's edit page.
+Before double opt-in, sign-ups were stored only in a Resend audience. The one-time import command (`newsletter:import-resend-subscribers`, available in tag `v2026.10.1`) was dry-run on production on 2026-10-01 and would have imported 10 contacts, but most were spam sign-ups from the old unverified form, so the import was skipped: real readers sign up again through the confirmed form. The command and the code that read the audience were removed. The audience itself and its contacts live in the Resend dashboard and are owner-managed: delete the spam contacts, or the whole Mouse28 audience (not Ringside's), so Resend holds no subscriber data.
+
+The application only uses Resend to send email. Its `RESEND_API_KEY` is the only Resend setting; the former `RESEND_ENABLED` and `RESEND_AUDIENCE_ID` variables are unused and can be removed from the Forge environment files. Prefer a sending-only key restricted to the `mouse28.com` domain; a full-access key is only needed for contact or audience management.
+
+## Newsletter queue workers
+
+Newsletter sign-up confirmations and issue deliveries are queued on the **default** queue (database connection). Production and staging each run two supervised workers in Forge: the original contact-mail worker (`--queue=contact-mail`) and a "Default queue worker" (`queue:work database --queue=default --sleep=3 --timeout=60 --tries=3`, added 2026-10-01). Keep `retry_after` above 60 seconds and restart workers after each deployment. Issue emails are rate limited to `MOUSE28_NEWSLETTER_DELIVERY_RATE_LIMIT` per second (default 5) and retried for up to a day, so a large send simply takes a few minutes. To send an issue: publish it, use "Send test email" to check the email, then "Send to subscribers" (it cannot be undone), and watch the delivery count on the issue's edit page. Staging never delivers email, so verify real delivery in production.
 
 ## Contact mail queue deployment prerequisite
 
@@ -354,7 +361,7 @@ If either heartbeat goes stale, `/up` returns `500` with `{"status":"down"}`.
 Mouse28's off-site backup job runs as `forge` on `cold-moon`, independently of
 Forge's paid database-backup feature and application deployments. The daily cron
 schedule is **07:15 UTC** (03:15 New York during daylight-saving time). Its private
-installation is `/home/forge/mouse28-offsite-backup`:
+installation is `/home/forge/backups/.control/mouse28-offsite` (it was `/home/forge/mouse28-offsite-backup` until the 2026-09-23 centralization under `/home/forge/backups`):
 
 - `backup.py` orchestrates the backup; `export-database.php` reads the active
   release's Laravel database configuration without printing credentials.
@@ -363,7 +370,7 @@ installation is `/home/forge/mouse28-offsite-backup`:
   existing Mouse28 backup password, retained separately in the original secret
   stores for recovery; this server file must not be its only surviving copy.
 - `last-success.json` records the latest verified snapshot. Scheduled output goes
-  to `backup.log`, with generic failure stages rather than credentials or data.
+  to `/home/forge/backups/logs/mouse28-offsite.log`, with generic failure stages rather than credentials or data.
 - `test_backup.py` provides isolated safety tests using synthetic data.
 
 Each run exports a transactional MySQL dump and archives only persistent public
@@ -406,7 +413,7 @@ endpoint is stored in the server-only `heartbeat-url` file with mode `0600`.
 Never commit or log this capability URL. The request has bounded timeouts and
 retries, does not follow redirects, and keeps its URL out of process arguments.
 A heartbeat delivery failure leaves the verified backup intact, returns failure,
-and logs only the generic notification stage. Inspect `backup.log` and
+and logs only the generic notification stage. Inspect `/home/forge/backups/logs/mouse28-offsite.log` and
 `last-success.json` to distinguish backup failures from monitoring failures.
 
 Forge's account email is `jdavidsonwebdev@gmail.com`; email and in-app
@@ -420,6 +427,24 @@ reported **Beating** after its success ping. An actual missed-run email has not
 been deliberately triggered or confirmed in the inbox. Original scripts are
 preserved as `backup.py.before-heartbeat` and `test_backup.py.before-heartbeat`
 in the private server installation for recovery.
+
+The upload step shells out to the AWS CLI. It now uses **AWS CLI v2, installed for
+the `forge` user** at `/home/forge/.local/bin/aws` (a self-contained bundle, so a
+system Python upgrade cannot break it); `backup.py` calls that path. The `forge` user
+has no passwordless `sudo`, so a system-wide install is not possible from Forge
+commands. The previous script is kept as `backup.py.before-aws-v2`.
+
+Incident, 2026-09-25 to 2026-10-01: the Ubuntu/Python upgrade on 2026-09-24
+(15:36 UTC) left the old pip-installed `/usr/local/bin/aws` (CLI v1, shebang
+`/usr/bin/python3`) without its `awscli` module, so every run failed at "upload and
+verify encrypted backup" and then "retry pending encrypted uploads" (a stuck pending
+bundle is retried first and blocks new ones). The Forge heartbeat showed *Missing*
+for a week. It was diagnosed with `/usr/local/bin/aws --version`
+(`ModuleNotFoundError: No module named 'awscli'`), repaired by the user-level v2
+install and the one-line path change, and a manual run uploaded the stuck
+`20260925T071502Z` bundle and a fresh `20261001T185413Z` snapshot. If the heartbeat
+goes missing again, first run `/home/forge/.local/bin/aws --version`, then read the
+log's last lines, then list `/home/forge/backups/production/mouse28.com/offsite/pending`.
 
 For recovery, first verify the manifest's ciphertext hashes, decrypt with the
 existing backup password and recorded OpenSSL parameters, then verify plaintext
@@ -455,7 +480,7 @@ connected server's data directory and disabled networking before importing.
 The removed Mac automation is not an active fallback. Reinstating it requires
 explicit approval and rebuilding its deleted files before enabling a launch agent;
 avoid running duplicate schedules. A pre-migration server crontab is preserved at
-`/home/forge/mouse28-offsite-backup/crontab.before-migration`; compare it rather
+`/home/forge/backups/.control/mouse28-offsite/crontab.before-migration`; compare it rather
 than overwriting a newer crontab, to avoid losing unrelated jobs.
 
 ## Deploying

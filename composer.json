@@ -154,7 +154,6 @@
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Models/Concerns/HasCoverImages.php --filter='image paths'"
         ],
         "test:mutate:integrations": [
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/ResendAudience.php --filter='(subscriber|audience|provider|connection|subscription)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/StructuredData.php --filter='structured data'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Actions/GenerateRobotsTxt.php --filter='(robots|crawlers|crawlable)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/SafeReturnUrl.php --filter='(referrers|same origin)'",

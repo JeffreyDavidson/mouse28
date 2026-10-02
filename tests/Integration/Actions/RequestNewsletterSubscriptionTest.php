@@ -149,3 +149,17 @@ test('the cooldown is dropped when queueing the confirmation fails', function ()
         ->toThrow(RuntimeException::class, 'mail transport unavailable')
         ->and(Cache::has('newsletter.confirmation.cooldown.'.hash('sha256', 'reader@example.com')))->toBeFalse();
 });
+
+test('a suppressed address is left alone and gets no email', function (): void {
+    $reader = Subscriber::factory()->suppressed()->create(['email' => 'reader@example.com']);
+
+    app(RequestNewsletterSubscription::class)->handle('Reader@Example.com');
+
+    $reader->refresh();
+
+    expect($reader->isSuppressed())->toBeTrue()
+        ->and($reader->unsubscribed_at)->not->toBeNull()
+        ->and($reader->verification_token_hash)->toBeNull();
+
+    Mail::assertNothingQueued();
+});

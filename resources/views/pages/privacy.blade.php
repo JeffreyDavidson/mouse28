@@ -27,7 +27,8 @@
                 We store your email address on Mouse28's own server and email you a link to confirm that you want
                 Mouse28 updates. Addresses that are never confirmed are deleted after 7 days. Resend, our email
                 provider, only delivers the emails we send. You can unsubscribe using the link in any newsletter or
-                contact us for help, and addresses that unsubscribe are deleted after 30 days.
+                contact us for help, and addresses that unsubscribe are deleted after 30 days. If an address bounces or
+                is reported as spam, we keep it on a do-not-email list so we never email it again.
             </p>
 
             <h2>Services used by the site</h2>

@@ -19,6 +19,7 @@ class ListSubscribers extends ListRecords
             'active' => $this->countWithStatus(SubscriberStatus::Active),
             'pending' => $this->countWithStatus(SubscriberStatus::Pending),
             'unsubscribed' => $this->countWithStatus(SubscriberStatus::Unsubscribed),
+            'suppressed' => $this->countWithStatus(SubscriberStatus::Suppressed),
         ]);
     }
 

@@ -43,6 +43,7 @@ test('sensitive form batches are excluded even when exceptions contain submitted
     'newsletter' => ['/newsletter', false],
     'newsletter confirmation' => ['/newsletter/confirm/1/token', false],
     'newsletter unsubscribe' => ['/newsletter/unsubscribe/1', false],
+    'resend webhook' => ['/webhooks/resend', false],
     'unrelated request' => ['/other', true],
 ]);
 

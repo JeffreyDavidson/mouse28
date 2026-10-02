@@ -23,7 +23,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
         $isLocal = $this->app->environment('local');
 
         // Exclude the whole batch: exception messages and SQL bindings may also contain submitted text.
-        Telescope::filterBatch(fn (): bool => ! Request::is('contact', 'newsletter', 'newsletter/*'));
+        Telescope::filterBatch(fn (): bool => ! Request::is('contact', 'newsletter', 'newsletter/*', 'webhooks/*'));
 
         Telescope::filter(fn (IncomingEntry $entry): bool => $isLocal ||
             $entry->isReportableException() ||

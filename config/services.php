@@ -19,9 +19,8 @@ return [
     ],
 
     'resend' => [
-        'enabled' => env('RESEND_ENABLED', true),
         'key' => env('RESEND_API_KEY'),
-        'audience_id' => env('RESEND_AUDIENCE_ID'),
+        'webhook_secret' => env('RESEND_WEBHOOK_SECRET'),
     ],
 
     'ses' => [
