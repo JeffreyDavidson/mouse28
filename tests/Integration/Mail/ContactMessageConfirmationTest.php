@@ -1,17 +1,17 @@
 <?php
 
-use App\Mail\ContactFormConfirmation;
-use App\Models\ContactMessage;
+use App\Enums\ContactType;
+use App\Mail\ContactMessageConfirmation;
+use App\Models\ContactInquiry;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailables\Address;
+use Illuminate\Support\Facades\Date;
 
 test('contact confirmation uses configured contact addresses for replies', function (string $configured, array $addresses): void {
     config()->set('mail.admin_address', $configured);
-    $contactMessage = new ContactMessage([
-        'email' => 'dale@example.com',
-        'subject' => 'accessibility',
-    ]);
+    $inquiry = ContactInquiry::factory()->make(['type' => ContactType::Accessibility]);
 
-    $envelope = new ContactFormConfirmation($contactMessage)->envelope();
+    $envelope = new ContactMessageConfirmation($inquiry)->envelope();
 
     expect($envelope->subject)->toBe('We got your message! — Mouse28')
         ->and($envelope->replyTo)->toEqual($addresses);
@@ -21,13 +21,13 @@ test('contact confirmation uses configured contact addresses for replies', funct
 ]);
 
 test('contact confirmation renders the contact details safely', function (): void {
-    $contactMessage = new ContactMessage([
+    $inquiry = ContactInquiry::factory()->make([
         'name' => 'Dale <Cooper>',
         'email' => 'dale@example.com',
-        'subject' => 'accessibility',
+        'type' => ContactType::Accessibility,
         'message' => '<script>alert("unsafe")</script> Need accessibility help.',
     ]);
-    $mailable = new ContactFormConfirmation($contactMessage);
+    $mailable = new ContactMessageConfirmation($inquiry);
 
     $content = $mailable->content();
     $html = $mailable->render();
@@ -42,15 +42,24 @@ test('contact confirmation renders the contact details safely', function (): voi
 });
 
 test('confirmation email uses accessible current branding without external fonts', function (): void {
-    $message = new ContactMessage([
-        'name' => 'Sample Visitor',
-        'email' => 'visitor@example.com',
-        'subject' => 'general',
-        'message' => 'A sample question.',
-    ]);
-
-    $html = new ContactFormConfirmation($message)->render();
+    $html = new ContactMessageConfirmation(ContactInquiry::factory()->make())->render();
 
     expect($html)->toContain('Besley', '<html lang="en">', 'role="presentation"')
         ->not->toContain('Playfair', 'fonts.googleapis.com');
+});
+
+test('contact confirmation is sent immediately by the delivery job rather than queued', function (): void {
+    expect(class_implements(ContactMessageConfirmation::class))->not->toContain(ShouldQueue::class);
+});
+
+test('contact confirmation carries a mouse28 confirmation idempotency key', function (): void {
+    config()->set('app.url', 'https://mouse28.test');
+    $inquiry = ContactInquiry::factory()->make();
+    $inquiry->id = 7;
+    $createdAt = Date::parse('2026-10-02 12:00:00');
+    $inquiry->created_at = $createdAt;
+
+    $headers = new ContactMessageConfirmation($inquiry)->headers()->text;
+
+    expect($headers['Resend-Idempotency-Key'])->toBe('mouse28-contact-'.hash('sha256', "https://mouse28.test|7|{$createdAt->toISOString()}").'-confirmation');
 });

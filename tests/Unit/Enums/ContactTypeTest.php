@@ -1,11 +1,11 @@
 <?php
 
-use App\Enums\ContactTopic;
+use App\Enums\ContactType;
 
-test('contact topics expose admin labels', function (): void {
+test('contact types expose admin labels', function (): void {
     $labels = [];
 
-    foreach (ContactTopic::cases() as $case) {
+    foreach (ContactType::cases() as $case) {
         $labels[$case->value] = $case->getLabel();
     }
 
@@ -18,10 +18,10 @@ test('contact topics expose admin labels', function (): void {
     ]);
 });
 
-test('contact topics expose contact form labels', function (): void {
+test('contact types expose contact form labels', function (): void {
     $labels = [];
 
-    foreach (ContactTopic::cases() as $case) {
+    foreach (ContactType::cases() as $case) {
         $labels[$case->value] = $case->contactFormLabel();
     }
 

@@ -6,7 +6,7 @@ namespace App\Enums;
 
 use Filament\Support\Contracts\HasLabel;
 
-enum ContactTopic: string implements HasLabel
+enum ContactType: string implements HasLabel
 {
     case General = 'general';
     case Accessibility = 'accessibility';
