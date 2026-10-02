@@ -405,7 +405,8 @@ test('copying an article link gives accessible feedback', function (): void {
         });
         JS);
 
-    $page->keys('button[aria-label="Copy link"]', 'Enter')
+    $page->assertScript(browserAlpineReadyScript('button[aria-label="Copy link"]'), true)
+        ->keys('button[aria-label="Copy link"]', 'Enter')
         ->assertScript('window.copiedArticleUrl', route('blog.show', $post))
         ->assertSee('Copied!')
         ->assertNoJavaScriptErrors();
@@ -422,7 +423,8 @@ test('copying an episode link gives accessible feedback', function (): void {
         });
         JS);
 
-    $page->click('[aria-labelledby="share-episode"] button')
+    $page->assertScript(browserAlpineReadyScript('[aria-labelledby="share-episode"] button'), true)
+        ->click('[aria-labelledby="share-episode"] button')
         ->assertScript('window.copiedEpisodeUrl', route('episodes.show', $episode))
         ->assertSee('Copied!')
         ->assertNoJavaScriptErrors();

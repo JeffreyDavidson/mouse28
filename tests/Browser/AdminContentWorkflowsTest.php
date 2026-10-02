@@ -115,6 +115,7 @@ test('Episode creation shows duplicate number validation while preserving entere
         ->fill('input[id="form.slug"]', 'browser-duplicate-episode')
         ->fill('input[id="form.episode_number"]', '280')
         ->click('button[wire\\:target="create"]')
+        ->assertScript(browserWaitForScript("document.body.innerText.includes('The episode number has already been taken.')"), true)
         ->assertSee('The episode number has already been taken.')
         ->assertValue('input[id="form.title"]', 'Browser Duplicate Episode')
         ->assertNoJavaScriptErrors();
