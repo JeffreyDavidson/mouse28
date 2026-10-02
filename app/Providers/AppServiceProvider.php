@@ -15,6 +15,7 @@ use App\Support\Monitoring\Sentry\RedactSentryBreadcrumb;
 use App\Support\Monitoring\Sentry\RedactSentryEvent;
 use App\Support\SafeReturnUrl;
 use App\View\Composers\PodcastComposer;
+use App\View\Composers\SocialProfilesComposer;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\DiagnosingHealth;
@@ -66,6 +67,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('components.layouts.app', PodcastComposer::class);
+        View::composer('components.layouts.app', SocialProfilesComposer::class);
 
         if (str_starts_with(Config::string('app.url'), 'https://')) {
             URL::forceRootUrl(Config::string('app.url'));

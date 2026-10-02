@@ -69,6 +69,22 @@
                         <li class="py-4">Collaboration and partnerships</li>
                     </ul>
 
+                    @if ($socialProfiles->isNotEmpty())
+                        <p class="text-navy/65 mt-8 text-sm/6">
+                            Find us on
+                            @foreach ($socialProfiles as $profile)
+                                <a
+                                    href="{{ $profile->url }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="text-purple decoration-gold/70 hover:text-navy font-semibold underline underline-offset-4 transition-colors"
+                                    >{{ $profile->label ?: $profile->platform->getLabel() }}<x-new-tab-notice
+                                /></a>
+                                @if (! $loop->last) , @endif
+                            @endforeach
+                        </p>
+                    @endif
+
                     @if ($contactFormAvailable)
                         <p class="text-navy/65 mt-8 text-sm/6">
                             Prefer email?

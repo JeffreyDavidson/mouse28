@@ -341,6 +341,26 @@
                         </div>
                     </div>
 
+                    @if ($footerSocialProfiles->isNotEmpty())
+                        {{-- Follow --}}
+                        <div>
+                            <h2 class="font-heading mb-4 text-base font-semibold tracking-wider text-white uppercase sm:text-sm">
+                                Follow
+                            </h2>
+                            <div class="flex flex-col gap-1 text-base sm:text-sm">
+                                @foreach ($footerSocialProfiles as $profile)
+                                    <a
+                                        href="{{ $profile->url }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
+                                        >{{ $profile->platform->getLabel() }}<x-new-tab-notice
+                                    /></a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+
                     {{-- Connect --}}
                     <div>
                         <h2 class="font-heading mb-4 text-base font-semibold tracking-wider text-white uppercase sm:text-sm">

@@ -1,9 +1,11 @@
 <?php
 
 use App\Enums\ContactType;
+use App\Enums\SocialPlatform;
 use App\Http\Requests\StoreContactRequest;
 use App\Jobs\SendContactInquiryEmails;
 use App\Models\ContactInquiry;
+use App\Models\SocialProfile;
 use Dom\HTMLDocument;
 use Dom\XPath;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -31,7 +33,8 @@ test('contact page displays its view model data', function (): void {
 });
 
 test('contact stays within its query budget', function (): void {
-    $this->expectsDatabaseQueryCount(1);
+    // Podcast data for the layout, plus the footer and contact-page social profiles.
+    $this->expectsDatabaseQueryCount(3);
 
     get(route('contact.create'))
         ->assertOk();
@@ -356,4 +359,23 @@ test('contact page exposes a single main landmark without nested complementary r
 
     expect($xpath->query('//*[local-name()="main"]'))->toHaveCount(1)
         ->and($xpath->query('//*[local-name()="main"]//*[local-name()="aside"]'))->toBeEmpty();
+});
+
+test('the contact page lists enabled contact profiles using their label', function (): void {
+    SocialProfile::factory()->onContactPage()->create([
+        'platform' => SocialPlatform::Facebook,
+        'url' => 'https://facebook.com/mouse28',
+        'label' => 'Mouse28 on Facebook',
+    ]);
+    SocialProfile::factory()->onContactPage()->create([
+        'platform' => SocialPlatform::Instagram,
+        'url' => 'https://instagram.com/mouse28',
+    ]);
+    SocialProfile::factory()->onContactPage()->create(['url' => 'https://disabled.example.com/a', 'is_enabled' => false]);
+
+    get(route('contact.create'))
+        ->assertOk()
+        ->assertSee(['Mouse28 on Facebook', 'Instagram'])
+        ->assertSeeHtml('href="https://facebook.com/mouse28"')
+        ->assertDontSee('disabled.example.com');
 });

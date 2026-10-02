@@ -55,11 +55,12 @@ test('podcast pages stay within their query budget as content grows', function (
     Episode::factory()->count(15)->create();
     $url = $page === 'index' ? route('episodes.index') : route('episodes.show', $episode);
 
+    // Includes one query for the footer social links.
     $this->expectsDatabaseQueryCount($queries);
 
     get($url)
         ->assertOk();
-})->with(['archive' => ['index', 3], 'episode' => ['show', 5]]);
+})->with(['archive' => ['index', 4], 'episode' => ['show', 6]]);
 
 test('episode archive renders', function (): void {
     get(route('episodes.index'))

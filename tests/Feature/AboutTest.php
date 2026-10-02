@@ -10,7 +10,8 @@ use function Pest\Laravel\get;
 pest()->use(RefreshDatabase::class);
 
 test('about stays within its query budget', function (): void {
-    $this->expectsDatabaseQueryCount(1);
+    // Includes one query for the footer social links.
+    $this->expectsDatabaseQueryCount(2);
 
     get(route('about'))
         ->assertOk();

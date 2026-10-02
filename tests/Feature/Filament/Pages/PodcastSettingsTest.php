@@ -28,13 +28,13 @@ test('podcast links enforce their storage length without changing saved settings
     // Assert
     $page->assertHasFormErrors([$field => 'max']);
     expect($podcast->refresh()->getAttribute($field))->toBe($original);
-})->with(['apple_url', 'spotify_url', 'youtube_url', 'instagram_url', 'tiktok_url']);
+})->with(['apple_url', 'spotify_url', 'youtube_url']);
 
 test('podcast links accept the full supported storage length', function (): void {
     // Arrange
     actingAs(User::factory()->admin()->create());
     $url = 'https://example.com/'.str_repeat('a', 255 - strlen('https://example.com/'));
-    $links = array_fill_keys(['apple_url', 'spotify_url', 'youtube_url', 'instagram_url', 'tiktok_url'], $url);
+    $links = array_fill_keys(['apple_url', 'spotify_url', 'youtube_url'], $url);
     $page = livewire(PodcastSettings::class);
 
     // Act
