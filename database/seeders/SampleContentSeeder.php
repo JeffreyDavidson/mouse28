@@ -96,7 +96,7 @@ class SampleContentSeeder extends Seeder
             [
                 'title' => $title,
                 'excerpt' => 'This sample record exists to exercise the publishing workflow.',
-                'body' => 'Synthetic development content for testing lists, detail pages, and filters.',
+                'content' => 'Synthetic development content for testing lists, detail pages, and filters.',
                 'category' => $category,
                 'author' => ContentAuthor::Both,
                 'status' => $status,
@@ -112,7 +112,7 @@ class SampleContentSeeder extends Seeder
             [
                 'title' => $title,
                 'excerpt' => 'This sample record exists to exercise the publishing workflow.',
-                'body' => 'Synthetic development content for testing lists, detail pages, and filters.',
+                'content' => 'Synthetic development content for testing lists, detail pages, and filters.',
                 'category' => $category,
                 'author' => ContentAuthor::Both,
                 'source_url' => 'https://example.test/sample-source',

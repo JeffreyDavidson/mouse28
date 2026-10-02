@@ -22,7 +22,7 @@ class GuideFactory extends Factory
             'title' => $title,
             'slug' => str($title)->slug(),
             'excerpt' => fake()->sentence(18),
-            'body' => fake()->paragraphs(5, true),
+            'content' => fake()->paragraphs(5, true),
             'category' => fake()->randomElement(GuideCategory::cases()),
             'author' => fake()->randomElement(ContentAuthor::cases()),
             'source_url' => fake()->url(),

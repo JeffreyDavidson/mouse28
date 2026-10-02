@@ -50,7 +50,7 @@ test('post and guide structured data use content fallbacks without optional meta
         'slug' => 'fallback-post',
         'meta_description' => null,
         'excerpt' => null,
-        'body' => '<p>'.str_repeat('Useful planning advice. ', 20).'</p>',
+        'content' => '<p>'.str_repeat('Useful planning advice. ', 20).'</p>',
         'cover_image' => 'posts/cover.jpg',
         'og_image' => null,
         'source_url' => null,

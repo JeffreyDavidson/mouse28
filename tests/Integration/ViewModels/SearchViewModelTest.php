@@ -15,11 +15,11 @@ test('search results select only the fields rendered by the page', function (): 
 
     Post::factory()->create([
         'title' => 'Sensory planning post',
-        'body' => 'Sensory planning post body',
+        'content' => 'Sensory planning post body',
     ]);
     Guide::factory()->create([
         'title' => 'Sensory planning guide',
-        'body' => 'Sensory planning guide body',
+        'content' => 'Sensory planning guide body',
     ]);
     Episode::factory()->create([
         'title' => 'Sensory planning episode',
@@ -31,10 +31,10 @@ test('search results select only the fields rendered by the page', function (): 
 
     expect($results['posts']->sole()->getAttributes())
         ->toHaveKeys(['slug', 'title', 'excerpt', 'category'])
-        ->not->toHaveKeys(['body', 'meta_description'])
+        ->not->toHaveKeys(['content', 'meta_description'])
         ->and($results['guides']->sole()->getAttributes())
         ->toHaveKeys(['slug', 'title', 'excerpt', 'category'])
-        ->not->toHaveKeys(['body', 'meta_description'])
+        ->not->toHaveKeys(['content', 'meta_description'])
         ->and($results['episodes']->sole()->getAttributes())
         ->toHaveKeys(['slug', 'episode_number', 'title', 'description'])
         ->not->toHaveKeys(['show_notes', 'transcript', 'meta_description']);
@@ -57,11 +57,11 @@ test('search omits guides when the feature is disabled', function (): void {
 test('search treats wildcard characters as literal text', function (string $query, int $expectedPerType): void {
     config()->set('mouse28.guides_enabled', true);
 
-    Post::factory()->create(['title' => 'Magic Kingdom 100% guide', 'excerpt' => '', 'body' => '']);
-    Guide::factory()->create(['title' => 'Magic Kingdom 100% guide', 'excerpt' => '', 'body' => '']);
+    Post::factory()->create(['title' => 'Magic Kingdom 100% guide', 'excerpt' => '', 'content' => '']);
+    Guide::factory()->create(['title' => 'Magic Kingdom 100% guide', 'excerpt' => '', 'content' => '']);
     Episode::factory()->create(['title' => 'Magic Kingdom 100% guide', 'description' => '', 'show_notes' => '', 'transcript' => '']);
-    Post::factory()->create(['title' => 'Magic Kingdom 1000 steps', 'excerpt' => '', 'body' => '']);
-    Guide::factory()->create(['title' => 'Magic Kingdom 1000 steps', 'excerpt' => '', 'body' => '']);
+    Post::factory()->create(['title' => 'Magic Kingdom 1000 steps', 'excerpt' => '', 'content' => '']);
+    Guide::factory()->create(['title' => 'Magic Kingdom 1000 steps', 'excerpt' => '', 'content' => '']);
     Episode::factory()->create(['title' => 'Magic Kingdom 1000 steps', 'description' => '', 'show_notes' => '', 'transcript' => '']);
 
     $results = app(SearchViewModel::class)->data($query);
@@ -87,3 +87,15 @@ test('search results use the configured page size for each section', function (s
     'with a query' => ['Castle'],
     'without a query' => [''],
 ]);
+
+test('search matches posts and guides by their written content', function (): void {
+    config()->set('mouse28.guides_enabled', true);
+    Post::factory()->create(['title' => 'Arrival tips', 'slug' => 'arrival-tips', 'excerpt' => '', 'content' => 'Find the quietzone near the entrance.']);
+    Guide::factory()->create(['title' => 'Arrival guide', 'slug' => 'arrival-guide', 'excerpt' => '', 'content' => 'Another quietzone sits by the lake.']);
+    Post::factory()->create(['title' => 'Unrelated', 'excerpt' => '', 'content' => 'Nothing to see here.']);
+
+    $results = app(SearchViewModel::class)->data('quietzone');
+
+    expect($results['posts']->pluck('slug')->all())->toBe(['arrival-tips'])
+        ->and($results['guides']->pluck('slug')->all())->toBe(['arrival-guide']);
+});

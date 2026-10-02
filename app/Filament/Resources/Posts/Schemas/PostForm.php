@@ -83,7 +83,7 @@ class PostForm
                             ->rows(3)
                             ->maxLength(300)
                             ->helperText('Short summary shown in post listings.'),
-                        MarkdownEditor::make('body')
+                        MarkdownEditor::make('content')
                             ->dehydrateStateUsing(fn (?string $state): string => $state ?? ''),
                     ]),
 

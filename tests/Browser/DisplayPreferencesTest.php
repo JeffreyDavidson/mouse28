@@ -97,13 +97,13 @@ test('multilingual and right to left content remains contained', function (): vo
         'title' => $multilingualTitle,
         'slug' => 'multilingual-accessibility-post',
         'excerpt' => $multilingualBody,
-        'body' => $multilingualBody,
+        'content' => $multilingualBody,
     ]);
     $guide = Guide::factory()->create([
         'title' => $multilingualTitle,
         'slug' => 'multilingual-accessibility-guide',
         'excerpt' => $multilingualBody,
-        'body' => $multilingualBody,
+        'content' => $multilingualBody,
     ]);
     $episode = Episode::factory()->create([
         'title' => $multilingualTitle,

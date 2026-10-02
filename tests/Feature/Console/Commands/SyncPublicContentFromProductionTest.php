@@ -21,7 +21,7 @@ test('sync rejects invalid content before replacing any local media', function (
     $post = Post::factory()->create(['title' => 'Original', 'cover_image' => 'posts/cover.webp']);
     $archive = app(PublicContentArchive::class)->export();
     $archive['posts'][0]['title'] = 'Changed';
-    $archive['posts'][0]['body'] = null;
+    $archive['posts'][0]['content'] = null;
     Process::fake(function (PendingProcess $process) use ($archive) {
         $arguments = syncProcessArguments($process);
         if ($arguments[0] === 'scp') {
@@ -104,7 +104,7 @@ test('production syncs public content, preserves drafts, and transfers reference
             [
                 'title' => 'Example Post',
                 'slug' => 'example-post',
-                'body' => '',
+                'content' => '',
                 'cover_image' => 'posts/example-post.webp',
                 'episode_slug' => 'example-episode',
                 'published_at' => now()->subDay()->toAtomString(),
@@ -113,7 +113,7 @@ test('production syncs public content, preserves drafts, and transfers reference
             [
                 'title' => 'Second Example Post',
                 'slug' => 'second-example-post',
-                'body' => '',
+                'content' => '',
                 'cover_image' => 'posts/second-example-post.webp',
                 'published_at' => now()->subHours(2)->toAtomString(),
             ],

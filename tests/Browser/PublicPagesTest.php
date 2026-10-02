@@ -270,7 +270,7 @@ test('mobile navigation restores focus when closed with the keyboard', function 
 test('search and transcript controls work from the keyboard', function (): void {
     $post = Post::factory()->create([
         'title' => 'Accessible Park Planning',
-        'body' => 'Practical accessible planning advice for a Disney parks visit.',
+        'content' => 'Practical accessible planning advice for a Disney parks visit.',
     ]);
     $episode = Episode::factory()->create([
         'audio_url' => 'https://cdn.example.com/accessible-episode.mp3',
@@ -295,7 +295,7 @@ test('search and transcript controls work from the keyboard', function (): void 
 test('public pages remain usable at mobile widths', function (): void {
     $post = Post::factory()->create([
         'title' => 'Accessible Park Planning',
-        'body' => "## Planning the day\n\nStart with a flexible plan.\n\n## Finding quiet spaces\n\nTake sensory breaks when needed.",
+        'content' => "## Planning the day\n\nStart with a flexible plan.\n\n## Finding quiet spaces\n\nTake sensory breaks when needed.",
     ]);
     $episode = Episode::factory()->create([
         'title' => 'Accessible Disney Travel',
@@ -333,7 +333,7 @@ test('public pages remain usable at mobile widths', function (): void {
 test('mobile search and transcript controls remain usable', function (): void {
     $post = Post::factory()->create([
         'title' => 'Accessible Park Planning',
-        'body' => 'Practical accessible planning advice for a Disney parks visit.',
+        'content' => 'Practical accessible planning advice for a Disney parks visit.',
     ]);
     $episode = Episode::factory()->create([
         'audio_url' => 'https://cdn.example.com/accessible-episode.mp3',
@@ -361,7 +361,7 @@ test('mobile search and transcript controls remain usable', function (): void {
 
 test('article navigation scrolls to headings and back to the top with reduced motion', function (string $trailingContent): void {
     $post = Post::factory()->create([
-        'body' => "## Planning the day\n\n".str_repeat("Flexible park planning and sensory breaks.\n\n", 80)."## Finding quiet spaces\n\n".$trailingContent,
+        'content' => "## Planning the day\n\n".str_repeat("Flexible park planning and sensory breaks.\n\n", 80)."## Finding quiet spaces\n\n".$trailingContent,
     ]);
     $page = visit(route('blog.show', $post), ['reducedMotion' => 'reduce']);
 

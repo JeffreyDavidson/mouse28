@@ -105,3 +105,16 @@ test('sourced posts require a matching official source and review date', functio
     expect($missingReviewDateIssues)->toContain('Set the review date')
         ->and($missingSourceIssues)->toContain('Add an official source');
 });
+
+test('readiness asks for content until the content is written', function (PostFactory|GuideFactory $factory, string $issue, ?string $content, bool $missing): void {
+    $record = $factory->makeOne(['content' => $content]);
+
+    expect(in_array($issue, EditorialReadiness::issues($record), true))->toBe($missing);
+})->with([
+    'post' => [fn () => Post::factory(), 'Add post content'],
+    'guide' => [fn () => Guide::factory(), 'Add guide content'],
+])->with([
+    'missing content' => [null, true],
+    'empty content' => ['', true],
+    'written content' => ['Plan a flexible arrival.', false],
+]);

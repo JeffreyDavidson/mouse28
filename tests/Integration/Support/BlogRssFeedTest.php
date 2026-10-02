@@ -35,3 +35,14 @@ test('blog feed limits entries to the newest twenty published posts', function (
     expect(substr_count($content, '<item>'))->toBe(20)
         ->and($content)->not->toContain($oldest->title);
 });
+
+test('blog feed describes a post without an excerpt from its content', function (): void {
+    Post::factory()->create([
+        'excerpt' => null,
+        'content' => '<p>Plan a flexible arrival.</p>',
+    ]);
+
+    $content = app(BlogRssFeed::class)->content();
+
+    expect($content)->toContain('<description>Plan a flexible arrival.</description>');
+});

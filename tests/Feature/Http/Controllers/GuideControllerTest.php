@@ -262,3 +262,13 @@ test('signed-in visitors see published guides but nobody sees drafts at public U
     get(route('guides.show', $published))->assertOk();
     get(route('guides.show', $draft))->assertNotFound();
 })->with(['non-admin' => [false], 'admin' => [true]]);
+
+test('a published guide renders its markdown content', function (): void {
+    config()->set('mouse28.guides_enabled', true);
+    $guide = Guide::factory()->create(['content' => "## Arrival plan\n\nTake a **sensory break** when needed."]);
+
+    get(route('guides.show', $guide))
+        ->assertOk()
+        ->assertSeeHtml('<h2>Arrival plan</h2>')
+        ->assertSeeHtml('<strong>sensory break</strong>');
+});

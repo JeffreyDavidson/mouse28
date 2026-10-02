@@ -96,7 +96,7 @@
 
                     <article class="dispatch-reader-sheet relative rounded-xl bg-white p-6 shadow-[0_1.75rem_4rem_rgb(26_16_64/0.12)] sm:p-10 lg:p-14">
                         <div class="guide-reading-column blog-article-content prose-navy prose prose-lg text-navy/80 max-w-none text-[1.1rem] leading-[1.85] wrap-anywhere">
-                            {!! Str::markdown($guide->body, ['html_input' => 'strip', 'allow_unsafe_links' => false]) !!}
+                            {!! Str::markdown($guide->content ?? '', ['html_input' => 'strip', 'allow_unsafe_links' => false]) !!}
                         </div>
                     </article>
                 </div>

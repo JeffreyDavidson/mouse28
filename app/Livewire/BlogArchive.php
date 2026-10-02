@@ -92,12 +92,12 @@ class BlogArchive extends Component
 
     public function render(): View
     {
-        $cardColumns = ['id', 'slug', 'title', 'excerpt', 'body', 'category', 'author', 'cover_image', 'published_at'];
+        $cardColumns = ['id', 'slug', 'title', 'excerpt', 'content', 'category', 'author', 'cover_image', 'published_at'];
 
         $posts = Post::published()
             ->select($cardColumns)
             ->when($this->category, fn (Builder $query) => $query->where('category', $this->category))
-            ->when($this->search, fn (Builder $query) => TextSearch::constrain($query, ['title', 'excerpt', 'body'], $this->search))
+            ->when($this->search, fn (Builder $query) => TextSearch::constrain($query, ['title', 'excerpt', 'content'], $this->search))
             ->orderBy('published_at', $this->sort === 'oldest' ? 'asc' : 'desc')
             ->orderBy('id', $this->sort === 'oldest' ? 'asc' : 'desc')
             ->paginate(Config::integer('mouse28.blog_posts_per_page'));

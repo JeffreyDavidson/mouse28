@@ -14,7 +14,7 @@ use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
 
-test('an incomplete post can be saved as a draft without body content', function (): void {
+test('an incomplete post can be saved as a draft without content', function (): void {
     actingAs(User::factory()->admin()->create());
 
     livewire(CreatePost::class)
@@ -22,7 +22,7 @@ test('an incomplete post can be saved as a draft without body content', function
         ->call('create')
         ->assertHasNoFormErrors();
 
-    expect(Post::query()->sole())->body->toBe('')->status->toBe(PublishStatus::Draft);
+    expect(Post::query()->sole())->content->toBe('')->status->toBe(PublishStatus::Draft);
 });
 
 test('post creation validates required fields on the server', function (): void {
