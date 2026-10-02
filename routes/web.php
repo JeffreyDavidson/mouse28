@@ -17,6 +17,7 @@ use App\Http\Controllers\PreviewEpisodeController;
 use App\Http\Controllers\PreviewGuideController;
 use App\Http\Controllers\PreviewNewsletterIssueController;
 use App\Http\Controllers\PreviewPostController;
+use App\Http\Controllers\ResendWebhookController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
@@ -68,5 +69,10 @@ Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 Route::get('/robots.txt', RobotsController::class)
     ->withoutMiddleware('web')
     ->name('robots');
+// Server-to-server: no session, cookies or forgery token; the Resend signature is the credential.
+Route::post('/webhooks/resend', ResendWebhookController::class)
+    ->withoutMiddleware('web')
+    ->middleware('throttle:resend-webhook')
+    ->name('webhooks.resend');
 Route::get('/rss/blog', BlogRssController::class)->name('rss.blog');
 Route::get('/rss/podcast', PodcastFeedRedirectController::class)->name('rss.podcast');

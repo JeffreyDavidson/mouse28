@@ -84,6 +84,8 @@ class AppServiceProvider extends ServiceProvider
 
         RateLimiter::for('newsletter-confirm', fn (Request $request): Limit => Limit::perMinute(Config::integer('mouse28.rate_limits.newsletter_confirm_per_minute'))->by($request->ip()));
 
+        RateLimiter::for('resend-webhook', fn (Request $request): Limit => Limit::perMinute(Config::integer('mouse28.rate_limits.resend_webhook_per_minute'))->by($request->ip()));
+
         RateLimiter::for('search', function (Request $request): Limit {
             if (blank($request->query('q'))) {
                 return Limit::none();

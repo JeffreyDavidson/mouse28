@@ -312,6 +312,16 @@ Use these descriptive command names for new scripts. Existing names remain alias
 
 Use `--isolated=1` for sync so overlapping invocations stop with a nonzero exit code before remote processes or local writes. Both command names share the same isolation lock. The framework releases it on completion; interrupted locks expire after one hour. The existing Forge verification command remains supported through its alias; no deployment script changes are required.
 
+## Resend bounce and complaint webhook
+
+Resend reports bounces and spam complaints to `POST https://mouse28.com/webhooks/resend`; the application then suppresses those addresses so they are never mailed again (see `docs/architecture.md`). To set it up on production:
+
+1. In the Resend dashboard, open Webhooks, add `https://mouse28.com/webhooks/resend` and select `email.bounced`, `email.complained` and `email.suppressed`. Resend webhooks are account-wide, so events for the other projects' mail also arrive; they are ignored unless the address is a Mouse28 subscriber.
+2. Copy the signing secret (`whsec_...`) into the production environment as `RESEND_WEBHOOK_SECRET` in Forge, then deploy or refresh the config cache and restart the queue workers.
+3. Send a test event from the Resend dashboard and confirm a 2xx in its delivery log. A 503 means the secret is not loaded; a 403 means the secret does not match this webhook.
+
+`app:verify-deployment` does not require the secret, so a release can ship before the webhook exists. Staging never sends email and needs no webhook.
+
 ## Legacy Resend newsletter audience
 
 Before double opt-in, sign-ups were stored only in a Resend audience. The one-time import command (`newsletter:import-resend-subscribers`, available in tag `v2026.10.1`) was dry-run on production on 2026-10-01 and would have imported 10 contacts, but most were spam sign-ups from the old unverified form, so the import was skipped: real readers sign up again through the confirmed form. The command and the code that read the audience were removed. The audience itself and its contacts live in the Resend dashboard and are owner-managed: delete the spam contacts, or the whole Mouse28 audience (not Ringside's), so Resend holds no subscriber data.
