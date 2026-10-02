@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\SuppressionReason;
 use App\Models\Subscriber;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
@@ -69,3 +70,19 @@ test('current readers are kept when pruning', function (int $subscribedDaysAgo, 
     'unsubscribed within the grace period' => [365, 365, 29],
     'active' => [365, 365, null],
 ]);
+
+test('suppressed readers are never active or pruned', function (): void {
+    $this->freezeTime();
+    $suppressed = Subscriber::factory()->suppressed(SuppressionReason::Complained)->create([
+        'subscribed_at' => Date::now()->subYear(),
+        'unsubscribed_at' => Date::now()->subYear(),
+        'suppressed_at' => Date::now()->subYear(),
+    ]);
+    $flagged = Subscriber::factory()->create(['suppressed_at' => Date::now()]);
+
+    expect(Subscriber::query()->active()->exists())->toBeFalse()
+        ->and($suppressed->isSuppressed())->toBeTrue()
+        ->and($flagged->isActive())->toBeFalse()
+        ->and($suppressed->suppression_reason)->toBe(SuppressionReason::Complained)
+        ->and(new Subscriber()->prunable()->exists())->toBeFalse();
+});
