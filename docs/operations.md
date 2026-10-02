@@ -152,8 +152,8 @@ Forge trims trailing blank lines when it saves.
 - The deployment marker is written only after activation and the health checks.
   In production it must be written **before** the cleanup step, which changes
   directory.
-- Runtime heartbeats are not part of deployment verification until a default-queue
-  worker exists (see "Runtime health monitoring").
+- Runtime heartbeats are not part of deployment verification until they are enabled
+  (see "Runtime health monitoring").
 
 ### Installed staging deploy script (site 3396232)
 
@@ -330,28 +330,62 @@ The application only uses Resend to send email. Its `RESEND_API_KEY` is the only
 
 ## Newsletter queue workers
 
-Newsletter sign-up confirmations and issue deliveries are queued on the **default** queue (database connection). Production and staging each run two supervised workers in Forge: the original contact-mail worker (`--queue=contact-mail`) and a "Default queue worker" (`queue:work database --queue=default --sleep=3 --timeout=60 --tries=3`, added 2026-10-01). Keep `retry_after` above 60 seconds and restart workers after each deployment. Issue emails are rate limited to `MOUSE28_NEWSLETTER_DELIVERY_RATE_LIMIT` per second (default 5) and retried for up to a day, so a large send simply takes a few minutes. To send an issue: publish it, use "Send test email" to check the email, then "Send to subscribers" (it cannot be undone), and watch the delivery count on the issue's edit page. Staging never delivers email, so verify real delivery in production.
+Newsletter sign-up confirmations and issue deliveries are queued on the **default** queue (database connection). Contact emails use the same queue. Production and staging each run two supervised workers in Forge: the original contact-mail worker (`--queue=contact-mail`, retiring after the contact-inquiries rollout below) and a "Default queue worker" (`queue:work database --queue=default --sleep=3 --timeout=60 --tries=3`, added 2026-10-01). Keep `retry_after` above 60 seconds and restart workers after each deployment. Issue emails are rate limited to `MOUSE28_NEWSLETTER_DELIVERY_RATE_LIMIT` per second (default 5) and retried for up to a day, so a large send simply takes a few minutes. To send an issue: publish it, use "Send test email" to check the email, then "Send to subscribers" (it cannot be undone), and watch the delivery count on the issue's edit page. Staging never delivers email, so verify real delivery in production.
 
-## Contact mail queue deployment prerequisite
+## Contact mail queue
 
-Before deploying queued contact delivery, configure a supervised Forge worker:
-`php artisan queue:work database --queue=contact-mail --timeout=60 --tries=3`.
-Use the site's current release directory, keep database `retry_after` greater than
-60 seconds (the default is 90), and restart workers after each deployment. Verify
-the jobs and failed_jobs migrations are present and that the worker can process a
-new, authorized test submission. A default-queue worker does not consume this queue.
+Contact emails (`SendContactInquiryEmails`) run on the **default** queue of the
+database connection, served by the "Default queue worker" described above. Keep
+database `retry_after` greater than 60 seconds (the default is 90) and restart
+workers after each deployment. Queued contact payloads are encrypted and carry only
+the inquiry ID, so they depend on the site's `APP_KEY`.
 
 Do not backfill historical contacts. New jobs automatically retry only within
 23 hours of submission. Inspect failed jobs and provider receipts before a manual
 retry; Resend retains idempotency keys for 24 hours, not indefinitely. No production
 worker or deployment is created by the application changes themselves.
 
+### Rollout of contact inquiries (`refactor/contact-inquiries`)
+
+Before this release, contact emails ran on a dedicated `contact-mail` queue
+(`queue:work database --queue=contact-mail --timeout=60 --tries=3`). The release
+copies `contact_messages` into the encrypted `contact_inquiries` table (same IDs and
+timestamps; `contact_messages` is kept) and moves new contact jobs to the default
+queue. A legacy `SendContactMessageEmails` job still on `contact-mail` forwards its
+ID to the new job. Follow these steps in order; Forge changes need Jeffrey's approval.
+
+1. **Before the release (owner, Forge):** confirm production and staging each still
+   run the "Default queue worker" (`--queue=default`). If either is missing, add it
+   (or change the contact-mail worker to `--queue=default,contact-mail`) before
+   releasing. Without a default-queue worker, contact emails silently stop.
+2. Keep the `contact-mail` worker running through the release so it drains old jobs.
+3. **Backup (owner):** confirm a fresh, independently verified database backup newer
+   than the latest `contact_messages.created_at` (the off-site job's
+   `last-success.json`), or take one. Record `SELECT COUNT(*), MAX(id) FROM contact_messages;`,
+   the `contact-mail` rows in `jobs`, and any contact jobs in `failed_jobs`.
+4. **Staging:** after the staged deployment, check that `contact_inquiries` has the
+   same count as `contact_messages`, open an older message in the admin, then submit
+   a test contact and confirm both emails are stamped on its page.
+5. **Production (owner approval to promote):** promote at a quiet time. Migrations run
+   before activation, so a submission between `migrate` and activation is stored only
+   in `contact_messages` (the old worker still emails it). Afterwards run
+   `SELECT id FROM contact_messages WHERE id > <MAX(id) from step 3>;` and record any
+   stragglers for the follow-up. Confirm the counts, then a test contact with both stamps.
+6. **After the release (owner, Forge):** once `jobs` has no `contact-mail` rows and no
+   contact job in `failed_jobs` needs a retry, remove the `contact-mail` worker on both
+   sites (or simplify a combined worker to `--queue=default`).
+7. **Follow-up PR:** delete the `SendContactMessageEmails` compatibility class, copy any
+   stragglers, and drop `contact_messages` once Jeffrey approves.
+
+Rolling back to the previous tag keeps working because `contact_messages` still
+exists, but inquiries submitted after the release are only in `contact_inquiries`.
+
 ## Runtime health monitoring
 
 `/up` always checks the database. Runtime heartbeats are off by default (`RUNTIME_HEALTH_ENABLED=false`). Before enabling them on a site:
 
 1. Confirm the site's Forge scheduler is running. Since 2026-09-28 each site has one Forge scheduled job, **Mouse28 Scheduler** and **Mouse28 Staging Scheduler**, running `php8.5 /home/forge/<site>/current/artisan schedule:run` every minute as `forge`. Forge installs these in `/etc/crontab`, not in the `forge` user's crontab, and logs to `/home/forge/.forge/scheduled-<id>.log`. A former hand-added production entry in the `forge` crontab was removed to avoid running the scheduler twice; the prior crontab is saved as `/home/forge/backups/crontab.before-scheduler-cleanup-20260928T152816Z`. Keep exactly one scheduler per site.
-2. Add a supervised worker for the default queue (`php artisan queue:work database`). The existing `contact-mail` worker does not consume it.
+2. Confirm the supervised default-queue worker is running (see "Newsletter queue workers"). The legacy `contact-mail` worker does not consume the default queue.
 3. Set `RUNTIME_HEALTH_ENABLED=true` (and optionally `RUNTIME_HEALTH_MAX_AGE`, default 300 seconds), deploy, wait a few minutes, and confirm `/up` returns `{"status":"up"}`.
 
 If either heartbeat goes stale, `/up` returns `500` with `{"status":"down"}`.
