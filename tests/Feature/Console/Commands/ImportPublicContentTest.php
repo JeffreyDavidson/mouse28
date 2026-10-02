@@ -1,6 +1,7 @@
 <?php
 
 use App\Console\Commands\ImportPublicContent;
+use App\Enums\PublishStatus;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Podcast;
@@ -54,7 +55,7 @@ test('public content archive is imported idempotently with podcast metadata', fu
         ->and($repeatExitCode)->toBe(Command::SUCCESS)
         ->and(Post::query()->where('slug', 'example-post')->firstOrFail()->episode?->slug)->toBe('example-episode')
         ->and(Episode::query()->where('slug', 'example-episode')->firstOrFail()->transistor_url)->toBe('https://example.com/episode-audio')
-        ->and(Guide::query()->where('slug', 'example-guide')->firstOrFail()->is_published)->toBeTrue()
+        ->and(Guide::query()->where('slug', 'example-guide')->firstOrFail()->status)->toBe(PublishStatus::Published)
         ->and(Podcast::query()->firstOrFail()->name)->toBe('Example Podcast')
         ->and(Post::query()->count())->toBe(1)
         ->and(Guide::query()->count())->toBe(1)

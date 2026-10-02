@@ -2,6 +2,7 @@
 
 use App\Enums\ContentAuthor;
 use App\Enums\PostCategory;
+use App\Enums\PublishStatus;
 use App\Enums\SourceReviewStatus;
 use App\Models\Post;
 use App\Models\User;
@@ -97,7 +98,7 @@ test('editorial scopes separate the content work queue', function (): void {
     $needsAttention = Post::factory()->create(['cover_image' => null]);
 
     $draftIds = Post::query()
-        ->drafts()
+        ->where('status', PublishStatus::Draft)
         ->pluck('id')
         ->all();
     $scheduledIds = Post::query()

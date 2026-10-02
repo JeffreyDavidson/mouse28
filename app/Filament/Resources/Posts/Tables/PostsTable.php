@@ -4,7 +4,7 @@ namespace App\Filament\Resources\Posts\Tables;
 
 use App\Enums\ContentAuthor;
 use App\Enums\PostCategory;
-use App\Enums\PublicationStatus;
+use App\Enums\PublishStatus;
 use App\Enums\SourceReviewStatus;
 use App\Models\Post;
 use App\Support\EditorialReadiness;
@@ -59,7 +59,7 @@ class PostsTable
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->getStateUsing(fn (Post $record): PublicationStatus => EditorialReadiness::status($record)),
+                    ->color(fn (PublishStatus $state): string => $state->color()),
                 TextColumn::make('published_at')
                     ->label('Published Date')
                     ->date()

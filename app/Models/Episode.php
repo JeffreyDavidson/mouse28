@@ -3,9 +3,13 @@
 namespace App\Models;
 
 use App\Contracts\Publishable;
+use App\Enums\PublishStatus;
+use App\Models\Attributes\PublishingStatus;
 use App\Models\Concerns\HasCoverImages;
-use App\Models\Concerns\HasPublication;
+use App\Models\Concerns\HasPublishingStatus;
 use App\Models\Concerns\HasTagsUntilForceDeleted;
+use App\Models\Concerns\LocksSlugAfterPublication;
+use App\Models\Concerns\SyncsLegacyPublishedFlag;
 use Carbon\CarbonInterface;
 use Database\Factories\EpisodeFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -21,6 +25,7 @@ use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
 /**
+ * @property PublishStatus $status
  * @property Carbon|null $published_at
  * @property CarbonInterface|null $slug_locked_at
  * @property Carbon $updated_at
@@ -29,10 +34,10 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property-read string|null $og_image_url
  * @property-read string|null $transistor_embed_url
  *
- * @method static Builder<static> drafts()
  * @method static Builder<static> needsAttention()
  * @method static Builder<static> published()
  * @method static Builder<static> scheduled()
+ * @method static Builder<static> unpublished()
  */
 #[Fillable([
     'title',
@@ -50,16 +55,17 @@ use Spatie\Activitylog\Support\LogOptions;
     'youtube_url',
     'duration_seconds',
     'cover_image',
-    'is_published',
+    'status',
     'published_at',
     'meta_title',
     'meta_description',
     'og_image',
 ])]
+#[PublishingStatus]
 class Episode extends Model implements Publishable
 {
     /** @use HasFactory<EpisodeFactory> */
-    use HasCoverImages, HasFactory, HasPublication, HasTagsUntilForceDeleted, SoftDeletes;
+    use HasCoverImages, HasFactory, HasPublishingStatus, HasTagsUntilForceDeleted, LocksSlugAfterPublication, SoftDeletes, SyncsLegacyPublishedFlag;
 
     use LogsActivity;
 
@@ -81,7 +87,7 @@ class Episode extends Model implements Publishable
                 'youtube_url',
                 'duration_seconds',
                 'cover_image',
-                'is_published',
+                'status',
                 'published_at',
                 'meta_title',
                 'meta_description',
@@ -111,7 +117,7 @@ class Episode extends Model implements Publishable
             }
 
             $query->orWhere(function (Builder $query): void {
-                $query->where('is_published', true)->whereNull('published_at');
+                $query->whereIn('status', [PublishStatus::Published, PublishStatus::Scheduled])->whereNull('published_at');
             });
         });
     }
@@ -151,7 +157,7 @@ class Episode extends Model implements Publishable
     protected function casts(): array
     {
         return [
-            'is_published' => 'boolean',
+            'status' => PublishStatus::class,
             'published_at' => 'datetime',
             'slug_locked_at' => 'datetime',
         ];

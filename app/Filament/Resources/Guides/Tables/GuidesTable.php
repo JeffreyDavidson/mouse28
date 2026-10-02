@@ -4,7 +4,7 @@ namespace App\Filament\Resources\Guides\Tables;
 
 use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
-use App\Enums\PublicationStatus;
+use App\Enums\PublishStatus;
 use App\Enums\SourceReviewStatus;
 use App\Models\Guide;
 use App\Support\EditorialReadiness;
@@ -43,7 +43,7 @@ class GuidesTable
                     ->tooltip(fn (Guide $record): string => EditorialReadiness::summary($record)),
                 TextColumn::make('status')
                     ->badge()
-                    ->getStateUsing(fn (Guide $record): PublicationStatus => EditorialReadiness::status($record)),
+                    ->color(fn (PublishStatus $state): string => $state->color()),
                 TextColumn::make('published_at')->date()->sortable(),
             ])
             ->filters([

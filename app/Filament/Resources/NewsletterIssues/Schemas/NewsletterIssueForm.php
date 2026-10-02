@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\NewsletterIssues\Schemas;
 
+use App\Filament\Forms\Components\PublishStatusSelect;
 use App\Models\NewsletterIssue;
-use App\Support\ContentPermalink;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Textarea;
@@ -43,7 +43,7 @@ class NewsletterIssueForm
                         TextInput::make('slug')
                             ->regex('/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/')
                             ->notIn(self::RESERVED_SLUGS)
-                            ->disabled(fn (?NewsletterIssue $record): bool => $record instanceof NewsletterIssue && ContentPermalink::isLocked($record))
+                            ->disabled(fn (?NewsletterIssue $record): bool => $record?->isSlugLocked() ?? false)
                             ->helperText('Lowercase words separated by hyphens. URLs stay locked after first publication, even when unpublished or rescheduled.')
                             ->required()
                             ->maxLength(255)
@@ -66,6 +66,7 @@ class NewsletterIssueForm
                     ->icon(Heroicon::OutlinedRocketLaunch)
                     ->description('Save the issue, then use the Publish action when its content is ready.')
                     ->schema([
+                        PublishStatusSelect::make('status'),
                         DateTimePicker::make('published_at')
                             ->helperText('Optional. Leave blank to publish immediately, or choose a future date to schedule.'),
                     ]),

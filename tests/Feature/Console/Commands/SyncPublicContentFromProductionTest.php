@@ -1,6 +1,7 @@
 <?php
 
 use App\Console\Commands\SyncPublicContentFromProduction;
+use App\Enums\PublishStatus;
 use App\Models\Episode;
 use App\Models\Post;
 use App\Support\PublicContentArchive;
@@ -62,7 +63,7 @@ test('sync stops before transferring media when a local draft collides', functio
     config()->set('mouse28.production_sync.site_path', '/home/forge/mouse28.com/current');
     $post = Post::factory()->create(['cover_image' => 'posts/local.webp']);
     $archive = app(PublicContentArchive::class)->export();
-    $post->update(['is_published' => false]);
+    $post->update(['status' => PublishStatus::Draft]);
     Process::fake(function (PendingProcess $process) use ($archive) {
         $command = syncProcessArguments($process);
         if ($command[0] === 'scp') {
@@ -78,7 +79,7 @@ test('sync stops before transferring media when a local draft collides', functio
 
     // Assert
     expect($exitCode)->toBe(Command::FAILURE)
-        ->and($post->refresh()->is_published)->toBeFalse();
+        ->and($post->refresh()->status)->toBe(PublishStatus::Draft);
     Process::assertDidntRun(fn (PendingProcess $process): bool => syncProcessArguments($process)[0] === 'rsync');
 });
 

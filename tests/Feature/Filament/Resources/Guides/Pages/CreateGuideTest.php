@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\GuideCategory;
+use App\Enums\PublishStatus;
 use App\Filament\Resources\Guides\GuideResource;
 use App\Filament\Resources\Guides\Pages\CreateGuide;
 use App\Models\Guide;
@@ -21,7 +22,7 @@ test('a guide can be saved as a draft before it is ready for publication', funct
         ->call('create')
         ->assertHasNoFormErrors();
 
-    expect(Guide::query()->sole())->body->toBe('Draft text')->is_published->toBeFalse();
+    expect(Guide::query()->sole())->body->toBe('Draft text')->status->toBe(PublishStatus::Draft);
 });
 
 test('guide creation validates required content on the server', function (): void {

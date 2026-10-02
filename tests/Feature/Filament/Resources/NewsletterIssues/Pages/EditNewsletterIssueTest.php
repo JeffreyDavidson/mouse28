@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PublishStatus;
 use App\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
 use App\Filament\Resources\NewsletterIssues\Pages\EditNewsletterIssue;
 use App\Mail\NewsletterIssueMail;
@@ -55,7 +56,7 @@ test('published URLs stay locked even when the editor submits a new slug', funct
 
 test('a previously published URL stays locked after unpublishing', function (): void {
     $issue = NewsletterIssue::factory()->create(['slug' => 'original-url']);
-    $issue->refresh()->update(['is_published' => false]);
+    $issue->refresh()->update(['status' => PublishStatus::Draft]);
 
     livewire(EditNewsletterIssue::class, ['record' => $issue->getRouteKey()])
         ->fillForm(['slug' => 'replacement-url'])
@@ -72,7 +73,7 @@ test('a draft with content can be published', function (): void {
         ->callAction('publish')
         ->assertNotified('Newsletter Issue published');
 
-    expect($issue->refresh()->is_published)->toBeTrue()
+    expect($issue->refresh()->status)->toBe(PublishStatus::Published)
         ->and($issue->published_at)->not->toBeNull();
 });
 
@@ -83,7 +84,7 @@ test('a draft without content is not published', function (): void {
         ->callAction('publish')
         ->assertNotified('Newsletter Issue is not ready to publish');
 
-    expect($issue->refresh()->is_published)->toBeFalse();
+    expect($issue->refresh()->status)->toBe(PublishStatus::Draft);
 });
 
 test('a live issue can be unpublished', function (): void {
@@ -93,7 +94,7 @@ test('a live issue can be unpublished', function (): void {
         ->callAction('unpublish')
         ->assertNotified('Newsletter Issue unpublished');
 
-    expect($issue->refresh()->is_published)->toBeFalse();
+    expect($issue->refresh()->status)->toBe(PublishStatus::Draft);
 });
 
 test('a deleted issue can be restored', function (): void {

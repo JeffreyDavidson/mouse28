@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
+use App\Enums\PublishStatus;
 use App\Models\Guide;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -26,7 +27,7 @@ class GuideFactory extends Factory
             'author' => fake()->randomElement(ContentAuthor::cases()),
             'source_url' => fake()->url(),
             'last_reviewed_at' => now()->subWeek(),
-            'is_published' => true,
+            'status' => PublishStatus::Published,
             'published_at' => now()->subDay(),
         ];
     }
@@ -34,7 +35,7 @@ class GuideFactory extends Factory
     public function draft(): static
     {
         return $this->state(fn (): array => [
-            'is_published' => false,
+            'status' => PublishStatus::Draft,
             'published_at' => null,
         ]);
     }
@@ -42,7 +43,7 @@ class GuideFactory extends Factory
     public function scheduled(): static
     {
         return $this->state(fn (): array => [
-            'is_published' => true,
+            'status' => PublishStatus::Scheduled,
             'published_at' => now()->addDay(),
         ]);
     }

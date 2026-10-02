@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Episodes\Pages;
 
+use App\Enums\PublishStatus;
 use App\Filament\Resources\Episodes\EpisodeResource;
 use App\Models\Episode;
 use Filament\Resources\Pages\ListRecords;
@@ -21,7 +22,7 @@ class ListEpisodes extends ListRecords
             'attention' => Tab::make('Needs attention')
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('episodes.id', Episode::query()->needsAttention()->select('id'))),
             'drafts' => Tab::make('Drafts')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('episodes.id', Episode::query()->drafts()->select('id'))),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('episodes.status', [PublishStatus::Draft, PublishStatus::InReview])),
             'scheduled' => Tab::make('Scheduled')
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('episodes.id', Episode::query()->scheduled()->select('id'))),
             'published' => Tab::make('Published')
@@ -32,7 +33,7 @@ class ListEpisodes extends ListRecords
     public function getHeader(): ?View
     {
         $published = Episode::published()->count();
-        $drafts = Episode::drafts()->count();
+        $drafts = Episode::query()->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])->count();
 
         return view('filament.resources.episodes.header', [
             'published' => $published,

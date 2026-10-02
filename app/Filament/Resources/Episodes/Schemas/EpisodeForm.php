@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\Episodes\Schemas;
 
+use App\Filament\Forms\Components\PublishStatusSelect;
 use App\Models\Episode;
-use App\Support\ContentPermalink;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
@@ -45,7 +45,7 @@ class EpisodeForm
                             }),
                         TextInput::make('slug')
                             ->regex('/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/')
-                            ->disabled(fn (?Episode $record): bool => $record instanceof Episode && ContentPermalink::isLocked($record))
+                            ->disabled(fn (?Episode $record): bool => $record?->isSlugLocked() ?? false)
                             ->helperText('Lowercase words separated by hyphens. URLs stay locked after first publication, even when unpublished or rescheduled.')
                             ->required()
                             ->maxLength(255)
@@ -102,6 +102,8 @@ class EpisodeForm
                             ->icon(Heroicon::OutlinedRocketLaunch)
                             ->description('Save the episode, then use the Publish action when its editorial content is ready. Transcripts may be added later.')
                             ->schema([
+                                PublishStatusSelect::make('status')
+                                    ->withoutReview(),
                                 DateTimePicker::make('published_at')
                                     ->label('Publish Date')
                                     ->helperText('Optional. Leave blank to publish immediately, or choose a future date to schedule.'),

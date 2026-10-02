@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PublishStatus;
 use App\Models\NewsletterIssue;
 use App\Models\Subscriber;
 use Database\Seeders\SampleContentSeeder;
@@ -30,7 +31,7 @@ test('the sample seeder creates one live, one draft and one scheduled issue', fu
 
     expect(NewsletterIssue::query()->count())->toBe(3)
         ->and(NewsletterIssue::published()->count())->toBe(1)
-        ->and(NewsletterIssue::drafts()->count())->toBe(1)
+        ->and(NewsletterIssue::query()->where('status', PublishStatus::Draft)->count())->toBe(1)
         ->and(NewsletterIssue::scheduled()->count())->toBe(1)
         ->and(NewsletterIssue::query()->whereNotNull('sent_at')->count())->toBe(0);
 });

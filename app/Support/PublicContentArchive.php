@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
 use App\Enums\PostCategory;
+use App\Enums\PublishStatus;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Podcast;
@@ -176,7 +177,7 @@ class PublicContentArchive
                 ->get();
 
             foreach ($records as $record) {
-                if (! $record->is_published || $record->published_at === null || $record->published_at->isFuture()) {
+                if (! $record->isPublished()) {
                     throw new InvalidArgumentException("Sync conflicts with local unpublished {$type}. Resolve the conflicting {$identity} before syncing.");
                 }
             }
@@ -275,7 +276,7 @@ class PublicContentArchive
 
         $episode->fill([
             ...$this->onlyAttributes($attributes, self::EPISODE_FIELDS),
-            'is_published' => true,
+            'status' => PublishStatus::Published,
         ]);
         $episode->save();
         if (is_array($attributes['tags'] ?? null)) {
@@ -298,7 +299,7 @@ class PublicContentArchive
         $post->fill([
             ...$this->onlyAttributes($attributes, self::POST_FIELDS),
             'episode_id' => $episodeId,
-            'is_published' => true,
+            'status' => PublishStatus::Published,
         ]);
         $post->save();
         if (is_array($attributes['tags'] ?? null)) {
@@ -317,7 +318,7 @@ class PublicContentArchive
 
         $guide->fill([
             ...$this->onlyAttributes($attributes, self::GUIDE_FIELDS),
-            'is_published' => true,
+            'status' => PublishStatus::Published,
         ]);
         $guide->save();
         if (is_array($attributes['tags'] ?? null)) {

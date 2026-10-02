@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PublishStatus;
 use App\Models\Post;
 use App\Support\TextSearch;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -26,10 +27,10 @@ test('text search matches terms as literal text in any listed column', function 
 ]);
 
 test('text search groups its column matches so other constraints still apply', function (): void {
-    Post::factory()->create(['title' => 'Castle tour', 'is_published' => true]);
-    Post::factory()->create(['title' => 'Castle draft', 'is_published' => false]);
+    Post::factory()->create(['title' => 'Castle tour', 'status' => PublishStatus::Published]);
+    Post::factory()->create(['title' => 'Castle draft', 'status' => PublishStatus::Draft]);
 
-    $query = Post::query()->where('is_published', true);
+    $query = Post::query()->where('status', PublishStatus::Published);
     TextSearch::constrain($query, ['title', 'excerpt'], 'Castle');
 
     expect($query->pluck('title')->all())->toBe(['Castle tour']);

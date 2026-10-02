@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Enums\ContentAuthor;
+use App\Enums\PublishStatus;
 use App\Models\Post;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -62,7 +63,7 @@ class QuickDraft extends Widget implements HasForms
             'excerpt' => $state['notes'] ?? null,
             'body' => $state['notes'] ?? '',
             'author' => ContentAuthor::Both,
-            'is_published' => false,
+            'status' => PublishStatus::Draft,
         ]);
 
         $this->data = [];
