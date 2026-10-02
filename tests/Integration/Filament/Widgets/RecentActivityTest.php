@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PublishStatus;
 use App\Filament\Resources\Guides\GuideResource;
 use App\Filament\Widgets\RecentActivity;
 use App\Models\Episode;
@@ -35,9 +36,10 @@ test('activity shows the eight newest records even when one content type dominat
     'guides' => fn () => Guide::factory(),
 ]);
 
-test('activity includes guides and identifies scheduled content', function (): void {
+test('activity includes guides and labels content by its publish status', function (): void {
     $guide = Guide::factory()->create(['title' => 'Updated Accessibility Guide']);
     $post = Post::factory()->scheduled()->create(['title' => 'Scheduled Park Story']);
+    $episode = Episode::factory()->create(['title' => 'Episode In Review', 'status' => PublishStatus::InReview]);
 
     $activity = collect(app(RecentActivity::class)->getActivity())->keyBy('label');
 
@@ -46,7 +48,8 @@ test('activity includes guides and identifies scheduled content', function (): v
             'type' => 'Published guide',
             'url' => GuideResource::getUrl('edit', ['record' => $guide]),
         ])
-        ->and($activity[$post->title])->toMatchArray(['type' => 'Scheduled post']);
+        ->and($activity[$post->title])->toMatchArray(['type' => 'Scheduled post'])
+        ->and($activity[$episode->title])->toMatchArray(['type' => 'In Review episode']);
 });
 
 test('activity queries select only fields rendered by the widget', function (): void {
@@ -66,5 +69,5 @@ test('activity queries select only fields rendered by the widget', function (): 
 
     expect($queries)->toHaveCount(3)
         ->each->not->toContain('select *')
-        ->toContain('select "id", "title", "is_published", "published_at", "updated_at"');
+        ->toContain('select "id", "title", "status", "published_at", "updated_at"');
 });

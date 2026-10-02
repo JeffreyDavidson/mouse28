@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Enums\PublishStatus;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
@@ -28,9 +29,9 @@ class StatsOverview extends Widget
         $publishedGuides = Guide::published()->count();
         $guidesDueForReview = Guide::published()->reviewDue()->count();
         $postsDueForReview = Post::published()->reviewDue()->count();
-        $drafts = Post::where('is_published', false)->count()
-            + Episode::where('is_published', false)->count()
-            + Guide::where('is_published', false)->count();
+        $drafts = Post::query()->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])->count()
+            + Episode::query()->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])->count()
+            + Guide::query()->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])->count();
 
         return [
             [

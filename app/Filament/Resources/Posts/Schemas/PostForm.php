@@ -4,8 +4,8 @@ namespace App\Filament\Resources\Posts\Schemas;
 
 use App\Enums\ContentAuthor;
 use App\Enums\PostCategory;
+use App\Filament\Forms\Components\PublishStatusSelect;
 use App\Models\Post;
-use App\Support\ContentPermalink;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
@@ -50,7 +50,7 @@ class PostForm
                             }),
                         TextInput::make('slug')
                             ->regex('/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/')
-                            ->disabled(fn (?Post $record): bool => $record instanceof Post && ContentPermalink::isLocked($record))
+                            ->disabled(fn (?Post $record): bool => $record?->isSlugLocked() ?? false)
                             ->helperText('Lowercase words separated by hyphens. URLs stay locked after first publication, even when unpublished or rescheduled.')
                             ->required()
                             ->maxLength(255)
@@ -83,7 +83,7 @@ class PostForm
                             ->rows(3)
                             ->maxLength(300)
                             ->helperText('Short summary shown in post listings.'),
-                        MarkdownEditor::make('body')
+                        MarkdownEditor::make('content')
                             ->dehydrateStateUsing(fn (?string $state): string => $state ?? ''),
                     ]),
 
@@ -127,6 +127,7 @@ class PostForm
                             ->icon(Heroicon::OutlinedRocketLaunch)
                             ->description('Save the post, then use the Publish action when its content is ready.')
                             ->schema([
+                                PublishStatusSelect::make('status'),
                                 DateTimePicker::make('published_at')
                                     ->label('Publish Date')
                                     ->helperText('Optional. Leave blank to publish immediately, or choose a future date to schedule.'),

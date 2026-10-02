@@ -16,7 +16,7 @@ test('public reading and form surfaces work across supported browsers', function
 
     $post = Post::factory()->create([
         'title' => 'Cross-Browser Park Planning',
-        'body' => "## Arrival\n\nPlan a flexible arrival.\n\n## Sensory breaks\n\nSchedule time to reset.",
+        'content' => "## Arrival\n\nPlan a flexible arrival.\n\n## Sensory breaks\n\nSchedule time to reset.",
     ]);
     $guide = Guide::factory()->create([
         'title' => 'Cross-Browser Accessibility Guide',
@@ -60,11 +60,11 @@ test('articles and guides provide a focused print presentation', function (): vo
     $externalUrl = 'https://example.com/accessible-planning';
     $post = Post::factory()->create([
         'title' => 'Printable Park Planning',
-        'body' => "## Before You Go\n\nRead the [official planning details]({$externalUrl}).",
+        'content' => "## Before You Go\n\nRead the [official planning details]({$externalUrl}).",
     ]);
     $guide = Guide::factory()->create([
         'title' => 'Printable Accessibility Guide',
-        'body' => "## Before You Go\n\nRead the [official planning details]({$externalUrl}).",
+        'content' => "## Before You Go\n\nRead the [official planning details]({$externalUrl}).",
     ]);
 
     $pages = [];

@@ -2,6 +2,7 @@
 
 use App\Enums\ContentAuthor;
 use App\Enums\PostCategory;
+use App\Enums\PublishStatus;
 use App\Enums\SourceReviewStatus;
 use App\Models\Post;
 use App\Models\User;
@@ -97,7 +98,7 @@ test('editorial scopes separate the content work queue', function (): void {
     $needsAttention = Post::factory()->create(['cover_image' => null]);
 
     $draftIds = Post::query()
-        ->drafts()
+        ->where('status', PublishStatus::Draft)
         ->pluck('id')
         ->all();
     $scheduledIds = Post::query()
@@ -168,7 +169,7 @@ test('posts cannot be published without each required detail', function (string 
 
     expect($post->publishingIssues())->toBe([$issue]);
 })->with([
-    'content' => ['body', 'Add post content'],
+    'content' => ['content', 'Add post content'],
     'excerpt' => ['excerpt', 'Add an excerpt'],
     'category' => ['category', 'Choose a category'],
 ]);
@@ -199,4 +200,39 @@ test('the post review interval comes from content configuration', function (): v
     ]);
 
     expect($post->isReviewDue())->toBeTrue();
+});
+
+test('posts without content need attention', function (?string $content): void {
+    $post = Post::factory()->create([
+        'content' => $content,
+        'cover_image' => 'posts/complete.jpg',
+        'meta_title' => 'Complete title',
+        'meta_description' => 'Complete description',
+    ]);
+
+    expect(Post::query()->needsAttention()->pluck('id')->all())->toBe([$post->id]);
+})->with([
+    'missing' => [null],
+    'empty' => [''],
+]);
+
+test('post reading time counts the words in the content', function (?string $content, int $minutes): void {
+    $post = Post::factory()->make(['content' => $content]);
+
+    expect($post->reading_time)->toBe($minutes);
+})->with([
+    'missing content' => [null, 1],
+    'two hundred words' => [str_repeat('word ', 200), 1],
+    'two hundred and one words' => [str_repeat('word ', 201), 2],
+]);
+
+test('post content edits are recorded in the editorial log', function (): void {
+    $record = Post::factory()->create(['content' => 'Original content']);
+
+    $record->update(['content' => 'Updated content']);
+
+    expect(Activity::query()->latest('id')->firstOrFail()->attribute_changes?->all() ?? [])->toEqual([
+        'attributes' => ['content' => 'Updated content'],
+        'old' => ['content' => 'Original content'],
+    ]);
 });

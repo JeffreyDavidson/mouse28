@@ -1,6 +1,6 @@
 <?php
 
-use App\Enums\PublicationStatus;
+use App\Enums\PublishStatus;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
@@ -11,27 +11,25 @@ use Database\Factories\PostFactory;
 
 covers(EditorialReadiness::class);
 
-test('publication status respects publication flags and dates', function (PostFactory|GuideFactory|EpisodeFactory $factory, bool $isPublished, ?int $offset, PublicationStatus $expected): void {
-    $this->freezeSecond();
+test('live or scheduled content without a publish date is asked for one', function (PostFactory|GuideFactory|EpisodeFactory $factory, PublishStatus $status, bool $dated, bool $needsDate): void {
     $content = $factory->makeOne([
-        'is_published' => $isPublished,
-        'published_at' => $offset === null ? null : now()->addSeconds($offset),
+        'status' => $status,
+        'published_at' => $dated ? now() : null,
     ]);
 
-    $status = EditorialReadiness::status($content);
+    $issues = EditorialReadiness::issues($content);
 
-    expect($status)->toBe($expected);
+    expect(in_array('Set a publish date', $issues, true))->toBe($needsDate);
 })->with([
     'post' => fn () => Post::factory(),
     'guide' => fn () => Guide::factory(),
     'episode' => fn () => Episode::factory(),
 ])->with([
-    'draft' => [false, null, PublicationStatus::Draft],
-    'draft with a past date' => [false, -1, PublicationStatus::Draft],
-    'missing date' => [true, null, PublicationStatus::NeedsPublishDate],
-    'scheduled' => [true, 1, PublicationStatus::Scheduled],
-    'published now' => [true, 0, PublicationStatus::Published],
-    'published earlier' => [true, -1, PublicationStatus::Published],
+    'undated draft' => [PublishStatus::Draft, false, false],
+    'undated in review' => [PublishStatus::InReview, false, false],
+    'undated published' => [PublishStatus::Published, false, true],
+    'undated scheduled' => [PublishStatus::Scheduled, false, true],
+    'dated published' => [PublishStatus::Published, true, false],
 ]);
 
 test('readiness reports actionable issues for each content type', function (): void {
@@ -107,3 +105,16 @@ test('sourced posts require a matching official source and review date', functio
     expect($missingReviewDateIssues)->toContain('Set the review date')
         ->and($missingSourceIssues)->toContain('Add an official source');
 });
+
+test('readiness asks for content until the content is written', function (PostFactory|GuideFactory $factory, string $issue, ?string $content, bool $missing): void {
+    $record = $factory->makeOne(['content' => $content]);
+
+    expect(in_array($issue, EditorialReadiness::issues($record), true))->toBe($missing);
+})->with([
+    'post' => [fn () => Post::factory(), 'Add post content'],
+    'guide' => [fn () => Guide::factory(), 'Add guide content'],
+])->with([
+    'missing content' => [null, true],
+    'empty content' => ['', true],
+    'written content' => ['Plan a flexible arrival.', false],
+]);

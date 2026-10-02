@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PublishStatus;
 use App\Filament\Resources\Posts\Pages\ListPosts;
 use App\Filament\Resources\Posts\PostResource;
 use App\Models\Post;
@@ -20,26 +21,27 @@ test('authenticated user can render the resource listing', function (): void {
         ->assertSee('Blog Posts');
 });
 
-test('content table shows readiness and missing publish dates', function (): void {
+test('content table shows readiness and the persisted publish status', function (): void {
     $admin = User::factory()->admin()->create();
-    Post::factory()->create(['published_at' => null]);
+    Post::factory()->create(['status' => PublishStatus::InReview]);
 
     actingAs($admin);
 
     get(PostResource::getUrl())
         ->assertOk()
         ->assertSee('Readiness')
-        ->assertSee('Needs publish date');
+        ->assertSee('In Review');
 });
 
 test('draft and scheduled tabs filter posts', function (): void {
     $draft = Post::factory()->draft()->create();
+    $inReview = Post::factory()->create(['status' => PublishStatus::InReview]);
     $scheduled = Post::factory()->scheduled()->create();
     actingAs(User::factory()->admin()->create());
 
     livewire(ListPosts::class)
         ->set('activeTab', 'drafts')
-        ->assertCanSeeTableRecords([$draft])
+        ->assertCanSeeTableRecords([$draft, $inReview])
         ->assertCanNotSeeTableRecords([$scheduled])
         ->set('activeTab', 'scheduled')
         ->assertCanSeeTableRecords([$scheduled])
@@ -51,6 +53,7 @@ test('header does not count scheduled posts as published', function (): void {
     Post::factory()->create();
     Post::factory()->scheduled()->create();
     Post::factory()->draft()->create();
+    Post::factory()->create(['status' => PublishStatus::InReview]);
     actingAs(User::factory()->admin()->create());
 
     // Act
@@ -62,7 +65,7 @@ test('header does not count scheduled posts as published', function (): void {
     expect($header?->getData())
         ->toMatchArray([
             'published' => 1,
-            'drafts' => 1,
+            'drafts' => 2,
         ]);
 });
 

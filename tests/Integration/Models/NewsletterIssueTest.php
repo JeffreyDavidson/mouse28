@@ -1,6 +1,7 @@
 <?php
 
 use App\Contracts\Publishable;
+use App\Enums\PublishStatus;
 use App\Models\NewsletterDelivery;
 use App\Models\NewsletterIssue;
 use App\Models\User;
@@ -38,7 +39,7 @@ test('newsletter issues are drafts, scheduled or live', function (): void {
 
     expect(NewsletterIssue::published()->pluck('id')->all())->toBe([$live->id])
         ->and(NewsletterIssue::scheduled()->pluck('id')->all())->toBe([$scheduled->id])
-        ->and(NewsletterIssue::drafts()->pluck('id')->all())->toBe([$draft->id]);
+        ->and(NewsletterIssue::query()->where('status', PublishStatus::Draft)->pluck('id')->all())->toBe([$draft->id]);
 });
 
 test('an issue needs content before it can be published', function (string $content, array $issues): void {

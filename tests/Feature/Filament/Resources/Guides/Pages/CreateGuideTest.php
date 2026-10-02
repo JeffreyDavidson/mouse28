@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\GuideCategory;
+use App\Enums\PublishStatus;
 use App\Filament\Resources\Guides\GuideResource;
 use App\Filament\Resources\Guides\Pages\CreateGuide;
 use App\Models\Guide;
@@ -17,20 +18,20 @@ test('a guide can be saved as a draft before it is ready for publication', funct
     actingAs(User::factory()->admin()->create());
 
     livewire(CreateGuide::class)
-        ->fillForm(['title' => 'Sample guide', 'slug' => 'sample-guide', 'category' => GuideCategory::cases()[0], 'body' => 'Draft text'])
+        ->fillForm(['title' => 'Sample guide', 'slug' => 'sample-guide', 'category' => GuideCategory::cases()[0], 'content' => 'Draft text'])
         ->call('create')
         ->assertHasNoFormErrors();
 
-    expect(Guide::query()->sole())->body->toBe('Draft text')->is_published->toBeFalse();
+    expect(Guide::query()->sole())->content->toBe('Draft text')->status->toBe(PublishStatus::Draft);
 });
 
 test('guide creation validates required content on the server', function (): void {
     actingAs(User::factory()->admin()->create());
 
     livewire(CreateGuide::class)
-        ->fillForm(['title' => 'Sample guide', 'slug' => 'sample-guide', 'category' => GuideCategory::cases()[0], 'body' => null])
+        ->fillForm(['title' => 'Sample guide', 'slug' => 'sample-guide', 'category' => GuideCategory::cases()[0], 'content' => null])
         ->call('create')
-        ->assertHasFormErrors(['body' => 'required']);
+        ->assertHasFormErrors(['content' => 'required']);
 });
 
 test('guide creation rejects a duplicate slug', function (): void {
@@ -38,7 +39,7 @@ test('guide creation rejects a duplicate slug', function (): void {
     actingAs(User::factory()->admin()->create());
 
     livewire(CreateGuide::class)
-        ->fillForm(['title' => 'Sample guide', 'slug' => 'existing-guide', 'category' => GuideCategory::cases()[0], 'body' => 'Draft text'])
+        ->fillForm(['title' => 'Sample guide', 'slug' => 'existing-guide', 'category' => GuideCategory::cases()[0], 'content' => 'Draft text'])
         ->call('create')
         ->assertHasFormErrors(['slug' => 'unique']);
 });

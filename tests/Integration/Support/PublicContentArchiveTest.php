@@ -3,6 +3,7 @@
 use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
 use App\Enums\PostCategory;
+use App\Enums\PublishStatus;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
@@ -59,7 +60,7 @@ test('invalid imported attributes leave all existing records unchanged', functio
     'invalid URL' => ['source_url', 'javascript:alert(1)'],
     'invalid media type' => ['cover_image', []],
     'invalid relation type' => ['episode_slug', []],
-    'null body' => ['body', null],
+    'null content' => ['content', null],
 ]);
 
 test('sync refuses unpublished identity collisions without changing content', function (PostFactory|GuideFactory|EpisodeFactory $factory, string $state): void {
@@ -68,7 +69,7 @@ test('sync refuses unpublished identity collisions without changing content', fu
     $service = app(PublicContentArchive::class);
     $archive = $service->export();
     $record->update($state === 'draft'
-        ? ['is_published' => false, 'title' => 'Local work']
+        ? ['status' => PublishStatus::Draft, 'title' => 'Local work']
         : ['published_at' => now()->addWeek(), 'title' => 'Local work']);
 
     $exception = null;
@@ -174,3 +175,123 @@ test('archive validation requires guide enum values', function (string $field): 
     'author' => 'author',
     'category' => 'category',
 ]);
+
+test('export includes only live content by its publish status', function (PostFactory|GuideFactory|EpisodeFactory $factory): void {
+    $factory->createOne(['slug' => 'live-content']);
+    $factory->draft()->createOne();
+    $factory->createOne(['status' => PublishStatus::InReview]);
+    $factory->scheduled()->createOne();
+
+    $archive = app(PublicContentArchive::class)->export();
+
+    expect(array_column([...$archive['posts'], ...$archive['guides'], ...$archive['episodes']], 'slug'))->toBe(['live-content']);
+})->with([
+    'posts' => fn () => Post::factory(),
+    'guides' => fn () => Guide::factory(),
+    'episodes' => fn () => Episode::factory(),
+]);
+
+test('archives without a status field import as published content', function (PostFactory|GuideFactory|EpisodeFactory $factory): void {
+    $record = $factory->createOne();
+    $service = app(PublicContentArchive::class);
+    $archive = $service->export();
+    $record->forceDelete();
+
+    $service->import($archive);
+
+    $imported = $record::query()->sole();
+    expect([...$archive['posts'], ...$archive['guides'], ...$archive['episodes']])->each->not->toHaveKeys(['status', 'is_published'])
+        ->and($imported->publishStatus())->toBe(PublishStatus::Published)
+        ->and($imported->isPublished())->toBeTrue()
+        ->and($imported->getAttribute('is_published'))->toBeTruthy();
+})->with([
+    'posts' => fn () => Post::factory(),
+    'guides' => fn () => Guide::factory(),
+    'episodes' => fn () => Episode::factory(),
+]);
+
+/**
+ * @param  array<string, mixed>  $archive
+ * @return array<array-key, mixed>
+ */
+function firstArchivedRecord(array $archive, string $type): array
+{
+    $records = $archive[$type] ?? null;
+
+    if (! is_array($records) || ! is_array($records[0] ?? null)) {
+        throw new UnexpectedValueException("The archive has no {$type}.");
+    }
+
+    return $records[0];
+}
+
+/**
+ * Returns the archive with its first record of a type changed, optionally dropping keys.
+ *
+ * @param  array<string, mixed>  $archive
+ * @param  array<string, string>  $changes
+ * @param  list<string>  $without
+ * @return array<string, mixed>
+ */
+function withFirstArchivedRecord(array $archive, string $type, array $changes, array $without = []): array
+{
+    $record = firstArchivedRecord($archive, $type);
+    foreach ($without as $key) {
+        unset($record[$key]);
+    }
+
+    return [...$archive, $type => [[...$record, ...$changes]]];
+}
+
+dataset('archived written content', [
+    'posts' => [fn () => Post::factory(), 'posts'],
+    'guides' => [fn () => Guide::factory(), 'guides'],
+]);
+
+test('archive export writes the written content under the content key', function (PostFactory|GuideFactory $factory, string $type): void {
+    $factory->createOne(['content' => "## Arrival\n\nPlan a flexible arrival."]);
+
+    $archive = app(PublicContentArchive::class)->export();
+
+    expect(firstArchivedRecord($archive, $type))->toHaveKey('content', "## Arrival\n\nPlan a flexible arrival.")
+        ->not->toHaveKey('body');
+})->with('archived written content');
+
+test('archive import restores the written content from either archive format', function (PostFactory|GuideFactory $factory, string $type, string $key): void {
+    $record = $factory->createOne(['content' => 'Exported content.']);
+    $service = app(PublicContentArchive::class);
+    $archive = $service->export();
+    $archive = withFirstArchivedRecord($archive, $type, [$key => "## Café ✨\n\nImported content."], without: ['content']);
+    $record->forceDelete();
+
+    $service->import($archive);
+
+    $imported = $record::query()->sole();
+    expect($imported->getAttribute('content'))->toBe("## Café ✨\n\nImported content.")
+        ->and($imported->getAttribute('body'))->toBe("## Café ✨\n\nImported content.");
+})->with('archived written content')->with([
+    'current content key' => ['content'],
+    'older body key' => ['body'],
+]);
+
+test('archive import prefers the content key when an archive carries both keys', function (PostFactory|GuideFactory $factory, string $type): void {
+    $record = $factory->createOne();
+    $service = app(PublicContentArchive::class);
+    $archive = $service->export();
+    $archive = withFirstArchivedRecord($archive, $type, ['content' => 'Current content.', 'body' => 'Older body.']);
+    $record->forceDelete();
+
+    $service->import($archive);
+
+    expect($record::query()->sole()->getAttribute('content'))->toBe('Current content.');
+})->with('archived written content');
+
+test('archive import rejects a record without any written content', function (PostFactory|GuideFactory $factory, string $type): void {
+    $factory->createOne(['title' => 'Original']);
+    $service = app(PublicContentArchive::class);
+    $archive = $service->export();
+    $archive = withFirstArchivedRecord($archive, $type, ['title' => 'Changed'], without: ['content']);
+
+    expect(fn () => $service->import($archive))->toThrow(InvalidArgumentException::class)
+        ->and($factory->newModel()->newQuery()->sole()->getAttribute('title'))->toBe('Original');
+})->with('archived written content');

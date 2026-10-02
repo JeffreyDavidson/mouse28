@@ -203,8 +203,8 @@ test('featured story is independent of category search and sort filters', functi
 });
 
 test('archive search treats wildcard characters as literal text', function (string $search, int $expectedCount): void {
-    Post::factory()->create(['title' => 'Magic Kingdom 100% guide', 'excerpt' => '', 'body' => '']);
-    Post::factory()->create(['title' => 'Magic Kingdom 1000 steps', 'excerpt' => '', 'body' => '']);
+    Post::factory()->create(['title' => 'Magic Kingdom 100% guide', 'excerpt' => '', 'content' => '']);
+    Post::factory()->create(['title' => 'Magic Kingdom 1000 steps', 'excerpt' => '', 'content' => '']);
 
     $page = livewire(BlogArchive::class, ['search' => $search]);
 
@@ -213,3 +213,12 @@ test('archive search treats wildcard characters as literal text', function (stri
     'percent sign' => ['100%', 1],
     'underscore' => ['_', 0],
 ]);
+
+test('archive search matches text in the post content', function (): void {
+    $matching = Post::factory()->create(['title' => 'Arrival tips', 'excerpt' => '', 'content' => 'Find the quietzone near the entrance.']);
+    $unrelated = Post::factory()->create(['title' => 'Unrelated', 'excerpt' => '', 'content' => 'Nothing to see here.']);
+
+    $page = livewire(BlogArchive::class, ['search' => 'quietzone']);
+
+    $page->assertViewHas('archivePosts', fn (Collection $posts): bool => $posts->contains($matching) && $posts->doesntContain($unrelated));
+});

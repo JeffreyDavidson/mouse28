@@ -4,8 +4,8 @@ namespace App\Filament\Resources\Guides\Schemas;
 
 use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
+use App\Filament\Forms\Components\PublishStatusSelect;
 use App\Models\Guide;
-use App\Support\ContentPermalink;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
@@ -50,7 +50,7 @@ class GuideForm
                             }),
                         TextInput::make('slug')
                             ->regex('/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/')
-                            ->disabled(fn (?Guide $record): bool => $record instanceof Guide && ContentPermalink::isLocked($record))
+                            ->disabled(fn (?Guide $record): bool => $record?->isSlugLocked() ?? false)
                             ->helperText('Lowercase words separated by hyphens. URLs stay locked after first publication, even when unpublished or rescheduled.')
                             ->required()
                             ->maxLength(255)
@@ -73,7 +73,7 @@ class GuideForm
                         Textarea::make('excerpt')
                             ->maxLength(300)
                             ->rows(3),
-                        MarkdownEditor::make('body')
+                        MarkdownEditor::make('content')
                             ->required(),
                     ]),
                 Grid::make(2)
@@ -94,6 +94,7 @@ class GuideForm
                             ->icon(Heroicon::OutlinedRocketLaunch)
                             ->description('Save the guide, then use the Publish action when its content is ready.')
                             ->schema([
+                                PublishStatusSelect::make('status'),
                                 DateTimePicker::make('published_at')
                                     ->helperText('Optional. Leave blank to publish immediately, or choose a future date to schedule.'),
                             ]),

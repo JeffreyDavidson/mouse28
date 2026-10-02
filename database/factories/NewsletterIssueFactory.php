@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\PublishStatus;
 use App\Models\NewsletterIssue;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Date;
@@ -25,7 +26,7 @@ class NewsletterIssueFactory extends Factory
             'slug' => str($title)->slug(),
             'excerpt' => fake()->sentence(16),
             'content' => fake()->paragraphs(3, true),
-            'is_published' => true,
+            'status' => PublishStatus::Published,
             'published_at' => Date::now()->subDay(),
             'sent_at' => null,
         ];
@@ -34,7 +35,7 @@ class NewsletterIssueFactory extends Factory
     public function draft(): static
     {
         return $this->state(fn (): array => [
-            'is_published' => false,
+            'status' => PublishStatus::Draft,
             'published_at' => null,
         ]);
     }
@@ -42,7 +43,7 @@ class NewsletterIssueFactory extends Factory
     public function scheduled(): static
     {
         return $this->state(fn (): array => [
-            'is_published' => true,
+            'status' => PublishStatus::Scheduled,
             'published_at' => Date::now()->addDay(),
         ]);
     }

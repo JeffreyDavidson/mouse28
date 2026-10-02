@@ -5,10 +5,15 @@ namespace App\Models;
 use App\Contracts\Publishable;
 use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
+use App\Enums\PublishStatus;
 use App\Enums\SourceReviewStatus;
+use App\Models\Attributes\PublishingStatus;
 use App\Models\Concerns\HasCoverImages;
-use App\Models\Concerns\HasPublication;
+use App\Models\Concerns\HasPublishingStatus;
 use App\Models\Concerns\HasTagsUntilForceDeleted;
+use App\Models\Concerns\LocksSlugAfterPublication;
+use App\Models\Concerns\SyncsLegacyBody;
+use App\Models\Concerns\SyncsLegacyPublishedFlag;
 use Carbon\CarbonInterface;
 use Database\Factories\GuideFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -25,6 +30,8 @@ use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
 /**
+ * @property PublishStatus $status
+ * @property string|null $content
  * @property ContentAuthor|null $author
  * @property GuideCategory $category
  * @property Carbon|null $last_reviewed_at
@@ -37,32 +44,33 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property-read string|null $og_image_url
  * @property-read int $reading_time
  *
- * @method static Builder<static> drafts()
  * @method static Builder<static> needsAttention()
  * @method static Builder<static> published()
  * @method static Builder<static> reviewDue()
  * @method static Builder<static> scheduled()
+ * @method static Builder<static> unpublished()
  */
 #[Fillable([
     'title',
     'slug',
     'excerpt',
-    'body',
+    'content',
     'category',
     'author',
     'cover_image',
     'source_url',
     'last_reviewed_at',
-    'is_published',
+    'status',
     'published_at',
     'meta_title',
     'meta_description',
     'og_image',
 ])]
+#[PublishingStatus]
 class Guide extends Model implements Publishable
 {
     /** @use HasFactory<GuideFactory> */
-    use HasCoverImages, HasFactory, HasPublication, HasTagsUntilForceDeleted, SoftDeletes;
+    use HasCoverImages, HasFactory, HasPublishingStatus, HasTagsUntilForceDeleted, LocksSlugAfterPublication, SoftDeletes, SyncsLegacyBody, SyncsLegacyPublishedFlag;
 
     use LogsActivity;
 
@@ -74,13 +82,13 @@ class Guide extends Model implements Publishable
                 'title',
                 'slug',
                 'excerpt',
-                'body',
+                'content',
                 'category',
                 'author',
                 'cover_image',
                 'source_url',
                 'last_reviewed_at',
-                'is_published',
+                'status',
                 'published_at',
                 'meta_title',
                 'meta_description',
@@ -110,7 +118,7 @@ class Guide extends Model implements Publishable
     protected function needsAttention(Builder $query): void
     {
         $query->where(function (Builder $query): void {
-            foreach (['excerpt', 'body', 'cover_image', 'source_url', 'last_reviewed_at', 'meta_title', 'meta_description'] as $column) {
+            foreach (['excerpt', 'content', 'cover_image', 'source_url', 'last_reviewed_at', 'meta_title', 'meta_description'] as $column) {
                 $query->orWhereNull($column);
 
                 if ($column !== 'last_reviewed_at') {
@@ -119,7 +127,7 @@ class Guide extends Model implements Publishable
             }
 
             $query->orWhere(function (Builder $query): void {
-                $query->where('is_published', true)->whereNull('published_at');
+                $query->whereIn('status', [PublishStatus::Published, PublishStatus::Scheduled])->whereNull('published_at');
             });
         });
     }
@@ -139,7 +147,7 @@ class Guide extends Model implements Publishable
     /** @return Attribute<int, never> */
     protected function readingTime(): Attribute
     {
-        return Attribute::make(get: fn (): int => max(1, (int) ceil(str_word_count(strip_tags($this->body)) / 200)));
+        return Attribute::make(get: fn (): int => max(1, (int) ceil(str_word_count(strip_tags($this->content ?? '')) / 200)));
     }
 
     public function isReviewDue(): bool
@@ -167,7 +175,7 @@ class Guide extends Model implements Publishable
         return [
             'author' => ContentAuthor::class,
             'category' => GuideCategory::class,
-            'is_published' => 'boolean',
+            'status' => PublishStatus::class,
             'last_reviewed_at' => 'date',
             'published_at' => 'datetime',
             'slug_locked_at' => 'datetime',
@@ -182,7 +190,7 @@ class Guide extends Model implements Publishable
     public function publishingIssues(): array
     {
         return array_values(array_filter([
-            blank($this->body) ? 'Add guide content' : null,
+            blank($this->content) ? 'Add guide content' : null,
             blank($this->excerpt) ? 'Add an excerpt' : null,
             blank($this->source_url) ? 'Add an official source' : null,
             blank($this->last_reviewed_at) ? 'Set the review date' : null,

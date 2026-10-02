@@ -31,7 +31,7 @@ test('administrator can create a Post from the resource form', function (): void
         ->fill('input[id="form.title"]', 'Browser Smoke Post')
         ->fill('input[id="form.slug"]', 'browser-smoke-post')
         ->select('select[id="form.category"]', 'disney-tips')
-        ->fill('textarea[aria-label="Body"]', 'A browser-created post body.')
+        ->fill('textarea[aria-label="Content"]', 'A browser-created post body.')
         ->click('button[wire\\:target="create"]')
         ->assertSee('Created')
         ->assertScript(browserWaitForScript("location.pathname.endsWith('/edit') && document.readyState === 'complete'"), true)

@@ -2,6 +2,7 @@
 
 use App\Enums\ContentAuthor;
 use App\Enums\PostCategory;
+use App\Enums\PublishStatus;
 use App\Filament\Resources\Posts\Pages\EditPost;
 use App\Filament\Resources\Posts\PostResource;
 use App\Models\Post;
@@ -27,7 +28,7 @@ test('previously published URLs stay locked after clearing the date and unpublis
         ->fillForm(['published_at' => null])
         ->call('save')
         ->assertHasNoFormErrors();
-    $record->refresh()->update(['is_published' => false]);
+    $record->refresh()->update(['status' => PublishStatus::Draft]);
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->fillForm(['slug' => 'replacement-url'])
@@ -123,7 +124,7 @@ test('drafts with their required details can be published while advisory details
         ->callAction('publish')
         ->assertNotified('Post published');
 
-    expect($record->refresh()->is_published)->toBeTrue()
+    expect($record->refresh()->status)->toBe(PublishStatus::Published)
         ->and($record->published_at)->not->toBeNull();
 
 });
@@ -136,7 +137,7 @@ test('published content can be explicitly unpublished', function (): void {
         ->callAction('unpublish')
         ->assertNotified('Post unpublished');
 
-    expect($record->refresh()->is_published)->toBeFalse();
+    expect($record->refresh()->status)->toBe(PublishStatus::Draft);
 });
 
 test('deleted content leaves the public site and can be restored by an administrator', function (): void {
@@ -177,7 +178,7 @@ test('publishing is blocked until editorial requirements are complete', function
         ->callAction('publish')
         ->assertNotified('Post is not ready to publish');
 
-    expect($post->refresh()->is_published)->toBeFalse();
+    expect($post->refresh()->status)->toBe(PublishStatus::Draft);
 });
 
 test('editor saves author and category selections as enums', function (): void {
@@ -207,9 +208,9 @@ test('publishing actions disappear when admin access is revoked for the post', f
     'unpublish' => [false, 'unpublish'],
 ]);
 
-test('publishing actions follow whether the post is a draft, live, or scheduled', function (bool $isPublished, ?string $publishedAt, bool $canPublish): void {
+test('publishing actions follow whether the post is a draft, live, or scheduled', function (PublishStatus $status, ?string $publishedAt, bool $canPublish): void {
     actingAs(User::factory()->admin()->create());
-    $post = Post::factory()->create(['is_published' => $isPublished, 'published_at' => $publishedAt]);
+    $post = Post::factory()->create(['status' => $status, 'published_at' => $publishedAt]);
 
     $page = livewire(EditPost::class, ['record' => $post->getRouteKey()]);
 
@@ -217,10 +218,11 @@ test('publishing actions follow whether the post is a draft, live, or scheduled'
         ? $page->assertActionVisible('publish')->assertActionHidden('unpublish')
         : $page->assertActionHidden('publish')->assertActionVisible('unpublish');
 })->with([
-    'draft' => [false, null, true],
-    'live' => [true, '2000-01-01 09:00:00', false],
-    'scheduled' => [true, '2999-01-01 09:00:00', false],
-    'published without a date' => [true, null, true],
+    'draft' => [PublishStatus::Draft, null, true],
+    'in review' => [PublishStatus::InReview, null, true],
+    'live' => [PublishStatus::Published, '2000-01-01 09:00:00', false],
+    'scheduled' => [PublishStatus::Scheduled, '2999-01-01 09:00:00', false],
+    'published without a date' => [PublishStatus::Published, null, true],
 ]);
 
 test('saving after publishing keeps the publication date the action set', function (): void {
@@ -233,7 +235,7 @@ test('saving after publishing keeps the publication date the action set', functi
         ->call('save')
         ->assertHasNoFormErrors();
 
-    expect($post->refresh()->is_published)->toBeTrue()
+    expect($post->refresh()->status)->toBe(PublishStatus::Published)
         ->and($post->published_at?->toDateTimeString())->toBe('2026-09-25 12:00:00');
 });
 
@@ -265,3 +267,16 @@ test('the official source and its review date are required together', function (
     'source without a review date' => [['source_url' => 'https://example.test/official-source'], 'last_reviewed_at'],
     'review date without a source' => [['last_reviewed_at' => '2026-09-01'], 'source_url'],
 ]);
+
+test('the edit form loads and saves the post content', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $record = Post::factory()->draft()->create(['content' => 'Original post content.']);
+
+    $page = livewire(EditPost::class, ['record' => $record->getRouteKey()]);
+    $page->assertSchemaStateSet(['content' => 'Original post content.']);
+    $page->fillForm(['content' => "## Updated\n\nNew post content."])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($record->refresh()->content)->toBe("## Updated\n\nNew post content.");
+});

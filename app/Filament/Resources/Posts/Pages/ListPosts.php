@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Posts\Pages;
 
+use App\Enums\PublishStatus;
 use App\Filament\Resources\Posts\PostResource;
 use App\Models\Post;
 use Filament\Resources\Pages\ListRecords;
@@ -21,7 +22,7 @@ class ListPosts extends ListRecords
             'attention' => Tab::make('Needs attention')
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->needsAttention()->select('id'))),
             'drafts' => Tab::make('Drafts')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->drafts()->select('id'))),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.status', [PublishStatus::Draft, PublishStatus::InReview])),
             'scheduled' => Tab::make('Scheduled')
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->scheduled()->select('id'))),
             'published' => Tab::make('Published')
@@ -34,7 +35,7 @@ class ListPosts extends ListRecords
     public function getHeader(): ?View
     {
         $published = Post::published()->count();
-        $drafts = Post::drafts()->count();
+        $drafts = Post::query()->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])->count();
 
         return view('filament.resources.posts.header', [
             'published' => $published,

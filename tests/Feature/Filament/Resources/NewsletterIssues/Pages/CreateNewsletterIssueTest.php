@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PublishStatus;
 use App\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
 use App\Filament\Resources\NewsletterIssues\Pages\CreateNewsletterIssue;
 use App\Models\NewsletterIssue;
@@ -24,7 +25,7 @@ test('an issue can be saved as a draft', function (): void {
 
     expect(NewsletterIssue::query()->sole())
         ->content->toBe('Draft text')
-        ->is_published->toBeFalse()
+        ->status->toBe(PublishStatus::Draft)
         ->sent_at->toBeNull();
 });
 

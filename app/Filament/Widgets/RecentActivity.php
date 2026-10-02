@@ -8,7 +8,6 @@ use App\Filament\Resources\Posts\PostResource;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
-use App\Support\EditorialReadiness;
 use Carbon\Carbon;
 use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\Widget;
@@ -29,34 +28,34 @@ class RecentActivity extends Widget
     {
         $items = [];
 
-        foreach (Post::select(['id', 'title', 'is_published', 'published_at', 'updated_at'])->latest('updated_at')->limit(8)->get() as $post) {
+        foreach (Post::select(['id', 'title', 'status', 'published_at', 'updated_at'])->latest('updated_at')->limit(8)->get() as $post) {
             $items[] = $this->activityItem(
                 Heroicon::OutlinedDocumentText,
                 'purple',
                 $post->title,
-                EditorialReadiness::status($post)->getLabel().' post',
+                $post->publishStatus()->label().' post',
                 $post->updated_at,
                 PostResource::getUrl('edit', ['record' => $post]),
             );
         }
 
-        foreach (Episode::select(['id', 'title', 'is_published', 'published_at', 'updated_at'])->latest('updated_at')->limit(8)->get() as $episode) {
+        foreach (Episode::select(['id', 'title', 'status', 'published_at', 'updated_at'])->latest('updated_at')->limit(8)->get() as $episode) {
             $items[] = $this->activityItem(
                 Heroicon::OutlinedMicrophone,
                 'gold',
                 $episode->title,
-                EditorialReadiness::status($episode)->getLabel().' episode',
+                $episode->publishStatus()->label().' episode',
                 $episode->updated_at,
                 EpisodeResource::getUrl('edit', ['record' => $episode]),
             );
         }
 
-        foreach (Guide::select(['id', 'title', 'is_published', 'published_at', 'updated_at'])->latest('updated_at')->limit(8)->get() as $guide) {
+        foreach (Guide::select(['id', 'title', 'status', 'published_at', 'updated_at'])->latest('updated_at')->limit(8)->get() as $guide) {
             $items[] = $this->activityItem(
                 Heroicon::OutlinedBookOpen,
                 'teal',
                 $guide->title,
-                EditorialReadiness::status($guide)->getLabel().' guide',
+                $guide->publishStatus()->label().' guide',
                 $guide->updated_at,
                 GuideResource::getUrl('edit', ['record' => $guide]),
             );

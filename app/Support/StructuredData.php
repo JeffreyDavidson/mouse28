@@ -27,7 +27,7 @@ class StructuredData
         $article = [
             '@type' => 'BlogPosting',
             'headline' => $post->meta_title ?: $post->title,
-            'description' => self::description($post->meta_description, $post->excerpt, $post->body),
+            'description' => self::description($post->meta_description, $post->excerpt, $post->content),
             'mainEntityOfPage' => route('blog.show', $post),
             'datePublished' => $post->published_at->toAtomString(),
             'dateModified' => $modifiedAt->toAtomString(),
@@ -63,7 +63,7 @@ class StructuredData
         $article = [
             '@type' => 'Article',
             'headline' => $guide->meta_title ?: $guide->title,
-            'description' => self::description($guide->meta_description, $guide->excerpt, $guide->body),
+            'description' => self::description($guide->meta_description, $guide->excerpt, $guide->content),
             'mainEntityOfPage' => route('guides.show', $guide),
             'datePublished' => $guide->published_at->toAtomString(),
             'dateModified' => $modifiedAt->toAtomString(),
@@ -165,9 +165,9 @@ class StructuredData
         ];
     }
 
-    private static function description(?string $metaDescription, ?string $summary, ?string $body): string
+    private static function description(?string $metaDescription, ?string $summary, ?string $content): string
     {
-        return Str::limit($metaDescription ?: $summary ?: strip_tags($body ?? ''), 200);
+        return Str::limit($metaDescription ?: $summary ?: strip_tags($content ?? ''), 200);
     }
 
     private static function duration(int $seconds): string

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\NewsletterIssues\Pages;
 
+use App\Enums\PublishStatus;
 use App\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
 use App\Models\NewsletterIssue;
 use Filament\Resources\Pages\ListRecords;
@@ -19,7 +20,7 @@ class ListNewsletterIssues extends ListRecords
         return [
             'all' => Tab::make('All'),
             'drafts' => Tab::make('Drafts')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('newsletter_issues.id', NewsletterIssue::query()->drafts()->select('id'))),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('newsletter_issues.status', [PublishStatus::Draft, PublishStatus::InReview])),
             'scheduled' => Tab::make('Scheduled')
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('newsletter_issues.id', NewsletterIssue::query()->scheduled()->select('id'))),
             'published' => Tab::make('Published')
@@ -31,7 +32,7 @@ class ListNewsletterIssues extends ListRecords
     {
         return view('filament.resources.newsletter-issues.header', [
             'published' => NewsletterIssue::published()->count(),
-            'drafts' => NewsletterIssue::drafts()->count(),
+            'drafts' => NewsletterIssue::query()->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])->count(),
             'createUrl' => NewsletterIssueResource::getUrl('create'),
         ]);
     }

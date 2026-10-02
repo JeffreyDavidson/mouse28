@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PublishStatus;
 use App\Filament\Widgets\StatsOverview;
 use App\Models\Episode;
 use App\Models\Guide;
@@ -25,6 +26,8 @@ test('stats overview reports published content review needs drafts and active su
     Guide::factory()->draft()->create();
     Episode::factory()->create();
     Episode::factory()->draft()->create();
+    Episode::factory()->create(['status' => PublishStatus::InReview]);
+    Post::factory()->scheduled()->create();
 
     $stats = livewire(StatsOverview::class)->instance()->getStats();
 
@@ -50,7 +53,7 @@ test('stats overview reports published content review needs drafts and active su
         ],
         [
             'label' => 'Drafts',
-            'value' => 3,
+            'value' => 4,
             'description' => 'All content',
         ],
         [

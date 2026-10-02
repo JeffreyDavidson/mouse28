@@ -5,10 +5,15 @@ namespace App\Models;
 use App\Contracts\Publishable;
 use App\Enums\ContentAuthor;
 use App\Enums\PostCategory;
+use App\Enums\PublishStatus;
 use App\Enums\SourceReviewStatus;
+use App\Models\Attributes\PublishingStatus;
 use App\Models\Concerns\HasCoverImages;
-use App\Models\Concerns\HasPublication;
+use App\Models\Concerns\HasPublishingStatus;
 use App\Models\Concerns\HasTagsUntilForceDeleted;
+use App\Models\Concerns\LocksSlugAfterPublication;
+use App\Models\Concerns\SyncsLegacyBody;
+use App\Models\Concerns\SyncsLegacyPublishedFlag;
 use Carbon\CarbonInterface;
 use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -27,6 +32,8 @@ use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
 /**
+ * @property PublishStatus $status
+ * @property string|null $content
  * @property ContentAuthor|null $author
  * @property PostCategory|null $category
  * @property Carbon|null $last_reviewed_at
@@ -40,33 +47,34 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property-read string|null $og_image_url
  * @property-read int $reading_time
  *
- * @method static Builder<static> drafts()
  * @method static Builder<static> needsAttention()
  * @method static Builder<static> published()
  * @method static Builder<static> reviewDue()
  * @method static Builder<static> scheduled()
+ * @method static Builder<static> unpublished()
  */
 #[Fillable([
     'title',
     'slug',
     'excerpt',
-    'body',
+    'content',
     'source_url',
     'last_reviewed_at',
     'cover_image',
     'episode_id',
     'category',
     'author',
-    'is_published',
+    'status',
     'published_at',
     'meta_title',
     'meta_description',
     'og_image',
 ])]
+#[PublishingStatus]
 class Post extends Model implements Publishable
 {
     /** @use HasFactory<PostFactory> */
-    use HasCoverImages, HasFactory, HasPublication, HasTagsUntilForceDeleted, SoftDeletes;
+    use HasCoverImages, HasFactory, HasPublishingStatus, HasTagsUntilForceDeleted, LocksSlugAfterPublication, SoftDeletes, SyncsLegacyBody, SyncsLegacyPublishedFlag;
 
     use LogsActivity;
 
@@ -78,14 +86,14 @@ class Post extends Model implements Publishable
                 'title',
                 'slug',
                 'excerpt',
-                'body',
+                'content',
                 'source_url',
                 'last_reviewed_at',
                 'cover_image',
                 'episode_id',
                 'category',
                 'author',
-                'is_published',
+                'status',
                 'published_at',
                 'meta_title',
                 'meta_description',
@@ -124,8 +132,8 @@ class Post extends Model implements Publishable
         $query->where(function (Builder $query): void {
             $query->whereNull('excerpt')
                 ->orWhere('excerpt', '')
-                ->orWhereNull('body')
-                ->orWhere('body', '')
+                ->orWhereNull('content')
+                ->orWhere('content', '')
                 ->orWhereNull('cover_image')
                 ->orWhere('cover_image', '')
                 ->orWhereNull('meta_title')
@@ -133,7 +141,7 @@ class Post extends Model implements Publishable
                 ->orWhereNull('meta_description')
                 ->orWhere('meta_description', '')
                 ->orWhere(function (Builder $query): void {
-                    $query->where('is_published', true)->whereNull('published_at');
+                    $query->whereIn('status', [PublishStatus::Published, PublishStatus::Scheduled])->whereNull('published_at');
                 })
                 ->orWhere(function (Builder $query): void {
                     $query->whereNotNull('source_url')->whereNull('last_reviewed_at');
@@ -163,7 +171,7 @@ class Post extends Model implements Publishable
     protected function readingTime(): Attribute
     {
         return Attribute::make(get: function (): int {
-            $words = str_word_count(strip_tags($this->body ?? ''));
+            $words = str_word_count(strip_tags($this->content ?? ''));
 
             return max(1, (int) ceil($words / 200));
         });
@@ -202,7 +210,7 @@ class Post extends Model implements Publishable
         return [
             'author' => ContentAuthor::class,
             'category' => PostCategory::class,
-            'is_published' => 'boolean',
+            'status' => PublishStatus::class,
             'last_reviewed_at' => 'date',
             'published_at' => 'datetime',
             'slug_locked_at' => 'datetime',
@@ -217,7 +225,7 @@ class Post extends Model implements Publishable
     public function publishingIssues(): array
     {
         return array_values(array_filter([
-            blank($this->body) ? 'Add post content' : null,
+            blank($this->content) ? 'Add post content' : null,
             blank($this->excerpt) ? 'Add an excerpt' : null,
             blank($this->category) ? 'Choose a category' : null,
         ]));

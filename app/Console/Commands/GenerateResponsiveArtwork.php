@@ -55,7 +55,7 @@ class GenerateResponsiveArtwork extends Command
         $generated = 0;
         $failed = false;
 
-        foreach ($query->whereNotNull('cover_image')->select(['id', 'cover_image', 'is_published', 'published_at'])->lazyById(100) as $record) {
+        foreach ($query->whereNotNull('cover_image')->select(['id', 'cover_image', 'status', 'published_at'])->lazyById(100) as $record) {
             $source = ResponsiveArtwork::source($record->cover_image);
 
             if (! $source) {

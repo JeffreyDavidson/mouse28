@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Enums\ContentAuthor;
 use App\Enums\PostCategory;
+use App\Enums\PublishStatus;
 use App\Models\Post;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -21,10 +22,10 @@ class PostFactory extends Factory
             'title' => $title,
             'slug' => str($title)->slug(),
             'excerpt' => fake()->sentence(18),
-            'body' => fake()->paragraphs(5, true),
+            'content' => fake()->paragraphs(5, true),
             'category' => fake()->randomElement(PostCategory::cases()),
             'author' => fake()->randomElement(ContentAuthor::cases()),
-            'is_published' => true,
+            'status' => PublishStatus::Published,
             'published_at' => now()->subDay(),
         ];
     }
@@ -32,7 +33,7 @@ class PostFactory extends Factory
     public function draft(): static
     {
         return $this->state(fn (): array => [
-            'is_published' => false,
+            'status' => PublishStatus::Draft,
             'published_at' => null,
         ]);
     }
@@ -40,7 +41,7 @@ class PostFactory extends Factory
     public function scheduled(): static
     {
         return $this->state(fn (): array => [
-            'is_published' => true,
+            'status' => PublishStatus::Scheduled,
             'published_at' => now()->addDay(),
         ]);
     }

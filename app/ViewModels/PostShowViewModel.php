@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\ViewModels;
 
+use App\Models\Episode;
 use App\Models\Post;
 use App\Support\ContentContinuation;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Date;
 
 class PostShowViewModel
 {
@@ -22,10 +22,7 @@ class PostShowViewModel
     public function data(Post $post, bool $preview = false): array
     {
         $post->load($preview ? 'episode' : [
-            'episode' => fn (BelongsTo $query) => $query
-                ->where('is_published', true)
-                ->whereNotNull('published_at')
-                ->where('published_at', '<=', Date::now()),
+            'episode' => $this->publishedEpisode(...),
         ]);
 
         $data = [
@@ -38,5 +35,11 @@ class PostShowViewModel
         }
 
         return $data;
+    }
+
+    /** @param BelongsTo<Episode, Post> $query */
+    private function publishedEpisode(BelongsTo $query): void
+    {
+        $query->published();
     }
 }

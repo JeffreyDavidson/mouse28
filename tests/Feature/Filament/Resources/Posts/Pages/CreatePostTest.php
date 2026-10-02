@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\PostCategory;
+use App\Enums\PublishStatus;
 use App\Filament\Resources\Posts\Pages\CreatePost;
 use App\Filament\Resources\Posts\PostResource;
 use App\Models\Post;
@@ -13,7 +14,7 @@ use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
 
-test('an incomplete post can be saved as a draft without body content', function (): void {
+test('an incomplete post can be saved as a draft without content', function (): void {
     actingAs(User::factory()->admin()->create());
 
     livewire(CreatePost::class)
@@ -21,7 +22,7 @@ test('an incomplete post can be saved as a draft without body content', function
         ->call('create')
         ->assertHasNoFormErrors();
 
-    expect(Post::query()->sole())->body->toBe('')->is_published->toBeFalse();
+    expect(Post::query()->sole())->content->toBe('')->status->toBe(PublishStatus::Draft);
 });
 
 test('post creation validates required fields on the server', function (): void {

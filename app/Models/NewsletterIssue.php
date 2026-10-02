@@ -3,7 +3,11 @@
 namespace App\Models;
 
 use App\Contracts\Publishable;
-use App\Models\Concerns\HasPublication;
+use App\Enums\PublishStatus;
+use App\Models\Attributes\PublishingStatus;
+use App\Models\Concerns\HasPublishingStatus;
+use App\Models\Concerns\LocksSlugAfterPublication;
+use App\Models\Concerns\SyncsLegacyPublishedFlag;
 use Carbon\CarbonInterface;
 use Database\Factories\NewsletterIssueFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -17,27 +21,29 @@ use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
 /**
+ * @property PublishStatus $status
  * @property Carbon|null $published_at
  * @property Carbon|null $sent_at
  * @property CarbonInterface|null $slug_locked_at
  *
- * @method static Builder<static> drafts()
  * @method static Builder<static> published()
  * @method static Builder<static> scheduled()
+ * @method static Builder<static> unpublished()
  */
 #[Fillable([
     'title',
     'slug',
     'excerpt',
     'content',
-    'is_published',
+    'status',
     'published_at',
     'sent_at',
 ])]
+#[PublishingStatus]
 class NewsletterIssue extends Model implements Publishable
 {
     /** @use HasFactory<NewsletterIssueFactory> */
-    use HasFactory, HasPublication, SoftDeletes;
+    use HasFactory, HasPublishingStatus, LocksSlugAfterPublication, SoftDeletes, SyncsLegacyPublishedFlag;
 
     use LogsActivity;
 
@@ -50,7 +56,7 @@ class NewsletterIssue extends Model implements Publishable
                 'slug',
                 'excerpt',
                 'content',
-                'is_published',
+                'status',
                 'published_at',
                 'sent_at',
             ])
@@ -84,7 +90,7 @@ class NewsletterIssue extends Model implements Publishable
     protected function casts(): array
     {
         return [
-            'is_published' => 'boolean',
+            'status' => PublishStatus::class,
             'published_at' => 'datetime',
             'sent_at' => 'datetime',
             'slug_locked_at' => 'datetime',

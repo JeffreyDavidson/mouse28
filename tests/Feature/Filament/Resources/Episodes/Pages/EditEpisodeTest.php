@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PublishStatus;
 use App\Filament\Resources\Episodes\EpisodeResource;
 use App\Filament\Resources\Episodes\Pages\EditEpisode;
 use App\Models\Episode;
@@ -25,7 +26,7 @@ test('previously published URLs stay locked after clearing the date and unpublis
         ->fillForm(['published_at' => null])
         ->call('save')
         ->assertHasNoFormErrors();
-    $record->refresh()->update(['is_published' => false]);
+    $record->refresh()->update(['status' => PublishStatus::Draft]);
 
     livewire(EditEpisode::class, ['record' => $record->getRouteKey()])
         ->fillForm(['slug' => 'replacement-url'])
@@ -155,7 +156,7 @@ test('drafts with their required details can be published while advisory details
         ->callAction('publish')
         ->assertNotified('Episode published');
 
-    expect($record->refresh()->is_published)->toBeTrue()
+    expect($record->refresh()->status)->toBe(PublishStatus::Published)
         ->and($record->published_at)->not->toBeNull();
 
 });
@@ -168,7 +169,7 @@ test('published content can be explicitly unpublished', function (): void {
         ->callAction('unpublish')
         ->assertNotified('Episode unpublished');
 
-    expect($record->refresh()->is_published)->toBeFalse();
+    expect($record->refresh()->status)->toBe(PublishStatus::Draft);
 });
 
 test('deleted content leaves the public site and can be restored by an administrator', function (): void {
@@ -216,5 +217,5 @@ test('episodes cannot be published without a Transistor episode URL', function (
         ->callAction('publish')
         ->assertNotified('Episode is not ready to publish');
 
-    expect($episode->refresh()->is_published)->toBeFalse();
+    expect($episode->refresh()->status)->toBe(PublishStatus::Draft);
 });

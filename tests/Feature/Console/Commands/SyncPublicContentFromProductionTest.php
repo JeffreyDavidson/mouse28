@@ -1,6 +1,7 @@
 <?php
 
 use App\Console\Commands\SyncPublicContentFromProduction;
+use App\Enums\PublishStatus;
 use App\Models\Episode;
 use App\Models\Post;
 use App\Support\PublicContentArchive;
@@ -20,7 +21,7 @@ test('sync rejects invalid content before replacing any local media', function (
     $post = Post::factory()->create(['title' => 'Original', 'cover_image' => 'posts/cover.webp']);
     $archive = app(PublicContentArchive::class)->export();
     $archive['posts'][0]['title'] = 'Changed';
-    $archive['posts'][0]['body'] = null;
+    $archive['posts'][0]['content'] = null;
     Process::fake(function (PendingProcess $process) use ($archive) {
         $arguments = syncProcessArguments($process);
         if ($arguments[0] === 'scp') {
@@ -62,7 +63,7 @@ test('sync stops before transferring media when a local draft collides', functio
     config()->set('mouse28.production_sync.site_path', '/home/forge/mouse28.com/current');
     $post = Post::factory()->create(['cover_image' => 'posts/local.webp']);
     $archive = app(PublicContentArchive::class)->export();
-    $post->update(['is_published' => false]);
+    $post->update(['status' => PublishStatus::Draft]);
     Process::fake(function (PendingProcess $process) use ($archive) {
         $command = syncProcessArguments($process);
         if ($command[0] === 'scp') {
@@ -78,7 +79,7 @@ test('sync stops before transferring media when a local draft collides', functio
 
     // Assert
     expect($exitCode)->toBe(Command::FAILURE)
-        ->and($post->refresh()->is_published)->toBeFalse();
+        ->and($post->refresh()->status)->toBe(PublishStatus::Draft);
     Process::assertDidntRun(fn (PendingProcess $process): bool => syncProcessArguments($process)[0] === 'rsync');
 });
 
@@ -103,7 +104,7 @@ test('production syncs public content, preserves drafts, and transfers reference
             [
                 'title' => 'Example Post',
                 'slug' => 'example-post',
-                'body' => '',
+                'content' => '',
                 'cover_image' => 'posts/example-post.webp',
                 'episode_slug' => 'example-episode',
                 'published_at' => now()->subDay()->toAtomString(),
@@ -112,7 +113,7 @@ test('production syncs public content, preserves drafts, and transfers reference
             [
                 'title' => 'Second Example Post',
                 'slug' => 'second-example-post',
-                'body' => '',
+                'content' => '',
                 'cover_image' => 'posts/second-example-post.webp',
                 'published_at' => now()->subHours(2)->toAtomString(),
             ],

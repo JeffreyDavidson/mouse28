@@ -4,27 +4,13 @@ declare(strict_types=1);
 
 namespace App\Support;
 
-use App\Enums\PublicationStatus;
+use App\Enums\PublishStatus;
 use App\Models\Episode;
 use App\Models\Guide;
-use App\Models\NewsletterIssue;
 use App\Models\Post;
 
 class EditorialReadiness
 {
-    public static function status(Post|Guide|Episode|NewsletterIssue $content): PublicationStatus
-    {
-        if (! $content->is_published) {
-            return PublicationStatus::Draft;
-        }
-
-        if (! $content->published_at) {
-            return PublicationStatus::NeedsPublishDate;
-        }
-
-        return $content->published_at->isFuture() ? PublicationStatus::Scheduled : PublicationStatus::Published;
-    }
-
     public static function label(Post|Guide|Episode $content): string
     {
         $count = count(self::issues($content));
@@ -59,13 +45,13 @@ class EditorialReadiness
     {
         return array_values(array_filter([
             blank($post->excerpt) ? 'Add an excerpt' : null,
-            blank($post->body) ? 'Add post content' : null,
+            blank($post->content) ? 'Add post content' : null,
             blank($post->cover_image) ? 'Add a cover image' : null,
             filled($post->last_reviewed_at) && blank($post->source_url) ? 'Add an official source' : null,
             filled($post->source_url) && blank($post->last_reviewed_at) ? 'Set the review date' : null,
             blank($post->meta_title) ? 'Add an SEO title' : null,
             blank($post->meta_description) ? 'Add an SEO description' : null,
-            $post->is_published && blank($post->published_at) ? 'Set a publish date' : null,
+            self::needsPublishDate($post) ? 'Set a publish date' : null,
         ]));
     }
 
@@ -74,13 +60,13 @@ class EditorialReadiness
     {
         return array_values(array_filter([
             blank($guide->excerpt) ? 'Add an excerpt' : null,
-            blank($guide->body) ? 'Add guide content' : null,
+            blank($guide->content) ? 'Add guide content' : null,
             blank($guide->cover_image) ? 'Add a cover image' : null,
             blank($guide->source_url) ? 'Add an official source' : null,
             blank($guide->last_reviewed_at) ? 'Set the review date' : null,
             blank($guide->meta_title) ? 'Add an SEO title' : null,
             blank($guide->meta_description) ? 'Add an SEO description' : null,
-            $guide->is_published && blank($guide->published_at) ? 'Set a publish date' : null,
+            self::needsPublishDate($guide) ? 'Set a publish date' : null,
         ]));
     }
 
@@ -94,7 +80,14 @@ class EditorialReadiness
             blank($episode->duration_seconds) ? 'Set the duration' : null,
             blank($episode->meta_title) ? 'Add an SEO title' : null,
             blank($episode->meta_description) ? 'Add an SEO description' : null,
-            $episode->is_published && blank($episode->published_at) ? 'Set a publish date' : null,
+            self::needsPublishDate($episode) ? 'Set a publish date' : null,
         ]));
+    }
+
+    /** Published or scheduled content that has lost its publish date is not live until one is set. */
+    private static function needsPublishDate(Post|Guide|Episode $content): bool
+    {
+        return in_array($content->status, [PublishStatus::Published, PublishStatus::Scheduled], true)
+            && blank($content->published_at);
     }
 }

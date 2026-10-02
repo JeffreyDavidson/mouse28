@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PublishStatus;
 use App\Livewire\BlogArchive;
 use App\Models\Episode;
 use App\Models\Podcast;
@@ -160,10 +161,10 @@ test('published post detail page renders', function (): void {
         'title' => 'An Accessible Day at the Parks',
         'slug' => 'accessible-day-at-the-parks',
         'excerpt' => 'A practical guide for planning a comfortable park day.',
-        'body' => 'Start with a flexible plan. '.str_repeat('accessible park planning ', 198),
+        'content' => 'Start with a flexible plan. '.str_repeat('accessible park planning ', 198),
         'category' => 'park-accessibility',
         'author' => 'jeffrey',
-        'is_published' => true,
+        'status' => PublishStatus::Published,
         'published_at' => now()->subDay(),
     ]);
 
@@ -363,3 +364,12 @@ test('signed-in visitors see published posts but nobody sees drafts at public UR
     get(route('blog.show', $published))->assertOk();
     get(route('blog.show', $draft))->assertNotFound();
 })->with(['non-admin' => [false], 'admin' => [true]]);
+
+test('a published post renders its markdown content', function (): void {
+    $post = Post::factory()->create(['content' => "## Arrival plan\n\nTake a **sensory break** when needed."]);
+
+    get(route('blog.show', $post))
+        ->assertOk()
+        ->assertSeeHtml('<h2>Arrival plan</h2>')
+        ->assertSeeHtml('<strong>sensory break</strong>');
+});

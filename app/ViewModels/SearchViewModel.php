@@ -31,7 +31,7 @@ class SearchViewModel
         if ($query !== '') {
             $posts = Post::published()
                 ->select(['slug', 'title', 'excerpt', 'category'])
-                ->tap(fn (Builder $builder) => TextSearch::constrain($builder, ['title', 'excerpt', 'body'], $query))
+                ->tap(fn (Builder $builder) => TextSearch::constrain($builder, ['title', 'excerpt', 'content'], $query))
                 ->latest('published_at')
                 ->latest('id')
                 ->paginate($perPage, pageName: 'postsPage')
@@ -41,7 +41,7 @@ class SearchViewModel
             if (Config::boolean('mouse28.guides_enabled')) {
                 $guides = Guide::published()
                     ->select(['slug', 'title', 'excerpt', 'category'])
-                    ->tap(fn (Builder $builder) => TextSearch::constrain($builder, ['title', 'excerpt', 'body'], $query))
+                    ->tap(fn (Builder $builder) => TextSearch::constrain($builder, ['title', 'excerpt', 'content'], $query))
                     ->latest('published_at')
                     ->latest('id')
                     ->paginate($perPage, pageName: 'guidesPage')

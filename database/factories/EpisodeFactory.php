@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\PublishStatus;
 use App\Models\Episode;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -24,7 +25,7 @@ class EpisodeFactory extends Factory
             'episode_number' => fake()->unique()->numberBetween(1, 10000),
             'season_number' => 1,
             'duration_seconds' => 1800,
-            'is_published' => true,
+            'status' => PublishStatus::Published,
             'published_at' => now()->subDay(),
         ];
     }
@@ -32,7 +33,7 @@ class EpisodeFactory extends Factory
     public function draft(): static
     {
         return $this->state(fn (): array => [
-            'is_published' => false,
+            'status' => PublishStatus::Draft,
             'published_at' => null,
         ]);
     }
@@ -40,7 +41,7 @@ class EpisodeFactory extends Factory
     public function scheduled(): static
     {
         return $this->state(fn (): array => [
-            'is_published' => true,
+            'status' => PublishStatus::Scheduled,
             'published_at' => now()->addDay(),
         ]);
     }
