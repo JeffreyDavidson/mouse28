@@ -28,14 +28,14 @@ test('public content archive is imported idempotently with podcast metadata', fu
         'posts' => [[
             'title' => 'Example Post',
             'slug' => 'example-post',
-            'body' => '',
+            'content' => '',
             'episode_slug' => 'example-episode',
             'published_at' => now()->subDay()->toAtomString(),
         ]],
         'guides' => [[
             'title' => 'Example Guide',
             'slug' => 'example-guide',
-            'body' => '',
+            'content' => '',
             'category' => 'accessibility',
             'author' => 'both',
             'published_at' => now()->subDay()->toAtomString(),

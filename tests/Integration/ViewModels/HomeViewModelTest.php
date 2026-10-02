@@ -22,13 +22,13 @@ test('homepage content queries select only fields rendered by their cards', func
 
     expect($data['featuredPost']?->getAttributes() ?? [])
         ->toHaveKeys(['id', 'slug', 'title', 'category', 'cover_image'])
-        ->not->toHaveKeys(['body', 'excerpt', 'meta_description'])
+        ->not->toHaveKeys(['content', 'excerpt', 'meta_description'])
         ->and($data['latestPosts']->firstOrFail()->getAttributes())
         ->toHaveKeys(['id', 'slug', 'title', 'category', 'cover_image', 'published_at'])
-        ->not->toHaveKeys(['body', 'excerpt', 'meta_description'])
+        ->not->toHaveKeys(['content', 'excerpt', 'meta_description'])
         ->and($data['latestGuides']->sole()->getAttributes())
         ->toHaveKeys(['id', 'slug', 'title', 'excerpt', 'category', 'cover_image'])
-        ->not->toHaveKeys(['body', 'meta_description'])
+        ->not->toHaveKeys(['content', 'meta_description'])
         ->and($data['latestEpisodes']->sole()->getAttributes())
         ->toHaveKeys(['id', 'slug', 'title', 'description', 'episode_number', 'duration_seconds'])
         ->not->toHaveKeys(['show_notes', 'transcript', 'meta_description']);
@@ -46,5 +46,5 @@ test('homepage planning posts select only their rendered fields', function (): v
 
     expect($data['planningPosts']->sole()->getAttributes())
         ->toHaveKeys(['id', 'slug', 'title', 'category', 'cover_image'])
-        ->not->toHaveKeys(['body', 'excerpt', 'meta_description']);
+        ->not->toHaveKeys(['content', 'excerpt', 'meta_description']);
 });

@@ -61,7 +61,7 @@ class QuickDraft extends Widget implements HasForms
             'title' => $state['title'],
             'slug' => $this->uniqueSlug(Arr::string($state, 'title')),
             'excerpt' => $state['notes'] ?? null,
-            'body' => $state['notes'] ?? '',
+            'content' => $state['notes'] ?? '',
             'author' => ContentAuthor::Both,
             'status' => PublishStatus::Draft,
         ]);

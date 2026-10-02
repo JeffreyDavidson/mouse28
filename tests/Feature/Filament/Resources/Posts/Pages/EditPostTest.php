@@ -267,3 +267,16 @@ test('the official source and its review date are required together', function (
     'source without a review date' => [['source_url' => 'https://example.test/official-source'], 'last_reviewed_at'],
     'review date without a source' => [['last_reviewed_at' => '2026-09-01'], 'source_url'],
 ]);
+
+test('the edit form loads and saves the post content', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $record = Post::factory()->draft()->create(['content' => 'Original post content.']);
+
+    $page = livewire(EditPost::class, ['record' => $record->getRouteKey()]);
+    $page->assertSchemaStateSet(['content' => 'Original post content.']);
+    $page->fillForm(['content' => "## Updated\n\nNew post content."])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($record->refresh()->content)->toBe("## Updated\n\nNew post content.");
+});

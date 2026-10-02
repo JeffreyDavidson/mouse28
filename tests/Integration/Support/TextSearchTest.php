@@ -11,12 +11,12 @@ pest()->use(RefreshDatabase::class);
 
 /** @param list<string> $expectedTitles */
 test('text search matches terms as literal text in any listed column', function (string $term, array $expectedTitles): void {
-    Post::factory()->create(['title' => '100% fun', 'excerpt' => '', 'body' => '']);
-    Post::factory()->create(['title' => '1000 steps', 'excerpt' => 'first_pass', 'body' => '']);
-    Post::factory()->create(['title' => 'Wow!', 'excerpt' => '', 'body' => 'fun_day']);
+    Post::factory()->create(['title' => '100% fun', 'excerpt' => '', 'content' => '']);
+    Post::factory()->create(['title' => '1000 steps', 'excerpt' => 'first_pass', 'content' => '']);
+    Post::factory()->create(['title' => 'Wow!', 'excerpt' => '', 'content' => 'fun_day']);
 
     $query = Post::query();
-    TextSearch::constrain($query, ['title', 'excerpt', 'body'], $term);
+    TextSearch::constrain($query, ['title', 'excerpt', 'content'], $term);
 
     expect($query->orderBy('id')->pluck('title')->all())->toBe($expectedTitles);
 })->with([

@@ -51,7 +51,7 @@ class PublicContentArchive
         'title',
         'slug',
         'excerpt',
-        'body',
+        'content',
         'source_url',
         'last_reviewed_at',
         'cover_image',
@@ -67,7 +67,7 @@ class PublicContentArchive
         'title',
         'slug',
         'excerpt',
-        'body',
+        'content',
         'category',
         'author',
         'cover_image',
@@ -377,7 +377,7 @@ class PublicContentArchive
             $rules["{$type}.*.slug"] = ['required', 'string', 'max:255', 'regex:/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/'];
             $rules["{$type}.*.published_at"] = ['required', 'date', 'before_or_equal:now'];
             $rules["{$type}.*.last_reviewed_at"] = ['nullable', 'date'];
-            foreach (['excerpt', 'body', 'description', 'show_notes', 'transcript', 'meta_title', 'meta_description'] as $field) {
+            foreach (['excerpt', 'content', 'description', 'show_notes', 'transcript', 'meta_title', 'meta_description'] as $field) {
                 $rules["{$type}.*.{$field}"] = ['nullable', 'string'];
             }
             foreach (['cover_image', 'og_image', 'audio_path'] as $field) {
@@ -388,8 +388,8 @@ class PublicContentArchive
             }
         }
         $rules['posts.*.episode_slug'] = ['nullable', 'string', 'max:255', 'regex:/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/'];
-        $rules['posts.*.body'] = ['present', 'string'];
-        $rules['guides.*.body'] = ['present', 'string'];
+        $rules['posts.*.content'] = ['present', 'string'];
+        $rules['guides.*.content'] = ['present', 'string'];
         $rules['posts.*.author'] = ['nullable', Rule::enum(ContentAuthor::class)];
         $rules['posts.*.category'] = ['nullable', Rule::enum(PostCategory::class)];
         $rules['guides.*.author'] = ['required', Rule::enum(ContentAuthor::class)];
@@ -479,6 +479,11 @@ class PublicContentArchive
                     throw new InvalidArgumentException('The public content archive contains duplicate episode numbers.');
                 }
                 $episodeNumbers[] = $attributes['episode_number'];
+            }
+
+            // Archives exported before the content column existed carry post and guide text as `body`.
+            if (! array_key_exists('content', $attributes) && array_key_exists('body', $attributes)) {
+                $attributes['content'] = $attributes['body'];
             }
 
             $validated[] = $this->onlyAttributes($attributes, [...$fields, 'tags']);

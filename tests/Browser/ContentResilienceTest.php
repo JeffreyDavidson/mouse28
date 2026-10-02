@@ -77,14 +77,14 @@ test('long public content and portrait artwork stay contained', function (): voi
             'title' => $longTitle,
             'slug' => 'long-content-post',
             'excerpt' => "A practical introduction followed by {$longToken}",
-            'body' => "## {$longToken}\n\n{$longToken}\n\n[{$longToken}](https://example.com/{$longToken})\n\n`{$longToken}`",
+            'content' => "## {$longToken}\n\n{$longToken}\n\n[{$longToken}](https://example.com/{$longToken})\n\n`{$longToken}`",
             'cover_image' => $portraitPath,
         ]);
         $guide = Guide::factory()->create([
             'title' => $longTitle,
             'slug' => 'long-content-guide',
             'excerpt' => "A practical introduction followed by {$longToken}",
-            'body' => "## {$longToken}\n\n{$longToken}\n\n[{$longToken}](https://example.com/{$longToken})\n\n`{$longToken}`",
+            'content' => "## {$longToken}\n\n{$longToken}\n\n[{$longToken}](https://example.com/{$longToken})\n\n`{$longToken}`",
             'cover_image' => $portraitPath,
         ]);
         $episode = Episode::factory()->create([

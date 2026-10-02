@@ -12,6 +12,7 @@ use App\Models\Concerns\HasCoverImages;
 use App\Models\Concerns\HasPublishingStatus;
 use App\Models\Concerns\HasTagsUntilForceDeleted;
 use App\Models\Concerns\LocksSlugAfterPublication;
+use App\Models\Concerns\SyncsLegacyBody;
 use App\Models\Concerns\SyncsLegacyPublishedFlag;
 use Carbon\CarbonInterface;
 use Database\Factories\GuideFactory;
@@ -30,6 +31,7 @@ use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property PublishStatus $status
+ * @property string|null $content
  * @property ContentAuthor|null $author
  * @property GuideCategory $category
  * @property Carbon|null $last_reviewed_at
@@ -52,7 +54,7 @@ use Spatie\Activitylog\Support\LogOptions;
     'title',
     'slug',
     'excerpt',
-    'body',
+    'content',
     'category',
     'author',
     'cover_image',
@@ -68,7 +70,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class Guide extends Model implements Publishable
 {
     /** @use HasFactory<GuideFactory> */
-    use HasCoverImages, HasFactory, HasPublishingStatus, HasTagsUntilForceDeleted, LocksSlugAfterPublication, SoftDeletes, SyncsLegacyPublishedFlag;
+    use HasCoverImages, HasFactory, HasPublishingStatus, HasTagsUntilForceDeleted, LocksSlugAfterPublication, SoftDeletes, SyncsLegacyBody, SyncsLegacyPublishedFlag;
 
     use LogsActivity;
 
@@ -80,7 +82,7 @@ class Guide extends Model implements Publishable
                 'title',
                 'slug',
                 'excerpt',
-                'body',
+                'content',
                 'category',
                 'author',
                 'cover_image',
@@ -116,7 +118,7 @@ class Guide extends Model implements Publishable
     protected function needsAttention(Builder $query): void
     {
         $query->where(function (Builder $query): void {
-            foreach (['excerpt', 'body', 'cover_image', 'source_url', 'last_reviewed_at', 'meta_title', 'meta_description'] as $column) {
+            foreach (['excerpt', 'content', 'cover_image', 'source_url', 'last_reviewed_at', 'meta_title', 'meta_description'] as $column) {
                 $query->orWhereNull($column);
 
                 if ($column !== 'last_reviewed_at') {
@@ -145,7 +147,7 @@ class Guide extends Model implements Publishable
     /** @return Attribute<int, never> */
     protected function readingTime(): Attribute
     {
-        return Attribute::make(get: fn (): int => max(1, (int) ceil(str_word_count(strip_tags($this->body)) / 200)));
+        return Attribute::make(get: fn (): int => max(1, (int) ceil(str_word_count(strip_tags($this->content ?? '')) / 200)));
     }
 
     public function isReviewDue(): bool
@@ -188,7 +190,7 @@ class Guide extends Model implements Publishable
     public function publishingIssues(): array
     {
         return array_values(array_filter([
-            blank($this->body) ? 'Add guide content' : null,
+            blank($this->content) ? 'Add guide content' : null,
             blank($this->excerpt) ? 'Add an excerpt' : null,
             blank($this->source_url) ? 'Add an official source' : null,
             blank($this->last_reviewed_at) ? 'Set the review date' : null,

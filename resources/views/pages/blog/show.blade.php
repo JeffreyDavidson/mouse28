@@ -139,7 +139,7 @@
 
                 <div class="blog-article-content prose-navy prose text-navy/80 max-w-none text-[1.0625rem] leading-[1.85] wrap-anywhere">
                     {!!
-                        Str::markdown($post->body ?? '', [
+                        Str::markdown($post->content ?? '', [
                             'html_input' => 'strip',
                             'allow_unsafe_links' => false,
                             'renderer' => [

@@ -6,6 +6,7 @@ use App\Enums\SourceReviewStatus;
 use App\Models\Guide;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Date;
 use Spatie\Activitylog\Models\Activity;
 
 use function Pest\Laravel\actingAs;
@@ -114,7 +115,7 @@ test('guides cannot be published without each required detail', function (string
 
     expect($guide->publishingIssues())->toBe([$issue]);
 })->with([
-    'content' => ['body', 'Add guide content'],
+    'content' => ['content', 'Add guide content'],
     'excerpt' => ['excerpt', 'Add an excerpt'],
     'official source' => ['source_url', 'Add an official source'],
     'review date' => ['last_reviewed_at', 'Set the review date'],
@@ -141,4 +142,41 @@ test('the guide review interval comes from content configuration', function (): 
     $guide = Guide::factory()->make(['last_reviewed_at' => today()->subDays(31)]);
 
     expect($guide->isReviewDue())->toBeTrue();
+});
+
+test('guides without content need attention', function (?string $content): void {
+    $guide = Guide::factory()->create([
+        'content' => $content,
+        'cover_image' => 'guides/complete.jpg',
+        'source_url' => 'https://example.test/source',
+        'last_reviewed_at' => Date::today(),
+        'meta_title' => 'Complete title',
+        'meta_description' => 'Complete description',
+    ]);
+
+    expect(Guide::query()->needsAttention()->pluck('id')->all())->toBe([$guide->id]);
+})->with([
+    'missing' => [null],
+    'empty' => [''],
+]);
+
+test('guide reading time counts the words in the content', function (?string $content, int $minutes): void {
+    $guide = Guide::factory()->make(['content' => $content]);
+
+    expect($guide->reading_time)->toBe($minutes);
+})->with([
+    'missing content' => [null, 1],
+    'two hundred words' => [str_repeat('word ', 200), 1],
+    'two hundred and one words' => [str_repeat('word ', 201), 2],
+]);
+
+test('guide content edits are recorded in the editorial log', function (): void {
+    $record = Guide::factory()->create(['content' => 'Original content']);
+
+    $record->update(['content' => 'Updated content']);
+
+    expect(Activity::query()->latest('id')->firstOrFail()->attribute_changes?->all() ?? [])->toEqual([
+        'attributes' => ['content' => 'Updated content'],
+        'old' => ['content' => 'Original content'],
+    ]);
 });

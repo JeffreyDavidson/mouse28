@@ -73,7 +73,7 @@ class GuideForm
                         Textarea::make('excerpt')
                             ->maxLength(300)
                             ->rows(3),
-                        MarkdownEditor::make('body')
+                        MarkdownEditor::make('content')
                             ->required(),
                     ]),
                 Grid::make(2)

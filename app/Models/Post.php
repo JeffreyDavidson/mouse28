@@ -12,6 +12,7 @@ use App\Models\Concerns\HasCoverImages;
 use App\Models\Concerns\HasPublishingStatus;
 use App\Models\Concerns\HasTagsUntilForceDeleted;
 use App\Models\Concerns\LocksSlugAfterPublication;
+use App\Models\Concerns\SyncsLegacyBody;
 use App\Models\Concerns\SyncsLegacyPublishedFlag;
 use Carbon\CarbonInterface;
 use Database\Factories\PostFactory;
@@ -32,6 +33,7 @@ use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property PublishStatus $status
+ * @property string|null $content
  * @property ContentAuthor|null $author
  * @property PostCategory|null $category
  * @property Carbon|null $last_reviewed_at
@@ -55,7 +57,7 @@ use Spatie\Activitylog\Support\LogOptions;
     'title',
     'slug',
     'excerpt',
-    'body',
+    'content',
     'source_url',
     'last_reviewed_at',
     'cover_image',
@@ -72,7 +74,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class Post extends Model implements Publishable
 {
     /** @use HasFactory<PostFactory> */
-    use HasCoverImages, HasFactory, HasPublishingStatus, HasTagsUntilForceDeleted, LocksSlugAfterPublication, SoftDeletes, SyncsLegacyPublishedFlag;
+    use HasCoverImages, HasFactory, HasPublishingStatus, HasTagsUntilForceDeleted, LocksSlugAfterPublication, SoftDeletes, SyncsLegacyBody, SyncsLegacyPublishedFlag;
 
     use LogsActivity;
 
@@ -84,7 +86,7 @@ class Post extends Model implements Publishable
                 'title',
                 'slug',
                 'excerpt',
-                'body',
+                'content',
                 'source_url',
                 'last_reviewed_at',
                 'cover_image',
@@ -130,8 +132,8 @@ class Post extends Model implements Publishable
         $query->where(function (Builder $query): void {
             $query->whereNull('excerpt')
                 ->orWhere('excerpt', '')
-                ->orWhereNull('body')
-                ->orWhere('body', '')
+                ->orWhereNull('content')
+                ->orWhere('content', '')
                 ->orWhereNull('cover_image')
                 ->orWhere('cover_image', '')
                 ->orWhereNull('meta_title')
@@ -169,7 +171,7 @@ class Post extends Model implements Publishable
     protected function readingTime(): Attribute
     {
         return Attribute::make(get: function (): int {
-            $words = str_word_count(strip_tags($this->body ?? ''));
+            $words = str_word_count(strip_tags($this->content ?? ''));
 
             return max(1, (int) ceil($words / 200));
         });
@@ -223,7 +225,7 @@ class Post extends Model implements Publishable
     public function publishingIssues(): array
     {
         return array_values(array_filter([
-            blank($this->body) ? 'Add post content' : null,
+            blank($this->content) ? 'Add post content' : null,
             blank($this->excerpt) ? 'Add an excerpt' : null,
             blank($this->category) ? 'Choose a category' : null,
         ]));

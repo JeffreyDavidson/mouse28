@@ -45,7 +45,7 @@ class EditorialReadiness
     {
         return array_values(array_filter([
             blank($post->excerpt) ? 'Add an excerpt' : null,
-            blank($post->body) ? 'Add post content' : null,
+            blank($post->content) ? 'Add post content' : null,
             blank($post->cover_image) ? 'Add a cover image' : null,
             filled($post->last_reviewed_at) && blank($post->source_url) ? 'Add an official source' : null,
             filled($post->source_url) && blank($post->last_reviewed_at) ? 'Set the review date' : null,
@@ -60,7 +60,7 @@ class EditorialReadiness
     {
         return array_values(array_filter([
             blank($guide->excerpt) ? 'Add an excerpt' : null,
-            blank($guide->body) ? 'Add guide content' : null,
+            blank($guide->content) ? 'Add guide content' : null,
             blank($guide->cover_image) ? 'Add a cover image' : null,
             blank($guide->source_url) ? 'Add an official source' : null,
             blank($guide->last_reviewed_at) ? 'Set the review date' : null,

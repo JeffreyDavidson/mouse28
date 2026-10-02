@@ -161,3 +161,16 @@ test('publishing actions disappear when admin access is revoked for the guide', 
     'publish' => [true, 'publish'],
     'unpublish' => [false, 'unpublish'],
 ]);
+
+test('the edit form loads and saves the guide content', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $record = Guide::factory()->draft()->create(['content' => 'Original guide content.']);
+
+    $page = livewire(EditGuide::class, ['record' => $record->getRouteKey()]);
+    $page->assertSchemaStateSet(['content' => 'Original guide content.']);
+    $page->fillForm(['content' => "## Updated\n\nNew guide content."])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($record->refresh()->content)->toBe("## Updated\n\nNew guide content.");
+});

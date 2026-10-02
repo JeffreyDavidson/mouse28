@@ -61,11 +61,11 @@ test('continuation queries select only the fields rendered by their cards', func
     $nextEpisode = ContentContinuation::nextEpisode($currentEpisode);
 
     expect($relatedPost->getAttributes())
-        ->toHaveKeys(['id', 'slug', 'title', 'category', 'body', 'cover_image'])
+        ->toHaveKeys(['id', 'slug', 'title', 'category', 'content', 'cover_image'])
         ->not->toHaveKeys(['excerpt', 'meta_description'])
         ->and($relatedGuide->getAttributes())
         ->toHaveKeys(['id', 'slug', 'title', 'category', 'cover_image'])
-        ->not->toHaveKeys(['body', 'excerpt', 'meta_description'])
+        ->not->toHaveKeys(['content', 'excerpt', 'meta_description'])
         ->and($previousEpisode?->getAttributes())
         ->toHaveKeys(['id', 'slug', 'title'])
         ->not->toHaveKeys(['description', 'show_notes', 'transcript'])
