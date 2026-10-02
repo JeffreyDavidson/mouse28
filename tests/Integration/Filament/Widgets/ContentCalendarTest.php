@@ -44,5 +44,5 @@ test('timeline queries select only fields rendered by the calendar', function ()
 
     expect($queries)->toHaveCount(3)
         ->each->not->toContain('select *')
-        ->toContain('select "id", "title", "is_published", "published_at"');
+        ->toContain('select "id", "title", "status", "published_at"');
 });

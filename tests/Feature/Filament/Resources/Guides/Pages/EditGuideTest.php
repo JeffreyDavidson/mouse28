@@ -2,6 +2,7 @@
 
 use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
+use App\Enums\PublishStatus;
 use App\Filament\Resources\Guides\GuideResource;
 use App\Filament\Resources\Guides\Pages\EditGuide;
 use App\Models\Guide;
@@ -24,7 +25,7 @@ test('previously published URLs stay locked after clearing the date and unpublis
         ->fillForm(['published_at' => null])
         ->call('save')
         ->assertHasNoFormErrors();
-    $record->refresh()->update(['is_published' => false]);
+    $record->refresh()->update(['status' => PublishStatus::Draft]);
 
     livewire(EditGuide::class, ['record' => $record->getRouteKey()])
         ->fillForm(['slug' => 'replacement-url'])
@@ -95,7 +96,7 @@ test('drafts with their required details can be published while advisory details
         ->callAction('publish')
         ->assertNotified('Guide published');
 
-    expect($record->refresh()->is_published)->toBeTrue()
+    expect($record->refresh()->status)->toBe(PublishStatus::Published)
         ->and($record->published_at)->not->toBeNull();
 
 });
@@ -108,7 +109,7 @@ test('published content can be explicitly unpublished', function (): void {
         ->callAction('unpublish')
         ->assertNotified('Guide unpublished');
 
-    expect($record->refresh()->is_published)->toBeFalse();
+    expect($record->refresh()->status)->toBe(PublishStatus::Draft);
 });
 
 test('deleted content leaves the public site and can be restored by an administrator', function (): void {

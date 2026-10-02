@@ -5,10 +5,14 @@ namespace App\Models;
 use App\Contracts\Publishable;
 use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
+use App\Enums\PublishStatus;
 use App\Enums\SourceReviewStatus;
+use App\Models\Attributes\PublishingStatus;
 use App\Models\Concerns\HasCoverImages;
-use App\Models\Concerns\HasPublication;
+use App\Models\Concerns\HasPublishingStatus;
 use App\Models\Concerns\HasTagsUntilForceDeleted;
+use App\Models\Concerns\LocksSlugAfterPublication;
+use App\Models\Concerns\SyncsLegacyPublishedFlag;
 use Carbon\CarbonInterface;
 use Database\Factories\GuideFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -25,6 +29,7 @@ use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
 /**
+ * @property PublishStatus $status
  * @property ContentAuthor|null $author
  * @property GuideCategory $category
  * @property Carbon|null $last_reviewed_at
@@ -37,11 +42,11 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property-read string|null $og_image_url
  * @property-read int $reading_time
  *
- * @method static Builder<static> drafts()
  * @method static Builder<static> needsAttention()
  * @method static Builder<static> published()
  * @method static Builder<static> reviewDue()
  * @method static Builder<static> scheduled()
+ * @method static Builder<static> unpublished()
  */
 #[Fillable([
     'title',
@@ -53,16 +58,17 @@ use Spatie\Activitylog\Support\LogOptions;
     'cover_image',
     'source_url',
     'last_reviewed_at',
-    'is_published',
+    'status',
     'published_at',
     'meta_title',
     'meta_description',
     'og_image',
 ])]
+#[PublishingStatus]
 class Guide extends Model implements Publishable
 {
     /** @use HasFactory<GuideFactory> */
-    use HasCoverImages, HasFactory, HasPublication, HasTagsUntilForceDeleted, SoftDeletes;
+    use HasCoverImages, HasFactory, HasPublishingStatus, HasTagsUntilForceDeleted, LocksSlugAfterPublication, SoftDeletes, SyncsLegacyPublishedFlag;
 
     use LogsActivity;
 
@@ -80,7 +86,7 @@ class Guide extends Model implements Publishable
                 'cover_image',
                 'source_url',
                 'last_reviewed_at',
-                'is_published',
+                'status',
                 'published_at',
                 'meta_title',
                 'meta_description',
@@ -119,7 +125,7 @@ class Guide extends Model implements Publishable
             }
 
             $query->orWhere(function (Builder $query): void {
-                $query->where('is_published', true)->whereNull('published_at');
+                $query->whereIn('status', [PublishStatus::Published, PublishStatus::Scheduled])->whereNull('published_at');
             });
         });
     }
@@ -167,7 +173,7 @@ class Guide extends Model implements Publishable
         return [
             'author' => ContentAuthor::class,
             'category' => GuideCategory::class,
-            'is_published' => 'boolean',
+            'status' => PublishStatus::class,
             'last_reviewed_at' => 'date',
             'published_at' => 'datetime',
             'slug_locked_at' => 'datetime',

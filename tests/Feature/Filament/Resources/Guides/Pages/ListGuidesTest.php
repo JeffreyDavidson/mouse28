@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PublishStatus;
 use App\Filament\Resources\Guides\GuideResource;
 use App\Filament\Resources\Guides\Pages\ListGuides;
 use App\Models\Guide;
@@ -22,26 +23,27 @@ test('authenticated user can render the resource listing', function (): void {
         ->assertSee('New Guide');
 });
 
-test('content table shows readiness and missing publish dates', function (): void {
+test('content table shows readiness and the persisted publish status', function (): void {
     $admin = User::factory()->admin()->create();
-    Guide::factory()->create(['published_at' => null]);
+    Guide::factory()->create(['status' => PublishStatus::InReview]);
 
     actingAs($admin);
 
     get(GuideResource::getUrl())
         ->assertOk()
         ->assertSee('Readiness')
-        ->assertSee('Needs publish date');
+        ->assertSee('In Review');
 });
 
 test('draft and scheduled tabs filter guides', function (): void {
     $draft = Guide::factory()->draft()->create();
+    $inReview = Guide::factory()->create(['status' => PublishStatus::InReview]);
     $scheduled = Guide::factory()->scheduled()->create();
     actingAs(User::factory()->admin()->create());
 
     livewire(ListGuides::class)
         ->set('activeTab', 'drafts')
-        ->assertCanSeeTableRecords([$draft])
+        ->assertCanSeeTableRecords([$draft, $inReview])
         ->assertCanNotSeeTableRecords([$scheduled])
         ->set('activeTab', 'scheduled')
         ->assertCanSeeTableRecords([$scheduled])
@@ -52,6 +54,7 @@ test('header does not count scheduled guides as published', function (): void {
     Guide::factory()->create();
     Guide::factory()->scheduled()->create();
     Guide::factory()->draft()->create();
+    Guide::factory()->create(['status' => PublishStatus::InReview]);
     actingAs(User::factory()->admin()->create());
 
     $page = livewire(ListGuides::class);
@@ -60,7 +63,7 @@ test('header does not count scheduled guides as published', function (): void {
     expect($component->getHeader()?->getData())
         ->toMatchArray([
             'published' => 1,
-            'drafts' => 1,
+            'drafts' => 2,
         ]);
 });
 

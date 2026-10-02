@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PublishStatus;
 use App\Livewire\BlogArchive;
 use App\Models\Episode;
 use App\Models\Podcast;
@@ -163,7 +164,7 @@ test('published post detail page renders', function (): void {
         'body' => 'Start with a flexible plan. '.str_repeat('accessible park planning ', 198),
         'category' => 'park-accessibility',
         'author' => 'jeffrey',
-        'is_published' => true,
+        'status' => PublishStatus::Published,
         'published_at' => now()->subDay(),
     ]);
 

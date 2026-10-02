@@ -3,6 +3,7 @@
 use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
 use App\Enums\PostCategory;
+use App\Enums\PublishStatus;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
@@ -68,7 +69,7 @@ test('sync refuses unpublished identity collisions without changing content', fu
     $service = app(PublicContentArchive::class);
     $archive = $service->export();
     $record->update($state === 'draft'
-        ? ['is_published' => false, 'title' => 'Local work']
+        ? ['status' => PublishStatus::Draft, 'title' => 'Local work']
         : ['published_at' => now()->addWeek(), 'title' => 'Local work']);
 
     $exception = null;
@@ -173,4 +174,38 @@ test('archive validation requires guide enum values', function (string $field): 
 })->with([
     'author' => 'author',
     'category' => 'category',
+]);
+
+test('export includes only live content by its publish status', function (PostFactory|GuideFactory|EpisodeFactory $factory): void {
+    $factory->createOne(['slug' => 'live-content']);
+    $factory->draft()->createOne();
+    $factory->createOne(['status' => PublishStatus::InReview]);
+    $factory->scheduled()->createOne();
+
+    $archive = app(PublicContentArchive::class)->export();
+
+    expect(array_column([...$archive['posts'], ...$archive['guides'], ...$archive['episodes']], 'slug'))->toBe(['live-content']);
+})->with([
+    'posts' => fn () => Post::factory(),
+    'guides' => fn () => Guide::factory(),
+    'episodes' => fn () => Episode::factory(),
+]);
+
+test('archives without a status field import as published content', function (PostFactory|GuideFactory|EpisodeFactory $factory): void {
+    $record = $factory->createOne();
+    $service = app(PublicContentArchive::class);
+    $archive = $service->export();
+    $record->forceDelete();
+
+    $service->import($archive);
+
+    $imported = $record::query()->sole();
+    expect([...$archive['posts'], ...$archive['guides'], ...$archive['episodes']])->each->not->toHaveKeys(['status', 'is_published'])
+        ->and($imported->publishStatus())->toBe(PublishStatus::Published)
+        ->and($imported->isPublished())->toBeTrue()
+        ->and($imported->getAttribute('is_published'))->toBeTruthy();
+})->with([
+    'posts' => fn () => Post::factory(),
+    'guides' => fn () => Guide::factory(),
+    'episodes' => fn () => Episode::factory(),
 ]);

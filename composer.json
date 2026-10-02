@@ -82,7 +82,7 @@
             "@php artisan test --exclude-testsuite=Browser --fail-on-risky"
         ],
         "test:architecture": "@php artisan test --compact --testsuite=Architecture --fail-on-risky",
-        "test:mysql": "MOUSE28_TEST_MYSQL=1 php artisan test --compact tests/Integration/Models tests/Integration/Database/Migrations tests/Integration/Support/PublicContentArchiveTest.php tests/Integration/Support/ContentPermalinkTest.php tests/Integration/Support/TextSearchTest.php tests/Feature/Filament/Resources/Posts/Pages/CreatePostTest.php tests/Feature/Filament/Resources/Episodes/Pages/CreateEpisodeTest.php tests/Feature/Filament/Resources/Guides/Pages/CreateGuideTest.php",
+        "test:mysql": "MOUSE28_TEST_MYSQL=1 php artisan test --compact tests/Integration/Models tests/Integration/Database/Migrations tests/Integration/Support/PublicContentArchiveTest.php tests/Integration/Support/TextSearchTest.php tests/Feature/Filament/Resources/Posts/Pages/CreatePostTest.php tests/Feature/Filament/Resources/Episodes/Pages/CreateEpisodeTest.php tests/Feature/Filament/Resources/Guides/Pages/CreateGuideTest.php",
         "test:browser": "@php artisan test --testsuite=Browser --fail-on-risky",
         "test:browser:compatibility": "@php artisan test --compact --testsuite=Browser --group=browser-compatibility --fail-on-risky",
         "test:browser:smoke": "@php artisan test --compact --testsuite=Browser --group=browser-smoke --fail-on-risky",
@@ -149,9 +149,9 @@
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/ArtworkSourceCache.php --filter='cache reuses a source hash'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/PublicContentArchive.php --filter='archive'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/ResponsiveArtwork.php --filter='responsive artwork'",
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/EditorialReadiness.php --filter='(publication status|readiness reports|episode readiness|complete content|sourced posts)'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/EditorialReadiness.php --filter='(without a publish date|readiness reports|episode readiness|complete content|sourced posts)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/ContentContinuation.php --filter='(related posts|continuation queries|related guides|episode)'",
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Models/Concerns/HasPublication.php --filter='(content is live|publication scopes)'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Models/Concerns/HasPublishingStatus.php --filter='(agree on what is live|publishing keeps|unpublishing returns)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Models/Concerns/HasCoverImages.php --filter='image paths'"
         ],
         "test:mutate:integrations": [

@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\ContentAuthor;
+use App\Enums\PublishStatus;
 use App\Filament\Widgets\QuickDraft;
 use App\Models\Post;
 use App\Models\User;
@@ -56,5 +57,5 @@ test('an administrator can save a post draft from the dashboard widget', functio
         ->and($post->excerpt)->toBe('Ideas to develop for a future post.')
         ->and($post->body)->toBe('Ideas to develop for a future post.')
         ->and($post->author)->toBe(ContentAuthor::Both)
-        ->and($post->is_published)->toBeFalse();
+        ->and($post->status)->toBe(PublishStatus::Draft);
 });

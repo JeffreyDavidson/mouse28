@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PublishStatus;
 use App\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
 use App\Filament\Resources\NewsletterIssues\Pages\ListNewsletterIssues;
 use App\Models\NewsletterIssue;
@@ -30,10 +31,11 @@ test('the list shows each issue with a readable status', function (): void {
     $live = NewsletterIssue::factory()->create();
     $scheduled = NewsletterIssue::factory()->scheduled()->create();
     $draft = NewsletterIssue::factory()->draft()->create();
+    $inReview = NewsletterIssue::factory()->create(['status' => PublishStatus::InReview]);
 
     livewire(ListNewsletterIssues::class)
-        ->assertCanSeeTableRecords([$live, $scheduled, $draft])
-        ->assertSee(['Published', 'Scheduled', 'Draft']);
+        ->assertCanSeeTableRecords([$live, $scheduled, $draft, $inReview])
+        ->assertSee(['Published', 'Scheduled', 'Draft', 'In Review']);
 });
 
 test('the tabs narrow the list to drafts, scheduled or published issues', function (string $tab, string $visible): void {
@@ -57,10 +59,11 @@ test('the header does not count scheduled issues as published', function (): voi
     NewsletterIssue::factory()->create();
     NewsletterIssue::factory()->scheduled()->create();
     NewsletterIssue::factory()->draft()->create();
+    NewsletterIssue::factory()->create(['status' => PublishStatus::InReview]);
 
     $header = livewire(ListNewsletterIssues::class)->instance()->getHeader();
 
-    expect($header?->getData())->toMatchArray(['published' => 1, 'drafts' => 1]);
+    expect($header?->getData())->toMatchArray(['published' => 1, 'drafts' => 2]);
 });
 
 test('issues can be found by title', function (): void {

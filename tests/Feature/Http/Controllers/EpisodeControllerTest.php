@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PublishStatus;
 use App\Models\Episode;
 use App\Models\Podcast;
 use App\Models\User;
@@ -123,7 +124,7 @@ test('published episode detail page renders', function (): void {
         'season_number' => 1,
         'duration_seconds' => 1800,
         'transistor_url' => 'https://share.transistor.fm/s/428d650c',
-        'is_published' => true,
+        'status' => PublishStatus::Published,
         'published_at' => now()->subDay(),
     ]);
 

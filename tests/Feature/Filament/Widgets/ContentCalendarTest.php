@@ -14,15 +14,15 @@ use function Pest\Livewire\livewire;
 pest()->use(RefreshDatabase::class);
 
 test('content calendar lists the next seven days in chronological order', function (): void {
-    $post = Post::factory()->create([
+    $post = Post::factory()->scheduled()->create([
         'title' => 'Example post',
         'published_at' => now()->addDays(2),
     ]);
-    $episode = Episode::factory()->create([
+    $episode = Episode::factory()->scheduled()->create([
         'title' => 'Example episode',
         'published_at' => now()->addDay(),
     ]);
-    $guide = Guide::factory()->create([
+    $guide = Guide::factory()->scheduled()->create([
         'title' => 'Example guide',
         'published_at' => now()->addDays(3),
     ]);

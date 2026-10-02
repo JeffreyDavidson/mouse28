@@ -71,7 +71,7 @@ The Filament panel is available at `/admin` to users with `is_admin = true`.
 - Show-level podcast destinations appear throughout the public site and act as fallbacks when an episode does not have a platform-specific URL. Transistor owns the canonical RSS feed and embedded episode players; the legacy `/rss/podcast` URL permanently redirects there.
 - Content lists show publication status and readiness reminders. Edit pages provide administrator-only draft previews.
 
-Content is publicly visible only when it is marked published and its publication date is not in the future. Community Stories and reader-submitted story publishing are intentionally outside the product scope.
+Content is publicly visible only when its status is Published or Scheduled and its publication date is not in the future. Community Stories and reader-submitted story publishing are intentionally outside the product scope.
 
 Published post, guide, and episode pages emit Schema.org content and breadcrumb data. Guides older than the configured review interval display a reader notice and are flagged in Filament.
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PublishStatus;
 use App\Filament\Resources\Episodes\EpisodeResource;
 use App\Filament\Resources\Episodes\Pages\ListEpisodes;
 use App\Models\Episode;
@@ -20,26 +21,27 @@ test('authenticated user can render the resource listing', function (): void {
         ->assertSee('Episodes');
 });
 
-test('content table shows readiness and missing publish dates', function (): void {
+test('content table shows readiness and the persisted publish status', function (): void {
     $admin = User::factory()->admin()->create();
-    Episode::factory()->create(['published_at' => null]);
+    Episode::factory()->create(['status' => PublishStatus::InReview]);
 
     actingAs($admin);
 
     get(EpisodeResource::getUrl())
         ->assertOk()
         ->assertSee('Readiness')
-        ->assertSee('Needs publish date');
+        ->assertSee('In Review');
 });
 
 test('draft and scheduled tabs filter episodes', function (): void {
     $draft = Episode::factory()->draft()->create();
+    $inReview = Episode::factory()->create(['status' => PublishStatus::InReview]);
     $scheduled = Episode::factory()->scheduled()->create();
     actingAs(User::factory()->admin()->create());
 
     livewire(ListEpisodes::class)
         ->set('activeTab', 'drafts')
-        ->assertCanSeeTableRecords([$draft])
+        ->assertCanSeeTableRecords([$draft, $inReview])
         ->assertCanNotSeeTableRecords([$scheduled])
         ->set('activeTab', 'scheduled')
         ->assertCanSeeTableRecords([$scheduled])
@@ -51,6 +53,7 @@ test('header does not count scheduled episodes as published', function (): void 
     Episode::factory()->create();
     Episode::factory()->scheduled()->create();
     Episode::factory()->draft()->create();
+    Episode::factory()->create(['status' => PublishStatus::InReview]);
     actingAs(User::factory()->admin()->create());
 
     // Act
@@ -62,6 +65,6 @@ test('header does not count scheduled episodes as published', function (): void 
     expect($header?->getData())
         ->toMatchArray([
             'published' => 1,
-            'drafts' => 1,
+            'drafts' => 2,
         ]);
 });
