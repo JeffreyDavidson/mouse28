@@ -42,11 +42,12 @@ test('blog pages stay within their query budget as content grows', function (str
     Post::factory()->count(30)->create(['category' => 'disney-tips']);
     $url = $page === 'index' ? route('blog.index') : route('blog.show', $post);
 
+    // Includes one query for the footer social links.
     $this->expectsDatabaseQueryCount($queries);
 
     get($url)
         ->assertOk();
-})->with(['archive' => ['index', 4], 'article with episode' => ['show', 4]]);
+})->with(['archive' => ['index', 5], 'article with episode' => ['show', 5]]);
 
 test('blog featured cover is prioritized while archive cards remain deferred', function (): void {
     Storage::fake('public');

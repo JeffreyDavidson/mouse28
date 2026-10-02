@@ -1,9 +1,11 @@
 <?php
 
+use App\Enums\SocialPlatform;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Podcast;
 use App\Models\Post;
+use App\Models\SocialProfile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Laravel\get;
@@ -26,7 +28,8 @@ test('homepage stays within its query budget as content grows', function (): voi
     Post::factory()->count(30)->create();
     Episode::factory()->count(15)->create();
 
-    $this->expectsDatabaseQueryCount(3);
+    // Includes one query for the footer social links.
+    $this->expectsDatabaseQueryCount(4);
 
     get(route('home'))
         ->assertOk();
@@ -210,4 +213,34 @@ test('homepage links that open a new tab announce it', function (): void {
     $response = get(route('home'))->assertOk();
 
     expect($this->unannouncedNewTabLinks($response))->toBeEmpty();
+});
+
+test('the footer lists enabled footer profiles as external links', function (): void {
+    SocialProfile::factory()->create([
+        'platform' => SocialPlatform::Instagram,
+        'url' => 'https://instagram.com/mouse28',
+        'sort_order' => 10,
+    ]);
+    SocialProfile::factory()->create([
+        'platform' => SocialPlatform::TikTok,
+        'url' => 'https://tiktok.com/@mouse28',
+        'label' => '@mouse28',
+        'sort_order' => 20,
+    ]);
+    SocialProfile::factory()->create(['url' => 'https://hidden.example.com/off', 'is_enabled' => false]);
+    SocialProfile::factory()->create(['url' => 'https://hidden.example.com/contact-only', 'show_in_footer' => false]);
+
+    get(route('home'))
+        ->assertOk()
+        ->assertSeeInOrder(['Instagram', 'TikTok'])
+        ->assertSeeHtml('href="https://instagram.com/mouse28"')
+        ->assertSeeHtml('href="https://tiktok.com/@mouse28"')
+        ->assertSeeHtml('rel="noopener noreferrer"')
+        ->assertDontSee(['hidden.example.com']);
+});
+
+test('the footer shows no social links when none are configured', function (): void {
+    get(route('home'))
+        ->assertOk()
+        ->assertDontSee('Follow');
 });

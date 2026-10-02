@@ -52,7 +52,7 @@ class PodcastSettings extends Page
         $podcast = Podcast::settings();
         $this->form->fill($podcast->only([
             'name', 'description', 'cover_image',
-            'apple_url', 'spotify_url', 'youtube_url', 'instagram_url', 'tiktok_url',
+            'apple_url', 'spotify_url', 'youtube_url',
         ]));
     }
 
@@ -93,17 +93,6 @@ class PodcastSettings extends Page
                         TextInput::make('spotify_url')->url()->maxLength(255)->label('Spotify')
                             ->prefixIcon(Heroicon::OutlinedLink),
                         TextInput::make('youtube_url')->url()->maxLength(255)->label('YouTube')
-                            ->prefixIcon(Heroicon::OutlinedLink),
-                    ]),
-
-                Section::make('Social Media')
-                    ->icon(Heroicon::OutlinedHeart)
-                    ->description('Connect your social accounts')
-                    ->columns(2)
-                    ->schema([
-                        TextInput::make('instagram_url')->url()->maxLength(255)->label('Instagram')
-                            ->prefixIcon(Heroicon::OutlinedLink),
-                        TextInput::make('tiktok_url')->url()->maxLength(255)->label('TikTok')
                             ->prefixIcon(Heroicon::OutlinedLink),
                     ]),
 
