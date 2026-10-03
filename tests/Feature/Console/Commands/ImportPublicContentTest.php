@@ -29,7 +29,7 @@ test('public content archive is imported idempotently with podcast metadata', fu
             'title' => 'Example Post',
             'slug' => 'example-post',
             'content' => '',
-            'episode_slug' => 'example-episode',
+            'episode_slugs' => ['example-episode'],
             'published_at' => now()->subDay()->toAtomString(),
         ]],
         'guides' => [[
@@ -53,7 +53,7 @@ test('public content archive is imported idempotently with podcast metadata', fu
 
     expect($exitCode)->toBe(Command::SUCCESS)
         ->and($repeatExitCode)->toBe(Command::SUCCESS)
-        ->and(Post::query()->where('slug', 'example-post')->firstOrFail()->episode?->slug)->toBe('example-episode')
+        ->and(Post::query()->where('slug', 'example-post')->firstOrFail()->episodes->pluck('slug')->all())->toBe(['example-episode'])
         ->and(Episode::query()->where('slug', 'example-episode')->firstOrFail()->transistor_url)->toBe('https://example.com/episode-audio')
         ->and(Guide::query()->where('slug', 'example-guide')->firstOrFail()->status)->toBe(PublishStatus::Published)
         ->and(Podcast::query()->firstOrFail()->name)->toBe('Example Podcast')

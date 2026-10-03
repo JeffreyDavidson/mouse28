@@ -222,14 +222,14 @@ test('table pagination selects have an accessible name', function (): void {
         ->assertNoJavaScriptErrors();
 })->group('browser-smoke');
 
-test('related episode combobox exposes an accessible searchable listbox', function (): void {
+test('related episodes combobox exposes an accessible searchable listbox', function (): void {
     // Arrange
     actingAs(User::factory()->admin()->create());
     Episode::factory()->create(['title' => 'Example Episode']);
 
     // Act
     $page = visit(PostResource::getUrl('create'));
-    $page->click('button[role="combobox"][id="form.episode_id"]');
+    $page->click('button[role="combobox"][id="form.episodes"]');
 
     // Assert
     $page->assertScript(<<<'JS'
@@ -246,16 +246,16 @@ test('related episode combobox exposes an accessible searchable listbox', functi
 
     $page->assertScript(<<<'JS'
             (() => {
-                const combobox = document.querySelector('button[role="combobox"][id="form.episode_id"]');
+                const combobox = document.querySelector('button[role="combobox"][id="form.episodes"]');
                 const listbox = document.getElementById(combobox?.getAttribute('aria-controls') ?? '');
-                const label = document.querySelector('label[for="form.episode_id"]');
+                const label = document.querySelector('label[for="form.episodes"]');
                 const dropdown = listbox?.closest('.fi-dropdown-panel');
                 const searchInput = dropdown?.querySelector('.fi-select-input-search-ctn input');
 
                 return Boolean(combobox && listbox && label && dropdown && searchInput)
                     && combobox.getAttribute('aria-haspopup') === 'listbox'
                     && combobox.getAttribute('aria-expanded') === 'true'
-                    && label.textContent.trim() === 'Related Episode'
+                    && label.textContent.trim() === 'Related Episodes'
                     && listbox.tagName === 'UL'
                     && listbox.getAttribute('role') === 'listbox'
                     && !listbox.contains(searchInput)
@@ -271,7 +271,7 @@ test('related episode combobox exposes an accessible searchable listbox', functi
         ->keys(':focus', 'ArrowDown')
         ->assertScript(<<<'JS'
             (() => {
-                const combobox = document.querySelector('#form\\.episode_id');
+                const combobox = document.querySelector('#form\\.episodes');
                 const listbox = document.getElementById(combobox?.getAttribute('aria-controls') ?? '');
                 const activeOptionId = listbox?.getAttribute('aria-activedescendant');
 
@@ -281,7 +281,7 @@ test('related episode combobox exposes an accessible searchable listbox', functi
             })()
             JS, true)
         ->keys(':focus', 'Escape')
-        ->assertScript('document.querySelector("#form\\\\.episode_id").getAttribute("aria-expanded")', 'false')
+        ->assertScript('document.querySelector("#form\\\\.episodes").getAttribute("aria-expanded")', 'false')
         ->assertNoJavaScriptErrors();
 })->group('browser-smoke');
 

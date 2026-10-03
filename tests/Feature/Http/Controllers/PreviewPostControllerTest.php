@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Episode;
 use App\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
@@ -43,4 +44,17 @@ test('the former numeric preview address no longer shows the draft', function ()
     $post = Post::factory()->draft()->create();
 
     expect(get("/preview/posts/{$post->id}")->status())->toBeIn([403, 404]);
+});
+
+test('a signed preview links every related episode, published or not', function (): void {
+    $post = Post::factory()->draft()->create();
+    $post->episodes()->attach([
+        Episode::factory()->draft()->create(['title' => 'Unannounced podcast episode'])->id,
+        Episode::factory()->create(['title' => 'Released podcast episode'])->id,
+    ]);
+
+    get(URL::temporarySignedRoute('preview.post', Date::now()->addHour(), ['post' => $post]))
+        ->assertOk()
+        ->assertSee('Unannounced podcast episode')
+        ->assertSee('Released podcast episode');
 });

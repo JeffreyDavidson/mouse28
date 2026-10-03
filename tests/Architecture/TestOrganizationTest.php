@@ -57,6 +57,8 @@ test('test paths mirror their application source', function (string $suite): voi
         'Database/Migrations/CreateSocialProfilesTableTest.php' => 'database/migrations/2026_10_02_173351_create_social_profiles_table.php',
         'Database/Migrations/AddPublishStatusToEditorialContentTest.php' => 'database/migrations/2026_10_02_195819_add_publish_status_to_editorial_content.php',
         'Database/Migrations/AddContentToPostsAndGuidesTest.php' => 'database/migrations/2026_10_02_212427_add_content_to_posts_and_guides.php',
+        'Database/Migrations/CreateEpisodePostTableTest.php' => 'database/migrations/2026_10_02_235304_create_episode_post_table.php',
+        'Database/Migrations/CopyPostEpisodeLinksToEpisodePostTest.php' => 'database/migrations/2026_10_02_235306_copy_post_episode_links_to_episode_post.php',
         'Http/ProductionSmokeTest.php' => 'routes/web.php',
         'Support/DeploymentSmokeClientTest.php' => 'tests/Support/DeploymentSmokeClient.php',
     ];

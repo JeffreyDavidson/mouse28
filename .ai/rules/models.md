@@ -29,3 +29,6 @@ Posts, guides, episodes and newsletter issues store `status` as `App\Enums\Publi
 
 ## Write post and guide text to content
 Posts and guides store their Markdown in the nullable `content` column (TLA's name; TLA's is NOT NULL). Never read or write `body`: `SyncsLegacyBody` mirrors `content` into it on save (`content ?? ''`) until a guarded follow-up release drops the column and the trait together. Public archives write `content` and still import older archives that carry `body`.
+
+## Relate posts to episodes through episode_post
+A post relates to any number of episodes through the `episode_post` pivot (`Post::episodes()` / `Episode::posts()`, TLA's shape). Never read or write `posts.episode_id`: it was copied into the pivot and stays only until a guarded follow-up release drops it (no mirroring trait, owner decision). Public pages show published related episodes only. Public archives write `episode_slugs` and still import an older single `episode_slug`.
