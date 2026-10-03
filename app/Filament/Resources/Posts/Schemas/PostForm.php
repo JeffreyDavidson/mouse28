@@ -3,9 +3,10 @@
 namespace App\Filament\Resources\Posts\Schemas;
 
 use App\Enums\ContentAuthor;
-use App\Enums\PostCategory;
 use App\Filament\Forms\Components\PublishStatusSelect;
+use App\Models\Category;
 use App\Models\Post;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
@@ -56,9 +57,23 @@ class PostForm
                             ->maxLength(255)
                             ->columnSpan(2)
                             ->unique(),
-                        Select::make('category')
-                            ->options(PostCategory::class)
+                        Select::make('category_id')
+                            ->label('Category')
+                            ->relationship('category', 'name')
+                            ->searchable()
+                            ->preload()
+                            ->createOptionAction(fn (Action $action): Action => $action->authorize('create', Category::class))
+                            ->createOptionForm([
+                                TextInput::make('name')->required()
+                                    ->maxLength(255),
+                                TextInput::make('slug')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->regex('/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/')
+                                    ->unique(Category::class),
+                            ])
                             ->required()
+                            ->extraAlpineAttributes(['data-mouse28-accessible-select' => true])
                             ->columnSpan(1),
                         Select::make('author')
                             ->options(ContentAuthor::class)

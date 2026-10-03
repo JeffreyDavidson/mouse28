@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Category;
 use App\Models\Post;
 use App\Support\BlogRssFeed;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -45,4 +46,22 @@ test('blog feed describes a post without an excerpt from its content', function 
     $content = app(BlogRssFeed::class)->content();
 
     expect($content)->toContain('<description>Plan a flexible arrival.</description>');
+});
+
+test('blog feed names each post category by its escaped name', function (): void {
+    $category = Category::factory()->create(['name' => 'Food & Drink']);
+    Post::factory()->for($category)->count(2)->create();
+
+    $content = app(BlogRssFeed::class)->content();
+
+    expect(substr_count($content, '<category>Food &amp; Drink</category>'))->toBe(2);
+});
+
+test('blog feed leaves out the category element for an uncategorized post', function (): void {
+    Post::factory()->create(['category_id' => null]);
+
+    $content = app(BlogRssFeed::class)->content();
+
+    expect($content)->toContain('<item>')
+        ->not->toContain('<category>');
 });

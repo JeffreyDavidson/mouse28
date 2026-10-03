@@ -1,9 +1,9 @@
 <?php
 
 use App\Enums\ContentAuthor;
-use App\Enums\PostCategory;
 use App\Enums\PublishStatus;
 use App\Enums\SourceReviewStatus;
+use App\Models\Category;
 use App\Models\Episode;
 use App\Models\Post;
 use App\Models\User;
@@ -37,12 +37,12 @@ test('post editorial changes record the actor and changed values only', function
 
     $record->save();
 
-    expect(Activity::query()->count())->toBe(2);
+    expect(Activity::query()->whereMorphedTo('subject', $record)->count())->toBe(2);
 
     $record->delete();
     $record->restore();
 
-    expect(Activity::query()->pluck('event')->all())
+    expect(Activity::query()->whereMorphedTo('subject', $record)->pluck('event')->all())
         ->toBe(['created', 'updated', 'deleted', 'restored']);
 });
 
@@ -126,24 +126,59 @@ test('editorial scopes separate the content work queue', function (): void {
 test('content enums round trip through their existing database strings', function (): void {
     $record = Post::factory()->create([
         'author' => 'cassie',
-        'category' => 'park-accessibility',
     ]);
 
     $record->refresh();
 
     expect($record->author)->toBe(ContentAuthor::Cassie)
-        ->and($record->category)->toBe(PostCategory::ParkAccessibility)
         ->and($record->author_name)->toBe('Cassie Davidson');
 
-    $record->update(['author' => ContentAuthor::Both, 'category' => PostCategory::DisneyTips]);
+    $record->update(['author' => ContentAuthor::Both]);
     $record->refresh();
 
-    expect($record->category)->toBe(PostCategory::DisneyTips)
-        ->and($record->getRawOriginal('author'))->toBe('both')
-        ->and($record->getRawOriginal('category'))->toBe('disney-tips')
+    expect($record->getRawOriginal('author'))->toBe('both')
         ->and($record->toArray()['author'])->toBe('both')
-        ->and($record->toArray()['category'])->toBe('disney-tips')
         ->and($record->author_name)->toBe('Jeffrey & Cassie');
+});
+
+test('a post belongs to a category and is labelled with its name', function (): void {
+    $category = Category::factory()->create(['name' => 'Water Parks']);
+
+    $post = Post::factory()->for($category)->create();
+
+    expect($post->category?->is($category))->toBeTrue()
+        ->and($post->category_id)->toBe($category->id)
+        ->and($post->category_label)->toBe('Water Parks');
+});
+
+test('a post without a category has an empty category label', function (): void {
+    $post = Post::factory()->create(['category_id' => null]);
+
+    expect($post->category)->toBeNull()
+        ->and($post->category_label)->toBeEmpty();
+});
+
+test('posts write their category through category_id only', function (): void {
+    $post = new Post;
+
+    expect($post->getFillable())->toContain('category_id')
+        ->not->toContain('category')
+        ->and($post->getCasts())->not->toHaveKey('category')
+        ->and($post->getActivitylogOptions()->logAttributes)->toContain('category_id')
+        ->not->toContain('category');
+});
+
+test('post category changes are recorded in the editorial log', function (): void {
+    $from = Category::factory()->create();
+    $to = Category::factory()->create();
+    $record = Post::factory()->for($from)->create();
+
+    $record->update(['category_id' => $to->id]);
+
+    expect(Activity::query()->latest('id')->firstOrFail()->attribute_changes?->all() ?? [])->toEqual([
+        'attributes' => ['category_id' => $to->id],
+        'old' => ['category_id' => $from->id],
+    ]);
 });
 
 test('author initials are derived from the display name', function (?ContentAuthor $author, string $initials): void {
@@ -174,7 +209,7 @@ test('posts cannot be published without each required detail', function (string 
 })->with([
     'content' => ['content', 'Add post content'],
     'excerpt' => ['excerpt', 'Add an excerpt'],
-    'category' => ['category', 'Choose a category'],
+    'category' => ['category_id', 'Choose a category'],
 ]);
 
 test('posts report the freshness of their official source', function (?string $sourceUrl, ?int $reviewedDaysAgo, SourceReviewStatus $status): void {

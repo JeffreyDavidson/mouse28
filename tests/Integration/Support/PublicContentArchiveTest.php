@@ -2,8 +2,8 @@
 
 use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
-use App\Enums\PostCategory;
 use App\Enums\PublishStatus;
+use App\Models\Category;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
@@ -93,7 +93,7 @@ test('sync refuses unpublished identity collisions without changing content', fu
 ])->with(['draft', 'scheduled']);
 
 test('public archives retain string values and restore enum backed content', function (): void {
-    $post = Post::factory()->create(['author' => ContentAuthor::Cassie, 'category' => PostCategory::DisneyTips]);
+    $post = Post::factory()->inCategory('disney-tips')->create(['author' => ContentAuthor::Cassie]);
     $guide = Guide::factory()->create(['author' => ContentAuthor::Both, 'category' => GuideCategory::Accessibility]);
     $service = app(PublicContentArchive::class);
 
@@ -101,6 +101,8 @@ test('public archives retain string values and restore enum backed content', fun
 
     expect($archive['posts'][0]['author'])->toBe('cassie')
         ->and($archive['posts'][0]['category'])->toBe('disney-tips')
+        ->and($archive['posts'][0]['category_name'])->toBe('Disney Tips')
+        ->and($archive['posts'][0])->not->toHaveKey('category_id')
         ->and($archive['guides'][0]['author'])->toBe('both')
         ->and($archive['guides'][0]['category'])->toBe('accessibility');
 
@@ -129,7 +131,7 @@ test('public archives retain string values and restore enum backed content', fun
 
     expect($post->trashed())->toBeFalse()
         ->and($post->author)->toBe(ContentAuthor::Cassie)
-        ->and($post->category)->toBe(PostCategory::DisneyTips)
+        ->and($post->category?->slug)->toBe('disney-tips')
         ->and($guide->trashed())->toBeFalse()
         ->and($guide->author)->toBe(ContentAuthor::Both)
         ->and($guide->category)->toBe(GuideCategory::Accessibility);
@@ -150,19 +152,129 @@ test('archive validation rejects a non-string slug before importing any records'
     expect($post->title)->toBe('Original title');
 });
 
-test('invalid archive enum values roll back earlier imported records', function (): void {
+test('invalid archive category values roll back earlier imported records', function (string $field, mixed $value): void {
     $first = Post::factory()->create(['title' => 'Original first title', 'published_at' => now()->subDays(2)]);
     Post::factory()->create();
+    $categories = Category::query()->count();
     $service = app(PublicContentArchive::class);
     $archive = $service->export();
     $archive['posts'][0]['title'] = 'Changed by import';
-    $archive['posts'][1]['category'] = 'not-a-category';
+    $archive['posts'][1][$field] = $value;
 
     expect(fn () => $service->import($archive))->toThrow(InvalidArgumentException::class);
 
     $first->refresh();
 
-    expect($first->title)->toBe('Original first title');
+    expect($first->title)->toBe('Original first title')
+        ->and(Category::query()->count())->toBe($categories);
+})->with([
+    'a category that is not a slug' => ['category', 'Not A Category'],
+    'a category that is not a string' => ['category', ['disney-tips']],
+    'a category slug that is too long' => ['category', str_repeat('a', 256)],
+    'a category name that is not a string' => ['category_name', ['Disney Tips']],
+    'a category name that is too long' => ['category_name', str_repeat('a', 256)],
+]);
+
+test('archive export writes each post category slug and name', function (): void {
+    Post::factory()->inCategory('disney-tips')->create(['published_at' => now()->subDays(2)]);
+    Post::factory()->for(Category::factory()->create(['name' => 'Water Parks', 'slug' => 'water-parks']))->create(['published_at' => now()->subDay()]);
+
+    $archive = app(PublicContentArchive::class)->export();
+
+    expect(array_map(fn (array $post): array => [$post['category'], $post['category_name']], $archive['posts']))->toBe([
+        ['disney-tips', 'Disney Tips'],
+        ['water-parks', 'Water Parks'],
+    ]);
+});
+
+test('archive export carries no category for an uncategorized post', function (): void {
+    Post::factory()->create(['category_id' => null]);
+
+    $archive = app(PublicContentArchive::class)->export();
+
+    expect($archive['posts'][0]['category'])->toBeNull()
+        ->and($archive['posts'][0]['category_name'])->toBeNull();
+});
+
+test('archive import creates a category the local site does not have yet', function (): void {
+    $post = Post::factory()->create();
+    $service = app(PublicContentArchive::class);
+    $archive = $service->export();
+    $archive['posts'][0]['category'] = 'water-parks';
+    $archive['posts'][0]['category_name'] = 'Water Parks & Slides';
+
+    $service->import($archive);
+
+    $category = Category::query()->where('slug', 'water-parks')->sole();
+    expect($category->name)->toBe('Water Parks & Slides')
+        ->and($category->description)->toBeNull()
+        ->and($post->refresh()->category_id)->toBe($category->id);
+});
+
+test('archive import names a new category from its slug when the archive has no name', function (bool $withName, ?string $name): void {
+    $post = Post::factory()->create();
+    $service = app(PublicContentArchive::class);
+    $archive = $service->export();
+    $archive['posts'][0]['category'] = 'water-parks';
+    unset($archive['posts'][0]['category_name']);
+
+    if ($withName) {
+        $archive['posts'][0]['category_name'] = $name;
+    }
+
+    $service->import($archive);
+
+    expect(Category::query()->where('slug', 'water-parks')->sole()->name)->toBe('Water Parks')
+        ->and($post->refresh()->category?->slug)->toBe('water-parks');
+})->with([
+    'an older archive without the name' => [false, null],
+    'a null name' => [true, null],
+    'an empty name' => [true, ''],
+]);
+
+test('archive import links an existing category by slug and keeps its local name', function (): void {
+    $post = Post::factory()->create();
+    $local = Category::query()->where('slug', 'general')->sole();
+    $local->update(['name' => 'Local General']);
+    $categories = Category::query()->count();
+    $service = app(PublicContentArchive::class);
+    $archive = $service->export();
+    $archive['posts'][0]['category'] = 'general';
+    $archive['posts'][0]['category_name'] = 'General';
+
+    $service->import($archive);
+
+    expect($post->refresh()->category_id)->toBe($local->id)
+        ->and($local->refresh()->name)->toBe('Local General')
+        ->and(Category::query()->count())->toBe($categories);
+});
+
+test('archive import clears the category of a post exported without one', function (?string $slug): void {
+    $post = Post::factory()->create();
+    $categories = Category::query()->count();
+    $service = app(PublicContentArchive::class);
+    $archive = $service->export();
+    $archive['posts'][0]['category'] = $slug;
+    $archive['posts'][0]['category_name'] = null;
+
+    $service->import($archive);
+
+    expect($post->refresh()->category_id)->toBeNull()
+        ->and(Category::query()->count())->toBe($categories);
+})->with([
+    'a null category' => [null],
+    'an empty category' => [''],
+]);
+
+test('archive import leaves the category alone when the record carries none', function (): void {
+    $post = Post::factory()->create();
+    $service = app(PublicContentArchive::class);
+    $archive = $service->export();
+    unset($archive['posts'][0]['category'], $archive['posts'][0]['category_name']);
+
+    $service->import($archive);
+
+    expect($post->refresh()->category_id)->toBe($post->category_id);
 });
 
 test('archive validation requires guide enum values', function (string $field): void {

@@ -22,6 +22,7 @@ class PostShowViewModel
     public function data(Post $post, bool $preview = false): array
     {
         $post->load([
+            'category',
             'episodes' => $preview ? $this->orderedEpisodes(...) : $this->publishedEpisodes(...),
         ]);
 

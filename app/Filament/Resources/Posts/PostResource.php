@@ -35,7 +35,7 @@ class PostResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['title', 'slug', 'category', 'author'];
+        return ['title', 'slug', 'category.name', 'author'];
     }
 
     public static function getRecordRouteBindingEloquentQuery(): Builder

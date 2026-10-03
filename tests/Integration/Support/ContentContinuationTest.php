@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\GuideCategory;
+use App\Models\Category;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
@@ -25,30 +26,51 @@ test('episode neighbors use IDs to break equal publication dates', function (): 
 });
 
 test('related posts prioritize category and fill remaining slots with recent posts', function (): void {
-    $current = Post::factory()->create(['category' => 'park-accessibility']);
-    $olderMatch = Post::factory()->create([
-        'category' => 'park-accessibility',
+    $category = Category::factory()->create();
+    $current = Post::factory()->for($category)->create();
+    $olderMatch = Post::factory()->for($category)->create([
         'published_at' => now()->subDays(4),
     ]);
-    $newerMatch = Post::factory()->create([
-        'category' => 'park-accessibility',
+    $newerMatch = Post::factory()->for($category)->create([
         'published_at' => now()->subDays(3),
     ]);
     $fallback = Post::factory()->create([
-        'category' => 'food-reviews',
         'published_at' => now()->subDay(),
     ]);
-    Post::factory()->draft()->create(['category' => 'park-accessibility']);
-    Post::factory()->scheduled()->create(['category' => 'park-accessibility']);
+    Post::factory()->for($category)->draft()->create();
+    Post::factory()->for($category)->scheduled()->create();
 
     $related = ContentContinuation::relatedPosts($current, 3);
 
     expect($related->modelKeys())->toBe([$newerMatch->id, $olderMatch->id, $fallback->id]);
 });
 
+test('related posts arrive with their category names loaded', function (): void {
+    $category = Category::factory()->create(['name' => 'Sample Topic']);
+    $current = Post::factory()->for($category)->create();
+    Post::factory()->for($category)->create(['published_at' => now()->subDays(2)]);
+    Post::factory()->create(['published_at' => now()->subDays(3)]);
+
+    $related = ContentContinuation::relatedPosts($current);
+
+    expect($related)->toHaveCount(2)
+        ->and($related->every(fn (Post $post): bool => $post->relationLoaded('category')))->toBeTrue()
+        ->and($related->first()?->category_label)->toBe('Sample Topic');
+});
+
+test('related posts of an uncategorized post start with other uncategorized posts', function (): void {
+    $current = Post::factory()->create(['category_id' => null]);
+    $uncategorized = Post::factory()->create(['category_id' => null, 'published_at' => now()->subDays(3)]);
+    $recent = Post::factory()->create(['published_at' => now()->subDay()]);
+
+    $related = ContentContinuation::relatedPosts($current, 2);
+
+    expect($related->modelKeys())->toBe([$uncategorized->id, $recent->id]);
+});
+
 test('continuation queries select only the fields rendered by their cards', function (): void {
-    $post = Post::factory()->create(['category' => 'park-accessibility']);
-    Post::factory()->create(['category' => 'park-accessibility']);
+    $post = Post::factory()->inCategory('park-accessibility')->create();
+    Post::factory()->inCategory('park-accessibility')->create();
     $guide = Guide::factory()->create(['category' => GuideCategory::Accessibility]);
     Guide::factory()->create(['category' => GuideCategory::Accessibility]);
     $currentEpisode = Episode::factory()->create(['published_at' => now()->subDay()]);
@@ -61,8 +83,8 @@ test('continuation queries select only the fields rendered by their cards', func
     $nextEpisode = ContentContinuation::nextEpisode($currentEpisode);
 
     expect($relatedPost->getAttributes())
-        ->toHaveKeys(['id', 'slug', 'title', 'category', 'content', 'cover_image'])
-        ->not->toHaveKeys(['excerpt', 'meta_description'])
+        ->toHaveKeys(['id', 'slug', 'title', 'category_id', 'content', 'cover_image'])
+        ->not->toHaveKeys(['excerpt', 'meta_description', 'category'])
         ->and($relatedGuide->getAttributes())
         ->toHaveKeys(['id', 'slug', 'title', 'category', 'cover_image'])
         ->not->toHaveKeys(['content', 'excerpt', 'meta_description'])

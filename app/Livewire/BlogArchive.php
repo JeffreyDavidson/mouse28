@@ -2,7 +2,7 @@
 
 namespace App\Livewire;
 
-use App\Enums\PostCategory;
+use App\Models\Category;
 use App\Models\Post;
 use App\Support\TextSearch;
 use App\ViewModels\PostIndexViewModel;
@@ -67,7 +67,7 @@ class BlogArchive extends Component
 
     public function selectCategory(string $category): void
     {
-        $this->category = PostCategory::tryFrom($category)?->value ?: '';
+        $this->category = $this->existingCategorySlug($category);
         $this->search = '';
         $this->sort = 'newest';
         $this->resetPage();
@@ -92,11 +92,17 @@ class BlogArchive extends Component
 
     public function render(): View
     {
-        $cardColumns = ['id', 'slug', 'title', 'excerpt', 'content', 'category', 'author', 'cover_image', 'published_at'];
+        $cardColumns = ['id', 'slug', 'title', 'excerpt', 'content', 'category_id', 'author', 'cover_image', 'published_at'];
+        $categoryColumns = 'category:id,name,slug';
+        $usedCategories = Category::query()
+            ->whereHas('publishedPosts')
+            ->orderBy('id')
+            ->get(['id', 'name', 'slug']);
 
         $posts = Post::published()
             ->select($cardColumns)
-            ->when($this->category, fn (Builder $query) => $query->where('category', $this->category))
+            ->with($categoryColumns)
+            ->when($this->category, fn (Builder $query) => $query->whereRelation('category', 'slug', $this->category))
             ->when($this->search, fn (Builder $query) => TextSearch::constrain($query, ['title', 'excerpt', 'content'], $this->search))
             ->orderBy('published_at', $this->sort === 'oldest' ? 'asc' : 'desc')
             ->orderBy('id', $this->sort === 'oldest' ? 'asc' : 'desc')
@@ -104,7 +110,7 @@ class BlogArchive extends Component
 
         $featuredPost = $this->hasDefaultFilters() && $posts->currentPage() === 1
             ? $posts->first()
-            : Post::published()->select($cardColumns)->latest('published_at')->latest('id')->first();
+            : Post::published()->select($cardColumns)->with($categoryColumns)->latest('published_at')->latest('id')->first();
 
         $archivePosts = $featuredPost && $this->hasDefaultFilters()
             ? $posts->getCollection()->reject(fn (Post $post): bool => $post->is($featuredPost))
@@ -115,13 +121,10 @@ class BlogArchive extends Component
             'featuredPost' => $featuredPost,
             'archivePosts' => $archivePosts,
             'hasAnyPosts' => $featuredPost !== null,
-            'usedCategories' => Post::published()->distinct()->pluck('category')->filter()
-                ->values()
-                ->map(fn (mixed $category): ?string => $category instanceof PostCategory
-                    ? $category->value
-                    : (is_string($category) ? PostCategory::tryFrom($category)?->value : null))
-                ->filter()
-                ->all(),
+            'usedCategories' => $usedCategories,
+            'selectedCategoryName' => $this->category === ''
+                ? null
+                : Category::query()->where('slug', $this->category)->value('name'),
         ]);
     }
 
@@ -139,7 +142,19 @@ class BlogArchive extends Component
 
     private function normalizedCategory(): string
     {
-        return PostCategory::tryFrom($this->category)?->value ?: '';
+        return $this->existingCategorySlug($this->category);
+    }
+
+    /** The slug when a category with it exists, otherwise an empty string (all stories). */
+    private function existingCategorySlug(string $slug): string
+    {
+        if ($slug === '') {
+            return '';
+        }
+
+        $existingSlug = Category::query()->where('slug', $slug)->value('slug');
+
+        return is_string($existingSlug) ? $existingSlug : '';
     }
 
     private function normalizedSort(): string

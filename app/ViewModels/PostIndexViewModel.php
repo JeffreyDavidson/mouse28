@@ -2,7 +2,7 @@
 
 namespace App\ViewModels;
 
-use App\Enums\PostCategory;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class PostIndexViewModel
@@ -20,8 +20,7 @@ class PostIndexViewModel
      */
     public function data(Request $request): array
     {
-        $categoryEnum = PostCategory::tryFrom($request->string('category')->toString());
-        $category = $categoryEnum->value ?? '';
+        $category = $this->existingCategory($request->string('category')->toString())->slug ?? '';
         $search = $request->string('q')->trim()->limit(100, '')->toString();
         $sort = $request->string('sort', 'newest')->toString();
 
@@ -42,7 +41,7 @@ class PostIndexViewModel
     /** @return array{pageTitle: string, pageDescription: string, canonicalUrl: string, robots: string} */
     public function metadata(string $category, string $search, string $sort, int $page): array
     {
-        $categoryLabel = PostCategory::tryFrom($category)?->getLabel();
+        $categoryLabel = $this->existingCategory($category)?->name;
 
         return [
             'pageTitle' => $categoryLabel ? "{$categoryLabel} | Mouse28" : 'Disney Parks Blog | Mouse28',
@@ -55,5 +54,16 @@ class PostIndexViewModel
             ])),
             'robots' => $search !== '' || $sort !== 'newest' ? 'noindex,follow' : 'index,follow',
         ];
+    }
+
+    private function existingCategory(string $slug): ?Category
+    {
+        if ($slug === '') {
+            return null;
+        }
+
+        return Category::query()
+            ->where('slug', $slug)
+            ->first(['name', 'slug']);
     }
 }
