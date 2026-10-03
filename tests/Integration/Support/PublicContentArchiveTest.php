@@ -60,6 +60,8 @@ test('invalid imported attributes leave all existing records unchanged', functio
     'invalid URL' => ['source_url', 'javascript:alert(1)'],
     'invalid media type' => ['cover_image', []],
     'invalid relation type' => ['episode_slug', []],
+    'invalid relation list' => ['episode_slugs', 'example-episode'],
+    'invalid relation slug' => ['episode_slugs', ['Not A Slug']],
     'null content' => ['content', null],
 ]);
 
@@ -229,7 +231,7 @@ function firstArchivedRecord(array $archive, string $type): array
  * Returns the archive with its first record of a type changed, optionally dropping keys.
  *
  * @param  array<string, mixed>  $archive
- * @param  array<string, string>  $changes
+ * @param  array<string, mixed>  $changes
  * @param  list<string>  $without
  * @return array<string, mixed>
  */
@@ -295,3 +297,58 @@ test('archive import rejects a record without any written content', function (Po
     expect(fn () => $service->import($archive))->toThrow(InvalidArgumentException::class)
         ->and($factory->newModel()->newQuery()->sole()->getAttribute('title'))->toBe('Original');
 })->with('archived written content');
+
+test('archive export lists the published related episodes of each post in episode number order', function (): void {
+    $post = Post::factory()->create();
+    $post->episodes()->attach([
+        Episode::factory()->create(['slug' => 'later-episode', 'episode_number' => 12])->id,
+        Episode::factory()->create(['slug' => 'earlier-episode', 'episode_number' => 3])->id,
+        Episode::factory()->draft()->create(['slug' => 'draft-episode', 'episode_number' => 1])->id,
+    ]);
+
+    $archive = app(PublicContentArchive::class)->export();
+
+    expect(firstArchivedRecord($archive, 'posts'))->toHaveKey('episode_slugs', ['earlier-episode', 'later-episode'])
+        ->not->toHaveKey('episode_slug');
+});
+
+test('archive import restores related episodes from either archive format', function (string $key, string|array $value, array $expected): void {
+    Episode::factory()->create(['slug' => 'first-episode']);
+    Episode::factory()->create(['slug' => 'second-episode']);
+    $post = Post::factory()->create();
+    $service = app(PublicContentArchive::class);
+    $archive = withFirstArchivedRecord($service->export(), 'posts', [$key => $value], without: ['episode_slugs']);
+    $post->forceDelete();
+
+    $service->import($archive);
+
+    expect(Post::query()->sole()->episodes->pluck('slug')->sort()->values()->all())->toBe($expected);
+})->with([
+    'current episode_slugs list' => ['episode_slugs', ['first-episode', 'second-episode'], ['first-episode', 'second-episode']],
+    'older single episode_slug' => ['episode_slug', 'first-episode', ['first-episode']],
+]);
+
+test('archive import prefers the episode_slugs list when an archive carries both keys', function (): void {
+    Episode::factory()->create(['slug' => 'listed-episode']);
+    Episode::factory()->create(['slug' => 'older-episode']);
+    $post = Post::factory()->create();
+    $service = app(PublicContentArchive::class);
+    $archive = withFirstArchivedRecord($service->export(), 'posts', ['episode_slugs' => ['listed-episode'], 'episode_slug' => 'older-episode']);
+    $post->forceDelete();
+
+    $service->import($archive);
+
+    expect(Post::query()->sole()->episodes->pluck('slug')->all())->toBe(['listed-episode']);
+});
+
+test('archive import replaces the related episodes of an existing post', function (): void {
+    $kept = Episode::factory()->create(['slug' => 'kept-episode']);
+    $post = Post::factory()->create();
+    $post->episodes()->attach([$kept->id, Episode::factory()->create()->id]);
+    $service = app(PublicContentArchive::class);
+    $archive = withFirstArchivedRecord($service->export(), 'posts', ['episode_slugs' => ['kept-episode']]);
+
+    $service->import($archive);
+
+    expect($post->refresh()->episodes->modelKeys())->toBe([$kept->id]);
+});

@@ -65,12 +65,12 @@ class PostForm
                             ->required()
                             ->default(ContentAuthor::Both)
                             ->columnSpan(1),
-                        Select::make('episode_id')
-                            ->label('Related Episode')
-                            ->relationship('episode', 'title')
+                        Select::make('episodes')
+                            ->label('Related Episodes')
+                            ->relationship('episodes', 'title')
+                            ->multiple()
                             ->searchable()
                             ->preload()
-                            ->placeholder('None')
                             ->extraAlpineAttributes(['data-mouse28-accessible-select' => true])
                             ->columnSpan(2),
                     ]),

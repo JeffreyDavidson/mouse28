@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Episode;
+use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Spatie\Activitylog\Models\Activity;
@@ -63,3 +64,12 @@ test('episodes cannot be published without each required detail', function (stri
     'description' => ['description', 'Add a description'],
     'Transistor episode URL' => ['transistor_url', 'Add the Transistor episode URL'],
 ]);
+
+test('an episode relates to every post linked to it', function (): void {
+    $episode = Episode::factory()->create();
+    $posts = Post::factory()->count(2)->create();
+
+    $episode->posts()->attach($posts);
+
+    expect($episode->posts->modelKeys())->toEqualCanonicalizing($posts->modelKeys());
+});

@@ -39,7 +39,8 @@ test('published blog post returns its view model data', function (): void {
 
 test('blog pages stay within their query budget as content grows', function (string $page, int $queries): void {
     $episode = Episode::factory()->create();
-    $post = Post::factory()->create(['episode_id' => $episode->id, 'category' => 'disney-tips']);
+    $post = Post::factory()->create(['category' => 'disney-tips']);
+    $post->episodes()->attach($episode);
     Post::factory()->count(30)->create(['category' => 'disney-tips']);
     $url = $page === 'index' ? route('blog.index') : route('blog.show', $post);
 
@@ -237,16 +238,34 @@ test('editorial review information is shown on the public page', function (): vo
         ->assertSee('due for editorial review');
 });
 
-test('posts do not reveal an unpublished related episode', function (): void {
-    $draftEpisode = Episode::factory()->draft()->create([
-        'title' => 'Unannounced podcast episode',
-    ]);
-    $post = Post::factory()->create([
-        'episode_id' => $draftEpisode->getKey(),
+test('posts do not reveal an unpublished related episode', function (string $state): void {
+    $factory = match ($state) {
+        'draft' => Episode::factory()->draft(),
+        'scheduled' => Episode::factory()->scheduled(),
+        default => Episode::factory(),
+    };
+    $hiddenEpisode = $factory->createOne(['title' => 'Unannounced podcast episode']);
+    $post = Post::factory()->create();
+    $post->episodes()->attach($hiddenEpisode);
+
+    if ($state === 'trashed') {
+        $hiddenEpisode->delete();
+    }
+
+    get(route('blog.show', $post))
+        ->assertOk()->assertDontSee($hiddenEpisode->title)->assertDontSeeHtml(route('episodes.show', $hiddenEpisode));
+})->with(['draft', 'scheduled', 'trashed']);
+
+test('posts link every published related episode in episode number order', function (): void {
+    $post = Post::factory()->create();
+    $post->episodes()->attach([
+        Episode::factory()->create(['title' => 'Later podcast episode', 'episode_number' => 12])->id,
+        Episode::factory()->create(['title' => 'Earlier podcast episode', 'episode_number' => 3])->id,
     ]);
 
     get(route('blog.show', $post))
-        ->assertOk()->assertDontSee($draftEpisode->title)->assertDontSeeHtml(route('episodes.show', $draftEpisode));
+        ->assertOk()
+        ->assertSeeInOrder(['Earlier podcast episode', 'Listen to episode 3', 'Later podcast episode', 'Listen to episode 12']);
 });
 
 test('category label links to its filtered index', function (): void {

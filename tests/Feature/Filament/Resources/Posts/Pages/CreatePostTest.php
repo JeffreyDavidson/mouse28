@@ -4,6 +4,7 @@ use App\Enums\PostCategory;
 use App\Enums\PublishStatus;
 use App\Filament\Resources\Posts\Pages\CreatePost;
 use App\Filament\Resources\Posts\PostResource;
+use App\Models\Episode;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -60,4 +61,16 @@ test('create form explains editorial requirements', function (): void {
         ->assertSee('use the Publish action')
         ->assertSee('Optional for evergreen posts')
         ->assertSee('Landscape image (1.91:1)');
+});
+
+test('a new post saves every selected related episode', function (): void {
+    $episodes = Episode::factory()->count(2)->create();
+    actingAs(User::factory()->admin()->create());
+
+    livewire(CreatePost::class)
+        ->fillForm(['title' => 'Sample draft', 'slug' => 'sample-draft', 'category' => PostCategory::cases()[0], 'episodes' => $episodes->modelKeys()])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    expect(Post::query()->sole()->episodes->modelKeys())->toEqualCanonicalizing($episodes->modelKeys());
 });
