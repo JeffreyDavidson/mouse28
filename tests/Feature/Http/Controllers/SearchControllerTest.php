@@ -35,8 +35,8 @@ test('search stays within its query budget as content grows', function (): void 
     Guide::factory()->count(15)->create(['title' => 'Disney planning']);
     Episode::factory()->count(15)->create(['title' => 'Disney planning']);
 
-    // Includes one query for the footer social links.
-    $this->expectsDatabaseQueryCount(8);
+    // Includes one query for the footer social links and one for the post categories.
+    $this->expectsDatabaseQueryCount(9);
 
     get(route('search', ['q' => 'Disney']))
         ->assertOk();

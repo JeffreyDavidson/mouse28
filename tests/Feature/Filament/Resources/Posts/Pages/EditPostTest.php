@@ -1,10 +1,10 @@
 <?php
 
 use App\Enums\ContentAuthor;
-use App\Enums\PostCategory;
 use App\Enums\PublishStatus;
 use App\Filament\Resources\Posts\Pages\EditPost;
 use App\Filament\Resources\Posts\PostResource;
+use App\Models\Category;
 use App\Models\Episode;
 use App\Models\Post;
 use App\Models\User;
@@ -182,17 +182,19 @@ test('publishing is blocked until editorial requirements are complete', function
     expect($post->refresh()->status)->toBe(PublishStatus::Draft);
 });
 
-test('editor saves author and category selections as enums', function (): void {
+test('editor saves the author enum and the category selection', function (): void {
     $record = Post::factory()->draft()->create();
+    $category = Category::factory()->create();
     actingAs(User::factory()->admin()->create());
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
-        ->fillForm(['author' => 'jeffrey', 'category' => 'food-reviews'])
+        ->assertSchemaStateSet(['category_id' => $record->category_id])
+        ->fillForm(['author' => 'jeffrey', 'category_id' => $category->id])
         ->call('save')
         ->assertHasNoFormErrors();
 
     expect($record->refresh()->author)->toBe(ContentAuthor::Jeffrey)
-        ->and($record->category)->toBe(PostCategory::FoodReviews);
+        ->and($record->category_id)->toBe($category->id);
 });
 
 test('publishing actions disappear when admin access is revoked for the post', function (bool $isDraft, string $action): void {

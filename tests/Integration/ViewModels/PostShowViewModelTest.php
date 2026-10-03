@@ -45,7 +45,7 @@ function relatedEpisodeIds(Post $post): array
 
 test('post data includes recent posts', function (): void {
     $post = Post::factory()->create();
-    $recentPost = Post::factory()->create(['category' => $post->category]);
+    $recentPost = Post::factory()->create(['category_id' => $post->category_id]);
 
     $data = app(PostShowViewModel::class)->data($post);
 
@@ -79,4 +79,13 @@ test('post data for a preview lists every related episode that is not trashed', 
 
     expect(relatedEpisodeIds($previewData['post']))->toBe([$episodes['draft']->id, $episodes['scheduled']->id, $episodes['published']->id])
         ->and($previewData)->toHaveKey('isPreview', true);
+});
+
+test('post data loads the category of the post', function (): void {
+    $post = Post::factory()->create();
+
+    $data = app(PostShowViewModel::class)->data($post);
+
+    expect($data['post']->relationLoaded('category'))->toBeTrue()
+        ->and($data['post']->category_label)->toBe($post->category?->name);
 });

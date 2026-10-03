@@ -4,8 +4,8 @@ namespace App\Support;
 
 use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
-use App\Enums\PostCategory;
 use App\Enums\PublishStatus;
+use App\Models\Category;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Podcast;
@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use InvalidArgumentException;
 
@@ -55,13 +56,15 @@ class PublicContentArchive
         'source_url',
         'last_reviewed_at',
         'cover_image',
-        'category',
         'author',
         'published_at',
         'meta_title',
         'meta_description',
         'og_image',
     ];
+
+    /** A post's category travels by slug and name, so an import can create one the local site lacks. */
+    private const array POST_CATEGORY_FIELDS = ['category', 'category_name'];
 
     private const array GUIDE_FIELDS = [
         'title',
@@ -112,12 +115,14 @@ class PublicContentArchive
             ->all();
 
         $posts = Post::query()
-            ->with(['tags', 'episodes'])
+            ->with(['tags', 'episodes', 'category'])
             ->published()
             ->orderBy('published_at')
-            ->get(['id', ...self::POST_FIELDS])
+            ->get(['id', 'category_id', ...self::POST_FIELDS])
             ->map(fn (Post $post): array => [
                 ...$this->attributes($post, self::POST_FIELDS),
+                'category' => $post->category?->slug,
+                'category_name' => $post->category?->name,
                 'episode_slugs' => $this->publishedEpisodeSlugs($post),
                 'tags' => $post->tagsWithType('content')->pluck('name')->all(),
             ])
@@ -296,11 +301,38 @@ class PublicContentArchive
             ...$this->onlyAttributes($attributes, self::POST_FIELDS),
             'status' => PublishStatus::Published,
         ]);
+
+        if (array_key_exists('category', $attributes)) {
+            $post->category()->associate($this->importedCategory($attributes));
+        }
+
         $post->save();
         $post->episodes()->sync(Episode::query()->whereIn('slug', $this->relatedEpisodeSlugs($attributes))->pluck('id'));
         if (is_array($attributes['tags'] ?? null)) {
             $post->syncTagsWithType($attributes['tags'], 'content');
         }
+    }
+
+    /**
+     * Finds the archived category by slug, creating it when the local site lacks it.
+     * Older archives carry only the slug, so the name falls back to its headline.
+     *
+     * @param  array<string, mixed>  $attributes
+     */
+    private function importedCategory(array $attributes): ?Category
+    {
+        $slug = $attributes['category'];
+
+        if (! is_string($slug) || $slug === '') {
+            return null;
+        }
+
+        $name = $attributes['category_name'] ?? null;
+
+        return Category::query()->firstOrCreate(
+            ['slug' => $slug],
+            ['name' => is_string($name) && $name !== '' ? $name : Str::headline($slug)],
+        );
     }
 
     /** @return list<string> the slugs of the post's live related episodes, in episode number order */
@@ -413,7 +445,8 @@ class PublicContentArchive
         $rules['posts.*.content'] = ['present', 'string'];
         $rules['guides.*.content'] = ['present', 'string'];
         $rules['posts.*.author'] = ['nullable', Rule::enum(ContentAuthor::class)];
-        $rules['posts.*.category'] = ['nullable', Rule::enum(PostCategory::class)];
+        $rules['posts.*.category'] = ['nullable', 'string', 'max:255', 'regex:/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/'];
+        $rules['posts.*.category_name'] = ['nullable', 'string', 'max:255'];
         $rules['guides.*.author'] = ['required', Rule::enum(ContentAuthor::class)];
         $rules['guides.*.category'] = ['required', Rule::enum(GuideCategory::class)];
         $rules['episodes.*.episode_number'] = ['required', 'integer', 'min:0', 'max:2147483647', 'distinct'];
@@ -452,7 +485,7 @@ class PublicContentArchive
 
         return [
             'version' => self::VERSION,
-            'posts' => $this->validateRecords($archive['posts'] ?? null, 'posts', [...self::POST_FIELDS, 'episode_slug', 'episode_slugs']),
+            'posts' => $this->validateRecords($archive['posts'] ?? null, 'posts', [...self::POST_FIELDS, ...self::POST_CATEGORY_FIELDS, 'episode_slug', 'episode_slugs']),
             'guides' => $this->validateRecords($archive['guides'] ?? null, 'guides', self::GUIDE_FIELDS),
             'episodes' => $this->validateRecords($archive['episodes'] ?? null, 'episodes', self::EPISODE_FIELDS),
             'podcast' => $archive['podcast'] === null ? null : $this->onlyAttributes($archive['podcast'], self::PODCAST_FIELDS),

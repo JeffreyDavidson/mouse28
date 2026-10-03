@@ -110,16 +110,15 @@
                                     @if (! $category) aria-current="page" @endif
                                     class="data-loading:pointer-events-none data-loading:opacity-60 inline-flex min-h-12 shrink-0 items-center rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ ! $category ? 'bg-navy text-cream' : 'border-navy/15 text-navy hover:border-purple border' }}"
                                 >All stories</a>
-                                @foreach (\App\Enums\PostCategory::cases() as $categoryOption)
-                                    @continue(! in_array($categoryOption->value, $usedCategories))
+                                @foreach ($usedCategories as $categoryOption)
                                     <a
-                                        href="{{ route('blog.index', ['category' => $categoryOption->value]) }}"
-                                        wire:click.prevent="selectCategory('{{ $categoryOption->value }}')"
+                                        href="{{ route('blog.index', ['category' => $categoryOption->slug]) }}"
+                                        wire:click.prevent="selectCategory('{{ $categoryOption->slug }}')"
                                         data-preserve-blog-filter-position
                                         data-blog-filter-link
-                                        @if ($category === $categoryOption->value) aria-current="page" @endif
-                                        class="data-loading:pointer-events-none data-loading:opacity-60 inline-flex min-h-12 shrink-0 items-center rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ $category === $categoryOption->value ? 'bg-navy text-cream' : 'border-navy/15 text-navy hover:border-purple border' }}"
-                                    >{{ $categoryOption->getLabel() }}</a>
+                                        @if ($category === $categoryOption->slug) aria-current="page" @endif
+                                        class="data-loading:pointer-events-none data-loading:opacity-60 inline-flex min-h-12 shrink-0 items-center rounded-full px-4 py-2 text-sm font-semibold transition-colors {{ $category === $categoryOption->slug ? 'bg-navy text-cream' : 'border-navy/15 text-navy hover:border-purple border' }}"
+                                    >{{ $categoryOption->name }}</a>
                                 @endforeach
                             </div>
                         </nav>
@@ -167,7 +166,7 @@
                             @if ($search)
                                 Results for "{{ $search }}"
                             @elseif ($category)
-                                {{ \App\Enums\PostCategory::tryFrom($category)?->getLabel() ?? 'Stories' }}
+                                {{ $selectedCategoryName ?? 'Stories' }}
                             @else
                                 More stories
                             @endif
@@ -208,7 +207,7 @@
                             @if ($search)
                                 No posts match "{{ $search }}"
                             @elseif ($category)
-                                Nothing in {{ \App\Enums\PostCategory::tryFrom($category)?->getLabel() ?? 'this category' }} yet
+                                Nothing in {{ $selectedCategoryName ?? 'this category' }} yet
                             @else
                                 We're putting pen to paper
                             @endif

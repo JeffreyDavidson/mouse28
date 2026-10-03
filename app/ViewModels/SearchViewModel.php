@@ -30,7 +30,8 @@ class SearchViewModel
 
         if ($query !== '') {
             $posts = Post::published()
-                ->select(['slug', 'title', 'excerpt', 'category'])
+                ->select(['slug', 'title', 'excerpt', 'category_id'])
+                ->with('category:id,name')
                 ->tap(fn (Builder $builder) => TextSearch::constrain($builder, ['title', 'excerpt', 'content'], $query))
                 ->latest('published_at')
                 ->latest('id')

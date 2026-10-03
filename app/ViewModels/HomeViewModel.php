@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\ViewModels;
 
-use App\Enums\PostCategory;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Config;
 
@@ -25,7 +25,8 @@ class HomeViewModel
     public function data(): array
     {
         $posts = Post::published()
-            ->select(['id', 'slug', 'title', 'category', 'cover_image', 'published_at'])
+            ->select(['id', 'slug', 'title', 'category_id', 'cover_image', 'published_at'])
+            ->with('category:id,name,slug')
             ->latest('published_at')
             ->take(4)
             ->get();
@@ -45,8 +46,9 @@ class HomeViewModel
             : new Collection;
         $planningPosts = Config::boolean('mouse28.guides_enabled') && $latestGuides->isEmpty()
             ? Post::published()
-                ->select(['id', 'slug', 'title', 'category', 'cover_image'])
-                ->whereIn('category', [PostCategory::ParkAccessibility, PostCategory::DisneyTips, PostCategory::AutismAwareness])
+                ->select(['id', 'slug', 'title', 'category_id', 'cover_image'])
+                ->with('category:id,name,slug')
+                ->whereHas('category', fn (Builder $query) => $query->whereIn('slug', ['park-accessibility', 'disney-tips', 'autism-awareness']))
                 ->latest('published_at')
                 ->take(2)
                 ->get()

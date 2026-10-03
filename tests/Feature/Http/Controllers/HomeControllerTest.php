@@ -28,8 +28,8 @@ test('homepage stays within its query budget as content grows', function (): voi
     Post::factory()->count(30)->create();
     Episode::factory()->count(15)->create();
 
-    // Includes one query for the footer social links.
-    $this->expectsDatabaseQueryCount(4);
+    // Includes one query for the footer social links and one for the post categories.
+    $this->expectsDatabaseQueryCount(5);
 
     get(route('home'))
         ->assertOk();
@@ -138,15 +138,13 @@ test('homepage only presents published content as stories and guides', function 
 });
 
 test('homepage turns an empty guide shelf into useful planning stories', function (): void {
-    $planningPost = Post::factory()->create([
+    $planningPost = Post::factory()->inCategory('park-accessibility')->create([
         'title' => 'Plan a Calmer Park Morning',
-        'category' => 'park-accessibility',
         'cover_image' => null,
         'published_at' => now()->subDay(),
     ]);
-    $draftPlanningPost = Post::factory()->draft()->create([
+    $draftPlanningPost = Post::factory()->inCategory('disney-tips')->draft()->create([
         'title' => 'Private Planning Notes',
-        'category' => 'disney-tips',
     ]);
 
     get(route('home'))

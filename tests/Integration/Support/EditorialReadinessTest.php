@@ -8,6 +8,9 @@ use App\Support\EditorialReadiness;
 use Database\Factories\EpisodeFactory;
 use Database\Factories\GuideFactory;
 use Database\Factories\PostFactory;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+pest()->use(RefreshDatabase::class);
 
 covers(EditorialReadiness::class);
 

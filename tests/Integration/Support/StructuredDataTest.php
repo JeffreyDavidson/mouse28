@@ -1,11 +1,15 @@
 <?php
 
+use App\Models\Category;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Podcast;
 use App\Models\Post;
 use App\Support\StructuredData;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+
+pest()->use(RefreshDatabase::class);
 
 covers(StructuredData::class);
 
@@ -158,3 +162,14 @@ test('episode structured data omits unavailable media metadata and uses the defa
             'image',
         ]);
 });
+
+test('post structured data names the post category as the article section', function (?string $name, string $section): void {
+    $post = Post::factory()->create([
+        'category_id' => $name === null ? null : Category::factory()->create(['name' => $name])->id,
+    ]);
+
+    expect(data_get(StructuredData::forPost($post), '@graph.0.articleSection'))->toBe($section);
+})->with([
+    'a category' => ['Sample Topic', 'Sample Topic'],
+    'no category' => [null, ''],
+]);
