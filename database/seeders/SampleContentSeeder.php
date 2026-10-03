@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
-use App\Enums\PostCategory;
 use App\Enums\PublishStatus;
+use App\Models\Category;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\NewsletterIssue;
@@ -18,6 +18,8 @@ class SampleContentSeeder extends Seeder
 {
     public function run(): void
     {
+        $this->call(CategorySeeder::class);
+
         $this->episode('sample-episode-weekly-discussion', 'Sample Episode 01: Weekly Discussion', 9001, PublishStatus::Published, now()->subDay());
         $this->episode('sample-episode-planning-notes', 'Sample Episode 02: Planning Notes', 9002, PublishStatus::Draft);
         $this->episode('sample-episode-upcoming-conversation', 'Sample Episode 03: Upcoming Conversation', 9003, PublishStatus::Scheduled, now()->addDay());
@@ -25,12 +27,12 @@ class SampleContentSeeder extends Seeder
         $this->post(
             'sample-post-planning-notes',
             'Sample Post 01: Planning Notes',
-            PostCategory::ParkAccessibility,
+            'park-accessibility',
             PublishStatus::Published,
             now()->subDay(),
         );
-        $this->post('sample-post-draft-outline', 'Sample Post 02: Draft Outline', PostCategory::DisneyTips, PublishStatus::Draft);
-        $this->post('sample-post-scheduled-update', 'Sample Post 03: Scheduled Update', PostCategory::FamilyLife, PublishStatus::Scheduled, now()->addDay());
+        $this->post('sample-post-draft-outline', 'Sample Post 02: Draft Outline', 'disney-tips', PublishStatus::Draft);
+        $this->post('sample-post-scheduled-update', 'Sample Post 03: Scheduled Update', 'family-life', PublishStatus::Scheduled, now()->addDay());
 
         $this->guide('sample-guide-reference-information', 'Sample Guide 01: Reference Information', GuideCategory::Accessibility, PublishStatus::Published, now()->subDay());
         $this->guide('sample-guide-draft-outline', 'Sample Guide 02: Draft Outline', GuideCategory::ParkStrategy, PublishStatus::Draft);
@@ -89,7 +91,7 @@ class SampleContentSeeder extends Seeder
         );
     }
 
-    private function post(string $slug, string $title, PostCategory $category, PublishStatus $status, ?Carbon $publishedAt = null): Post
+    private function post(string $slug, string $title, string $categorySlug, PublishStatus $status, ?Carbon $publishedAt = null): Post
     {
         return Post::query()->updateOrCreate(
             ['slug' => $slug],
@@ -97,7 +99,7 @@ class SampleContentSeeder extends Seeder
                 'title' => $title,
                 'excerpt' => 'This sample record exists to exercise the publishing workflow.',
                 'content' => 'Synthetic development content for testing lists, detail pages, and filters.',
-                'category' => $category,
+                'category_id' => Category::query()->where('slug', $categorySlug)->value('id'),
                 'author' => ContentAuthor::Both,
                 'status' => $status,
                 'published_at' => $publishedAt,

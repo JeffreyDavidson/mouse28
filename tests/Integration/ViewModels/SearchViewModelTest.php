@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Category;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
@@ -30,8 +31,8 @@ test('search results select only the fields rendered by the page', function (): 
     $results = app(SearchViewModel::class)->data('Sensory planning');
 
     expect($results['posts']->sole()->getAttributes())
-        ->toHaveKeys(['slug', 'title', 'excerpt', 'category'])
-        ->not->toHaveKeys(['content', 'meta_description'])
+        ->toHaveKeys(['slug', 'title', 'excerpt', 'category_id'])
+        ->not->toHaveKeys(['content', 'meta_description', 'category'])
         ->and($results['guides']->sole()->getAttributes())
         ->toHaveKeys(['slug', 'title', 'excerpt', 'category'])
         ->not->toHaveKeys(['content', 'meta_description'])
@@ -98,4 +99,14 @@ test('search matches posts and guides by their written content', function (): vo
 
     expect($results['posts']->pluck('slug')->all())->toBe(['arrival-tips'])
         ->and($results['guides']->pluck('slug')->all())->toBe(['arrival-guide']);
+});
+
+test('search results label posts with their category names', function (): void {
+    $category = Category::factory()->create(['name' => 'Sample Topic']);
+    Post::factory()->for($category)->count(2)->create(['title' => 'Sensory planning post']);
+
+    $results = app(SearchViewModel::class)->data('Sensory planning');
+
+    expect($results['posts']->getCollection()->every(fn (Post $post): bool => $post->relationLoaded('category')))->toBeTrue()
+        ->and($results['posts']->getCollection()->pluck('category_label')->all())->toBe(['Sample Topic', 'Sample Topic']);
 });

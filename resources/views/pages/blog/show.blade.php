@@ -38,7 +38,7 @@
                 <div class="text-cream/65 mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
                     @if ($post->category)
                         <a
-                            href="{{ route('blog.index', ['category' => $post->category]) }}"
+                            href="{{ route('blog.index', ['category' => $post->category->slug]) }}"
                             class="text-gold hover:text-cream inline-flex min-h-12 items-center font-semibold underline decoration-current/35 underline-offset-8 transition-colors"
                         >{{ $post->category_label }}</a>
                     @endif

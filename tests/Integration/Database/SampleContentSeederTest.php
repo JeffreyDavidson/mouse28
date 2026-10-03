@@ -1,7 +1,9 @@
 <?php
 
 use App\Enums\PublishStatus;
+use App\Models\Category;
 use App\Models\NewsletterIssue;
+use App\Models\Post;
 use App\Models\Subscriber;
 use Database\Seeders\SampleContentSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -41,4 +43,23 @@ test('running the sample seeder twice does not duplicate issues', function (): v
     $this->seed(SampleContentSeeder::class);
 
     expect(NewsletterIssue::query()->count())->toBe(3);
+});
+
+test('the sample seeder files each sample post under a category', function (): void {
+    $this->seed(SampleContentSeeder::class);
+
+    expect(Post::query()->with('category')->orderBy('slug')->get()->mapWithKeys(fn (Post $post): array => [$post->slug => $post->category?->slug])->all())->toBe([
+        'sample-post-draft-outline' => 'disney-tips',
+        'sample-post-planning-notes' => 'park-accessibility',
+        'sample-post-scheduled-update' => 'family-life',
+    ]);
+});
+
+test('the sample seeder adds its categories when they are missing', function (): void {
+    Category::query()->delete();
+
+    $this->seed(SampleContentSeeder::class);
+
+    expect(Post::query()->whereNull('category_id')->count())->toBe(0)
+        ->and(Category::query()->count())->toBe(11);
 });

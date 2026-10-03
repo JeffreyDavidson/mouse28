@@ -10,7 +10,8 @@ class BlogRssFeed
     public function content(): string
     {
         $posts = Post::published()
-            ->select(['id', 'slug', 'title', 'excerpt', 'content', 'published_at', 'category'])
+            ->select(['id', 'slug', 'title', 'excerpt', 'content', 'published_at', 'category_id'])
+            ->with('category:id,name')
             ->latest('published_at')
             ->take(20)
             ->get();
@@ -37,7 +38,7 @@ class BlogRssFeed
             $xml .= '<description>'.htmlspecialchars($post->excerpt ?? Str::limit(strip_tags($post->content ?? ''), 300)).'</description>';
             $xml .= '<pubDate>'.$post->published_at->toRfc2822String().'</pubDate>';
 
-            if ($post->category) {
+            if ($post->category !== null) {
                 $xml .= '<category>'.htmlspecialchars($post->category_label).'</category>';
             }
 

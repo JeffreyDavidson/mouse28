@@ -103,19 +103,15 @@ function blogCardMotionObservedScript(): string
 
 test('blog filters and sorting animate stories without reloading or moving the controls', function (): void {
     Post::factory()->create(['title' => 'Featured park story', 'published_at' => now()]);
-    $accessiblePost = Post::factory()->create([
+    $accessiblePost = Post::factory()->inCategory('park-accessibility')->create([
         'title' => 'A quiet entrance plan',
-        'category' => 'park-accessibility',
         'published_at' => now()->subWeek(),
     ]);
-    $diningPost = Post::factory()->create([
+    $diningPost = Post::factory()->inCategory('food-reviews')->create([
         'title' => 'A family dining review',
-        'category' => 'food-reviews',
         'published_at' => now()->subDay(),
     ]);
-    Post::factory()->count(7)->create([
-        'category' => 'food-reviews',
-    ]);
+    Post::factory()->count(7)->inCategory('food-reviews')->create();
 
     $page = visit(route('blog.index'))
         ->assertScript(browserLivewireReadyScript('[data-blog-browser]'), true);
@@ -183,20 +179,16 @@ test('blog filters and sorting animate stories without reloading or moving the c
 })->group('browser-smoke', 'browser-compatibility');
 
 test('blog filters update without spatial card motion when reduced motion is preferred', function (): void {
-    Post::factory()->create([
-        'category' => 'food-reviews',
+    Post::factory()->inCategory('food-reviews')->create([
         'published_at' => now(),
     ]);
-    Post::factory()->create([
-        'category' => 'park-accessibility',
+    Post::factory()->inCategory('park-accessibility')->create([
         'published_at' => now()->subDay(),
     ]);
-    Post::factory()->create([
-        'category' => 'food-reviews',
+    Post::factory()->inCategory('food-reviews')->create([
         'published_at' => now()->subDays(2),
     ]);
-    $accessiblePost = Post::factory()->create([
-        'category' => 'park-accessibility',
+    $accessiblePost = Post::factory()->inCategory('park-accessibility')->create([
         'published_at' => now()->subDays(3),
     ]);
 
@@ -500,9 +492,9 @@ test('accessibility checks reject small targets and misleading focus decoration'
 });
 
 test('featured story and viewport stay stable throughout filter transitions', function (): void {
-    Post::factory()->create(['title' => 'Permanent featured story', 'category' => 'food-reviews', 'published_at' => now()]);
-    Post::factory()->create(['category' => 'food-reviews', 'published_at' => now()->subDay()]);
-    Post::factory()->count(3)->create(['category' => 'park-accessibility', 'published_at' => now()->subWeek()]);
+    Post::factory()->inCategory('food-reviews')->create(['title' => 'Permanent featured story', 'published_at' => now()]);
+    Post::factory()->inCategory('food-reviews')->create(['published_at' => now()->subDay()]);
+    Post::factory()->count(3)->inCategory('park-accessibility')->create(['published_at' => now()->subWeek()]);
 
     $page = visit(route('blog.index'))
         ->assertScript(browserLivewireReadyScript('[data-blog-browser]'), true);

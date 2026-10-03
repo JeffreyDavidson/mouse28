@@ -4,13 +4,13 @@ namespace App\Models;
 
 use App\Contracts\Publishable;
 use App\Enums\ContentAuthor;
-use App\Enums\PostCategory;
 use App\Enums\PublishStatus;
 use App\Enums\SourceReviewStatus;
 use App\Models\Attributes\PublishingStatus;
 use App\Models\Concerns\HasCoverImages;
 use App\Models\Concerns\HasPublishingStatus;
 use App\Models\Concerns\HasTagsUntilForceDeleted;
+use App\Models\Concerns\IgnoresLegacyCategoryColumn;
 use App\Models\Concerns\LocksSlugAfterPublication;
 use App\Models\Concerns\SyncsLegacyBody;
 use App\Models\Concerns\SyncsLegacyPublishedFlag;
@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
@@ -35,7 +36,8 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property PublishStatus $status
  * @property string|null $content
  * @property ContentAuthor|null $author
- * @property PostCategory|null $category
+ * @property int|null $category_id
+ * @property-read Category|null $category
  * @property Carbon|null $last_reviewed_at
  * @property Carbon|null $published_at
  * @property CarbonInterface|null $slug_locked_at
@@ -61,7 +63,7 @@ use Spatie\Activitylog\Support\LogOptions;
     'source_url',
     'last_reviewed_at',
     'cover_image',
-    'category',
+    'category_id',
     'author',
     'status',
     'published_at',
@@ -73,7 +75,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class Post extends Model implements Publishable
 {
     /** @use HasFactory<PostFactory> */
-    use HasCoverImages, HasFactory, HasPublishingStatus, HasTagsUntilForceDeleted, LocksSlugAfterPublication, SoftDeletes, SyncsLegacyBody, SyncsLegacyPublishedFlag;
+    use HasCoverImages, HasFactory, HasPublishingStatus, HasTagsUntilForceDeleted, IgnoresLegacyCategoryColumn, LocksSlugAfterPublication, SoftDeletes, SyncsLegacyBody, SyncsLegacyPublishedFlag;
 
     use LogsActivity;
 
@@ -89,7 +91,7 @@ class Post extends Model implements Publishable
                 'source_url',
                 'last_reviewed_at',
                 'cover_image',
-                'category',
+                'category_id',
                 'author',
                 'status',
                 'published_at',
@@ -99,6 +101,12 @@ class Post extends Model implements Publishable
             ])
             ->logOnlyDirty()
             ->dontLogEmptyChanges();
+    }
+
+    /** @return BelongsTo<Category, $this> */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
     }
 
     /** @return BelongsToMany<Episode, $this> */
@@ -178,7 +186,7 @@ class Post extends Model implements Publishable
     /** @return Attribute<string, never> */
     protected function categoryLabel(): Attribute
     {
-        return Attribute::make(get: fn (): string => $this->category?->getLabel() ?? '');
+        return Attribute::make(get: fn (): string => $this->category->name ?? '');
     }
 
     public function isReviewDue(): bool
@@ -207,7 +215,6 @@ class Post extends Model implements Publishable
     {
         return [
             'author' => ContentAuthor::class,
-            'category' => PostCategory::class,
             'status' => PublishStatus::class,
             'last_reviewed_at' => 'date',
             'published_at' => 'datetime',
@@ -225,7 +232,7 @@ class Post extends Model implements Publishable
         return array_values(array_filter([
             blank($this->content) ? 'Add post content' : null,
             blank($this->excerpt) ? 'Add an excerpt' : null,
-            blank($this->category) ? 'Choose a category' : null,
+            blank($this->category_id) ? 'Choose a category' : null,
         ]));
     }
 }

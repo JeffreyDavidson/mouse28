@@ -14,9 +14,10 @@ class ContentContinuation
     public static function relatedPosts(Post $post, int $limit = 5): Collection
     {
         $sameCategoryPosts = Post::published()
-            ->select(['id', 'slug', 'title', 'category', 'content', 'cover_image'])
+            ->select(['id', 'slug', 'title', 'category_id', 'content', 'cover_image'])
+            ->with('category:id,name,slug')
             ->whereKeyNot($post->getKey())
-            ->where('category', $post->category)
+            ->where('category_id', $post->category_id)
             ->latest('published_at')
             ->take($limit)
             ->get();
@@ -27,7 +28,8 @@ class ContentContinuation
 
         return $sameCategoryPosts->merge(
             Post::published()
-                ->select(['id', 'slug', 'title', 'category', 'content', 'cover_image'])
+                ->select(['id', 'slug', 'title', 'category_id', 'content', 'cover_image'])
+                ->with('category:id,name,slug')
                 ->whereKeyNot($post->getKey())
                 ->whereNotIn('id', $sameCategoryPosts->modelKeys())
                 ->latest('published_at')

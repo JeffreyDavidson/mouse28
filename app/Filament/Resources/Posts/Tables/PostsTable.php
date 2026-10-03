@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Posts\Tables;
 
 use App\Enums\ContentAuthor;
-use App\Enums\PostCategory;
 use App\Enums\PublishStatus;
 use App\Enums\SourceReviewStatus;
 use App\Models\Post;
@@ -33,12 +32,10 @@ class PostsTable
                 TextColumn::make('author')
                     ->badge()
                     ->color('info'),
-                TextColumn::make('category')
-                    ->badge(),
-                TextColumn::make('episode.title')
-                    ->label('Episode')
-                    ->limit(30)
-                    ->placeholder('—'),
+                TextColumn::make('category.name')
+                    ->label('Category')
+                    ->badge()
+                    ->sortable(),
                 TextColumn::make('last_reviewed_at')
                     ->label('Reviewed')
                     ->date()
@@ -66,7 +63,8 @@ class PostsTable
                     ->sortable(),
             ])
             ->filters([
-                SelectFilter::make('category')->options(PostCategory::class),
+                SelectFilter::make('category')
+                    ->relationship('category', 'name'),
                 SelectFilter::make('author')->options(ContentAuthor::class),
                 Filter::make('missing_artwork')
                     ->query(fn (Builder $query): Builder => $query->where(function (Builder $query): void {

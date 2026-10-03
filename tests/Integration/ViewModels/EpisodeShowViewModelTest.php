@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Category;
 use App\Models\Episode;
 use App\Models\Post;
 use App\ViewModels\EpisodeShowViewModel;
@@ -38,4 +39,18 @@ test('episode preview data marks the payload as a preview', function (): void {
 
     expect(app(EpisodeShowViewModel::class)->data($episode, preview: true))
         ->toHaveKey('isPreview', true);
+});
+
+test('episode data loads the category of each related post', function (): void {
+    $episode = Episode::factory()->create();
+    $category = Category::factory()->create(['name' => 'Sample Topic']);
+    $posts = Post::factory()->for($category)->count(2)->create();
+    $episode->posts()->attach($posts);
+
+    $data = app(EpisodeShowViewModel::class)->data($episode);
+
+    expect($data['relatedPosts']->every(fn (Post $post): bool => $post->relationLoaded('category')))->toBeTrue()
+        ->and($data['relatedPosts']->pluck('category_label')->all())->toBe(['Sample Topic', 'Sample Topic'])
+        ->and($data['relatedPosts']->first()?->getAttributes())->toHaveKey('category_id')
+        ->not->toHaveKey('category');
 });

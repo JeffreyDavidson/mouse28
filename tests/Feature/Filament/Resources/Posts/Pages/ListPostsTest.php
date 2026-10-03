@@ -3,6 +3,7 @@
 use App\Enums\PublishStatus;
 use App\Filament\Resources\Posts\Pages\ListPosts;
 use App\Filament\Resources\Posts\PostResource;
+use App\Models\Category;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -79,4 +80,33 @@ test('the review due filter and source review column show sources that need revi
         ->assertCanSeeTableRecords([$due])
         ->assertCanNotSeeTableRecords([$current])
         ->assertTableColumnExists('source_review_status');
+});
+
+test('the posts table shows each category name as a badge', function (): void {
+    $post = Post::factory()->for(Category::factory()->create(['name' => 'Sample Topic']))->create();
+    actingAs(User::factory()->admin()->create());
+
+    livewire(ListPosts::class)
+        ->assertTableColumnStateSet('category.name', 'Sample Topic', $post)
+        ->assertSee('Sample Topic');
+});
+
+test('the posts table filters by category', function (): void {
+    $category = Category::factory()->create();
+    $inCategory = Post::factory()->for($category)->create();
+    $elsewhere = Post::factory()->create();
+    $uncategorized = Post::factory()->create(['category_id' => null]);
+    actingAs(User::factory()->admin()->create());
+
+    livewire(ListPosts::class)
+        ->filterTable('category', $category->id)
+        ->assertCanSeeTableRecords([$inCategory])
+        ->assertCanNotSeeTableRecords([$elsewhere, $uncategorized]);
+});
+
+test('the posts table has no column for the removed single episode relation', function (): void {
+    actingAs(User::factory()->admin()->create());
+
+    livewire(ListPosts::class)
+        ->assertTableColumnDoesNotExist('episode.title');
 });

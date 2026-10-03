@@ -2,6 +2,7 @@
 
 use App\Enums\PublishStatus;
 use App\Livewire\BlogArchive;
+use App\Models\Category;
 use App\Models\Episode;
 use App\Models\Podcast;
 use App\Models\Post;
@@ -39,17 +40,18 @@ test('published blog post returns its view model data', function (): void {
 
 test('blog pages stay within their query budget as content grows', function (string $page, int $queries): void {
     $episode = Episode::factory()->create();
-    $post = Post::factory()->create(['category' => 'disney-tips']);
+    $post = Post::factory()->inCategory('disney-tips')->create();
     $post->episodes()->attach($episode);
-    Post::factory()->count(30)->create(['category' => 'disney-tips']);
+    Post::factory()->count(30)->inCategory('disney-tips')->create();
     $url = $page === 'index' ? route('blog.index') : route('blog.show', $post);
 
-    // Includes one query for the footer social links.
+    // Includes one query for the footer social links, and the post categories: one
+    // for the archive, two for an article (its own and its related posts').
     $this->expectsDatabaseQueryCount($queries);
 
     get($url)
         ->assertOk();
-})->with(['archive' => ['index', 5], 'article with episode' => ['show', 5]]);
+})->with(['archive' => ['index', 6], 'article with episode' => ['show', 7]]);
 
 test('blog featured cover is prioritized while archive cards remain deferred', function (): void {
     Storage::fake('public');
@@ -163,7 +165,7 @@ test('published post detail page renders', function (): void {
         'slug' => 'accessible-day-at-the-parks',
         'excerpt' => 'A practical guide for planning a comfortable park day.',
         'content' => 'Start with a flexible plan. '.str_repeat('accessible park planning ', 198),
-        'category' => 'park-accessibility',
+        'category_id' => Category::query()->where('slug', 'park-accessibility')->value('id'),
         'author' => 'jeffrey',
         'status' => PublishStatus::Published,
         'published_at' => now()->subDay(),
@@ -191,19 +193,16 @@ test('only currently published content is publicly visible', function (): void {
 });
 
 test('blog search category sorting and pagination preserve filters', function (): void {
-    Post::factory()->create([
+    Post::factory()->inCategory('park-accessibility')->create([
         'title' => 'Newest accessible plan',
-        'category' => 'park-accessibility',
         'published_at' => now()->subDay(),
     ]);
-    Post::factory()->create([
+    Post::factory()->inCategory('park-accessibility')->create([
         'title' => 'Oldest accessible plan',
-        'category' => 'park-accessibility',
         'published_at' => now()->subWeek(),
     ]);
-    Post::factory()->create([
+    Post::factory()->inCategory('food-reviews')->create([
         'title' => 'Unrelated dining review',
-        'category' => 'food-reviews',
         'published_at' => now()->subMonth(),
     ]);
 
@@ -269,9 +268,23 @@ test('posts link every published related episode in episode number order', funct
 });
 
 test('category label links to its filtered index', function (): void {
-    $post = Post::factory()->create(['category' => 'park-accessibility']);
+    $post = Post::factory()->inCategory('park-accessibility')->create();
 
-    get(route('blog.show', $post))->assertOk()->assertSeeHtml(route('blog.index', ['category' => $post->category]));
+    get(route('blog.show', $post))
+        ->assertOk()
+        ->assertSeeHtml('href="'.e(route('blog.index', ['category' => 'park-accessibility'])).'"')
+        ->assertSee('Park Accessibility');
+});
+
+test('a post in a category without its own artwork style uses the general artwork', function (): void {
+    $category = Category::factory()->create(['name' => 'Sample Topic', 'slug' => 'sample-topic']);
+    $post = Post::factory()->for($category)->create(['cover_image' => null]);
+
+    get(route('blog.show', $post))
+        ->assertOk()
+        ->assertSee('Mouse28 dispatch')
+        ->assertSee('Sample Topic')
+        ->assertSeeHtml('href="'.e(route('blog.index', ['category' => 'sample-topic'])).'"');
 });
 
 test('invalid blog filters do not create indexable archive variants', function (): void {
@@ -292,7 +305,7 @@ test('landing page provides search and social metadata', function (): void {
 });
 
 test('archive canonical preserves meaningful filters and pagination', function (): void {
-    Post::factory()->count(13)->create(['category' => 'park-accessibility']);
+    Post::factory()->count(13)->inCategory('park-accessibility')->create();
 
     $blogCanonical = route('blog.index', [
         'category' => 'park-accessibility',
@@ -307,7 +320,7 @@ test('text searches are not indexed', function (): void {
 });
 
 test('an uncategorized post keeps its public fallback presentation', function (): void {
-    $post = Post::factory()->create(['category' => null, 'cover_image' => null]);
+    $post = Post::factory()->create(['category_id' => null, 'cover_image' => null]);
 
     get(route('blog.show', $post))
         ->assertOk()
