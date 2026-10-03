@@ -56,6 +56,7 @@ test('public content archive is imported idempotently with podcast metadata', fu
         ->and(Post::query()->where('slug', 'example-post')->firstOrFail()->episodes->pluck('slug')->all())->toBe(['example-episode'])
         ->and(Episode::query()->where('slug', 'example-episode')->firstOrFail()->transistor_url)->toBe('https://example.com/episode-audio')
         ->and(Guide::query()->where('slug', 'example-guide')->firstOrFail()->status)->toBe(PublishStatus::Published)
+        ->and(Guide::query()->where('slug', 'example-guide')->firstOrFail()->author_name)->toBe('Jeffrey & Cassie')
         ->and(Podcast::query()->firstOrFail()->name)->toBe('Example Podcast')
         ->and(Post::query()->count())->toBe(1)
         ->and(Guide::query()->count())->toBe(1)

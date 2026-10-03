@@ -78,3 +78,26 @@ test('the review due filter and source review column show guides that need revie
         ->assertCanNotSeeTableRecords([$current])
         ->assertTableColumnExists('source_review_status');
 });
+
+test('the guides table filters by author', function (): void {
+    [$jeffrey, $cassie] = User::authors()->get()->all();
+    $byJeffrey = Guide::factory()->withAuthors($jeffrey)->create();
+    $byBoth = Guide::factory()->withAuthors($jeffrey, $cassie)->create();
+    $byCassie = Guide::factory()->withAuthors($cassie)->create();
+    actingAs(User::factory()->admin()->create());
+
+    livewire(ListGuides::class)
+        ->filterTable('authors', $cassie->id)
+        ->assertCanSeeTableRecords([$byBoth, $byCassie])
+        ->assertCanNotSeeTableRecords([$byJeffrey]);
+});
+
+test('global search finds guides by author name', function (): void {
+    [$jeffrey, $cassie] = User::authors()->get()->all();
+    $byJeffrey = Guide::factory()->withAuthors($jeffrey)->create(['title' => 'Sample guide one']);
+    Guide::factory()->withAuthors($cassie)->create(['title' => 'Sample guide two']);
+    actingAs(User::factory()->admin()->create());
+
+    expect(GuideResource::getGlobalSearchResults('Jeffrey')->pluck('title')->all())
+        ->toBe([$byJeffrey->title]);
+});

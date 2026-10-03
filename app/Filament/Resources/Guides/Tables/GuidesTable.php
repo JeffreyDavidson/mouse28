@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Guides\Tables;
 
-use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
 use App\Enums\PublishStatus;
 use App\Enums\SourceReviewStatus;
@@ -48,7 +47,9 @@ class GuidesTable
             ])
             ->filters([
                 SelectFilter::make('category')->options(GuideCategory::class),
-                SelectFilter::make('author')->options(ContentAuthor::class),
+                SelectFilter::make('authors')
+                    ->label('Author')
+                    ->relationship('authors', 'name', fn (Builder $query): Builder => $query->where('users.is_author', true)),
                 Filter::make('missing_artwork')
                     ->query(fn (Builder $query): Builder => $query->where(function (Builder $query): void {
                         $query->whereNull('cover_image')->orWhere('cover_image', '');

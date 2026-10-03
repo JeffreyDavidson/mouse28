@@ -2,7 +2,6 @@
 
 namespace App\Support;
 
-use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
 use App\Enums\PublishStatus;
 use App\Models\Category;
@@ -10,6 +9,7 @@ use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Podcast;
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
@@ -56,7 +56,6 @@ class PublicContentArchive
         'source_url',
         'last_reviewed_at',
         'cover_image',
-        'author',
         'published_at',
         'meta_title',
         'meta_description',
@@ -66,13 +65,29 @@ class PublicContentArchive
     /** A post's category travels by slug and name, so an import can create one the local site lacks. */
     private const array POST_CATEGORY_FIELDS = ['category', 'category_name'];
 
+    /**
+     * Authors travel by name (`authors`, in byline order). Archives exported before
+     * authors became users carry a single legacy `author` value instead.
+     */
+    private const array AUTHOR_FIELDS = ['authors', 'author'];
+
+    /**
+     * The author names (in byline order) credited by each legacy `author` value.
+     *
+     * @var array<string, list<string>>
+     */
+    private const array LEGACY_AUTHOR_NAMES = [
+        'jeffrey' => ['Jeffrey Davidson'],
+        'cassie' => ['Cassie Davidson'],
+        'both' => ['Jeffrey Davidson', 'Cassie Davidson'],
+    ];
+
     private const array GUIDE_FIELDS = [
         'title',
         'slug',
         'excerpt',
         'content',
         'category',
-        'author',
         'cover_image',
         'source_url',
         'last_reviewed_at',
@@ -115,7 +130,7 @@ class PublicContentArchive
             ->all();
 
         $posts = Post::query()
-            ->with(['tags', 'episodes', 'category'])
+            ->with(['tags', 'episodes', 'category', 'authors'])
             ->published()
             ->orderBy('published_at')
             ->get(['id', 'category_id', ...self::POST_FIELDS])
@@ -123,6 +138,7 @@ class PublicContentArchive
                 ...$this->attributes($post, self::POST_FIELDS),
                 'category' => $post->category?->slug,
                 'category_name' => $post->category?->name,
+                'authors' => $this->authorNames($post),
                 'episode_slugs' => $this->publishedEpisodeSlugs($post),
                 'tags' => $post->tagsWithType('content')->pluck('name')->all(),
             ])
@@ -130,11 +146,15 @@ class PublicContentArchive
             ->all();
 
         $guides = Guide::query()
-            ->with('tags')
+            ->with(['tags', 'authors'])
             ->published()
             ->orderBy('published_at')
             ->get(['id', ...self::GUIDE_FIELDS])
-            ->map(fn (Guide $guide): array => [...$this->attributes($guide, self::GUIDE_FIELDS), 'tags' => $guide->tagsWithType('content')->pluck('name')->all()])
+            ->map(fn (Guide $guide): array => [
+                ...$this->attributes($guide, self::GUIDE_FIELDS),
+                'authors' => $this->authorNames($guide),
+                'tags' => $guide->tagsWithType('content')->pluck('name')->all(),
+            ])
             ->values()
             ->all();
 
@@ -307,6 +327,7 @@ class PublicContentArchive
         }
 
         $post->save();
+        $this->importAuthors($post, $attributes);
         $post->episodes()->sync(Episode::query()->whereIn('slug', $this->relatedEpisodeSlugs($attributes))->pluck('id'));
         if (is_array($attributes['tags'] ?? null)) {
             $post->syncTagsWithType($attributes['tags'], 'content');
@@ -333,6 +354,47 @@ class PublicContentArchive
             ['slug' => $slug],
             ['name' => is_string($name) && $name !== '' ? $name : Str::headline($slug)],
         );
+    }
+
+    /** @return array<int, string> the names of the record's authors, in byline order */
+    private function authorNames(Post|Guide $record): array
+    {
+        return $record->authors->map(fn (User $author): string => $author->name)->all();
+    }
+
+    /**
+     * Credits the archived authors (existing author users matched by name, in archive
+     * order; unknown names are ignored and no users are created). Older archives carry
+     * a legacy `author` value instead; the `authors` list wins when both are present.
+     * A record that carries neither keeps its current authors.
+     *
+     * @param  array<string, mixed>  $attributes
+     */
+    private function importAuthors(Post|Guide $record, array $attributes): void
+    {
+        if (! array_key_exists('authors', $attributes) && ! array_key_exists('author', $attributes)) {
+            return;
+        }
+
+        $names = array_key_exists('authors', $attributes)
+            ? (array) $attributes['authors']
+            : $this->legacyAuthorNames($attributes['author']);
+        $authors = User::authors()->whereIn('name', $names)->get()->unique('name')->keyBy('name');
+
+        $record->syncAuthors(array_filter(array_map(
+            fn (mixed $name): ?int => is_string($name) ? $authors->get($name)?->id : null,
+            $names,
+        )));
+    }
+
+    /**
+     * The author names a validated legacy `author` value credits, in byline order.
+     *
+     * @return list<string>
+     */
+    private function legacyAuthorNames(mixed $author): array
+    {
+        return is_string($author) ? self::LEGACY_AUTHOR_NAMES[$author] : [];
     }
 
     /** @return list<string> the slugs of the post's live related episodes, in episode number order */
@@ -373,6 +435,7 @@ class PublicContentArchive
             'status' => PublishStatus::Published,
         ]);
         $guide->save();
+        $this->importAuthors($guide, $attributes);
         if (is_array($attributes['tags'] ?? null)) {
             $guide->syncTagsWithType($attributes['tags'], 'content');
         }
@@ -444,10 +507,13 @@ class PublicContentArchive
         $rules['posts.*.episode_slugs.*'] = ['required', 'string', 'max:255', 'regex:/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/'];
         $rules['posts.*.content'] = ['present', 'string'];
         $rules['guides.*.content'] = ['present', 'string'];
-        $rules['posts.*.author'] = ['nullable', Rule::enum(ContentAuthor::class)];
+        foreach (['posts', 'guides'] as $type) {
+            $rules["{$type}.*.authors"] = ['nullable', 'list'];
+            $rules["{$type}.*.authors.*"] = ['required', 'string', 'max:255'];
+            $rules["{$type}.*.author"] = ['nullable', Rule::in(array_keys(self::LEGACY_AUTHOR_NAMES))];
+        }
         $rules['posts.*.category'] = ['nullable', 'string', 'max:255', 'regex:/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/'];
         $rules['posts.*.category_name'] = ['nullable', 'string', 'max:255'];
-        $rules['guides.*.author'] = ['required', Rule::enum(ContentAuthor::class)];
         $rules['guides.*.category'] = ['required', Rule::enum(GuideCategory::class)];
         $rules['episodes.*.episode_number'] = ['required', 'integer', 'min:0', 'max:2147483647', 'distinct'];
         $rules['episodes.*.season_number'] = ['nullable', 'integer', 'min:0', 'max:4294967295'];
@@ -485,8 +551,8 @@ class PublicContentArchive
 
         return [
             'version' => self::VERSION,
-            'posts' => $this->validateRecords($archive['posts'] ?? null, 'posts', [...self::POST_FIELDS, ...self::POST_CATEGORY_FIELDS, 'episode_slug', 'episode_slugs']),
-            'guides' => $this->validateRecords($archive['guides'] ?? null, 'guides', self::GUIDE_FIELDS),
+            'posts' => $this->validateRecords($archive['posts'] ?? null, 'posts', [...self::POST_FIELDS, ...self::POST_CATEGORY_FIELDS, ...self::AUTHOR_FIELDS, 'episode_slug', 'episode_slugs']),
+            'guides' => $this->validateRecords($archive['guides'] ?? null, 'guides', [...self::GUIDE_FIELDS, ...self::AUTHOR_FIELDS]),
             'episodes' => $this->validateRecords($archive['episodes'] ?? null, 'episodes', self::EPISODE_FIELDS),
             'podcast' => $archive['podcast'] === null ? null : $this->onlyAttributes($archive['podcast'], self::PODCAST_FIELDS),
         ];

@@ -63,6 +63,9 @@ test('test paths mirror their application source', function (string $suite): voi
         'Database/Migrations/CreateCategoriesTableTest.php' => 'database/migrations/2026_10_03_015027_create_categories_table.php',
         'Database/Migrations/AddCategoryIdToPostsTableTest.php' => 'database/migrations/2026_10_03_015030_add_category_id_to_posts_table.php',
         'Database/Migrations/CopyPostCategoriesToCategoriesTest.php' => 'database/migrations/2026_10_03_015033_copy_post_categories_to_categories.php',
+        'Database/Migrations/AddAuthorFieldsToUsersTableTest.php' => 'database/migrations/2026_10_03_144331_add_author_fields_to_users_table.php',
+        'Database/Migrations/CreatePostUserAndGuideUserTablesTest.php' => 'database/migrations/2026_10_03_144332_create_post_user_and_guide_user_tables.php',
+        'Database/Migrations/CopyContentAuthorsToAuthorPivotsTest.php' => 'database/migrations/2026_10_03_144333_copy_content_authors_to_author_pivots.php',
         'Http/ProductionSmokeTest.php' => 'routes/web.php',
         'Support/DeploymentSmokeClientTest.php' => 'tests/Support/DeploymentSmokeClient.php',
     ];

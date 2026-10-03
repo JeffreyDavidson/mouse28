@@ -60,6 +60,12 @@ test('non admin user cannot access the admin panel', function (): void {
         ->assertForbidden();
 });
 
+test('an author who is not an administrator cannot access the admin panel', function (): void {
+    actingAs(User::authors()->firstOrFail())
+        ->get(Dashboard::getUrl(panel: 'admin'))
+        ->assertForbidden();
+});
+
 test('multi factor authentication is optional in the local environment', function (): void {
     app()->instance('env', 'local');
 

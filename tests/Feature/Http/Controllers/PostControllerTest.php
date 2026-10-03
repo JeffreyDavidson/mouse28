@@ -8,6 +8,7 @@ use App\Models\Podcast;
 use App\Models\Post;
 use App\Models\User;
 use App\Support\ResponsiveArtwork;
+use Dom\Element;
 use Dom\HTMLDocument;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -45,13 +46,14 @@ test('blog pages stay within their query budget as content grows', function (str
     Post::factory()->count(30)->inCategory('disney-tips')->create();
     $url = $page === 'index' ? route('blog.index') : route('blog.show', $post);
 
-    // Includes one query for the footer social links, and the post categories: one
-    // for the archive, two for an article (its own and its related posts').
+    // Includes one query for the footer social links, the post categories (one for
+    // the archive, two for an article: its own and its related posts') and the post
+    // authors (one for the archive's cards, one for the article's byline).
     $this->expectsDatabaseQueryCount($queries);
 
     get($url)
         ->assertOk();
-})->with(['archive' => ['index', 6], 'article with episode' => ['show', 7]]);
+})->with(['archive' => ['index', 7], 'article with episode' => ['show', 8]]);
 
 test('blog featured cover is prioritized while archive cards remain deferred', function (): void {
     Storage::fake('public');
@@ -166,7 +168,6 @@ test('published post detail page renders', function (): void {
         'excerpt' => 'A practical guide for planning a comfortable park day.',
         'content' => 'Start with a flexible plan. '.str_repeat('accessible park planning ', 198),
         'category_id' => Category::query()->where('slug', 'park-accessibility')->value('id'),
-        'author' => 'jeffrey',
         'status' => PublishStatus::Published,
         'published_at' => now()->subDay(),
     ]);
@@ -175,6 +176,62 @@ test('published post detail page renders', function (): void {
         ->assertOk()
         ->assertSee($post->title)
         ->assertSee('3 min read')->assertDontSee('1 of 3 min read')->assertSeeHtml('Start with a flexible plan')->assertSeeHtml('editorial-reading-column')->assertDontSeeHtml('data-article-secondary')->assertSeeHtml('id="back-to-top"')->assertSeeHtml('aria-hidden="true"')->assertSeeHtml('tabindex="-1"')->assertSeeHtml('inline-flex size-12 items-center justify-center rounded-full')->assertDontSeeHtml('inline-flex size-11');
+});
+
+dataset('post author credits', [
+    'Jeffrey' => [
+        ['Jeffrey Davidson'],
+        'Jeffrey Davidson',
+        [['JD', 'Jeffrey Davidson', 'Mouse28 co-host, theme park enthusiast, and candid chronicler of Disney family life.']],
+    ],
+    'Cassie' => [
+        ['Cassie Davidson'],
+        'Cassie Davidson',
+        [['CD', 'Cassie Davidson', 'Mouse28 co-host, accessibility advocate, and the planner behind the family\'s park days.']],
+    ],
+    'both, Jeffrey first' => [
+        ['Jeffrey Davidson', 'Cassie Davidson'],
+        'Jeffrey & Cassie',
+        [
+            ['JD', 'Jeffrey Davidson', 'Mouse28 co-host, theme park enthusiast, and candid chronicler of Disney family life.'],
+            ['CD', 'Cassie Davidson', 'Mouse28 co-host, accessibility advocate, and the planner behind the family\'s park days.'],
+        ],
+    ],
+    'no authors' => [
+        [],
+        'Mouse28 Team',
+        [['MT', 'Mouse28 Team', 'Disney park explorer, accessibility advocate, and parent.']],
+    ],
+]);
+
+test('a post page shows its byline and one about-the-author block per author', function (array $names, string $byline, array $profiles): void {
+    $post = Post::factory()->create();
+    $post->syncAuthors(array_map(fn (mixed $name): int => User::authors()->where('name', $name)->sole()->id, $names));
+
+    $response = get(route('blog.show', $post))
+        ->assertOk();
+
+    $document = HTMLDocument::createFromString($this->responseContent($response), LIBXML_NOERROR);
+    $section = $document->querySelector('section[aria-labelledby^="about-author"]') ?? throw new UnexpectedValueException('The about-the-author section is missing.');
+    $headingIds = array_map(fn (int $number): string => "about-author-{$number}", range(1, count($profiles)));
+    $blocks = array_map(
+        fn (Element $block): array => array_map(fn (Element $text): string => trim($text->textContent ?? ''), iterator_to_array($block->querySelectorAll('span, h2, p'))),
+        iterator_to_array($section->querySelectorAll('[data-author-bio]')),
+    );
+
+    expect(trim($document->querySelector('[data-byline]')->textContent ?? ''))->toBe($byline)
+        ->and($section->getAttribute('aria-labelledby'))->toBe(implode(' ', $headingIds))
+        ->and(array_map(fn (Element $heading): ?string => $heading->getAttribute('id'), iterator_to_array($section->querySelectorAll('h2'))))->toBe($headingIds)
+        ->and($blocks)->toBe($profiles)
+        ->and($this->responseContent($response))->not->toContain('The couple behind Mouse28');
+})->with('post author credits');
+
+test('an author without a bio falls back to the general about-the-author sentence', function (): void {
+    $post = Post::factory()->withAuthors(User::factory()->author()->create(['name' => 'Sample Author', 'bio' => null]))->create();
+
+    get(route('blog.show', $post))
+        ->assertOk()
+        ->assertSeeInOrder(['Sample Author', 'Disney park explorer, accessibility advocate, and parent.']);
 });
 
 test('only currently published content is publicly visible', function (): void {
