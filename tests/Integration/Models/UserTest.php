@@ -40,3 +40,22 @@ test('new users are not administrators until explicitly promoted', function (): 
     expect((new User)->is_admin)->toBeFalse()
         ->and($user->is_admin)->toBeFalse();
 });
+
+test('new users are not authors until explicitly credited', function (): void {
+    $user = User::factory()->create();
+
+    expect((new User)->is_author)->toBeFalse()
+        ->and($user->refresh()->is_author)->toBeFalse()
+        ->and($user->bio)->toBeNull()
+        ->and($user->isFillable('bio'))->toBeTrue()
+        ->and($user->isFillable('is_author'))->toBeFalse();
+});
+
+test('the authors scope lists only authors in creation order', function (): void {
+    User::query()->where('is_author', true)->delete();
+    $first = User::factory()->author()->create();
+    User::factory()->admin()->create();
+    $second = User::factory()->author()->create();
+
+    expect(User::authors()->pluck('id')->all())->toBe([$first->id, $second->id]);
+});

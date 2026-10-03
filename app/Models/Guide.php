@@ -3,11 +3,11 @@
 namespace App\Models;
 
 use App\Contracts\Publishable;
-use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
 use App\Enums\PublishStatus;
 use App\Enums\SourceReviewStatus;
 use App\Models\Attributes\PublishingStatus;
+use App\Models\Concerns\HasAuthors;
 use App\Models\Concerns\HasCoverImages;
 use App\Models\Concerns\HasPublishingStatus;
 use App\Models\Concerns\HasTagsUntilForceDeleted;
@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -32,12 +33,13 @@ use Spatie\Activitylog\Support\LogOptions;
 /**
  * @property PublishStatus $status
  * @property string|null $content
- * @property ContentAuthor|null $author
  * @property GuideCategory $category
+ * @property-read Collection<int, User> $authors
  * @property Carbon|null $last_reviewed_at
  * @property Carbon|null $published_at
  * @property CarbonInterface|null $slug_locked_at
  * @property Carbon $updated_at
+ * @property-read string $author_initials
  * @property-read string $author_name
  * @property-read string $category_label
  * @property-read string|null $cover_image_url
@@ -56,7 +58,6 @@ use Spatie\Activitylog\Support\LogOptions;
     'excerpt',
     'content',
     'category',
-    'author',
     'cover_image',
     'source_url',
     'last_reviewed_at',
@@ -70,7 +71,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class Guide extends Model implements Publishable
 {
     /** @use HasFactory<GuideFactory> */
-    use HasCoverImages, HasFactory, HasPublishingStatus, HasTagsUntilForceDeleted, LocksSlugAfterPublication, SoftDeletes, SyncsLegacyBody, SyncsLegacyPublishedFlag;
+    use HasAuthors, HasCoverImages, HasFactory, HasPublishingStatus, HasTagsUntilForceDeleted, LocksSlugAfterPublication, SoftDeletes, SyncsLegacyBody, SyncsLegacyPublishedFlag;
 
     use LogsActivity;
 
@@ -84,7 +85,6 @@ class Guide extends Model implements Publishable
                 'excerpt',
                 'content',
                 'category',
-                'author',
                 'cover_image',
                 'source_url',
                 'last_reviewed_at',
@@ -133,12 +133,6 @@ class Guide extends Model implements Publishable
     }
 
     /** @return Attribute<string, never> */
-    protected function authorName(): Attribute
-    {
-        return Attribute::make(get: fn () => $this->author?->getLabel() ?? 'Mouse28 Team');
-    }
-
-    /** @return Attribute<string, never> */
     protected function categoryLabel(): Attribute
     {
         return Attribute::make(get: fn (): string => $this->category->getLabel());
@@ -173,7 +167,6 @@ class Guide extends Model implements Publishable
     protected function casts(): array
     {
         return [
-            'author' => ContentAuthor::class,
             'category' => GuideCategory::class,
             'status' => PublishStatus::class,
             'last_reviewed_at' => 'date',

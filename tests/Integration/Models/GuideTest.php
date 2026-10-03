@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
 use App\Enums\SourceReviewStatus;
 use App\Models\Guide;
@@ -77,27 +76,29 @@ test('editorial review dates determine the review queue', function (): void {
         ->and($reviewDueIds)->toEqualCanonicalizing([$staleGuide->id, $unreviewedGuide->id]);
 });
 
-test('content enums round trip through their existing database strings', function (): void {
+test('guide categories round trip through their existing database strings', function (): void {
     $record = Guide::factory()->create([
-        'author' => 'cassie',
         'category' => 'accessibility',
     ]);
 
     $record->refresh();
 
-    expect($record->author)->toBe(ContentAuthor::Cassie)
-        ->and($record->category)->toBe(GuideCategory::Accessibility)
-        ->and($record->author_name)->toBe('Cassie Davidson');
+    expect($record->category)->toBe(GuideCategory::Accessibility);
 
-    $record->update(['author' => ContentAuthor::Both, 'category' => GuideCategory::FamilyPlanning]);
+    $record->update(['category' => GuideCategory::FamilyPlanning]);
     $record->refresh();
 
     expect($record->category)->toBe(GuideCategory::FamilyPlanning)
-        ->and($record->getRawOriginal('author'))->toBe('both')
         ->and($record->getRawOriginal('category'))->toBe('family-planning')
-        ->and($record->toArray()['author'])->toBe('both')
-        ->and($record->toArray()['category'])->toBe('family-planning')
-        ->and($record->author_name)->toBe('Jeffrey & Cassie');
+        ->and($record->toArray()['category'])->toBe('family-planning');
+});
+
+test('guides credit authors through the pivot only', function (): void {
+    $guide = new Guide;
+
+    expect($guide->getFillable())->not->toContain('author')
+        ->and($guide->getCasts())->not->toHaveKey('author')
+        ->and($guide->getActivitylogOptions()->logAttributes)->not->toContain('author');
 });
 
 test('guides are ready to publish with content, an excerpt, an official source, and a review date', function (): void {

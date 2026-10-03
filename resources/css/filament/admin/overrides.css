@@ -121,6 +121,11 @@
     opacity: 1;
 }
 
+/* Selected values in a multiple select (such as Authors) need AA contrast on their tinted badge. */
+.fi-body .fi-select-input .fi-badge.fi-text-color-600 {
+    --text: var(--color-700);
+}
+
 .fi-input,
 .fi-select-input,
 .fi-fo-textarea textarea {

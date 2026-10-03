@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use App\Contracts\Publishable;
-use App\Enums\ContentAuthor;
 use App\Enums\PublishStatus;
 use App\Enums\SourceReviewStatus;
 use App\Models\Attributes\PublishingStatus;
+use App\Models\Concerns\HasAuthors;
 use App\Models\Concerns\HasCoverImages;
 use App\Models\Concerns\HasPublishingStatus;
 use App\Models\Concerns\HasTagsUntilForceDeleted;
@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -28,16 +29,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Date;
-use Illuminate\Support\Str;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property PublishStatus $status
  * @property string|null $content
- * @property ContentAuthor|null $author
  * @property int|null $category_id
  * @property-read Category|null $category
+ * @property-read Collection<int, User> $authors
  * @property Carbon|null $last_reviewed_at
  * @property Carbon|null $published_at
  * @property CarbonInterface|null $slug_locked_at
@@ -64,7 +64,6 @@ use Spatie\Activitylog\Support\LogOptions;
     'last_reviewed_at',
     'cover_image',
     'category_id',
-    'author',
     'status',
     'published_at',
     'meta_title',
@@ -75,7 +74,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class Post extends Model implements Publishable
 {
     /** @use HasFactory<PostFactory> */
-    use HasCoverImages, HasFactory, HasPublishingStatus, HasTagsUntilForceDeleted, IgnoresLegacyCategoryColumn, LocksSlugAfterPublication, SoftDeletes, SyncsLegacyBody, SyncsLegacyPublishedFlag;
+    use HasAuthors, HasCoverImages, HasFactory, HasPublishingStatus, HasTagsUntilForceDeleted, IgnoresLegacyCategoryColumn, LocksSlugAfterPublication, SoftDeletes, SyncsLegacyBody, SyncsLegacyPublishedFlag;
 
     use LogsActivity;
 
@@ -92,7 +91,6 @@ class Post extends Model implements Publishable
                 'last_reviewed_at',
                 'cover_image',
                 'category_id',
-                'author',
                 'status',
                 'published_at',
                 'meta_title',
@@ -161,18 +159,6 @@ class Post extends Model implements Publishable
         });
     }
 
-    /** @return Attribute<string, never> */
-    protected function authorName(): Attribute
-    {
-        return Attribute::make(get: fn () => $this->author?->getLabel() ?? 'Mouse28 Team');
-    }
-
-    /** @return Attribute<string, never> */
-    protected function authorInitials(): Attribute
-    {
-        return Attribute::make(get: fn (): string => Str::initials($this->author_name, capitalize: true));
-    }
-
     /** @return Attribute<int, never> */
     protected function readingTime(): Attribute
     {
@@ -214,7 +200,6 @@ class Post extends Model implements Publishable
     protected function casts(): array
     {
         return [
-            'author' => ContentAuthor::class,
             'status' => PublishStatus::class,
             'last_reviewed_at' => 'date',
             'published_at' => 'datetime',

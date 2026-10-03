@@ -33,8 +33,8 @@ pest()->use(RefreshDatabase::class);
 beforeEach(fn () => actingAs(User::factory()->admin()->create()));
 
 dataset('status edit pages', [
-    'post' => [fn () => Post::factory(), EditPost::class],
-    'guide' => [fn () => Guide::factory(), EditGuide::class],
+    'post' => [fn () => Post::factory()->credited(), EditPost::class],
+    'guide' => [fn () => Guide::factory()->credited(), EditGuide::class],
     'episode' => [fn () => Episode::factory(), EditEpisode::class],
     'newsletter issue' => [fn () => NewsletterIssue::factory(), EditNewsletterIssue::class],
 ]);
@@ -91,7 +91,7 @@ test('a forged draft status never unpublishes live content', function (): void {
 });
 
 test('an editor can move a draft into review', function (): void {
-    $post = Post::factory()->draft()->create();
+    $post = Post::factory()->draft()->credited()->create();
 
     livewire(EditPost::class, ['record' => $post->getRouteKey()])
         ->fillForm(['status' => PublishStatus::InReview])

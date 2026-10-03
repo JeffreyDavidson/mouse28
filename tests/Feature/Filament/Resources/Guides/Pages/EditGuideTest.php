@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
 use App\Enums\PublishStatus;
 use App\Filament\Resources\Guides\GuideResource;
@@ -19,7 +18,7 @@ pest()->use(RefreshDatabase::class);
 
 test('previously published URLs stay locked after clearing the date and unpublishing', function (): void {
     actingAs(User::factory()->admin()->create());
-    $record = Guide::factory()->create(['slug' => 'original-public-url']);
+    $record = Guide::factory()->credited()->create(['slug' => 'original-public-url']);
 
     livewire(EditGuide::class, ['record' => $record->getRouteKey()])
         ->fillForm(['published_at' => null])
@@ -48,7 +47,7 @@ test('authenticated user can render the edit form', function (): void {
 
 test('published URLs cannot be changed by submitted editor state', function (): void {
     actingAs(User::factory()->admin()->create());
-    $published = Guide::factory()->create(['slug' => 'permanent-url']);
+    $published = Guide::factory()->credited()->create(['slug' => 'permanent-url']);
 
     livewire(EditGuide::class, ['record' => $published->getRouteKey()])
         ->fillForm(['slug' => 'replacement-url'])
@@ -135,16 +134,26 @@ test('deleted content leaves the public site and can be restored by an administr
     $response->assertOk();
 });
 
-test('editor saves author and category selections as enums', function (): void {
-    $record = Guide::factory()->draft()->create();
+test('editor loads the guide authors in byline order', function (): void {
+    [$jeffrey, $cassie] = User::authors()->get()->all();
+    $record = Guide::factory()->draft()->withAuthors($cassie, $jeffrey)->create();
     actingAs(User::factory()->admin()->create());
 
     livewire(EditGuide::class, ['record' => $record->getRouteKey()])
-        ->fillForm(['author' => 'jeffrey', 'category' => 'family-planning'])
+        ->assertSchemaStateSet(['authors' => [$cassie->id, $jeffrey->id]]);
+});
+
+test('editor saves the author selection and the category as an enum', function (): void {
+    [$jeffrey, $cassie] = User::authors()->get()->all();
+    $record = Guide::factory()->draft()->withAuthors($jeffrey, $cassie)->create();
+    actingAs(User::factory()->admin()->create());
+
+    livewire(EditGuide::class, ['record' => $record->getRouteKey()])
+        ->fillForm(['authors' => [$cassie->id], 'category' => 'family-planning'])
         ->call('save')
         ->assertHasNoFormErrors();
 
-    expect($record->refresh()->author)->toBe(ContentAuthor::Jeffrey)
+    expect($record->refresh()->authors->modelKeys())->toBe([$cassie->id])
         ->and($record->category)->toBe(GuideCategory::FamilyPlanning);
 });
 
@@ -164,7 +173,7 @@ test('publishing actions disappear when admin access is revoked for the guide', 
 
 test('the edit form loads and saves the guide content', function (): void {
     actingAs(User::factory()->admin()->create());
-    $record = Guide::factory()->draft()->create(['content' => 'Original guide content.']);
+    $record = Guide::factory()->draft()->credited()->create(['content' => 'Original guide content.']);
 
     $page = livewire(EditGuide::class, ['record' => $record->getRouteKey()]);
     $page->assertSchemaStateSet(['content' => 'Original guide content.']);

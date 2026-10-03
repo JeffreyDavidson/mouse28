@@ -8,7 +8,9 @@ use App\Models\Episode;
 use App\Models\Post;
 use App\Models\User;
 use Filament\Actions\Testing\TestAction;
+use Filament\Forms\Components\Select;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -131,3 +133,55 @@ test('an inline category requires a name and a normalized unique slug', function
     'repeated hyphens' => [['name' => 'New category', 'slug' => 'new--category'], ['slug' => 'regex']],
     'a name that is too long' => [['name' => str_repeat('a', 256), 'slug' => 'new-category'], ['name' => 'max']],
 ]);
+
+test('the post form credits every author by default, in order', function (): void {
+    actingAs(User::factory()->admin()->create());
+
+    livewire(CreatePost::class)
+        ->assertSchemaStateSet(['authors' => User::authors()->pluck('id')->all()]);
+});
+
+test('the post form offers only authors in its author select', function (): void {
+    actingAs(User::factory()->admin()->create(['name' => 'Sample Admin']));
+
+    livewire(CreatePost::class)
+        ->assertFormFieldExists('authors', fn (Select $field): bool => $field->isMultiple()
+            && collect($field->getOptions())->sort()->values()->all() === ['Cassie Davidson', 'Jeffrey Davidson']);
+});
+
+test('post creation requires at least one author', function (): void {
+    actingAs(User::factory()->admin()->create());
+
+    livewire(CreatePost::class)
+        ->fillForm(['title' => 'Sample draft', 'slug' => 'sample-draft', 'category_id' => Category::factory()->create()->id, 'authors' => []])
+        ->call('create')
+        ->assertHasFormErrors(['authors' => 'required']);
+
+    expect(Post::query()->count())->toBe(0);
+});
+
+test('a new post credits the selected authors in the order they were chosen', function (): void {
+    [$jeffreyId, $cassieId] = User::authorIds();
+    actingAs(User::factory()->admin()->create());
+
+    livewire(CreatePost::class)
+        ->fillForm(['title' => 'Sample draft', 'slug' => 'sample-draft', 'category_id' => Category::factory()->create()->id, 'authors' => [$cassieId, $jeffreyId]])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    expect(Post::query()->sole()->authors->modelKeys())->toBe([$cassieId, $jeffreyId])
+        ->and(DB::table('post_user')->orderBy('user_id')->pluck('position', 'user_id')->all())->toEqual([$jeffreyId => 1, $cassieId => 0]);
+});
+
+test('post creation rejects a submitted user who is not an author', function (): void {
+    $admin = User::factory()->admin()->create();
+    $cassieId = User::authorIds()[1];
+    actingAs($admin);
+
+    livewire(CreatePost::class)
+        ->fillForm(['title' => 'Sample draft', 'slug' => 'sample-draft', 'category_id' => Category::factory()->create()->id, 'authors' => [$admin->id, $cassieId]])
+        ->call('create')
+        ->assertHasFormErrors(['authors.0']);
+
+    expect(Post::query()->count())->toBe(0);
+});

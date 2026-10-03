@@ -52,6 +52,15 @@ class UserFactory extends Factory
         ]);
     }
 
+    /** A user who can be credited as a post or guide author. */
+    public function author(): static
+    {
+        return $this->state(fn (): array => [
+            'is_author' => true,
+            'bio' => fake()->sentence(),
+        ]);
+    }
+
     public function withoutAppAuthentication(): static
     {
         return $this->state(fn (): array => [

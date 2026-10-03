@@ -14,14 +14,20 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * @method static Builder<static> authors()
+ */
 #[Fillable([
     'name',
     'email',
     'password',
+    'bio',
 ])]
 #[Hidden([
     'password',
@@ -30,18 +36,40 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery
 {
     /**
-     * New users start without admin access, matching the column default, so authorization never sees a null flag.
+     * New users start without admin access or author credit, matching the column defaults, so neither flag is ever null.
      *
      * @var array<string, mixed>
      */
     #[\Override]
     protected $attributes = [
         'is_admin' => false,
+        'is_author' => false,
     ];
 
     public function canAccessPanel(Panel $panel): bool
     {
         return $this->is_admin === true;
+    }
+
+    /**
+     * Users who can be credited as post and guide authors, in creation order.
+     *
+     * @param  Builder<static>  $query
+     */
+    #[Scope]
+    protected function authors(Builder $query): void
+    {
+        $query->where('is_author', true)->orderBy('id');
+    }
+
+    /**
+     * Every author's id, in creation order (Jeffrey, then Cassie, for the migrated authors).
+     *
+     * @return list<int>
+     */
+    public static function authorIds(): array
+    {
+        return array_values(static::query()->authors()->get()->map(fn (User $author): int => $author->id)->all());
     }
 
     /** @use HasFactory<UserFactory> */
@@ -58,6 +86,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
+            'is_author' => 'boolean',
         ];
     }
 }

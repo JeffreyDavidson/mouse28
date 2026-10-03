@@ -44,7 +44,7 @@ test('administrator can create a Post from the resource form', function (): void
 })->group('browser-smoke');
 
 test('administrator can edit a Post from the resource form', function (): void {
-    $post = Post::factory()->draft()->create();
+    $post = Post::factory()->draft()->credited()->create();
 
     actingAs(User::factory()->admin()->create());
 

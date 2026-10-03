@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Posts\Schemas;
 
-use App\Enums\ContentAuthor;
+use App\Filament\Forms\Components\AuthorsSelect;
 use App\Filament\Forms\Components\PublishStatusSelect;
 use App\Models\Category;
 use App\Models\Post;
@@ -75,10 +75,7 @@ class PostForm
                             ->required()
                             ->extraAlpineAttributes(['data-mouse28-accessible-select' => true])
                             ->columnSpan(1),
-                        Select::make('author')
-                            ->options(ContentAuthor::class)
-                            ->required()
-                            ->default(ContentAuthor::Both)
+                        AuthorsSelect::make('authors')
                             ->columnSpan(1),
                         Select::make('episodes')
                             ->label('Related Episodes')

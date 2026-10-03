@@ -60,7 +60,7 @@
                             {{ $post->author_initials }}
                         </span>
                         <span>
-                            <span class="block text-sm font-semibold">{{ $post->author_name }}</span>
+                            <span class="block text-sm font-semibold" data-byline>{{ $post->author_name }}</span>
                             <span class="text-cream/55 block text-xs">Mouse28</span>
                         </span>
                     </div>
@@ -154,28 +154,19 @@
                 @endif
             </article>
 
-            <section class="border-navy/12 mt-14 border-y py-8" aria-labelledby="about-author">
-                <div class="flex items-start gap-5">
-                    <span class="border-gold/35 text-gold-ink font-heading inline-flex size-14 shrink-0 items-center justify-center rounded-full border font-semibold">
-                        {{ $post->author_initials }}
-                    </span>
-                    <div>
-                        <h2 id="about-author" class="font-heading text-navy text-2xl [font-weight:620]">
-                            {{ $post->author_name }}
-                        </h2>
-                        <p class="text-navy/68 mt-2 text-sm/7">
-                            @if ($post->author === \App\Enums\ContentAuthor::Both)
-                                The couple behind Mouse28, sharing practical park lessons and honest family experiences.
-                            @elseif ($post->author === \App\Enums\ContentAuthor::Cassie)
-                                Mouse28 co-host, accessibility advocate, and the planner behind the family's park days.
-                            @elseif ($post->author === \App\Enums\ContentAuthor::Jeffrey)
-                                Mouse28 co-host, theme park enthusiast, and candid chronicler of Disney family life.
-                            @else
-                                Disney park explorer, accessibility advocate, and parent.
-                            @endif
-                        </p>
-                    </div>
-                </div>
+            <section
+                class="border-navy/12 mt-14 space-y-8 border-y py-8"
+                aria-labelledby="{{ collect(range(1, max(1, $post->authors->count())))->map(fn (int $number): string => "about-author-{$number}")->implode(' ') }}"
+            >
+                @forelse ($post->authors as $author)
+                    <x-author-bio
+                        :name="$author->name"
+                        :bio="$author->bio"
+                        :heading-id="'about-author-'.$loop->iteration"
+                    />
+                @empty
+                    <x-author-bio :name="$post->author_name" heading-id="about-author-1" />
+                @endforelse
             </section>
 
             @foreach ($post->episodes as $episode)

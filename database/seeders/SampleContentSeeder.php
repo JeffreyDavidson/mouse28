@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
 use App\Enums\PublishStatus;
 use App\Models\Category;
@@ -11,6 +10,7 @@ use App\Models\Guide;
 use App\Models\NewsletterIssue;
 use App\Models\Post;
 use App\Models\Subscriber;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 
@@ -93,35 +93,39 @@ class SampleContentSeeder extends Seeder
 
     private function post(string $slug, string $title, string $categorySlug, PublishStatus $status, ?Carbon $publishedAt = null): Post
     {
-        return Post::query()->updateOrCreate(
+        $post = Post::query()->updateOrCreate(
             ['slug' => $slug],
             [
                 'title' => $title,
                 'excerpt' => 'This sample record exists to exercise the publishing workflow.',
                 'content' => 'Synthetic development content for testing lists, detail pages, and filters.',
                 'category_id' => Category::query()->where('slug', $categorySlug)->value('id'),
-                'author' => ContentAuthor::Both,
                 'status' => $status,
                 'published_at' => $publishedAt,
             ],
         );
+        $post->syncAuthors(User::authorIds());
+
+        return $post;
     }
 
     private function guide(string $slug, string $title, GuideCategory $category, PublishStatus $status, ?Carbon $publishedAt = null): Guide
     {
-        return Guide::query()->updateOrCreate(
+        $guide = Guide::query()->updateOrCreate(
             ['slug' => $slug],
             [
                 'title' => $title,
                 'excerpt' => 'This sample record exists to exercise the publishing workflow.',
                 'content' => 'Synthetic development content for testing lists, detail pages, and filters.',
                 'category' => $category,
-                'author' => ContentAuthor::Both,
                 'source_url' => 'https://example.test/sample-source',
                 'last_reviewed_at' => now()->toDateString(),
                 'status' => $status,
                 'published_at' => $publishedAt,
             ],
         );
+        $guide->syncAuthors(User::authorIds());
+
+        return $guide;
     }
 }

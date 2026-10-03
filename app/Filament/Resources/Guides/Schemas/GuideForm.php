@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\Guides\Schemas;
 
-use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
+use App\Filament\Forms\Components\AuthorsSelect;
 use App\Filament\Forms\Components\PublishStatusSelect;
 use App\Models\Guide;
 use Filament\Forms\Components\DatePicker;
@@ -60,10 +60,7 @@ class GuideForm
                             ->options(GuideCategory::class)
                             ->required()
                             ->columnSpan(2),
-                        Select::make('author')
-                            ->options(ContentAuthor::class)
-                            ->required()
-                            ->default(ContentAuthor::Both)
+                        AuthorsSelect::make('authors')
                             ->columnSpan(2),
                     ]),
                 Section::make('Content')

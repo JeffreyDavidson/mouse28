@@ -1,12 +1,12 @@
 <?php
 
-use App\Enums\ContentAuthor;
 use App\Enums\GuideCategory;
 use App\Enums\PublishStatus;
 use App\Models\Category;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
+use App\Models\User;
 use App\Support\PublicContentArchive;
 use Database\Factories\EpisodeFactory;
 use Database\Factories\GuideFactory;
@@ -93,17 +93,15 @@ test('sync refuses unpublished identity collisions without changing content', fu
 ])->with(['draft', 'scheduled']);
 
 test('public archives retain string values and restore enum backed content', function (): void {
-    $post = Post::factory()->inCategory('disney-tips')->create(['author' => ContentAuthor::Cassie]);
-    $guide = Guide::factory()->create(['author' => ContentAuthor::Both, 'category' => GuideCategory::Accessibility]);
+    $post = Post::factory()->inCategory('disney-tips')->create();
+    $guide = Guide::factory()->create(['category' => GuideCategory::Accessibility]);
     $service = app(PublicContentArchive::class);
 
     $archive = $service->export();
 
-    expect($archive['posts'][0]['author'])->toBe('cassie')
-        ->and($archive['posts'][0]['category'])->toBe('disney-tips')
+    expect($archive['posts'][0]['category'])->toBe('disney-tips')
         ->and($archive['posts'][0]['category_name'])->toBe('Disney Tips')
         ->and($archive['posts'][0])->not->toHaveKey('category_id')
-        ->and($archive['guides'][0]['author'])->toBe('both')
         ->and($archive['guides'][0]['category'])->toBe('accessibility');
 
     $post->delete();
@@ -130,10 +128,8 @@ test('public archives retain string values and restore enum backed content', fun
     $guide->refresh();
 
     expect($post->trashed())->toBeFalse()
-        ->and($post->author)->toBe(ContentAuthor::Cassie)
         ->and($post->category?->slug)->toBe('disney-tips')
         ->and($guide->trashed())->toBeFalse()
-        ->and($guide->author)->toBe(ContentAuthor::Both)
         ->and($guide->category)->toBe(GuideCategory::Accessibility);
 });
 
@@ -277,18 +273,15 @@ test('archive import leaves the category alone when the record carries none', fu
     expect($post->refresh()->category_id)->toBe($post->category_id);
 });
 
-test('archive validation requires guide enum values', function (string $field): void {
+test('archive validation requires the guide category', function (): void {
     Guide::factory()->create();
     $service = app(PublicContentArchive::class);
     $archive = $service->export();
-    $archive['guides'][0][$field] = null;
+    $archive['guides'][0]['category'] = null;
 
     expect(fn () => $service->import($archive))
-        ->toThrow(InvalidArgumentException::class, "{$field} field is required");
-})->with([
-    'author' => 'author',
-    'category' => 'category',
-]);
+        ->toThrow(InvalidArgumentException::class, 'category field is required');
+});
 
 test('export includes only live content by its publish status', function (PostFactory|GuideFactory|EpisodeFactory $factory): void {
     $factory->createOne(['slug' => 'live-content']);
@@ -464,3 +457,134 @@ test('archive import replaces the related episodes of an existing post', functio
 
     expect($post->refresh()->episodes->modelKeys())->toBe([$kept->id]);
 });
+
+/** @return array<mixed> the author names credited on the archived record, in byline order */
+function importedAuthorNames(PostFactory|GuideFactory $factory): array
+{
+    return $factory->newModel()->newQuery()->sole()->authors->pluck('name')->all();
+}
+
+test('archive export writes the author names of each post and guide in byline order', function (PostFactory|GuideFactory $factory, string $type): void {
+    [$jeffrey, $cassie] = User::authors()->get()->all();
+    $factory->withAuthors($cassie, $jeffrey)->createOne();
+
+    $archive = app(PublicContentArchive::class)->export();
+
+    expect(firstArchivedRecord($archive, $type))->toHaveKey('authors', ['Cassie Davidson', 'Jeffrey Davidson'])
+        ->not->toHaveKey('author');
+})->with('archived written content');
+
+test('archive export writes an empty author list for content without authors', function (PostFactory|GuideFactory $factory, string $type): void {
+    $factory->createOne();
+
+    expect(firstArchivedRecord(app(PublicContentArchive::class)->export(), $type))->toHaveKey('authors', []);
+})->with('archived written content');
+
+test('archive import credits existing authors by name in archive order and ignores unknown names', function (PostFactory|GuideFactory $factory, string $type): void {
+    $factory->createOne();
+    $service = app(PublicContentArchive::class);
+    $archive = withFirstArchivedRecord($service->export(), $type, ['authors' => ['Cassie Davidson', 'Someone Unknown', 'Jeffrey Davidson']]);
+    $users = User::query()->count();
+
+    $service->import($archive);
+
+    expect(importedAuthorNames($factory))->toBe(['Cassie Davidson', 'Jeffrey Davidson'])
+        ->and(User::query()->count())->toBe($users);
+})->with('archived written content');
+
+test('archive import credits the first of two authors who share a name', function (): void {
+    $first = User::factory()->author()->create(['name' => 'Sample Author']);
+    User::factory()->author()->create(['name' => 'Sample Author']);
+    Post::factory()->create();
+    $service = app(PublicContentArchive::class);
+    $archive = withFirstArchivedRecord($service->export(), 'posts', ['authors' => ['Sample Author']]);
+
+    $service->import($archive);
+
+    expect(Post::query()->sole()->authors->modelKeys())->toBe([$first->id]);
+});
+
+test('archive import clears the authors of content archived with a null author list', function (): void {
+    Post::factory()->credited()->create();
+    $service = app(PublicContentArchive::class);
+    $archive = withFirstArchivedRecord($service->export(), 'posts', ['authors' => null]);
+
+    $service->import($archive);
+
+    expect(importedAuthorNames(Post::factory()))->toBeEmpty();
+});
+
+test('archive import never credits a same-named user who is not an author', function (): void {
+    User::factory()->admin()->create(['name' => 'Sample Admin']);
+    Post::factory()->create();
+    $service = app(PublicContentArchive::class);
+    $archive = withFirstArchivedRecord($service->export(), 'posts', ['authors' => ['Sample Admin']]);
+
+    $service->import($archive);
+
+    expect(importedAuthorNames(Post::factory()))->toBeEmpty();
+});
+
+test('archive import maps an older author value to the author users', function (PostFactory|GuideFactory $factory, string $type, ?string $legacyAuthor, array $names): void {
+    $factory->createOne();
+    $service = app(PublicContentArchive::class);
+    $archive = withFirstArchivedRecord($service->export(), $type, ['author' => $legacyAuthor], without: ['authors']);
+
+    $service->import($archive);
+
+    expect(importedAuthorNames($factory))->toBe($names);
+})->with('archived written content')->with([
+    'jeffrey' => ['jeffrey', ['Jeffrey Davidson']],
+    'cassie' => ['cassie', ['Cassie Davidson']],
+    'both, Jeffrey first' => ['both', ['Jeffrey Davidson', 'Cassie Davidson']],
+    'no author' => [null, []],
+]);
+
+test('archive import prefers the authors list when an archive carries both keys', function (): void {
+    Post::factory()->create();
+    $service = app(PublicContentArchive::class);
+    $archive = withFirstArchivedRecord($service->export(), 'posts', ['authors' => ['Cassie Davidson'], 'author' => 'jeffrey']);
+
+    $service->import($archive);
+
+    expect(importedAuthorNames(Post::factory()))->toBe(['Cassie Davidson']);
+});
+
+test('archive import replaces the authors of existing content when the archive lists them', function (PostFactory|GuideFactory $factory, string $type, array $archivedAuthors, array $names): void {
+    [$jeffrey] = User::authors()->get()->all();
+    $factory->withAuthors($jeffrey)->createOne();
+    $service = app(PublicContentArchive::class);
+    $archive = withFirstArchivedRecord($service->export(), $type, ['authors' => $archivedAuthors]);
+
+    $service->import($archive);
+
+    expect(importedAuthorNames($factory))->toBe($names);
+})->with('archived written content')->with([
+    'another author' => [['Cassie Davidson'], ['Cassie Davidson']],
+    'no authors' => [[], []],
+]);
+
+test('archive import leaves the authors alone when the record carries none', function (PostFactory|GuideFactory $factory, string $type): void {
+    [$jeffrey, $cassie] = User::authors()->get()->all();
+    $factory->withAuthors($cassie, $jeffrey)->createOne();
+    $service = app(PublicContentArchive::class);
+    $archive = withFirstArchivedRecord($service->export(), $type, [], without: ['authors']);
+
+    $service->import($archive);
+
+    expect(importedAuthorNames($factory))->toBe(['Cassie Davidson', 'Jeffrey Davidson']);
+})->with('archived written content');
+
+test('archive validation rejects an unknown older author value or a malformed author list', function (string $field, mixed $value): void {
+    Post::factory()->create(['title' => 'Original title']);
+    $service = app(PublicContentArchive::class);
+    $archive = withFirstArchivedRecord($service->export(), 'posts', ['title' => 'Changed by import', $field => $value]);
+
+    expect(fn () => $service->import($archive))->toThrow(InvalidArgumentException::class)
+        ->and(Post::query()->sole()->title)->toBe('Original title');
+})->with([
+    'an unknown older author value' => ['author', 'someone-else'],
+    'an author list that is not a list' => ['authors', 'Jeffrey Davidson'],
+    'a blank author name' => ['authors', ['']],
+    'a non-string author name' => ['authors', [42]],
+]);

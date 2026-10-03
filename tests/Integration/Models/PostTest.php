@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\ContentAuthor;
 use App\Enums\PublishStatus;
 use App\Enums\SourceReviewStatus;
 use App\Models\Category;
@@ -123,22 +122,12 @@ test('editorial scopes separate the content work queue', function (): void {
         ->and($attentionIds)->toEqualCanonicalizing([$draft->id, $scheduled->id, $needsAttention->id]);
 });
 
-test('content enums round trip through their existing database strings', function (): void {
-    $record = Post::factory()->create([
-        'author' => 'cassie',
-    ]);
+test('posts credit authors through the pivot only', function (): void {
+    $post = new Post;
 
-    $record->refresh();
-
-    expect($record->author)->toBe(ContentAuthor::Cassie)
-        ->and($record->author_name)->toBe('Cassie Davidson');
-
-    $record->update(['author' => ContentAuthor::Both]);
-    $record->refresh();
-
-    expect($record->getRawOriginal('author'))->toBe('both')
-        ->and($record->toArray()['author'])->toBe('both')
-        ->and($record->author_name)->toBe('Jeffrey & Cassie');
+    expect($post->getFillable())->not->toContain('author')
+        ->and($post->getCasts())->not->toHaveKey('author')
+        ->and($post->getActivitylogOptions()->logAttributes)->not->toContain('author');
 });
 
 test('a post belongs to a category and is labelled with its name', function (): void {
@@ -180,17 +169,6 @@ test('post category changes are recorded in the editorial log', function (): voi
         'old' => ['category_id' => $from->id],
     ]);
 });
-
-test('author initials are derived from the display name', function (?ContentAuthor $author, string $initials): void {
-    $record = Post::factory()->make(['author' => $author]);
-
-    expect($record->author_initials)->toBe($initials);
-})->with([
-    'Jeffrey' => [ContentAuthor::Jeffrey, 'JD'],
-    'Cassie' => [ContentAuthor::Cassie, 'CD'],
-    'both authors' => [ContentAuthor::Both, 'J&C'],
-    'Mouse28 team fallback' => [null, 'MT'],
-]);
 
 test('posts are ready to publish with content, an excerpt, and a category', function (): void {
     $post = Post::factory()->draft()->make([
