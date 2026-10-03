@@ -14,7 +14,7 @@ class ContentContinuation
     public static function relatedPosts(Post $post, int $limit = 5): Collection
     {
         $sameCategoryPosts = Post::published()
-            ->select(['id', 'slug', 'title', 'category_id', 'content', 'cover_image'])
+            ->select(['id', 'slug', 'title', 'category_id', 'content', 'featured_image_path'])
             ->with('category:id,name,slug')
             ->whereKeyNot($post->getKey())
             ->where('category_id', $post->category_id)
@@ -28,7 +28,7 @@ class ContentContinuation
 
         return $sameCategoryPosts->merge(
             Post::published()
-                ->select(['id', 'slug', 'title', 'category_id', 'content', 'cover_image'])
+                ->select(['id', 'slug', 'title', 'category_id', 'content', 'featured_image_path'])
                 ->with('category:id,name,slug')
                 ->whereKeyNot($post->getKey())
                 ->whereNotIn('id', $sameCategoryPosts->modelKeys())
@@ -42,7 +42,7 @@ class ContentContinuation
     public static function relatedGuides(Guide $guide, int $limit = 3): Collection
     {
         $sameCategoryGuides = Guide::published()
-            ->select(['id', 'slug', 'title', 'category', 'cover_image'])
+            ->select(['id', 'slug', 'title', 'category', 'featured_image_path'])
             ->whereKeyNot($guide->getKey())
             ->where('category', $guide->category)
             ->latest('published_at')
@@ -55,7 +55,7 @@ class ContentContinuation
 
         return $sameCategoryGuides->merge(
             Guide::published()
-                ->select(['id', 'slug', 'title', 'category', 'cover_image'])
+                ->select(['id', 'slug', 'title', 'category', 'featured_image_path'])
                 ->whereKeyNot($guide->getKey())
                 ->whereNotIn('id', $sameCategoryGuides->modelKeys())
                 ->latest('published_at')

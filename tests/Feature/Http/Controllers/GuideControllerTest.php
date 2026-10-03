@@ -6,6 +6,8 @@ use App\Models\User;
 use Dom\HTMLDocument;
 use Dom\XPath;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -99,12 +101,24 @@ test('guides stay hidden from the public site when the feature is disabled', fun
 test('guide pages use category artwork when an editor has not uploaded a cover', function (): void {
     $guide = Guide::factory()->create([
         'category' => 'accessibility',
-        'cover_image' => null,
+        'featured_image_path' => null,
     ]);
 
     get(route('guides.index'))->assertOk()->assertSeeHtml('/images/guides/accessibility.webp')->assertSeeHtml('data-guide-artwork');
 
     get(route('guides.show', $guide))->assertOk()->assertSeeHtml('/images/guides/accessibility.webp')->assertSeeHtml('fetchpriority="high"');
+});
+
+test('guide pages render an uploaded cover with its responsive variants', function (): void {
+    Storage::fake('public');
+    $disk = Storage::disk('public');
+    $disk->put('guides/cover.png', UploadedFile::fake()->image('cover.png', 700, 400)->getContent());
+    $guide = Guide::factory()->create(['featured_image_path' => 'guides/cover.png']);
+    $srcset = 'srcset="'.$disk->url('guides/responsive/cover-480.webp').' 480w, '.$disk->url('guides/responsive/cover-640.webp').' 640w"';
+
+    get(route('guides.index'))->assertOk()->assertSeeHtml('src="'.$disk->url('guides/cover.png').'"')->assertSeeHtml($srcset)->assertSeeHtml('sizes="auto, 100vw"');
+
+    get(route('guides.show', $guide))->assertOk()->assertSeeHtml($srcset)->assertSeeHtml('sizes="100vw"');
 });
 
 test('only currently published content is publicly visible', function (): void {
@@ -202,7 +216,7 @@ test('landing page provides search and social metadata', function (): void {
     Podcast::query()->create([
         'name' => 'Mouse28 Weekly',
         'description' => 'A weekly Disney parks podcast for accessibility-minded families.',
-        'cover_image' => 'podcasts/show-cover.jpg',
+        'cover_image_path' => 'podcasts/show-cover.jpg',
     ]);
 
     get(route('guides.index'))->assertOk()->assertSeeHtml('<meta property="og:title" content="Disney Parks Guides | Mouse28">');

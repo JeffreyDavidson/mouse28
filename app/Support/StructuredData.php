@@ -37,7 +37,7 @@ class StructuredData
             'articleSection' => $post->category_label,
         ];
 
-        if ($image = $post->og_image_url ?: $post->cover_image_url) {
+        if ($image = $post->og_image_url ?: $post->featured_image_url) {
             $article['image'] = url($image);
         }
 
@@ -73,7 +73,7 @@ class StructuredData
             'articleSection' => $guide->category_label,
         ];
 
-        if ($image = $guide->og_image_url ?: $guide->cover_image_url) {
+        if ($image = $guide->og_image_url ?: $guide->featured_image_url) {
             $article['image'] = url($image);
         }
 
@@ -123,7 +123,7 @@ class StructuredData
             ];
         }
 
-        $image = $episode->og_image_url ?: $episode->cover_image_url;
+        $image = $episode->og_image_url ?: $episode->featured_image_url;
         if ($image) {
             $podcastEpisode['image'] = url($image);
         }

@@ -7,7 +7,9 @@ use App\Filament\Resources\Guides\Pages\EditGuide;
 use App\Models\Guide;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 
 use function Pest\Laravel\actingAs;
@@ -84,7 +86,7 @@ test('edit page offers a draft preview', function (): void {
 test('drafts with their required details can be published while advisory details are missing', function (): void {
     $admin = User::factory()->admin()->create();
     $record = Guide::factory()->draft()->create([
-        'cover_image' => null,
+        'featured_image_path' => null,
         'meta_title' => null,
         'meta_description' => null,
     ]);
@@ -182,4 +184,22 @@ test('the edit form loads and saves the guide content', function (): void {
         ->assertHasNoFormErrors();
 
     expect($record->refresh()->content)->toBe("## Updated\n\nNew guide content.");
+});
+
+test('a replaced cover is stored under guides with variants and the previous file is removed', function (): void {
+    Storage::fake('public');
+    Storage::disk('public')->put('guides/previous.png', UploadedFile::fake()->image('previous.png', 1000, 525)->getContent());
+    actingAs(User::factory()->admin()->create());
+    $record = Guide::factory()->credited()->create(['featured_image_path' => 'guides/previous.png']);
+
+    livewire(EditGuide::class, ['record' => $record->getRouteKey()])
+        ->fillForm(['featured_image_path' => [UploadedFile::fake()->image('cover.png', 1000, 525)]])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    $path = (string) $record->refresh()->featured_image_path;
+    expect($path)->toStartWith('guides/')
+        ->not->toBe('guides/previous.png');
+    Storage::disk('public')->assertExists([$path, 'guides/responsive/'.pathinfo($path, PATHINFO_FILENAME).'-480.webp']);
+    Storage::disk('public')->assertMissing(['guides/previous.png', 'guides/responsive/previous-480.webp']);
 });

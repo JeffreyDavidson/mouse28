@@ -111,12 +111,12 @@ test('homepage offers a smaller bundled podcast cover without replacing the orig
 test('homepage only presents published content as stories and guides', function (): void {
     $featuredPost = Post::factory()->create([
         'title' => 'A Real Featured Dispatch',
-        'cover_image' => null,
+        'featured_image_path' => null,
         'published_at' => now()->subHour(),
     ]);
     $latestPost = Post::factory()->create([
         'title' => 'A Real Latest Dispatch',
-        'cover_image' => null,
+        'featured_image_path' => null,
         'published_at' => now()->subDay(),
     ]);
     $draftPost = Post::factory()->draft()->create([
@@ -125,7 +125,7 @@ test('homepage only presents published content as stories and guides', function 
     $guide = Guide::factory()->create([
         'title' => 'A Real Planning Guide',
         'category' => 'accessibility',
-        'cover_image' => null,
+        'featured_image_path' => null,
     ]);
 
     get(route('home'))
@@ -140,7 +140,7 @@ test('homepage only presents published content as stories and guides', function 
 test('homepage turns an empty guide shelf into useful planning stories', function (): void {
     $planningPost = Post::factory()->inCategory('park-accessibility')->create([
         'title' => 'Plan a Calmer Park Morning',
-        'cover_image' => null,
+        'featured_image_path' => null,
         'published_at' => now()->subDay(),
     ]);
     $draftPlanningPost = Post::factory()->inCategory('disney-tips')->draft()->create([
@@ -157,14 +157,14 @@ test('homepage turns an empty guide shelf into useful planning stories', functio
 
 test('homepage defers the below-fold featured post image', function (): void {
     Post::factory()->create([
-        'cover_image' => 'posts/featured.webp',
+        'featured_image_path' => 'posts/featured.webp',
     ]);
 
     $response = get(route('home'))
         ->assertOk();
 
     expect($this->responseContent($response))->toMatch(
-        '/<img[^>]*src="\/storage\/posts\/featured\.webp"[^>]*loading="lazy"[^>]*decoding="async"[^>]*>/',
+        '/<img[^>]*src="[^"]*\/storage\/posts\/featured\.webp"[^>]*loading="lazy"[^>]*decoding="async"[^>]*>/',
     );
 });
 
@@ -190,7 +190,7 @@ test('landing page provides search and social metadata', function (): void {
     Podcast::query()->create([
         'name' => 'Mouse28 Weekly',
         'description' => 'A weekly Disney parks podcast for accessibility-minded families.',
-        'cover_image' => 'podcasts/show-cover.jpg',
+        'cover_image_path' => 'podcasts/show-cover.jpg',
     ]);
 
     get(route('home'))->assertOk()->assertSeeHtml('<meta name="description" content="Accessibility tips, sensory-friendly park planning, family experiences, and the Mouse28 podcast from Jeffrey and Cassie Davidson.">')->assertSeeHtml('<meta name="theme-color" content="#1a1040" />')->assertSeeHtml('<link rel="preload" href="/fonts/mouse28/poppins-400.woff2" as="font" type="font/woff2" crossorigin />')->assertSeeHtml('<link rel="preload" href="/fonts/mouse28/besley-latin.woff2" as="font" type="font/woff2" crossorigin />')->assertSeeHtml('<meta property="og:image" content="'.url('/images/hero-family.jpg').'">');

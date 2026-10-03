@@ -93,11 +93,11 @@ test('editorial scopes separate the content work queue', function (): void {
     $draft = Post::factory()->draft()->create();
     $scheduled = Post::factory()->scheduled()->create();
     $published = Post::factory()->create([
-        'cover_image' => 'posts/complete.jpg',
+        'featured_image_path' => 'posts/complete.jpg',
         'meta_title' => 'Complete title',
         'meta_description' => 'Complete description',
     ]);
-    $needsAttention = Post::factory()->create(['cover_image' => null]);
+    $needsAttention = Post::factory()->create(['featured_image_path' => null]);
 
     $draftIds = Post::query()
         ->where('status', PublishStatus::Draft)
@@ -172,7 +172,7 @@ test('post category changes are recorded in the editorial log', function (): voi
 
 test('posts are ready to publish with content, an excerpt, and a category', function (): void {
     $post = Post::factory()->draft()->make([
-        'cover_image' => null,
+        'featured_image_path' => null,
         'meta_title' => null,
         'meta_description' => null,
     ]);
@@ -221,7 +221,7 @@ test('the post review interval comes from content configuration', function (): v
 test('posts without content need attention', function (?string $content): void {
     $post = Post::factory()->create([
         'content' => $content,
-        'cover_image' => 'posts/complete.jpg',
+        'featured_image_path' => 'posts/complete.jpg',
         'meta_title' => 'Complete title',
         'meta_description' => 'Complete description',
     ]);

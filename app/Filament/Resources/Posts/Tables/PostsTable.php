@@ -71,7 +71,7 @@ class PostsTable
                     ->relationship('authors', 'name', fn (Builder $query): Builder => $query->where('users.is_author', true)),
                 Filter::make('missing_artwork')
                     ->query(fn (Builder $query): Builder => $query->where(function (Builder $query): void {
-                        $query->whereNull('cover_image')->orWhere('cover_image', '');
+                        $query->whereNull('featured_image_path')->orWhere('featured_image_path', '');
                     })),
                 Filter::make('missing_seo')
                     ->query(fn (Builder $query): Builder => $query->where(function (Builder $query): void {

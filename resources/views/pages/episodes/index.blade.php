@@ -1,7 +1,7 @@
 <x-layouts.app
     :title="($podcast->name ?: 'Mouse28').' Podcast'"
     :description="$podcast->description ?: 'Disney park stories, accessibility conversations, and family experiences from the Mouse28 podcast.'"
-    :og-image="$podcast->cover_image ? '/storage/'.ltrim($podcast->cover_image, '/') : '/images/podcast/mouse28-cover.jpg'"
+    :og-image="$podcast->cover_image_path ? '/storage/'.ltrim($podcast->cover_image_path, '/') : '/images/podcast/mouse28-cover.jpg'"
     :canonical="$canonicalUrl"
     :dispatch-layout="true"
 >
@@ -12,13 +12,18 @@
         FIRST VIEWPORT: Podcast artwork anchors the left while the show promise and newest episode lead on the right.
         FORM [seed: season-tracklist]: Show poster followed by a spacious season tracklist with no sidebar or statistics panels.
     -->
+    @inject('responsiveImages', 'App\Services\ResponsiveImageVariants')
+
     @php
         $allEpisodes = $episodes->getCollection();
         $latestEpisode = $allEpisodes->first();
         $groupedEpisodes = $allEpisodes->groupBy(fn ($episode) => $episode->season_number ?? 0);
-        $coverImage = $podcast->cover_image
-            ? '/storage/'.ltrim($podcast->cover_image, '/')
+        $coverImage = $podcast->cover_image_path
+            ? '/storage/'.ltrim($podcast->cover_image_path, '/')
             : '/images/podcast/mouse28-cover.webp';
+        $coverSrcset = $podcast->cover_image_path
+            ? $responsiveImages->srcset($podcast->cover_image_path)
+            : '/images/podcast/mouse28-cover-640.webp 640w, /images/podcast/mouse28-cover-768.webp 768w, /images/podcast/mouse28-cover.webp 1200w';
     @endphp
 
     <div data-podcast-archive>
@@ -27,8 +32,8 @@
                 <div class="podcast-cover-frame mx-auto w-full max-w-64 sm:max-w-lg lg:mx-0">
                     <img
                         src="{{ $coverImage }}"
-                        @if (! $podcast->cover_image)
-                            srcset="/images/podcast/mouse28-cover-640.webp 640w, /images/podcast/mouse28-cover-768.webp 768w, /images/podcast/mouse28-cover.webp 1200w"
+                        @if ($coverSrcset)
+                            srcset="{{ $coverSrcset }}"
                             sizes="(min-width: 64rem) min(32rem, calc((100vw - 7rem) * 5 / 12)), (min-width: 40rem) 32rem, min(16rem, calc(100vw - 2rem))"
                         @endif
                         alt="Mouse28 podcast artwork"

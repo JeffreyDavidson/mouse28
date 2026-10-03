@@ -121,7 +121,8 @@ class PostForm
                         Section::make('Media')
                             ->icon(Heroicon::OutlinedPhoto)
                             ->schema([
-                                FileUpload::make('cover_image')
+                                FileUpload::make('featured_image_path')
+                                    ->label('Cover image')
                                     ->image()
                                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                     ->maxSize(5120)

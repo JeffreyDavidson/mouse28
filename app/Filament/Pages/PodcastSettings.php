@@ -51,7 +51,7 @@ class PodcastSettings extends Page
     {
         $podcast = Podcast::settings();
         $this->form->fill($podcast->only([
-            'name', 'description', 'cover_image',
+            'name', 'description', 'cover_image_path',
             'apple_url', 'spotify_url', 'youtube_url',
         ]));
     }
@@ -76,7 +76,8 @@ class PodcastSettings extends Page
                     ->schema([
                         TextInput::make('name')->required()->maxLength(255),
                         Textarea::make('description')->rows(3)->columnSpanFull(),
-                        FileUpload::make('cover_image')
+                        FileUpload::make('cover_image_path')
+                            ->label('Cover image')
                             ->image()
                             ->maxSize(5120)
                             ->disk('public')

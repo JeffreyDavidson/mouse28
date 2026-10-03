@@ -134,7 +134,7 @@ test('multilingual and right to left content remains contained', function (): vo
 
 test('reduced motion preference keeps guide artwork still on hover', function (): void {
     config()->set('mouse28.guides_enabled', true);
-    Guide::factory()->create(['cover_image' => null]);
+    Guide::factory()->create(['featured_image_path' => null]);
 
     $page = visit(route('guides.index'), ['reducedMotion' => 'reduce']);
 

@@ -41,7 +41,7 @@ class PublicContentArchive
         'spotify_url',
         'youtube_url',
         'duration_seconds',
-        'cover_image',
+        'featured_image_path',
         'published_at',
         'meta_title',
         'meta_description',
@@ -55,7 +55,7 @@ class PublicContentArchive
         'content',
         'source_url',
         'last_reviewed_at',
-        'cover_image',
+        'featured_image_path',
         'published_at',
         'meta_title',
         'meta_description',
@@ -88,7 +88,7 @@ class PublicContentArchive
         'excerpt',
         'content',
         'category',
-        'cover_image',
+        'featured_image_path',
         'source_url',
         'last_reviewed_at',
         'published_at',
@@ -100,7 +100,7 @@ class PublicContentArchive
     private const array PODCAST_FIELDS = [
         'name',
         'description',
-        'cover_image',
+        'cover_image_path',
         'apple_url',
         'spotify_url',
         'youtube_url',
@@ -220,7 +220,7 @@ class PublicContentArchive
 
         foreach ([$archive['episodes'], $archive['posts'], $archive['guides']] as $records) {
             foreach ($records as $attributes) {
-                foreach (['audio_path', 'cover_image', 'og_image'] as $field) {
+                foreach (['audio_path', 'featured_image_path', 'og_image'] as $field) {
                     if (filled($attributes[$field] ?? null)) {
                         $paths[] = $this->validateMediaPath($attributes[$field]);
                     }
@@ -228,7 +228,7 @@ class PublicContentArchive
             }
         }
 
-        $podcastCover = $archive['podcast']['cover_image'] ?? null;
+        $podcastCover = $archive['podcast']['cover_image_path'] ?? null;
 
         if (filled($podcastCover)) {
             $paths[] = $this->validateMediaPath($podcastCover);
@@ -470,6 +470,22 @@ class PublicContentArchive
         return $deleted;
     }
 
+    /**
+     * Copies an older archive's `cover_image` into the stored media path column the
+     * record now uses; the new key wins when an archive carries both.
+     *
+     * @param  array<array-key, mixed>  $attributes
+     * @return array<array-key, mixed>
+     */
+    private function withLegacyCoverImage(array $attributes, string $column): array
+    {
+        if (! array_key_exists($column, $attributes) && array_key_exists('cover_image', $attributes)) {
+            $attributes[$column] = $attributes['cover_image'];
+        }
+
+        return $attributes;
+    }
+
     private function validateMediaPath(mixed $path): string
     {
         if (! is_string($path)
@@ -495,7 +511,7 @@ class PublicContentArchive
             foreach (['excerpt', 'content', 'description', 'show_notes', 'transcript', 'meta_title', 'meta_description'] as $field) {
                 $rules["{$type}.*.{$field}"] = ['nullable', 'string'];
             }
-            foreach (['cover_image', 'og_image', 'audio_path'] as $field) {
+            foreach (['featured_image_path', 'og_image', 'audio_path'] as $field) {
                 $rules["{$type}.*.{$field}"] = ['nullable', 'string', 'max:255'];
             }
             foreach (['source_url', 'transistor_url', 'audio_url', 'apple_url', 'spotify_url', 'youtube_url'] as $field) {
@@ -520,7 +536,7 @@ class PublicContentArchive
         $rules['episodes.*.duration_seconds'] = ['nullable', 'integer', 'min:0', 'max:2147483647'];
         $rules['podcast.name'] = ['required_with:podcast', 'string', 'max:255'];
         $rules['podcast.description'] = ['nullable', 'string'];
-        $rules['podcast.cover_image'] = ['nullable', 'string', 'max:255'];
+        $rules['podcast.cover_image_path'] = ['nullable', 'string', 'max:255'];
         foreach (['apple_url', 'spotify_url', 'youtube_url', 'instagram_url', 'tiktok_url'] as $field) {
             $rules["podcast.{$field}"] = ['nullable', 'string', 'url:http,https', 'max:255'];
         }
@@ -545,8 +561,11 @@ class PublicContentArchive
             throw new InvalidArgumentException('The public content archive contains invalid podcast metadata.');
         }
 
-        if (filled($archive['podcast']['cover_image'] ?? null)) {
-            $this->validateMediaPath($archive['podcast']['cover_image']);
+        // Archives exported before stored media paths existed carry the podcast cover as `cover_image`.
+        $podcast = $archive['podcast'] === null ? null : $this->withLegacyCoverImage($archive['podcast'], 'cover_image_path');
+
+        if (filled($podcast['cover_image_path'] ?? null)) {
+            $this->validateMediaPath($podcast['cover_image_path']);
         }
 
         return [
@@ -554,7 +573,7 @@ class PublicContentArchive
             'posts' => $this->validateRecords($archive['posts'] ?? null, 'posts', [...self::POST_FIELDS, ...self::POST_CATEGORY_FIELDS, ...self::AUTHOR_FIELDS, 'episode_slug', 'episode_slugs']),
             'guides' => $this->validateRecords($archive['guides'] ?? null, 'guides', [...self::GUIDE_FIELDS, ...self::AUTHOR_FIELDS]),
             'episodes' => $this->validateRecords($archive['episodes'] ?? null, 'episodes', self::EPISODE_FIELDS),
-            'podcast' => $archive['podcast'] === null ? null : $this->onlyAttributes($archive['podcast'], self::PODCAST_FIELDS),
+            'podcast' => $podcast === null ? null : $this->onlyAttributes($podcast, self::PODCAST_FIELDS),
         ];
     }
 
@@ -582,7 +601,10 @@ class PublicContentArchive
             }
             $slugs[] = $attributes['slug'];
 
-            foreach (['cover_image', 'og_image', 'audio_path'] as $field) {
+            // Archives exported before stored media paths existed carry the image as `cover_image`.
+            $attributes = $this->withLegacyCoverImage($attributes, 'featured_image_path');
+
+            foreach (['featured_image_path', 'og_image', 'audio_path'] as $field) {
                 if (filled($attributes[$field] ?? null)) {
                     $this->validateMediaPath($attributes[$field]);
                 }

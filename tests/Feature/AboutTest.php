@@ -71,7 +71,7 @@ test('landing page provides search and social metadata', function (): void {
     Podcast::query()->create([
         'name' => 'Mouse28 Weekly',
         'description' => 'A weekly Disney parks podcast for accessibility-minded families.',
-        'cover_image' => 'podcasts/show-cover.jpg',
+        'cover_image_path' => 'podcasts/show-cover.jpg',
     ]);
 
     get(route('about'))->assertOk()->assertSeeHtml('<meta property="og:title" content="About the Davidson Family | Mouse28">');

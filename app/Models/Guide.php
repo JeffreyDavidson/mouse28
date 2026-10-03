@@ -8,15 +8,19 @@ use App\Enums\PublishStatus;
 use App\Enums\SourceReviewStatus;
 use App\Models\Attributes\PublishingStatus;
 use App\Models\Concerns\HasAuthors;
-use App\Models\Concerns\HasCoverImages;
+use App\Models\Concerns\HasFeaturedImage;
+use App\Models\Concerns\HasOgImage;
 use App\Models\Concerns\HasPublishingStatus;
 use App\Models\Concerns\HasTagsUntilForceDeleted;
 use App\Models\Concerns\LocksSlugAfterPublication;
+use App\Models\Concerns\ManagesStoredMedia;
 use App\Models\Concerns\SyncsLegacyBody;
 use App\Models\Concerns\SyncsLegacyPublishedFlag;
+use App\Observers\GuideObserver;
 use Carbon\CarbonInterface;
 use Database\Factories\GuideFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -42,7 +46,8 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property-read string $author_initials
  * @property-read string $author_name
  * @property-read string $category_label
- * @property-read string|null $cover_image_url
+ * @property string|null $featured_image_path
+ * @property-read string|null $featured_image_url
  * @property-read string|null $og_image_url
  * @property-read int $reading_time
  *
@@ -58,7 +63,7 @@ use Spatie\Activitylog\Support\LogOptions;
     'excerpt',
     'content',
     'category',
-    'cover_image',
+    'featured_image_path',
     'source_url',
     'last_reviewed_at',
     'status',
@@ -67,11 +72,12 @@ use Spatie\Activitylog\Support\LogOptions;
     'meta_description',
     'og_image',
 ])]
+#[ObservedBy(GuideObserver::class)]
 #[PublishingStatus]
 class Guide extends Model implements Publishable
 {
     /** @use HasFactory<GuideFactory> */
-    use HasAuthors, HasCoverImages, HasFactory, HasPublishingStatus, HasTagsUntilForceDeleted, LocksSlugAfterPublication, SoftDeletes, SyncsLegacyBody, SyncsLegacyPublishedFlag;
+    use HasAuthors, HasFactory, HasFeaturedImage, HasOgImage, HasPublishingStatus, HasTagsUntilForceDeleted, LocksSlugAfterPublication, ManagesStoredMedia, SoftDeletes, SyncsLegacyBody, SyncsLegacyPublishedFlag;
 
     use LogsActivity;
 
@@ -85,7 +91,7 @@ class Guide extends Model implements Publishable
                 'excerpt',
                 'content',
                 'category',
-                'cover_image',
+                'featured_image_path',
                 'source_url',
                 'last_reviewed_at',
                 'status',
@@ -96,6 +102,11 @@ class Guide extends Model implements Publishable
             ])
             ->logOnlyDirty()
             ->dontLogEmptyChanges();
+    }
+
+    protected function storedMediaAttributes(): array
+    {
+        return ['featured_image_path'];
     }
 
     /**
@@ -118,7 +129,7 @@ class Guide extends Model implements Publishable
     protected function needsAttention(Builder $query): void
     {
         $query->where(function (Builder $query): void {
-            foreach (['excerpt', 'content', 'cover_image', 'source_url', 'last_reviewed_at', 'meta_title', 'meta_description'] as $column) {
+            foreach (['excerpt', 'content', 'featured_image_path', 'source_url', 'last_reviewed_at', 'meta_title', 'meta_description'] as $column) {
                 $query->orWhereNull($column);
 
                 if ($column !== 'last_reviewed_at') {

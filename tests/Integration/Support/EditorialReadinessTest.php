@@ -37,7 +37,7 @@ test('live or scheduled content without a publish date is asked for one', functi
 
 test('readiness reports actionable issues for each content type', function (): void {
     $post = Post::factory()->make([
-        'cover_image' => null,
+        'featured_image_path' => null,
         'meta_title' => null,
         'meta_description' => null,
     ]);
@@ -66,7 +66,7 @@ test('episode readiness does not require deferred audio or transcripts', functio
         'audio_path' => null,
         'audio_url' => null,
         'transcript' => null,
-        'cover_image' => 'episodes/complete.jpg',
+        'featured_image_path' => 'episodes/complete.jpg',
         'meta_title' => 'A complete episode title',
         'meta_description' => 'A complete episode description for search and social sharing.',
     ]);
@@ -78,7 +78,7 @@ test('episode readiness does not require deferred audio or transcripts', functio
 
 test('complete content is marked ready', function (): void {
     $post = Post::factory()->make([
-        'cover_image' => 'posts/complete.jpg',
+        'featured_image_path' => 'posts/complete.jpg',
         'meta_title' => 'A complete park-planning post',
         'meta_description' => 'A complete description for search and social sharing.',
     ]);
