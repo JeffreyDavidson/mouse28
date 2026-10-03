@@ -3,6 +3,7 @@
 use App\Livewire\BlogArchive;
 use App\Models\Category;
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -213,6 +214,36 @@ test('featured story remains visible on subsequent archive pages', function (): 
 
     // Assert
     $page->assertViewHas('featuredPost', fn (Post $post): bool => $post->is($featuredPost));
+});
+
+test('featured story and archive cards show each post\'s byline from its loaded authors', function (): void {
+    // Arrange
+    $jeffrey = User::factory()->author()->create(['name' => 'Jeffrey Sample']);
+    $cassie = User::factory()->author()->create(['name' => 'Cassie Sample']);
+    Post::factory()->withAuthors($jeffrey, $cassie)->create(['published_at' => now()]);
+    Post::factory()->withAuthors($cassie)->create(['published_at' => now()->subDay()]);
+    Post::factory()->create(['published_at' => now()->subDays(2)]);
+
+    // Act
+    $page = livewire(BlogArchive::class);
+
+    // Assert
+    $page->assertSeeHtmlInOrder(['Jeffrey &amp; Cassie', 'By Cassie Sample', 'By Mouse28 Team'])
+        ->assertViewHas('featuredPost', fn (Post $post): bool => $post->relationLoaded('authors'))
+        ->assertViewHas('archivePosts', fn (Collection $posts): bool => $posts->every(fn (mixed $post): bool => $post instanceof Post && $post->relationLoaded('authors')));
+});
+
+test('featured story loads its authors when filters exclude it from the page', function (): void {
+    // Arrange
+    $author = User::factory()->author()->create(['name' => 'Jeffrey Sample']);
+    Post::factory()->withAuthors($author)->create(['published_at' => now()]);
+
+    // Act
+    $page = livewire(BlogArchive::class, ['sort' => 'oldest']);
+
+    // Assert
+    $page->assertViewHas('featuredPost', fn (Post $post): bool => $post->relationLoaded('authors'))
+        ->assertSee('Jeffrey Sample');
 });
 
 test('featured story is independent of category search and sort filters', function (): void {

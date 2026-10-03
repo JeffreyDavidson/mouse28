@@ -2,9 +2,11 @@
 
 use App\Enums\PublishStatus;
 use App\Models\Category;
+use App\Models\Guide;
 use App\Models\NewsletterIssue;
 use App\Models\Post;
 use App\Models\Subscriber;
+use App\Models\User;
 use Database\Seeders\SampleContentSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -62,4 +64,18 @@ test('the sample seeder adds its categories when they are missing', function ():
 
     expect(Post::query()->whereNull('category_id')->count())->toBe(0)
         ->and(Category::query()->count())->toBe(11);
+});
+
+test('the sample seeder credits every sample post and guide to both authors in order', function (): void {
+    $this->seed(SampleContentSeeder::class);
+    $this->seed(SampleContentSeeder::class);
+
+    $bylines = [
+        ...Post::query()->with('authors')->get()->map(fn (Post $post): array => $post->authors->pluck('name')->all()),
+        ...Guide::query()->with('authors')->get()->map(fn (Guide $guide): array => $guide->authors->pluck('name')->all()),
+    ];
+
+    expect($bylines)->toHaveCount(6)
+        ->each->toBe(['Jeffrey Davidson', 'Cassie Davidson'])
+        ->and(User::authors()->count())->toBe(2);
 });

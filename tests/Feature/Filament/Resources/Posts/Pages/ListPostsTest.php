@@ -110,3 +110,44 @@ test('the posts table has no column for the removed single episode relation', fu
     livewire(ListPosts::class)
         ->assertTableColumnDoesNotExist('episode.title');
 });
+
+test('the posts table shows each author name in byline order', function (): void {
+    [$jeffrey, $cassie] = User::authors()->get()->all();
+    $post = Post::factory()->withAuthors($cassie, $jeffrey)->create();
+    actingAs(User::factory()->admin()->create());
+
+    livewire(ListPosts::class)
+        ->assertTableColumnStateSet('authors.name', ['Cassie Davidson', 'Jeffrey Davidson'], $post);
+});
+
+test('the posts table filters by author', function (): void {
+    [$jeffrey, $cassie] = User::authors()->get()->all();
+    $byJeffrey = Post::factory()->withAuthors($jeffrey)->create();
+    $byBoth = Post::factory()->withAuthors($jeffrey, $cassie)->create();
+    $byCassie = Post::factory()->withAuthors($cassie)->create();
+    $uncredited = Post::factory()->create();
+    actingAs(User::factory()->admin()->create());
+
+    livewire(ListPosts::class)
+        ->filterTable('authors', $jeffrey->id)
+        ->assertCanSeeTableRecords([$byJeffrey, $byBoth])
+        ->assertCanNotSeeTableRecords([$byCassie, $uncredited]);
+});
+
+test('global search finds posts by author name', function (): void {
+    [$jeffrey, $cassie] = User::authors()->get()->all();
+    $byCassie = Post::factory()->withAuthors($cassie)->create(['title' => 'Sample post one']);
+    Post::factory()->withAuthors($jeffrey)->create(['title' => 'Sample post two']);
+    actingAs(User::factory()->admin()->create());
+
+    expect(PostResource::getGlobalSearchResults('Cassie')->pluck('title')->all())
+        ->toBe([$byCassie->title]);
+});
+
+test('the posts table names a post without authors', function (): void {
+    Post::factory()->create();
+    actingAs(User::factory()->admin()->create());
+
+    livewire(ListPosts::class)
+        ->assertSee('No authors');
+});

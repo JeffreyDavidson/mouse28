@@ -5,6 +5,7 @@ use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Podcast;
 use App\Models\Post;
+use App\Models\User;
 use App\Support\StructuredData;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
@@ -173,3 +174,23 @@ test('post structured data names the post category as the article section', func
     'a category' => ['Sample Topic', 'Sample Topic'],
     'no category' => [null, ''],
 ]);
+
+dataset('structured data authors', [
+    'one author' => [['Jeffrey Sample'], ['@type' => 'Person', 'name' => 'Jeffrey Sample']],
+    'several authors, in byline order' => [['Jeffrey Sample', 'Cassie Sample'], [
+        ['@type' => 'Person', 'name' => 'Jeffrey Sample'],
+        ['@type' => 'Person', 'name' => 'Cassie Sample'],
+    ]],
+    'no authors' => [[], ['@type' => 'Person', 'name' => 'Mouse28 Team']],
+]);
+
+test('post and guide structured data credit one author as a person and several as a list in byline order', function (array $names, array $author): void {
+    $authorIds = array_map(fn (mixed $name): int => User::factory()->author()->create(['name' => $name])->id, $names);
+    $post = Post::factory()->create();
+    $guide = Guide::factory()->create();
+    $post->syncAuthors($authorIds);
+    $guide->syncAuthors($authorIds);
+
+    expect(data_get(StructuredData::forPost($post->refresh()), '@graph.0.author'))->toBe($author)
+        ->and(data_get(StructuredData::forGuide($guide->refresh()), '@graph.0.author'))->toBe($author);
+})->with('structured data authors');

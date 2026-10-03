@@ -2,9 +2,9 @@
 
 namespace App\Filament\Widgets;
 
-use App\Enums\ContentAuthor;
 use App\Enums\PublishStatus;
 use App\Models\Post;
+use App\Models\User;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -57,14 +57,14 @@ class QuickDraft extends Widget implements HasForms
     {
         $state = $this->form->getState();
 
-        Post::query()->create([
+        $post = Post::query()->create([
             'title' => $state['title'],
             'slug' => $this->uniqueSlug(Arr::string($state, 'title')),
             'excerpt' => $state['notes'] ?? null,
             'content' => $state['notes'] ?? '',
-            'author' => ContentAuthor::Both,
             'status' => PublishStatus::Draft,
         ]);
+        $post->syncAuthors(User::authorIds());
 
         $this->data = [];
         $this->form->fill();

@@ -41,12 +41,27 @@ test('guide pages stay within their query budget as content grows', function (st
     Guide::factory()->count(30)->create(['category' => 'accessibility']);
     $url = $page === 'index' ? route('guides.index') : route('guides.show', $guide);
 
-    // Includes one query for the footer social links.
+    // Includes one query for the footer social links, and one for a guide's authors.
     $this->expectsDatabaseQueryCount($queries);
 
     get($url)
         ->assertOk();
-})->with(['archive' => ['index', 4], 'guide' => ['show', 4]]);
+})->with(['archive' => ['index', 4], 'guide' => ['show', 5]]);
+
+test('a guide page names its authors in byline order', function (array $names, string $byline): void {
+    config()->set('mouse28.guides_enabled', true);
+    $guide = Guide::factory()->create();
+    $guide->syncAuthors(array_map(fn (mixed $name): int => User::authors()->where('name', $name)->sole()->id, $names));
+
+    get(route('guides.show', $guide))
+        ->assertOk()
+        ->assertSeeInOrder(['Written by', $byline]);
+})->with([
+    'Jeffrey' => [['Jeffrey Davidson'], 'Jeffrey Davidson'],
+    'Cassie' => [['Cassie Davidson'], 'Cassie Davidson'],
+    'both, Jeffrey first' => [['Jeffrey Davidson', 'Cassie Davidson'], 'Jeffrey & Cassie'],
+    'no authors' => [[], 'Mouse28 Team'],
+]);
 
 test('guide archive renders', function (): void {
     get(route('guides.index'))

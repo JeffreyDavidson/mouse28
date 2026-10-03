@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\ContentAuthor;
 use App\Enums\PublishStatus;
 use App\Filament\Resources\Posts\Pages\EditPost;
 use App\Filament\Resources\Posts\PostResource;
@@ -23,7 +22,7 @@ pest()->use(RefreshDatabase::class);
 
 test('previously published URLs stay locked after clearing the date and unpublishing', function (): void {
     actingAs(User::factory()->admin()->create());
-    $record = Post::factory()->create(['slug' => 'original-public-url']);
+    $record = Post::factory()->credited()->create(['slug' => 'original-public-url']);
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->fillForm(['published_at' => null])
@@ -77,7 +76,7 @@ test('artwork generation reports an unavailable source', function (): void {
 });
 
 test('published URLs cannot be changed by submitted editor state', function (): void {
-    $record = Post::factory()->create(['slug' => 'permanent-url']);
+    $record = Post::factory()->credited()->create(['slug' => 'permanent-url']);
     actingAs(User::factory()->admin()->create());
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
@@ -182,18 +181,28 @@ test('publishing is blocked until editorial requirements are complete', function
     expect($post->refresh()->status)->toBe(PublishStatus::Draft);
 });
 
-test('editor saves the author enum and the category selection', function (): void {
-    $record = Post::factory()->draft()->create();
+test('editor loads the post authors in byline order', function (): void {
+    [$jeffrey, $cassie] = User::authors()->get()->all();
+    $record = Post::factory()->draft()->withAuthors($cassie, $jeffrey)->create();
+    actingAs(User::factory()->admin()->create());
+
+    livewire(EditPost::class, ['record' => $record->getRouteKey()])
+        ->assertSchemaStateSet(['authors' => [$cassie->id, $jeffrey->id]]);
+});
+
+test('editor saves the author and category selections', function (): void {
+    [$jeffrey, $cassie] = User::authors()->get()->all();
+    $record = Post::factory()->draft()->withAuthors($jeffrey, $cassie)->create();
     $category = Category::factory()->create();
     actingAs(User::factory()->admin()->create());
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->assertSchemaStateSet(['category_id' => $record->category_id])
-        ->fillForm(['author' => 'jeffrey', 'category_id' => $category->id])
+        ->fillForm(['authors' => [$jeffrey->id], 'category_id' => $category->id])
         ->call('save')
         ->assertHasNoFormErrors();
 
-    expect($record->refresh()->author)->toBe(ContentAuthor::Jeffrey)
+    expect($record->refresh()->authors->modelKeys())->toBe([$jeffrey->id])
         ->and($record->category_id)->toBe($category->id);
 });
 
@@ -231,7 +240,7 @@ test('publishing actions follow whether the post is a draft, live, or scheduled'
 test('saving after publishing keeps the publication date the action set', function (): void {
     Date::setTestNow('2026-09-25 12:00:00');
     actingAs(User::factory()->admin()->create());
-    $post = Post::factory()->draft()->create();
+    $post = Post::factory()->draft()->credited()->create();
 
     livewire(EditPost::class, ['record' => $post->getRouteKey()])
         ->callAction('publish')
@@ -244,7 +253,7 @@ test('saving after publishing keeps the publication date the action set', functi
 
 test('the official source and its review date are saved together', function (): void {
     actingAs(User::factory()->admin()->create());
-    $post = Post::factory()->draft()->create();
+    $post = Post::factory()->draft()->credited()->create();
 
     livewire(EditPost::class, ['record' => $post->getRouteKey()])
         ->fillForm([
@@ -260,7 +269,7 @@ test('the official source and its review date are saved together', function (): 
 
 test('the official source and its review date are required together', function (array $data, string $missing): void {
     actingAs(User::factory()->admin()->create());
-    $post = Post::factory()->draft()->create(['source_url' => null, 'last_reviewed_at' => null]);
+    $post = Post::factory()->draft()->credited()->create(['source_url' => null, 'last_reviewed_at' => null]);
 
     livewire(EditPost::class, ['record' => $post->getRouteKey()])
         ->fillForm($data)
@@ -273,7 +282,7 @@ test('the official source and its review date are required together', function (
 
 test('the edit form loads and saves the post content', function (): void {
     actingAs(User::factory()->admin()->create());
-    $record = Post::factory()->draft()->create(['content' => 'Original post content.']);
+    $record = Post::factory()->draft()->credited()->create(['content' => 'Original post content.']);
 
     $page = livewire(EditPost::class, ['record' => $record->getRouteKey()]);
     $page->assertSchemaStateSet(['content' => 'Original post content.']);
@@ -295,7 +304,7 @@ test('the related episodes select loads the episodes already linked', function (
 });
 
 test('editor replaces the related episodes with the selected ones', function (): void {
-    $record = Post::factory()->draft()->create();
+    $record = Post::factory()->draft()->credited()->create();
     $record->episodes()->attach(Episode::factory()->create());
     $selected = Episode::factory()->count(2)->create();
     actingAs(User::factory()->admin()->create());

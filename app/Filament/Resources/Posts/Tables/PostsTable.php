@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Posts\Tables;
 
-use App\Enums\ContentAuthor;
 use App\Enums\PublishStatus;
 use App\Enums\SourceReviewStatus;
 use App\Models\Post;
@@ -29,9 +28,11 @@ class PostsTable
                 TextColumn::make('title')
                     ->searchable()
                     ->limit(50),
-                TextColumn::make('author')
+                TextColumn::make('authors.name')
+                    ->label('Authors')
                     ->badge()
-                    ->color('info'),
+                    ->color('info')
+                    ->placeholder('No authors'),
                 TextColumn::make('category.name')
                     ->label('Category')
                     ->badge()
@@ -65,7 +66,9 @@ class PostsTable
             ->filters([
                 SelectFilter::make('category')
                     ->relationship('category', 'name'),
-                SelectFilter::make('author')->options(ContentAuthor::class),
+                SelectFilter::make('authors')
+                    ->label('Author')
+                    ->relationship('authors', 'name', fn (Builder $query): Builder => $query->where('users.is_author', true)),
                 Filter::make('missing_artwork')
                     ->query(fn (Builder $query): Builder => $query->where(function (Builder $query): void {
                         $query->whereNull('cover_image')->orWhere('cover_image', '');

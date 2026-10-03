@@ -92,8 +92,8 @@ class BlogArchive extends Component
 
     public function render(): View
     {
-        $cardColumns = ['id', 'slug', 'title', 'excerpt', 'content', 'category_id', 'author', 'cover_image', 'published_at'];
-        $categoryColumns = 'category:id,name,slug';
+        $cardColumns = ['id', 'slug', 'title', 'excerpt', 'content', 'category_id', 'cover_image', 'published_at'];
+        $cardRelations = ['category:id,name,slug', 'authors:id,name'];
         $usedCategories = Category::query()
             ->whereHas('publishedPosts')
             ->orderBy('id')
@@ -101,7 +101,7 @@ class BlogArchive extends Component
 
         $posts = Post::published()
             ->select($cardColumns)
-            ->with($categoryColumns)
+            ->with($cardRelations)
             ->when($this->category, fn (Builder $query) => $query->whereRelation('category', 'slug', $this->category))
             ->when($this->search, fn (Builder $query) => TextSearch::constrain($query, ['title', 'excerpt', 'content'], $this->search))
             ->orderBy('published_at', $this->sort === 'oldest' ? 'asc' : 'desc')
@@ -110,7 +110,7 @@ class BlogArchive extends Component
 
         $featuredPost = $this->hasDefaultFilters() && $posts->currentPage() === 1
             ? $posts->first()
-            : Post::published()->select($cardColumns)->with($categoryColumns)->latest('published_at')->latest('id')->first();
+            : Post::published()->select($cardColumns)->with($cardRelations)->latest('published_at')->latest('id')->first();
 
         $archivePosts = $featuredPost && $this->hasDefaultFilters()
             ? $posts->getCollection()->reject(fn (Post $post): bool => $post->is($featuredPost))

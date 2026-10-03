@@ -6,6 +6,7 @@ use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Podcast;
 use App\Models\Post;
+use App\Models\User;
 use Illuminate\Support\Str;
 use UnexpectedValueException;
 
@@ -31,7 +32,7 @@ class StructuredData
             'mainEntityOfPage' => route('blog.show', $post),
             'datePublished' => $post->published_at->toAtomString(),
             'dateModified' => $modifiedAt->toAtomString(),
-            'author' => self::person($post->author_name),
+            'author' => self::authors($post),
             'publisher' => self::publisher(),
             'articleSection' => $post->category_label,
         ];
@@ -67,7 +68,7 @@ class StructuredData
             'mainEntityOfPage' => route('guides.show', $guide),
             'datePublished' => $guide->published_at->toAtomString(),
             'dateModified' => $modifiedAt->toAtomString(),
-            'author' => self::person($guide->author_name),
+            'author' => self::authors($guide),
             'publisher' => self::publisher(),
             'articleSection' => $guide->category_label,
         ];
@@ -177,6 +178,23 @@ class StructuredData
         $remainingSeconds = $seconds % 60;
 
         return "PT{$hours}H{$minutes}M{$remainingSeconds}S";
+    }
+
+    /**
+     * One author is a single Person; several are a list of Persons in byline order.
+     * Content without authors is credited to its byline fallback.
+     *
+     * @return array<string, mixed>|array<int, array<string, mixed>>
+     */
+    private static function authors(Post|Guide $content): array
+    {
+        $people = $content->authors->map(fn (User $author): array => self::person($author->name));
+
+        return match ($people->count()) {
+            0 => self::person($content->author_name),
+            1 => $people->sole(),
+            default => $people->all(),
+        };
     }
 
     /** @return array<string, mixed> */

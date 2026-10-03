@@ -2,6 +2,7 @@
 
 use App\Models\Episode;
 use App\Models\Post;
+use App\Models\User;
 use App\ViewModels\PostShowViewModel;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -88,4 +89,14 @@ test('post data loads the category of the post', function (): void {
 
     expect($data['post']->relationLoaded('category'))->toBeTrue()
         ->and($data['post']->category_label)->toBe($post->category?->name);
+});
+
+test('post data loads the authors of the post in byline order', function (): void {
+    [$first, $second] = User::factory()->author()->count(2)->create()->all();
+    $post = Post::factory()->withAuthors($second, $first)->create();
+
+    $data = app(PostShowViewModel::class)->data($post);
+
+    expect($data['post']->relationLoaded('authors'))->toBeTrue()
+        ->and($data['post']->authors->modelKeys())->toBe([$second->id, $first->id]);
 });

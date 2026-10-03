@@ -19,6 +19,8 @@ class GuideShowViewModel
      */
     public function data(Guide $guide, bool $preview = false): array
     {
+        $guide->load('authors');
+
         $data = [
             'guide' => $guide,
             'relatedGuides' => ContentContinuation::relatedGuides($guide),

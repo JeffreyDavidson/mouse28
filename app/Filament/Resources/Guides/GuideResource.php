@@ -35,7 +35,7 @@ class GuideResource extends Resource
 
     public static function getGloballySearchableAttributes(): array
     {
-        return ['title', 'slug', 'category', 'author'];
+        return ['title', 'slug', 'category', 'authors.name'];
     }
 
     public static function getRecordRouteBindingEloquentQuery(): Builder
