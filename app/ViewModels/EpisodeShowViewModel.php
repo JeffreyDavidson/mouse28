@@ -25,9 +25,9 @@ class EpisodeShowViewModel
         $data = [
             'episode' => $episode,
             'podcast' => Podcast::info(),
-            'relatedPosts' => Post::published()
-                ->select(['id', 'slug', 'title', 'category', 'cover_image'])
-                ->whereBelongsTo($episode)
+            'relatedPosts' => $episode->posts()
+                ->published()
+                ->select(['posts.id', 'posts.slug', 'posts.title', 'posts.category', 'posts.cover_image'])
                 ->latest('published_at')
                 ->take(4)
                 ->get(),

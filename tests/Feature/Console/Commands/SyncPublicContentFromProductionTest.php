@@ -156,8 +156,8 @@ test('production syncs public content, preserves drafts, and transfers reference
         ->and(Episode::query()->count())->toBe(1)
         ->and(Episode::query()->firstOrFail()->id)->toBe($localEpisode->id)
         ->and(Episode::query()->firstOrFail()->slug)->toBe('example-episode')
-        ->and(Post::query()->where('slug', 'example-post')->firstOrFail()->episode?->slug)
-        ->toBe('example-episode')
+        ->and(Post::query()->where('slug', 'example-post')->firstOrFail()->episodes->pluck('slug')->all())
+        ->toBe(['example-episode'])
         ->and($transferredMedia)->toBe([
             'posts/example-post-social.webp',
             'posts/example-post.webp',

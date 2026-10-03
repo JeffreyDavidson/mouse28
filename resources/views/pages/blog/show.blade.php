@@ -178,16 +178,16 @@
                 </div>
             </section>
 
-            @if ($post->episode)
+            @foreach ($post->episodes as $episode)
                 <aside class="bg-navy text-cream mt-12 rounded-xl px-6 py-7 sm:px-8" data-print-hidden>
-                    <h2 class="font-heading text-2xl [font-weight:620]">{{ $post->episode->title }}</h2>
+                    <h2 class="font-heading text-2xl [font-weight:620]">{{ $episode->title }}</h2>
                     <p class="text-cream/65 mt-2 text-sm/6">Hear the conversation behind this story.</p>
                     <a
-                        href="{{ route('episodes.show', $post->episode) }}"
+                        href="{{ route('episodes.show', $episode) }}"
                         class="text-gold mt-4 inline-flex min-h-12 items-center font-semibold underline underline-offset-8"
-                    >Listen to episode {{ $post->episode->episode_number }}</a>
+                    >Listen to episode {{ $episode->episode_number }}</a>
                 </aside>
-            @endif
+            @endforeach
 
             <div class="mt-12 flex flex-wrap items-center gap-5" data-print-hidden>
                 <span class="text-navy font-semibold">Share this story</span>

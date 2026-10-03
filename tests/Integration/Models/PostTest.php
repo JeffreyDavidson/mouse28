@@ -4,9 +4,12 @@ use App\Enums\ContentAuthor;
 use App\Enums\PostCategory;
 use App\Enums\PublishStatus;
 use App\Enums\SourceReviewStatus;
+use App\Models\Episode;
 use App\Models\Post;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\Models\Activity;
 
 use function Pest\Laravel\actingAs;
@@ -235,4 +238,66 @@ test('post content edits are recorded in the editorial log', function (): void {
         'attributes' => ['content' => 'Updated content'],
         'old' => ['content' => 'Original content'],
     ]);
+});
+
+test('a post relates to every episode it is linked to', function (): void {
+    $post = Post::factory()->create();
+    $episodes = Episode::factory()->count(2)->create();
+
+    $post->episodes()->attach($episodes);
+
+    expect($post->episodes->modelKeys())->toEqualCanonicalizing($episodes->modelKeys());
+});
+
+test('a post has no related episodes unless some are linked', function (): void {
+    expect(Post::factory()->create()->episodes)->toBeEmpty();
+});
+
+test('a post cannot be linked to the same episode twice', function (): void {
+    $post = Post::factory()->create();
+    $episode = Episode::factory()->create();
+    $post->episodes()->attach($episode);
+
+    expect(fn () => $post->episodes()->attach($episode))->toThrow(QueryException::class);
+});
+
+test('a soft deleted episode is left out of the related episodes', function (): void {
+    $post = Post::factory()->create();
+    $episode = Episode::factory()->create();
+    $post->episodes()->attach($episode);
+
+    $episode->delete();
+
+    expect($post->refresh()->episodes)->toBeEmpty()
+        ->and(DB::table('episode_post')->count())->toBe(1);
+});
+
+test('permanently deleting a related episode keeps the post and drops the link', function (): void {
+    $post = Post::factory()->create();
+    $episode = Episode::factory()->create();
+    $post->episodes()->attach($episode);
+
+    $episode->forceDelete();
+
+    expect($post->refresh()->episodes)->toBeEmpty()
+        ->and(Post::query()->whereKey($post->id)->exists())->toBeTrue();
+});
+
+test('permanently deleting a post drops its episode links and keeps the episodes', function (): void {
+    $post = Post::factory()->create();
+    $episode = Episode::factory()->create();
+    $post->episodes()->attach($episode);
+
+    $post->forceDelete();
+
+    expect(DB::table('episode_post')->count())->toBe(0)
+        ->and(Episode::query()->whereKey($episode->id)->exists())->toBeTrue();
+});
+
+test('posts no longer expose the legacy single episode link', function (): void {
+    $post = new Post;
+
+    expect(new ReflectionClass($post)->hasMethod('episode'))->toBeFalse()
+        ->and($post->getFillable())->not->toContain('episode_id')
+        ->and($post->getActivitylogOptions()->logAttributes)->not->toContain('episode_id');
 });

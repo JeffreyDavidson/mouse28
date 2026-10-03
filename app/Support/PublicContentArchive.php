@@ -110,16 +110,15 @@ class PublicContentArchive
             ->map(fn (Episode $episode): array => [...$this->attributes($episode, self::EPISODE_FIELDS), 'tags' => $episode->tagsWithType('content')->pluck('name')->all()])
             ->values()
             ->all();
-        $episodeSlugs = Episode::query()->published()->pluck('slug', 'id');
 
         $posts = Post::query()
-            ->with('tags')
+            ->with(['tags', 'episodes'])
             ->published()
             ->orderBy('published_at')
-            ->get(['id', ...self::POST_FIELDS, 'episode_id'])
+            ->get(['id', ...self::POST_FIELDS])
             ->map(fn (Post $post): array => [
                 ...$this->attributes($post, self::POST_FIELDS),
-                'episode_slug' => $episodeSlugs->get($post->episode_id),
+                'episode_slugs' => $this->publishedEpisodeSlugs($post),
                 'tags' => $post->tagsWithType('content')->pluck('name')->all(),
             ])
             ->values()
@@ -287,9 +286,6 @@ class PublicContentArchive
     /** @param array<string, mixed> $attributes */
     private function importPost(array $attributes): void
     {
-        $episodeId = filled($attributes['episode_slug'] ?? null)
-            ? Episode::query()->where('slug', $attributes['episode_slug'])->value('id')
-            : null;
         $post = Post::withTrashed()->firstOrNew(['slug' => $attributes['slug']]);
 
         if ($post->trashed()) {
@@ -298,13 +294,37 @@ class PublicContentArchive
 
         $post->fill([
             ...$this->onlyAttributes($attributes, self::POST_FIELDS),
-            'episode_id' => $episodeId,
             'status' => PublishStatus::Published,
         ]);
         $post->save();
+        $post->episodes()->sync(Episode::query()->whereIn('slug', $this->relatedEpisodeSlugs($attributes))->pluck('id'));
         if (is_array($attributes['tags'] ?? null)) {
             $post->syncTagsWithType($attributes['tags'], 'content');
         }
+    }
+
+    /** @return list<string> the slugs of the post's live related episodes, in episode number order */
+    private function publishedEpisodeSlugs(Post $post): array
+    {
+        return array_values($post->episodes
+            ->filter(fn (Episode $episode): bool => $episode->isPublished())
+            ->sortBy('episode_number')
+            ->map(fn (Episode $episode): string => $episode->slug)
+            ->all());
+    }
+
+    /**
+     * Archives exported before a post could relate to several episodes carry a
+     * single `episode_slug`; the `episode_slugs` list wins when both are present.
+     *
+     * @param  array<string, mixed>  $attributes
+     * @return array<array-key, mixed>
+     */
+    private function relatedEpisodeSlugs(array $attributes): array
+    {
+        $slugs = $attributes['episode_slugs'] ?? $attributes['episode_slug'] ?? [];
+
+        return is_array($slugs) ? $slugs : [$slugs];
     }
 
     /** @param array<string, mixed> $attributes */
@@ -388,6 +408,8 @@ class PublicContentArchive
             }
         }
         $rules['posts.*.episode_slug'] = ['nullable', 'string', 'max:255', 'regex:/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/'];
+        $rules['posts.*.episode_slugs'] = ['nullable', 'list'];
+        $rules['posts.*.episode_slugs.*'] = ['required', 'string', 'max:255', 'regex:/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/'];
         $rules['posts.*.content'] = ['present', 'string'];
         $rules['guides.*.content'] = ['present', 'string'];
         $rules['posts.*.author'] = ['nullable', Rule::enum(ContentAuthor::class)];
@@ -430,7 +452,7 @@ class PublicContentArchive
 
         return [
             'version' => self::VERSION,
-            'posts' => $this->validateRecords($archive['posts'] ?? null, 'posts', [...self::POST_FIELDS, 'episode_slug']),
+            'posts' => $this->validateRecords($archive['posts'] ?? null, 'posts', [...self::POST_FIELDS, 'episode_slug', 'episode_slugs']),
             'guides' => $this->validateRecords($archive['guides'] ?? null, 'guides', self::GUIDE_FIELDS),
             'episodes' => $this->validateRecords($archive['episodes'] ?? null, 'episodes', self::EPISODE_FIELDS),
             'podcast' => $archive['podcast'] === null ? null : $this->onlyAttributes($archive['podcast'], self::PODCAST_FIELDS),

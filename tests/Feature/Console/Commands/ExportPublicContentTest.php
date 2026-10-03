@@ -22,8 +22,7 @@ test('public content archive includes only published content', function (): void
     ]);
     Post::factory()->create([
         'slug' => 'example-post',
-        'episode_id' => $episode->id,
-    ]);
+    ])->episodes()->attach($episode);
     Post::factory()->draft()->create([
         'title' => 'Draft Post',
     ]);
@@ -46,7 +45,7 @@ test('public content archive includes only published content', function (): void
         ->and(collect(publicArchiveRecords($archive, 'posts'))->pluck('slug')->all())->toBe(['example-post'])
         ->and(collect(publicArchiveRecords($archive, 'episodes'))->pluck('slug')->all())->toBe(['example-episode'])
         ->and(collect(publicArchiveRecords($archive, 'guides'))->pluck('slug')->all())->toBe(['example-guide'])
-        ->and(publicArchiveRecords($archive, 'posts')[0]['episode_slug'])->toBe('example-episode')
+        ->and(publicArchiveRecords($archive, 'posts')[0]['episode_slugs'])->toBe(['example-episode'])
         ->and(File::get($archivePath))->not->toContain('Draft Post', 'Draft Guide', 'Draft Episode');
 
     File::delete($archivePath);

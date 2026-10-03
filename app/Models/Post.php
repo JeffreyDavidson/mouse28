@@ -22,7 +22,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
@@ -61,7 +61,6 @@ use Spatie\Activitylog\Support\LogOptions;
     'source_url',
     'last_reviewed_at',
     'cover_image',
-    'episode_id',
     'category',
     'author',
     'status',
@@ -90,7 +89,6 @@ class Post extends Model implements Publishable
                 'source_url',
                 'last_reviewed_at',
                 'cover_image',
-                'episode_id',
                 'category',
                 'author',
                 'status',
@@ -103,10 +101,10 @@ class Post extends Model implements Publishable
             ->dontLogEmptyChanges();
     }
 
-    /** @return BelongsTo<Episode, $this> */
-    public function episode(): BelongsTo
+    /** @return BelongsToMany<Episode, $this> */
+    public function episodes(): BelongsToMany
     {
-        return $this->belongsTo(Episode::class);
+        return $this->belongsToMany(Episode::class);
     }
 
     /**

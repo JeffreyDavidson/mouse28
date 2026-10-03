@@ -5,6 +5,7 @@ use App\Enums\PostCategory;
 use App\Enums\PublishStatus;
 use App\Filament\Resources\Posts\Pages\EditPost;
 use App\Filament\Resources\Posts\PostResource;
+use App\Models\Episode;
 use App\Models\Post;
 use App\Models\User;
 use App\Support\ResponsiveArtwork;
@@ -279,4 +280,28 @@ test('the edit form loads and saves the post content', function (): void {
         ->assertHasNoFormErrors();
 
     expect($record->refresh()->content)->toBe("## Updated\n\nNew post content.");
+});
+
+test('the related episodes select loads the episodes already linked', function (): void {
+    $record = Post::factory()->draft()->create();
+    $episodes = Episode::factory()->count(2)->create();
+    $record->episodes()->attach($episodes);
+    actingAs(User::factory()->admin()->create());
+
+    livewire(EditPost::class, ['record' => $record->getRouteKey()])
+        ->assertSchemaStateSet(['episodes' => array_map(strval(...), $episodes->modelKeys())]);
+});
+
+test('editor replaces the related episodes with the selected ones', function (): void {
+    $record = Post::factory()->draft()->create();
+    $record->episodes()->attach(Episode::factory()->create());
+    $selected = Episode::factory()->count(2)->create();
+    actingAs(User::factory()->admin()->create());
+
+    livewire(EditPost::class, ['record' => $record->getRouteKey()])
+        ->fillForm(['episodes' => $selected->modelKeys()])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($record->refresh()->episodes->modelKeys())->toEqualCanonicalizing($selected->modelKeys());
 });
