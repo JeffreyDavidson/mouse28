@@ -103,3 +103,10 @@ test('the posts table filters by category', function (): void {
         ->assertCanSeeTableRecords([$inCategory])
         ->assertCanNotSeeTableRecords([$elsewhere, $uncategorized]);
 });
+
+test('the posts table has no column for the removed single episode relation', function (): void {
+    actingAs(User::factory()->admin()->create());
+
+    livewire(ListPosts::class)
+        ->assertTableColumnDoesNotExist('episode.title');
+});

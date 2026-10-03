@@ -36,10 +36,6 @@ class PostsTable
                     ->label('Category')
                     ->badge()
                     ->sortable(),
-                TextColumn::make('episode.title')
-                    ->label('Episode')
-                    ->limit(30)
-                    ->placeholder('—'),
                 TextColumn::make('last_reviewed_at')
                     ->label('Reviewed')
                     ->date()
