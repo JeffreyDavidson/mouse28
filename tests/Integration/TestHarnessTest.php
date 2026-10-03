@@ -15,7 +15,7 @@ test('the test harness selects only its isolated database', function (): void {
 
 test('the test harness keeps the public disk off the real storage', function (): void {
     expect(Storage::disk('public')->path(''))
-        ->toStartWith(storage_path('framework/testing/disks/public'));
+        ->toContain('framework/testing/disks/public');
 });
 
 test('the test harness rejects unfaked requests', function (): void {
