@@ -68,6 +68,10 @@ test('long public content and portrait artwork stay contained', function (): voi
         throw new RuntimeException('The content resilience artwork fixture could not be loaded.');
     }
 
+    // The responsive variants are linked with absolute URLs, so point them at the test server.
+    config(['filesystems.disks.public.url' => url('/storage')]);
+    Storage::forgetDisk('public');
+
     Storage::disk('public')->put(
         $portraitPath,
         $portrait,
