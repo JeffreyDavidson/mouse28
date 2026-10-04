@@ -5,6 +5,8 @@
     'sizes' => '(min-width: 1376px) 644px, (min-width: 768px) calc(50vw - 44px), (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)',
 ])
 
+@inject('responsiveImages', 'App\Services\ResponsiveImageVariants')
+
 @php
     $artworkStyles = [
         'disney-tips' => ['wash' => 'from-gold/35 via-cream to-purple/15', 'ink' => 'text-navy', 'stamp' => 'Planning note'],
@@ -29,10 +31,10 @@
         ->implode('');
 @endphp
 
-@if ($post->cover_image_url)
+@if ($post->featured_image_url)
     <img
-        src="{{ $post->cover_image_url }}"
-        @if ($srcset = \App\Support\ResponsiveArtwork::srcset($post->cover_image))
+        src="{{ $post->featured_image_url }}"
+        @if ($srcset = $responsiveImages->srcset($post->featured_image_path))
             srcset="{{ $srcset }}"
             sizes="{{ ($priority ? '' : 'auto, ').$sizes }}"
         @endif

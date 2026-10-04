@@ -62,7 +62,7 @@ test('podcast cover uploads enforce the five megabyte limit', function (int $siz
     $cover = UploadedFile::fake()->image('cover.jpg')->size($size);
 
     $page = livewire(PodcastSettings::class)
-        ->fillForm(['cover_image' => $cover])
+        ->fillForm(['cover_image_path' => $cover])
         ->call('save');
 
     if ($valid) {
@@ -71,7 +71,7 @@ test('podcast cover uploads enforce the five megabyte limit', function (int $siz
         return;
     }
 
-    $page->assertHasFormErrors(['cover_image']);
+    $page->assertHasFormErrors(['cover_image_path']);
 })->with([
     'at the limit' => [5120, true],
     'over the limit' => [5121, false],
@@ -86,4 +86,22 @@ test('podcast settings cannot be saved once admin access is revoked', function (
 
     expect(fn () => $page->instance()->save())->toThrow(AuthorizationException::class)
         ->and($podcast->refresh()->name)->not->toBe('Changed name');
+});
+
+test('a replaced podcast cover is stored under podcast with variants and the previous file is removed', function (): void {
+    Storage::fake('public');
+    actingAs(User::factory()->admin()->create());
+    Storage::disk('public')->put('podcast/previous.png', UploadedFile::fake()->image('previous.png', 600, 600)->getContent());
+    Podcast::settings()->update(['cover_image_path' => 'podcast/previous.png']);
+
+    livewire(PodcastSettings::class)
+        ->fillForm(['cover_image_path' => [UploadedFile::fake()->image('cover.png', 600, 600)]])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    $path = Podcast::settings()->cover_image_path;
+    expect($path)->toStartWith('podcast/')
+        ->not->toBe('podcast/previous.png');
+    Storage::disk('public')->assertExists([$path, 'podcast/responsive/'.pathinfo((string) $path, PATHINFO_FILENAME).'-480.webp']);
+    Storage::disk('public')->assertMissing(['podcast/previous.png', 'podcast/responsive/previous-480.webp']);
 });

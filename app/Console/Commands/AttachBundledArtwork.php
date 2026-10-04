@@ -4,6 +4,8 @@ namespace App\Console\Commands;
 
 use App\Models\Episode;
 use App\Models\Post;
+use App\Services\ResponsiveImageVariants;
+use App\Services\SquareResponsiveImageVariants;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -17,7 +19,9 @@ use Symfony\Component\Finder\SplFileInfo;
 #[Description('Attach the bundled Mouse28 artwork to matching content without replacing uploads')]
 class AttachBundledArtwork extends Command
 {
-    public function handle(): int
+    private int $failedVariants = 0;
+
+    public function handle(ResponsiveImageVariants $images, SquareResponsiveImageVariants $squareImages): int
     {
         $sourceDirectory = Config::string('mouse28.content_artwork_path');
 
@@ -58,10 +62,16 @@ class AttachBundledArtwork extends Command
             $copied++;
         }
 
-        $updated = $this->attach(Post::query(), $postArtwork)
-            + $this->attach(Episode::query(), $episodeArtwork);
+        $updated = $this->attach(Post::query(), $postArtwork, $images)
+            + $this->attach(Episode::query(), $episodeArtwork, $squareImages);
 
         $this->info("Copied {$copied} artwork files and attached artwork to {$updated} content records.");
+
+        if ($this->failedVariants > 0) {
+            $this->error("Responsive images could not be generated for {$this->failedVariants} attached artwork files. Run media:repair-responsive-images to retry.");
+
+            return self::FAILURE;
+        }
 
         return self::SUCCESS;
     }
@@ -78,16 +88,32 @@ class AttachBundledArtwork extends Command
     }
 
     /**
+     * Fills `featured_image_path` only where it is empty, then generates the responsive
+     * variants for every file it attached. The query update skips model events, so the
+     * variants are generated here rather than by the model observers.
+     *
      * @param  Builder<Post>|Builder<Episode>  $query
      * @param  array<string, string>  $artwork
      */
-    private function attach(Builder $query, array $artwork): int
+    private function attach(Builder $query, array $artwork, ResponsiveImageVariants $images): int
     {
-        return collect($artwork)->sum(fn (string $path, string $slug): int => (int) (clone $query)
-            ->where('slug', $slug)
-            ->where(function (Builder $query): void {
-                $query->whereNull('cover_image')->orWhere('cover_image', '');
-            })
-            ->update(['cover_image' => $path]));
+        $updated = 0;
+
+        foreach ($artwork as $slug => $path) {
+            $attached = (clone $query)
+                ->where('slug', $slug)
+                ->where(function (Builder $query): void {
+                    $query->whereNull('featured_image_path')->orWhere('featured_image_path', '');
+                })
+                ->update(['featured_image_path' => $path]);
+
+            if ($attached > 0 && ! $images->generate($path)) {
+                $this->failedVariants++;
+            }
+
+            $updated += $attached;
+        }
+
+        return $updated;
     }
 }

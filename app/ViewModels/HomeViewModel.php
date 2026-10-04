@@ -25,7 +25,7 @@ class HomeViewModel
     public function data(): array
     {
         $posts = Post::published()
-            ->select(['id', 'slug', 'title', 'category_id', 'cover_image', 'published_at'])
+            ->select(['id', 'slug', 'title', 'category_id', 'featured_image_path', 'published_at'])
             ->with('category:id,name,slug')
             ->latest('published_at')
             ->take(4)
@@ -39,14 +39,14 @@ class HomeViewModel
             ->get();
         $latestGuides = Config::boolean('mouse28.guides_enabled')
             ? Guide::published()
-                ->select(['id', 'slug', 'title', 'excerpt', 'category', 'cover_image'])
+                ->select(['id', 'slug', 'title', 'excerpt', 'category', 'featured_image_path'])
                 ->latest('published_at')
                 ->take(2)
                 ->get()
             : new Collection;
         $planningPosts = Config::boolean('mouse28.guides_enabled') && $latestGuides->isEmpty()
             ? Post::published()
-                ->select(['id', 'slug', 'title', 'category_id', 'cover_image'])
+                ->select(['id', 'slug', 'title', 'category_id', 'featured_image_path'])
                 ->with('category:id,name,slug')
                 ->whereHas('category', fn (Builder $query) => $query->whereIn('slug', ['park-accessibility', 'disney-tips', 'autism-awareness']))
                 ->latest('published_at')

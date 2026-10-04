@@ -78,7 +78,8 @@ class EpisodeForm
                                     ->rules(['regex:/\Ahttps:\/\/share\.transistor\.fm\/s\/[a-zA-Z0-9]+\/?\z/'])
                                     ->prefixIcon(Heroicon::OutlinedLink)
                                     ->helperText('Paste the episode share URL, such as https://share.transistor.fm/s/428d650c. Mouse28 builds the embedded player from it.'),
-                                FileUpload::make('cover_image')
+                                FileUpload::make('featured_image_path')
+                                    ->label('Cover image')
                                     ->image()
                                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                     ->maxSize(5120)

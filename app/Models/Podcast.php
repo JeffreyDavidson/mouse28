@@ -2,21 +2,27 @@
 
 namespace App\Models;
 
+use App\Observers\PodcastObserver;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
+/**
+ * @property string|null $cover_image_path
+ */
 #[Fillable([
     'name',
     'description',
-    'cover_image',
+    'cover_image_path',
     'apple_url',
     'spotify_url',
     'youtube_url',
     'instagram_url',
     'tiktok_url',
 ])]
+#[ObservedBy(PodcastObserver::class)]
 class Podcast extends Model
 {
     use LogsActivity;
@@ -28,7 +34,7 @@ class Podcast extends Model
             ->logOnly([
                 'name',
                 'description',
-                'cover_image',
+                'cover_image_path',
                 'apple_url',
                 'spotify_url',
                 'youtube_url',

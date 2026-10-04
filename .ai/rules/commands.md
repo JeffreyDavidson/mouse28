@@ -3,7 +3,7 @@ paths:
   - 'app/Console/Commands/**'
   - 'app/Support/**/*PublicContent*.php'
   - 'resources/content-artwork/**'
-  - 'app/Support/ResponsiveArtwork.php'
+  - 'app/Services/*ResponsiveImage*.php'
   - 'resources/views/components/post-artwork.blade.php'
   - 'resources/views/pages/episodes/show.blade.php'
 ---
@@ -19,5 +19,5 @@ Forge runs staging with APP_ENV=production. Public-content imports may bypass th
 ## Separate active post covers from concepts
 Repository-ready post covers live directly in `resources/content-artwork/posts` as `<post-slug>.webp`; `content:attach-artwork` discovers and attaches them automatically. Keep drafts, alternatives, demo artwork, and unassigned concepts in `resources/content-artwork/concepts`, which the command must ignore.
 
-## Keep responsive artwork generation outside page requests
-Generate derivatives ahead of time; rendering stays read-only with original fallback when candidates are absent or source bytes change. Preserve originals. Post derivatives retain posts/responsive; episode derivatives use centered square crops under episodes/responsive/v1 so the existing square frame does not magnify a downsized wide image. Change URL format when changing transformations. Production generation requires separate approval. The legacy post command defaults to posts; episodes require --type=episodes.
+## Keep responsive image generation outside page requests
+Responsive variants are generated on save by the model observers (`ResponsiveImageLifecycle`) and by the `*:generate-image-variants` and `media:repair-responsive-images` commands; rendering only checks which variants exist and falls back to the original. Preserve originals. Variants are `{dir}/responsive/{filename}-{width}.webp` for `config('media.responsive_widths')`; posts, guides and the podcast use TLA's `ResponsiveImageVariants` unchanged, episodes use the mouse28-only `SquareResponsiveImageVariants` (centered square crops) so the square frame never shows a stretched wide image. Variant names are not content fingerprints and post variants are served with a one-year immutable edge policy, so never overwrite a stored image or variant in place with different content: store a new file and point the record at it. Production generation and repair runs require separate approval. The legacy content-addressed variants (`posts/responsive/<sha256>-*.webp`, `episodes/responsive/v1/`) are unreferenced and only a guarded, dry-run-first prune may remove them.

@@ -4,7 +4,6 @@ use App\Enums\PublishStatus;
 use App\Models\Episode;
 use App\Models\Podcast;
 use App\Models\User;
-use App\Support\ResponsiveArtwork;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -35,20 +34,43 @@ test('published episode returns its view model data', function (): void {
         ->assertViewHas('relatedPosts');
 });
 
-test('episode artwork uses available responsive candidates and falls back after replacement', function (): void {
+test('episode artwork lists its square variants', function (): void {
     Storage::fake('public');
     $disk = Storage::disk('public');
-    $contents = UploadedFile::fake()->image('cover.png', 800, 800)->getContent();
-    $disk->put('episodes/cover.png', $contents);
-    $variant = ResponsiveArtwork::variantPath(hash('sha256', $contents), 768, square: true);
-    $disk->put($variant, 'generated image');
-    $episode = Episode::factory()->create(['cover_image' => 'episodes/cover.png']);
+    $disk->put('episodes/cover.png', UploadedFile::fake()->image('cover.png', 700, 700)->getContent());
+    $episode = Episode::factory()->create(['featured_image_path' => 'episodes/cover.png']);
 
-    get(route('episodes.show', $episode))->assertOk()->assertSeeHtml('srcset="'.$disk->url($variant).' 768w"')->assertSeeHtml('fetchpriority="high"')->assertSeeHtml('sizes="(min-width: 1188px) 448px, (min-width: 1024px) calc(41.6667vw - 46.6667px), (min-width: 480px) 448px, calc(100vw - 32px)"');
+    get(route('episodes.show', $episode))
+        ->assertOk()
+        ->assertSeeHtml('src="'.$disk->url('episodes/cover.png').'"')
+        ->assertSeeHtml('srcset="'.$disk->url('episodes/responsive/cover-480.webp').' 480w, '.$disk->url('episodes/responsive/cover-640.webp').' 640w"')
+        ->assertSeeHtml('fetchpriority="high"')
+        ->assertSeeHtml('sizes="(min-width: 1188px) 448px, (min-width: 1024px) calc(41.6667vw - 46.6667px), (min-width: 480px) 448px, calc(100vw - 32px)"');
+});
 
-    $disk->put('episodes/cover.png', UploadedFile::fake()->image('replacement.png', 801, 800)->getContent());
+test('episode artwork falls back to the original without a srcset when no variants exist', function (): void {
+    Storage::fake('public');
+    $disk = Storage::disk('public');
+    $episode = Episode::factory()->create();
+    $episode->forceFill(['featured_image_path' => 'episodes/cover.png'])->saveQuietly();
 
-    get(route('episodes.show', $episode))->assertOk()->assertSeeHtml('src="/storage/episodes/cover.png"')->assertDontSeeHtml($disk->url($variant));
+    get(route('episodes.show', $episode))
+        ->assertOk()
+        ->assertSeeHtml('src="'.$disk->url('episodes/cover.png').'"')
+        ->assertDontSeeHtml('episodes/responsive/');
+});
+
+test('the podcast archive renders an uploaded show cover with its responsive variants', function (): void {
+    Storage::fake('public');
+    $disk = Storage::disk('public');
+    $disk->put('podcast/cover.png', UploadedFile::fake()->image('cover.png', 700, 700)->getContent());
+    Podcast::settings()->update(['cover_image_path' => 'podcast/cover.png']);
+
+    get(route('episodes.index'))
+        ->assertOk()
+        ->assertSeeHtml('src="/storage/podcast/cover.png"')
+        ->assertSeeHtml('srcset="'.$disk->url('podcast/responsive/cover-480.webp').' 480w, '.$disk->url('podcast/responsive/cover-640.webp').' 640w"')
+        ->assertDontSeeHtml('mouse28-cover-640.webp');
 });
 
 test('podcast pages stay within their query budget as content grows', function (string $page, int $queries): void {
@@ -281,7 +303,7 @@ test('episode metadata falls back to its title and description', function (): vo
     $episode = Episode::factory()->create([
         'title' => 'Trailer: Meet Mouse28',
         'description' => 'Meet Jeffrey and Cassie and learn what the Mouse28 podcast is about.',
-        'cover_image' => 'episodes/trailer-meet-mouse28.webp',
+        'featured_image_path' => 'episodes/trailer-meet-mouse28.webp',
         'meta_title' => null,
         'meta_description' => null,
     ]);
@@ -293,7 +315,7 @@ test('landing page provides search and social metadata', function (): void {
     Podcast::query()->create([
         'name' => 'Mouse28 Weekly',
         'description' => 'A weekly Disney parks podcast for accessibility-minded families.',
-        'cover_image' => 'podcasts/show-cover.jpg',
+        'cover_image_path' => 'podcasts/show-cover.jpg',
     ]);
 
     get(route('episodes.index'))->assertOk()->assertSeeHtml('<meta property="og:title" content="Mouse28 Weekly Podcast">')->assertSeeHtml('<meta property="og:description" content="A weekly Disney parks podcast for accessibility-minded families.">')->assertSeeHtml('<meta property="og:image" content="'.url('/storage/podcasts/show-cover.jpg').'">');

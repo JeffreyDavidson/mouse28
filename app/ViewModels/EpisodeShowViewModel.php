@@ -27,7 +27,7 @@ class EpisodeShowViewModel
             'podcast' => Podcast::info(),
             'relatedPosts' => $episode->posts()
                 ->published()
-                ->select(['posts.id', 'posts.slug', 'posts.title', 'posts.category_id', 'posts.cover_image'])
+                ->select(['posts.id', 'posts.slug', 'posts.title', 'posts.category_id', 'posts.featured_image_path'])
                 ->with('category:id,name,slug')
                 ->latest('published_at')
                 ->take(4)

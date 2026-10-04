@@ -118,7 +118,7 @@
             "@test:mutate:integrations"
         ],
         "test:mutate:commands": [
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Console/Commands/AttachBundledArtwork.php --filter='(failed artwork writes|bundled artwork attaches|artwork attachment stops|bundled artwork ignores)'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Console/Commands/AttachBundledArtwork.php --filter='(failed artwork writes|bundled artwork attaches|artwork attachment stops|bundled artwork ignores|attached artwork that cannot be decoded)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Console/Commands/ExportPublicContent.php --filter='public content archive includes'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Console/Commands/ImportPublicContent.php --filter='(public content archive is imported|cannot be imported|requires an explicit staging override)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Console/Commands/VerifyDeploymentConfiguration.php --filter='(safe production configuration|blank or non-string driver|safe staging configuration|unsafe production configuration|administrator recipients|observability validation)'"
@@ -145,14 +145,11 @@
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Livewire/BlogArchive.php --filter='(publication dates|query string filters|invalid query filters|selecting a category|clearing filters|featured story)'"
         ],
         "test:mutate:content": [
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Actions/GenerateResponsiveCover.php --filter='(failed derivative publication|cover generation)'",
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/ArtworkSourceCache.php --filter='cache reuses a source hash'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/PublicContentArchive.php --filter='archive'",
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/ResponsiveArtwork.php --filter='responsive artwork'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/EditorialReadiness.php --filter='(without a publish date|readiness reports|episode readiness|complete content|sourced posts)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/ContentContinuation.php --filter='(related posts|continuation queries|related guides|episode)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Models/Concerns/HasPublishingStatus.php --filter='(agree on what is live|publishing keeps|unpublishing returns)'",
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Models/Concerns/HasCoverImages.php --filter='image paths'"
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Models/Concerns/HasOgImage.php --filter='social image path'"
         ],
         "test:mutate:integrations": [
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/StructuredData.php --filter='structured data'",

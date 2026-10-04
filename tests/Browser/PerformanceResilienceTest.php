@@ -1,9 +1,9 @@
 <?php
 
-use App\Actions\GenerateResponsiveCover;
 use App\Models\Episode;
 use App\Models\Post;
-use App\Support\ResponsiveArtwork;
+use App\Services\ResponsiveImageVariants;
+use App\Services\SquareResponsiveImageVariants;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -176,24 +176,12 @@ test('mobile blog archive and article load responsive cover artwork without over
     $disk = Storage::disk('public');
     $disk->put($coverPath, $cover);
 
-    $coverHash = hash('sha256', $cover);
-    $existingVariants = [];
-
-    foreach (ResponsiveArtwork::WIDTHS as $width) {
-        $variantPath = ResponsiveArtwork::variantPath($coverHash, $width);
-
-        if ($disk->exists($variantPath)) {
-            $existingVariants[$variantPath] = $disk->get($variantPath);
-        }
-    }
-
     try {
+        // The post observer generates the responsive variants when the post is saved.
         $post = Post::factory()->create([
             'title' => 'Responsive Park Planning',
-            'cover_image' => $coverPath,
+            'featured_image_path' => $coverPath,
         ]);
-
-        app(GenerateResponsiveCover::class)->handle($post);
 
         $viewport = [
             'viewport' => ['width' => 390, 'height' => 844],
@@ -227,16 +215,8 @@ test('mobile blog archive and article load responsive cover artwork without over
             ->assertScript($responsiveArtworkLoadedScript, true)
             ->assertNoJavaScriptErrors();
     } finally {
+        app(ResponsiveImageVariants::class)->delete($coverPath);
         $disk->delete($coverPath);
-
-        foreach (ResponsiveArtwork::WIDTHS as $width) {
-            $variantPath = ResponsiveArtwork::variantPath($coverHash, $width);
-            $disk->delete($variantPath);
-
-            if (isset($existingVariants[$variantPath])) {
-                $disk->put($variantPath, $existingVariants[$variantPath]);
-            }
-        }
     }
 })->group('browser-smoke');
 
@@ -254,21 +234,9 @@ test('mobile episode archive and detail fit the viewport and detail loads square
     $disk = Storage::disk('public');
     $disk->put($coverPath, $cover);
 
-    $coverHash = hash('sha256', $cover);
-    $existingVariants = [];
-
-    foreach (ResponsiveArtwork::WIDTHS as $width) {
-        $variantPath = ResponsiveArtwork::variantPath($coverHash, $width, square: true);
-
-        if ($disk->exists($variantPath)) {
-            $existingVariants[$variantPath] = $disk->get($variantPath);
-        }
-    }
-
     try {
-        $episode = Episode::factory()->create(['cover_image' => $coverPath]);
-
-        app(GenerateResponsiveCover::class)->handle($episode);
+        // The episode observer generates the square variants when the episode is saved.
+        $episode = Episode::factory()->create(['featured_image_path' => $coverPath]);
 
         $viewport = [
             'viewport' => ['width' => 390, 'height' => 844],
@@ -289,7 +257,7 @@ test('mobile episode archive and detail fit the viewport and detail loads square
 
                     return image?.complete === true
                         && image.naturalWidth > 0
-                        && candidate.pathname.includes('/episodes/responsive/v1/');
+                        && candidate.pathname.includes('/episodes/responsive/');
                 })()
                 JS,
             json_encode($sourceSelector, JSON_THROW_ON_ERROR),
@@ -302,16 +270,8 @@ test('mobile episode archive and detail fit the viewport and detail loads square
             ->assertScript($responsiveArtworkLoadedScript, true)
             ->assertNoJavaScriptErrors();
     } finally {
+        app(SquareResponsiveImageVariants::class)->delete($coverPath);
         $disk->delete($coverPath);
-
-        foreach (ResponsiveArtwork::WIDTHS as $width) {
-            $variantPath = ResponsiveArtwork::variantPath($coverHash, $width, square: true);
-            $disk->delete($variantPath);
-
-            if (isset($existingVariants[$variantPath])) {
-                $disk->put($variantPath, $existingVariants[$variantPath]);
-            }
-        }
     }
 })->group('browser-smoke');
 
@@ -336,7 +296,7 @@ test('core mobile navigation and search work without JavaScript', function (): v
 test('failed optional artwork preserves content and its reserved layout', function (): void {
     $post = Post::factory()->create([
         'title' => 'Resilient Park Planning',
-        'cover_image' => 'posts/missing-artwork.webp',
+        'featured_image_path' => 'posts/missing-artwork.webp',
     ]);
 
     visit(route('home'))

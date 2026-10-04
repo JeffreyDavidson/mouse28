@@ -4,7 +4,7 @@
     :og-title="$guide->meta_title ?: $guide->title"
     :og-description="$guide->meta_description ?: Str::limit($guide->excerpt, 200)"
     og-type="article"
-    :og-image="$guide->og_image_url ?: $guide->cover_image_url"
+    :og-image="$guide->og_image_url ?: $guide->featured_image_url"
     :robots="($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow'"
     :dispatch-layout="true"
 >
