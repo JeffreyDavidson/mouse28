@@ -67,6 +67,7 @@ test('test paths mirror their application source', function (string $suite): voi
         'Database/Migrations/CreatePostUserAndGuideUserTablesTest.php' => 'database/migrations/2026_10_03_144332_create_post_user_and_guide_user_tables.php',
         'Database/Migrations/CopyContentAuthorsToAuthorPivotsTest.php' => 'database/migrations/2026_10_03_144333_copy_content_authors_to_author_pivots.php',
         'Database/Migrations/AddStoredMediaPathsToContentTablesTest.php' => 'database/migrations/2026_10_03_215858_add_stored_media_paths_to_content_tables.php',
+        'Database/Migrations/DropLegacyCoverImageColumnsTest.php' => 'database/migrations/2026_10_04_221212_drop_legacy_cover_image_columns.php',
         'Config/MediaTest.php' => 'config/media.php',
         'Http/ProductionSmokeTest.php' => 'routes/web.php',
         'Support/DeploymentSmokeClientTest.php' => 'tests/Support/DeploymentSmokeClient.php',
