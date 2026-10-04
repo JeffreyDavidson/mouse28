@@ -44,7 +44,7 @@ test('episodes are ready to publish with a description and a Transistor episode 
     $episode = Episode::factory()->draft()->make([
         'transistor_url' => 'https://share.transistor.fm/s/428d650c',
         'show_notes' => null,
-        'cover_image' => null,
+        'featured_image_path' => null,
         'duration_seconds' => null,
         'meta_title' => null,
         'meta_description' => null,

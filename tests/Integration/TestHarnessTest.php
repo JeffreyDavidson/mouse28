@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Client\StrayRequestException;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 test('the test harness selects only its isolated database', function (): void {
     $mysql = getenv('MOUSE28_TEST_MYSQL') === '1';
@@ -10,6 +11,11 @@ test('the test harness selects only its isolated database', function (): void {
     expect(config('database.default'))->toBe($mysql ? 'mysql' : 'sqlite')
         ->and(config('database.connections.'.$connection.'.database'))->toBe($mysql ? 'mouse28_test' : ':memory:')
         ->and(config('telescope.enabled'))->toBeFalse();
+});
+
+test('the test harness keeps the public disk off the real storage', function (): void {
+    expect(Storage::disk('public')->path(''))
+        ->toContain('framework/testing/disks/public');
 });
 
 test('the test harness rejects unfaked requests', function (): void {

@@ -20,7 +20,7 @@ test('post structured data prioritizes metadata and the newest content timestamp
         'slug' => 'park-tips',
         'meta_title' => 'Accessible Park Tips',
         'meta_description' => 'Practical planning guidance.',
-        'cover_image' => 'posts/cover.jpg',
+        'featured_image_path' => 'posts/cover.jpg',
         'og_image' => 'posts/social.jpg',
         'source_url' => 'https://source.example/park-tips',
         'published_at' => Carbon::parse('2026-08-01 12:00:00 UTC'),
@@ -56,7 +56,7 @@ test('post and guide structured data use content fallbacks without optional meta
         'meta_description' => null,
         'excerpt' => null,
         'content' => '<p>'.str_repeat('Useful planning advice. ', 20).'</p>',
-        'cover_image' => 'posts/cover.jpg',
+        'featured_image_path' => 'posts/cover.jpg',
         'og_image' => null,
         'source_url' => null,
         'published_at' => Carbon::parse('2026-08-01 12:00:00 UTC'),
@@ -68,7 +68,7 @@ test('post and guide structured data use content fallbacks without optional meta
         'slug' => 'fallback-guide',
         'meta_description' => null,
         'excerpt' => 'Guide excerpt.',
-        'cover_image' => null,
+        'featured_image_path' => null,
         'og_image' => null,
         'source_url' => null,
         'published_at' => Carbon::parse('2026-08-01 12:00:00 UTC'),
@@ -83,7 +83,7 @@ test('post and guide structured data use content fallbacks without optional meta
         ->and(data_get($postArticle, 'description'))->toHaveLength(203)
         ->and(data_get($postArticle, 'description'))->toEndWith('...')
         ->and(data_get($postArticle, 'dateModified'))->toBe('2026-08-02T12:00:00+00:00')
-        ->and(data_get($postArticle, 'image'))->toBe(url($post->cover_image_url))
+        ->and(data_get($postArticle, 'image'))->toBe(url($post->featured_image_url))
         ->and($postArticle)->not->toHaveKeys(['citation'])
         ->and($guideArticle)->toMatchArray([
             '@type' => 'Article',
@@ -104,7 +104,7 @@ test('episode structured data includes configured podcast and optional media met
         'season_number' => 3,
         'duration_seconds' => 3661,
         'audio_url' => 'https://audio.example/episode-42.mp3',
-        'cover_image' => 'episodes/cover.jpg',
+        'featured_image_path' => 'episodes/cover.jpg',
         'og_image' => 'episodes/social.jpg',
         'published_at' => Carbon::parse('2026-08-01 12:00:00 UTC'),
     ]);
@@ -146,7 +146,7 @@ test('episode structured data omits unavailable media metadata and uses the defa
         'season_number' => null,
         'duration_seconds' => null,
         'audio_url' => null,
-        'cover_image' => null,
+        'featured_image_path' => null,
         'og_image' => null,
         'published_at' => Carbon::parse('2026-08-01 12:00:00 UTC'),
     ]);

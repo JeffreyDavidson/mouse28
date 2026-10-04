@@ -8,6 +8,7 @@ use Dom\XPath;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Testing\TestResponse;
 use Symfony\Component\HttpFoundation\Response;
 use UnexpectedValueException;
@@ -47,6 +48,13 @@ abstract class TestCase extends BaseTestCase
         parent::setUp();
 
         Http::preventStrayRequests();
+
+        // Model observers generate and delete files on the public disk whenever a record
+        // with an image is saved, so Feature and Integration tests never touch the real
+        // one. Browser tests serve real files and clean up the ones they create.
+        if (! $this instanceof BrowserTestCase) {
+            Storage::fake('public');
+        }
 
         $this->withoutVite();
     }

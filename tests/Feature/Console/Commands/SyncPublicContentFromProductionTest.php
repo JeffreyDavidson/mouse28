@@ -18,7 +18,7 @@ pest()->use(RefreshDatabase::class);
 test('sync rejects invalid content before replacing any local media', function (): void {
     $disk = Storage::fake('public');
     $disk->put('posts/cover.webp', 'original bytes');
-    $post = Post::factory()->create(['title' => 'Original', 'cover_image' => 'posts/cover.webp']);
+    $post = Post::factory()->create(['title' => 'Original', 'featured_image_path' => 'posts/cover.webp']);
     $archive = app(PublicContentArchive::class)->export();
     $archive['posts'][0]['title'] = 'Changed';
     $archive['posts'][0]['content'] = null;
@@ -61,7 +61,7 @@ test('sync stops before transferring media when a local draft collides', functio
     Storage::fake('public');
     config()->set('mouse28.production_sync.ssh_host', 'cold-moon');
     config()->set('mouse28.production_sync.site_path', '/home/forge/mouse28.com/current');
-    $post = Post::factory()->create(['cover_image' => 'posts/local.webp']);
+    $post = Post::factory()->create(['featured_image_path' => 'posts/local.webp']);
     $archive = app(PublicContentArchive::class)->export();
     $post->update(['status' => PublishStatus::Draft]);
     Process::fake(function (PendingProcess $process) use ($archive) {
@@ -93,6 +93,7 @@ test('production syncs public content, preserves drafts, and transfers reference
     $localEpisode = Episode::factory()->create([
         'episode_number' => 1,
     ]);
+    // Production exports covers as `cover_image` until the stored media release reaches it.
     $archive = publicContentArchive([
         'episodes' => [[
             'title' => 'Example Episode',
@@ -148,7 +149,7 @@ test('production syncs public content, preserves drafts, and transfers reference
         ->run();
 
     expect($exitCode)->toBe(Command::SUCCESS)
-        ->and(Post::query()->where('slug', 'example-post')->firstOrFail()->cover_image)
+        ->and(Post::query()->where('slug', 'example-post')->firstOrFail()->featured_image_path)
         ->toBe('posts/example-post.webp')
         ->and(Post::query()->whereKey($stalePost)->exists())->toBeFalse()
         ->and(Post::withTrashed()->find($stalePost->id)?->trashed())->toBeTrue()

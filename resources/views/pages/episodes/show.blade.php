@@ -3,7 +3,7 @@
     :description="$episode->meta_description ?: Str::limit($episode->description, 160)"
     :og-title="$episode->meta_title ?: $episode->title"
     :og-description="$episode->meta_description ?: Str::limit($episode->description, 200)"
-    :og-image="$episode->og_image_url ?: $episode->cover_image_url"
+    :og-image="$episode->og_image_url ?: $episode->featured_image_url"
     :robots="($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow'"
     :dispatch-layout="true"
 >
@@ -24,13 +24,15 @@
         <x-preview-banner />
     @endif
 
+    @inject('squareImages', 'App\Services\SquareResponsiveImageVariants')
+
     @php
         $showNotesLength = Str::of(strip_tags($episode->show_notes ?? ''))->squish()->length();
         $isSparseEpisode = blank($episode->transistor_embed_url)
             && blank($episode->transcript)
             && $showNotesLength < 160;
-        $coverImage = $episode->cover_image_url
-            ?: ($podcast->cover_image ? '/storage/'.ltrim($podcast->cover_image, '/') : '/images/podcast/mouse28-cover.webp');
+        $coverImage = $episode->featured_image_url
+            ?: ($podcast->cover_image_path ? '/storage/'.ltrim($podcast->cover_image_path, '/') : '/images/podcast/mouse28-cover.webp');
         $appleUrl = $episode->apple_url ?: $podcast->apple_url;
         $spotifyUrl = $episode->spotify_url ?: $podcast->spotify_url;
         $youtubeUrl = $episode->youtube_url ?: $podcast->youtube_url;
@@ -41,7 +43,7 @@
             <div class="podcast-cover-frame mx-auto w-full max-w-md lg:mx-0">
                 <img
                     src="{{ $coverImage }}"
-                    @if ($srcset = \App\Support\ResponsiveArtwork::srcset($episode->cover_image, square: true))
+                    @if ($srcset = $squareImages->srcset($episode->featured_image_path))
                         srcset="{{ $srcset }}"
                         sizes="(min-width: 1188px) 448px, (min-width: 1024px) calc(41.6667vw - 46.6667px), (min-width: 480px) 448px, calc(100vw - 32px)"
                     @endif

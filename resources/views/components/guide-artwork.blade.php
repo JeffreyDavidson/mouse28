@@ -2,7 +2,10 @@
     'guide',
     'loading' => 'lazy',
     'fetchpriority' => null,
+    'sizes' => '100vw',
 ])
+
+@inject('responsiveImages', 'App\Services\ResponsiveImageVariants')
 
 @php
     $categoryArtwork = [
@@ -11,11 +14,16 @@
         'food-reviews' => '/images/guides/food-reviews.webp',
         'family-planning' => '/images/guides/family-planning.webp',
     ];
-    $artworkUrl = $guide->cover_image_url ?: ($categoryArtwork[$guide->category?->value] ?? $categoryArtwork['park-strategy']);
+    $artworkUrl = $guide->featured_image_url ?: ($categoryArtwork[$guide->category?->value] ?? $categoryArtwork['park-strategy']);
+    $srcset = $guide->featured_image_url ? $responsiveImages->srcset($guide->featured_image_path) : null;
 @endphp
 
 <img
     src="{{ $artworkUrl }}"
+    @if ($srcset)
+        srcset="{{ $srcset }}"
+        sizes="{{ ($loading === 'lazy' ? 'auto, ' : '').$sizes }}"
+    @endif
     alt=""
     aria-hidden="true"
     loading="{{ $loading }}"

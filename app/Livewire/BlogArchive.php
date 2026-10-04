@@ -92,7 +92,7 @@ class BlogArchive extends Component
 
     public function render(): View
     {
-        $cardColumns = ['id', 'slug', 'title', 'excerpt', 'content', 'category_id', 'cover_image', 'published_at'];
+        $cardColumns = ['id', 'slug', 'title', 'excerpt', 'content', 'category_id', 'featured_image_path', 'published_at'];
         $cardRelations = ['category:id,name,slug', 'authors:id,name'];
         $usedCategories = Category::query()
             ->whereHas('publishedPosts')

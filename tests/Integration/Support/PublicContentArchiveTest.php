@@ -5,6 +5,7 @@ use App\Enums\PublishStatus;
 use App\Models\Category;
 use App\Models\Episode;
 use App\Models\Guide;
+use App\Models\Podcast;
 use App\Models\Post;
 use App\Models\User;
 use App\Support\PublicContentArchive;
@@ -53,17 +54,60 @@ test('invalid imported attributes leave all existing records unchanged', functio
     expect(fn () => $service->import($archive))->toThrow(InvalidArgumentException::class)
         ->and($post->refresh()->title)->toBe('Original');
 })->with([
-    'unsafe media' => ['cover_image', '../private.jpg'],
+    'unsafe media' => ['featured_image_path', '../private.jpg'],
     'invalid date' => ['published_at', 'not a date'],
     'invalid slug' => ['slug', 'folder/story'],
     'invalid tags' => ['tags', [42]],
     'invalid URL' => ['source_url', 'javascript:alert(1)'],
-    'invalid media type' => ['cover_image', []],
+    'invalid media type' => ['featured_image_path', []],
     'invalid relation type' => ['episode_slug', []],
     'invalid relation list' => ['episode_slugs', 'example-episode'],
     'invalid relation slug' => ['episode_slugs', ['Not A Slug']],
     'null content' => ['content', null],
 ]);
+
+test('an older archive with an unsafe cover_image is rejected before importing', function (): void {
+    $post = Post::factory()->create(['title' => 'Original']);
+    $service = app(PublicContentArchive::class);
+    $archive = $service->export();
+    $archive['posts'][0]['title'] = 'Changed';
+    unset($archive['posts'][0]['featured_image_path']);
+    $archive['posts'][0]['cover_image'] = '../private.jpg';
+
+    expect(fn () => $service->import($archive))->toThrow(InvalidArgumentException::class)
+        ->and($post->refresh()->title)->toBe('Original');
+});
+
+test('archives export stored media paths and import them under either key name', function (): void {
+    $post = Post::factory()->create();
+    $guide = Guide::factory()->create();
+    $episode = Episode::factory()->create();
+    foreach ([$post, $guide, $episode] as $record) {
+        $record->forceFill(['featured_image_path' => "{$record->getTable()}/exported.webp"])->saveQuietly();
+    }
+    Podcast::settings()->forceFill(['cover_image_path' => 'podcast/exported.webp'])->saveQuietly();
+    $service = app(PublicContentArchive::class);
+    $archive = $service->export();
+
+    expect($archive['posts'][0]['featured_image_path'])->toBe('posts/exported.webp')
+        ->and($archive['guides'][0]['featured_image_path'])->toBe('guides/exported.webp')
+        ->and($archive['episodes'][0]['featured_image_path'])->toBe('episodes/exported.webp')
+        ->and($archive['podcast']['cover_image_path'] ?? null)->toBe('podcast/exported.webp')
+        ->and($archive['posts'][0])->not->toHaveKey('cover_image');
+
+    // An older archive carries only `cover_image`; a newer key wins when both are present.
+    unset($archive['posts'][0]['featured_image_path'], $archive['podcast']['cover_image_path']);
+    $archive['posts'][0]['cover_image'] = 'posts/legacy.webp';
+    $archive['podcast']['cover_image'] = 'podcast/legacy.webp';
+    $archive['guides'][0]['cover_image'] = 'guides/ignored.webp';
+
+    $service->import($archive);
+
+    expect($post->refresh()->featured_image_path)->toBe('posts/legacy.webp')
+        ->and($guide->refresh()->featured_image_path)->toBe('guides/exported.webp')
+        ->and($episode->refresh()->featured_image_path)->toBe('episodes/exported.webp')
+        ->and(Podcast::settings()->cover_image_path)->toBe('podcast/legacy.webp');
+});
 
 test('sync refuses unpublished identity collisions without changing content', function (PostFactory|GuideFactory|EpisodeFactory $factory, string $state): void {
     // Arrange

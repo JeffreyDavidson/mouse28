@@ -3,6 +3,7 @@
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
+use App\Services\ResponsiveImageVariants;
 use Illuminate\Support\Facades\Storage;
 
 function homepageStoryColumnsDoNotOverlapScript(): string
@@ -67,6 +68,10 @@ test('long public content and portrait artwork stay contained', function (): voi
         throw new RuntimeException('The content resilience artwork fixture could not be loaded.');
     }
 
+    // The responsive variants are linked with absolute URLs, so point them at the test server.
+    config(['filesystems.disks.public.url' => url('/storage')]);
+    Storage::forgetDisk('public');
+
     Storage::disk('public')->put(
         $portraitPath,
         $portrait,
@@ -78,14 +83,14 @@ test('long public content and portrait artwork stay contained', function (): voi
             'slug' => 'long-content-post',
             'excerpt' => "A practical introduction followed by {$longToken}",
             'content' => "## {$longToken}\n\n{$longToken}\n\n[{$longToken}](https://example.com/{$longToken})\n\n`{$longToken}`",
-            'cover_image' => $portraitPath,
+            'featured_image_path' => $portraitPath,
         ]);
         $guide = Guide::factory()->create([
             'title' => $longTitle,
             'slug' => 'long-content-guide',
             'excerpt' => "A practical introduction followed by {$longToken}",
             'content' => "## {$longToken}\n\n{$longToken}\n\n[{$longToken}](https://example.com/{$longToken})\n\n`{$longToken}`",
-            'cover_image' => $portraitPath,
+            'featured_image_path' => $portraitPath,
         ]);
         $episode = Episode::factory()->create([
             'title' => $longTitle,
@@ -93,7 +98,7 @@ test('long public content and portrait artwork stay contained', function (): voi
             'description' => "A practical introduction followed by {$longToken}",
             'show_notes' => "<h2>{$longToken}</h2><p>{$longToken}</p><p><a href=\"https://example.com/{$longToken}\">{$longToken}</a></p>",
             'transcript' => "<p><strong>Jeffrey:</strong> {$longToken}</p>",
-            'cover_image' => $portraitPath,
+            'featured_image_path' => $portraitPath,
             'audio_url' => 'https://cdn.example.com/content-resilience.mp3',
         ]);
 
@@ -153,6 +158,8 @@ test('long public content and portrait artwork stay contained', function (): voi
             'cover',
         );
     } finally {
+        // The model observers generated variants for the shared fixture path.
+        app(ResponsiveImageVariants::class)->delete($portraitPath);
         Storage::disk('public')->delete($portraitPath);
     }
 })->group('browser-smoke');

@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Support\ArtworkSourceCache;
 use App\Support\Monitoring\Health\RuntimeHealthMonitor;
 use App\Support\Monitoring\Nightwatch\RedactNightwatchCacheEvent;
 use App\Support\Monitoring\Nightwatch\RedactNightwatchCommand;
@@ -34,8 +33,6 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->scoped(ArtworkSourceCache::class);
-
         $this->app->afterResolving(ClientBuilder::class, function (ClientBuilder $clientBuilder): void {
             $options = $clientBuilder->getOptions();
             $options->setBeforeSendCallback($this->app->make(RedactSentryEvent::class));

@@ -5,7 +5,6 @@ use App\Filament\Resources\Episodes\EpisodeResource;
 use App\Filament\Resources\Episodes\Pages\EditEpisode;
 use App\Models\Episode;
 use App\Models\User;
-use App\Support\ResponsiveArtwork;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Date;
@@ -47,30 +46,30 @@ test('authenticated user can render the edit form', function (): void {
         ->assertSee('Save changes');
 });
 
-test('explicit artwork action generates only the saved record cover', function (): void {
+test('a replaced cover is stored under episodes with variants and the previous file is removed', function (): void {
     Storage::fake('public');
-    Storage::disk('public')->put('episodes/cover.png', UploadedFile::fake()->image('cover.png', 1000, 800)->getContent());
-    Storage::disk('public')->put('episodes/other.png', UploadedFile::fake()->image('other.png', 1200, 800)->getContent());
+    Storage::disk('public')->put('episodes/previous.png', UploadedFile::fake()->image('previous.png', 1000, 525)->getContent());
     actingAs(User::factory()->admin()->create());
-    $record = Episode::factory()->create(['cover_image' => 'episodes/cover.png']);
-    $other = Episode::factory()->create(['cover_image' => 'episodes/other.png']);
+    $record = Episode::factory()->create(['featured_image_path' => 'episodes/previous.png']);
 
     livewire(EditEpisode::class, ['record' => $record->getRouteKey()])
-        ->callAction('generateArtwork')
-        ->assertNotified('Responsive artwork prepared');
+        ->fillForm(['featured_image_path' => [UploadedFile::fake()->image('cover.png', 1000, 525)]])
+        ->call('save')
+        ->assertHasNoFormErrors();
 
-    expect(ResponsiveArtwork::srcset($record->cover_image, square: true))->not->toBeNull()
-        ->and(ResponsiveArtwork::srcset($other->cover_image, square: true))->toBeNull();
+    $path = (string) $record->refresh()->featured_image_path;
+    expect($path)->toStartWith('episodes/')
+        ->not->toBe('episodes/previous.png');
+    Storage::disk('public')->assertExists([$path, 'episodes/responsive/'.pathinfo($path, PATHINFO_FILENAME).'-480.webp']);
+    Storage::disk('public')->assertMissing(['episodes/previous.png', 'episodes/responsive/previous-480.webp']);
 });
 
-test('artwork generation reports an unavailable source', function (): void {
-    Storage::fake('public');
+test('the edit page offers no manual artwork generation action', function (): void {
     actingAs(User::factory()->admin()->create());
-    $record = Episode::factory()->create(['cover_image' => 'episodes/missing.png']);
+    $record = Episode::factory()->create(['featured_image_path' => 'episodes/cover.png']);
 
     livewire(EditEpisode::class, ['record' => $record->getRouteKey()])
-        ->callAction('generateArtwork')
-        ->assertNotified('Artwork generation failed');
+        ->assertActionDoesNotExist('generateArtwork');
 });
 
 test('published URLs cannot be changed by submitted editor state', function (): void {
@@ -145,7 +144,7 @@ test('drafts with their required details can be published while advisory details
     $admin = User::factory()->admin()->create();
     $record = Episode::factory()->draft()->create([
         'transistor_url' => 'https://share.transistor.fm/s/428d650c',
-        'cover_image' => null,
+        'featured_image_path' => null,
         'meta_title' => null,
         'meta_description' => null,
     ]);

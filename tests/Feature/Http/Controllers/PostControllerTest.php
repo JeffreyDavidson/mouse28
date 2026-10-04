@@ -7,7 +7,6 @@ use App\Models\Episode;
 use App\Models\Podcast;
 use App\Models\Post;
 use App\Models\User;
-use App\Support\ResponsiveArtwork;
 use Dom\Element;
 use Dom\HTMLDocument;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -57,26 +56,22 @@ test('blog pages stay within their query budget as content grows', function (str
 
 test('blog featured cover is prioritized while archive cards remain deferred', function (): void {
     Storage::fake('public');
-    $contents = UploadedFile::fake()->image('cover.webp', 600, 300)->getContent();
-    Storage::disk('public')->put('posts/cover.webp', $contents);
-    Storage::disk('public')->put(
-        ResponsiveArtwork::variantPath(hash('sha256', $contents), 480),
-        UploadedFile::fake()->image('variant.webp', 480, 240)->getContent(),
-    );
-    Post::factory()->count(2)->create(['cover_image' => 'posts/cover.webp']);
+    $disk = Storage::disk('public');
+    $disk->put('posts/cover.webp', UploadedFile::fake()->image('cover.webp', 600, 300)->getContent());
+    Post::factory()->count(2)->create(['featured_image_path' => 'posts/cover.webp']);
 
     $response = get(route('blog.index'))
         ->assertOk();
 
     $document = HTMLDocument::createFromString($this->responseContent($response), LIBXML_NOERROR);
-    $images = $document->querySelectorAll('img[src="/storage/posts/cover.webp"]');
+    $images = $document->querySelectorAll('img[src="'.$disk->url('posts/cover.webp').'"]');
     $featuredImage = $images->item(0) ?? throw new UnexpectedValueException('The featured image is missing.');
     $archiveImage = $images->item(1) ?? throw new UnexpectedValueException('The archive image is missing.');
 
     expect($featuredImage->getAttribute('loading'))->toBe('eager')
         ->and($featuredImage->getAttribute('fetchpriority'))->toBe('high')
         ->and($archiveImage->getAttribute('loading'))->toBe('lazy')
-        ->and($featuredImage->getAttribute('srcset'))->toContain('480w', '600w')
+        ->and($featuredImage->getAttribute('srcset'))->toBe($disk->url('posts/responsive/cover-480.webp').' 480w')
         ->and($featuredImage->getAttribute('sizes'))->not->toStartWith('auto')
         ->and($archiveImage->getAttribute('sizes'))->toStartWith('auto, ');
 });
@@ -155,7 +150,7 @@ test('blog discovery controls precede results in the document order', function (
 
 test('blog index uses an artwork led archive without dashboard widgets', function (): void {
     Post::factory()->count(3)->create([
-        'cover_image' => null,
+        'featured_image_path' => null,
     ]);
 
     get(route('blog.index'))->assertOk()->assertSeeHtml('data-editorial-blog')->assertSeeHtml('editorial-feature')->assertSeeHtml('editorial-story-grid')->assertSeeHtml('data-equal-width-stories')->assertSeeHtml('data-post-artwork')->assertDontSee('Blog Stats')->assertDontSeeHtml('Categories</h3>');
@@ -335,7 +330,7 @@ test('category label links to its filtered index', function (): void {
 
 test('a post in a category without its own artwork style uses the general artwork', function (): void {
     $category = Category::factory()->create(['name' => 'Sample Topic', 'slug' => 'sample-topic']);
-    $post = Post::factory()->for($category)->create(['cover_image' => null]);
+    $post = Post::factory()->for($category)->create(['featured_image_path' => null]);
 
     get(route('blog.show', $post))
         ->assertOk()
@@ -355,7 +350,7 @@ test('landing page provides search and social metadata', function (): void {
     Podcast::query()->create([
         'name' => 'Mouse28 Weekly',
         'description' => 'A weekly Disney parks podcast for accessibility-minded families.',
-        'cover_image' => 'podcasts/show-cover.jpg',
+        'cover_image_path' => 'podcasts/show-cover.jpg',
     ]);
 
     get(route('blog.index'))->assertOk()->assertSeeHtml('<meta property="og:title" content="Disney Parks Blog | Mouse28">')->assertSeeHtml('<meta property="og:url" content="'.route('blog.index').'">');
@@ -377,7 +372,7 @@ test('text searches are not indexed', function (): void {
 });
 
 test('an uncategorized post keeps its public fallback presentation', function (): void {
-    $post = Post::factory()->create(['category_id' => null, 'cover_image' => null]);
+    $post = Post::factory()->create(['category_id' => null, 'featured_image_path' => null]);
 
     get(route('blog.show', $post))
         ->assertOk()
@@ -387,7 +382,7 @@ test('an uncategorized post keeps its public fallback presentation', function ()
 test('blog posts include article and breadcrumb structured data', function (): void {
     $post = Post::factory()->create([
         'title' => 'Accessible <Park> Plan',
-        'cover_image' => 'posts/plan.jpg',
+        'featured_image_path' => 'posts/plan.jpg',
         'source_url' => 'https://disneyworld.disney.go.com/guest-services/disability-access-service/',
         'last_reviewed_at' => '2026-08-01',
         'updated_at' => '2026-07-01',

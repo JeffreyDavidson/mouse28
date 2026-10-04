@@ -61,7 +61,7 @@ test('the footer newsletter field shows a focus indicator that stands out from t
 test('polished discovery and guide artwork remain usable on mobile', function (): void {
     $guide = Guide::factory()->create([
         'category' => 'accessibility',
-        'cover_image' => null,
+        'featured_image_path' => null,
     ]);
     $post = Post::factory()->create();
     Post::factory()->create();

@@ -103,7 +103,7 @@ test('guides credit authors through the pivot only', function (): void {
 
 test('guides are ready to publish with content, an excerpt, an official source, and a review date', function (): void {
     $guide = Guide::factory()->draft()->make([
-        'cover_image' => null,
+        'featured_image_path' => null,
         'meta_title' => null,
         'meta_description' => null,
     ]);
@@ -148,7 +148,7 @@ test('the guide review interval comes from content configuration', function (): 
 test('guides without content need attention', function (?string $content): void {
     $guide = Guide::factory()->create([
         'content' => $content,
-        'cover_image' => 'guides/complete.jpg',
+        'featured_image_path' => 'guides/complete.jpg',
         'source_url' => 'https://example.test/source',
         'last_reviewed_at' => Date::today(),
         'meta_title' => 'Complete title',

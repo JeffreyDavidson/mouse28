@@ -46,7 +46,7 @@ class EditorialReadiness
         return array_values(array_filter([
             blank($post->excerpt) ? 'Add an excerpt' : null,
             blank($post->content) ? 'Add post content' : null,
-            blank($post->cover_image) ? 'Add a cover image' : null,
+            blank($post->featured_image_path) ? 'Add a cover image' : null,
             filled($post->last_reviewed_at) && blank($post->source_url) ? 'Add an official source' : null,
             filled($post->source_url) && blank($post->last_reviewed_at) ? 'Set the review date' : null,
             blank($post->meta_title) ? 'Add an SEO title' : null,
@@ -61,7 +61,7 @@ class EditorialReadiness
         return array_values(array_filter([
             blank($guide->excerpt) ? 'Add an excerpt' : null,
             blank($guide->content) ? 'Add guide content' : null,
-            blank($guide->cover_image) ? 'Add a cover image' : null,
+            blank($guide->featured_image_path) ? 'Add a cover image' : null,
             blank($guide->source_url) ? 'Add an official source' : null,
             blank($guide->last_reviewed_at) ? 'Set the review date' : null,
             blank($guide->meta_title) ? 'Add an SEO title' : null,
@@ -76,7 +76,7 @@ class EditorialReadiness
         return array_values(array_filter([
             blank($episode->description) ? 'Add a description' : null,
             blank($episode->show_notes) ? 'Add show notes' : null,
-            blank($episode->cover_image) ? 'Add a cover image' : null,
+            blank($episode->featured_image_path) ? 'Add a cover image' : null,
             blank($episode->duration_seconds) ? 'Set the duration' : null,
             blank($episode->meta_title) ? 'Add an SEO title' : null,
             blank($episode->meta_description) ? 'Add an SEO description' : null,

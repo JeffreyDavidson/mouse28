@@ -56,6 +56,24 @@ test('media paths include all content types once in sorted order', function (): 
     ]);
 });
 
+test('media paths read stored media paths and prefer them over an older cover_image', function (): void {
+    $service = new PublicContentArchive;
+    $archive = [
+        'version' => 1,
+        'posts' => [['slug' => 'park-story', 'featured_image_path' => 'posts/new.webp', 'cover_image' => 'posts/old.webp']],
+        'guides' => [['slug' => 'park-guide', 'featured_image_path' => 'guides/guide.webp']],
+        'episodes' => [['slug' => 'park-episode', 'featured_image_path' => 'episodes/episode.webp']],
+        'podcast' => ['cover_image_path' => 'podcast/new.webp', 'cover_image' => 'podcast/old.webp'],
+    ];
+
+    expect($service->mediaPaths($archive))->toBe([
+        'episodes/episode.webp',
+        'guides/guide.webp',
+        'podcast/new.webp',
+        'posts/new.webp',
+    ]);
+});
+
 test('archives without media return an empty list', function (): void {
     $service = new PublicContentArchive;
     $archive = [

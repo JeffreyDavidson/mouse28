@@ -7,16 +7,12 @@ namespace App\Models\Concerns;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
 /**
- * Public storage URLs for the cover and social images that editorial content can carry.
+ * The public storage URL for the social image that editorial content can carry.
+ * Cover images moved to `HasFeaturedImage`; this goes when the SEO slice moves
+ * `og_image` into the SEO package.
  */
-trait HasCoverImages
+trait HasOgImage
 {
-    /** @return Attribute<string|null, never> */
-    protected function coverImageUrl(): Attribute
-    {
-        return Attribute::make(get: fn (): ?string => $this->cover_image ? "/storage/{$this->cover_image}" : null);
-    }
-
     /** @return Attribute<string|null, never> */
     protected function ogImageUrl(): Attribute
     {
