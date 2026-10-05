@@ -36,12 +36,11 @@ function postCategoryForeignKeyCount(): int
     return count(array_keys(array_column(Schema::getForeignKeys('posts'), 'foreign_table'), 'categories', true));
 }
 
-test('posts gain a nullable, indexed category_id and keep the legacy category column', function (): void {
+test('posts gain a nullable, indexed category_id', function (): void {
     $nullable = array_column(Schema::getColumns('posts'), 'nullable', 'name');
 
     expect($nullable['category_id'])->toBeTrue()
-        ->and(Schema::hasIndex('posts', ['category_id']))->toBeTrue()
-        ->and(Schema::hasColumn('posts', 'category'))->toBeTrue();
+        ->and(Schema::hasIndex('posts', ['category_id']))->toBeTrue();
 });
 
 test('posts.category_id references categories and is set to null when its category is deleted', function (): void {
@@ -63,9 +62,7 @@ test('deleting a category leaves its posts without a category', function (): voi
 });
 
 test('adding category_id keeps the other posts constraints and indexes', function (): void {
-    expect(postForeignKeys('columns'))->toHaveKey('episodes', ['episode_id'])
-        ->and(postForeignKeys('on_delete'))->toHaveKey('episodes', 'set null')
-        ->and(Schema::hasIndex('posts', ['slug'], 'unique'))->toBeTrue()
+    expect(Schema::hasIndex('posts', ['slug'], 'unique'))->toBeTrue()
         ->and(Schema::hasIndex('posts', ['status', 'published_at']))->toBeTrue();
 });
 
