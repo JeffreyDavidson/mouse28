@@ -17,6 +17,7 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Str;
+use RalphJSmit\Filament\SEO\SEO;
 
 class EpisodeForm
 {
@@ -152,25 +153,7 @@ class EpisodeForm
                             ->description('Search engine optimization')
                             ->collapsed()
                             ->schema([
-                                TextInput::make('meta_title')
-                                    ->maxLength(70)
-                                    ->helperText('50–70 characters recommended.'),
-                                Textarea::make('meta_description')
-                                    ->maxLength(160)
-                                    ->rows(2)
-                                    ->helperText('120–160 characters recommended.'),
-                                FileUpload::make('og_image')
-                                    ->image()
-                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                    ->maxSize(5120)
-                                    ->imageAspectRatio('1200:630')
-                                    ->automaticallyCropImagesToAspectRatio()
-                                    ->automaticallyResizeImagesMode('cover')
-                                    ->automaticallyResizeImagesToWidth('1200')
-                                    ->automaticallyResizeImagesToHeight('630')
-                                    ->disk('public')
-                                    ->directory('episodes/og')
-                                    ->helperText('Custom social sharing image. Falls back to cover.'),
+                                SEO::make(),
                             ]),
                     ]),
             ]);

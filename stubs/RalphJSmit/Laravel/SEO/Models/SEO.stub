@@ -1,0 +1,15 @@
+<?php
+
+namespace RalphJSmit\Laravel\SEO\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+/**
+ * @property string|null $title
+ * @property string|null $description
+ * @property string|null $author
+ * @property string|null $image
+ * @property string|null $robots
+ * @property string|null $canonical_url
+ */
+class SEO extends Model {}

@@ -1,11 +1,10 @@
 <x-layouts.app
-    :title="($post->meta_title ?: $post->title).' | Mouse28'"
-    :description="$post->meta_description ?: Str::limit($post->excerpt, 160)"
-    :og-title="$post->meta_title ?: $post->title"
-    :og-description="$post->meta_description ?: Str::limit($post->excerpt, 200)"
+    :title="($post->seo?->title ?: $post->title).' | Mouse28'"
+    :description="$post->seo?->description ?: Str::limit($post->excerpt, 160)"
+    :og-title="$post->seo?->title ?: $post->title"
     og-type="article"
-    :og-image="$post->og_image_url ?: $post->featured_image_url"
-    :robots="($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow'"
+    :og-image="$post->featured_image_url"
+    :robots="($isPreview ?? false) ? 'noindex,nofollow' : ($post->seo?->robots ?: 'index,follow')"
     :dispatch-layout="true"
 >
     <!--

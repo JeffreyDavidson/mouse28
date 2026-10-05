@@ -4,7 +4,6 @@
     title="Something Went Wrong | Mouse28"
     description="Mouse28 could not complete this request. Please try again in a moment."
     og-title="Something Went Wrong | Mouse28"
-    og-description="Mouse28 could not complete this request. Please try again in a moment."
 >
     <x-error-state
         code="500"

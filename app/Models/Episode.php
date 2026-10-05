@@ -6,11 +6,11 @@ use App\Contracts\Publishable;
 use App\Enums\PublishStatus;
 use App\Models\Attributes\PublishingStatus;
 use App\Models\Concerns\HasFeaturedImage;
-use App\Models\Concerns\HasOgImage;
 use App\Models\Concerns\HasPublishingStatus;
 use App\Models\Concerns\HasTagsUntilForceDeleted;
 use App\Models\Concerns\LocksSlugAfterPublication;
 use App\Models\Concerns\ManagesStoredMedia;
+use App\Models\Concerns\ScopesMissingSeo;
 use App\Observers\EpisodeObserver;
 use Carbon\CarbonInterface;
 use Database\Factories\EpisodeFactory;
@@ -24,10 +24,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use RalphJSmit\Laravel\SEO\Models\SEO;
+use RalphJSmit\Laravel\SEO\Support\HasSEO;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
 /**
+ * @property-read SEO $seo
  * @property PublishStatus $status
  * @property Carbon|null $published_at
  * @property CarbonInterface|null $slug_locked_at
@@ -35,7 +38,6 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property string|null $featured_image_path
  * @property-read string|null $featured_image_url
  * @property-read string $formatted_duration
- * @property-read string|null $og_image_url
  * @property-read string|null $transistor_embed_url
  *
  * @method static Builder<static> needsAttention()
@@ -61,16 +63,13 @@ use Spatie\Activitylog\Support\LogOptions;
     'featured_image_path',
     'status',
     'published_at',
-    'meta_title',
-    'meta_description',
-    'og_image',
 ])]
 #[ObservedBy(EpisodeObserver::class)]
 #[PublishingStatus]
 class Episode extends Model implements Publishable
 {
     /** @use HasFactory<EpisodeFactory> */
-    use HasFactory, HasFeaturedImage, HasOgImage, HasPublishingStatus, HasTagsUntilForceDeleted, LocksSlugAfterPublication, ManagesStoredMedia, SoftDeletes;
+    use HasFactory, HasFeaturedImage, HasPublishingStatus, HasSEO, HasTagsUntilForceDeleted, LocksSlugAfterPublication, ManagesStoredMedia, ScopesMissingSeo, SoftDeletes;
 
     use LogsActivity;
 
@@ -94,9 +93,6 @@ class Episode extends Model implements Publishable
                 'featured_image_path',
                 'status',
                 'published_at',
-                'meta_title',
-                'meta_description',
-                'og_image',
             ])
             ->logOnlyDirty()
             ->dontLogEmptyChanges();
@@ -118,13 +114,15 @@ class Episode extends Model implements Publishable
     protected function needsAttention(Builder $query): void
     {
         $query->where(function (Builder $query): void {
-            foreach (['description', 'show_notes', 'featured_image_path', 'duration_seconds', 'meta_title', 'meta_description'] as $column) {
+            foreach (['description', 'show_notes', 'featured_image_path', 'duration_seconds'] as $column) {
                 $query->orWhereNull($column);
 
                 if ($column !== 'duration_seconds') {
                     $query->orWhere($column, '');
                 }
             }
+
+            $query->orWhere(fn (Builder $query) => $query->missingSeo());
 
             $query->orWhere(function (Builder $query): void {
                 $query->whereIn('status', [PublishStatus::Published, PublishStatus::Scheduled])->whereNull('published_at');

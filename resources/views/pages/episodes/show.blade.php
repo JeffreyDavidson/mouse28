@@ -1,10 +1,9 @@
 <x-layouts.app
-    :title="($episode->meta_title ?: $episode->title).' | Mouse28'"
-    :description="$episode->meta_description ?: Str::limit($episode->description, 160)"
-    :og-title="$episode->meta_title ?: $episode->title"
-    :og-description="$episode->meta_description ?: Str::limit($episode->description, 200)"
-    :og-image="$episode->og_image_url ?: $episode->featured_image_url"
-    :robots="($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow'"
+    :title="($episode->seo?->title ?: $episode->title).' | Mouse28'"
+    :description="$episode->seo?->description ?: Str::limit($episode->description, 160)"
+    :og-title="$episode->seo?->title ?: $episode->title"
+    :og-image="$episode->featured_image_url"
+    :robots="($isPreview ?? false) ? 'noindex,nofollow' : ($episode->seo?->robots ?: 'index,follow')"
     :dispatch-layout="true"
 >
     <!--

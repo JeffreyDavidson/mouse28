@@ -23,6 +23,7 @@ class PostsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query): Builder => $query->with('seo'))
             ->defaultSort('published_at', 'desc')
             ->columns([
                 TextColumn::make('title')
@@ -74,10 +75,7 @@ class PostsTable
                         $query->whereNull('featured_image_path')->orWhere('featured_image_path', '');
                     })),
                 Filter::make('missing_seo')
-                    ->query(fn (Builder $query): Builder => $query->where(function (Builder $query): void {
-                        $query->whereNull('meta_title')->orWhere('meta_title', '')
-                            ->orWhereNull('meta_description')->orWhere('meta_description', '');
-                    })),
+                    ->query(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->missingSeo()->select('id'))),
                 Filter::make('review_due')
                     ->query(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->reviewDue()->select('id'))),
                 TrashedFilter::make(),

@@ -2,7 +2,6 @@
     title="Contact | Mouse28"
     description="Contact Jeffrey and Cassie about Mouse28, Disney park accessibility, family travel, collaborations, or the podcast."
     og-title="Contact Mouse28"
-    og-description="Get in touch with Jeffrey and Cassie about Disney park accessibility, family travel, collaborations, or the Mouse28 podcast."
     :canonical="route('contact.create')"
     :dispatch-layout="true"
 >

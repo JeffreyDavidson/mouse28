@@ -8,11 +8,11 @@ use App\Enums\SourceReviewStatus;
 use App\Models\Attributes\PublishingStatus;
 use App\Models\Concerns\HasAuthors;
 use App\Models\Concerns\HasFeaturedImage;
-use App\Models\Concerns\HasOgImage;
 use App\Models\Concerns\HasPublishingStatus;
 use App\Models\Concerns\HasTagsUntilForceDeleted;
 use App\Models\Concerns\LocksSlugAfterPublication;
 use App\Models\Concerns\ManagesStoredMedia;
+use App\Models\Concerns\ScopesMissingSeo;
 use App\Observers\PostObserver;
 use Carbon\CarbonInterface;
 use Database\Factories\PostFactory;
@@ -30,10 +30,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Date;
+use RalphJSmit\Laravel\SEO\Models\SEO;
+use RalphJSmit\Laravel\SEO\Support\HasSEO;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
 /**
+ * @property-read SEO $seo
  * @property PublishStatus $status
  * @property string|null $content
  * @property int|null $category_id
@@ -48,7 +51,6 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property-read string $category_label
  * @property string|null $featured_image_path
  * @property-read string|null $featured_image_url
- * @property-read string|null $og_image_url
  * @property-read int $reading_time
  *
  * @method static Builder<static> needsAttention()
@@ -68,16 +70,13 @@ use Spatie\Activitylog\Support\LogOptions;
     'category_id',
     'status',
     'published_at',
-    'meta_title',
-    'meta_description',
-    'og_image',
 ])]
 #[ObservedBy(PostObserver::class)]
 #[PublishingStatus]
 class Post extends Model implements Publishable
 {
     /** @use HasFactory<PostFactory> */
-    use HasAuthors, HasFactory, HasFeaturedImage, HasOgImage, HasPublishingStatus, HasTagsUntilForceDeleted, LocksSlugAfterPublication, ManagesStoredMedia, SoftDeletes;
+    use HasAuthors, HasFactory, HasFeaturedImage, HasPublishingStatus, HasSEO, HasTagsUntilForceDeleted, LocksSlugAfterPublication, ManagesStoredMedia, ScopesMissingSeo, SoftDeletes;
 
     use LogsActivity;
 
@@ -96,9 +95,6 @@ class Post extends Model implements Publishable
                 'category_id',
                 'status',
                 'published_at',
-                'meta_title',
-                'meta_description',
-                'og_image',
             ])
             ->logOnlyDirty()
             ->dontLogEmptyChanges();
@@ -148,10 +144,7 @@ class Post extends Model implements Publishable
                 ->orWhere('content', '')
                 ->orWhereNull('featured_image_path')
                 ->orWhere('featured_image_path', '')
-                ->orWhereNull('meta_title')
-                ->orWhere('meta_title', '')
-                ->orWhereNull('meta_description')
-                ->orWhere('meta_description', '')
+                ->orWhere(fn (Builder $query) => $query->missingSeo())
                 ->orWhere(function (Builder $query): void {
                     $query->whereIn('status', [PublishStatus::Published, PublishStatus::Scheduled])->whereNull('published_at');
                 })

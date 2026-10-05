@@ -109,7 +109,6 @@ test('production syncs public content, preserves drafts, and transfers reference
                 'cover_image' => 'posts/example-post.webp',
                 'episode_slug' => 'example-episode',
                 'published_at' => now()->subDay()->toAtomString(),
-                'og_image' => 'posts/example-post-social.webp',
             ],
             [
                 'title' => 'Second Example Post',
@@ -160,7 +159,6 @@ test('production syncs public content, preserves drafts, and transfers reference
         ->and(Post::query()->where('slug', 'example-post')->firstOrFail()->episodes->pluck('slug')->all())
         ->toBe(['example-episode'])
         ->and($transferredMedia)->toBe([
-            'posts/example-post-social.webp',
             'posts/example-post.webp',
             'posts/second-example-post.webp',
         ]);

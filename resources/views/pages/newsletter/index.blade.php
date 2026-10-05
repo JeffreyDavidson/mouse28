@@ -5,9 +5,14 @@
     :canonical="$canonicalUrl"
     :dispatch-layout="true"
 >
-    @php
-        \Laravel\Head\Facades\Head::feed(route('newsletter.rss'), 'Mouse28 Newsletter');
-    @endphp
+    @push('head')
+        <link
+            rel="alternate"
+            type="application/rss+xml"
+            title="Mouse28 Newsletter"
+            href="{{ route('newsletter.rss') }}"
+        />
+    @endpush
 
     <!--
         THESIS: The newsletter archive is a stack of letters from the family, not a feed of cards.

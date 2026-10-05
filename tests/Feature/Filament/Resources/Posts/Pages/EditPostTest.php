@@ -113,8 +113,6 @@ test('drafts with their required details can be published while advisory details
     $admin = User::factory()->admin()->create();
     $record = Post::factory()->draft()->create([
         'featured_image_path' => null,
-        'meta_title' => null,
-        'meta_description' => null,
     ]);
 
     actingAs($admin);
@@ -167,8 +165,6 @@ test('publishing is blocked until editorial requirements are complete', function
     $post = Post::factory()->draft()->create([
         'excerpt' => null,
         'featured_image_path' => null,
-        'meta_title' => null,
-        'meta_description' => null,
     ]);
 
     actingAs($admin);
@@ -314,4 +310,23 @@ test('editor replaces the related episodes with the selected ones', function ():
         ->assertHasNoFormErrors();
 
     expect($record->refresh()->episodes->modelKeys())->toEqualCanonicalizing($selected->modelKeys());
+});
+
+test('the SEO section saves its title and description to the SEO row', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+    $record = Post::factory()->credited()->create();
+
+    // Act
+    livewire(EditPost::class, ['record' => $record->getRouteKey()])
+        ->fillForm([
+            'seo.title' => 'A saved SEO title',
+            'seo.description' => 'A saved SEO description.',
+        ])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    // Assert
+    expect($record->refresh()->seo->title)->toBe('A saved SEO title')
+        ->and($record->seo->description)->toBe('A saved SEO description.');
 });
