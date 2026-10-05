@@ -11,7 +11,6 @@ use App\Models\Concerns\HasPublishingStatus;
 use App\Models\Concerns\HasTagsUntilForceDeleted;
 use App\Models\Concerns\LocksSlugAfterPublication;
 use App\Models\Concerns\ManagesStoredMedia;
-use App\Models\Concerns\SyncsLegacyPublishedFlag;
 use App\Observers\EpisodeObserver;
 use Carbon\CarbonInterface;
 use Database\Factories\EpisodeFactory;
@@ -71,7 +70,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class Episode extends Model implements Publishable
 {
     /** @use HasFactory<EpisodeFactory> */
-    use HasFactory, HasFeaturedImage, HasOgImage, HasPublishingStatus, HasTagsUntilForceDeleted, LocksSlugAfterPublication, ManagesStoredMedia, SoftDeletes, SyncsLegacyPublishedFlag;
+    use HasFactory, HasFeaturedImage, HasOgImage, HasPublishingStatus, HasTagsUntilForceDeleted, LocksSlugAfterPublication, ManagesStoredMedia, SoftDeletes;
 
     use LogsActivity;
 

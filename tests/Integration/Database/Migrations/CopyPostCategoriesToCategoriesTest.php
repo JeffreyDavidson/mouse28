@@ -3,10 +3,21 @@
 use App\Models\Post;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 pest()->use(RefreshDatabase::class);
+
+// A later migration drops the legacy `posts.category` column; put it back so rows look like they did before the copy.
+beforeEach(function (): void {
+    if (! Schema::hasColumn('posts', 'category')) {
+        Schema::table('posts', function (Blueprint $blueprint): void {
+            $blueprint->string('category')->nullable();
+        });
+    }
+});
 
 function runPostCategoryCopyMigration(): void
 {

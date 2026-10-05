@@ -34,8 +34,8 @@ function insertLegacyRow(string $table, ?string $cover, ?string $path): int
     $now = Date::now();
     $column = $table === 'podcasts' ? 'cover_image_path' : 'featured_image_path';
     $row = match ($table) {
-        'posts' => ['title' => 'Legacy row', 'slug' => uniqid('legacy-'), 'body' => ''],
-        'guides' => ['title' => 'Legacy row', 'slug' => uniqid('legacy-'), 'body' => '', 'category' => 'accessibility'],
+        'posts' => ['title' => 'Legacy row', 'slug' => uniqid('legacy-')],
+        'guides' => ['title' => 'Legacy row', 'slug' => uniqid('legacy-'), 'category' => 'accessibility'],
         'episodes' => ['title' => 'Legacy row', 'slug' => uniqid('legacy-'), 'episode_number' => random_int(1, 99_999)],
         default => ['name' => 'Legacy podcast'],
     };

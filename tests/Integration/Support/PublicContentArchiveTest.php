@@ -353,8 +353,7 @@ test('archives without a status field import as published content', function (Po
     $imported = $record::query()->sole();
     expect([...$archive['posts'], ...$archive['guides'], ...$archive['episodes']])->each->not->toHaveKeys(['status', 'is_published'])
         ->and($imported->publishStatus())->toBe(PublishStatus::Published)
-        ->and($imported->isPublished())->toBeTrue()
-        ->and($imported->getAttribute('is_published'))->toBeTruthy();
+        ->and($imported->isPublished())->toBeTrue();
 })->with([
     'posts' => fn () => Post::factory(),
     'guides' => fn () => Guide::factory(),
@@ -418,8 +417,7 @@ test('archive import restores the written content from either archive format', f
     $service->import($archive);
 
     $imported = $record::query()->sole();
-    expect($imported->getAttribute('content'))->toBe("## Café ✨\n\nImported content.")
-        ->and($imported->getAttribute('body'))->toBe("## Café ✨\n\nImported content.");
+    expect($imported->getAttribute('content'))->toBe("## Café ✨\n\nImported content.");
 })->with('archived written content')->with([
     'current content key' => ['content'],
     'older body key' => ['body'],
