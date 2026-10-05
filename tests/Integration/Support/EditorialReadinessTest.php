@@ -9,6 +9,7 @@ use Database\Factories\EpisodeFactory;
 use Database\Factories\GuideFactory;
 use Database\Factories\PostFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use RalphJSmit\Laravel\SEO\Models\SEO;
 
 pest()->use(RefreshDatabase::class);
 
@@ -38,8 +39,6 @@ test('live or scheduled content without a publish date is asked for one', functi
 test('readiness reports actionable issues for each content type', function (): void {
     $post = Post::factory()->make([
         'featured_image_path' => null,
-        'meta_title' => null,
-        'meta_description' => null,
     ]);
     $guide = Guide::factory()->make([
         'source_url' => null,
@@ -67,9 +66,8 @@ test('episode readiness does not require deferred audio or transcripts', functio
         'audio_url' => null,
         'transcript' => null,
         'featured_image_path' => 'episodes/complete.jpg',
-        'meta_title' => 'A complete episode title',
-        'meta_description' => 'A complete episode description for search and social sharing.',
     ]);
+    $episode->setRelation('seo', new SEO(['title' => 'A complete episode title', 'description' => 'A complete episode description for search and social sharing.']));
 
     $issues = EditorialReadiness::issues($episode);
 
@@ -79,9 +77,8 @@ test('episode readiness does not require deferred audio or transcripts', functio
 test('complete content is marked ready', function (): void {
     $post = Post::factory()->make([
         'featured_image_path' => 'posts/complete.jpg',
-        'meta_title' => 'A complete park-planning post',
-        'meta_description' => 'A complete description for search and social sharing.',
     ]);
+    $post->setRelation('seo', new SEO(['title' => 'A complete park-planning post', 'description' => 'A complete description for search and social sharing.']));
 
     $issues = EditorialReadiness::issues($post);
     $label = EditorialReadiness::label($post);

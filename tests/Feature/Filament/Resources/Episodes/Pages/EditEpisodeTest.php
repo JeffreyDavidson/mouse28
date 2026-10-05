@@ -145,8 +145,6 @@ test('drafts with their required details can be published while advisory details
     $record = Episode::factory()->draft()->create([
         'transistor_url' => 'https://share.transistor.fm/s/428d650c',
         'featured_image_path' => null,
-        'meta_title' => null,
-        'meta_description' => null,
     ]);
 
     actingAs($admin);
@@ -217,4 +215,23 @@ test('episodes cannot be published without a Transistor episode URL', function (
         ->assertNotified('Episode is not ready to publish');
 
     expect($episode->refresh()->status)->toBe(PublishStatus::Draft);
+});
+
+test('the SEO section saves its title and description to the SEO row', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+    $record = Episode::factory()->create();
+
+    // Act
+    livewire(EditEpisode::class, ['record' => $record->getRouteKey()])
+        ->fillForm([
+            'seo.title' => 'A saved SEO title',
+            'seo.description' => 'A saved SEO description.',
+        ])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    // Assert
+    expect($record->refresh()->seo->title)->toBe('A saved SEO title')
+        ->and($record->seo->description)->toBe('A saved SEO description.');
 });

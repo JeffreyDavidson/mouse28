@@ -4,11 +4,14 @@ namespace Database\Factories;
 
 use App\Enums\PublishStatus;
 use App\Models\Episode;
+use Database\Factories\Concerns\HasSeoState;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /** @extends Factory<Episode> */
 class EpisodeFactory extends Factory
 {
+    use HasSeoState;
+
     #[\Override]
     protected $model = Episode::class;
 

@@ -2,7 +2,6 @@
     title="Page Not Found | Mouse28"
     description="The page you requested could not be found. Search Mouse28 or continue exploring our Disney park stories and podcast."
     og-title="Page Not Found | Mouse28"
-    og-description="Search Mouse28 or continue exploring our Disney park stories and podcast."
 >
     <x-error-state
         code="404"

@@ -4,7 +4,6 @@
     title="Too Many Requests | Mouse28"
     description="You’re moving a little faster than Mouse28 can keep up. Please wait a minute and try again."
     og-title="Too Many Requests | Mouse28"
-    og-description="You’re moving a little faster than Mouse28 can keep up. Please wait a minute and try again."
 >
     <x-error-state
         code="429"

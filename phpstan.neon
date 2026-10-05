@@ -10,4 +10,7 @@ parameters:
         return: 100
         property: 100
 
+    stubFiles:
+        - stubs/RalphJSmit/Laravel/SEO/Models/SEO.stub
+
     tmpDir: storage/framework/cache/phpstan-app

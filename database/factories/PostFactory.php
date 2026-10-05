@@ -6,12 +6,15 @@ use App\Enums\PublishStatus;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\User;
+use Database\Factories\Concerns\HasSeoState;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
 /** @extends Factory<Post> */
 class PostFactory extends Factory
 {
+    use HasSeoState;
+
     #[\Override]
     protected $model = Post::class;
 

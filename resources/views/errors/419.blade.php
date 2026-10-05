@@ -4,7 +4,6 @@
     title="Page Expired | Mouse28"
     description="Your Mouse28 session expired. Return to the form and try your request again."
     og-title="Page Expired | Mouse28"
-    og-description="Your Mouse28 session expired. Return to the form and try your request again."
 >
     <x-error-state
         code="419"

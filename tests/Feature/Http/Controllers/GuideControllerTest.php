@@ -43,12 +43,12 @@ test('guide pages stay within their query budget as content grows', function (st
     Guide::factory()->count(30)->create(['category' => 'accessibility']);
     $url = $page === 'index' ? route('guides.index') : route('guides.show', $guide);
 
-    // Includes one query for the footer social links, and one for a guide's authors.
+    // Includes one query for the footer social links, one for a guide's authors, and one for its saved SEO row.
     $this->expectsDatabaseQueryCount($queries);
 
     get($url)
         ->assertOk();
-})->with(['archive' => ['index', 4], 'guide' => ['show', 5]]);
+})->with(['archive' => ['index', 4], 'guide' => ['show', 6]]);
 
 test('a guide page names its authors in byline order', function (array $names, string $byline): void {
     config()->set('mouse28.guides_enabled', true);

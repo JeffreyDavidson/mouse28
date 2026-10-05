@@ -13,6 +13,7 @@ use Database\Factories\EpisodeFactory;
 use Database\Factories\GuideFactory;
 use Database\Factories\PostFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 
 pest()->use(RefreshDatabase::class);
 
@@ -629,4 +630,28 @@ test('archive validation rejects an unknown older author value or a malformed au
     'an author list that is not a list' => ['authors', 'Jeffrey Davidson'],
     'a blank author name' => ['authors', ['']],
     'a non-string author name' => ['authors', [42]],
+]);
+
+test('archives carry the SEO title and description under their original keys', function (PostFactory|EpisodeFactory|GuideFactory $factory, string $type): void {
+    // Arrange
+    $record = $factory->withSeo('Archived SEO title', 'Archived SEO description.')->createOne();
+    $service = app(PublicContentArchive::class);
+
+    // Act
+    $archive = $service->export();
+    $record->forceDelete();
+    DB::table('seo')->delete();
+    $service->import($archive);
+
+    // Assert
+    $imported = $record::query()->sole();
+    expect(firstArchivedRecord($archive, $type))->toMatchArray([
+        'meta_title' => 'Archived SEO title',
+        'meta_description' => 'Archived SEO description.',
+    ])->and($imported->seo->title)->toBe('Archived SEO title')
+        ->and($imported->seo->description)->toBe('Archived SEO description.');
+})->with([
+    'posts' => [fn () => Post::factory(), 'posts'],
+    'episodes' => [fn () => Episode::factory(), 'episodes'],
+    'guides' => [fn () => Guide::factory(), 'guides'],
 ]);

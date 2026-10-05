@@ -2,20 +2,20 @@
     'title' => 'Something Went Wrong | Mouse28',
     'description' => 'Mouse28 could not complete this request.',
     'ogTitle' => 'Mouse28',
-    'ogDescription' => 'Disney parks through different eyes.',
 ])
 
 @php
-    \Laravel\Head\Facades\Head::title($title)
-        ->description($description)
-        ->hiddenFromRobots()
-        ->og(
-            type: \Laravel\Head\Enums\OgType::Website,
-            title: $ogTitle,
-            description: $ogDescription,
-            siteName: 'Mouse28',
-        )
-        ->ogImage(url('/images/logo.jpg'));
+    $seoData = new \RalphJSmit\Laravel\SEO\Support\SEOData(
+        title: $title,
+        description: $description,
+        image: url('/images/logo.jpg'),
+        url: url()->current(),
+        enableTitleSuffix: false,
+        site_name: 'Mouse28',
+        locale: '',
+        robots: 'noindex, nofollow',
+        openGraphTitle: $ogTitle,
+    );
 @endphp
 
 <!DOCTYPE html>
@@ -23,7 +23,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    @head
+    {!! seo($seoData) !!}
 
     @vite('resources/css/app.css')
 </head>

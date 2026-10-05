@@ -20,26 +20,39 @@ test('contact confirmation uses configured contact addresses for replies', funct
     'multiple recipients with whitespace' => ['hello@mouse28.test, second@mouse28.test, ', [new Address('hello@mouse28.test'), new Address('second@mouse28.test')]],
 ]);
 
-test('contact confirmation renders the contact details safely', function (): void {
+test('contact confirmation never echoes what the visitor submitted', function (string $name, string $message): void {
+    // Arrange
     $inquiry = ContactInquiry::factory()->make([
-        'name' => 'Dale <Cooper>',
-        'email' => 'dale@example.com',
+        'name' => $name,
+        'email' => 'visitor@example.com',
         'type' => ContactType::Accessibility,
-        'message' => '<script>alert("unsafe")</script> Need accessibility help.',
+        'message' => $message,
     ]);
     $mailable = new ContactMessageConfirmation($inquiry);
 
-    $content = $mailable->content();
+    // Act
+    $subject = $mailable->envelope()->subject;
     $html = $mailable->render();
 
-    expect($content->view)->toBe('emails.contact-confirmation')
-        ->and($html)->toContain('Hi Dale &lt;Cooper&gt;,')
-        ->and($html)->toContain('Park Accessibility')
-        ->and($html)->toContain('&lt;script&gt;alert(&quot;unsafe&quot;)&lt;/script&gt; Need accessibility help.')
-        ->and($html)->not->toContain('<script>alert("unsafe")</script>')
-        ->and($html)->toContain(route('episodes.index'))
-        ->and($html)->toContain(route('blog.index'));
-});
+    // Assert
+    expect($subject)->toBe('We got your message! — Mouse28')
+        ->and($html)->not->toContain($name, e($name), $message, e($message), 'spam.example', 'Cheap pills', 'Park Accessibility')
+        ->and($html)->toContain('Hi there,', 'respond within 48 hours', route('episodes.index'), route('blog.index'))
+        ->and($mailable->buildViewData())->not->toHaveKey('inquiry');
+})->with([
+    'a name carrying a link' => [
+        'Claim your prize at https://spam.example/win',
+        'Hello',
+    ],
+    'a message full of links and HTML' => [
+        'Jane',
+        '<a href="https://spam.example/pills">Cheap pills</a> https://spam.example/offer <script>alert("unsafe")</script>',
+    ],
+    'markup in the name' => [
+        'Dale <Cooper>',
+        'Need accessibility help.',
+    ],
+]);
 
 test('confirmation email uses accessible current branding without external fonts', function (): void {
     $html = new ContactMessageConfirmation(ContactInquiry::factory()->make())->render();

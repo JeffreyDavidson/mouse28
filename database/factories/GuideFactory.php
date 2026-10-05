@@ -6,11 +6,14 @@ use App\Enums\GuideCategory;
 use App\Enums\PublishStatus;
 use App\Models\Guide;
 use App\Models\User;
+use Database\Factories\Concerns\HasSeoState;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /** @extends Factory<Guide> */
 class GuideFactory extends Factory
 {
+    use HasSeoState;
+
     #[\Override]
     protected $model = Guide::class;
 
