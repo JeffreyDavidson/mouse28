@@ -2,12 +2,26 @@
 
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 pest()->use(RefreshDatabase::class);
+
+// A later migration drops `cover_image`; put it back so these rows look like they did before the backfill.
+beforeEach(function (): void {
+    foreach (['posts', 'episodes', 'guides', 'podcasts'] as $table) {
+        if (Schema::hasColumn($table, 'cover_image')) {
+            continue;
+        }
+
+        Schema::table($table, function (Blueprint $blueprint): void {
+            $blueprint->string('cover_image')->nullable();
+        });
+    }
+});
 
 function runStoredMediaPathsMigration(): void
 {
