@@ -10,12 +10,26 @@ use Database\Factories\NewsletterIssueFactory;
 use Database\Factories\PostFactory;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 pest()->use(RefreshDatabase::class);
+
+// A later migration drops `is_published`; put it back so rows look like they did before `status` existed.
+beforeEach(function (): void {
+    foreach (['posts', 'episodes', 'guides', 'newsletter_issues'] as $table) {
+        if (Schema::hasColumn($table, 'is_published')) {
+            continue;
+        }
+
+        Schema::table($table, function (Blueprint $blueprint): void {
+            $blueprint->boolean('is_published')->default(false);
+        });
+    }
+});
 
 function runPublishStatusMigration(): void
 {

@@ -14,8 +14,6 @@ use App\Models\Concerns\HasTagsUntilForceDeleted;
 use App\Models\Concerns\IgnoresLegacyCategoryColumn;
 use App\Models\Concerns\LocksSlugAfterPublication;
 use App\Models\Concerns\ManagesStoredMedia;
-use App\Models\Concerns\SyncsLegacyBody;
-use App\Models\Concerns\SyncsLegacyPublishedFlag;
 use App\Observers\PostObserver;
 use Carbon\CarbonInterface;
 use Database\Factories\PostFactory;
@@ -80,7 +78,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class Post extends Model implements Publishable
 {
     /** @use HasFactory<PostFactory> */
-    use HasAuthors, HasFactory, HasFeaturedImage, HasOgImage, HasPublishingStatus, HasTagsUntilForceDeleted, IgnoresLegacyCategoryColumn, LocksSlugAfterPublication, ManagesStoredMedia, SoftDeletes, SyncsLegacyBody, SyncsLegacyPublishedFlag;
+    use HasAuthors, HasFactory, HasFeaturedImage, HasOgImage, HasPublishingStatus, HasTagsUntilForceDeleted, IgnoresLegacyCategoryColumn, LocksSlugAfterPublication, ManagesStoredMedia, SoftDeletes;
 
     use LogsActivity;
 

@@ -14,8 +14,6 @@ use App\Models\Concerns\HasPublishingStatus;
 use App\Models\Concerns\HasTagsUntilForceDeleted;
 use App\Models\Concerns\LocksSlugAfterPublication;
 use App\Models\Concerns\ManagesStoredMedia;
-use App\Models\Concerns\SyncsLegacyBody;
-use App\Models\Concerns\SyncsLegacyPublishedFlag;
 use App\Observers\GuideObserver;
 use Carbon\CarbonInterface;
 use Database\Factories\GuideFactory;
@@ -77,7 +75,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class Guide extends Model implements Publishable
 {
     /** @use HasFactory<GuideFactory> */
-    use HasAuthors, HasFactory, HasFeaturedImage, HasOgImage, HasPublishingStatus, HasTagsUntilForceDeleted, LocksSlugAfterPublication, ManagesStoredMedia, SoftDeletes, SyncsLegacyBody, SyncsLegacyPublishedFlag;
+    use HasAuthors, HasFactory, HasFeaturedImage, HasOgImage, HasPublishingStatus, HasTagsUntilForceDeleted, LocksSlugAfterPublication, ManagesStoredMedia, SoftDeletes;
 
     use LogsActivity;
 
