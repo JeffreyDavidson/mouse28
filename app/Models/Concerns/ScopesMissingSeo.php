@@ -18,9 +18,8 @@ trait ScopesMissingSeo
     protected function missingSeo(Builder $query): void
     {
         $query->whereDoesntHave('seo', function (Builder $seo): void {
-            $seo->whereNotNull('title')
-                ->where('title', '<>', '')
-                ->whereNotNull('description')
+            // A NULL title or description never matches `<>`, so this also excludes unsaved values.
+            $seo->where('title', '<>', '')
                 ->where('description', '<>', '');
         });
     }
