@@ -324,8 +324,8 @@ Use `--isolated=1` for sync so overlapping invocations stop with a nonzero exit 
 Resend reports bounces and spam complaints to `POST https://mouse28.com/webhooks/resend`; the application then suppresses those addresses so they are never mailed again (see `docs/architecture.md`). To set it up on production:
 
 1. In the Resend dashboard, open Webhooks, add `https://mouse28.com/webhooks/resend` and select `email.bounced`, `email.complained` and `email.suppressed`. Resend webhooks are account-wide, so events for the other projects' mail also arrive; they are ignored unless the address is a Mouse28 subscriber.
-2. Copy the signing secret (`whsec_...`) into the production environment as `RESEND_WEBHOOK_SECRET` in Forge, then deploy or refresh the config cache and restart the queue workers.
-3. Send a test event from the Resend dashboard and confirm a 2xx in its delivery log. A 503 means the secret is not loaded; a 403 means the secret does not match this webhook.
+2. Copy the signing secret (`whsec_...`) into the production environment as `RESEND_WEBHOOK_SECRET` in Forge and save it, spelled exactly like that. Forge writes only the master `.env`; the running release keeps the copy it took at deploy time, so rebuilding the config cache does not load the value. Re-run **Promote production** for the revision that is already live (same `revision` and `staging_run_id`) and approve it; Forge's own **Deploy Now** button fails because the deploy script requires the revision the workflow passes. The deploy restarts the queue workers.
+3. The Resend webhook page has no test button. Send one email to Resend's test address `bounced@resend.dev` (for example `Mail::raw(...)` through tinker on production) to produce an `email.bounced` event, then confirm a 2xx in the webhook's event log (the controller answers `204`). A 503 means the secret is not loaded; a 403 means the secret does not match this webhook.
 
 `app:verify-deployment` does not require the secret, so a release can ship before the webhook exists. Staging never sends email and needs no webhook.
 
