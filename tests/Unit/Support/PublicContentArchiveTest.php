@@ -29,13 +29,11 @@ test('media paths include all content types once in sorted order', function (): 
         'posts' => [[
             'slug' => 'park-story',
             'cover_image' => 'shared/cover.webp',
-            'og_image' => 'posts/social.webp',
             'source_url' => 'https://example.com/source',
         ]],
         'guides' => [[
             'slug' => 'park-guide',
             'cover_image' => 'shared/cover.webp',
-            'og_image' => '',
         ]],
         'episodes' => [[
             'slug' => 'park-episode',
@@ -51,7 +49,6 @@ test('media paths include all content types once in sorted order', function (): 
     expect($paths)->toBe([
         'episodes/audio.mp3',
         'podcasts/show.webp',
-        'posts/social.webp',
         'shared/cover.webp',
     ]);
 });
@@ -78,7 +75,7 @@ test('archives without media return an empty list', function (): void {
     $service = new PublicContentArchive;
     $archive = [
         'version' => 1,
-        'posts' => [['slug' => 'text-post', 'cover_image' => null, 'og_image' => '']],
+        'posts' => [['slug' => 'text-post', 'cover_image' => null]],
         'guides' => [],
         'episodes' => [],
         'podcast' => null,

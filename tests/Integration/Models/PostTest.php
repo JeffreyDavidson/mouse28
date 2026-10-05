@@ -92,10 +92,8 @@ test('editorial review dates determine the review queue', function (): void {
 test('editorial scopes separate the content work queue', function (): void {
     $draft = Post::factory()->draft()->create();
     $scheduled = Post::factory()->scheduled()->create();
-    $published = Post::factory()->create([
+    $published = Post::factory()->withSeo('Complete title', 'Complete description')->create([
         'featured_image_path' => 'posts/complete.jpg',
-        'meta_title' => 'Complete title',
-        'meta_description' => 'Complete description',
     ]);
     $needsAttention = Post::factory()->create(['featured_image_path' => null]);
 

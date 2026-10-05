@@ -7,9 +7,14 @@
     :robots="($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow'"
     :dispatch-layout="true"
 >
-    @php
-        \Laravel\Head\Facades\Head::feed(route('newsletter.rss'), 'Mouse28 Newsletter');
-    @endphp
+    @push('head')
+        <link
+            rel="alternate"
+            type="application/rss+xml"
+            title="Mouse28 Newsletter"
+            href="{{ route('newsletter.rss') }}"
+        />
+    @endpush
 
     <!--
         THESIS: A newsletter issue should read like a letter from the family, not a web page about one.

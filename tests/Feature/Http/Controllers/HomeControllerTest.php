@@ -77,7 +77,10 @@ test('homepage uses one newsletter form and responsive hero artwork', function (
 test('homepage preloads responsive AVIF hero artwork with a WebP fallback', function (): void {
     get(route('home'))
         ->assertOk()
-        ->assertSeeHtml('<link rel="preload" href="/images/hero-family-1600.avif" as="image" type="image/avif"')
+        ->assertSeeHtml('rel="preload"')
+        ->assertSeeHtml('href="/images/hero-family-1600.avif"')
+        ->assertSeeHtml('as="image"')
+        ->assertSeeHtml('type="image/avif"')
         ->assertSeeHtml('/images/hero-family-768.avif 768w')
         ->assertSeeHtml('type="image/webp"')
         ->assertSeeHtml('/images/hero-family-768.webp 768w');
@@ -241,4 +244,21 @@ test('the footer shows no social links when none are configured', function (): v
     get(route('home'))
         ->assertOk()
         ->assertDontSee('Follow');
+});
+
+test('the home page head keeps its canonical slash, social tags and feeds', function (): void {
+    // Act
+    $response = get(route('home'));
+
+    // Assert
+    $response->assertOk()
+        ->assertSeeHtml('<link rel="canonical" href="'.url('/').'/">')
+        ->assertSeeHtml('<meta name="robots" content="index,follow">')
+        ->assertSeeHtml('<meta property="og:site_name" content="Mouse28">')
+        ->assertSeeHtml('<meta property="og:type" content="website">')
+        ->assertSeeHtml('<meta name="twitter:card" content="summary_large_image">')
+        ->assertSeeHtml('<meta property="og:image:alt"')
+        ->assertSeeHtml('<meta name="twitter:image:alt"')
+        ->assertSeeHtml('type="application/rss+xml" title="Mouse28 Blog"')
+        ->assertDontSeeHtml('property="og:locale"');
 });

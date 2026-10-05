@@ -47,12 +47,13 @@ test('blog pages stay within their query budget as content grows', function (str
 
     // Includes one query for the footer social links, the post categories (one for
     // the archive, two for an article: its own and its related posts') and the post
-    // authors (one for the archive's cards, one for the article's byline).
+    // authors (one for the archive's cards, one for the article's byline), plus the
+    // article's saved SEO row.
     $this->expectsDatabaseQueryCount($queries);
 
     get($url)
         ->assertOk();
-})->with(['archive' => ['index', 7], 'article with episode' => ['show', 8]]);
+})->with(['archive' => ['index', 7], 'article with episode' => ['show', 9]]);
 
 test('blog featured cover is prioritized while archive cards remain deferred', function (): void {
     Storage::fake('public');
@@ -123,10 +124,10 @@ test('blog pages render one newsletter signup', function (): void {
 test('post social image URLs are absolute', function (): void {
     $post = Post::factory()->create([
         'title' => 'Accessible Disney Planning',
-        'og_image' => 'posts/social-card.jpg',
+        'featured_image_path' => 'posts/social-card.jpg',
     ]);
 
-    get(route('blog.show', $post))->assertOk()->assertSeeHtml('<meta property="og:image" content="'.url('/storage/posts/social-card.jpg').'">')->assertSeeHtml('<meta property="og:image:alt" content="Accessible Disney Planning">')->assertSeeHtml('<meta name="twitter:image" content="'.url('/storage/posts/social-card.jpg').'">')->assertSeeHtml('<meta name="twitter:image:alt" content="Accessible Disney Planning">');
+    get(route('blog.show', $post))->assertOk()->assertSeeHtml('<meta property="og:image" content="'.url('/storage/posts/social-card.jpg').'">')->assertSeeHtml('<meta property="og:image:alt" content="Accessible Disney Planning" />')->assertSeeHtml('<meta name="twitter:image" content="'.url('/storage/posts/social-card.jpg').'">')->assertSeeHtml('<meta name="twitter:image:alt" content="Accessible Disney Planning" />');
 });
 
 test('empty blog discovery offers useful paths forward', function (): void {
@@ -456,4 +457,35 @@ test('a published post renders its markdown content', function (): void {
         ->assertOk()
         ->assertSeeHtml('<h2>Arrival plan</h2>')
         ->assertSeeHtml('<strong>sensory break</strong>');
+});
+
+test('post pages take their head from the saved SEO row and fall back to the post', function (): void {
+    // Arrange
+    $withSeo = Post::factory()->withSeo('Saved SEO Title', 'Saved SEO description.')->create(['title' => 'Plain Title', 'excerpt' => 'Plain excerpt.']);
+    $withoutSeo = Post::factory()->create(['title' => 'Fallback Title', 'excerpt' => 'Fallback excerpt.']);
+
+    // Act
+    $saved = get(route('blog.show', $withSeo));
+    $fallback = get(route('blog.show', $withoutSeo));
+
+    // Assert
+    $saved->assertOk()
+        ->assertSeeHtml('<title>Saved SEO Title | Mouse28</title>')
+        ->assertSeeHtml('<meta name="description" content="Saved SEO description.">')
+        ->assertSeeHtml('<meta property="og:title" content="Saved SEO Title">');
+    $fallback->assertOk()
+        ->assertSeeHtml('<title>Fallback Title | Mouse28</title>')
+        ->assertSeeHtml('<meta name="description" content="Fallback excerpt.">');
+});
+
+test('post pages honor the robots choice saved in the SEO row', function (): void {
+    // Arrange
+    $post = Post::factory()->create();
+    $post->seo->update(['robots' => 'noindex, nofollow']);
+
+    // Act
+    $response = get(route('blog.show', $post));
+
+    // Assert
+    $response->assertOk()->assertSeeHtml('<meta name="robots" content="noindex, nofollow">');
 });

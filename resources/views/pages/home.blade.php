@@ -1,20 +1,21 @@
 <x-layouts.app
     title="Mouse28 | Disney Parks Through Different Eyes"
     description="Accessibility tips, sensory-friendly park planning, family experiences, and the Mouse28 podcast from Jeffrey and Cassie Davidson."
-    og-description="Accessibility tips, sensory-friendly Disney park planning, and honest family experiences from Jeffrey and Cassie Davidson."
     og-image="/images/hero-family.jpg"
     :canonical="route('home')"
     :dispatch-layout="true"
 >
-    @php
-        \Laravel\Head\Facades\Head::link('preload', '/images/hero-family-1600.avif', [
-            'as' => 'image',
-            'type' => 'image/avif',
-            'imagesrcset' => '/images/hero-family-640.avif 640w, /images/hero-family-768.avif 768w, /images/hero-family-1024.avif 1024w, /images/hero-family-1600.avif 1600w',
-            'imagesizes' => '(min-width: 768px) 60vw, (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)',
-            'fetchpriority' => 'high',
-        ]);
-    @endphp
+    @push('head')
+        <link
+            rel="preload"
+            href="/images/hero-family-1600.avif"
+            as="image"
+            type="image/avif"
+            imagesrcset="/images/hero-family-640.avif 640w, /images/hero-family-768.avif 768w, /images/hero-family-1024.avif 1024w, /images/hero-family-1600.avif 1600w"
+            imagesizes="(min-width: 768px) 60vw, (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
+            fetchpriority="high"
+        />
+    @endpush
 
     <div class="dispatch-cloth overflow-hidden">
         <section class="dispatch-hero relative px-4 pt-6 sm:px-6 sm:pt-8">

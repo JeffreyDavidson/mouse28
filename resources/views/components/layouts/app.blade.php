@@ -3,7 +3,6 @@
     'description' => 'Disney parks through the eyes of a family raising a daughter with autism. Practical tips and stories from Jeffrey & Cassie Davidson.',
     'robots' => 'index,follow',
     'ogTitle' => null,
-    'ogDescription' => null,
     'ogType' => 'website',
     'ogImage' => null,
     'canonical' => null,
@@ -12,33 +11,31 @@
 
 @php
     $canonicalUrl = $canonical ?: url()->current();
+
+    // The home page's canonical keeps its trailing slash ("https://host/"), as it has always been published.
+    if (parse_url($canonicalUrl, PHP_URL_PATH) === null) {
+        $canonicalUrl .= '/';
+    }
+
     $socialTitle = $ogTitle ?: $title;
-    $socialDescription = $ogDescription ?: $description;
     $socialImage = $ogImage ?: url('/images/logo.jpg');
     $socialImage = Str::startsWith($socialImage, ['http://', 'https://'])
         ? $socialImage
         : url('/'.ltrim($socialImage, '/'));
 
-    \Laravel\Head\Facades\Head::title($title)
-        ->description($description)
-        ->robots($robots)
-        ->canonical($canonicalUrl, forceHttps: Str::startsWith($canonicalUrl, 'https://'))
-        ->og(
-            type: $ogType,
-            title: $socialTitle,
-            description: $socialDescription,
-            url: $canonicalUrl,
-            siteName: 'Mouse28',
-        )
-        ->ogImage($socialImage, alt: $socialTitle)
-        ->twitter(
-            card: \Laravel\Head\Enums\TwitterCard::SummaryWithLargeImage,
-            title: $socialTitle,
-            description: $socialDescription,
-        )
-        ->twitterImage($socialImage, alt: $socialTitle)
-        ->feed(route('rss.blog'), 'Mouse28 Blog')
-        ->feed(config('podcast.rss_url'), 'Mouse28 Podcast');
+    $seoData = new \RalphJSmit\Laravel\SEO\Support\SEOData(
+        title: $title,
+        description: $description,
+        image: $socialImage,
+        url: $canonicalUrl,
+        enableTitleSuffix: false,
+        type: $ogType,
+        site_name: 'Mouse28',
+        locale: '',
+        robots: $robots,
+        canonical_url: $canonicalUrl,
+        openGraphTitle: $socialTitle,
+    );
 @endphp
 
 <!DOCTYPE html>
@@ -49,7 +46,11 @@
     <meta name="theme-color" content="#1a1040" />
     <link rel="preload" href="/fonts/mouse28/poppins-400.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/mouse28/besley-latin.woff2" as="font" type="font/woff2" crossorigin />
-    @head
+    {!! seo($seoData) !!}
+    <meta property="og:image:alt" content="{{ $socialTitle }}" />
+    <meta name="twitter:image:alt" content="{{ $socialTitle }}" />
+    <link rel="alternate" type="application/rss+xml" title="Mouse28 Blog" href="{{ route('rss.blog') }}" />
+    <link rel="alternate" type="application/rss+xml" title="Mouse28 Podcast" href="{{ config('podcast.rss_url') }}" />
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles

@@ -27,8 +27,8 @@ class StructuredData
 
         $article = [
             '@type' => 'BlogPosting',
-            'headline' => $post->meta_title ?: $post->title,
-            'description' => self::description($post->meta_description, $post->excerpt, $post->content),
+            'headline' => $post->seo?->title ?: $post->title,
+            'description' => self::description($post->seo?->description, $post->excerpt, $post->content),
             'mainEntityOfPage' => route('blog.show', $post),
             'datePublished' => $post->published_at->toAtomString(),
             'dateModified' => $modifiedAt->toAtomString(),
@@ -37,7 +37,7 @@ class StructuredData
             'articleSection' => $post->category_label,
         ];
 
-        if ($image = $post->og_image_url ?: $post->featured_image_url) {
+        if ($image = $post->featured_image_url) {
             $article['image'] = url($image);
         }
 
@@ -63,8 +63,8 @@ class StructuredData
 
         $article = [
             '@type' => 'Article',
-            'headline' => $guide->meta_title ?: $guide->title,
-            'description' => self::description($guide->meta_description, $guide->excerpt, $guide->content),
+            'headline' => $guide->seo?->title ?: $guide->title,
+            'description' => self::description($guide->seo?->description, $guide->excerpt, $guide->content),
             'mainEntityOfPage' => route('guides.show', $guide),
             'datePublished' => $guide->published_at->toAtomString(),
             'dateModified' => $modifiedAt->toAtomString(),
@@ -73,7 +73,7 @@ class StructuredData
             'articleSection' => $guide->category_label,
         ];
 
-        if ($image = $guide->og_image_url ?: $guide->featured_image_url) {
+        if ($image = $guide->featured_image_url) {
             $article['image'] = url($image);
         }
 
@@ -93,8 +93,8 @@ class StructuredData
 
         $podcastEpisode = [
             '@type' => 'PodcastEpisode',
-            'name' => $episode->meta_title ?: $episode->title,
-            'description' => self::description($episode->meta_description, $episode->description, $episode->show_notes),
+            'name' => $episode->seo?->title ?: $episode->title,
+            'description' => self::description($episode->seo?->description, $episode->description, $episode->show_notes),
             'url' => route('episodes.show', $episode),
             'datePublished' => $episode->published_at->toAtomString(),
             'episodeNumber' => $episode->episode_number,
@@ -123,7 +123,7 @@ class StructuredData
             ];
         }
 
-        $image = $episode->og_image_url ?: $episode->featured_image_url;
+        $image = $episode->featured_image_url;
         if ($image) {
             $podcastEpisode['image'] = url($image);
         }

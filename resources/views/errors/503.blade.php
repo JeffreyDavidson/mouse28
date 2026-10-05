@@ -4,7 +4,6 @@
     title="We’ll Be Right Back | Mouse28"
     description="Mouse28 is temporarily unavailable while we make an update. Please try again shortly."
     og-title="We’ll Be Right Back | Mouse28"
-    og-description="Mouse28 is temporarily unavailable while we make an update. Please try again shortly."
 >
     <x-error-state
         code="503"

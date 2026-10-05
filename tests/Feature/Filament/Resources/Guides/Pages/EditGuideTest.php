@@ -87,8 +87,6 @@ test('drafts with their required details can be published while advisory details
     $admin = User::factory()->admin()->create();
     $record = Guide::factory()->draft()->create([
         'featured_image_path' => null,
-        'meta_title' => null,
-        'meta_description' => null,
     ]);
 
     actingAs($admin);
@@ -202,4 +200,23 @@ test('a replaced cover is stored under guides with variants and the previous fil
         ->not->toBe('guides/previous.png');
     Storage::disk('public')->assertExists([$path, 'guides/responsive/'.pathinfo($path, PATHINFO_FILENAME).'-480.webp']);
     Storage::disk('public')->assertMissing(['guides/previous.png', 'guides/responsive/previous-480.webp']);
+});
+
+test('the SEO section saves its title and description to the SEO row', function (): void {
+    // Arrange
+    actingAs(User::factory()->admin()->create());
+    $record = Guide::factory()->credited()->create();
+
+    // Act
+    livewire(EditGuide::class, ['record' => $record->getRouteKey()])
+        ->fillForm([
+            'seo.title' => 'A saved SEO title',
+            'seo.description' => 'A saved SEO description.',
+        ])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    // Assert
+    expect($record->refresh()->seo->title)->toBe('A saved SEO title')
+        ->and($record->seo->description)->toBe('A saved SEO description.');
 });

@@ -43,9 +43,6 @@ class PublicContentArchive
         'duration_seconds',
         'featured_image_path',
         'published_at',
-        'meta_title',
-        'meta_description',
-        'og_image',
     ];
 
     private const array POST_FIELDS = [
@@ -57,10 +54,10 @@ class PublicContentArchive
         'last_reviewed_at',
         'featured_image_path',
         'published_at',
-        'meta_title',
-        'meta_description',
-        'og_image',
     ];
+
+    /** The archive keeps its original SEO keys; they map to the saved SEO row's title and description. */
+    private const array SEO_FIELDS = ['meta_title', 'meta_description'];
 
     /** A post's category travels by slug and name, so an import can create one the local site lacks. */
     private const array POST_CATEGORY_FIELDS = ['category', 'category_name'];
@@ -92,9 +89,6 @@ class PublicContentArchive
         'source_url',
         'last_reviewed_at',
         'published_at',
-        'meta_title',
-        'meta_description',
-        'og_image',
     ];
 
     private const array PODCAST_FIELDS = [
@@ -121,21 +115,22 @@ class PublicContentArchive
     public function export(): array
     {
         $episodes = Episode::query()
-            ->with('tags')
+            ->with(['tags', 'seo'])
             ->published()
             ->orderBy('published_at')
             ->get(['id', ...self::EPISODE_FIELDS])
-            ->map(fn (Episode $episode): array => [...$this->attributes($episode, self::EPISODE_FIELDS), 'tags' => $episode->tagsWithType('content')->pluck('name')->all()])
+            ->map(fn (Episode $episode): array => [...$this->attributes($episode, self::EPISODE_FIELDS), ...$this->seoAttributes($episode), 'tags' => $episode->tagsWithType('content')->pluck('name')->all()])
             ->values()
             ->all();
 
         $posts = Post::query()
-            ->with(['tags', 'episodes', 'category', 'authors'])
+            ->with(['tags', 'episodes', 'category', 'authors', 'seo'])
             ->published()
             ->orderBy('published_at')
             ->get(['id', 'category_id', ...self::POST_FIELDS])
             ->map(fn (Post $post): array => [
                 ...$this->attributes($post, self::POST_FIELDS),
+                ...$this->seoAttributes($post),
                 'category' => $post->category?->slug,
                 'category_name' => $post->category?->name,
                 'authors' => $this->authorNames($post),
@@ -146,12 +141,13 @@ class PublicContentArchive
             ->all();
 
         $guides = Guide::query()
-            ->with(['tags', 'authors'])
+            ->with(['tags', 'authors', 'seo'])
             ->published()
             ->orderBy('published_at')
             ->get(['id', ...self::GUIDE_FIELDS])
             ->map(fn (Guide $guide): array => [
                 ...$this->attributes($guide, self::GUIDE_FIELDS),
+                ...$this->seoAttributes($guide),
                 'authors' => $this->authorNames($guide),
                 'tags' => $guide->tagsWithType('content')->pluck('name')->all(),
             ])
@@ -220,7 +216,7 @@ class PublicContentArchive
 
         foreach ([$archive['episodes'], $archive['posts'], $archive['guides']] as $records) {
             foreach ($records as $attributes) {
-                foreach (['audio_path', 'featured_image_path', 'og_image'] as $field) {
+                foreach (['audio_path', 'featured_image_path'] as $field) {
                     if (filled($attributes[$field] ?? null)) {
                         $paths[] = $this->validateMediaPath($attributes[$field]);
                     }
@@ -303,6 +299,7 @@ class PublicContentArchive
             'status' => PublishStatus::Published,
         ]);
         $episode->save();
+        $this->importSeo($episode, $attributes);
         if (is_array($attributes['tags'] ?? null)) {
             $episode->syncTagsWithType($attributes['tags'], 'content');
         }
@@ -327,6 +324,7 @@ class PublicContentArchive
         }
 
         $post->save();
+        $this->importSeo($post, $attributes);
         $this->importAuthors($post, $attributes);
         $post->episodes()->sync(Episode::query()->whereIn('slug', $this->relatedEpisodeSlugs($attributes))->pluck('id'));
         if (is_array($attributes['tags'] ?? null)) {
@@ -435,10 +433,35 @@ class PublicContentArchive
             'status' => PublishStatus::Published,
         ]);
         $guide->save();
+        $this->importSeo($guide, $attributes);
         $this->importAuthors($guide, $attributes);
         if (is_array($attributes['tags'] ?? null)) {
             $guide->syncTagsWithType($attributes['tags'], 'content');
         }
+    }
+
+    /**
+     * @return array{meta_title: ?string, meta_description: ?string}
+     */
+    private function seoAttributes(Episode|Post|Guide $record): array
+    {
+        return [
+            'meta_title' => $record->seo?->title,
+            'meta_description' => $record->seo?->description,
+        ];
+    }
+
+    /** @param array<string, mixed> $attributes */
+    private function importSeo(Episode|Post|Guide $record, array $attributes): void
+    {
+        if (! array_key_exists('meta_title', $attributes) && ! array_key_exists('meta_description', $attributes)) {
+            return;
+        }
+
+        $record->seo()->updateOrCreate([], [
+            'title' => $attributes['meta_title'] ?? null,
+            'description' => $attributes['meta_description'] ?? null,
+        ]);
     }
 
     /**
@@ -511,7 +534,7 @@ class PublicContentArchive
             foreach (['excerpt', 'content', 'description', 'show_notes', 'transcript', 'meta_title', 'meta_description'] as $field) {
                 $rules["{$type}.*.{$field}"] = ['nullable', 'string'];
             }
-            foreach (['featured_image_path', 'og_image', 'audio_path'] as $field) {
+            foreach (['featured_image_path', 'audio_path'] as $field) {
                 $rules["{$type}.*.{$field}"] = ['nullable', 'string', 'max:255'];
             }
             foreach (['source_url', 'transistor_url', 'audio_url', 'apple_url', 'spotify_url', 'youtube_url'] as $field) {
@@ -604,7 +627,7 @@ class PublicContentArchive
             // Archives exported before stored media paths existed carry the image as `cover_image`.
             $attributes = $this->withLegacyCoverImage($attributes, 'featured_image_path');
 
-            foreach (['featured_image_path', 'og_image', 'audio_path'] as $field) {
+            foreach (['featured_image_path', 'audio_path'] as $field) {
                 if (filled($attributes[$field] ?? null)) {
                     $this->validateMediaPath($attributes[$field]);
                 }
@@ -629,7 +652,7 @@ class PublicContentArchive
                 $attributes['content'] = $attributes['body'];
             }
 
-            $validated[] = $this->onlyAttributes($attributes, [...$fields, 'tags']);
+            $validated[] = $this->onlyAttributes($attributes, [...$fields, ...self::SEO_FIELDS, 'tags']);
         }
 
         return $validated;

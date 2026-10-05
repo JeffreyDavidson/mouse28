@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Support\StructuredData;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use RalphJSmit\Laravel\SEO\Models\SEO;
 
 pest()->use(RefreshDatabase::class);
 
@@ -18,13 +19,11 @@ test('post structured data prioritizes metadata and the newest content timestamp
     $post = Post::factory()->make([
         'title' => 'Park Tips',
         'slug' => 'park-tips',
-        'meta_title' => 'Accessible Park Tips',
-        'meta_description' => 'Practical planning guidance.',
         'featured_image_path' => 'posts/cover.jpg',
-        'og_image' => 'posts/social.jpg',
         'source_url' => 'https://source.example/park-tips',
         'published_at' => Carbon::parse('2026-08-01 12:00:00 UTC'),
     ]);
+    $post->setRelation('seo', new SEO(['title' => 'Accessible Park Tips', 'description' => 'Practical planning guidance.']));
     $post->updated_at = Carbon::parse('2026-08-02 12:00:00 UTC');
     $post->last_reviewed_at = Carbon::parse('2026-08-03 12:00:00 UTC');
 
@@ -38,7 +37,7 @@ test('post structured data prioritizes metadata and the newest content timestamp
         'mainEntityOfPage' => route('blog.show', $post),
         'datePublished' => '2026-08-01T12:00:00+00:00',
         'dateModified' => '2026-08-03T00:00:00+00:00',
-        'image' => url($post->og_image_url),
+        'image' => url($post->featured_image_url),
         'citation' => 'https://source.example/park-tips',
     ])->and(data_get($article, '@id'))->toBe(route('blog.show', $post).'#blog-posting')
         ->and(data_get($data, '@graph.1.itemListElement'))->toContain([
@@ -53,11 +52,9 @@ test('post and guide structured data use content fallbacks without optional meta
     $post = Post::factory()->make([
         'title' => 'Fallback Post',
         'slug' => 'fallback-post',
-        'meta_description' => null,
         'excerpt' => null,
         'content' => '<p>'.str_repeat('Useful planning advice. ', 20).'</p>',
         'featured_image_path' => 'posts/cover.jpg',
-        'og_image' => null,
         'source_url' => null,
         'published_at' => Carbon::parse('2026-08-01 12:00:00 UTC'),
     ]);
@@ -66,10 +63,8 @@ test('post and guide structured data use content fallbacks without optional meta
     $guide = Guide::factory()->make([
         'title' => 'Fallback Guide',
         'slug' => 'fallback-guide',
-        'meta_description' => null,
         'excerpt' => 'Guide excerpt.',
         'featured_image_path' => null,
-        'og_image' => null,
         'source_url' => null,
         'published_at' => Carbon::parse('2026-08-01 12:00:00 UTC'),
     ]);
@@ -98,16 +93,14 @@ test('episode structured data includes configured podcast and optional media met
     $episode = Episode::factory()->make([
         'title' => 'Episode 42',
         'slug' => 'episode-42',
-        'meta_title' => 'Accessible Episode 42',
-        'meta_description' => 'Episode metadata.',
         'episode_number' => 42,
         'season_number' => 3,
         'duration_seconds' => 3661,
         'audio_url' => 'https://audio.example/episode-42.mp3',
         'featured_image_path' => 'episodes/cover.jpg',
-        'og_image' => 'episodes/social.jpg',
         'published_at' => Carbon::parse('2026-08-01 12:00:00 UTC'),
     ]);
+    $episode->setRelation('seo', new SEO(['title' => 'Accessible Episode 42', 'description' => 'Episode metadata.']));
     $podcast = new Podcast(['name' => 'Mouse28 Weekly']);
 
     $data = StructuredData::forEpisode($episode, $podcast);
@@ -132,7 +125,7 @@ test('episode structured data includes configured podcast and optional media met
             '@type' => 'MediaObject',
             'contentUrl' => 'https://audio.example/episode-42.mp3',
         ],
-        'image' => url($episode->og_image_url),
+        'image' => url($episode->featured_image_url),
     ]);
 });
 
@@ -140,14 +133,12 @@ test('episode structured data omits unavailable media metadata and uses the defa
     $episode = Episode::factory()->make([
         'title' => 'Episode 43',
         'slug' => 'episode-43',
-        'meta_description' => null,
         'description' => null,
         'show_notes' => 'Episode notes.',
         'season_number' => null,
         'duration_seconds' => null,
         'audio_url' => null,
         'featured_image_path' => null,
-        'og_image' => null,
         'published_at' => Carbon::parse('2026-08-01 12:00:00 UTC'),
     ]);
 
