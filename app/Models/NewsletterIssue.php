@@ -7,7 +7,6 @@ use App\Enums\PublishStatus;
 use App\Models\Attributes\PublishingStatus;
 use App\Models\Concerns\HasPublishingStatus;
 use App\Models\Concerns\LocksSlugAfterPublication;
-use App\Models\Concerns\SyncsLegacyPublishedFlag;
 use Carbon\CarbonInterface;
 use Database\Factories\NewsletterIssueFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -43,7 +42,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class NewsletterIssue extends Model implements Publishable
 {
     /** @use HasFactory<NewsletterIssueFactory> */
-    use HasFactory, HasPublishingStatus, LocksSlugAfterPublication, SoftDeletes, SyncsLegacyPublishedFlag;
+    use HasFactory, HasPublishingStatus, LocksSlugAfterPublication, SoftDeletes;
 
     use LogsActivity;
 

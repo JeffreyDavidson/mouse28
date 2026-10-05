@@ -41,8 +41,8 @@ function legacyCoverRow(string $table, ?string $cover, bool $trashed = false): i
 {
     $now = Date::now();
     $row = match ($table) {
-        'posts' => ['title' => 'Legacy row', 'slug' => uniqid('legacy-'), 'body' => '', 'deleted_at' => $trashed ? $now : null],
-        'guides' => ['title' => 'Legacy row', 'slug' => uniqid('legacy-'), 'body' => '', 'category' => 'accessibility', 'deleted_at' => $trashed ? $now : null],
+        'posts' => ['title' => 'Legacy row', 'slug' => uniqid('legacy-'), 'deleted_at' => $trashed ? $now : null],
+        'guides' => ['title' => 'Legacy row', 'slug' => uniqid('legacy-'), 'category' => 'accessibility', 'deleted_at' => $trashed ? $now : null],
         'episodes' => ['title' => 'Legacy row', 'slug' => uniqid('legacy-'), 'episode_number' => random_int(1, 99_999), 'deleted_at' => $trashed ? $now : null],
         // The single-row podcasts table has no soft deletes.
         default => ['name' => 'Legacy podcast'],
