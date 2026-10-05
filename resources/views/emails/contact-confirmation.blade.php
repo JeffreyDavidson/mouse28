@@ -36,18 +36,16 @@
                         <td style="background: #ffffff; padding: 36px 40px;">
 
                             <p style="margin: 0 0 24px; font-size: 15px; line-height: 1.7; color: #2a2040;">
-                                Hi {{ $inquiry->name }},
+                                Hi there,
                             </p>
 
                             <p style="margin: 0 0 24px; font-size: 15px; line-height: 1.7; color: #2a2040;">
-                                Thanks for getting in touch with us at Mouse28! We've received your message about <strong style="color: #1a1040;">{{ $inquiry->type->getLabel() }}</strong> and will do our best to respond within 48 hours.
+                                Thanks for getting in touch with us at Mouse28! We've received your message and will do our best to respond within 48 hours.
                             </p>
 
-                            {{-- Their message recap --}}
-                            <p style="margin: 0 0 8px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: #705f41; font-weight: 600;">Your message</p>
-                            <div style="border-left: 3px solid #d4a843; padding: 16px 20px; background: #fef9ef; border-radius: 0 12px 12px 0; margin-bottom: 28px;">
-                                <p style="margin: 0; font-size: 14px; line-height: 1.7; color: #3a2a1a; white-space: pre-wrap;">{{ $inquiry->message }}</p>
-                            </div>
+                            <p style="margin: 0 0 24px; font-size: 13px; line-height: 1.7; color: #705f41;">
+                                If you didn't use the contact form on mouse28.com, you can ignore this email.
+                            </p>
 
                             <p style="margin: 0 0 28px; font-size: 15px; line-height: 1.7; color: #2a2040;">
                                 In the meantime, check out our latest episodes and blog posts!
