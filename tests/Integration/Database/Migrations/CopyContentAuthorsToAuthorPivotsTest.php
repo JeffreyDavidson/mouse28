@@ -7,11 +7,26 @@ use Database\Factories\GuideFactory;
 use Database\Factories\PostFactory;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 
 pest()->use(RefreshDatabase::class);
+
+// A later migration drops the legacy `author` column; put it back so rows look like they did before the copy.
+beforeEach(function (): void {
+    foreach (['posts', 'guides'] as $table) {
+        if (Schema::hasColumn($table, 'author')) {
+            continue;
+        }
+
+        Schema::table($table, function (Blueprint $blueprint): void {
+            $blueprint->string('author')->nullable();
+        });
+    }
+});
 
 function runContentAuthorCopyMigration(): void
 {
