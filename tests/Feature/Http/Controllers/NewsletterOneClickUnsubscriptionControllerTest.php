@@ -72,3 +72,24 @@ test('mail providers can post one-click requests without a forgery token', funct
 test('other posts keep forgery protection', function (): void {
     expect(fn () => forgeryCheckedStatus(route('contact.store')))->toThrow(TokenMismatchException::class);
 });
+
+test('a burst of one-click posts from one mail provider address is accepted', function (): void {
+    $url = URL::signedRoute('newsletter.unsubscribe.oneClick', Subscriber::factory()->create());
+
+    $statuses = collect(range(1, 30))
+        ->map(fn (): int => post($url, ['List-Unsubscribe' => 'One-Click'])->status())
+        ->unique()
+        ->values()
+        ->all();
+
+    expect($statuses)->toBe([204]);
+});
+
+test('one-click posts from one address are still rate limited', function (): void {
+    config()->set('mouse28.rate_limits.newsletter_unsubscribe_per_minute', 2);
+    $url = URL::signedRoute('newsletter.unsubscribe.oneClick', Subscriber::factory()->create());
+
+    post($url, ['List-Unsubscribe' => 'One-Click'])->assertNoContent();
+    post($url, ['List-Unsubscribe' => 'One-Click'])->assertNoContent();
+    post($url, ['List-Unsubscribe' => 'One-Click'])->assertTooManyRequests();
+});
