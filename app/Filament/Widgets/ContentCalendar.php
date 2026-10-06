@@ -8,6 +8,7 @@ use App\Filament\Resources\Posts\PostResource;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
+use App\Support\DisplayTimezone;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Date;
@@ -26,8 +27,9 @@ class ContentCalendar extends Widget
     /** @return array<int, array{title: string, type: string, date: Carbon|null, status: string, url: string}> */
     public function getTimeline(): array
     {
-        $start = Date::now()->startOfDay();
-        $end = Date::now()->addDays(7)->endOfDay();
+        // The seven days are calendar days in the display timezone; the query compares UTC instants.
+        $start = Date::now(DisplayTimezone::name())->startOfDay()->utc();
+        $end = Date::now(DisplayTimezone::name())->addDays(7)->endOfDay()->utc();
 
         $posts = Post::whereBetween('published_at', [$start, $end])
             ->select(['id', 'title', 'status', 'published_at'])

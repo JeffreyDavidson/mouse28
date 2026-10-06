@@ -41,7 +41,7 @@
                             class="text-gold hover:text-cream inline-flex min-h-12 items-center font-semibold underline decoration-current/35 underline-offset-8 transition-colors"
                         >{{ $post->category_label }}</a>
                     @endif
-                    <span>{{ $post->published_at?->format('F j, Y') ?? 'Not scheduled' }}</span>
+                    <x-display-date :date="$post->published_at" fallback="Not scheduled" />
                     <span id="reading-indicator">{{ $post->reading_time }} min read</span>
                 </div>
 

@@ -65,7 +65,7 @@
                     @if ($episode->duration_seconds)
                         <span>{{ $episode->formatted_duration }}</span>
                     @endif
-                    <span>{{ $episode->published_at?->format('F j, Y') ?? 'Not scheduled' }}</span>
+                    <x-display-date :date="$episode->published_at" fallback="Not scheduled" />
                 </div>
 
                 <h1 class="font-heading mt-4 max-w-4xl text-4xl/tight [font-weight:680] tracking-[-0.03em] text-balance sm:text-5xl/tight lg:text-6xl/tight">
@@ -168,7 +168,7 @@
                 <div class="flex min-h-12 items-center justify-between gap-4 sm:block">
                     <dt class="text-navy/60 text-sm">Published</dt>
                     <dd class="text-navy font-semibold">
-                        {{ $episode->published_at?->format('M j, Y') ?? 'Not scheduled' }}
+                        <x-display-date :date="$episode->published_at" format="M j, Y" fallback="Not scheduled" />
                     </dd>
                 </div>
             </dl>

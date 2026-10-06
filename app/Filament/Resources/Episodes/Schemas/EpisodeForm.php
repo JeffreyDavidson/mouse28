@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\Episodes\Schemas;
 
+use App\Filament\Forms\Components\PublishDatePicker;
 use App\Filament\Forms\Components\PublishStatusSelect;
 use App\Models\Episode;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\SpatieTagsInput;
@@ -106,7 +106,7 @@ class EpisodeForm
                             ->schema([
                                 PublishStatusSelect::make('status')
                                     ->withoutReview(),
-                                DateTimePicker::make('published_at')
+                                PublishDatePicker::make('published_at')
                                     ->label('Publish Date')
                                     ->helperText('Optional. Leave blank to publish immediately, or choose a future date to schedule.'),
                             ]),

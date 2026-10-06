@@ -57,3 +57,23 @@ test('content calendar lists the next seven days in chronological order', functi
         ],
     ]);
 });
+
+test('content calendar shows scheduled times in Eastern time', function (): void {
+    $this->travelTo('2026-10-05 12:00:00');
+    Post::factory()->scheduled()->create(['title' => 'Evening post', 'published_at' => '2026-10-07 01:00:00']);
+
+    livewire(ContentCalendar::class)
+        ->assertSee('Oct 6, 9:00pm')
+        ->assertDontSee('Oct 7, 1:00am');
+});
+
+test('content calendar covers the next seven Eastern days', function (): void {
+    $this->travelTo('2026-10-06 02:00:00');
+    $lateTonight = Post::factory()->scheduled()->create(['published_at' => '2026-10-06 03:30:00']);
+    $pastMidnightUtc = Post::factory()->scheduled()->create(['published_at' => '2026-10-13 03:00:00']);
+
+    $titles = collect(livewire(ContentCalendar::class)->instance()->getTimeline())->pluck('title')->all();
+
+    expect($titles)->toContain($lateTonight->title)
+        ->toContain($pastMidnightUtc->title);
+});

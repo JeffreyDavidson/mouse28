@@ -31,9 +31,7 @@
         <div class="mx-auto max-w-3xl wrap-anywhere">
             <x-back-link href="{{ route('newsletter.index') }}" label="Back to Newsletter" />
             <p class="text-cream/65 mt-5 text-sm">
-                <time datetime="{{ $issue->published_at?->toDateString() }}">
-                    {{ $issue->published_at?->format('F j, Y') ?? 'Not scheduled' }}
-                </time>
+                <x-display-date :date="$issue->published_at" fallback="Not scheduled" />
             </p>
             <h1 class="font-heading mt-4 text-4xl/tight [font-weight:680] tracking-[-0.03em] text-balance sm:text-5xl/tight">
                 {{ $issue->title }}

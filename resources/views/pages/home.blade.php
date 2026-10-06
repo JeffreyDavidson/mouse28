@@ -151,7 +151,7 @@
                                         {{ $post->title }}
                                     </h3>
                                     <p class="text-navy/65 mt-auto pt-2 text-sm tabular-nums sm:text-xs">
-                                        {{ $post->published_at->format('M j, Y') }}
+                                        <x-display-date :date="$post->published_at" format="M j, Y" />
                                     </p>
                                 </div>
                             </a>
