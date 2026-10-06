@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\NewsletterIssues\Tables;
 
-use App\Enums\PublishStatus;
 use App\Models\NewsletterIssue;
 use App\Support\Content\PreviewUrlGenerator;
 use Filament\Actions\Action;
@@ -30,8 +29,7 @@ class NewsletterIssuesTable
                     ->sortable()
                     ->limit(60),
                 TextColumn::make('status')
-                    ->badge()
-                    ->color(fn (PublishStatus $state): string => $state->color()),
+                    ->badge(),
                 TextColumn::make('published_at')
                     ->label('Published')
                     ->date()

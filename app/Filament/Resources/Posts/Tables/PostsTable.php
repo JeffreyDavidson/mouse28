@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Posts\Tables;
 
-use App\Enums\PublishStatus;
 use App\Enums\SourceReviewStatus;
 use App\Models\Post;
 use App\Support\EditorialReadiness;
@@ -57,8 +56,7 @@ class PostsTable
                     ->tooltip(fn (Post $record): string => EditorialReadiness::summary($record)),
                 TextColumn::make('status')
                     ->label('Status')
-                    ->badge()
-                    ->color(fn (PublishStatus $state): string => $state->color()),
+                    ->badge(),
                 TextColumn::make('published_at')
                     ->label('Published Date')
                     ->date()
