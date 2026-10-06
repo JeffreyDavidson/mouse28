@@ -67,6 +67,24 @@ class EpisodeForm
                             ->columnSpan(1),
                     ]),
 
+                Section::make('Guest')
+                    ->icon(Heroicon::OutlinedUser)
+                    ->description('Optional. Shown in the admin only for now.')
+                    ->columns(3)
+                    ->collapsed()
+                    ->schema([
+                        TextInput::make('guest_name')
+                            ->label('Name')
+                            ->maxLength(255),
+                        TextInput::make('guest_title')
+                            ->label('Title')
+                            ->maxLength(255),
+                        TextInput::make('guest_url')
+                            ->label('Link')
+                            ->url()
+                            ->maxLength(255),
+                    ]),
+
                 Grid::make(2)
                     ->schema([
                         Section::make('Media')

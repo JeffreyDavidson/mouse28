@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
@@ -31,6 +32,10 @@ use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property-read SEO $seo
+ * @property int|null $podcast_id
+ * @property string|null $guest_name
+ * @property string|null $guest_title
+ * @property string|null $guest_url
  * @property PublishStatus $status
  * @property Carbon|null $published_at
  * @property CarbonInterface|null $slug_locked_at
@@ -46,6 +51,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * @method static Builder<static> unpublished()
  */
 #[Fillable([
+    'podcast_id',
     'title',
     'slug',
     'description',
@@ -59,6 +65,9 @@ use Spatie\Activitylog\Support\LogOptions;
     'apple_url',
     'spotify_url',
     'youtube_url',
+    'guest_name',
+    'guest_title',
+    'guest_url',
     'duration_seconds',
     'featured_image_path',
     'status',
@@ -89,6 +98,10 @@ class Episode extends Model implements Publishable
                 'apple_url',
                 'spotify_url',
                 'youtube_url',
+                'podcast_id',
+                'guest_name',
+                'guest_title',
+                'guest_url',
                 'duration_seconds',
                 'featured_image_path',
                 'status',
@@ -101,6 +114,12 @@ class Episode extends Model implements Publishable
     protected function storedMediaAttributes(): array
     {
         return ['featured_image_path'];
+    }
+
+    /** @return BelongsTo<Podcast, $this> */
+    public function podcast(): BelongsTo
+    {
+        return $this->belongsTo(Podcast::class);
     }
 
     /** @return BelongsToMany<Post, $this> */
