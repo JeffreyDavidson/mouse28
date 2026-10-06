@@ -27,7 +27,7 @@ test('a delivery emails the issue with a personal unsubscribe link and is marked
     Mail::assertSent(NewsletterIssueMail::class, fn (NewsletterIssueMail $mail): bool => $mail->hasTo($recipient)
         && $mail->issue->id === $delivery->newsletter_issue_id
         && str_contains((string) $mail->unsubscribeUrl, 'signature=')
-        && $mail->idempotencyKey === 'mouse28-newsletter-'.hash('sha256', config()->string('app.url')."|{$delivery->id}"));
+        && $mail->idempotencyKey === 'mouse28-newsletter-'.hash('sha256', implode('|', [config()->string('app.url'), $delivery->id, $delivery->created_at?->toISOString()])));
     expect($delivery->refresh()->sent_at)->not->toBeNull();
 });
 
@@ -62,4 +62,50 @@ test('deliveries go out through the newsletter send rate limit', function (): vo
     $job = new DeliverNewsletterIssue(NewsletterDelivery::factory()->create());
 
     expect($job->middleware())->toEqual([new RateLimited('newsletter-delivery')]);
+});
+
+test('a delivery is abandoned before the queue hands it to another worker', function (): void {
+    // Arrange
+    $job = new DeliverNewsletterIssue(NewsletterDelivery::factory()->create());
+
+    // Act
+    $timeout = $job->timeout;
+
+    // Assert
+    expect($timeout)->toBe(60)
+        ->and($timeout)->toBeLessThan(config()->integer('queue.connections.database.retry_after'));
+});
+
+test('a delivery key stays the same across attempts', function (): void {
+    // Arrange
+    Mail::fake();
+    $delivery = NewsletterDelivery::factory()->create();
+
+    // Act
+    runDelivery($delivery);
+    $delivery->update(['sent_at' => null]);
+    runDelivery($delivery->refresh());
+
+    // Assert
+    $keys = Mail::sent(NewsletterIssueMail::class)->pluck('idempotencyKey');
+    expect($keys)->toHaveCount(2)
+        ->and($keys->unique())->toHaveCount(1);
+});
+
+test('a delivery key differs when a database reset reuses the same delivery id', function (): void {
+    // Arrange
+    Mail::fake();
+    $first = NewsletterDelivery::factory()->create(['created_at' => '2026-10-01 12:00:00']);
+    runDelivery($first);
+    $reusedId = $first->id;
+    $first->delete();
+    $second = NewsletterDelivery::factory()->create(['id' => $reusedId, 'created_at' => '2026-10-06 12:00:00']);
+
+    // Act
+    runDelivery($second);
+
+    // Assert
+    $keys = Mail::sent(NewsletterIssueMail::class)->pluck('idempotencyKey');
+    expect($keys)->toHaveCount(2)
+        ->and($keys->unique())->toHaveCount(2);
 });
