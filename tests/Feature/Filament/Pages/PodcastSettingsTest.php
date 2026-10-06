@@ -105,3 +105,27 @@ test('a replaced podcast cover is stored under podcast with variants and the pre
     Storage::disk('public')->assertExists([$path, 'podcast/responsive/'.pathinfo((string) $path, PATHINFO_FILENAME).'-480.webp']);
     Storage::disk('public')->assertMissing(['podcast/previous.png', 'podcast/responsive/previous-480.webp']);
 });
+
+test('the long description and show colour are saved with the settings', function (): void {
+    actingAs(User::factory()->admin()->create());
+
+    livewire(PodcastSettings::class)
+        ->fillForm(['long_description' => 'A longer show summary.', 'color' => '#5b3e9e'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect(Podcast::settings())
+        ->long_description->toBe('A longer show summary.')
+        ->color->toBe('#5b3e9e');
+});
+
+test('the show colour must be a six digit hex colour', function (string $color): void {
+    actingAs(User::factory()->admin()->create());
+
+    livewire(PodcastSettings::class)
+        ->fillForm(['color' => $color])
+        ->call('save')
+        ->assertHasFormErrors(['color']);
+
+    expect(Podcast::settings()->color)->toBeNull();
+})->with(['named colour' => ['purple'], 'short hex' => ['#fff'], 'missing hash' => ['5b3e9e']]);

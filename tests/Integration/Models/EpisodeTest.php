@@ -31,12 +31,12 @@ test('episode editorial changes record the actor and changed values only', funct
 
     $record->save();
 
-    expect(Activity::query()->count())->toBe(2);
+    expect(Activity::query()->whereMorphedTo('subject', $record)->count())->toBe(2);
 
     $record->delete();
     $record->restore();
 
-    expect(Activity::query()->pluck('event')->all())
+    expect(Activity::query()->whereMorphedTo('subject', $record)->pluck('event')->all())
         ->toBe(['created', 'updated', 'deleted', 'restored']);
 });
 

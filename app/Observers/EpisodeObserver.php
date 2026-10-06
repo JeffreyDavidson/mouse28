@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Observers;
 
 use App\Models\Episode;
+use App\Models\Podcast;
 use App\Services\ResponsiveImageLifecycle;
 use App\Services\SquareResponsiveImageVariants;
 
@@ -18,6 +19,14 @@ class EpisodeObserver
     public function __construct(SquareResponsiveImageVariants $images)
     {
         $this->lifecycle = new ResponsiveImageLifecycle($images);
+    }
+
+    /** Mouse28 has one show, so an episode created without a podcast joins it. */
+    public function creating(Episode $episode): void
+    {
+        if ($episode->podcast_id === null) {
+            $episode->podcast()->associate(Podcast::settings());
+        }
     }
 
     public function created(Episode $episode): void

@@ -45,11 +45,20 @@ test('a rolled back podcast cover replacement keeps the previous files', functio
     Storage::disk('public')->assertExists(['podcast/old.png', 'podcast/responsive/old-480.webp']);
 });
 
-test('deleting the podcast removes its cover and variants', function (): void {
+test('trashing the podcast keeps its cover so it can be restored', function (): void {
     $podcast = Podcast::settings();
     $podcast->update(['cover_image_path' => 'podcast/old.png']);
 
     $podcast->delete();
+
+    Storage::disk('public')->assertExists(['podcast/old.png', 'podcast/responsive/old-480.webp']);
+});
+
+test('permanently deleting the podcast removes its cover and variants', function (): void {
+    $podcast = Podcast::settings();
+    $podcast->update(['cover_image_path' => 'podcast/old.png']);
+
+    $podcast->forceDelete();
 
     Storage::disk('public')->assertMissing(['podcast/old.png', 'podcast/responsive/old-480.webp']);
 });
