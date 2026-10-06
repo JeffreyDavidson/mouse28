@@ -88,7 +88,9 @@ after activation and the deployment checks succeed does it publish
 file must not be cached by Cloudflare or Nginx. The workflow requires this marker
 and `/up`, runs the HTTP smoke suite against the deployed revision, then checks
 the marker again. A redirect to Cloudflare Access login is a failure, not a
-successful application response.
+successful application response. The smoke suite's HTTP client retries once,
+after 2 seconds, when a request cannot connect; an HTTP error status is never
+retried.
 
 Staging never delivers email: its `MAIL_MAILER` is `array`, which
 `app:verify-deployment` requires, so confirmation, test and
