@@ -46,8 +46,6 @@ test('episodes are ready to publish with a description and a Transistor episode 
         'show_notes' => null,
         'featured_image_path' => null,
         'duration_seconds' => null,
-        'meta_title' => null,
-        'meta_description' => null,
     ]);
 
     expect($episode->publishingIssues())->toBeEmpty();
