@@ -31,6 +31,8 @@ return [
         'newsletter_per_minute' => max(1, (int) env('MOUSE28_NEWSLETTER_RATE_LIMIT', 5)),
         'newsletter_delivery_per_second' => max(1, (int) env('MOUSE28_NEWSLETTER_DELIVERY_RATE_LIMIT', 5)),
         'newsletter_confirm_per_minute' => max(1, (int) env('MOUSE28_NEWSLETTER_CONFIRM_RATE_LIMIT', 10)),
+        // Mail providers send one-click unsubscribes from a few shared addresses, often in a burst after a send.
+        'newsletter_unsubscribe_per_minute' => max(1, (int) env('MOUSE28_NEWSLETTER_UNSUBSCRIBE_RATE_LIMIT', 120)),
         'resend_webhook_per_minute' => max(1, (int) env('MOUSE28_RESEND_WEBHOOK_RATE_LIMIT', 60)),
         'search_per_minute' => max(1, (int) env('MOUSE28_SEARCH_RATE_LIMIT', 30)),
     ],

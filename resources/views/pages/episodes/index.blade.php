@@ -59,7 +59,7 @@
                                 {{ $latestEpisode->title }}
                             </h2>
                             <div class="text-cream/65 mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm">
-                                <span>{{ $latestEpisode->published_at->format('F j, Y') }}</span>
+                                <x-display-date :date="$latestEpisode->published_at" />
                                 @if ($latestEpisode->duration_seconds)
                                     <span>{{ $latestEpisode->formatted_duration }}</span>
                                 @endif
@@ -139,7 +139,10 @@
                                                 </div>
                                                 <div class="min-w-0">
                                                     <div class="text-navy/60 flex flex-wrap gap-x-4 gap-y-1 text-sm">
-                                                        <span>{{ $episode->published_at->format('M j, Y') }}</span>
+                                                        <x-display-date
+                                                            :date="$episode->published_at"
+                                                            format="M j, Y"
+                                                        />
                                                         @if ($episode->duration_seconds)
                                                             <span>{{ $episode->formatted_duration }}</span>
                                                         @endif

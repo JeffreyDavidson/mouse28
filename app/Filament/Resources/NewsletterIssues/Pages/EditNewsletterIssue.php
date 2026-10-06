@@ -10,6 +10,7 @@ use App\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
 use App\Models\NewsletterIssue;
 use App\Models\Subscriber;
 use App\Support\Content\PreviewUrlGenerator;
+use App\Support\DisplayTimezone;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
@@ -43,7 +44,9 @@ class EditNewsletterIssue extends EditRecord
         $total = $this->record->deliveries()->count();
         $delivered = $this->record->deliveries()->whereNotNull('sent_at')->count();
 
-        return "Sent {$this->record->sent_at?->format('M j, Y')}. Delivered to {$delivered} of {$total} ".Str::plural('subscriber', $total).'.';
+        $sentOn = DisplayTimezone::convert($this->record->sent_at)?->format('M j, Y');
+
+        return "Sent {$sentOn}. Delivered to {$delivered} of {$total} ".Str::plural('subscriber', $total).'.';
     }
 
     protected function getHeaderActions(): array

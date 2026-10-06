@@ -3,12 +3,12 @@
 namespace App\Filament\Resources\Posts\Schemas;
 
 use App\Filament\Forms\Components\AuthorsSelect;
+use App\Filament\Forms\Components\PublishDatePicker;
 use App\Filament\Forms\Components\PublishStatusSelect;
 use App\Models\Category;
 use App\Models\Post;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
@@ -142,7 +142,7 @@ class PostForm
                             ->description('Save the post, then use the Publish action when its content is ready.')
                             ->schema([
                                 PublishStatusSelect::make('status'),
-                                DateTimePicker::make('published_at')
+                                PublishDatePicker::make('published_at')
                                     ->label('Publish Date')
                                     ->helperText('Optional. Leave blank to publish immediately, or choose a future date to schedule.'),
                             ]),

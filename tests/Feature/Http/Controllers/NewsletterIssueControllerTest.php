@@ -105,3 +105,20 @@ test('the footer sign-up offers the newsletter archive', function (): void {
         ->assertSeeHtml('href="'.route('newsletter.index').'"')
         ->assertSee('Read past issues');
 });
+
+test('newsletter pages show an evening publish date on its Eastern day', function (): void {
+    $this->travelTo('2026-10-10 12:00:00');
+    $issue = NewsletterIssue::factory()->create(['published_at' => '2026-10-06 01:00:00']);
+
+    get(route('newsletter.index'))
+        ->assertOk()
+        ->assertSeeHtml('datetime="2026-10-05"')
+        ->assertSee('October 5, 2026')
+        ->assertDontSee('October 6, 2026');
+
+    get(route('newsletter.issue', $issue))
+        ->assertOk()
+        ->assertSeeHtml('datetime="2026-10-05"')
+        ->assertSee('October 5, 2026')
+        ->assertDontSee('October 6, 2026');
+});

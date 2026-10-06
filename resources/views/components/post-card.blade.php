@@ -38,7 +38,7 @@
         <div class="pt-5">
             <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
                 <span class="text-purple font-semibold">{{ $post->category_label }}</span>
-                <span class="text-navy/60">{{ $post->published_at->format('M j, Y') }}</span>
+                <x-display-date :date="$post->published_at" format="M j, Y" class="text-navy/60" />
                 <span class="text-navy/60">{{ $post->reading_time }} min read</span>
             </div>
             <h3 class="font-heading text-navy group-hover:text-purple mt-2 text-2xl [font-weight:600] tracking-[-0.015em] text-balance transition-colors sm:text-3xl">

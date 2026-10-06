@@ -233,7 +233,8 @@ jobs:
   mysql:
     name: MySQL compatibility
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # The lane usually takes 7-9 minutes; 15 leaves room for a slow runner.
+    timeout-minutes: 15
     services:
       mysql:
         image: mysql:8.4

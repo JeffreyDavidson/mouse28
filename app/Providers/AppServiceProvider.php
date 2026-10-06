@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Support\DisplayTimezone;
 use App\Support\Monitoring\Health\RuntimeHealthMonitor;
 use App\Support\Monitoring\Nightwatch\RedactNightwatchCacheEvent;
 use App\Support\Monitoring\Nightwatch\RedactNightwatchCommand;
@@ -15,6 +16,7 @@ use App\Support\Monitoring\Sentry\RedactSentryEvent;
 use App\Support\SafeReturnUrl;
 use App\View\Composers\PodcastComposer;
 use App\View\Composers\SocialProfilesComposer;
+use Filament\Support\Facades\FilamentTimezone;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Events\DiagnosingHealth;
@@ -71,6 +73,8 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
         }
 
+        FilamentTimezone::set(DisplayTimezone::name(...));
+
         RateLimiter::for('contact-form', fn (Request $request) => Limit::perMinute(Config::integer('mouse28.rate_limits.contact_form_per_minute'))->by($request->ip())->response(fn (Request $request) => redirect()->route('contact.create')
             ->withErrors(['contact_rate_limit' => 'Too many contact attempts. Please wait a minute and try again.'], 'contact')
             ->withInput($request->only(['name', 'email', 'subject', 'message']))));
@@ -82,6 +86,8 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('newsletter-delivery', fn (): Limit => Limit::perSecond(Config::integer('mouse28.rate_limits.newsletter_delivery_per_second')));
 
         RateLimiter::for('newsletter-confirm', fn (Request $request): Limit => Limit::perMinute(Config::integer('mouse28.rate_limits.newsletter_confirm_per_minute'))->by($request->ip()));
+        // The signed link already authorizes unsubscribes, so this limit only caps abuse.
+        RateLimiter::for('newsletter-unsubscribe', fn (Request $request): Limit => Limit::perMinute(Config::integer('mouse28.rate_limits.newsletter_unsubscribe_per_minute'))->by($request->ip()));
 
         RateLimiter::for('resend-webhook', fn (Request $request): Limit => Limit::perMinute(Config::integer('mouse28.rate_limits.resend_webhook_per_minute'))->by($request->ip()));
 
