@@ -171,8 +171,6 @@ test('post category changes are recorded in the editorial log', function (): voi
 test('posts are ready to publish with content, an excerpt, and a category', function (): void {
     $post = Post::factory()->draft()->make([
         'featured_image_path' => null,
-        'meta_title' => null,
-        'meta_description' => null,
     ]);
 
     expect($post->publishingIssues())->toBeEmpty();
@@ -217,11 +215,9 @@ test('the post review interval comes from content configuration', function (): v
 });
 
 test('posts without content need attention', function (?string $content): void {
-    $post = Post::factory()->create([
+    $post = Post::factory()->withSeo('Complete title', 'Complete description')->create([
         'content' => $content,
         'featured_image_path' => 'posts/complete.jpg',
-        'meta_title' => 'Complete title',
-        'meta_description' => 'Complete description',
     ]);
 
     expect(Post::query()->needsAttention()->pluck('id')->all())->toBe([$post->id]);

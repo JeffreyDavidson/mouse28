@@ -7,10 +7,27 @@ use Database\Factories\EpisodeFactory;
 use Database\Factories\GuideFactory;
 use Database\Factories\PostFactory;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 pest()->use(RefreshDatabase::class);
+
+// A later migration drops the legacy meta columns; put them back so rows look like they did before the backfill.
+beforeEach(function (): void {
+    foreach (['posts', 'episodes', 'guides'] as $table) {
+        if (Schema::hasColumn($table, 'meta_title')) {
+            continue;
+        }
+
+        Schema::table($table, function (Blueprint $blueprint): void {
+            $blueprint->string('meta_title')->nullable();
+            $blueprint->text('meta_description')->nullable();
+            $blueprint->string('og_image')->nullable();
+        });
+    }
+});
 
 function backfillSeoMigration(): Migration
 {

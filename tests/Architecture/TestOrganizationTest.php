@@ -71,6 +71,7 @@ test('test paths mirror their application source', function (string $suite): voi
         'Database/Migrations/DropLegacyPublishedAndBodyColumnsTest.php' => 'database/migrations/2026_10_05_143704_drop_legacy_published_and_body_columns.php',
         'Database/Migrations/DropLegacyPostLinkCategoryAndAuthorColumnsTest.php' => 'database/migrations/2026_10_05_150608_drop_legacy_post_link_category_and_author_columns.php',
         'Database/Migrations/BackfillSeoFromMetaColumnsTest.php' => 'database/migrations/2026_10_05_174142_backfill_seo_from_meta_columns.php',
+        'Database/Migrations/DropLegacyMetaColumnsTest.php' => 'database/migrations/2026_10_06_003047_drop_legacy_meta_columns.php',
         'Config/MediaTest.php' => 'config/media.php',
         'Http/ProductionSmokeTest.php' => 'routes/web.php',
         'Support/DeploymentSmokeClientTest.php' => 'tests/Support/DeploymentSmokeClient.php',

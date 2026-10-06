@@ -304,8 +304,6 @@ test('episode metadata falls back to its title and description', function (): vo
         'title' => 'Trailer: Meet Mouse28',
         'description' => 'Meet Jeffrey and Cassie and learn what the Mouse28 podcast is about.',
         'featured_image_path' => 'episodes/trailer-meet-mouse28.webp',
-        'meta_title' => null,
-        'meta_description' => null,
     ]);
 
     get(route('episodes.show', $episode))->assertOk()->assertSeeHtml('<title>Trailer: Meet Mouse28 | Mouse28</title>')->assertSeeHtml('<meta name="description" content="Meet Jeffrey and Cassie and learn what the Mouse28 podcast is about.">')->assertSeeHtml('<meta property="og:image" content="'.url('/storage/episodes/trailer-meet-mouse28.webp').'">');
