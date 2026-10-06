@@ -489,3 +489,18 @@ test('post pages honor the robots choice saved in the SEO row', function (): voi
     // Assert
     $response->assertOk()->assertSeeHtml('<meta name="robots" content="noindex, nofollow">');
 });
+
+test('blog pages show an evening publish date on its Eastern day while metadata keeps the UTC instant', function (): void {
+    $this->travelTo('2026-10-10 12:00:00');
+    $post = Post::factory()->create(['published_at' => '2026-10-06 01:00:00']);
+
+    get(route('blog.index'))
+        ->assertOk()
+        ->assertSee('October 5, 2026')
+        ->assertDontSee('October 6, 2026');
+
+    get(route('blog.show', $post))
+        ->assertOk()
+        ->assertSeeHtml('datetime="2026-10-05"')
+        ->assertSee('October 5, 2026')->assertDontSee('October 6, 2026')->assertSeeHtml('2026-10-06T01:00:00+00:00');
+});

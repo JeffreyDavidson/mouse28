@@ -38,7 +38,7 @@
                         @endif
                         <div class="border-gold/35 mt-7 flex flex-wrap items-center gap-x-4 gap-y-2 border-t pt-5 text-sm">
                             <span class="font-semibold">{{ $featuredPost->author_name }}</span>
-                            <span class="text-navy/65">{{ $featuredPost->published_at->format('F j, Y') }}</span>
+                            <x-display-date :date="$featuredPost->published_at" class="text-navy/65" />
                             <span class="text-navy/65">{{ $featuredPost->reading_time }} min read</span>
                         </div>
                         <a

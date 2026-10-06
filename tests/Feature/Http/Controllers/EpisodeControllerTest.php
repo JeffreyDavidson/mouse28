@@ -386,3 +386,18 @@ test('signed-in visitors see published episodes but nobody sees drafts at public
     get(route('episodes.show', $published))->assertOk();
     get(route('episodes.show', $draft))->assertNotFound();
 })->with(['non-admin' => [false], 'admin' => [true]]);
+
+test('episode pages show an evening publish date on its Eastern day', function (): void {
+    $this->travelTo('2026-10-10 12:00:00');
+    $episode = Episode::factory()->create(['published_at' => '2026-10-06 01:00:00']);
+
+    get(route('episodes.index'))
+        ->assertOk()
+        ->assertSee('October 5, 2026')
+        ->assertDontSee('October 6, 2026');
+
+    get(route('episodes.show', $episode))
+        ->assertOk()
+        ->assertSee('October 5, 2026')
+        ->assertDontSee('October 6, 2026');
+});

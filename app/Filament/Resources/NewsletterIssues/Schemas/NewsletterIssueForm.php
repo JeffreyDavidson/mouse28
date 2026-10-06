@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources\NewsletterIssues\Schemas;
 
+use App\Filament\Forms\Components\PublishDatePicker;
 use App\Filament\Forms\Components\PublishStatusSelect;
 use App\Models\NewsletterIssue;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -67,7 +67,7 @@ class NewsletterIssueForm
                     ->description('Save the issue, then use the Publish action when its content is ready.')
                     ->schema([
                         PublishStatusSelect::make('status'),
-                        DateTimePicker::make('published_at')
+                        PublishDatePicker::make('published_at')
                             ->helperText('Optional. Leave blank to publish immediately, or choose a future date to schedule.'),
                     ]),
             ]);

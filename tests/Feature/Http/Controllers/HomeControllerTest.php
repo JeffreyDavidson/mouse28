@@ -262,3 +262,14 @@ test('the home page head keeps its canonical slash, social tags and feeds', func
         ->assertSeeHtml('type="application/rss+xml" title="Mouse28 Blog"')
         ->assertDontSeeHtml('property="og:locale"');
 });
+
+test('homepage shows an evening post date on its Eastern day', function (): void {
+    $this->travelTo('2026-10-10 12:00:00');
+    Post::factory()->create(['published_at' => '2026-10-09 12:00:00']);
+    Post::factory()->create(['published_at' => '2026-10-06 01:00:00']);
+
+    get(route('home'))
+        ->assertOk()
+        ->assertSee('Oct 5, 2026')
+        ->assertDontSee('Oct 6, 2026');
+});

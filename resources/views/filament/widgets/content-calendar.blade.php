@@ -24,7 +24,7 @@
                                     class="text-mouse-navy/75 text-sm"
                                     datetime="{{ \Carbon\Carbon::parse($item['date'])->toIso8601String() }}"
                                 >
-                                    {{ \Carbon\Carbon::parse($item['date'])->format('M j, g:ia') }}
+                                    {{ \App\Support\DisplayTimezone::convert(\Carbon\Carbon::parse($item['date']))->format('M j, g:ia') }}
                                 </time>
                                 <x-filament::badge :color="match ($item['status']) { 'Published' => 'success', 'Scheduled' => 'primary', default => 'gray' }">
                                     {{ $item['status'] }}

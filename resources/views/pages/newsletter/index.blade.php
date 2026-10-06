@@ -58,9 +58,7 @@
 
             @forelse ($issues as $issue)
                 <article class="border-gold/35 mt-8 border-t pt-8">
-                    <time class="text-navy/60 text-sm" datetime="{{ $issue->published_at?->toDateString() }}">
-                        {{ $issue->published_at?->format('F j, Y') }}
-                    </time>
+                    <x-display-date :date="$issue->published_at" class="text-navy/60 text-sm" />
                     <h3 class="font-heading mt-2 text-2xl/tight [font-weight:620] text-balance sm:text-3xl/tight">
                         <a
                             href="{{ route('newsletter.issue', $issue) }}"

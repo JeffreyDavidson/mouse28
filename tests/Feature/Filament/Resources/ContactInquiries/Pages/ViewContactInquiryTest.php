@@ -61,7 +61,7 @@ test('mark resolved header action resolves the inquiry', function (): void {
     expect($inquiry->refresh()->status)->toBe(ContactInquiryStatus::Resolved);
 });
 
-test('delivery stamps are shown read-only with their sent times', function (): void {
+test('delivery stamps are shown read-only with their sent times in Eastern time', function (): void {
     $inquiry = ContactInquiry::factory()->create([
         'email_attempted_at' => Date::parse('2026-10-02 09:15:00'),
         'notification_sent_at' => Date::parse('2026-10-02 09:15:01'),
@@ -71,7 +71,7 @@ test('delivery stamps are shown read-only with their sent times', function (): v
 
     livewire(ViewContactInquiry::class, ['record' => $inquiry->getRouteKey()])
         ->assertSee('Administrator notification sent')
-        ->assertSee('Oct 2, 2026 9:15 AM')
+        ->assertSee('Oct 2, 2026 5:15 AM')
         ->assertSee('Not sent');
 });
 
