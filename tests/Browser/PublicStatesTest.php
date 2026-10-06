@@ -1,6 +1,9 @@
 <?php
 
+use App\Models\Subscriber;
+use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
 
 test('empty and no-result states remain actionable on mobile', function (): void {
@@ -185,3 +188,21 @@ test('branded recovery pages remain accessible and actionable', function (): voi
         ->assertSee('Try again')
         ->assertDontSee('Private maintenance details');
 });
+
+test('opening a confirmation link in a browser confirms in one click', function (): void {
+    $reader = Subscriber::factory()->pending()->create();
+    $reader->verification_token_hash = hash('sha256', 'browser-token');
+    $reader->save();
+
+    $page = visit(URL::temporarySignedRoute('newsletter.confirm', Date::now()->addDay(), [
+        'subscriber' => $reader,
+        'token' => 'browser-token',
+    ]));
+
+    $page->assertPathIs('/newsletter/confirmed')
+        ->assertSee('You’re confirmed')
+        ->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors();
+
+    expect($reader->refresh()->isActive())->toBeTrue();
+})->group('browser-smoke');

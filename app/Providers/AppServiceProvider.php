@@ -82,6 +82,8 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('newsletter-delivery', fn (): Limit => Limit::perSecond(Config::integer('mouse28.rate_limits.newsletter_delivery_per_second')));
 
         RateLimiter::for('newsletter-confirm', fn (Request $request): Limit => Limit::perMinute(Config::integer('mouse28.rate_limits.newsletter_confirm_per_minute'))->by($request->ip()));
+        // The signed link already authorizes unsubscribes, so this limit only caps abuse.
+        RateLimiter::for('newsletter-unsubscribe', fn (Request $request): Limit => Limit::perMinute(Config::integer('mouse28.rate_limits.newsletter_unsubscribe_per_minute'))->by($request->ip()));
 
         RateLimiter::for('resend-webhook', fn (Request $request): Limit => Limit::perMinute(Config::integer('mouse28.rate_limits.resend_webhook_per_minute'))->by($request->ip()));
 

@@ -22,7 +22,8 @@ test('the unsubscribe page asks for a click and does not unsubscribe on its own'
         ->assertSee($reader->email)
         ->assertSee('Unsubscribe')
         ->assertSeeHtml('action="'.e(URL::signedRoute('newsletter.unsubscribe.store', $reader)).'"')
-        ->assertSeeHtml('<meta name="robots" content="noindex,nofollow">');
+        ->assertSeeHtml('<meta name="robots" content="noindex,nofollow">')
+        ->assertDontSeeHtml('data-newsletter-confirm');
 
     expect($reader->refresh()->isActive())->toBeTrue();
 });

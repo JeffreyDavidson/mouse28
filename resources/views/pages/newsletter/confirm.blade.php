@@ -3,4 +3,5 @@
     description="Confirm that you want Mouse28 updates sent to {{ $subscriber->email }}."
     :action-url="$actionUrl"
     button-label="Confirm sign-up"
+    pending-label="Confirming your sign-up…"
 />

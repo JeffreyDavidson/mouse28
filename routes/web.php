@@ -50,19 +50,23 @@ Route::post('/newsletter', [NewsletterSubscriptionController::class, 'store'])->
 Route::middleware([EnsureValidNewsletterConfirmationLink::class, 'throttle:newsletter-confirm'])
     ->missing(fn (): RedirectResponse => EnsureValidNewsletterConfirmationLink::redirectToSignupForm())
     ->group(function (): void {
+        // Not stored anywhere, so the back button reloads the page instead of restoring
+        // a form already submitted, and the CSRF token and email are never cached.
         Route::get('/newsletter/confirm/{subscriber}/{token}', [NewsletterConfirmationController::class, 'create'])
+            ->middleware('cache.headers:no_store;private')
             ->name('newsletter.confirm');
         Route::post('/newsletter/confirm/{subscriber}/{token}', [NewsletterConfirmationController::class, 'store'])
             ->name('newsletter.confirm.store');
     });
+Route::view('/newsletter/confirmed', 'pages.newsletter.confirmed')->name('newsletter.confirmed');
 Route::get('/newsletter/unsubscribe/{subscriber}', [NewsletterUnsubscriptionController::class, 'create'])
-    ->middleware(['signed', 'throttle:newsletter-confirm'])
+    ->middleware(['signed', 'throttle:newsletter-unsubscribe'])
     ->name('newsletter.unsubscribe');
 Route::delete('/newsletter/unsubscribe/{subscriber}', [NewsletterUnsubscriptionController::class, 'destroy'])
-    ->middleware(['signed', 'throttle:newsletter-confirm'])
+    ->middleware(['signed', 'throttle:newsletter-unsubscribe'])
     ->name('newsletter.unsubscribe.store');
 Route::post('/newsletter/unsubscribe/{subscriber}', NewsletterOneClickUnsubscriptionController::class)
-    ->middleware(['signed', 'throttle:newsletter-confirm'])
+    ->middleware(['signed', 'throttle:newsletter-unsubscribe'])
     ->name('newsletter.unsubscribe.oneClick');
 
 Route::get('/newsletter', [NewsletterIssueController::class, 'index'])->name('newsletter.index');
