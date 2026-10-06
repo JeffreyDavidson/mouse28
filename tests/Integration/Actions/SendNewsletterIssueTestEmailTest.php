@@ -23,7 +23,8 @@ test('a test email goes to every configured admin address and records nothing', 
     expect($recipients)->toBe(['jeffrey@example.test', 'cassie@example.test']);
     Mail::assertSent(NewsletterIssueMail::class, fn (NewsletterIssueMail $mail): bool => $mail->hasTo('jeffrey@example.test')
         && $mail->hasTo('cassie@example.test')
-        && $mail->unsubscribeUrl === null);
+        && $mail->unsubscribeUrl === null
+        && $mail->idempotencyKey === null);
     expect($issue->refresh()->wasSent())->toBeFalse();
     assertDatabaseCount(NewsletterDelivery::class, 0);
 });
