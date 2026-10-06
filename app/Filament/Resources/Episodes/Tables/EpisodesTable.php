@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Episodes\Tables;
 
-use App\Enums\PublishStatus;
 use App\Models\Episode;
 use App\Support\EditorialReadiness;
 use Filament\Actions\BulkActionGroup;
@@ -51,8 +50,7 @@ class EpisodesTable
                     ->tooltip(fn (Episode $record): string => EditorialReadiness::summary($record)),
                 TextColumn::make('status')
                     ->label('Status')
-                    ->badge()
-                    ->color(fn (PublishStatus $state): string => $state->color()),
+                    ->badge(),
                 TextColumn::make('published_at')
                     ->label('Published Date')
                     ->date()
