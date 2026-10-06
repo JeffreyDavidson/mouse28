@@ -17,7 +17,10 @@ use Illuminate\Support\Facades\Mail;
 
 /**
  * Sends one newsletter delivery. Rate-limited releases are retried until the
- * deadline, while genuine failures stop after a few exceptions.
+ * deadline, while genuine failures stop after a few exceptions. The email's
+ * idempotency key stops a retry from resending when the send succeeded but
+ * recording it did not, and the timeout ends a stuck send before the database
+ * queue's retry_after hands the job to another worker.
  */
 class DeliverNewsletterIssue implements ShouldQueue
 {
@@ -26,6 +29,8 @@ class DeliverNewsletterIssue implements ShouldQueue
     public bool $deleteWhenMissingModels = true;
 
     public int $maxExceptions = 3;
+
+    public int $timeout = 60;
 
     /** @var list<int> */
     public array $backoff = [60, 300, 900];
@@ -65,9 +70,24 @@ class DeliverNewsletterIssue implements ShouldQueue
             ->send(new NewsletterIssueMail(
                 $issue,
                 $unsubscribeUrlGenerator->for($subscriber),
-                'mouse28-newsletter-'.hash('sha256', Config::string('app.url')."|{$delivery->id}"),
+                $this->idempotencyKey($delivery),
             ));
 
         $delivery->update(['sent_at' => Date::now()]);
+    }
+
+    /**
+     * Identifies the delivery across environments and database resets, like the contact
+     * emails' keys: a reset that reuses a delivery id still gets a different key. Resend
+     * keeps a key for 24 hours, which covers every attempt because deliveries stop
+     * retrying a day after dispatch.
+     */
+    private function idempotencyKey(NewsletterDelivery $delivery): string
+    {
+        return 'mouse28-newsletter-'.hash('sha256', implode('|', [
+            Config::string('app.url'),
+            $delivery->id,
+            $delivery->created_at?->toISOString(),
+        ]));
     }
 }
