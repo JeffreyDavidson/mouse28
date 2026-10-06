@@ -91,6 +91,42 @@ test('requests with a bad signature are rejected and change nothing', function (
     expect($reader->refresh()->isActive())->toBeTrue();
 })->with(['missing headers', 'old timestamp', 'wrong secret', 'tampered body']);
 
+test('a header carrying an old signature beside the valid one is accepted', function (): void {
+    // Arrange
+    $reader = Subscriber::factory()->create();
+    $body = json_encode(complaintEvent($reader->email), JSON_THROW_ON_ERROR);
+    $headers = signedWebhookHeaders($body);
+    $headers['HTTP_SVIX_SIGNATURE'] = 'v1,b2xkLXNpZ25hdHVyZQ== '.$headers['HTTP_SVIX_SIGNATURE'];
+
+    // Act
+    $response = call('POST', route('webhooks.resend'), [], [], [], $headers, $body);
+
+    // Assert
+    $response->assertNoContent();
+    expect($reader->refresh()->isSuppressed())->toBeTrue();
+});
+
+test('a malformed signature header is rejected with forbidden instead of an error', function (string $signature): void {
+    // Arrange
+    $reader = Subscriber::factory()->create();
+    $body = json_encode(complaintEvent($reader->email), JSON_THROW_ON_ERROR);
+    $server = [...signedWebhookHeaders($body), 'HTTP_SVIX_SIGNATURE' => $signature];
+
+    // Act
+    $response = call('POST', route('webhooks.resend'), [], [], [], $server, $body);
+
+    // Assert
+    $response->assertForbidden();
+    expect($reader->refresh()->isActive())->toBeTrue();
+})->with([
+    'a version with no signature' => ['v1'],
+    'an empty signature' => ['v1,'],
+    'a signature with no version' => [',abc'],
+    'a valid pair followed by a bare version' => ['v1,abc v1'],
+    'a signature with extra spaces' => ['v1,abc  v1,def'],
+    'only spaces' => ['   '],
+]);
+
 test('an unconfigured secret answers service unavailable', function (?string $secret): void {
     config()->set('services.resend.webhook_secret', $secret);
     $reader = Subscriber::factory()->create();
