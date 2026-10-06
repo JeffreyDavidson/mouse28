@@ -3,6 +3,7 @@
 use App\Enums\PublishStatus;
 use App\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
 use App\Filament\Resources\NewsletterIssues\Pages\EditNewsletterIssue;
+use App\Jobs\DeliverNewsletterIssue;
 use App\Mail\NewsletterIssueMail;
 use App\Models\NewsletterDelivery;
 use App\Models\NewsletterIssue;
@@ -202,3 +203,74 @@ test('sending actions disappear when admin access is revoked', function (string 
 
     $page->assertActionHidden($action);
 })->with(['sendToSubscribers', 'sendTestEmail']);
+
+test('a draft slug cannot be changed to one used by a fixed newsletter page', function (string $slug): void {
+    $issue = NewsletterIssue::factory()->draft()->create(['slug' => 'original-issue']);
+
+    livewire(EditNewsletterIssue::class, ['record' => $issue->getRouteKey()])
+        ->fillForm(['slug' => $slug])
+        ->call('save')
+        ->assertHasFormErrors(['slug' => 'not_in']);
+
+    expect($issue->refresh()->slug)->toBe('original-issue');
+})->with(['rss', 'confirmed']);
+
+test('a test email sends the unsaved edits on screen and saves them', function (): void {
+    Mail::fake();
+    config()->set('mail.admin_address', 'owner@example.test');
+    $issue = NewsletterIssue::factory()->draft()->create(['title' => 'Saved title', 'content' => 'Saved content.']);
+
+    livewire(EditNewsletterIssue::class, ['record' => $issue->getRouteKey()])
+        ->fillForm(['title' => 'Edited title', 'content' => 'Edited content.'])
+        ->callAction('sendTestEmail')
+        ->assertHasNoFormErrors()
+        ->assertNotified('Test email sent to owner@example.test');
+
+    Mail::assertSent(NewsletterIssueMail::class, function (NewsletterIssueMail $mail): bool {
+        $mail->assertHasSubject('Edited title')
+            ->assertSeeInHtml('Edited content.');
+
+        return true;
+    });
+    expect($issue->refresh())
+        ->title->toBe('Edited title')
+        ->content->toBe('Edited content.');
+});
+
+test('sending to subscribers sends the unsaved edits on screen', function (): void {
+    Mail::fake();
+    $reader = Subscriber::factory()->create();
+    $issue = NewsletterIssue::factory()->create(['title' => 'Saved title', 'content' => 'Saved content.']);
+
+    livewire(EditNewsletterIssue::class, ['record' => $issue->getRouteKey()])
+        ->fillForm(['title' => 'Edited title', 'content' => 'Edited content.'])
+        ->callAction('sendToSubscribers')
+        ->assertHasNoFormErrors()
+        ->assertNotified('Queued for 1 subscriber');
+
+    DeliverNewsletterIssue::dispatchSync(NewsletterDelivery::query()->sole());
+
+    Mail::assertSent(NewsletterIssueMail::class, function (NewsletterIssueMail $mail) use ($reader): bool {
+        $mail->assertHasSubject('Edited title')
+            ->assertSeeInHtml('Edited content.');
+
+        return $mail->hasTo($reader->email);
+    });
+});
+
+test('nothing is sent when the unsaved edits are invalid', function (string $action): void {
+    Mail::fake();
+    Subscriber::factory()->create();
+    $issue = NewsletterIssue::factory()->create(['title' => 'Saved title']);
+
+    livewire(EditNewsletterIssue::class, ['record' => $issue->getRouteKey()])
+        ->fillForm(['title' => ''])
+        ->callAction($action)
+        ->assertHasErrors(['data.title' => 'required']);
+
+    Mail::assertNothingSent();
+    expect($issue->refresh())
+        ->title->toBe('Saved title')
+        ->wasSent()->toBeFalse();
+    $this->assertDatabaseCount('newsletter_deliveries', 0);
+})->with(['sendTestEmail', 'sendToSubscribers']);

@@ -13,13 +13,12 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\Route as Router;
 use Illuminate\Support\Str;
 
 class NewsletterIssueForm
 {
-    /** Slugs that would collide with fixed newsletter routes. */
-    private const array RESERVED_SLUGS = ['rss'];
-
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -42,7 +41,7 @@ class NewsletterIssueForm
                             }),
                         TextInput::make('slug')
                             ->regex('/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/')
-                            ->notIn(self::RESERVED_SLUGS)
+                            ->notIn(fn (): array => self::reservedSlugs())
                             ->disabled(fn (?NewsletterIssue $record): bool => $record?->isSlugLocked() ?? false)
                             ->helperText('Lowercase words separated by hyphens. URLs stay locked after first publication, even when unpublished or rescheduled.')
                             ->required()
@@ -71,5 +70,23 @@ class NewsletterIssueForm
                             ->helperText('Optional. Leave blank to publish immediately, or choose a future date to schedule.'),
                     ]),
             ]);
+    }
+
+    /**
+     * Slugs taken by fixed /newsletter/* pages, such as the feed and the confirmed page,
+     * which are registered before the issue route and would make an issue with the same
+     * slug unreachable.
+     *
+     * @return array<int, string>
+     */
+    private static function reservedSlugs(): array
+    {
+        return collect(Router::getRoutes()->getRoutes())
+            ->map(fn (Route $route): string => $route->uri())
+            ->filter(fn (string $uri): bool => preg_match('#\Anewsletter/[^/{]+\z#', $uri) === 1)
+            ->map(fn (string $uri): string => Str::after($uri, 'newsletter/'))
+            ->unique()
+            ->values()
+            ->all();
     }
 }

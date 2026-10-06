@@ -43,6 +43,7 @@ test('issue creation validates the fields the server requires', function (array 
     'duplicate slug' => [['slug' => 'existing-issue'], 'slug', 'unique'],
     'slug that cannot form a route' => [['slug' => 'Invalid/URL'], 'slug', 'regex'],
     'slug reserved for the feed' => [['slug' => 'rss'], 'slug', 'not_in'],
+    'slug reserved for the confirmed page' => [['slug' => 'confirmed'], 'slug', 'not_in'],
     'excerpt over the limit' => [['excerpt' => str_repeat('a', 301)], 'excerpt', 'max'],
 ]);
 

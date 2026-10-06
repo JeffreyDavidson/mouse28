@@ -65,6 +65,7 @@ class EditNewsletterIssue extends EditRecord
                 ->color('gray')
                 ->authorize('update')
                 ->action(function (SendNewsletterIssueTestEmail $sendTestEmail): void {
+                    $this->saveBeforeSending();
                     $recipients = implode(', ', $sendTestEmail->handle($this->record));
 
                     Notification::make()
@@ -86,6 +87,8 @@ class EditNewsletterIssue extends EditRecord
                 })
                 ->modalSubmitActionLabel('Send')
                 ->action(function (SendNewsletterIssue $sendIssue): void {
+                    $this->saveBeforeSending();
+
                     if (! Subscriber::query()->active()->exists()) {
                         Notification::make()
                             ->warning()
@@ -108,5 +111,14 @@ class EditNewsletterIssue extends EditRecord
             ForceDeleteAction::make(),
             RestoreAction::make(),
         ];
+    }
+
+    /**
+     * Save the form so the email matches what is on screen. Invalid data throws a
+     * validation exception, which stops the action before anything is sent.
+     */
+    private function saveBeforeSending(): void
+    {
+        $this->save(shouldRedirect: false, shouldSendSavedNotification: false);
     }
 }
