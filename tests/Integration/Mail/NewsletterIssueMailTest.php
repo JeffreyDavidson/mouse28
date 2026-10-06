@@ -57,3 +57,33 @@ test('a test email is marked and carries no unsubscribe headers', function (): v
         ->assertSeeInText('This is a test email');
     expect($mail->headers()->text)->toBeEmpty();
 });
+
+test('relative links and images become absolute in the html and text parts', function (): void {
+    config()->set('app.url', 'https://example.test');
+    $issue = issueForMail("[Post](/blog/x) and [Rel](blog/y)\n\n![Pic](/storage/pic.png)\n\n[Paged](/blog?page=2&a=1)");
+
+    $mail = new NewsletterIssueMail($issue, 'https://example.test/unsubscribe');
+
+    $mail->assertSeeInHtml('href="https://example.test/blog/x"', false)
+        ->assertSeeInHtml('href="https://example.test/blog/y"', false)
+        ->assertSeeInHtml('src="https://example.test/storage/pic.png"', false)
+        ->assertSeeInHtml('href="https://example.test/blog?page=2&amp;a=1"', false)
+        ->assertDontSeeInHtml('href="/blog', false)
+        ->assertSeeInText('[Post](https://example.test/blog/x)')
+        ->assertSeeInText('![Pic](https://example.test/storage/pic.png)')
+        ->assertDontSeeInText('](/');
+});
+
+test('absolute, mailto, tel, anchor and protocol-relative links are left alone', function (): void {
+    config()->set('app.url', 'https://example.test');
+    $markdown = '[A](https://other.test/a) [B](mailto:me@example.com) [C](tel:+15555550100) [D](#section) [E](//cdn.test/e)';
+
+    $mail = new NewsletterIssueMail(issueForMail($markdown), 'https://example.test/unsubscribe');
+
+    $mail->assertSeeInHtml('href="https://other.test/a"', false)
+        ->assertSeeInHtml('href="mailto:me@example.com"', false)
+        ->assertSeeInHtml('href="tel:+15555550100"', false)
+        ->assertSeeInHtml('href="#section"', false)
+        ->assertSeeInHtml('href="//cdn.test/e"', false)
+        ->assertSeeInText($markdown);
+});

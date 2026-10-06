@@ -9,7 +9,7 @@ test('publish statuses keep their stored values', function (): void {
 test('publish statuses expose a label and badge color', function (PublishStatus $status, string $label, string $color): void {
     expect($status->label())->toBe($label)
         ->and($status->getLabel())->toBe($label)
-        ->and($status->color())->toBe($color);
+        ->and($status->getColor())->toBe($color);
 })->with([
     'draft' => [PublishStatus::Draft, 'Draft', 'gray'],
     'in review' => [PublishStatus::InReview, 'In Review', 'info'],
