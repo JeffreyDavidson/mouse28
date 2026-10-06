@@ -21,7 +21,8 @@ use App\Http\Controllers\ResendWebhookController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
-use App\Http\Middleware\EnsureValidNewsletterConfirmationToken;
+use App\Http\Middleware\EnsureValidNewsletterConfirmationLink;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', HomeController::class)->name('home');
@@ -44,12 +45,16 @@ Route::get('/contact', [ContactController::class, 'create'])->name('contact.crea
 Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:contact-form')->name('contact.store');
 
 Route::post('/newsletter', [NewsletterSubscriptionController::class, 'store'])->middleware('throttle:newsletter')->name('newsletter.subscribe');
-Route::get('/newsletter/confirm/{subscriber}/{token}', [NewsletterConfirmationController::class, 'create'])
-    ->middleware(['signed', EnsureValidNewsletterConfirmationToken::class, 'throttle:newsletter-confirm'])
-    ->name('newsletter.confirm');
-Route::post('/newsletter/confirm/{subscriber}/{token}', [NewsletterConfirmationController::class, 'store'])
-    ->middleware(['signed', EnsureValidNewsletterConfirmationToken::class, 'throttle:newsletter-confirm'])
-    ->name('newsletter.confirm.store');
+// The middleware checks the signature and token; an unusable link, including
+// one whose subscriber was removed, goes back to the sign-up form.
+Route::middleware([EnsureValidNewsletterConfirmationLink::class, 'throttle:newsletter-confirm'])
+    ->missing(fn (): RedirectResponse => EnsureValidNewsletterConfirmationLink::redirectToSignupForm())
+    ->group(function (): void {
+        Route::get('/newsletter/confirm/{subscriber}/{token}', [NewsletterConfirmationController::class, 'create'])
+            ->name('newsletter.confirm');
+        Route::post('/newsletter/confirm/{subscriber}/{token}', [NewsletterConfirmationController::class, 'store'])
+            ->name('newsletter.confirm.store');
+    });
 Route::get('/newsletter/unsubscribe/{subscriber}', [NewsletterUnsubscriptionController::class, 'create'])
     ->middleware(['signed', 'throttle:newsletter-confirm'])
     ->name('newsletter.unsubscribe');
