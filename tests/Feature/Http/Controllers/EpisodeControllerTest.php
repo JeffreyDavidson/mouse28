@@ -64,7 +64,7 @@ test('the podcast archive renders an uploaded show cover with its responsive var
     Storage::fake('public');
     $disk = Storage::disk('public');
     $disk->put('podcast/cover.png', UploadedFile::fake()->image('cover.png', 700, 700)->getContent());
-    Podcast::settings()->update(['cover_image_path' => 'podcast/cover.png']);
+    primaryPodcast()->update(['cover_image_path' => 'podcast/cover.png']);
 
     get(route('episodes.index'))
         ->assertOk()
@@ -367,7 +367,7 @@ test('reading page uses the dispatch reading surface', function (): void {
 });
 
 test('podcast links that open a new tab announce it', function (bool $showEpisode): void {
-    Podcast::settings()->update(['apple_url' => 'https://podcasts.apple.com/podcast/mouse28']);
+    primaryPodcast()->update(['apple_url' => 'https://podcasts.apple.com/podcast/mouse28']);
     $episode = Episode::factory()->create(['transistor_url' => 'https://share.transistor.fm/s/abc123']);
 
     $response = get($showEpisode ? route('episodes.show', $episode) : route('episodes.index'))->assertOk();

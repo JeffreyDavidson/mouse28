@@ -7,11 +7,14 @@ namespace App\ViewModels;
 use App\Models\Episode;
 use App\Models\Podcast;
 use App\Support\PodcastLinks;
+use App\Support\PrimaryPodcast;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Config;
 
 class EpisodeIndexViewModel
 {
+    public function __construct(private readonly PrimaryPodcast $primaryPodcast) {}
+
     /**
      * @return array{
      *     episodes: LengthAwarePaginator<int, Episode>,
@@ -27,7 +30,7 @@ class EpisodeIndexViewModel
             ->latest('published_at')
             ->latest('id')
             ->paginate(Config::integer('mouse28.episodes_per_page'));
-        $podcast = Podcast::info();
+        $podcast = $this->primaryPodcast->current();
 
         return [
             'episodes' => $episodes,

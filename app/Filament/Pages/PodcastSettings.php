@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Models\Podcast;
+use App\Support\PrimaryPodcast;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\ColorPicker;
@@ -48,9 +49,9 @@ class PodcastSettings extends Page
         return auth()->user()?->is_admin === true;
     }
 
-    public function mount(): void
+    public function mount(PrimaryPodcast $primaryPodcast): void
     {
-        $podcast = Podcast::settings();
+        $podcast = $primaryPodcast->findOrCreate();
         $this->form->fill($podcast->only([
             'name', 'description', 'long_description', 'color', 'cover_image_path',
             'apple_url', 'spotify_url', 'youtube_url',
@@ -112,7 +113,7 @@ class PodcastSettings extends Page
                     Action::make('save')
                         ->label('Save Settings')
                         ->icon(Heroicon::OutlinedCheck)
-                        ->authorize('update', Podcast::info())
+                        ->authorize('update', Podcast::class)
                         ->action(fn () => $this->save()),
                 ])->alignEnd(),
             ])
@@ -121,7 +122,8 @@ class PodcastSettings extends Page
 
     public function save(): void
     {
-        $podcast = Podcast::settings();
+        // Resolved here rather than injected: the Save action calls this method directly.
+        $podcast = app(PrimaryPodcast::class)->findOrCreate();
         Gate::authorize('update', $podcast);
         $data = $this->form->getState();
         $podcast->update($data);

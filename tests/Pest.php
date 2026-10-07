@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Podcast;
+use App\Support\PrimaryPodcast;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Testing\PendingCommand;
 use Tests\BrowserTestCase;
@@ -19,6 +21,12 @@ function pendingCommand(string $command, array $parameters = []): PendingCommand
     }
 
     return $pendingCommand;
+}
+
+/** The site's saved podcast show, created with the configured defaults when missing. */
+function primaryPodcast(): Podcast
+{
+    return app(PrimaryPodcast::class)->findOrCreate();
 }
 
 pest()->extend(TestCase::class)

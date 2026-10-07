@@ -5,7 +5,6 @@ use App\Enums\PublishStatus;
 use App\Models\Category;
 use App\Models\Episode;
 use App\Models\Guide;
-use App\Models\Podcast;
 use App\Models\Post;
 use App\Models\User;
 use App\Support\PublicContentArchive;
@@ -86,7 +85,7 @@ test('archives export stored media paths and import them under either key name',
     foreach ([$post, $guide, $episode] as $record) {
         $record->forceFill(['featured_image_path' => "{$record->getTable()}/exported.webp"])->saveQuietly();
     }
-    Podcast::settings()->forceFill(['cover_image_path' => 'podcast/exported.webp'])->saveQuietly();
+    primaryPodcast()->forceFill(['cover_image_path' => 'podcast/exported.webp'])->saveQuietly();
     $service = app(PublicContentArchive::class);
     $archive = $service->export();
 
@@ -107,7 +106,7 @@ test('archives export stored media paths and import them under either key name',
     expect($post->refresh()->featured_image_path)->toBe('posts/legacy.webp')
         ->and($guide->refresh()->featured_image_path)->toBe('guides/exported.webp')
         ->and($episode->refresh()->featured_image_path)->toBe('episodes/exported.webp')
-        ->and(Podcast::settings()->cover_image_path)->toBe('podcast/legacy.webp');
+        ->and(primaryPodcast()->cover_image_path)->toBe('podcast/legacy.webp');
 });
 
 test('sync refuses unpublished identity collisions without changing content', function (PostFactory|GuideFactory|EpisodeFactory $factory, string $state): void {
