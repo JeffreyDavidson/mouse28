@@ -22,7 +22,7 @@ test('archive versions must match the supported integer version', function (mixe
     'null version' => [null],
 ]);
 
-test('media paths include all content types once in sorted order', function (): void {
+test('media paths include all content types once in sorted order and skip legacy episode audio', function (): void {
     $service = new PublicContentArchive;
     $archive = [
         'version' => 1,
@@ -47,7 +47,6 @@ test('media paths include all content types once in sorted order', function (): 
     $paths = $service->mediaPaths($archive);
 
     expect($paths)->toBe([
-        'episodes/audio.mp3',
         'podcasts/show.webp',
         'shared/cover.webp',
     ]);

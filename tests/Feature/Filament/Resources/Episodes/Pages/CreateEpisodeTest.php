@@ -54,8 +54,6 @@ test('episode creation validates numeric and URL storage constraints', function 
     'negative duration' => ['duration_seconds', -1, 'min'],
     'overflow duration' => ['duration_seconds', 2147483648, 'max'],
     'long Transistor URL' => ['transistor_url', 'https://share.transistor.fm/s/'.str_repeat('a', 256), 'max'],
-    'long Apple URL' => ['apple_url', 'https://example.com/'.str_repeat('a', 256), 'max'],
-    'long Spotify URL' => ['spotify_url', 'https://example.com/'.str_repeat('a', 256), 'max'],
     'long YouTube URL' => ['youtube_url', 'https://example.com/'.str_repeat('a', 256), 'max'],
 ]);
 
@@ -109,8 +107,6 @@ test('episode storage boundaries are accepted', function (): void {
         'season_number' => 4294967295,
         'duration_seconds' => 2147483647,
         'transistor_url' => $transistorUrl,
-        'apple_url' => $url,
-        'spotify_url' => $url,
         'youtube_url' => $url,
     ]);
     $page->call('create');
@@ -122,8 +118,6 @@ test('episode storage boundaries are accepted', function (): void {
         ->and($episode->season_number)->toBe(4294967295)
         ->and($episode->duration_seconds)->toBe(2147483647)
         ->and($episode->transistor_url)->toBe($transistorUrl)
-        ->and($episode->apple_url)->toBe($url)
-        ->and($episode->spotify_url)->toBe($url)
         ->and($episode->youtube_url)->toBe($url);
 });
 
@@ -145,4 +139,13 @@ test('create form explains editorial requirements', function (): void {
         ->assertDontSee('Hosted MP3')
         ->assertDontSee('External Audio URL')
         ->assertSee('Landscape image (1.91:1)');
+});
+
+test('the create form no longer offers per-episode Apple or Spotify links', function (): void {
+    actingAs(User::factory()->admin()->create());
+
+    livewire(CreateEpisode::class)
+        ->assertFormFieldDoesNotExist('apple_url')
+        ->assertFormFieldDoesNotExist('spotify_url')
+        ->assertFormFieldExists('youtube_url');
 });
