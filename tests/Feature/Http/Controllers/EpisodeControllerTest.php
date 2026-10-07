@@ -392,3 +392,12 @@ test('episode pages show an evening publish date on its Eastern day', function (
         ->assertSee('October 5, 2026')
         ->assertDontSee('October 6, 2026');
 });
+
+test('episode share links open without passing the page as referrer', function (): void {
+    $episode = Episode::factory()->create();
+
+    $response = get(route('episodes.show', $episode));
+
+    $response->assertOk()
+        ->assertDontSeeHtml('rel="noopener"');
+});
