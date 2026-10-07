@@ -393,6 +393,21 @@ test('episode pages show an evening publish date on its Eastern day', function (
         ->assertDontSee('October 6, 2026');
 });
 
+test('episode archive pages past the last one do not exist', function (int $page, int $status): void {
+    config()->set('mouse28.episodes_per_page', 1);
+    Episode::factory()->count(2)->create();
+
+    get(route('episodes.index', ['page' => $page]))->assertStatus($status);
+})->with([
+    'last page' => [2, 200],
+    'one past the last page' => [3, 404],
+    'far past the last page' => [999, 404],
+]);
+
+test('an empty episode archive still renders its first page', function (): void {
+    get(route('episodes.index'))->assertOk();
+});
+
 test('episode share links open without passing the page as referrer', function (): void {
     $episode = Episode::factory()->create();
 

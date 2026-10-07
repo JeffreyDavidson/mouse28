@@ -32,6 +32,10 @@ class GuideIndexViewModel
             ->latest('id')
             ->paginate(Config::integer('mouse28.guides_per_page'))
             ->withQueryString();
+
+        // A page past the last one would render an empty archive with its own canonical URL.
+        abort_if($guides->currentPage() > $guides->lastPage(), 404);
+
         $categoryLabel = $categoryEnum?->getLabel();
         $canonicalParameters = array_filter([
             'category' => $category ?: null,
