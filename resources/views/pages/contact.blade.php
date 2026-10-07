@@ -137,7 +137,7 @@
                                         placeholder="Your name"
                                         autocomplete="name"
                                         required
-                                        input-class="border-navy/20 bg-dark-cream/45 text-navy placeholder:text-navy/65 focus:border-purple focus:ring-purple/15 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
+                                        input-class="border-navy/20 bg-cream-dark/45 text-navy placeholder:text-navy/65 focus:border-purple focus:ring-purple/15 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
                                     />
                                 </div>
 
@@ -155,7 +155,7 @@
                                         autocomplete="email"
                                         inputmode="email"
                                         required
-                                        input-class="border-navy/20 bg-dark-cream/45 text-navy placeholder:text-navy/65 focus:border-purple focus:ring-purple/15 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
+                                        input-class="border-navy/20 bg-cream-dark/45 text-navy placeholder:text-navy/65 focus:border-purple focus:ring-purple/15 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
                                     />
                                 </div>
                             </div>
@@ -168,7 +168,7 @@
                                     required
                                     @error('type', 'contact') aria-invalid="true" aria-describedby="type-error" @enderror
                                     @if ($firstContactError === 'type') autofocus @endif
-                                    class="border-navy/20 bg-dark-cream/45 text-navy focus:border-purple focus:ring-purple/15 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
+                                    class="border-navy/20 bg-cream-dark/45 text-navy focus:border-purple focus:ring-purple/15 min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
                                 >
                                     <option value="">Choose a topic...</option>
                                     @foreach (\App\Enums\ContactType::cases() as $type)
@@ -193,7 +193,7 @@
                                     placeholder="What's on your mind?"
                                     @error('message', 'contact') aria-invalid="true" aria-describedby="message-error" @enderror
                                     @if ($firstContactError === 'message') autofocus @endif
-                                    class="border-navy/20 bg-dark-cream/45 text-navy placeholder:text-navy/65 focus:border-purple focus:ring-purple/15 min-h-44 w-full resize-y rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
+                                    class="border-navy/20 bg-cream-dark/45 text-navy placeholder:text-navy/65 focus:border-purple focus:ring-purple/15 min-h-44 w-full resize-y rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
                                 >{{ $contactHasFeedback ? old('message') : '' }}</textarea>
                                 <x-form.error id="message-error" :message="$errors->contact->first('message')" />
                             </div>
