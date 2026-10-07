@@ -30,6 +30,10 @@ class EpisodeIndexViewModel
             ->latest('published_at')
             ->latest('id')
             ->paginate(Config::integer('mouse28.episodes_per_page'));
+
+        // A page past the last one would render an empty archive with its own canonical URL.
+        abort_if($episodes->currentPage() > $episodes->lastPage(), 404);
+
         $podcast = $this->primaryPodcast->current();
 
         return [

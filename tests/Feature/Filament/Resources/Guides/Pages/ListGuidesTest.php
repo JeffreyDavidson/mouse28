@@ -79,6 +79,17 @@ test('the review due filter and source review column show guides that need revie
         ->assertTableColumnExists('source_review_status');
 });
 
+test('the review due filter counts published guides only, like the review due tab and dashboard', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $publishedDue = Guide::factory()->create(['last_reviewed_at' => null]);
+    $draftDue = Guide::factory()->draft()->create(['last_reviewed_at' => null]);
+
+    livewire(ListGuides::class)
+        ->filterTable('review_due')
+        ->assertCanSeeTableRecords([$publishedDue])
+        ->assertCanNotSeeTableRecords([$draftDue]);
+});
+
 test('the guides table filters by author', function (): void {
     [$jeffrey, $cassie] = User::authors()->get()->all();
     $byJeffrey = Guide::factory()->withAuthors($jeffrey)->create();

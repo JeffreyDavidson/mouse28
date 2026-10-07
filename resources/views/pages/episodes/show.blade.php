@@ -230,14 +230,14 @@
                     <a
                         href="https://twitter.com/intent/tweet?text={{ urlencode($episode->title . ' | Mouse28 Podcast') }}&url={{ urlencode(route('episodes.show', $episode)) }}"
                         target="_blank"
-                        rel="noopener"
+                        rel="noopener noreferrer"
                         class="text-purple inline-flex min-h-12 items-center underline underline-offset-8"
                         >Post on X<x-new-tab-notice
                     /></a>
                     <a
                         href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(route('episodes.show', $episode)) }}"
                         target="_blank"
-                        rel="noopener"
+                        rel="noopener noreferrer"
                         class="text-purple inline-flex min-h-12 items-center underline underline-offset-8"
                         >Share on Facebook<x-new-tab-notice
                     /></a>

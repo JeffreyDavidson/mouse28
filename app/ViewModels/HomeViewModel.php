@@ -28,6 +28,7 @@ class HomeViewModel
             ->select(['id', 'slug', 'title', 'category_id', 'featured_image_path', 'published_at'])
             ->with('category:id,name,slug')
             ->latest('published_at')
+            ->latest('id')
             ->take(4)
             ->get();
         $featuredPost = $posts->first();
@@ -35,12 +36,14 @@ class HomeViewModel
         $latestEpisodes = Episode::published()
             ->select(['id', 'slug', 'title', 'description', 'episode_number', 'duration_seconds'])
             ->latest('published_at')
+            ->latest('id')
             ->take(3)
             ->get();
         $latestGuides = Config::boolean('mouse28.guides_enabled')
             ? Guide::published()
                 ->select(['id', 'slug', 'title', 'excerpt', 'category', 'featured_image_path'])
                 ->latest('published_at')
+                ->latest('id')
                 ->take(2)
                 ->get()
             : new Collection;
@@ -50,6 +53,7 @@ class HomeViewModel
                 ->with('category:id,name,slug')
                 ->whereHas('category', fn (Builder $query) => $query->whereIn('slug', ['park-accessibility', 'disney-tips', 'autism-awareness']))
                 ->latest('published_at')
+                ->latest('id')
                 ->take(2)
                 ->get()
             : new Collection;

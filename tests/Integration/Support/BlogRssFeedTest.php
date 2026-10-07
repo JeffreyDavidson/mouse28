@@ -79,3 +79,12 @@ test('blog feed describes a post without an excerpt in plain text from its markd
     'missing excerpt' => [null],
     'empty excerpt' => [''],
 ]);
+
+test('blog feed breaks publish-time ties by id so their order is stable on MySQL', function (): void {
+    Post::factory()->count(2)->create();
+
+    $orderings = publishTimeOrderings(fn () => app(BlogRssFeed::class)->content());
+
+    expect($orderings)->not->toBeEmpty()
+        ->each->toMatch(STABLE_PUBLISH_TIME_ORDER);
+});

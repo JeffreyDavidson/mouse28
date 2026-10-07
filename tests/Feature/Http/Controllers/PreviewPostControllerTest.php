@@ -58,3 +58,15 @@ test('a signed preview links every related episode, published or not', function 
         ->assertSee('Unannounced podcast episode')
         ->assertSee('Released podcast episode');
 });
+
+test('share links on a preview point to the public post, never the signed preview link', function (): void {
+    $post = Post::factory()->draft()->create();
+    $previewUrl = URL::temporarySignedRoute('preview.post', Date::now()->addHour(), ['post' => $post]);
+
+    $response = get($previewUrl);
+
+    $response->assertOk()
+        ->assertSeeHtml('u='.urlencode(route('blog.show', $post)))
+        ->assertSeeHtml('url='.urlencode(route('blog.show', $post)))
+        ->assertDontSeeHtml(urlencode(route('preview.post', $post)));
+});
