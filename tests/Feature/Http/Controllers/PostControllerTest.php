@@ -504,3 +504,13 @@ test('blog pages show an evening publish date on its Eastern day while metadata 
         ->assertSeeHtml('datetime="2026-10-05"')
         ->assertSee('October 5, 2026')->assertDontSee('October 6, 2026')->assertSeeHtml('2026-10-06T01:00:00+00:00');
 });
+
+test('blog share links open without passing the page as referrer', function (): void {
+    $post = Post::factory()->create();
+
+    $response = get(route('blog.show', $post));
+
+    $response->assertOk()
+        ->assertSeeHtml('rel="noopener noreferrer"')
+        ->assertDontSeeHtml('rel="noopener"');
+});
