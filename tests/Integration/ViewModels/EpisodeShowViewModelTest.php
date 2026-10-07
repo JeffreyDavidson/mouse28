@@ -54,3 +54,13 @@ test('episode data loads the category of each related post', function (): void {
         ->and($data['relatedPosts']->first()?->getAttributes())->toHaveKey('category_id')
         ->not->toHaveKey('category');
 });
+
+test('episode related posts break publish-time ties by id so their order is stable on MySQL', function (): void {
+    $episode = Episode::factory()->create();
+    $episode->posts()->attach(Post::factory()->count(2)->create());
+
+    $orderings = publishTimeOrderings(fn () => app(EpisodeShowViewModel::class)->data($episode));
+
+    expect($orderings)->not->toBeEmpty()
+        ->each->toMatch(STABLE_PUBLISH_TIME_ORDER);
+});

@@ -33,6 +33,7 @@ class EpisodeShowViewModel
                 ->select(['posts.id', 'posts.slug', 'posts.title', 'posts.category_id', 'posts.featured_image_path'])
                 ->with('category:id,name,slug')
                 ->latest('published_at')
+                ->latest('posts.id')
                 ->take(4)
                 ->get(),
             'previousEpisode' => ContentContinuation::previousEpisode($episode),

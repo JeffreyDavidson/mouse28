@@ -50,3 +50,15 @@ test('sitemap lists the newsletter archive and only live issues', function (): v
         ->not->toContain($draft->slug)
         ->not->toContain($scheduled->slug);
 });
+
+test('sitemap entries break publish-time ties by id so their order is stable on MySQL', function (): void {
+    config()->set('mouse28.guides_enabled', true);
+    Post::factory()->create();
+    Guide::factory()->create();
+    NewsletterIssue::factory()->create();
+
+    $orderings = publishTimeOrderings(fn () => app(SitemapDocument::class)->content());
+
+    expect($orderings)->not->toBeEmpty()
+        ->each->toMatch(STABLE_PUBLISH_TIME_ORDER);
+});

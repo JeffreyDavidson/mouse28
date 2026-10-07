@@ -19,6 +19,7 @@ class ContentContinuation
             ->whereKeyNot($post->getKey())
             ->where('category_id', $post->category_id)
             ->latest('published_at')
+            ->latest('id')
             ->take($limit)
             ->get();
 
@@ -33,6 +34,7 @@ class ContentContinuation
                 ->whereKeyNot($post->getKey())
                 ->whereNotIn('id', $sameCategoryPosts->modelKeys())
                 ->latest('published_at')
+                ->latest('id')
                 ->take($limit - $sameCategoryPosts->count())
                 ->get()
         );
@@ -46,6 +48,7 @@ class ContentContinuation
             ->whereKeyNot($guide->getKey())
             ->where('category', $guide->category)
             ->latest('published_at')
+            ->latest('id')
             ->take($limit)
             ->get();
 
@@ -59,6 +62,7 @@ class ContentContinuation
                 ->whereKeyNot($guide->getKey())
                 ->whereNotIn('id', $sameCategoryGuides->modelKeys())
                 ->latest('published_at')
+                ->latest('id')
                 ->take($limit - $sameCategoryGuides->count())
                 ->get()
         );
