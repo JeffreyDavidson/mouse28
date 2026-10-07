@@ -91,9 +91,11 @@ class PodcastSettings extends Page
                         FileUpload::make('cover_image_path')
                             ->label('Cover image')
                             ->image()
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                             ->maxSize(5120)
                             ->disk('public')
-                            ->directory('podcast'),
+                            ->directory('podcast')
+                            ->helperText('JPEG, PNG or WebP, up to 5 MB.'),
                     ]),
 
                 Section::make('Distribution Links')
