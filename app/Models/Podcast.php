@@ -35,8 +35,6 @@ use Spatie\Activitylog\Support\LogOptions;
     'apple_url',
     'spotify_url',
     'youtube_url',
-    'instagram_url',
-    'tiktok_url',
     'is_active',
     'sort_order',
 ])]
@@ -143,8 +141,6 @@ class Podcast extends Model
                 'apple_url',
                 'spotify_url',
                 'youtube_url',
-                'instagram_url',
-                'tiktok_url',
                 'is_active',
                 'sort_order',
             ])

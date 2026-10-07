@@ -45,7 +45,6 @@ test('readiness reports actionable issues for each content type', function (): v
         'last_reviewed_at' => null,
     ]);
     $episode = Episode::factory()->make([
-        'audio_url' => null,
         'transcript' => null,
     ]);
 
@@ -62,8 +61,6 @@ test('readiness reports actionable issues for each content type', function (): v
 
 test('episode readiness does not require deferred audio or transcripts', function (): void {
     $episode = Episode::factory()->make([
-        'audio_path' => null,
-        'audio_url' => null,
         'transcript' => null,
         'featured_image_path' => 'episodes/complete.jpg',
     ]);

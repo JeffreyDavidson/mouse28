@@ -265,7 +265,6 @@ test('search and transcript controls work from the keyboard', function (): void 
         'content' => 'Practical accessible planning advice for a Disney parks visit.',
     ]);
     $episode = Episode::factory()->create([
-        'audio_url' => 'https://cdn.example.com/accessible-episode.mp3',
     ]);
 
     visit(route('search'))
@@ -292,7 +291,6 @@ test('public pages remain usable at mobile widths', function (): void {
     $episode = Episode::factory()->create([
         'title' => 'Accessible Disney Travel',
         'description' => 'A conversation about accessible Disney travel.',
-        'audio_url' => 'https://cdn.example.com/accessible-episode.mp3',
     ]);
     $guide = Guide::factory()->create([
         'title' => 'Accessible Parks Guide',
@@ -328,7 +326,6 @@ test('mobile search and transcript controls remain usable', function (): void {
         'content' => 'Practical accessible planning advice for a Disney parks visit.',
     ]);
     $episode = Episode::factory()->create([
-        'audio_url' => 'https://cdn.example.com/accessible-episode.mp3',
     ]);
 
     visit(route('search'))

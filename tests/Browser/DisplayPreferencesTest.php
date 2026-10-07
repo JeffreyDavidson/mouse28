@@ -8,7 +8,6 @@ test('public pages reflow with two hundred percent text sizing', function (): vo
     $post = Post::factory()->create();
     $guide = Guide::factory()->create();
     $episode = Episode::factory()->create([
-        'audio_url' => 'https://cdn.example.com/display-preferences.mp3',
     ]);
 
     $pages = visit([
@@ -111,7 +110,6 @@ test('multilingual and right to left content remains contained', function (): vo
         'description' => $multilingualBody,
         'show_notes' => "<p>{$multilingualBody}</p>",
         'transcript' => "<p>{$multilingualBody}</p>",
-        'audio_url' => 'https://cdn.example.com/multilingual-accessibility.mp3',
     ]);
 
     $pages = visit([
