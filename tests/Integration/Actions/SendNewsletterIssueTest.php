@@ -32,6 +32,19 @@ test('sending queues one delivery for each active reader and marks the issue sen
     assertDatabaseCount('jobs', 1);
 });
 
+test('sending with no active readers queues nothing and leaves the issue unsent', function (): void {
+    Subscriber::factory()->pending()->create();
+    Subscriber::factory()->unsubscribed()->create();
+    $issue = NewsletterIssue::factory()->create();
+
+    $queued = app(SendNewsletterIssue::class)->handle($issue);
+
+    expect($queued)->toBe(0)
+        ->and($issue->refresh()->wasSent())->toBeFalse();
+    assertDatabaseCount('newsletter_deliveries', 0);
+    assertDatabaseCount('jobs', 0);
+});
+
 test('issues that cannot be sent are refused without queueing anything', function (NewsletterIssue $issue, string $message): void {
     Subscriber::factory()->create();
 

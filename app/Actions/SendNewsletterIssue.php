@@ -14,7 +14,8 @@ use LogicException;
 final class SendNewsletterIssue
 {
     /**
-     * Queue one delivery per active reader and mark the issue sent.
+     * Queue one delivery per active reader and mark the issue sent. With no active
+     * readers nothing is queued and the issue is left unsent.
      *
      * @return int The number of deliveries queued.
      */
@@ -47,6 +48,11 @@ final class SendNewsletterIssue
                     ->onConnection('database')
                     ->beforeCommit();
                 $queued++;
+            }
+
+            // With nobody to send to, the issue stays unsent so it can be sent once readers confirm.
+            if ($queued === 0) {
+                return 0;
             }
 
             $issue->update(['sent_at' => Date::now()]);
