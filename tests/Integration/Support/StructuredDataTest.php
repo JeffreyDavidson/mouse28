@@ -179,3 +179,14 @@ test('post and guide structured data credit one author as a person and several a
     expect(data_get(StructuredData::forPost($post->refresh()), '@graph.0.author'))->toBe($author)
         ->and(data_get(StructuredData::forGuide($guide->refresh()), '@graph.0.author'))->toBe($author);
 })->with('structured data authors');
+
+test('post structured data describes markdown content in plain text', function (): void {
+    $post = Post::factory()->make([
+        'excerpt' => null,
+        'content' => "## Arrival\n\n**Plan** a flexible arrival.",
+    ]);
+
+    $description = data_get(StructuredData::forPost($post), '@graph.0.description');
+
+    expect($description)->toBe('Arrival Plan a flexible arrival.');
+});
