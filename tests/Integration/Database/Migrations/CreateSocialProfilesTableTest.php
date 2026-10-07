@@ -3,11 +3,24 @@
 use App\Enums\SocialPlatform;
 use App\Models\SocialProfile;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 pest()->use(RefreshDatabase::class);
+
+// A later migration drops the podcast social columns; put them back so rows look like they did before the copy.
+beforeEach(function (): void {
+    if (Schema::hasColumn('podcasts', 'instagram_url')) {
+        return;
+    }
+
+    Schema::table('podcasts', function (Blueprint $table): void {
+        $table->string('instagram_url')->nullable();
+        $table->string('tiktok_url')->nullable();
+    });
+});
 
 function runSocialProfilesMigration(): void
 {
@@ -23,7 +36,7 @@ function runSocialProfilesMigration(): void
 }
 
 test('existing podcast Instagram and TikTok links become social profiles', function (): void {
-    primaryPodcast()->update([
+    DB::table('podcasts')->where('id', primaryPodcast()->id)->update([
         'instagram_url' => 'https://instagram.com/mouse28',
         'tiktok_url' => 'https://tiktok.com/@mouse28',
     ]);
@@ -39,7 +52,7 @@ test('existing podcast Instagram and TikTok links become social profiles', funct
 });
 
 test('blank or missing podcast links create no profiles', function (): void {
-    primaryPodcast()->update(['instagram_url' => '', 'tiktok_url' => null]);
+    DB::table('podcasts')->where('id', primaryPodcast()->id)->update(['instagram_url' => '', 'tiktok_url' => null]);
 
     runSocialProfilesMigration();
 

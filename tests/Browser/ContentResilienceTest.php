@@ -99,7 +99,6 @@ test('long public content and portrait artwork stay contained', function (): voi
             'show_notes' => "<h2>{$longToken}</h2><p>{$longToken}</p><p><a href=\"https://example.com/{$longToken}\">{$longToken}</a></p>",
             'transcript' => "<p><strong>Jeffrey:</strong> {$longToken}</p>",
             'featured_image_path' => $portraitPath,
-            'audio_url' => 'https://cdn.example.com/content-resilience.mp3',
         ]);
 
         $mobilePages = visit([

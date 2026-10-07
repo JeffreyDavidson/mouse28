@@ -106,7 +106,6 @@ test('polished discovery and guide artwork remain usable on mobile', function ()
 test('published content detail pages have no accessibility issues', function (): void {
     $post = Post::factory()->create();
     $episode = Episode::factory()->create([
-        'audio_url' => 'https://cdn.example.com/accessible-episode.mp3',
     ]);
     $guide = Guide::factory()->create();
 
@@ -127,7 +126,6 @@ test('published content detail pages have no accessibility issues', function ():
 
 test('episode transcript expands accessibly', function (): void {
     $episode = Episode::factory()->create([
-        'audio_url' => 'https://cdn.example.com/accessible-episode.mp3',
     ]);
 
     visit(route('episodes.show', $episode))

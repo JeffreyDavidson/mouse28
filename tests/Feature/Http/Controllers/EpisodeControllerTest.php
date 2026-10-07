@@ -166,8 +166,6 @@ test('episode pages sanitize rich show notes and transcripts', function (): void
 
 test('sparse episode detail pages use a compact continuation layout', function (): void {
     $episode = Episode::factory()->create([
-        'audio_url' => null,
-        'audio_path' => null,
         'show_notes' => '<p>Coming soon.</p>',
         'transcript' => null,
     ]);
@@ -195,8 +193,6 @@ test('podcast index leads with the show and uses a season tracklist', function (
 
 test('podcast pages describe episodes without audio as details instead of playable media', function (): void {
     $episode = Episode::factory()->create([
-        'audio_url' => null,
-        'audio_path' => null,
         'transcript' => null,
     ]);
 
@@ -260,7 +256,7 @@ test('episode pages link to the adjacent published episodes', function (): void 
         ->assertDontSee($scheduledEpisode->title);
 });
 
-test('episode pages link to the show platforms and ignore legacy episode links', function (): void {
+test('episode pages link to the show platforms', function (): void {
     $podcast = Podcast::query()->create([
         'name' => 'Mouse28 Travel Podcast',
         'apple_url' => 'https://podcasts.apple.com/show/mouse28',
@@ -268,9 +264,8 @@ test('episode pages link to the show platforms and ignore legacy episode links',
         'youtube_url' => 'https://youtube.com/@mouse28',
     ]);
     $episode = Episode::factory()->create(['youtube_url' => null]);
-    $episode->forceFill(['apple_url' => 'https://podcasts.apple.com/episode/42'])->save();
 
-    get(route('episodes.show', $episode))->assertOk()->assertDontSeeHtml('https://podcasts.apple.com/episode/42')->assertSeeHtml('https://podcasts.apple.com/show/mouse28')->assertSeeHtml('https://open.spotify.com/show/mouse28')->assertSee('Visit the show')->assertSeeHtml('https://youtube.com/@mouse28')->assertSee('Visit the channel')->assertSeeHtml(config()->string('podcast.rss_url'))->assertSeeHtml('"name":"Mouse28 Travel Podcast"');
+    get(route('episodes.show', $episode))->assertOk()->assertSeeHtml('https://podcasts.apple.com/show/mouse28')->assertSeeHtml('https://open.spotify.com/show/mouse28')->assertSee('Visit the show')->assertSeeHtml('https://youtube.com/@mouse28')->assertSee('Visit the channel')->assertSeeHtml(config()->string('podcast.rss_url'))->assertSeeHtml('"name":"Mouse28 Travel Podcast"');
 });
 
 test('episode pages hide podcast platforms that are not configured', function (): void {
@@ -329,7 +324,6 @@ test('episodes include podcast media duration and breadcrumb structured data', f
         'season_number' => 3,
         'duration_seconds' => 3723,
     ]);
-    $episode->forceFill(['audio_url' => 'https://cdn.example.com/episode.mp3'])->save();
 
     $response = get(route('episodes.show', $episode));
 

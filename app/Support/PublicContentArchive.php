@@ -94,8 +94,6 @@ class PublicContentArchive
         'apple_url',
         'spotify_url',
         'youtube_url',
-        'instagram_url',
-        'tiktok_url',
     ];
 
     /**
@@ -530,10 +528,10 @@ class PublicContentArchive
             foreach (['excerpt', 'content', 'description', 'show_notes', 'transcript', 'meta_title', 'meta_description'] as $field) {
                 $rules["{$type}.*.{$field}"] = ['nullable', 'string'];
             }
-            foreach (['featured_image_path', 'audio_path'] as $field) {
+            foreach (['featured_image_path'] as $field) {
                 $rules["{$type}.*.{$field}"] = ['nullable', 'string', 'max:255'];
             }
-            foreach (['source_url', 'transistor_url', 'audio_url', 'apple_url', 'spotify_url', 'youtube_url'] as $field) {
+            foreach (['source_url', 'transistor_url', 'youtube_url'] as $field) {
                 $rules["{$type}.*.{$field}"] = ['nullable', 'string', 'url:http,https', 'max:255'];
             }
         }
@@ -556,7 +554,7 @@ class PublicContentArchive
         $rules['podcast.name'] = ['required_with:podcast', 'string', 'max:255'];
         $rules['podcast.description'] = ['nullable', 'string'];
         $rules['podcast.cover_image_path'] = ['nullable', 'string', 'max:255'];
-        foreach (['apple_url', 'spotify_url', 'youtube_url', 'instagram_url', 'tiktok_url'] as $field) {
+        foreach (['apple_url', 'spotify_url', 'youtube_url'] as $field) {
             $rules["podcast.{$field}"] = ['nullable', 'string', 'url:http,https', 'max:255'];
         }
 
