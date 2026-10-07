@@ -351,6 +351,22 @@ test('contact form rate limit uses the configured attempts per minute', function
         ->assertSessionHasErrorsIn('contact', 'contact_rate_limit');
 });
 
+test('a rate-limited contact submission keeps everything the visitor typed, including the inquiry type', function (): void {
+    config()->set('mouse28.rate_limits.contact_form_per_minute', 1);
+    $payload = array_merge(contactPayload(), ['website' => 'https://spam.example']);
+    from(route('contact.create'))->post(route('contact.store'), $payload);
+
+    $response = from(route('contact.create'))->post(route('contact.store'), $payload);
+
+    $response->assertRedirect(route('contact.create'))
+        ->assertSessionHasErrorsIn('contact', 'contact_rate_limit')
+        ->assertSessionHasInput('name', 'Dale Cooper')
+        ->assertSessionHasInput('email', 'dale@example.com')
+        ->assertSessionHasInput('type', 'accessibility')
+        ->assertSessionHasInput('message', 'The contact form needs secure bot protection.')
+        ->assertSessionMissing('_old_input.website');
+});
+
 test('contact page exposes a single main landmark without nested complementary regions', function (): void {
     $response = get(route('contact.create'))->assertOk();
 
