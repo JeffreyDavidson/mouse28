@@ -141,10 +141,16 @@ jobs:
         continue-on-error: true
         run: npx playwright install --with-deps chromium
 
+      # A timed-out attempt leaves its root apt-get running and holding the apt lock, so the
+      # retry would fail at once with "Could not get lock". Stop it and repair dpkg first.
       - name: Retry the Chromium install
         if: steps.chromium.outcome == 'failure'
         timeout-minutes: 5
-        run: npx playwright install --with-deps chromium
+        run: |
+          sudo pkill -KILL -x 'apt-get|dpkg' || true
+          timeout 30 sh -c 'while pgrep -x "apt-get|dpkg" > /dev/null; do sleep 1; done' || true
+          sudo dpkg --configure -a
+          npx playwright install --with-deps chromium
 
       - name: Link public storage
         run: php artisan storage:link --no-interaction

@@ -162,7 +162,7 @@
                 </div>
             </section>
 
-            <section class="bg-dark-cream border-navy/10 overflow-x-clip border-t" aria-labelledby="voices-heading">
+            <section class="bg-cream-dark border-navy/10 overflow-x-clip border-t" aria-labelledby="voices-heading">
                 <div class="mx-auto max-w-[86rem] px-4 py-16 sm:px-6 sm:py-20 lg:py-28">
                     <div class="max-w-4xl">
                         <h2

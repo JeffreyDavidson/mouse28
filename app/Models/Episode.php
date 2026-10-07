@@ -134,6 +134,16 @@ class Episode extends Model implements Publishable
 
             $query->orWhere(fn (Builder $query) => $query->missingSeo());
 
+            // No playable media: no Transistor share link and no YouTube video (the readiness checklist and
+            // publishing rule use `transistorEmbedUrl()`; LIKE matches its share-link prefix).
+            $query->orWhere(function (Builder $query): void {
+                $query->where(function (Builder $query): void {
+                    $query->whereNull('transistor_url')->orWhere('transistor_url', 'not like', 'https://share.transistor.fm/s/%');
+                })->where(function (Builder $query): void {
+                    $query->whereNull('youtube_url')->orWhere('youtube_url', '');
+                });
+            });
+
             $query->orWhere(function (Builder $query): void {
                 $query->whereIn('status', [PublishStatus::Published, PublishStatus::Scheduled])->whereNull('published_at');
             });

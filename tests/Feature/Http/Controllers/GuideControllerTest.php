@@ -301,3 +301,18 @@ test('a published guide renders its markdown content', function (): void {
         ->assertSeeHtml('<h2>Arrival plan</h2>')
         ->assertSeeHtml('<strong>sensory break</strong>');
 });
+
+test('guide archive pages past the last one do not exist', function (int $page, int $status): void {
+    config()->set('mouse28.guides_per_page', 1);
+    Guide::factory()->count(2)->create();
+
+    get(route('guides.index', ['page' => $page]))->assertStatus($status);
+})->with([
+    'last page' => [2, 200],
+    'one past the last page' => [3, 404],
+    'far past the last page' => [999, 404],
+]);
+
+test('an empty guide archive still renders its first page', function (): void {
+    get(route('guides.index'))->assertOk();
+});

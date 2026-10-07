@@ -76,6 +76,24 @@ test('podcast cover uploads enforce the five megabyte limit', function (int $siz
     'over the limit' => [5121, false],
 ]);
 
+test('podcast cover uploads accept only JPEG, PNG and WebP images', function (UploadedFile $cover, bool $accepted): void {
+    actingAs(User::factory()->admin()->create());
+
+    $page = livewire(PodcastSettings::class)
+        ->fillForm(['cover_image_path' => $cover])
+        ->call('save');
+
+    $accepted
+        ? $page->assertHasNoFormErrors()
+        : $page->assertHasFormErrors(['cover_image_path']);
+})->with([
+    'JPEG' => [fn (): UploadedFile => UploadedFile::fake()->image('cover.jpg'), true],
+    'PNG' => [fn (): UploadedFile => UploadedFile::fake()->image('cover.png'), true],
+    'WebP' => [fn (): UploadedFile => UploadedFile::fake()->image('cover.webp'), true],
+    'SVG' => [fn (): UploadedFile => UploadedFile::fake()->createWithContent('cover.svg', '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"></svg>'), false],
+    'GIF' => [fn (): UploadedFile => UploadedFile::fake()->image('cover.gif'), false],
+]);
+
 test('podcast settings cannot be saved once admin access is revoked', function (): void {
     $admin = User::factory()->admin()->create();
     actingAs($admin);

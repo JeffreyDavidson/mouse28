@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\ContactType;
+use App\Filament\Resources\ContactInquiries\ContactInquiryResource;
 use App\Mail\ContactMessageReceived;
 use App\Models\ContactInquiry;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\Date;
 
 test('received contact email uses accessible current branding without external fonts', function (): void {
     $inquiry = ContactInquiry::factory()->make();
+    $inquiry->id = 1;
     $inquiry->created_at = now();
 
     $html = new ContactMessageReceived($inquiry)->render();
@@ -24,6 +26,7 @@ test('received contact email renders the inquiry details and an encoded reply li
         'type' => ContactType::Guest,
         'message' => 'Confidential message',
     ]);
+    $inquiry->id = 1;
     $inquiry->created_at = now();
 
     $html = new ContactMessageReceived($inquiry)->render();
@@ -61,4 +64,16 @@ test('received contact email carries a mouse28 notification idempotency key', fu
     $headers = new ContactMessageReceived($inquiry)->headers()->text;
 
     expect($headers['Resend-Idempotency-Key'])->toBe('mouse28-contact-'.hash('sha256', "https://mouse28.test|7|{$createdAt->toISOString()}").'-notification');
+});
+
+test('received contact email shows when it arrived in Eastern time and links to the inquiry in the admin', function (): void {
+    $inquiry = ContactInquiry::factory()->make();
+    $inquiry->id = 42;
+    $inquiry->created_at = Date::parse('2026-10-07 01:30:00', 'UTC');
+
+    $html = new ContactMessageReceived($inquiry)->render();
+
+    expect($html)->toContain('Oct 6, 2026', '9:30 PM')
+        ->not->toContain('Oct 7, 2026', '1:30 AM')
+        ->toContain('href="'.ContactInquiryResource::getUrl('view', ['record' => $inquiry]).'"');
 });

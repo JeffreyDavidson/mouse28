@@ -87,3 +87,15 @@ test('homepage planning posts are the two newest published planning stories', fu
 
     expect($data['planningPosts']->modelKeys())->toBe([$newest->id, $second->id]);
 });
+
+test('homepage lists break publish-time ties by id so their order is stable on MySQL', function (): void {
+    config()->set('mouse28.guides_enabled', true);
+    Post::factory()->count(3)->create();
+    Episode::factory()->create();
+    Guide::factory()->create();
+
+    $orderings = publishTimeOrderings(fn () => app(HomeViewModel::class)->data());
+
+    expect($orderings)->not->toBeEmpty()
+        ->each->toMatch(STABLE_PUBLISH_TIME_ORDER);
+});

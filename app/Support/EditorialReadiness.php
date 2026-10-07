@@ -75,6 +75,7 @@ class EditorialReadiness
     {
         return array_values(array_filter([
             blank($episode->description) ? 'Add a description' : null,
+            $episode->transistorEmbedUrl() === null && blank($episode->youtube_url) ? 'Add a Transistor share link or a YouTube video' : null,
             blank($episode->show_notes) ? 'Add show notes' : null,
             blank($episode->featured_image_path) ? 'Add a cover image' : null,
             blank($episode->duration_seconds) ? 'Set the duration' : null,

@@ -13,6 +13,7 @@ class BlogRssFeed
             ->select(['id', 'slug', 'title', 'excerpt', 'content', 'published_at', 'category_id'])
             ->with('category:id,name')
             ->latest('published_at')
+            ->latest('id')
             ->take(20)
             ->get();
 
@@ -35,7 +36,7 @@ class BlogRssFeed
             $xml .= '<title>'.htmlspecialchars($post->title).'</title>';
             $xml .= '<link>'.route('blog.show', $post).'</link>';
             $xml .= '<guid isPermaLink="true">'.route('blog.show', $post).'</guid>';
-            $xml .= '<description>'.htmlspecialchars($post->excerpt ?? Str::limit(strip_tags($post->content ?? ''), 300)).'</description>';
+            $xml .= '<description>'.htmlspecialchars($post->excerpt ?: Str::limit(PlainText::fromMarkdown($post->content), 300)).'</description>';
             $xml .= '<pubDate>'.$post->published_at->toRfc2822String().'</pubDate>';
 
             if ($post->category !== null) {
