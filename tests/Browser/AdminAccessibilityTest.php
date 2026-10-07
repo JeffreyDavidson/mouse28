@@ -148,6 +148,27 @@ function undersizedFilamentTouchTargetsScript(): string
         JS;
 }
 
+/**
+ * Wait until the trigger's dropdown panel has finished fading in. Filament opens panels with an
+ * opacity transition, and an accessibility scan taken mid-fade measures half-transparent text
+ * as failing colour contrast.
+ */
+function filamentDropdownSettledScript(string $triggerSelector): string
+{
+    $selector = var_export($triggerSelector, true);
+
+    return browserWaitForScript(<<<JS
+        (() => {
+            const panel = document.querySelector({$selector})?.closest('.fi-dropdown')?.querySelector('.fi-dropdown-panel');
+
+            return Boolean(panel)
+                && getComputedStyle(panel).display !== 'none'
+                && getComputedStyle(panel).opacity === '1'
+                && panel.getAnimations({ subtree: true }).length === 0;
+        })()
+        JS);
+}
+
 function filamentDropdownAriaStateScript(string $triggerSelector, bool $isExpanded): string
 {
     $selector = var_export($triggerSelector, true);
@@ -178,6 +199,7 @@ test('user menu keeps expanded state on its button and closes with Escape', func
 
     // Assert
     $page->assertScript(filamentDropdownAriaStateScript('.fi-user-menu .fi-user-menu-trigger', true), true)
+        ->assertScript(filamentDropdownSettledScript('.fi-user-menu .fi-user-menu-trigger'), true)
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors()
         ->keys(':focus', 'Escape')
@@ -195,6 +217,7 @@ test('column manager keeps expanded state on its button and closes with Escape',
 
     // Assert
     $page->assertScript(filamentDropdownAriaStateScript('button[aria-label="Column manager"]', true), true)
+        ->assertScript(filamentDropdownSettledScript('button[aria-label="Column manager"]'), true)
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors()
         ->keys(':focus', 'Escape')
@@ -379,6 +402,7 @@ test('table filter dropdown keeps its expanded state on the trigger button', fun
 
     // Assert
     $page->assertScript(filamentDropdownAriaStateScript('button[aria-label="Filter"]', true), true)
+        ->assertScript(filamentDropdownSettledScript('button[aria-label="Filter"]'), true)
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 
