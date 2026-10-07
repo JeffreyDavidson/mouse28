@@ -45,8 +45,8 @@
                                                     <a href="mailto:{{ $inquiry->email }}" style="font-size: 13px; color: #5b3e9e; text-decoration: none; font-weight: 500;">{{ $inquiry->email }}</a>
                                                 </td>
                                                 <td align="right" valign="top">
-                                                    <p style="margin: 0; font-size: 12px; color: #705f41; font-weight: 500;">{{ $inquiry->created_at->format('M j, Y') }}</p>
-                                                    <p style="margin: 2px 0 0; font-size: 12px; color: #705f41;">{{ $inquiry->created_at->format('g:i A') }}</p>
+                                                    <p style="margin: 0; font-size: 12px; color: #705f41; font-weight: 500;">{{ $receivedAt?->format('M j, Y') }}</p>
+                                                    <p style="margin: 2px 0 0; font-size: 12px; color: #705f41;">{{ $receivedAt?->format('g:i A') }}</p>
                                                 </td>
                                             </tr>
                                         </table>
@@ -77,7 +77,7 @@
                     <tr>
                         <td style="background: #1a1040; border-radius: 0 0 16px 16px; padding: 20px 40px; text-align: center;">
                             <p style="margin: 0 0 6px; font-size: 12px; color: rgba(255,255,255,0.4);">
-                                <a href="{{ url('/admin') }}" style="color: #d4a843; text-decoration: none; font-weight: 600;">View in Admin</a>
+                                <a href="{{ $adminUrl }}" style="color: #d4a843; text-decoration: none; font-weight: 600;">View in Admin</a>
                                 &nbsp;&middot;&nbsp;
                                 <a href="{{ route('home') }}" style="color: rgba(255,255,255,0.5); text-decoration: none;">mouse28.com</a>
                             </p>
