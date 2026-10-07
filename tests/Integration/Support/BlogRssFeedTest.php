@@ -66,6 +66,20 @@ test('blog feed leaves out the category element for an uncategorized post', func
         ->not->toContain('<category>');
 });
 
+test('blog feed describes a post without an excerpt in plain text from its markdown content', function (?string $excerpt): void {
+    Post::factory()->create([
+        'excerpt' => $excerpt,
+        'content' => "## Arrival\n\n**Plan** a flexible arrival.",
+    ]);
+
+    $content = app(BlogRssFeed::class)->content();
+
+    expect($content)->toContain('<description>Arrival Plan a flexible arrival.</description>');
+})->with([
+    'missing excerpt' => [null],
+    'empty excerpt' => [''],
+]);
+
 test('blog feed breaks publish-time ties by id so their order is stable on MySQL', function (): void {
     Post::factory()->count(2)->create();
 

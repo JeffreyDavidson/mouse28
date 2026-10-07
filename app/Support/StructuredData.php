@@ -161,7 +161,7 @@ class StructuredData
 
     private static function description(?string $metaDescription, ?string $summary, ?string $content): string
     {
-        return Str::limit($metaDescription ?: $summary ?: strip_tags($content ?? ''), 200);
+        return Str::limit($metaDescription ?: $summary ?: PlainText::fromMarkdown($content), 200);
     }
 
     private static function duration(int $seconds): string
