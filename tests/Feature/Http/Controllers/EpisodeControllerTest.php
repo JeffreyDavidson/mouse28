@@ -64,7 +64,7 @@ test('the podcast archive renders an uploaded show cover with its responsive var
     Storage::fake('public');
     $disk = Storage::disk('public');
     $disk->put('podcast/cover.png', UploadedFile::fake()->image('cover.png', 700, 700)->getContent());
-    Podcast::settings()->update(['cover_image_path' => 'podcast/cover.png']);
+    primaryPodcast()->update(['cover_image_path' => 'podcast/cover.png']);
 
     get(route('episodes.index'))
         ->assertOk()
@@ -260,20 +260,17 @@ test('episode pages link to the adjacent published episodes', function (): void 
         ->assertDontSee($scheduledEpisode->title);
 });
 
-test('episode destinations override show links and missing destinations fall back', function (): void {
+test('episode pages link to the show platforms and ignore legacy episode links', function (): void {
     $podcast = Podcast::query()->create([
         'name' => 'Mouse28 Travel Podcast',
         'apple_url' => 'https://podcasts.apple.com/show/mouse28',
         'spotify_url' => 'https://open.spotify.com/show/mouse28',
         'youtube_url' => 'https://youtube.com/@mouse28',
     ]);
-    $episode = Episode::factory()->create([
-        'apple_url' => 'https://podcasts.apple.com/episode/42',
-        'spotify_url' => null,
-        'youtube_url' => null,
-    ]);
+    $episode = Episode::factory()->create(['youtube_url' => null]);
+    $episode->forceFill(['apple_url' => 'https://podcasts.apple.com/episode/42'])->save();
 
-    get(route('episodes.show', $episode))->assertOk()->assertSeeHtml('https://podcasts.apple.com/episode/42')->assertSee('Listen to this episode')->assertSeeHtml('https://open.spotify.com/show/mouse28')->assertSee('Visit the show')->assertSeeHtml('https://youtube.com/@mouse28')->assertSee('Visit the channel')->assertSeeHtml(config()->string('podcast.rss_url'))->assertSeeHtml('"name":"Mouse28 Travel Podcast"');
+    get(route('episodes.show', $episode))->assertOk()->assertDontSeeHtml('https://podcasts.apple.com/episode/42')->assertSeeHtml('https://podcasts.apple.com/show/mouse28')->assertSeeHtml('https://open.spotify.com/show/mouse28')->assertSee('Visit the show')->assertSeeHtml('https://youtube.com/@mouse28')->assertSee('Visit the channel')->assertSeeHtml(config()->string('podcast.rss_url'))->assertSeeHtml('"name":"Mouse28 Travel Podcast"');
 });
 
 test('episode pages hide podcast platforms that are not configured', function (): void {
@@ -331,8 +328,8 @@ test('episodes include podcast media duration and breadcrumb structured data', f
     $episode = Episode::factory()->create([
         'season_number' => 3,
         'duration_seconds' => 3723,
-        'audio_url' => 'https://cdn.example.com/episode.mp3',
     ]);
+    $episode->forceFill(['audio_url' => 'https://cdn.example.com/episode.mp3'])->save();
 
     $response = get(route('episodes.show', $episode));
 
@@ -342,7 +339,7 @@ test('episodes include podcast media duration and breadcrumb structured data', f
 
     expect(data_get($podcastEpisode, '@type'))->toBe('PodcastEpisode')
         ->and(data_get($podcastEpisode, 'duration'))->toBe('PT1H2M3S')
-        ->and(data_get($podcastEpisode, 'associatedMedia.contentUrl'))->toBe($episode->audio_url)
+        ->and(data_get($podcastEpisode, 'associatedMedia'))->toBeNull()
         ->and(data_get($podcastEpisode, 'partOfSeason.@type'))->toBe('PodcastSeason')
         ->and(data_get($podcastEpisode, 'partOfSeason.seasonNumber'))->toBe(3)
         ->and(data_get($podcastEpisode, 'partOfSeries.@type'))->toBe('PodcastSeries')
@@ -367,7 +364,7 @@ test('reading page uses the dispatch reading surface', function (): void {
 });
 
 test('podcast links that open a new tab announce it', function (bool $showEpisode): void {
-    Podcast::settings()->update(['apple_url' => 'https://podcasts.apple.com/podcast/mouse28']);
+    primaryPodcast()->update(['apple_url' => 'https://podcasts.apple.com/podcast/mouse28']);
     $episode = Episode::factory()->create(['transistor_url' => 'https://share.transistor.fm/s/abc123']);
 
     $response = get($showEpisode ? route('episodes.show', $episode) : route('episodes.index'))->assertOk();

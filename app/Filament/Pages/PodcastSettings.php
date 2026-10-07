@@ -3,8 +3,10 @@
 namespace App\Filament\Pages;
 
 use App\Models\Podcast;
+use App\Support\PrimaryPodcast;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -47,11 +49,11 @@ class PodcastSettings extends Page
         return auth()->user()?->is_admin === true;
     }
 
-    public function mount(): void
+    public function mount(PrimaryPodcast $primaryPodcast): void
     {
-        $podcast = Podcast::settings();
+        $podcast = $primaryPodcast->findOrCreate();
         $this->form->fill($podcast->only([
-            'name', 'description', 'cover_image_path',
+            'name', 'description', 'long_description', 'color', 'cover_image_path',
             'apple_url', 'spotify_url', 'youtube_url',
         ]));
     }
@@ -76,6 +78,16 @@ class PodcastSettings extends Page
                     ->schema([
                         TextInput::make('name')->required()->maxLength(255),
                         Textarea::make('description')->rows(3)->columnSpanFull(),
+                        Textarea::make('long_description')
+                            ->label('Long description')
+                            ->rows(5)
+                            ->helperText('A fuller introduction to the show.')
+                            ->columnSpanFull(),
+                        ColorPicker::make('color')
+                            ->label('Show colour')
+                            ->hex()
+                            ->regex('/\A#[0-9a-fA-F]{6}\z/')
+                            ->helperText('A six-digit hex colour, such as #5b3e9e.'),
                         FileUpload::make('cover_image_path')
                             ->label('Cover image')
                             ->image()
@@ -101,7 +113,7 @@ class PodcastSettings extends Page
                     Action::make('save')
                         ->label('Save Settings')
                         ->icon(Heroicon::OutlinedCheck)
-                        ->authorize('update', Podcast::info())
+                        ->authorize('update', Podcast::class)
                         ->action(fn () => $this->save()),
                 ])->alignEnd(),
             ])
@@ -110,7 +122,8 @@ class PodcastSettings extends Page
 
     public function save(): void
     {
-        $podcast = Podcast::settings();
+        // Resolved here rather than injected: the Save action calls this method directly.
+        $podcast = app(PrimaryPodcast::class)->findOrCreate();
         Gate::authorize('update', $podcast);
         $data = $this->form->getState();
         $podcast->update($data);

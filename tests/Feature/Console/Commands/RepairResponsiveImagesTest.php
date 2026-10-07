@@ -3,7 +3,6 @@
 use App\Console\Commands\RepairResponsiveImages;
 use App\Models\Episode;
 use App\Models\Guide;
-use App\Models\Podcast;
 use App\Models\Post;
 use App\Services\ResponsiveImageVariants;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -29,7 +28,7 @@ test('it repairs variants for posts, episodes, guides and the podcast, then veri
     Post::factory()->create()->forceFill(['featured_image_path' => 'posts/post.png'])->saveQuietly();
     Episode::factory()->create()->forceFill(['featured_image_path' => 'episodes/episode.png'])->saveQuietly();
     Guide::factory()->create()->forceFill(['featured_image_path' => 'guides/guide.png'])->saveQuietly();
-    Podcast::settings()->forceFill(['cover_image_path' => 'podcast/cover.png'])->saveQuietly();
+    primaryPodcast()->forceFill(['cover_image_path' => 'podcast/cover.png'])->saveQuietly();
     app(ResponsiveImageVariants::class)->generate('podcast/cover.png');
 
     pendingCommand('media:repair-responsive-images')

@@ -31,12 +31,12 @@ test('episode editorial changes record the actor and changed values only', funct
 
     $record->save();
 
-    expect(Activity::query()->count())->toBe(2);
+    expect(Activity::query()->whereMorphedTo('subject', $record)->count())->toBe(2);
 
     $record->delete();
     $record->restore();
 
-    expect(Activity::query()->pluck('event')->all())
+    expect(Activity::query()->whereMorphedTo('subject', $record)->pluck('event')->all())
         ->toBe(['created', 'updated', 'deleted', 'restored']);
 });
 
@@ -60,8 +60,34 @@ test('episodes cannot be published without each required detail', function (stri
     expect($episode->publishingIssues())->toBe([$issue]);
 })->with([
     'description' => ['description', 'Add a description'],
-    'Transistor episode URL' => ['transistor_url', 'Add the Transistor episode URL'],
+    'episode media' => ['transistor_url', 'Add a Transistor share link or a YouTube video'],
 ]);
+
+test('an episode has playable media with a Transistor share link or a YouTube video', function (?string $transistorUrl, ?string $youtubeUrl, bool $hasMedia): void {
+    $episode = Episode::factory()->draft()->make(['transistor_url' => $transistorUrl, 'youtube_url' => $youtubeUrl]);
+
+    expect(in_array('Add a Transistor share link or a YouTube video', $episode->publishingIssues(), true))->toBe(! $hasMedia);
+})->with([
+    'Transistor share link' => ['https://share.transistor.fm/s/428d650c', null, true],
+    'YouTube video' => [null, 'https://www.youtube.com/watch?v=abc', true],
+    'Transistor link that is not a share link' => ['https://example.com/episode', null, false],
+    'neither' => [null, null, false],
+]);
+
+test('the Transistor player URL is built only from a share link', function (?string $transistorUrl, ?string $embedUrl): void {
+    $episode = Episode::factory()->make(['transistor_url' => $transistorUrl]);
+
+    expect($episode->transistorEmbedUrl())->toBe($embedUrl);
+})->with([
+    'share link' => ['https://share.transistor.fm/s/428d650c', 'https://share.transistor.fm/e/428d650c'],
+    'share link with a trailing slash' => ['https://share.transistor.fm/s/428d650c/', 'https://share.transistor.fm/e/428d650c'],
+    'another site' => ['https://example.com/s/428d650c', null],
+    'missing' => [null, null],
+]);
+
+test('episodes no longer accept legacy audio or per-episode platform links', function (): void {
+    expect(new Episode()->getFillable())->not->toContain('audio_url', 'audio_path', 'apple_url', 'spotify_url');
+});
 
 test('an episode relates to every post linked to it', function (): void {
     $episode = Episode::factory()->create();

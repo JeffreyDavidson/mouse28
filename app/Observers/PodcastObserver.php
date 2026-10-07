@@ -4,18 +4,28 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
+use App\Models\Episode;
 use App\Models\Podcast;
 use App\Services\ResponsiveImageLifecycle;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 /**
- * The single-row podcast has no soft deletes, so it cannot use `ManagesStoredMedia`
- * (whose cleanup hangs off `forceDeleted`); this observer removes a replaced or
- * deleted original after commit itself, alongside the responsive variants.
+ * Removes a replaced podcast cover after commit, and a deleted podcast's cover only when
+ * it is permanently deleted, so a trashed podcast can be restored with its cover. Also
+ * restores the episodes that were trashed together with the podcast.
  */
 class PodcastObserver
 {
     public function __construct(private readonly ResponsiveImageLifecycle $lifecycle) {}
+
+    /** Until the sluggable package arrives (Phase 6 slice 8), a podcast created without a slug is slugged from its name. */
+    public function creating(Podcast $podcast): void
+    {
+        if (blank($podcast->slug)) {
+            $podcast->slug = Str::slug((string) $podcast->name);
+        }
+    }
 
     public function created(Podcast $podcast): void
     {
@@ -31,7 +41,25 @@ class PodcastObserver
         }
     }
 
-    public function deleted(Podcast $podcast): void
+    /**
+     * Restore the episodes that were trashed together with the podcast, leaving episodes
+     * that were trashed separately before it in the trash.
+     */
+    public function restoring(Podcast $podcast): void
+    {
+        $deletedAt = $podcast->getAttribute('deleted_at');
+
+        if ($deletedAt === null) {
+            return;
+        }
+
+        $podcast->episodes()
+            ->onlyTrashed()
+            ->where('deleted_at', '>=', $deletedAt)
+            ->each(fn (Episode $episode): bool => $episode->restore());
+    }
+
+    public function forceDeleted(Podcast $podcast): void
     {
         $this->lifecycle->deleted($podcast, 'cover_image_path');
         $this->deleteOriginalAfterCommit($podcast, $podcast->cover_image_path);

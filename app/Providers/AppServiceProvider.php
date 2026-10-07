@@ -13,6 +13,7 @@ use App\Support\Monitoring\Nightwatch\RedactNightwatchRequest;
 use App\Support\Monitoring\Nightwatch\ResolveNightwatchUser;
 use App\Support\Monitoring\Sentry\RedactSentryBreadcrumb;
 use App\Support\Monitoring\Sentry\RedactSentryEvent;
+use App\Support\PrimaryPodcast;
 use App\Support\SafeReturnUrl;
 use App\View\Composers\PodcastComposer;
 use App\View\Composers\SocialProfilesComposer;
@@ -35,6 +36,8 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->app->scoped(PrimaryPodcast::class);
+
         $this->app->afterResolving(ClientBuilder::class, function (ClientBuilder $clientBuilder): void {
             $options = $clientBuilder->getOptions();
             $options->setBeforeSendCallback($this->app->make(RedactSentryEvent::class));

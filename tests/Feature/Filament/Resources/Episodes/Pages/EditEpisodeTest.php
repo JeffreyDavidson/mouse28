@@ -235,3 +235,30 @@ test('the SEO section saves its title and description to the SEO row', function 
     expect($record->refresh()->seo->title)->toBe('A saved SEO title')
         ->and($record->seo->description)->toBe('A saved SEO description.');
 });
+
+test('an episode guest is saved from the edit form', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $episode = Episode::factory()->draft()->create();
+
+    livewire(EditEpisode::class, ['record' => $episode->getRouteKey()])
+        ->fillForm(['guest_name' => 'Guest Name', 'guest_title' => 'Guest title', 'guest_url' => 'https://example.test/guest'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($episode->refresh())
+        ->guest_name->toBe('Guest Name')
+        ->guest_title->toBe('Guest title')
+        ->guest_url->toBe('https://example.test/guest');
+});
+
+test('an episode guest link must be a web address', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $episode = Episode::factory()->draft()->create();
+
+    livewire(EditEpisode::class, ['record' => $episode->getRouteKey()])
+        ->fillForm(['guest_url' => 'not a link'])
+        ->call('save')
+        ->assertHasFormErrors(['guest_url' => 'url']);
+
+    expect($episode->refresh()->guest_url)->toBeNull();
+});

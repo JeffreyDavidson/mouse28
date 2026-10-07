@@ -1,7 +1,6 @@
 <?php
 
 use App\Filament\Pages\PodcastSettings;
-use App\Models\Podcast;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -17,7 +16,7 @@ pest()->use(RefreshDatabase::class);
 test('podcast links enforce their storage length without changing saved settings', function (string $field): void {
     // Arrange
     actingAs(User::factory()->admin()->create());
-    $podcast = Podcast::settings();
+    $podcast = primaryPodcast();
     $original = $podcast->getAttribute($field);
     $page = livewire(PodcastSettings::class);
 
@@ -43,7 +42,7 @@ test('podcast links accept the full supported storage length', function (): void
 
     // Assert
     $page->assertHasNoFormErrors();
-    expect(Podcast::settings()->only(array_keys($links)))->toBe($links);
+    expect(primaryPodcast()->only(array_keys($links)))->toBe($links);
 });
 
 test('authenticated user can render podcast settings', function (): void {
@@ -80,7 +79,7 @@ test('podcast cover uploads enforce the five megabyte limit', function (int $siz
 test('podcast settings cannot be saved once admin access is revoked', function (): void {
     $admin = User::factory()->admin()->create();
     actingAs($admin);
-    $podcast = Podcast::settings();
+    $podcast = primaryPodcast();
     $page = livewire(PodcastSettings::class)->fillForm(['name' => 'Changed name']);
     $admin->is_admin = false;
 
@@ -92,16 +91,40 @@ test('a replaced podcast cover is stored under podcast with variants and the pre
     Storage::fake('public');
     actingAs(User::factory()->admin()->create());
     Storage::disk('public')->put('podcast/previous.png', UploadedFile::fake()->image('previous.png', 600, 600)->getContent());
-    Podcast::settings()->update(['cover_image_path' => 'podcast/previous.png']);
+    primaryPodcast()->update(['cover_image_path' => 'podcast/previous.png']);
 
     livewire(PodcastSettings::class)
         ->fillForm(['cover_image_path' => [UploadedFile::fake()->image('cover.png', 600, 600)]])
         ->call('save')
         ->assertHasNoFormErrors();
 
-    $path = Podcast::settings()->cover_image_path;
+    $path = primaryPodcast()->cover_image_path;
     expect($path)->toStartWith('podcast/')
         ->not->toBe('podcast/previous.png');
     Storage::disk('public')->assertExists([$path, 'podcast/responsive/'.pathinfo((string) $path, PATHINFO_FILENAME).'-480.webp']);
     Storage::disk('public')->assertMissing(['podcast/previous.png', 'podcast/responsive/previous-480.webp']);
 });
+
+test('the long description and show colour are saved with the settings', function (): void {
+    actingAs(User::factory()->admin()->create());
+
+    livewire(PodcastSettings::class)
+        ->fillForm(['long_description' => 'A longer show summary.', 'color' => '#5b3e9e'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect(primaryPodcast())
+        ->long_description->toBe('A longer show summary.')
+        ->color->toBe('#5b3e9e');
+});
+
+test('the show colour must be a six digit hex colour', function (string $color): void {
+    actingAs(User::factory()->admin()->create());
+
+    livewire(PodcastSettings::class)
+        ->fillForm(['color' => $color])
+        ->call('save')
+        ->assertHasFormErrors(['color']);
+
+    expect(primaryPodcast()->color)->toBeNull();
+})->with(['named colour' => ['purple'], 'short hex' => ['#fff'], 'missing hash' => ['5b3e9e']]);

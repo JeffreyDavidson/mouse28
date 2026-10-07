@@ -67,6 +67,24 @@ class EpisodeForm
                             ->columnSpan(1),
                     ]),
 
+                Section::make('Guest')
+                    ->icon(Heroicon::OutlinedUser)
+                    ->description('Optional. Shown in the admin only for now.')
+                    ->columns(3)
+                    ->collapsed()
+                    ->schema([
+                        TextInput::make('guest_name')
+                            ->label('Name')
+                            ->maxLength(255),
+                        TextInput::make('guest_title')
+                            ->label('Title')
+                            ->maxLength(255),
+                        TextInput::make('guest_url')
+                            ->label('Link')
+                            ->url()
+                            ->maxLength(255),
+                    ]),
+
                 Grid::make(2)
                     ->schema([
                         Section::make('Media')
@@ -141,10 +159,8 @@ class EpisodeForm
                     ->schema([
                         Section::make('Distribution')
                             ->icon(Heroicon::OutlinedSignal)
-                            ->description('Where listeners can find this episode')
+                            ->description('Apple Podcasts and Spotify links are set once for the show in Podcast Settings.')
                             ->schema([
-                                TextInput::make('apple_url')->url()->maxLength(255)->label('Apple Podcasts')->prefixIcon(Heroicon::OutlinedLink),
-                                TextInput::make('spotify_url')->url()->maxLength(255)->label('Spotify')->prefixIcon(Heroicon::OutlinedLink),
                                 TextInput::make('youtube_url')->url()->maxLength(255)->label('YouTube')->prefixIcon(Heroicon::OutlinedLink),
                             ]),
 
