@@ -59,3 +59,15 @@ test('an administrator can save a post draft from the dashboard widget', functio
         ->and($post->author_name)->toBe('Jeffrey & Cassie')
         ->and($post->status)->toBe(PublishStatus::Draft);
 });
+
+test('a draft title with no letters or numbers is rejected because it cannot name the post', function (): void {
+    actingAs(User::factory()->admin()->create());
+
+    livewire(QuickDraft::class)
+        ->set('data.title', '!!!')
+        ->call('saveDraft')
+        ->assertNotNotified()
+        ->assertHasErrors(['title']);
+
+    expect(Post::query()->count())->toBe(0);
+});

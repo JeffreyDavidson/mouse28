@@ -90,3 +90,9 @@ test('issue edits record the editor and the changed values only', function (): v
 
     expect(Activity::query()->count())->toBe(2);
 });
+
+test('creating a newsletter issue without a slug names it from its title', function (): void {
+    $issue = NewsletterIssue::factory()->create(['title' => 'Spring Park Notes', 'slug' => null]);
+
+    expect($issue->slug)->toBe('spring-park-notes');
+});

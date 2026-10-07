@@ -177,3 +177,9 @@ test('guide content edits are recorded in the editorial log', function (): void 
         'old' => ['content' => 'Original content'],
     ]);
 });
+
+test('creating a guide without a slug names it from its title', function (): void {
+    $guide = Guide::factory()->create(['title' => 'Quiet Spaces Guide', 'slug' => null]);
+
+    expect($guide->slug)->toBe('quiet-spaces-guide');
+});

@@ -17,11 +17,8 @@ class EpisodeFactory extends Factory
 
     public function definition(): array
     {
-        $title = fake()->unique()->sentence(6);
-
         return [
-            'title' => $title,
-            'slug' => str($title)->slug(),
+            'title' => fake()->unique()->sentence(6),
             'description' => fake()->sentence(18),
             'show_notes' => fake()->paragraphs(3, true),
             'transcript' => fake()->paragraphs(4, true),

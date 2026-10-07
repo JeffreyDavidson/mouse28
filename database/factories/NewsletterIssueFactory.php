@@ -19,11 +19,8 @@ class NewsletterIssueFactory extends Factory
      */
     public function definition(): array
     {
-        $title = fake()->unique()->sentence(5);
-
         return [
-            'title' => $title,
-            'slug' => str($title)->slug(),
+            'title' => fake()->unique()->sentence(5),
             'excerpt' => fake()->sentence(16),
             'content' => fake()->paragraphs(3, true),
             'status' => PublishStatus::Published,

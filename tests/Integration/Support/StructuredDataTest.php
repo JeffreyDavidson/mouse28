@@ -182,6 +182,7 @@ test('post and guide structured data credit one author as a person and several a
 
 test('post structured data describes markdown content in plain text', function (): void {
     $post = Post::factory()->make([
+        'slug' => 'flexible-arrival',
         'excerpt' => null,
         'content' => "## Arrival\n\n**Plan** a flexible arrival.",
     ]);

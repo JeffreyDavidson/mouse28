@@ -308,3 +308,26 @@ test('posts no longer expose the legacy single episode link', function (): void 
         ->and($post->getFillable())->not->toContain('episode_id')
         ->and($post->getActivitylogOptions()->logAttributes)->not->toContain('episode_id');
 });
+
+test('creating a post without a slug names it from its title', function (): void {
+    $post = Post::factory()->create(['title' => 'Plan a Quiet Park Day', 'slug' => null]);
+
+    expect($post->slug)->toBe('plan-a-quiet-park-day');
+});
+
+test('a new post whose title is taken gets the next free numbered slug, counting trashed posts', function (): void {
+    Post::factory()->create(['slug' => 'quiet-park-day']);
+    Post::factory()->create(['slug' => 'quiet-park-day-2'])->delete();
+
+    $post = Post::factory()->create(['title' => 'Quiet Park Day', 'slug' => null]);
+
+    expect($post->slug)->toBe('quiet-park-day-3');
+});
+
+test('changing a post title keeps its slug', function (): void {
+    $post = Post::factory()->draft()->create(['title' => 'First Title', 'slug' => 'first-title']);
+
+    $post->update(['title' => 'A Better Title']);
+
+    expect($post->refresh()->slug)->toBe('first-title');
+});

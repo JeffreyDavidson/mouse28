@@ -78,3 +78,9 @@ test('category changes are recorded in the editorial log', function (): void {
             'old' => ['name' => 'Original name'],
         ]);
 });
+
+test('creating a category without a slug names it from its name', function (): void {
+    $category = Category::factory()->create(['name' => 'Water Parks', 'slug' => null]);
+
+    expect($category->slug)->toBe('water-parks');
+});

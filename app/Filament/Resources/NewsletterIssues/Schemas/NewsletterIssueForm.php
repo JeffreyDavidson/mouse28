@@ -4,13 +4,11 @@ namespace App\Filament\Resources\NewsletterIssues\Schemas;
 
 use App\Filament\Forms\Components\PublishDatePicker;
 use App\Filament\Forms\Components\PublishStatusSelect;
-use App\Models\NewsletterIssue;
+use App\Filament\Forms\Components\SlugInput;
+use App\Filament\Forms\Components\SlugSourceInput;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Routing\Route;
@@ -29,24 +27,13 @@ class NewsletterIssueForm
                     ->description('Title, permalink and summary shown in the public archive')
                     ->columns(4)
                     ->schema([
-                        TextInput::make('title')
+                        SlugSourceInput::make('title')
                             ->required()
                             ->maxLength(255)
-                            ->columnSpan(2)
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(function (Get $get, Set $set, ?string $state): void {
-                                if (! $get('slug')) {
-                                    $set('slug', Str::slug($state ?? ''));
-                                }
-                            }),
-                        TextInput::make('slug')
-                            ->regex('/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/')
+                            ->columnSpan(2),
+                        SlugInput::make('slug')
+                            ->lockedAfterPublication()
                             ->notIn(fn (): array => self::reservedSlugs())
-                            ->disabled(fn (?NewsletterIssue $record): bool => $record?->isSlugLocked() ?? false)
-                            ->helperText('Lowercase words separated by hyphens. URLs stay locked after first publication, even when unpublished or rescheduled.')
-                            ->required()
-                            ->maxLength(255)
-                            ->unique()
                             ->columnSpan(2),
                         Textarea::make('excerpt')
                             ->maxLength(300)

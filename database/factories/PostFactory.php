@@ -20,11 +20,8 @@ class PostFactory extends Factory
 
     public function definition(): array
     {
-        $title = fake()->unique()->sentence(6);
-
         return [
-            'title' => $title,
-            'slug' => str($title)->slug(),
+            'title' => fake()->unique()->sentence(6),
             'excerpt' => fake()->sentence(18),
             'content' => fake()->paragraphs(5, true),
             'category_id' => Category::factory(),
