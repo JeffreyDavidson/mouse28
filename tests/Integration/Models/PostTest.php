@@ -331,3 +331,40 @@ test('changing a post title keeps its slug', function (): void {
 
     expect($post->refresh()->slug)->toBe('first-title');
 });
+
+test('a post records its review notes, reviewer and review time', function (): void {
+    $reviewer = User::factory()->create();
+
+    $post = Post::factory()->create([
+        'review_notes' => 'Check the park hours.',
+        'reviewed_by' => $reviewer->id,
+        'reviewed_at' => '2026-10-07 14:30:00',
+    ]);
+
+    $post->refresh();
+
+    expect($post->review_notes)->toBe('Check the park hours.')
+        ->and($post->reviewer?->is($reviewer))->toBeTrue()
+        ->and($post->reviewed_at?->toDateTimeString())->toBe('2026-10-07 14:30:00');
+});
+
+test('a post without a review has no reviewer', function (): void {
+    $post = Post::factory()->create();
+
+    expect($post)
+        ->review_notes->toBeNull()
+        ->reviewer->toBeNull()
+        ->reviewed_at->toBeNull();
+});
+
+test('post review changes are recorded in the editorial log', function (): void {
+    $reviewer = User::factory()->create();
+    $record = Post::factory()->create();
+
+    $record->update(['review_notes' => 'Add the new rider switch policy.', 'reviewed_by' => $reviewer->id]);
+
+    expect(Activity::query()->latest('id')->firstOrFail()->attribute_changes?->all() ?? [])->toEqual([
+        'attributes' => ['review_notes' => 'Add the new rider switch policy.', 'reviewed_by' => $reviewer->id],
+        'old' => ['review_notes' => null, 'reviewed_by' => null],
+    ]);
+});

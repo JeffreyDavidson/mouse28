@@ -46,3 +46,7 @@ Posts, episodes and guides store their cover in `featured_image_path` and the po
 
 ## Generate slugs with the sluggable package
 Posts, guides, episodes and newsletter issues use `#[Sluggable(from: 'title', maxLength: 255)]`, categories and podcasts `from: 'name'` (`nunomaduro/laravel-sluggable`, TLA's package). Leave the slug out when creating a record in code (factories, widgets, seeders that don't need a fixed address) and let the package name it; it never rewrites an existing slug, so `LocksSlugAfterPublication` stays the only rule for editing. Keep `maxLength: 255` so generated slugs fit the column. Admin forms use the shared `SlugSourceInput` and `SlugInput` (copied byte-for-byte from TLA) rather than their own title-to-slug hooks or slug rules.
+
+## Keep post review notes private
+Posts have TLA's `review_notes`, `reviewed_by` (`Post::reviewer()`, NULL when the user is deleted) and `reviewed_at`. They are private editorial data: never export them in public archives, render them on public pages or overwrite them on import. Nothing sets `reviewed_by` / `reviewed_at` yet (as in TLA); change that in both sites together. Guides have no review fields.
+
