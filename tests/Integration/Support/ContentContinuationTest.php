@@ -178,3 +178,22 @@ test('an episode without a publication date has no chronological neighbors', fun
     expect($previous)->toBeNull()
         ->and($next)->toBeNull();
 });
+
+test('related content and adjacent episodes break publish-time ties by id so their order is stable on MySQL', function (): void {
+    $category = Category::factory()->create();
+    $post = Post::factory()->for($category)->create();
+    Post::factory()->for($category)->count(2)->create();
+    $guide = Guide::factory()->create();
+    Guide::factory()->count(2)->create();
+    $episode = Episode::factory()->create();
+
+    $orderings = publishTimeOrderings(function () use ($post, $guide, $episode): void {
+        ContentContinuation::relatedPosts($post);
+        ContentContinuation::relatedGuides($guide);
+        ContentContinuation::previousEpisode($episode);
+        ContentContinuation::nextEpisode($episode);
+    });
+
+    expect($orderings)->not->toBeEmpty()
+        ->each->toMatch(STABLE_PUBLISH_TIME_ORDER);
+});

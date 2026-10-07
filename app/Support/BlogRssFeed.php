@@ -13,6 +13,7 @@ class BlogRssFeed
             ->select(['id', 'slug', 'title', 'excerpt', 'content', 'published_at', 'category_id'])
             ->with('category:id,name')
             ->latest('published_at')
+            ->latest('id')
             ->take(20)
             ->get();
 

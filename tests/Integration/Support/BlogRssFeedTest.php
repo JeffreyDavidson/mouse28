@@ -65,3 +65,12 @@ test('blog feed leaves out the category element for an uncategorized post', func
     expect($content)->toContain('<item>')
         ->not->toContain('<category>');
 });
+
+test('blog feed breaks publish-time ties by id so their order is stable on MySQL', function (): void {
+    Post::factory()->count(2)->create();
+
+    $orderings = publishTimeOrderings(fn () => app(BlogRssFeed::class)->content());
+
+    expect($orderings)->not->toBeEmpty()
+        ->each->toMatch(STABLE_PUBLISH_TIME_ORDER);
+});
