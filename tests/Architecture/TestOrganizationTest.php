@@ -73,6 +73,7 @@ test('test paths mirror their application source', function (string $suite): voi
         'Database/Migrations/BackfillSeoFromMetaColumnsTest.php' => 'database/migrations/2026_10_05_174142_backfill_seo_from_meta_columns.php',
         'Database/Migrations/AddPodcastShapeTest.php' => 'database/migrations/2026_10_06_231450_add_podcast_and_guest_fields_to_episodes_table.php',
         'Database/Migrations/DropLegacyMetaColumnsTest.php' => 'database/migrations/2026_10_06_003047_drop_legacy_meta_columns.php',
+        'Database/Migrations/AddReviewFieldsToPostsTableTest.php' => 'database/migrations/2026_10_07_222557_add_review_fields_to_posts_table.php',
         'Database/Migrations/DropLegacyEpisodeMediaAndPodcastSocialColumnsTest.php' => 'database/migrations/2026_10_07_031500_drop_legacy_episode_media_and_podcast_social_columns.php',
         'Config/MediaTest.php' => 'config/media.php',
         'Http/ProductionSmokeTest.php' => 'routes/web.php',

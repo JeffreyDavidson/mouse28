@@ -185,3 +185,19 @@ test('post creation rejects a submitted user who is not an author', function ():
 
     expect(Post::query()->count())->toBe(0);
 });
+
+test('a new post saves its review notes', function (): void {
+    actingAs(User::factory()->admin()->create());
+
+    livewire(CreatePost::class)
+        ->fillForm([
+            'title' => 'Sample draft',
+            'slug' => 'sample-draft',
+            'category_id' => Category::factory()->create()->id,
+            'review_notes' => 'Needs a source for the new policy.',
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    expect(Post::query()->sole()->review_notes)->toBe('Needs a source for the new policy.');
+});

@@ -43,6 +43,10 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property int|null $category_id
  * @property-read Category|null $category
  * @property-read Collection<int, User> $authors
+ * @property string|null $review_notes
+ * @property int|null $reviewed_by
+ * @property-read User|null $reviewer
+ * @property Carbon|null $reviewed_at
  * @property Carbon|null $last_reviewed_at
  * @property Carbon|null $published_at
  * @property CarbonInterface|null $slug_locked_at
@@ -65,6 +69,9 @@ use Spatie\Activitylog\Support\LogOptions;
     'slug',
     'excerpt',
     'content',
+    'review_notes',
+    'reviewed_by',
+    'reviewed_at',
     'source_url',
     'last_reviewed_at',
     'featured_image_path',
@@ -91,6 +98,9 @@ class Post extends Model implements Publishable
                 'slug',
                 'excerpt',
                 'content',
+                'review_notes',
+                'reviewed_by',
+                'reviewed_at',
                 'source_url',
                 'last_reviewed_at',
                 'featured_image_path',
@@ -111,6 +121,12 @@ class Post extends Model implements Publishable
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /** @return BelongsTo<User, $this> */
+    public function reviewer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
     }
 
     /** @return BelongsToMany<Episode, $this> */
@@ -204,6 +220,7 @@ class Post extends Model implements Publishable
     {
         return [
             'status' => PublishStatus::class,
+            'reviewed_at' => 'datetime',
             'last_reviewed_at' => 'date',
             'published_at' => 'datetime',
             'slug_locked_at' => 'datetime',

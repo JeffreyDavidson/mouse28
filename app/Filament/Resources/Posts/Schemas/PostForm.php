@@ -8,6 +8,7 @@ use App\Filament\Forms\Components\PublishStatusSelect;
 use App\Filament\Forms\Components\SlugInput;
 use App\Filament\Forms\Components\SlugSourceInput;
 use App\Models\Category;
+use App\Models\Post;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
@@ -83,6 +84,17 @@ class PostForm
                         MarkdownEditor::make('content')
                             ->dehydrateStateUsing(fn (?string $state): string => $state ?? ''),
                     ]),
+
+                Section::make('Review')
+                    ->schema([
+                        Textarea::make('review_notes')
+                            ->label('Review Notes')
+                            ->rows(3)
+                            ->helperText('Feedback from the reviewer')
+                            ->columnSpanFull(),
+                    ])
+                    ->collapsible()
+                    ->collapsed(fn (?Post $record): bool => $record?->review_notes === null),
 
                 Section::make('Review & Source')
                     ->description('Optional for evergreen posts. Policy and planning posts should include both fields.')
