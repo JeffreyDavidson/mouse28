@@ -24,9 +24,10 @@
         <x-preview-banner />
     @endif
 
+    {{-- Starts just below the sticky header (h-20 plus its 1px border), which would otherwise cover it. --}}
     <div
         id="reading-progress"
-        class="from-gold to-gold-light fixed top-16 left-0 z-40 h-[3px] w-0 bg-linear-to-r transition-[width] duration-100 ease-linear"
+        class="from-gold to-gold-light fixed top-[calc(5rem+1px)] left-0 z-40 h-[3px] w-0 bg-linear-to-r transition-[width] duration-100 ease-linear"
     ></div>
 
     <section class="editorial-detail-hero bg-navy text-cream relative overflow-hidden">
