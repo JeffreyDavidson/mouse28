@@ -18,7 +18,6 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -42,8 +41,6 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property Carbon $updated_at
  * @property string|null $featured_image_path
  * @property-read string|null $featured_image_url
- * @property-read string $formatted_duration
- * @property-read string|null $transistor_embed_url
  *
  * @method static Builder<static> needsAttention()
  * @method static Builder<static> published()
@@ -60,10 +57,6 @@ use Spatie\Activitylog\Support\LogOptions;
     'episode_number',
     'season_number',
     'transistor_url',
-    'audio_url',
-    'audio_path',
-    'apple_url',
-    'spotify_url',
     'youtube_url',
     'guest_name',
     'guest_title',
@@ -95,8 +88,6 @@ class Episode extends Model implements Publishable
                 'episode_number',
                 'season_number',
                 'transistor_url',
-                'apple_url',
-                'spotify_url',
                 'youtube_url',
                 'podcast_id',
                 'guest_name',
@@ -149,36 +140,17 @@ class Episode extends Model implements Publishable
         });
     }
 
-    /** @return Attribute<string|null, never> */
-    protected function transistorEmbedUrl(): Attribute
+    /** The embeddable Transistor player for a share link (https://share.transistor.fm/s/{id}); null otherwise. */
+    public function transistorEmbedUrl(): ?string
     {
-        return Attribute::make(get: function (): ?string {
-            if (! is_string($this->transistor_url)) {
-                return null;
-            }
+        $url = $this->getAttribute('transistor_url');
+        $matches = [];
 
-            $matches = [];
+        if (! is_string($url) || preg_match('/\Ahttps:\/\/share\.transistor\.fm\/s\/([a-zA-Z0-9]+)\/?\z/', $url, $matches) !== 1) {
+            return null;
+        }
 
-            if (preg_match('/\Ahttps:\/\/share\.transistor\.fm\/s\/([a-zA-Z0-9]+)\/?\z/', $this->transistor_url, $matches) !== 1) {
-                return null;
-            }
-
-            return "https://share.transistor.fm/e/{$matches[1]}";
-        });
-    }
-
-    /** @return Attribute<string, never> */
-    protected function formattedDuration(): Attribute
-    {
-        return Attribute::make(get: function (): string {
-            if (! $this->duration_seconds) {
-                return '';
-            }
-            $minutes = floor($this->duration_seconds / 60);
-            $seconds = $this->duration_seconds % 60;
-
-            return sprintf('%d:%02d', $minutes, $seconds);
-        });
+        return "https://share.transistor.fm/e/{$matches[1]}";
     }
 
     protected function casts(): array
@@ -199,7 +171,7 @@ class Episode extends Model implements Publishable
     {
         return array_values(array_filter([
             blank($this->description) ? 'Add a description' : null,
-            blank($this->transistor_url) ? 'Add the Transistor episode URL' : null,
+            $this->transistorEmbedUrl() === null && blank($this->youtube_url) ? 'Add a Transistor share link or a YouTube video' : null,
         ]));
     }
 }

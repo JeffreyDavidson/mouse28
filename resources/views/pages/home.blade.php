@@ -338,7 +338,7 @@
                                 <div class="min-w-0">
                                     <p class="text-gold text-sm tabular-nums sm:text-xs">
                                         Episode {{ $episode->episode_number }}
-                                        @if ($episode->duration_seconds) ·{{ $episode->formatted_duration }}@endif
+                                        @if ($episode->duration_seconds) ·{{ \App\Presenters\EpisodePresenter::from($episode)->duration() }}@endif
                                     </p>
                                     <h3 class="font-heading text-cream group-hover:text-gold mt-1 line-clamp-2 text-lg [font-weight:560] tracking-[-0.012em]">
                                         {{ $episode->title }}

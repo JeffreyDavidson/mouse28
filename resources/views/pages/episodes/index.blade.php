@@ -61,7 +61,7 @@
                             <div class="text-cream/65 mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm">
                                 <x-display-date :date="$latestEpisode->published_at" />
                                 @if ($latestEpisode->duration_seconds)
-                                    <span>{{ $latestEpisode->formatted_duration }}</span>
+                                    <span>{{ \App\Presenters\EpisodePresenter::from($latestEpisode)->duration() }}</span>
                                 @endif
                                 @if ($latestEpisode->season_number)
                                     <span>Season {{ $latestEpisode->season_number }}, episode {{ $latestEpisode->episode_number }}</span>
@@ -70,7 +70,7 @@
                             <a
                                 href="{{ route('episodes.show', $latestEpisode) }}"
                                 class="bg-gold text-navy hover:bg-gold-light mt-5 inline-flex min-h-12 items-center rounded-full px-6 py-3 font-semibold transition-colors"
-                            >{{ $latestEpisode->transistor_embed_url ? 'Listen now' : 'Episode details' }}</a>
+                            >{{ $latestEpisode->transistorEmbedUrl() ? 'Listen now' : 'Episode details' }}</a>
                         </div>
                     @else
                         <div class="border-gold/35 mt-8 border-y py-6">
@@ -144,7 +144,7 @@
                                                             format="M j, Y"
                                                         />
                                                         @if ($episode->duration_seconds)
-                                                            <span>{{ $episode->formatted_duration }}</span>
+                                                            <span>{{ \App\Presenters\EpisodePresenter::from($episode)->duration() }}</span>
                                                         @endif
                                                     </div>
                                                     <h4 class="font-heading text-navy group-hover:text-purple mt-2 text-2xl [font-weight:600] tracking-[-0.015em] text-balance transition-colors">
@@ -155,7 +155,7 @@
                                                     </p>
                                                 </div>
                                                 <span class="text-purple decoration-gold/70 inline-flex min-h-12 shrink-0 items-center font-semibold underline underline-offset-8">
-                                                    {{ $episode->transistor_embed_url ? 'Listen now' : 'Episode details' }}
+                                                    {{ $episode->transistorEmbedUrl() ? 'Listen now' : 'Episode details' }}
                                                 </span>
                                             </a>
                                         </article>

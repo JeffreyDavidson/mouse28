@@ -35,7 +35,7 @@ class EpisodesTable
                 TextColumn::make('transistor_url')
                     ->label('Player')
                     ->badge()
-                    ->getStateUsing(fn (Episode $record): string => $record->transistor_embed_url ? 'Available' : 'Not available')
+                    ->getStateUsing(fn (Episode $record): string => $record->transistorEmbedUrl() ? 'Available' : 'Not available')
                     ->color(fn (string $state): string => $state === 'Available' ? 'success' : 'gray'),
                 TextColumn::make('transcript')
                     ->badge()

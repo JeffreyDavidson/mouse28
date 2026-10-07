@@ -27,13 +27,15 @@
 
     @php
         $showNotesLength = Str::of(strip_tags($episode->show_notes ?? ''))->squish()->length();
-        $isSparseEpisode = blank($episode->transistor_embed_url)
+        $embedUrl = $episode->transistorEmbedUrl();
+        $duration = \App\Presenters\EpisodePresenter::from($episode)->duration();
+        $isSparseEpisode = blank($embedUrl)
             && blank($episode->transcript)
             && $showNotesLength < 160;
         $coverImage = $episode->featured_image_url
             ?: ($podcast->cover_image_path ? '/storage/'.ltrim($podcast->cover_image_path, '/') : '/images/podcast/mouse28-cover.webp');
-        $appleUrl = $episode->apple_url ?: $podcast->apple_url;
-        $spotifyUrl = $episode->spotify_url ?: $podcast->spotify_url;
+        $appleUrl = $podcast->apple_url;
+        $spotifyUrl = $podcast->spotify_url;
         $youtubeUrl = $episode->youtube_url ?: $podcast->youtube_url;
     @endphp
 
@@ -63,7 +65,7 @@
                         <span>Season {{ $episode->season_number }}</span>
                     @endif
                     @if ($episode->duration_seconds)
-                        <span>{{ $episode->formatted_duration }}</span>
+                        <span>{{ $duration }}</span>
                     @endif
                     <x-display-date :date="$episode->published_at" fallback="Not scheduled" />
                 </div>
@@ -79,9 +81,9 @@
                 <section class="border-gold/30 mt-8 border-y py-6" aria-labelledby="episode-listening-heading">
                     <div class="flex flex-wrap items-center justify-between gap-x-6 gap-y-1">
                         <h2 id="episode-listening-heading" class="font-heading text-xl [font-weight:620]">
-                            {{ $episode->transistor_embed_url ? 'Listen to this episode' : 'Listen elsewhere' }}
+                            {{ $embedUrl ? 'Listen to this episode' : 'Listen elsewhere' }}
                         </h2>
-                        @if ($episode->transistor_embed_url)
+                        @if ($embedUrl)
                             <a
                                 href="{{ $episode->transistor_url }}"
                                 target="_blank"
@@ -96,10 +98,10 @@
                         @endif
                     </div>
 
-                    @if ($episode->transistor_embed_url)
+                    @if ($embedUrl)
                         <div class="mt-3 overflow-hidden rounded-xl bg-white">
                             <iframe
-                                src="{{ $episode->transistor_embed_url }}"
+                                src="{{ $embedUrl }}"
                                 title="Listen to {{ $episode->title }}"
                                 width="100%"
                                 height="180"
@@ -109,28 +111,28 @@
                         </div>
                     @endif
 
-                    <div @class(['mt-5', 'border-cream/15 border-t pt-5' => $episode->transistor_embed_url])>
-                        @if ($episode->transistor_embed_url)
+                    <div @class(['mt-5', 'border-cream/15 border-t pt-5' => $embedUrl])>
+                        @if ($embedUrl)
                             <p class="text-cream/55 text-xs font-semibold tracking-[0.14em] uppercase">
                                 Listen elsewhere
                             </p>
                         @endif
                         <nav
                             aria-label="Podcast listening options"
-                            @class(['flex flex-wrap gap-x-7 gap-y-1', 'mt-2' => $episode->transistor_embed_url])
+                            @class(['flex flex-wrap gap-x-7 gap-y-1', 'mt-2' => $embedUrl])
                         >
                             @if ($appleUrl)
                                 <x-external-resource-link
                                     :href="$appleUrl"
                                     label="Apple Podcasts"
-                                    :description="$episode->apple_url ? 'Listen to this episode' : 'Visit the show'"
+                                    description="Visit the show"
                                 />
                             @endif
                             @if ($spotifyUrl)
                                 <x-external-resource-link
                                     :href="$spotifyUrl"
                                     label="Spotify"
-                                    :description="$episode->spotify_url ? 'Listen to this episode' : 'Visit the show'"
+                                    description="Visit the show"
                                 />
                             @endif
                             @if ($youtubeUrl)
@@ -162,7 +164,7 @@
                 @if ($episode->duration_seconds)
                     <div class="flex min-h-12 items-center justify-between gap-4 sm:block">
                         <dt class="text-navy/60 text-sm">Duration</dt>
-                        <dd class="text-navy font-semibold">{{ $episode->formatted_duration }}</dd>
+                        <dd class="text-navy font-semibold">{{ $duration }}</dd>
                     </div>
                 @endif
                 <div class="flex min-h-12 items-center justify-between gap-4 sm:block">

@@ -89,7 +89,7 @@ test('post and guide structured data use content fallbacks without optional meta
         ->and($guideArticle)->not->toHaveKeys(['image', 'citation']);
 });
 
-test('episode structured data includes configured podcast and optional media metadata', function (): void {
+test('episode structured data includes configured podcast metadata and ignores a legacy audio URL', function (): void {
     $episode = Episode::factory()->make([
         'title' => 'Episode 42',
         'slug' => 'episode-42',
@@ -121,12 +121,8 @@ test('episode structured data includes configured podcast and optional media met
             'seasonNumber' => 3,
         ],
         'duration' => 'PT1H1M1S',
-        'associatedMedia' => [
-            '@type' => 'MediaObject',
-            'contentUrl' => 'https://audio.example/episode-42.mp3',
-        ],
         'image' => url($episode->featured_image_url),
-    ]);
+    ])->not->toHaveKey('associatedMedia');
 });
 
 test('episode structured data omits unavailable media metadata and uses the default podcast name', function (): void {

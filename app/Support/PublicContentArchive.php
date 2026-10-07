@@ -35,10 +35,6 @@ class PublicContentArchive
         'episode_number',
         'season_number',
         'transistor_url',
-        'audio_url',
-        'audio_path',
-        'apple_url',
-        'spotify_url',
         'youtube_url',
         'duration_seconds',
         'featured_image_path',
@@ -216,7 +212,7 @@ class PublicContentArchive
 
         foreach ([$archive['episodes'], $archive['posts'], $archive['guides']] as $records) {
             foreach ($records as $attributes) {
-                foreach (['audio_path', 'featured_image_path'] as $field) {
+                foreach (['featured_image_path'] as $field) {
                     if (filled($attributes[$field] ?? null)) {
                         $paths[] = $this->validateMediaPath($attributes[$field]);
                     }
@@ -627,7 +623,7 @@ class PublicContentArchive
             // Archives exported before stored media paths existed carry the image as `cover_image`.
             $attributes = $this->withLegacyCoverImage($attributes, 'featured_image_path');
 
-            foreach (['featured_image_path', 'audio_path'] as $field) {
+            foreach (['featured_image_path'] as $field) {
                 if (filled($attributes[$field] ?? null)) {
                     $this->validateMediaPath($attributes[$field]);
                 }

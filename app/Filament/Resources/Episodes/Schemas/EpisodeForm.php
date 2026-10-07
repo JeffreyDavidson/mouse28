@@ -159,10 +159,8 @@ class EpisodeForm
                     ->schema([
                         Section::make('Distribution')
                             ->icon(Heroicon::OutlinedSignal)
-                            ->description('Where listeners can find this episode')
+                            ->description('Apple Podcasts and Spotify links are set once for the show in Podcast Settings.')
                             ->schema([
-                                TextInput::make('apple_url')->url()->maxLength(255)->label('Apple Podcasts')->prefixIcon(Heroicon::OutlinedLink),
-                                TextInput::make('spotify_url')->url()->maxLength(255)->label('Spotify')->prefixIcon(Heroicon::OutlinedLink),
                                 TextInput::make('youtube_url')->url()->maxLength(255)->label('YouTube')->prefixIcon(Heroicon::OutlinedLink),
                             ]),
 

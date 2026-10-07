@@ -116,13 +116,6 @@ class StructuredData
             $podcastEpisode['duration'] = self::duration($episode->duration_seconds);
         }
 
-        if ($episode->audio_url) {
-            $podcastEpisode['associatedMedia'] = [
-                '@type' => 'MediaObject',
-                'contentUrl' => $episode->audio_url,
-            ];
-        }
-
         $image = $episode->featured_image_url;
         if ($image) {
             $podcastEpisode['image'] = url($image);
