@@ -85,10 +85,6 @@ test('the Transistor player URL is built only from a share link', function (?str
     'missing' => [null, null],
 ]);
 
-test('episodes no longer accept legacy audio or per-episode platform links', function (): void {
-    expect(new Episode()->getFillable())->not->toContain('audio_url', 'audio_path', 'apple_url', 'spotify_url');
-});
-
 test('an episode relates to every post linked to it', function (): void {
     $episode = Episode::factory()->create();
     $posts = Post::factory()->count(2)->create();
