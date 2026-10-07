@@ -24,9 +24,10 @@
         <x-preview-banner />
     @endif
 
+    {{-- Starts just below the sticky header (h-20 plus its 1px border), which would otherwise cover it. --}}
     <div
         id="reading-progress"
-        class="from-gold to-gold-light fixed top-16 left-0 z-40 h-[3px] w-0 bg-linear-to-r transition-[width] duration-100 ease-linear"
+        class="from-gold to-gold-light fixed top-[calc(5rem+1px)] left-0 z-40 h-[3px] w-0 bg-linear-to-r transition-[width] duration-100 ease-linear"
     ></div>
 
     <section class="editorial-detail-hero bg-navy text-cream relative overflow-hidden">
@@ -65,18 +66,18 @@
                     </div>
                     <div class="flex items-center gap-2" data-print-hidden>
                         <a
-                            href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($post->title) }}"
+                            href="https://twitter.com/intent/tweet?url={{ urlencode(route('blog.show', $post)) }}&text={{ urlencode($post->title) }}"
                             target="_blank"
-                            rel="noopener"
+                            rel="noopener noreferrer"
                             class="border-cream/20 text-cream/70 hover:border-gold hover:text-gold inline-flex size-12 items-center justify-center rounded-full border transition-colors"
                             aria-label="Share on X (opens in a new tab)"
                         >
                             <svg aria-hidden="true" class="size-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
                         </a>
                         <a
-                            href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}"
+                            href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(route('blog.show', $post)) }}"
                             target="_blank"
-                            rel="noopener"
+                            rel="noopener noreferrer"
                             class="border-cream/20 text-cream/70 hover:border-gold hover:text-gold inline-flex size-12 items-center justify-center rounded-full border transition-colors"
                             aria-label="Share on Facebook (opens in a new tab)"
                         >
@@ -182,16 +183,16 @@
             <div class="mt-12 flex flex-wrap items-center gap-5" data-print-hidden>
                 <span class="text-navy font-semibold">Share this story</span>
                 <a
-                    href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($post->title . ' | Mouse28') }}"
+                    href="https://twitter.com/intent/tweet?url={{ urlencode(route('blog.show', $post)) }}&text={{ urlencode($post->title . ' | Mouse28') }}"
                     target="_blank"
-                    rel="noopener"
+                    rel="noopener noreferrer"
                     class="text-purple inline-flex min-h-12 items-center underline underline-offset-8"
                     >Post on X<x-new-tab-notice
                 /></a>
                 <a
-                    href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}"
+                    href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(route('blog.show', $post)) }}"
                     target="_blank"
-                    rel="noopener"
+                    rel="noopener noreferrer"
                     class="text-purple inline-flex min-h-12 items-center underline underline-offset-8"
                     >Share on Facebook<x-new-tab-notice
                 /></a>

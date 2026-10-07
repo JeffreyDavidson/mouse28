@@ -75,7 +75,7 @@ class PostsTable
                 Filter::make('missing_seo')
                     ->query(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->missingSeo()->select('id'))),
                 Filter::make('review_due')
-                    ->query(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->reviewDue()->select('id'))),
+                    ->query(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->published()->reviewDue()->select('id'))),
                 TrashedFilter::make(),
             ])
             ->recordActions([

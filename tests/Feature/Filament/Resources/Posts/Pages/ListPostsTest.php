@@ -82,6 +82,17 @@ test('the review due filter and source review column show sources that need revi
         ->assertTableColumnExists('source_review_status');
 });
 
+test('the review due filter counts published posts only, like the review due tab and dashboard', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $publishedDue = Post::factory()->create(['source_url' => 'https://example.test/source', 'last_reviewed_at' => null]);
+    $draftDue = Post::factory()->draft()->create(['source_url' => 'https://example.test/source', 'last_reviewed_at' => null]);
+
+    livewire(ListPosts::class)
+        ->filterTable('review_due')
+        ->assertCanSeeTableRecords([$publishedDue])
+        ->assertCanNotSeeTableRecords([$draftDue]);
+});
+
 test('the posts table shows each category name as a badge', function (): void {
     $post = Post::factory()->for(Category::factory()->create(['name' => 'Sample Topic']))->create();
     actingAs(User::factory()->admin()->create());

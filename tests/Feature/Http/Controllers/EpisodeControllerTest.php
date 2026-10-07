@@ -407,3 +407,12 @@ test('episode archive pages past the last one do not exist', function (int $page
 test('an empty episode archive still renders its first page', function (): void {
     get(route('episodes.index'))->assertOk();
 });
+
+test('episode share links open without passing the page as referrer', function (): void {
+    $episode = Episode::factory()->create();
+
+    $response = get(route('episodes.show', $episode));
+
+    $response->assertOk()
+        ->assertDontSeeHtml('rel="noopener"');
+});
