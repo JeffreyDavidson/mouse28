@@ -63,6 +63,7 @@ test('episode readiness does not require deferred audio or transcripts', functio
     $episode = Episode::factory()->make([
         'transcript' => null,
         'featured_image_path' => 'episodes/complete.jpg',
+        'transistor_url' => 'https://share.transistor.fm/s/428d650c',
     ]);
     $episode->setRelation('seo', new SEO(['title' => 'A complete episode title', 'description' => 'A complete episode description for search and social sharing.']));
 
@@ -114,4 +115,42 @@ test('readiness asks for content until the content is written', function (PostFa
     'missing content' => [null, true],
     'empty content' => ['', true],
     'written content' => ['Plan a flexible arrival.', false],
+]);
+
+test('episode readiness asks for the same playable media that publishing requires', function (?string $transistorUrl, ?string $youtubeUrl, bool $asked): void {
+    $episode = Episode::factory()->make([
+        'featured_image_path' => 'episodes/complete.jpg',
+        'transistor_url' => $transistorUrl,
+        'youtube_url' => $youtubeUrl,
+    ]);
+    $episode->setRelation('seo', new SEO(['title' => 'A complete episode title', 'description' => 'A complete episode description.']));
+
+    $issues = EditorialReadiness::issues($episode);
+
+    expect(in_array('Add a Transistor share link or a YouTube video', $issues, true))->toBe($asked)
+        ->and(in_array('Add a Transistor share link or a YouTube video', $episode->publishingIssues(), true))->toBe($asked);
+})->with([
+    'Transistor share link' => ['https://share.transistor.fm/s/428d650c', null, false],
+    'YouTube video' => [null, 'https://www.youtube.com/watch?v=abc', false],
+    'Transistor link that is not a share link' => ['https://example.com/episode', null, true],
+    'neither' => [null, null, true],
+]);
+
+test('episodes without playable media need attention', function (?string $transistorUrl, ?string $youtubeUrl, bool $needsAttention): void {
+    $episode = Episode::factory()->withSeo('A complete episode title', 'A complete episode description.')->create([
+        'featured_image_path' => 'episodes/complete.jpg',
+        'transistor_url' => $transistorUrl,
+        'youtube_url' => $youtubeUrl,
+    ]);
+
+    $listed = Episode::query()->needsAttention()->whereKey($episode->id)->exists();
+
+    expect($listed)->toBe($needsAttention)
+        ->and(EditorialReadiness::issues($episode->load('seo')) !== [])->toBe($needsAttention);
+})->with([
+    'Transistor share link' => ['https://share.transistor.fm/s/428d650c', null, false],
+    'YouTube video' => [null, 'https://www.youtube.com/watch?v=abc', false],
+    'Transistor link that is not a share link' => ['https://example.com/episode', null, true],
+    'blank links' => ['', '', true],
+    'neither' => [null, null, true],
 ]);
