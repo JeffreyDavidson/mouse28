@@ -17,8 +17,8 @@ use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
 /**
- * A show. The Laravel Architect's multi-show model; Mouse28 runs one show, which
- * `info()` and `settings()` still return.
+ * A show, in The Laravel Architect's multi-show model. Mouse28 runs one show, found by
+ * `App\Support\PrimaryPodcast`.
  *
  * @property string|null $cover_image_path
  * @property bool $is_active
@@ -50,8 +50,6 @@ class Podcast extends Model
     use SoftDeletes {
         performDeleteOnModel as performSoftDeleteOnModel;
     }
-
-    private const string DEFAULT_SLUG = 'mouse28';
 
     protected function casts(): array
     {
@@ -152,24 +150,5 @@ class Podcast extends Model
             ])
             ->logOnlyDirty()
             ->dontLogEmptyChanges();
-    }
-
-    public static function info(): self
-    {
-        return once(fn (): self => self::query()->first() ?? new self([
-            'name' => 'Mouse28',
-            'slug' => self::DEFAULT_SLUG,
-            'description' => 'Disney parks through the lens of raising a daughter with autism.',
-        ]));
-    }
-
-    /** The one show, created with the site defaults when there is none yet. */
-    public static function settings(): self
-    {
-        return self::query()->oldest('id')->first() ?? self::query()->create([
-            'name' => 'Mouse28',
-            'slug' => self::DEFAULT_SLUG,
-            'description' => 'Disney parks through the lens of raising a daughter with autism.',
-        ]);
     }
 }

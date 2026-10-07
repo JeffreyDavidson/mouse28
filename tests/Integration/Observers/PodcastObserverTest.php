@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Podcast;
 use App\Observers\PodcastObserver;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -19,13 +18,13 @@ beforeEach(function (): void {
 });
 
 test('saving a podcast cover generates its variants', function (): void {
-    Podcast::settings()->update(['cover_image_path' => 'podcast/old.png']);
+    primaryPodcast()->update(['cover_image_path' => 'podcast/old.png']);
 
     Storage::disk('public')->assertExists(['podcast/responsive/old-480.webp', 'podcast/responsive/old-1280.webp']);
 });
 
 test('replacing the podcast cover removes the previous original and variants after commit', function (): void {
-    $podcast = Podcast::settings();
+    $podcast = primaryPodcast();
     $podcast->update(['cover_image_path' => 'podcast/old.png']);
 
     DB::transaction(fn () => $podcast->update(['cover_image_path' => 'podcast/new.png']));
@@ -35,7 +34,7 @@ test('replacing the podcast cover removes the previous original and variants aft
 });
 
 test('a rolled back podcast cover replacement keeps the previous files', function (): void {
-    $podcast = Podcast::settings();
+    $podcast = primaryPodcast();
     $podcast->update(['cover_image_path' => 'podcast/old.png']);
 
     DB::beginTransaction();
@@ -46,7 +45,7 @@ test('a rolled back podcast cover replacement keeps the previous files', functio
 });
 
 test('trashing the podcast keeps its cover so it can be restored', function (): void {
-    $podcast = Podcast::settings();
+    $podcast = primaryPodcast();
     $podcast->update(['cover_image_path' => 'podcast/old.png']);
 
     $podcast->delete();
@@ -55,7 +54,7 @@ test('trashing the podcast keeps its cover so it can be restored', function (): 
 });
 
 test('permanently deleting the podcast removes its cover and variants', function (): void {
-    $podcast = Podcast::settings();
+    $podcast = primaryPodcast();
     $podcast->update(['cover_image_path' => 'podcast/old.png']);
 
     $podcast->forceDelete();

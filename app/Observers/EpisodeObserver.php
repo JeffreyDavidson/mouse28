@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Observers;
 
 use App\Models\Episode;
-use App\Models\Podcast;
 use App\Services\ResponsiveImageLifecycle;
 use App\Services\SquareResponsiveImageVariants;
+use App\Support\PrimaryPodcast;
 
 /**
  * Episode covers are shown in square frames, so their variants are square crops.
@@ -16,7 +16,7 @@ class EpisodeObserver
 {
     private readonly ResponsiveImageLifecycle $lifecycle;
 
-    public function __construct(SquareResponsiveImageVariants $images)
+    public function __construct(SquareResponsiveImageVariants $images, private readonly PrimaryPodcast $primaryPodcast)
     {
         $this->lifecycle = new ResponsiveImageLifecycle($images);
     }
@@ -25,7 +25,7 @@ class EpisodeObserver
     public function creating(Episode $episode): void
     {
         if ($episode->podcast_id === null) {
-            $episode->podcast()->associate(Podcast::settings());
+            $episode->podcast()->associate($this->primaryPodcast->findOrCreate());
         }
     }
 
