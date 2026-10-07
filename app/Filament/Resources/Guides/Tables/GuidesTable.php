@@ -56,7 +56,7 @@ class GuidesTable
                 Filter::make('missing_seo')
                     ->query(fn (Builder $query): Builder => $query->whereIn('guides.id', Guide::query()->missingSeo()->select('id'))),
                 Filter::make('review_due')
-                    ->query(fn (Builder $query): Builder => $query->whereIn('guides.id', Guide::query()->reviewDue()->select('id'))),
+                    ->query(fn (Builder $query): Builder => $query->whereIn('guides.id', Guide::query()->published()->reviewDue()->select('id'))),
                 TrashedFilter::make(),
             ])
             ->recordActions([
