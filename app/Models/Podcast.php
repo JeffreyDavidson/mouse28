@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
@@ -39,6 +40,7 @@ use Spatie\Activitylog\Support\LogOptions;
     'sort_order',
 ])]
 #[ObservedBy(PodcastObserver::class)]
+#[Sluggable(from: 'name', maxLength: 255)]
 class Podcast extends Model
 {
     /** @use HasFactory<PodcastFactory> */

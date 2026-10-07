@@ -12,17 +12,14 @@ use Illuminate\Support\Str;
 class CategoryFactory extends Factory
 {
     /**
-     * A category without a description, its slug derived from its name.
+     * A category without a description, its slug generated from its name.
      *
      * @return array<string, mixed>
      */
     public function definition(): array
     {
-        $name = Str::title(fake()->unique()->words(3, true));
-
         return [
-            'name' => $name,
-            'slug' => Str::slug($name),
+            'name' => Str::title(fake()->unique()->words(3, true)),
             'description' => null,
         ];
     }

@@ -29,6 +29,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Date;
+use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
 use RalphJSmit\Laravel\SEO\Models\SEO;
 use RalphJSmit\Laravel\SEO\Support\HasSEO;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
@@ -71,6 +72,7 @@ use Spatie\Activitylog\Support\LogOptions;
 ])]
 #[ObservedBy(GuideObserver::class)]
 #[PublishingStatus]
+#[Sluggable(from: 'title', maxLength: 255)]
 class Guide extends Model implements Publishable
 {
     /** @use HasFactory<GuideFactory> */

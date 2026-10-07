@@ -72,3 +72,9 @@ test('an episode keeps its guest details', function (): void {
         ->guest_title->toBe('Guest title')
         ->guest_url->toBe('https://example.test/guest');
 });
+
+test('creating a podcast without a slug names it from its name', function (): void {
+    $podcast = Podcast::factory()->create(['name' => 'Park Family Podcast', 'slug' => null]);
+
+    expect($podcast->slug)->toBe('park-family-podcast');
+});

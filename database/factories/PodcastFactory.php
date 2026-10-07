@@ -12,17 +12,14 @@ use Illuminate\Support\Str;
 class PodcastFactory extends Factory
 {
     /**
-     * An active show with a name, its slug derived from the name.
+     * An active show with a name, its slug generated from the name.
      *
      * @return array<string, mixed>
      */
     public function definition(): array
     {
-        $name = Str::title(fake()->unique()->words(2, true));
-
         return [
-            'name' => $name,
-            'slug' => Str::slug($name),
+            'name' => Str::title(fake()->unique()->words(2, true)),
             'description' => fake()->sentence(),
             'is_active' => true,
             'sort_order' => 0,
