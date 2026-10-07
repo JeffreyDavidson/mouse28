@@ -533,3 +533,23 @@ test('featured story and viewport stay stable throughout filter transitions', fu
             ->assertNoJavaScriptErrors();
     }
 })->group('browser-smoke', 'browser-compatibility');
+
+test('the blog reading progress bar sits below the sticky header so readers can see it', function (): void {
+    $post = Post::factory()->create(['content' => str_repeat("A paragraph about planning a park day.\n\n", 120)]);
+
+    $page = visit(route('blog.show', $post));
+    $page->script('window.scrollTo(0, document.body.scrollHeight / 2); window.dispatchEvent(new Event("scroll"));');
+
+    $page->assertScript(browserWaitForScript(<<<'JS'
+        (() => {
+            const bar = document.getElementById('reading-progress');
+            const header = document.querySelector('header');
+            const box = bar.getBoundingClientRect();
+
+            return parseFloat(bar.style.width) > 0
+                && box.top >= header.getBoundingClientRect().bottom
+                && document.elementFromPoint(Math.max(1, box.width / 2), box.top + 1) === bar;
+        })()
+        JS, 3000), true)
+        ->assertNoJavaScriptErrors();
+});
