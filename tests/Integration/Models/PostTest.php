@@ -308,3 +308,63 @@ test('posts no longer expose the legacy single episode link', function (): void 
         ->and($post->getFillable())->not->toContain('episode_id')
         ->and($post->getActivitylogOptions()->logAttributes)->not->toContain('episode_id');
 });
+
+test('creating a post without a slug names it from its title', function (): void {
+    $post = Post::factory()->create(['title' => 'Plan a Quiet Park Day', 'slug' => null]);
+
+    expect($post->slug)->toBe('plan-a-quiet-park-day');
+});
+
+test('a new post whose title is taken gets the next free numbered slug, counting trashed posts', function (): void {
+    Post::factory()->create(['slug' => 'quiet-park-day']);
+    Post::factory()->create(['slug' => 'quiet-park-day-2'])->delete();
+
+    $post = Post::factory()->create(['title' => 'Quiet Park Day', 'slug' => null]);
+
+    expect($post->slug)->toBe('quiet-park-day-3');
+});
+
+test('changing a post title keeps its slug', function (): void {
+    $post = Post::factory()->draft()->create(['title' => 'First Title', 'slug' => 'first-title']);
+
+    $post->update(['title' => 'A Better Title']);
+
+    expect($post->refresh()->slug)->toBe('first-title');
+});
+
+test('a post records its review notes, reviewer and review time', function (): void {
+    $reviewer = User::factory()->create();
+
+    $post = Post::factory()->create([
+        'review_notes' => 'Check the park hours.',
+        'reviewed_by' => $reviewer->id,
+        'reviewed_at' => '2026-10-07 14:30:00',
+    ]);
+
+    $post->refresh();
+
+    expect($post->review_notes)->toBe('Check the park hours.')
+        ->and($post->reviewer?->is($reviewer))->toBeTrue()
+        ->and($post->reviewed_at?->toDateTimeString())->toBe('2026-10-07 14:30:00');
+});
+
+test('a post without a review has no reviewer', function (): void {
+    $post = Post::factory()->create();
+
+    expect($post)
+        ->review_notes->toBeNull()
+        ->reviewer->toBeNull()
+        ->reviewed_at->toBeNull();
+});
+
+test('post review changes are recorded in the editorial log', function (): void {
+    $reviewer = User::factory()->create();
+    $record = Post::factory()->create();
+
+    $record->update(['review_notes' => 'Add the new rider switch policy.', 'reviewed_by' => $reviewer->id]);
+
+    expect(Activity::query()->latest('id')->firstOrFail()->attribute_changes?->all() ?? [])->toEqual([
+        'attributes' => ['review_notes' => 'Add the new rider switch policy.', 'reviewed_by' => $reviewer->id],
+        'old' => ['review_notes' => null, 'reviewed_by' => null],
+    ]);
+});

@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
 use RalphJSmit\Laravel\SEO\Models\SEO;
 use RalphJSmit\Laravel\SEO\Support\HasSEO;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
@@ -68,6 +69,7 @@ use Spatie\Activitylog\Support\LogOptions;
 ])]
 #[ObservedBy(EpisodeObserver::class)]
 #[PublishingStatus]
+#[Sluggable(from: 'title', maxLength: 255)]
 class Episode extends Model implements Publishable
 {
     /** @use HasFactory<EpisodeFactory> */

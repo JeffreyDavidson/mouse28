@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Guides\Schemas;
 
 use App\Enums\GuideCategory;
 use App\Filament\Forms\Components\AuthorsSelect;
 use App\Filament\Forms\Components\PublishDatePicker;
 use App\Filament\Forms\Components\PublishStatusSelect;
-use App\Models\Guide;
+use App\Filament\Forms\Components\SlugInput;
+use App\Filament\Forms\Components\SlugSourceInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
@@ -16,12 +19,9 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Str;
 use RalphJSmit\Filament\SEO\SEO;
 
 class GuideForm
@@ -39,23 +39,12 @@ class GuideForm
                         SpatieTagsInput::make('tags')
                             ->type('content')
                             ->columnSpanFull(),
-                        TextInput::make('title')
+                        SlugSourceInput::make('title')
                             ->required()
                             ->maxLength(255)
-                            ->columnSpan(2)
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(function (Get $get, Set $set, ?string $state): void {
-                                if (! $get('slug')) {
-                                    $set('slug', Str::slug($state ?? ''));
-                                }
-                            }),
-                        TextInput::make('slug')
-                            ->regex('/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/')
-                            ->disabled(fn (?Guide $record): bool => $record?->isSlugLocked() ?? false)
-                            ->helperText('Lowercase words separated by hyphens. URLs stay locked after first publication, even when unpublished or rescheduled.')
-                            ->required()
-                            ->maxLength(255)
-                            ->unique()
+                            ->columnSpan(2),
+                        SlugInput::make('slug')
+                            ->lockedAfterPublication()
                             ->columnSpan(2),
                         Select::make('category')
                             ->options(GuideCategory::class)

@@ -7,6 +7,8 @@ use App\Models\Category;
 use App\Models\Episode;
 use App\Models\Post;
 use App\Models\User;
+use Filament\Forms\Components\Textarea;
+use Filament\Schemas\Components\Section;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Date;
@@ -329,4 +331,32 @@ test('the SEO section saves its title and description to the SEO row', function 
     // Assert
     expect($record->refresh()->seo->title)->toBe('A saved SEO title')
         ->and($record->seo->description)->toBe('A saved SEO description.');
+});
+
+test('the review section opens only when the post has review notes', function (?string $notes, bool $collapsed): void {
+    actingAs(User::factory()->admin()->create());
+    $record = Post::factory()->draft()->credited()->create(['review_notes' => $notes]);
+
+    livewire(EditPost::class, ['record' => $record->getRouteKey()])
+        ->assertFormFieldExists('review_notes', function (Textarea $field) use ($collapsed): bool {
+            $section = $field->getContainer()->getParentComponent();
+
+            return $section instanceof Section && $section->isCollapsed() === $collapsed;
+        });
+})->with([
+    'no notes' => [null, true],
+    'notes' => ['Check the park hours.', false],
+]);
+
+test('the edit form loads and saves the review notes', function (): void {
+    actingAs(User::factory()->admin()->create());
+    $record = Post::factory()->draft()->credited()->create(['review_notes' => 'Check the park hours.']);
+
+    livewire(EditPost::class, ['record' => $record->getRouteKey()])
+        ->assertSchemaStateSet(['review_notes' => 'Check the park hours.'])
+        ->fillForm(['review_notes' => 'Hours confirmed; add the new parade time.'])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($record->refresh()->review_notes)->toBe('Hours confirmed; add the new parade time.');
 });

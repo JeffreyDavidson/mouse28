@@ -5,6 +5,8 @@ namespace App\Filament\Resources\Posts\Schemas;
 use App\Filament\Forms\Components\AuthorsSelect;
 use App\Filament\Forms\Components\PublishDatePicker;
 use App\Filament\Forms\Components\PublishStatusSelect;
+use App\Filament\Forms\Components\SlugInput;
+use App\Filament\Forms\Components\SlugSourceInput;
 use App\Models\Category;
 use App\Models\Post;
 use Filament\Actions\Action;
@@ -18,11 +20,9 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
-use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Str;
 use RalphJSmit\Filament\SEO\SEO;
 
 class PostForm
@@ -40,24 +40,13 @@ class PostForm
                         SpatieTagsInput::make('tags')
                             ->type('content')
                             ->columnSpanFull(),
-                        TextInput::make('title')
+                        SlugSourceInput::make('title')
                             ->required()
                             ->maxLength(255)
-                            ->columnSpan(2)
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(function (Get $get, Set $set, ?string $state): void {
-                                if (! $get('slug') || $get('slug') === Str::slug($state ?? '')) {
-                                    $set('slug', Str::slug($state ?? ''));
-                                }
-                            }),
-                        TextInput::make('slug')
-                            ->regex('/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/')
-                            ->disabled(fn (?Post $record): bool => $record?->isSlugLocked() ?? false)
-                            ->helperText('Lowercase words separated by hyphens. URLs stay locked after first publication, even when unpublished or rescheduled.')
-                            ->required()
-                            ->maxLength(255)
-                            ->columnSpan(2)
-                            ->unique(),
+                            ->columnSpan(2),
+                        SlugInput::make('slug')
+                            ->lockedAfterPublication()
+                            ->columnSpan(2),
                         Select::make('category_id')
                             ->label('Category')
                             ->relationship('category', 'name')
@@ -67,11 +56,7 @@ class PostForm
                             ->createOptionForm([
                                 TextInput::make('name')->required()
                                     ->maxLength(255),
-                                TextInput::make('slug')
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->regex('/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/')
-                                    ->unique(Category::class),
+                                SlugInput::make('slug'),
                             ])
                             ->required()
                             ->extraAlpineAttributes(['data-mouse28-accessible-select' => true])
@@ -99,6 +84,17 @@ class PostForm
                         MarkdownEditor::make('content')
                             ->dehydrateStateUsing(fn (?string $state): string => $state ?? ''),
                     ]),
+
+                Section::make('Review')
+                    ->schema([
+                        Textarea::make('review_notes')
+                            ->label('Review Notes')
+                            ->rows(3)
+                            ->helperText('Feedback from the reviewer')
+                            ->columnSpanFull(),
+                    ])
+                    ->collapsible()
+                    ->collapsed(fn (?Post $record): bool => $record?->review_notes === null),
 
                 Section::make('Review & Source')
                     ->description('Optional for evergreen posts. Policy and planning posts should include both fields.')

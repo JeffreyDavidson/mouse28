@@ -93,3 +93,9 @@ test('an episode relates to every post linked to it', function (): void {
 
     expect($episode->posts->modelKeys())->toEqualCanonicalizing($posts->modelKeys());
 });
+
+test('creating an episode without a slug names it from its title', function (): void {
+    $episode = Episode::factory()->create(['title' => 'Rope Drop With a Plan', 'slug' => null]);
+
+    expect($episode->slug)->toBe('rope-drop-with-a-plan');
+});

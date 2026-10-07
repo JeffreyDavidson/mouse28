@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
@@ -39,6 +40,7 @@ use Spatie\Activitylog\Support\LogOptions;
     'sent_at',
 ])]
 #[PublishingStatus]
+#[Sluggable(from: 'title', maxLength: 255)]
 class NewsletterIssue extends Model implements Publishable
 {
     /** @use HasFactory<NewsletterIssueFactory> */

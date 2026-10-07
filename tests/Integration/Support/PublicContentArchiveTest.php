@@ -654,3 +654,33 @@ test('archives carry the SEO title and description under their original keys', f
     'episodes' => [fn () => Episode::factory(), 'episodes'],
     'guides' => [fn () => Guide::factory(), 'guides'],
 ]);
+
+test('archive export leaves out the private review fields of each post', function (): void {
+    Post::factory()->create([
+        'review_notes' => 'Private editorial note',
+        'reviewed_by' => User::factory()->create()->id,
+        'reviewed_at' => now(),
+    ]);
+
+    $post = firstArchivedRecord(app(PublicContentArchive::class)->export(), 'posts');
+
+    expect($post)->not->toHaveKeys(['review_notes', 'reviewed_by', 'reviewed_at']);
+});
+
+test('archive import and sync keep the review notes of an existing post', function (string $method): void {
+    $reviewer = User::factory()->create();
+    $post = Post::factory()->create(['review_notes' => 'Keep this note.', 'reviewed_by' => $reviewer->id]);
+    $service = app(PublicContentArchive::class);
+    $archive = withFirstArchivedRecord($service->export(), 'posts', [
+        'title' => 'Updated title',
+        'review_notes' => 'Archived note',
+        'reviewed_by' => null,
+    ]);
+
+    $service->{$method}($archive);
+
+    expect($post->refresh())
+        ->title->toBe('Updated title')
+        ->review_notes->toBe('Keep this note.')
+        ->reviewed_by->toBe($reviewer->id);
+})->with(['import', 'sync']);

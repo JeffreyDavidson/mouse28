@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Widgets;
 
 use App\Enums\PublishStatus;
@@ -12,8 +14,6 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
 use Filament\Widgets\Widget;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 
 /** @property-read Schema $form */
 class QuickDraft extends Widget implements HasForms
@@ -59,7 +59,6 @@ class QuickDraft extends Widget implements HasForms
 
         $post = Post::query()->create([
             'title' => $state['title'],
-            'slug' => $this->uniqueSlug(Arr::string($state, 'title')),
             'excerpt' => $state['notes'] ?? null,
             'content' => $state['notes'] ?? '',
             'status' => PublishStatus::Draft,
@@ -73,19 +72,5 @@ class QuickDraft extends Widget implements HasForms
             ->title('Draft saved!')
             ->success()
             ->send();
-    }
-
-    private function uniqueSlug(string $title): string
-    {
-        $baseSlug = Str::substr(Str::slug($title) ?: 'draft', 0, 255);
-        $slug = $baseSlug;
-        $suffix = 2;
-
-        while (Post::withTrashed()->where('slug', $slug)->exists()) {
-            $slug = Str::substr($baseSlug, 0, 255 - strlen("-{$suffix}"))."-{$suffix}";
-            $suffix++;
-        }
-
-        return $slug;
     }
 }
