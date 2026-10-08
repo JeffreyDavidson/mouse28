@@ -8,8 +8,7 @@ use Filament\Widgets\Widget;
 
 class InspirationWidget extends Widget
 {
-    /** @var list<string> */
-    private const PROMPTS = [
+    private const array PROMPTS = [
         "What's your family's favorite hidden Mickey?",
         'Share a sensory-friendly tip from your last visit',
         'Review the last thing you ate at the parks',
