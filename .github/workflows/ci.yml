@@ -17,7 +17,7 @@ concurrency:
 jobs:
   application:
     name: Application tests and build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
 
     steps:
@@ -172,7 +172,7 @@ jobs:
 
   test:
     name: Test and build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: [application, mysql]
     if: always()
     timeout-minutes: 1
@@ -185,7 +185,7 @@ jobs:
 
   mutation-shards:
     name: Mutation (${{ matrix.group }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: test
     timeout-minutes: 15
     strategy:
@@ -229,7 +229,7 @@ jobs:
 
   mutation:
     name: Mutation testing
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: mutation-shards
     if: always()
     timeout-minutes: 1
@@ -241,7 +241,7 @@ jobs:
 
   mysql:
     name: MySQL compatibility
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # The lane usually takes 7-9 minutes; 15 leaves room for a slow runner.
     timeout-minutes: 15
     services:
