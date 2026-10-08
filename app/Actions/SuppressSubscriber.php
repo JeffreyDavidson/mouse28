@@ -16,7 +16,10 @@ final class SuppressSubscriber
     public function handle(string $email, SuppressionReason $reason): bool
     {
         $subscriber = Subscriber::query()
-            ->where('email', Str::of($email)->trim()->lower()->toString())
+            ->where('email', Str::of($email)
+                ->trim()
+                ->lower()
+                ->toString())
             ->first();
 
         if ($subscriber === null) {

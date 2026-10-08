@@ -42,7 +42,8 @@ test('posts.reviewed_by references users and is set to null when the reviewer is
         ->firstWhere('columns', ['reviewed_by']);
 
     expect(postReviewerForeignKeyCount())->toBe(1)
-        ->and($foreignKey)->toMatchArray([
+        ->and($foreignKey)
+        ->toMatchArray([
             'foreign_table' => 'users',
             'foreign_columns' => ['id'],
             'on_delete' => 'set null',
@@ -53,18 +54,26 @@ test('deleting a reviewer keeps the post and its notes but forgets the reviewer'
     $reviewer = User::factory()->create();
     $post = Post::factory()->create(['review_notes' => 'Check the park hours.', 'reviewed_by' => $reviewer->id]);
 
-    DB::table('users')->where('id', $reviewer->id)->delete();
+    DB::table('users')
+        ->where('id', $reviewer->id)
+        ->delete();
 
-    expect(DB::table('posts')->where('id', $post->id)->first(['review_notes', 'reviewed_by']))
+    expect(DB::table('posts')
+        ->where('id', $post->id)
+        ->first(['review_notes', 'reviewed_by']))
         ->review_notes->toBe('Check the park hours.')
         ->reviewed_by->toBeNull();
 });
 
 test('adding the review fields keeps the other posts foreign keys and indexes', function (): void {
     expect(Schema::hasIndex('posts', ['slug'], 'unique'))->toBeTrue()
-        ->and(Schema::hasIndex('posts', ['status', 'published_at']))->toBeTrue()
-        ->and(Schema::hasIndex('posts', ['category_id']))->toBeTrue()
-        ->and(collect(Schema::getForeignKeys('posts'))->pluck('foreign_table')->all())->toContain('categories');
+        ->and(Schema::hasIndex('posts', ['status', 'published_at']))
+        ->toBeTrue()
+        ->and(Schema::hasIndex('posts', ['category_id']))
+        ->toBeTrue()
+        ->and(collect(Schema::getForeignKeys('posts'))->pluck('foreign_table')
+            ->all())
+        ->toContain('categories');
 });
 
 test('running the review fields migration again changes nothing', function (): void {
@@ -75,7 +84,12 @@ test('running the review fields migration again changes nothing', function (): v
     runPostReviewFieldsMigration();
 
     expect(Schema::getColumnListing('posts'))->toBe($columns)
-        ->and(Schema::getIndexes('posts'))->toHaveCount($indexes)
-        ->and(postReviewerForeignKeyCount())->toBe(1)
-        ->and(DB::table('posts')->where('id', $post->id)->value('review_notes'))->toBe('Keep this note.');
+        ->and(Schema::getIndexes('posts'))
+        ->toHaveCount($indexes)
+        ->and(postReviewerForeignKeyCount())
+        ->toBe(1)
+        ->and(DB::table('posts')
+            ->where('id', $post->id)
+            ->value('review_notes'))
+        ->toBe('Keep this note.');
 });

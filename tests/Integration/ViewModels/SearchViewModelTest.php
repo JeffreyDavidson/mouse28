@@ -30,13 +30,16 @@ test('search results select only the fields rendered by the page', function (): 
 
     $results = app(SearchViewModel::class)->data('Sensory planning');
 
-    expect($results['posts']->sole()->getAttributes())
+    expect($results['posts']->sole()
+        ->getAttributes())
         ->toHaveKeys(['slug', 'title', 'excerpt', 'category_id'])
         ->not->toHaveKeys(['content', 'meta_description', 'category'])
-        ->and($results['guides']->sole()->getAttributes())
+        ->and($results['guides']->sole()
+            ->getAttributes())
         ->toHaveKeys(['slug', 'title', 'excerpt', 'category'])
         ->not->toHaveKeys(['content', 'meta_description'])
-        ->and($results['episodes']->sole()->getAttributes())
+        ->and($results['episodes']->sole()
+            ->getAttributes())
         ->toHaveKeys(['slug', 'episode_number', 'title', 'description'])
         ->not->toHaveKeys(['show_notes', 'transcript', 'meta_description']);
 });
@@ -51,8 +54,10 @@ test('search omits guides when the feature is disabled', function (): void {
     $results = app(SearchViewModel::class)->data('Sensory planning');
 
     expect($results['guides']->total())->toBe(0)
-        ->and($results['posts']->total())->toBe(1)
-        ->and($results['episodes']->total())->toBe(1);
+        ->and($results['posts']->total())
+        ->toBe(1)
+        ->and($results['episodes']->total())
+        ->toBe(1);
 });
 
 test('search treats wildcard characters as literal text', function (string $query, int $expectedPerType): void {
@@ -68,8 +73,10 @@ test('search treats wildcard characters as literal text', function (string $quer
     $results = app(SearchViewModel::class)->data($query);
 
     expect($results['posts']->total())->toBe($expectedPerType)
-        ->and($results['guides']->total())->toBe($expectedPerType)
-        ->and($results['episodes']->total())->toBe($expectedPerType);
+        ->and($results['guides']->total())
+        ->toBe($expectedPerType)
+        ->and($results['episodes']->total())
+        ->toBe($expectedPerType);
 })->with([
     'percent sign' => ['100%', 1],
     'underscore' => ['_', 0],
@@ -82,8 +89,10 @@ test('search results use the configured page size for each section', function (s
     $results = app(SearchViewModel::class)->data($query);
 
     expect($results['posts']->perPage())->toBe(2)
-        ->and($results['guides']->perPage())->toBe(2)
-        ->and($results['episodes']->perPage())->toBe(2);
+        ->and($results['guides']->perPage())
+        ->toBe(2)
+        ->and($results['episodes']->perPage())
+        ->toBe(2);
 })->with([
     'with a query' => ['Castle'],
     'without a query' => [''],
@@ -97,16 +106,26 @@ test('search matches posts and guides by their written content', function (): vo
 
     $results = app(SearchViewModel::class)->data('quietzone');
 
-    expect($results['posts']->pluck('slug')->all())->toBe(['arrival-tips'])
-        ->and($results['guides']->pluck('slug')->all())->toBe(['arrival-guide']);
+    expect($results['posts']->pluck('slug')
+        ->all())->toBe(['arrival-tips'])
+        ->and($results['guides']->pluck('slug')
+            ->all())
+        ->toBe(['arrival-guide']);
 });
 
 test('search results label posts with their category names', function (): void {
     $category = Category::factory()->create(['name' => 'Sample Topic']);
-    Post::factory()->for($category)->count(2)->create(['title' => 'Sensory planning post']);
+    Post::factory()
+        ->for($category)
+        ->count(2)
+        ->create(['title' => 'Sensory planning post']);
 
     $results = app(SearchViewModel::class)->data('Sensory planning');
 
-    expect($results['posts']->getCollection()->every(fn (Post $post): bool => $post->relationLoaded('category')))->toBeTrue()
-        ->and($results['posts']->getCollection()->pluck('category_label')->all())->toBe(['Sample Topic', 'Sample Topic']);
+    expect($results['posts']->getCollection()
+        ->every(fn (Post $post): bool => $post->relationLoaded('category')))->toBeTrue()
+        ->and($results['posts']->getCollection()
+            ->pluck('category_label')
+            ->all())
+        ->toBe(['Sample Topic', 'Sample Topic']);
 });

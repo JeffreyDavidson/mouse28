@@ -29,9 +29,12 @@ function runDropLegacyMetaMigration(): void
 beforeEach(function (): void {
     foreach (['posts', 'episodes', 'guides'] as $table) {
         Schema::table($table, function (Blueprint $blueprint): void {
-            $blueprint->string('meta_title')->nullable();
-            $blueprint->text('meta_description')->nullable();
-            $blueprint->string('og_image')->nullable();
+            $blueprint->string('meta_title')
+                ->nullable();
+            $blueprint->text('meta_description')
+                ->nullable();
+            $blueprint->string('og_image')
+                ->nullable();
         });
     }
 });
@@ -60,22 +63,30 @@ function remainingLegacyMetaColumns(): array
 
 test('the migration drops the legacy meta columns and keeps the SEO rows', function (PostFactory|EpisodeFactory|GuideFactory $factory, string $table): void {
     // Arrange
-    $record = $factory->withSeo('Saved title', 'Saved description')->createOne();
-    DB::table($table)->where('id', $record->id)->update(['meta_title' => 'Saved title', 'meta_description' => 'Saved description']);
+    $record = $factory->withSeo('Saved title', 'Saved description')
+        ->createOne();
+    DB::table($table)
+        ->where('id', $record->id)
+        ->update(['meta_title' => 'Saved title', 'meta_description' => 'Saved description']);
 
     // Act
     runDropLegacyMetaMigration();
 
     // Assert
     expect(remainingLegacyMetaColumns())->toBeEmpty()
-        ->and($record->refresh()->seo->title)->toBe('Saved title')
-        ->and($record->seo->description)->toBe('Saved description');
+        ->and($record->refresh()
+            ->seo->title)
+        ->toBe('Saved title')
+        ->and($record->seo->description)
+        ->toBe('Saved description');
 })->with('meta tables');
 
 test('the migration ignores empty legacy values', function (PostFactory|EpisodeFactory|GuideFactory $factory, string $table): void {
     // Arrange
     $record = $factory->createOne();
-    DB::table($table)->where('id', $record->id)->update(['meta_title' => '', 'meta_description' => null, 'og_image' => '']);
+    DB::table($table)
+        ->where('id', $record->id)
+        ->update(['meta_title' => '', 'meta_description' => null, 'og_image' => '']);
 
     // Act
     runDropLegacyMetaMigration();
@@ -87,30 +98,37 @@ test('the migration ignores empty legacy values', function (PostFactory|EpisodeF
 test('the migration refuses to drop anything while a legacy meta value has no SEO value', function (PostFactory|EpisodeFactory|GuideFactory $factory, string $table, string $column): void {
     // Arrange
     $record = $factory->createOne();
-    DB::table($table)->where('id', $record->id)->update([$column => 'Only in the old column']);
+    DB::table($table)
+        ->where('id', $record->id)
+        ->update([$column => 'Only in the old column']);
 
     // Act
     $run = fn () => runDropLegacyMetaMigration();
 
     // Assert
     expect($run)->toThrow(RuntimeException::class, "1 {$table} meta value(s) have no matching SEO value, so the legacy columns were not dropped.")
-        ->and(Schema::hasColumn('posts', 'meta_title'))->toBeTrue();
-})->with('meta tables')->with([
-    'a title' => ['meta_title'],
-    'a description' => ['meta_description'],
-]);
+        ->and(Schema::hasColumn('posts', 'meta_title'))
+        ->toBeTrue();
+})->with('meta tables')
+    ->with([
+        'a title' => ['meta_title'],
+        'a description' => ['meta_description'],
+    ]);
 
 test('the migration refuses to drop anything while an og_image would be lost', function (PostFactory|EpisodeFactory|GuideFactory $factory, string $table): void {
     // Arrange
     $record = $factory->createOne();
-    DB::table($table)->where('id', $record->id)->update(['og_image' => 'posts/og/social.webp']);
+    DB::table($table)
+        ->where('id', $record->id)
+        ->update(['og_image' => 'posts/og/social.webp']);
 
     // Act
     $run = fn () => runDropLegacyMetaMigration();
 
     // Assert
     expect($run)->toThrow(RuntimeException::class, "1 {$table} row(s) still have an og_image, which is not stored anywhere else, so the legacy columns were not dropped.")
-        ->and(Schema::hasColumn('posts', 'og_image'))->toBeTrue();
+        ->and(Schema::hasColumn('posts', 'og_image'))
+        ->toBeTrue();
 })->with('meta tables');
 
 test('the migration can run again after the columns are gone', function (): void {

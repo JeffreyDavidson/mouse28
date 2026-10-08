@@ -13,7 +13,9 @@ covers(PreviewNewsletterIssueController::class);
 pest()->use(RefreshDatabase::class);
 
 test('a signed preview link shows the draft without exposing it to search', function (): void {
-    $issue = NewsletterIssue::factory()->draft()->create(['title' => 'Unfinished issue']);
+    $issue = NewsletterIssue::factory()
+        ->draft()
+        ->create(['title' => 'Unfinished issue']);
 
     get(URL::temporarySignedRoute('preview.newsletter-issue', Date::now()->addHour(), ['newsletterIssue' => $issue]))
         ->assertOk()
@@ -26,7 +28,9 @@ test('a signed preview link shows the draft without exposing it to search', func
 });
 
 test('preview links must be signed, untampered and unexpired', function (string $case): void {
-    $issue = NewsletterIssue::factory()->draft()->create();
+    $issue = NewsletterIssue::factory()
+        ->draft()
+        ->create();
     $signed = URL::temporarySignedRoute('preview.newsletter-issue', Date::now()->addHour(), ['newsletterIssue' => $issue]);
     $url = match ($case) {
         'unsigned' => route('preview.newsletter-issue', $issue),

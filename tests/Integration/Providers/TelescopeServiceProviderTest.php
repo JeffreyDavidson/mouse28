@@ -53,9 +53,12 @@ test('the application registers the Telescope service provider', function (): vo
 });
 
 test('only administrators may view Telescope', function (): void {
-    $administrator = User::factory()->admin()->make();
+    $administrator = User::factory()
+        ->admin()
+        ->make();
     $editor = User::factory()->make();
 
     expect(Gate::forUser($administrator)->allows('viewTelescope'))->toBeTrue()
-        ->and(Gate::forUser($editor)->allows('viewTelescope'))->toBeFalse();
+        ->and(Gate::forUser($editor)->allows('viewTelescope'))
+        ->toBeFalse();
 });

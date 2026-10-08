@@ -15,7 +15,10 @@ test('unsubscribing records the date and clears any pending token', function ():
 
     app(UnsubscribeFromNewsletter::class)->handle($reader);
 
-    expect($reader->refresh()->unsubscribed_at)->not->toBeNull()
-        ->and($reader->verification_token_hash)->toBeNull()
-        ->and($reader->isActive())->toBeFalse();
+    expect($reader->refresh()
+        ->unsubscribed_at)->not->toBeNull()
+        ->and($reader->verification_token_hash)
+        ->toBeNull()
+        ->and($reader->isActive())
+        ->toBeFalse();
 });

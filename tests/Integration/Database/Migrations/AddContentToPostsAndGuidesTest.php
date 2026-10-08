@@ -21,7 +21,8 @@ beforeEach(function (): void {
         }
 
         Schema::table($table, function (Blueprint $blueprint): void {
-            $blueprint->longText('body')->nullable();
+            $blueprint->longText('body')
+                ->nullable();
         });
     }
 });
@@ -45,11 +46,13 @@ function legacyBodyRow(PostFactory|GuideFactory $factory, string $body, bool $tr
 {
     $record = $factory->createOne();
 
-    DB::table($record->getTable())->where('id', $record->id)->update([
-        'body' => $body,
-        'content' => null,
-        'deleted_at' => $trashed ? '2026-09-01 08:00:00' : null,
-    ]);
+    DB::table($record->getTable())
+        ->where('id', $record->id)
+        ->update([
+            'body' => $body,
+            'content' => null,
+            'deleted_at' => $trashed ? '2026-09-01 08:00:00' : null,
+        ]);
 
     return $record->id;
 }
@@ -63,7 +66,10 @@ function contentColumns(PostFactory|GuideFactory $factory): array
 {
     $columns = [];
 
-    foreach ($factory->newModel()->newQueryWithoutScopes()->orderBy('id')->get() as $record) {
+    foreach ($factory->newModel()
+        ->newQueryWithoutScopes()
+        ->orderBy('id')
+        ->get() as $record) {
         $columns[$record->id] = ['body' => $record->body, 'content' => $record->content];
     }
 
@@ -79,8 +85,10 @@ test('the migration adds a nullable content column and keeps the body column', f
     $nullable = array_column(Schema::getColumns($table), 'nullable', 'name');
 
     expect(Schema::hasColumn($table, 'content'))->toBeTrue()
-        ->and($nullable['content'])->toBeTrue()
-        ->and(Schema::hasColumn($table, 'body'))->toBeTrue();
+        ->and($nullable['content'])
+        ->toBeTrue()
+        ->and(Schema::hasColumn($table, 'body'))
+        ->toBeTrue();
 })->with('legacy body tables');
 
 test('the backfill copies the body into the content unchanged', function (PostFactory|GuideFactory $factory, string $table, string $body, bool $trashed): void {
@@ -89,16 +97,19 @@ test('the backfill copies the body into the content unchanged', function (PostFa
     runContentColumnMigration();
 
     expect(contentColumns($factory)[$id])->toBe(['body' => $body, 'content' => $body]);
-})->with('legacy body tables')->with([
-    'plain text' => ['Plan a flexible arrival.', false],
-    'an empty body' => ['', false],
-    'unicode and markdown' => ["## Café ✨ planning\n\n- **Bold** 日本語 🐭\n- [Official](https://example.com/a?b=1&c=2)\n\n> Quote with \"quotes\" and 'apostrophes'", false],
-    'a trashed row' => ['Archived planning advice.', true],
-]);
+})->with('legacy body tables')
+    ->with([
+        'plain text' => ['Plan a flexible arrival.', false],
+        'an empty body' => ['', false],
+        'unicode and markdown' => ["## Café ✨ planning\n\n- **Bold** 日本語 🐭\n- [Official](https://example.com/a?b=1&c=2)\n\n> Quote with \"quotes\" and 'apostrophes'", false],
+        'a trashed row' => ['Archived planning advice.', true],
+    ]);
 
 test('the backfill leaves content already written alone', function (PostFactory|GuideFactory $factory, string $table): void {
     $id = legacyBodyRow($factory, 'Old body text.');
-    DB::table($table)->where('id', $id)->update(['content' => 'Newer content text.']);
+    DB::table($table)
+        ->where('id', $id)
+        ->update(['content' => 'Newer content text.']);
 
     runContentColumnMigration();
 
@@ -122,7 +133,9 @@ test('the migration refuses to finish while a row has a body but no content', fu
     // Simulates the previous release clearing the content after the backfill copied it.
     DB::listen(function (QueryExecuted $query) use ($table, $id): void {
         if (str_starts_with($query->sql, 'update') && str_contains($query->sql, $table) && str_contains($query->sql, 'body')) {
-            DB::table($table)->where('id', $id)->update(['content' => null]);
+            DB::table($table)
+                ->where('id', $id)
+                ->update(['content' => null]);
         }
     });
 

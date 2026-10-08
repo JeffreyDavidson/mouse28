@@ -25,10 +25,13 @@ class NewsletterSubscriptionController
         if (! $turnstile->passes($request, Config::string('services.turnstile.newsletter_action'))) {
             throw ValidationException::withMessages([
                 'cf-turnstile-response' => 'Please verify that you are human and try again.',
-            ])->errorBag('newsletter')->redirectTo($request->redirectUrl());
+            ])->errorBag('newsletter')
+                ->redirectTo($request->redirectUrl());
         }
 
-        $requestNewsletterSubscription->handle($request->safe()->string('email')->toString());
+        $requestNewsletterSubscription->handle($request->safe()
+            ->string('email')
+            ->toString());
 
         return $this->checkYourEmail($request);
     }

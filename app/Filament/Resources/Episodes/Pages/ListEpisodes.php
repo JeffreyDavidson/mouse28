@@ -20,20 +20,28 @@ class ListEpisodes extends ListRecords
         return [
             'all' => Tab::make('All'),
             'attention' => Tab::make('Needs attention')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('episodes.id', Episode::query()->needsAttention()->select('id'))),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('episodes.id', Episode::query()
+                    ->needsAttention()
+                    ->select('id'))),
             'drafts' => Tab::make('Drafts')
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('episodes.status', [PublishStatus::Draft, PublishStatus::InReview])),
             'scheduled' => Tab::make('Scheduled')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('episodes.id', Episode::query()->scheduled()->select('id'))),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('episodes.id', Episode::query()
+                    ->scheduled()
+                    ->select('id'))),
             'published' => Tab::make('Published')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('episodes.id', Episode::query()->published()->select('id'))),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('episodes.id', Episode::query()
+                    ->published()
+                    ->select('id'))),
         ];
     }
 
     public function getHeader(): ?View
     {
         $published = Episode::published()->count();
-        $drafts = Episode::query()->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])->count();
+        $drafts = Episode::query()
+            ->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])
+            ->count();
 
         return view('filament.resources.episodes.header', [
             'published' => $published,

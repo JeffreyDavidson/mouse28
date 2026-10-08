@@ -98,13 +98,15 @@ test('public pages allow only nonce-bearing scripts and the site third parties',
         ->toContain("object-src 'none'")
         ->toContain("frame-ancestors 'self'")
         ->not->toContain("'unsafe-eval'")
-        ->and($nonce)->not->toBeEmpty();
+        ->and($nonce)
+        ->not->toBeEmpty();
 
     $response->assertSeeHtml("nonce=\"{$nonce}\"");
 });
 
 test('the admin panel keeps the script allowances Filament requires', function (): void {
-    $policy = (string) get(route('filament.admin.auth.login'))->assertOk()->headers->get('Content-Security-Policy');
+    $policy = (string) get(route('filament.admin.auth.login'))->assertOk()
+        ->headers->get('Content-Security-Policy');
 
     expect($policy)
         ->toContain("'unsafe-inline'")
@@ -113,7 +115,8 @@ test('the admin panel keeps the script allowances Filament requires', function (
 });
 
 test('error responses carry the content security policy', function (string $url, int $status): void {
-    $policy = (string) get($url)->assertStatus($status)->headers->get('Content-Security-Policy');
+    $policy = (string) get($url)->assertStatus($status)
+        ->headers->get('Content-Security-Policy');
 
     expect($policy)->toContain("default-src 'self'");
 })->with([
@@ -133,7 +136,8 @@ test('only secure responses declare strict transport security', function (bool $
 ]);
 
 test('content security policies list exactly the approved sources', function (string $url, string $scripts): void {
-    $policy = (string) get($url)->assertOk()->headers->get('Content-Security-Policy');
+    $policy = (string) get($url)->assertOk()
+        ->headers->get('Content-Security-Policy');
     $policy = (string) preg_replace("/'nonce-[^']+'/", "'nonce-*'", $policy);
 
     expect($policy)->toBe(implode('; ', [
@@ -159,7 +163,8 @@ test('content security policies list exactly the approved sources', function (st
 test('local development allows the Vite dev server', function (): void {
     app()->detectEnvironment(fn (): string => 'local');
 
-    $policy = (string) get(route('home'))->assertOk()->headers->get('Content-Security-Policy');
+    $policy = (string) get(route('home'))->assertOk()
+        ->headers->get('Content-Security-Policy');
 
     expect($policy)
         ->toContain("script-src 'self' 'nonce-")

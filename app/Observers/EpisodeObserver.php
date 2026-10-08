@@ -25,7 +25,8 @@ class EpisodeObserver
     public function creating(Episode $episode): void
     {
         if ($episode->podcast_id === null) {
-            $episode->podcast()->associate($this->primaryPodcast->findOrCreate());
+            $episode->podcast()
+                ->associate($this->primaryPodcast->findOrCreate());
         }
     }
 

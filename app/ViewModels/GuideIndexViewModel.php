@@ -22,7 +22,8 @@ class GuideIndexViewModel
      */
     public function data(Request $request): array
     {
-        $categoryEnum = GuideCategory::tryFrom($request->string('category')->toString());
+        $categoryEnum = GuideCategory::tryFrom($request->string('category')
+            ->toString());
         $category = $categoryEnum->value ?? '';
 
         $guides = Guide::published()

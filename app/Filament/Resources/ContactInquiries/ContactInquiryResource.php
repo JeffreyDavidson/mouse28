@@ -47,7 +47,9 @@ class ContactInquiryResource extends Resource
         $count = Cache::store('array')->remember(
             'filament.contact-inquiries.new-count',
             60,
-            fn (): int => ContactInquiry::query()->where('status', ContactInquiryStatus::New)->count(),
+            fn (): int => ContactInquiry::query()
+                ->where('status', ContactInquiryStatus::New)
+                ->count(),
         );
 
         return $count > 0 ? (string) $count : null;

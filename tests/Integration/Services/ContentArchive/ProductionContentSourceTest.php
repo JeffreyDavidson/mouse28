@@ -37,10 +37,14 @@ test('exporting runs the production export, downloads the archive and removes th
 
     $remoteArchive = $ran[0][9] ?? '';
     expect($ran)->toHaveCount(3)
-        ->and($ran[0])->toBe(['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=10', 'forge@cold-moon', 'php', '/home/forge/mouse28.com/current/artisan', 'content:export-public', $remoteArchive, '--no-interaction'])
-        ->and($remoteArchive)->toMatch('#\A/tmp/mouse28-public-content-[0-9a-f-]{36}\.json\z#')
-        ->and($ran[1])->toBe(['scp', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=10', "forge@cold-moon:{$remoteArchive}", '/tmp/local/content.json'])
-        ->and($ran[2])->toBe(['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=10', 'forge@cold-moon', 'rm', '-f', '--', $remoteArchive]);
+        ->and($ran[0])
+        ->toBe(['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=10', 'forge@cold-moon', 'php', '/home/forge/mouse28.com/current/artisan', 'content:export-public', $remoteArchive, '--no-interaction'])
+        ->and($remoteArchive)
+        ->toMatch('#\A/tmp/mouse28-public-content-[0-9a-f-]{36}\.json\z#')
+        ->and($ran[1])
+        ->toBe(['scp', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=10', "forge@cold-moon:{$remoteArchive}", '/tmp/local/content.json'])
+        ->and($ran[2])
+        ->toBe(['ssh', '-o', 'BatchMode=yes', '-o', 'ConnectTimeout=10', 'forge@cold-moon', 'rm', '-f', '--', $remoteArchive]);
 });
 
 test('a failed production export stops before downloading anything', function (): void {

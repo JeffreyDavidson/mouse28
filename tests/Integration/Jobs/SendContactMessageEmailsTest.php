@@ -25,5 +25,6 @@ test('legacy contact-mail jobs queued before the release still unserialize', fun
     }
 
     expect($job->contactMessageId)->toBe(42)
-        ->and($job->queue)->toBe('contact-mail');
+        ->and($job->queue)
+        ->toBe('contact-mail');
 });
