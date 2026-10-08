@@ -1,3 +1,5 @@
+@use('App\Presenters\GuidePresenter')
+
 @props([
     'guide',
     'loading' => 'lazy',
@@ -5,17 +7,10 @@
     'sizes' => '100vw',
 ])
 
-@inject('responsiveImages', 'App\Services\ResponsiveImageVariants')
-
 @php
-    $categoryArtwork = [
-        'accessibility' => '/images/guides/accessibility.webp',
-        'park-strategy' => '/images/guides/park-strategy.webp',
-        'food-reviews' => '/images/guides/food-reviews.webp',
-        'family-planning' => '/images/guides/family-planning.webp',
-    ];
-    $artworkUrl = $guide->featured_image_url ?: ($categoryArtwork[$guide->category?->value] ?? $categoryArtwork['park-strategy']);
-    $srcset = $guide->featured_image_url ? $responsiveImages->srcset($guide->featured_image_path) : null;
+    $presenter = GuidePresenter::from($guide);
+    $artworkUrl = $presenter->artworkUrl();
+    $srcset = $presenter->artworkSrcset();
 @endphp
 
 <img

@@ -49,7 +49,7 @@ The application can run locally without live third-party calls, but these featur
 - `MOUSE28_BLOG_POSTS_PER_PAGE` controls the number of posts shown per archive page; it defaults to `12`.
 - `MOUSE28_EPISODES_PER_PAGE` and `MOUSE28_GUIDES_PER_PAGE` control the episode and guide archive page sizes; both default to `12`.
 - `MOUSE28_SEARCH_RESULTS_PER_PAGE` controls how many results each site search section shows per page; it defaults to `6`.
-- `MOUSE28_NEWSLETTER_ISSUES_PER_PAGE` and `MOUSE28_NEWSLETTER_FEED_ITEMS` set the newsletter archive page size and the number of newest issues in `/newsletter/rss`; they default to `12` and `20`.
+- `MOUSE28_NEWSLETTER_ISSUES_PER_PAGE` and `MOUSE28_NEWSLETTER_FEED_ITEMS` set the newsletter archive page size and the number of newest issues in `/newsletter/rss`; they default to `12` and `20`. `MOUSE28_BLOG_FEED_ITEMS` sets the number of newest posts in `/rss/blog` (default `20`).
 - `MOUSE28_CONTACT_FORM_RATE_LIMIT` and `MOUSE28_NEWSLETTER_RATE_LIMIT` set the per-IP submissions allowed each minute; both default to `5`.
 - `MOUSE28_NEWSLETTER_CONFIRM_RATE_LIMIT` sets the per-IP newsletter confirmation and unsubscribe requests allowed each minute; it defaults to `10`.
 - `MOUSE28_NEWSLETTER_DELIVERY_RATE_LIMIT` sets how many newsletter issue emails are sent each second; it defaults to `5`, half of Resend's default of 10 per second, so contact mail keeps headroom.
