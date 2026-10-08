@@ -192,20 +192,10 @@
             <section class="border-navy/12 mt-12 border-t pt-8" aria-labelledby="share-episode" data-print-hidden>
                 <h2 id="share-episode" class="font-heading text-navy text-xl [font-weight:620]">Share this episode</h2>
                 <div class="mt-3 flex flex-wrap gap-x-5 gap-y-2">
-                    <a
-                        href="https://twitter.com/intent/tweet?text={{ urlencode($episode->title . ' | Mouse28 Podcast') }}&url={{ urlencode(route('episodes.show', $episode)) }}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="text-purple inline-flex min-h-12 items-center underline underline-offset-8"
-                        >Post on X<x-new-tab-notice
-                    /></a>
-                    <a
-                        href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(route('episodes.show', $episode)) }}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="text-purple inline-flex min-h-12 items-center underline underline-offset-8"
-                        >Share on Facebook<x-new-tab-notice
-                    /></a>
+                    <x-share-links
+                        :url="route('episodes.show', $episode)"
+                        :text="$episode->title.' | Mouse28 Podcast'"
+                    />
                     <button
                         type="button"
                         x-data="copyLink"

@@ -505,3 +505,16 @@ test('episode share links open without passing the page as referrer', function (
     $response->assertOk()
         ->assertDontSeeHtml('rel="noopener"');
 });
+
+test('episode share links point to the public episode address', function (): void {
+    $episode = Episode::factory()->create(['title' => 'Sample share title']);
+    $publicUrl = urlencode(route('episodes.show', $episode));
+
+    $response = get(route('episodes.show', $episode));
+
+    $response->assertOk()
+        ->assertSeeHtml('rel="noopener noreferrer"')
+        ->assertSeeHtml("https://twitter.com/intent/tweet?url={$publicUrl}&text=Sample+share+title+%7C+Mouse28+Podcast\"")
+        ->assertSeeHtml("https://www.facebook.com/sharer/sharer.php?u={$publicUrl}\"")
+        ->assertSeeInOrder(['Post on X', 'Share on Facebook']);
+});
