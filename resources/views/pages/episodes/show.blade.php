@@ -23,29 +23,13 @@
         <x-preview-banner />
     @endif
 
-    @inject('squareImages', 'App\Services\SquareResponsiveImageVariants')
-
-    @php
-        $showNotesLength = Str::of(strip_tags($episode->show_notes ?? ''))->squish()->length();
-        $embedUrl = $episode->transistorEmbedUrl();
-        $duration = \App\Presenters\EpisodePresenter::from($episode)->duration();
-        $isSparseEpisode = blank($embedUrl)
-            && blank($episode->transcript)
-            && $showNotesLength < 160;
-        $coverImage = $episode->featured_image_url
-            ?: ($podcast->cover_image_path ? '/storage/'.ltrim($podcast->cover_image_path, '/') : '/images/podcast/mouse28-cover.webp');
-        $appleUrl = $podcast->apple_url;
-        $spotifyUrl = $podcast->spotify_url;
-        $youtubeUrl = $episode->youtube_url ?: $podcast->youtube_url;
-    @endphp
-
     <section class="episode-detail-hero bg-navy text-cream relative overflow-hidden">
         <div class="relative mx-auto grid max-w-[86rem] gap-10 px-4 py-10 sm:px-6 sm:py-14 lg:grid-cols-[5fr_7fr] lg:items-center lg:gap-16 lg:py-20">
             <div class="podcast-cover-frame mx-auto w-full max-w-md lg:mx-0">
                 <img
                     src="{{ $coverImage }}"
-                    @if ($srcset = $squareImages->srcset($episode->featured_image_path))
-                        srcset="{{ $srcset }}"
+                    @if ($coverSrcset)
+                        srcset="{{ $coverSrcset }}"
                         sizes="(min-width: 1188px) 448px, (min-width: 1024px) calc(41.6667vw - 46.6667px), (min-width: 480px) 448px, calc(100vw - 32px)"
                     @endif
                     alt="{{ $episode->title }} podcast artwork"
@@ -121,32 +105,13 @@
                             aria-label="Podcast listening options"
                             @class(['flex flex-wrap gap-x-7 gap-y-1', 'mt-2' => $embedUrl])
                         >
-                            @if ($appleUrl)
+                            @foreach ($listenLinks as $link)
                                 <x-external-resource-link
-                                    :href="$appleUrl"
-                                    label="Apple Podcasts"
-                                    description="Visit the show"
+                                    :href="$link['url']"
+                                    :label="$link['label']"
+                                    :description="$link['description']"
                                 />
-                            @endif
-                            @if ($spotifyUrl)
-                                <x-external-resource-link
-                                    :href="$spotifyUrl"
-                                    label="Spotify"
-                                    description="Visit the show"
-                                />
-                            @endif
-                            @if ($youtubeUrl)
-                                <x-external-resource-link
-                                    :href="$youtubeUrl"
-                                    label="YouTube"
-                                    :description="$episode->youtube_url ? 'Watch this episode' : 'Visit the channel'"
-                                />
-                            @endif
-                            <x-external-resource-link
-                                :href="config('podcast.rss_url')"
-                                label="RSS Feed"
-                                description="Subscribe in another podcast app"
-                            />
+                            @endforeach
                         </nav>
                     </div>
                 </section>

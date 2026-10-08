@@ -1,7 +1,9 @@
+@use('App\Presenters\EpisodePresenter')
+
 <x-layouts.app
     :title="($podcast->name ?: 'Mouse28').' Podcast'"
     :description="$podcast->description ?: 'Disney park stories, accessibility conversations, and family experiences from the Mouse28 podcast.'"
-    :og-image="$podcast->cover_image_path ? '/storage/'.ltrim($podcast->cover_image_path, '/') : '/images/podcast/mouse28-cover.jpg'"
+    :og-image="$shareImage"
     :canonical="$canonicalUrl"
     :dispatch-layout="true"
 >
@@ -12,20 +14,6 @@
         FIRST VIEWPORT: Podcast artwork anchors the left while the show promise and newest episode lead on the right.
         FORM [seed: season-tracklist]: Show poster followed by a spacious season tracklist with no sidebar or statistics panels.
     -->
-    @inject('responsiveImages', 'App\Services\ResponsiveImageVariants')
-
-    @php
-        $allEpisodes = $episodes->getCollection();
-        $latestEpisode = $allEpisodes->first();
-        $groupedEpisodes = $allEpisodes->groupBy(fn ($episode) => $episode->season_number ?? 0);
-        $coverImage = $podcast->cover_image_path
-            ? '/storage/'.ltrim($podcast->cover_image_path, '/')
-            : '/images/podcast/mouse28-cover.webp';
-        $coverSrcset = $podcast->cover_image_path
-            ? $responsiveImages->srcset($podcast->cover_image_path)
-            : '/images/podcast/mouse28-cover-640.webp 640w, /images/podcast/mouse28-cover-768.webp 768w, /images/podcast/mouse28-cover.webp 1200w';
-    @endphp
-
     <div data-podcast-archive>
         <section class="podcast-show-hero bg-navy text-cream relative overflow-hidden">
             <div class="relative mx-auto grid max-w-[86rem] gap-8 px-4 py-6 sm:gap-10 sm:px-6 sm:py-16 lg:grid-cols-[5fr_7fr] lg:items-center lg:gap-16 lg:py-20">
@@ -61,7 +49,7 @@
                             <div class="text-cream/65 mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm">
                                 <x-display-date :date="$latestEpisode->published_at" />
                                 @if ($latestEpisode->duration_seconds)
-                                    <span>{{ \App\Presenters\EpisodePresenter::from($latestEpisode)->duration() }}</span>
+                                    <span>{{ EpisodePresenter::from($latestEpisode)->duration() }}</span>
                                 @endif
                                 @if ($latestEpisode->season_number)
                                     <span>Season {{ $latestEpisode->season_number }}, episode {{ $latestEpisode->episode_number }}</span>
@@ -113,7 +101,7 @@
                     </div>
 
                     <div class="podcast-ledger min-w-0 wrap-anywhere">
-                        @foreach ($groupedEpisodes as $season => $seasonEpisodes)
+                        @foreach ($seasons as $season => $seasonEpisodes)
                             <section class="{{ ! $loop->first ? 'mt-14' : '' }}" aria-labelledby="season-{{ $season }}">
                                 <div class="border-gold/45 flex flex-wrap items-baseline justify-between gap-3 border-b pb-4">
                                     <h3
@@ -144,7 +132,7 @@
                                                             format="M j, Y"
                                                         />
                                                         @if ($episode->duration_seconds)
-                                                            <span>{{ \App\Presenters\EpisodePresenter::from($episode)->duration() }}</span>
+                                                            <span>{{ EpisodePresenter::from($episode)->duration() }}</span>
                                                         @endif
                                                     </div>
                                                     <h4 class="font-heading text-navy group-hover:text-purple mt-2 text-2xl [font-weight:600] tracking-[-0.015em] text-balance transition-colors">

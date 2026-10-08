@@ -14,11 +14,6 @@ class PodcastComposer
 
     public function compose(View $view): void
     {
-        $podcast = $this->primaryPodcast->current();
-
-        $view->with([
-            'podcast' => $podcast,
-            'podcastLinks' => PodcastLinks::for($podcast),
-        ]);
+        $view->with('podcastLinks', PodcastLinks::for($this->primaryPodcast->current()));
     }
 }

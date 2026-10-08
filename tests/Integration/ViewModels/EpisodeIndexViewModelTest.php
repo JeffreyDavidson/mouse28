@@ -1,8 +1,10 @@
 <?php
 
 use App\Models\Episode;
+use App\Models\Podcast;
 use App\ViewModels\EpisodeIndexViewModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Collection;
 
 covers(EpisodeIndexViewModel::class);
 
@@ -47,4 +49,46 @@ test('episode index data uses the configured page size', function (): void {
     $data = app(EpisodeIndexViewModel::class)->data();
 
     expect($data['episodes']->perPage())->toBe(2);
+});
+
+test('episode index data names the newest episode and groups the page by season', function (): void {
+    $oldest = Episode::factory()->create(['season_number' => 1, 'published_at' => now()->subDays(3)]);
+    $unseasoned = Episode::factory()->create(['season_number' => null, 'published_at' => now()->subDays(2)]);
+    $newest = Episode::factory()->create(['season_number' => 1, 'published_at' => now()->subDay()]);
+
+    $data = app(EpisodeIndexViewModel::class)->data();
+
+    expect($data['latestEpisode']?->is($newest))->toBeTrue()
+        ->and($data['seasons']->map(fn (Collection $episodes): array => $episodes->pluck('id')
+            ->all())
+            ->all())
+        ->toBe([1 => [$newest->id, $oldest->id], 0 => [$unseasoned->id]]);
+});
+
+test('episode index data has no newest episode or seasons without episodes', function (): void {
+    $data = app(EpisodeIndexViewModel::class)->data();
+
+    expect($data['latestEpisode'])->toBeNull()
+        ->and($data['seasons'])
+        ->toBeEmpty();
+});
+
+test('episode index data uses the bundled cover without an uploaded one', function (): void {
+    $data = app(EpisodeIndexViewModel::class)->data();
+
+    expect($data['coverImage'])->toBe('/images/podcast/mouse28-cover.webp')
+        ->and($data['shareImage'])
+        ->toBe('/images/podcast/mouse28-cover.jpg')
+        ->and($data['coverSrcset'])
+        ->toContain('/images/podcast/mouse28-cover-640.webp 640w');
+});
+
+test('episode index data uses the uploaded podcast cover', function (): void {
+    Podcast::factory()->create(['cover_image_path' => 'podcast/cover.png']);
+
+    $data = app(EpisodeIndexViewModel::class)->data();
+
+    expect($data['coverImage'])->toBe('/storage/podcast/cover.png')
+        ->and($data['shareImage'])
+        ->toBe('/storage/podcast/cover.png');
 });

@@ -6,9 +6,11 @@ namespace App\ViewModels;
 
 use App\Models\Episode;
 use App\Models\Podcast;
+use App\Presenters\PodcastPresenter;
 use App\Support\PodcastLinks;
 use App\Support\PrimaryPodcast;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 
 class EpisodeIndexViewModel
@@ -18,8 +20,13 @@ class EpisodeIndexViewModel
     /**
      * @return array{
      *     episodes: LengthAwarePaginator<int, Episode>,
+     *     latestEpisode: Episode|null,
+     *     seasons: Collection<int, Collection<int, Episode>>,
      *     podcast: Podcast,
-     *     podcastLinks: list<array{label: string, url: string}>,
+     *     podcastLinks: list<array{label: string, url: string, description: string}>,
+     *     coverImage: string,
+     *     coverSrcset: string|null,
+     *     shareImage: string,
      *     canonicalUrl: string
      * }
      */
@@ -35,11 +42,19 @@ class EpisodeIndexViewModel
         abort_if($episodes->currentPage() > $episodes->lastPage(), 404);
 
         $podcast = $this->primaryPodcast->current();
+        $presenter = PodcastPresenter::from($podcast);
 
         return [
             'episodes' => $episodes,
+            'latestEpisode' => $episodes->getCollection()
+                ->first(),
+            'seasons' => $episodes->getCollection()
+                ->groupBy(fn (Episode $episode): int => $episode->season_number ?? 0),
             'podcast' => $podcast,
             'podcastLinks' => PodcastLinks::for($podcast),
+            'coverImage' => $presenter->coverImageUrl(),
+            'coverSrcset' => $presenter->coverSrcset(),
+            'shareImage' => $presenter->shareImageUrl(),
             'canonicalUrl' => route('episodes.index', array_filter([
                 'page' => $episodes->currentPage() > 1 ? $episodes->currentPage() : null,
             ])),

@@ -20,6 +20,7 @@ test('a signed preview link shows the draft to anyone holding it without exposin
         ->assertViewIs('pages.episodes.show')
         ->assertViewHas('episode', fn (Episode $viewEpisode): bool => $viewEpisode->is($episode))
         ->assertViewHas('isPreview', true)
+        ->assertViewHas('listenLinks')
         ->assertSee('Preview mode')
         ->assertSeeHtml('noindex,nofollow')
         ->assertDontSeeHtml('application/ld+json')
