@@ -75,8 +75,8 @@ test('homepage renders configured podcast distribution links', function (): void
         ->assertDontSee('Spotify · Soon');
 });
 
-test('homepage uses one newsletter form and responsive hero artwork', function (): void {
-    $response = get(route('home'))->assertOk()
+test('homepage renders responsive hero artwork without a second newsletter form', function (): void {
+    get(route('home'))->assertOk()
         ->assertSeeHtml('/images/hero-family-640.webp 640w')
         ->assertSeeHtml('/images/hero-family-768.webp 768w')
         ->assertSeeHtml('/images/hero-family-1024.webp 1024w')
@@ -95,11 +95,7 @@ test('homepage uses one newsletter form and responsive hero artwork', function (
         ->assertSee('Our first dispatch is being prepared.')
         ->assertDontSeeHtml('/storage/posts/welcome-to-mouse-28.webp')
         ->assertSee('We email you a link to confirm. Your address is only used for Mouse28 updates.')
-        ->assertSeeHtml('id="footer-newsletter-email"')
-        ->assertSee('Connect')
         ->assertDontSeeHtml('id="home-newsletter-email"');
-
-    expect(substr_count($this->responseContent($response), 'action="'.route('newsletter.subscribe').'"'))->toBe(1);
 });
 
 test('homepage preloads responsive AVIF hero artwork with a WebP fallback', function (): void {
@@ -279,12 +275,6 @@ test('homepage newsletter form renders bot protection', function (): void {
         ->assertSeeHtml('data-action="newsletter"')
         ->assertSeeHtml('data-appearance="interaction-only"')
         ->assertSeeHtml('name="website_url"');
-});
-
-test('homepage links that open a new tab announce it', function (): void {
-    $response = get(route('home'))->assertOk();
-
-    expect($this->unannouncedNewTabLinks($response))->toBeEmpty();
 });
 
 test('the footer lists enabled footer profiles as external links', function (): void {

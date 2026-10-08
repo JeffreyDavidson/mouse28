@@ -93,24 +93,3 @@ test('landing page provides search and social metadata', function (): void {
     get(route('about'))->assertOk()
         ->assertSeeHtml('<meta property="og:title" content="About the Davidson Family | Mouse28">');
 });
-
-test('page copy and metadata avoid em dashes', function (): void {
-    get(route('about'))
-        ->assertOk()
-        ->assertDontSee('—');
-});
-
-test('page uses the dispatch editorial system', function (): void {
-    get(route('about'))->assertOk()
-        ->assertSeeHtml('data-brand-wordmark')
-        ->assertSeeHtml('data-about-editorial')
-        ->assertSeeHtml('js-dispatch-pages');
-});
-
-test('about page exposes a single main landmark', function (): void {
-    $response = get(route('about'))->assertOk();
-
-    $document = HTMLDocument::createFromString($this->responseContent($response), LIBXML_NOERROR);
-
-    expect(new XPath($document)->query('//*[local-name()="main"]'))->toHaveCount(1);
-});

@@ -83,6 +83,7 @@ test('test paths mirror their application source', function (string $suite): voi
         'PublicPageSeoTagsTest.php' => 'routes/web.php',
         'View/Layouts/AppLayoutTest.php' => 'resources/views/components/layouts/app.blade.php',
         'View/Layouts/ErrorLayoutTest.php' => 'resources/views/components/layouts/error.blade.php',
+        'PublicPageConventionsTest.php' => 'routes/web.php',
     ];
     $violations = [];
     $iterator = new RecursiveIteratorIterator(

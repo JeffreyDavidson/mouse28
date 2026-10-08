@@ -7,14 +7,17 @@ use App\Models\Podcast;
 use App\Models\Post;
 use App\Presenters\EpisodePresenter;
 use App\Presenters\PodcastPresenter;
-use App\Support\ContentContinuation;
+use App\Queries\EpisodeNavigationQuery;
 use App\Support\PodcastLinks;
 use App\Support\PrimaryPodcast;
 use Illuminate\Database\Eloquent\Collection;
 
 class EpisodeShowViewModel
 {
-    public function __construct(private readonly PrimaryPodcast $primaryPodcast) {}
+    public function __construct(
+        private readonly PrimaryPodcast $primaryPodcast,
+        private readonly EpisodeNavigationQuery $episodeNavigationQuery,
+    ) {}
 
     /**
      * @return array{
@@ -38,6 +41,7 @@ class EpisodeShowViewModel
         $podcast = $this->primaryPodcast->current();
         $presenter = EpisodePresenter::from($episode);
         $podcastPresenter = PodcastPresenter::from($podcast);
+        $navigation = $this->episodeNavigationQuery->get($episode);
 
         $data = [
             'episode' => $episode,
@@ -57,8 +61,8 @@ class EpisodeShowViewModel
                 ->latest('posts.id')
                 ->take(4)
                 ->get(),
-            'previousEpisode' => ContentContinuation::previousEpisode($episode),
-            'nextEpisode' => ContentContinuation::nextEpisode($episode),
+            'previousEpisode' => $navigation['previous'],
+            'nextEpisode' => $navigation['next'],
         ];
 
         if ($preview) {

@@ -3,12 +3,10 @@
 use App\Enums\PublishStatus;
 use App\Models\Episode;
 use App\Models\Podcast;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
@@ -35,7 +33,6 @@ test('published episode returns its view model data', function (): void {
 });
 
 test('episode artwork lists its square variants', function (): void {
-    Storage::fake('public');
     $disk = Storage::disk('public');
     $disk->put('episodes/cover.png', UploadedFile::fake()
         ->image('cover.png', 700, 700)
@@ -51,7 +48,6 @@ test('episode artwork lists its square variants', function (): void {
 });
 
 test('episode artwork falls back to the original without a srcset when no variants exist', function (): void {
-    Storage::fake('public');
     $disk = Storage::disk('public');
     $episode = Episode::factory()->create();
     $episode->forceFill(['featured_image_path' => 'episodes/cover.png'])
@@ -64,7 +60,6 @@ test('episode artwork falls back to the original without a srcset when no varian
 });
 
 test('the podcast archive renders an uploaded show cover with its responsive variants', function (): void {
-    Storage::fake('public');
     $disk = Storage::disk('public');
     $disk->put('podcast/cover.png', UploadedFile::fake()
         ->image('cover.png', 700, 700)
@@ -97,18 +92,6 @@ test('episode archive renders', function (): void {
         ->assertOk()
         ->assertSee('The Mouse28 Podcast')
         ->assertSeeHtml('src="/images/podcast/mouse28-cover.webp"');
-});
-
-test('podcast pages render one newsletter signup', function (): void {
-    $episode = Episode::factory()->create();
-
-    foreach ([route('episodes.index'), route('episodes.show', $episode)] as $url) {
-        $response = get($url)->assertOk()
-            ->assertSeeHtml('id="footer-newsletter-email"')
-            ->assertSee('Connect');
-
-        expect(substr_count($this->responseContent($response), 'action="'.route('newsletter.subscribe').'"'))->toBe(1);
-    }
 });
 
 test('podcast index advertises the canonical Transistor feed without persisting defaults', function (): void {
@@ -430,19 +413,6 @@ test('episodes include podcast media duration and breadcrumb structured data', f
         ->toBe('Podcast');
 });
 
-test('page copy and metadata avoid em dashes', function (): void {
-    get(route('episodes.index'))
-        ->assertOk()
-        ->assertDontSee('—');
-});
-
-test('page uses the dispatch editorial system', function (): void {
-    get(route('episodes.index'))->assertOk()
-        ->assertSeeHtml('data-brand-wordmark')
-        ->assertSeeHtml('data-podcast-archive')
-        ->assertSeeHtml('js-dispatch-pages');
-});
-
 test('reading page uses the dispatch reading surface', function (): void {
     $episode = Episode::factory()->create();
 
@@ -451,31 +421,6 @@ test('reading page uses the dispatch reading surface', function (): void {
         ->assertSeeHtml('dispatch-page-field')
         ->assertDontSee('—');
 });
-
-test('podcast links that open a new tab announce it', function (bool $showEpisode): void {
-    primaryPodcast()->update(['apple_url' => 'https://podcasts.apple.com/podcast/mouse28']);
-    $episode = Episode::factory()->create(['transistor_url' => 'https://share.transistor.fm/s/abc123']);
-
-    $response = get($showEpisode ? route('episodes.show', $episode) : route('episodes.index'))->assertOk();
-
-    expect($this->unannouncedNewTabLinks($response))->toBeEmpty();
-})->with([
-    'archive' => [false],
-    'episode' => [true],
-]);
-
-test('signed-in visitors see published episodes but nobody sees drafts at public URLs', function (bool $isAdmin): void {
-    $published = Episode::factory()->create();
-    $draft = Episode::factory()
-        ->draft()
-        ->create();
-    actingAs($isAdmin ? User::factory()
-        ->admin()
-        ->create() : User::factory()->create());
-
-    get(route('episodes.show', $published))->assertOk();
-    get(route('episodes.show', $draft))->assertNotFound();
-})->with(['non-admin' => [false], 'admin' => [true]]);
 
 test('episode pages show an evening publish date on its Eastern day', function (): void {
     $this->travelTo('2026-10-10 12:00:00');
