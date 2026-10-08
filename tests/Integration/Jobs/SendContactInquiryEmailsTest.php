@@ -50,8 +50,18 @@ test('contact emails notify the administrators and confirm to the sender', funct
 
     Event::assertDispatched(MessageSent::class, fn (MessageSent $event): bool => $event->message->getTo()[0]->getAddress() === 'admin@example.com'
         && $event->message->getReplyTo()[0]->getAddress() === 'dale@example.com');
+    Event::assertDispatched(MessageSent::class, fn (MessageSent $event): bool => $event->message->getTo()[0]->getAddress() === 'dale@example.com');
+});
+
+test('contact confirmation goes to the bare sender address while the notification reply-to keeps their name', function (): void {
+    $inquiry = ContactInquiry::factory()->create(['name' => 'Dale Cooper', 'email' => 'dale@example.com']);
+
+    sendContactInquiryEmails($inquiry);
+
+    Event::assertDispatched(MessageSent::class, fn (MessageSent $event): bool => $event->message->getTo()[0]->getAddress() === 'admin@example.com'
+        && $event->message->getReplyTo()[0]->getName() === 'Dale Cooper');
     Event::assertDispatched(MessageSent::class, fn (MessageSent $event): bool => $event->message->getTo()[0]->getAddress() === 'dale@example.com'
-        && $event->message->getTo()[0]->getName() === 'Dale Cooper');
+        && $event->message->getTo()[0]->getName() === '');
 });
 
 test('retry sends only the contact email that previously failed', function (): void {
