@@ -109,6 +109,37 @@ test('safe staging configuration passes with isolated observability', function (
     expect($exitCode)->toBe(Command::SUCCESS);
 });
 
+test('a deployment environment other than production or staging fails preflight', function (mixed $environment): void {
+    config()->set([
+        'app.deployment_environment' => $environment,
+        'sentry.environment' => $environment,
+    ]);
+
+    pendingCommand('app:verify-deployment')
+        ->expectsOutputToContain('MOUSE28_DEPLOYMENT_ENVIRONMENT must be production or staging.')
+        ->doesntExpectOutputToContain('SENTRY_ENVIRONMENT must match MOUSE28_DEPLOYMENT_ENVIRONMENT.')
+        ->assertFailed();
+})->with([
+    'local' => ['local'],
+    'unknown' => ['preview'],
+    'wrong case' => ['Production'],
+    'empty' => [''],
+    'missing' => [null],
+]);
+
+test('an unrecognised deployment environment is held to the production rules', function (): void {
+    config()->set([
+        'app.deployment_environment' => 'Staging',
+        'sentry.environment' => 'Staging',
+        'mail.default' => 'array',
+    ]);
+
+    pendingCommand('app:verify-deployment')
+        ->expectsOutputToContain('MAIL_MAILER must use a delivering transport.')
+        ->doesntExpectOutputToContain('MAIL_MAILER must use the array transport on staging.')
+        ->assertFailed();
+});
+
 test('staging rejects a live mail transport', function (): void {
     config()->set([
         'app.url' => 'https://staging.mouse28.com',
