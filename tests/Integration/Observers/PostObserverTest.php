@@ -13,7 +13,6 @@ pest()->use(RefreshDatabase::class);
 covers(PostObserver::class);
 
 beforeEach(function (): void {
-    Storage::fake('public');
     $image = UploadedFile::fake()
         ->image('post.png', 1280, 8)
         ->getContent();

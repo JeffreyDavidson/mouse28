@@ -9,10 +9,6 @@ covers(GeneratePodcastImageVariants::class);
 
 pest()->use(RefreshDatabase::class);
 
-beforeEach(function (): void {
-    Storage::fake('public');
-});
-
 test('it backfills variants for the podcast cover and skips it once verified', function (): void {
     Storage::disk('public')->put('podcast/cover.png', UploadedFile::fake()
         ->image('cover.png', 700, 700)

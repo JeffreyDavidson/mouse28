@@ -14,10 +14,6 @@ covers(RepairResponsiveImages::class);
 
 pest()->use(RefreshDatabase::class);
 
-beforeEach(function (): void {
-    Storage::fake('public');
-});
-
 test('it repairs variants for posts, episodes, guides and the podcast, then verifies them', function (): void {
     $wide = UploadedFile::fake()
         ->image('wide.png', 1000, 520)

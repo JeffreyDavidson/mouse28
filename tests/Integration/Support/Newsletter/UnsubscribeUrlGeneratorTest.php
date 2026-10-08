@@ -4,7 +4,8 @@ use App\Models\Subscriber;
 use App\Support\Newsletter\UnsubscribeUrlGenerator;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Date;
+
+use function Pest\Laravel\travel;
 
 covers(UnsubscribeUrlGenerator::class);
 
@@ -14,7 +15,7 @@ test('a reader gets a signed unsubscribe link that never expires', function (): 
     $reader = Subscriber::factory()->create();
 
     $url = app(UnsubscribeUrlGenerator::class)->for($reader);
-    Date::setTestNow(Date::now()->addYears(2));
+    travel(2)->years();
 
     expect(parse_url($url, PHP_URL_PATH))->toBe("/newsletter/unsubscribe/{$reader->id}")
         ->and(Request::create($url)->hasValidSignature())

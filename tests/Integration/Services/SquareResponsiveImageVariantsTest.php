@@ -4,10 +4,6 @@ use App\Services\SquareResponsiveImageVariants;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-beforeEach(function (): void {
-    Storage::fake('public');
-});
-
 test('it generates centered square variants up to the shorter side of a wide original', function (): void {
     Storage::disk('public')->put('episodes/cover.png', UploadedFile::fake()
         ->image('cover.png', 1731, 909)
