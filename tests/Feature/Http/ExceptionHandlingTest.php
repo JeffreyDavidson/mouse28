@@ -88,3 +88,20 @@ test('throttled requests explain how to recover without being indexed', function
         ->assertHeader('X-Robots-Tag', 'noindex, nofollow')
         ->assertDontSee('Private throttle details');
 });
+
+test('each status page renders its recovery options', function (int $status, string $recoveryLabel): void {
+    config()->set('app.debug', false);
+    Route::get('/testing/recovery-options', fn () => abort($status));
+
+    get('/testing/recovery-options')
+        ->assertStatus($status)
+        ->assertSeeHtml('dispatch-error-recovery')
+        ->assertSeeInOrder([$recoveryLabel, 'Go home'])
+        ->assertSeeHtml('href="'.route('home').'"')
+        ->assertSeeHtml('dispatch-error-secondary');
+})->with([
+    'expired session' => [419, 'Return to the site'],
+    'too many requests' => [429, 'Try again'],
+    'server error' => [500, 'Try again'],
+    'maintenance' => [503, 'Try again'],
+]);
