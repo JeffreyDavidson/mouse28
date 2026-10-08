@@ -1,13 +1,14 @@
 <?php
 
-use App\Actions\GenerateRobotsTxt;
+use App\Support\Feeds\RobotsTxtRenderer;
+use App\ViewModels\RobotsTxtViewModel;
 
-covers(GenerateRobotsTxt::class);
+covers(RobotsTxtViewModel::class);
 
 test('production allows crawlers, keeps them out of the admin and signed previews, and points them to the sitemap', function (): void {
     config()->set('app.deployment_environment', 'production');
 
-    $document = app(GenerateRobotsTxt::class)->handle();
+    $document = new RobotsTxtRenderer()->render(...app(RobotsTxtViewModel::class)->data());
 
     expect($document)->toBe(implode("\n", [
         'User-agent: *',
@@ -25,7 +26,7 @@ test('production allows crawlers, keeps them out of the admin and signed preview
 test('every other deployment environment blocks all crawlers', function (string $environment): void {
     config()->set('app.deployment_environment', $environment);
 
-    $document = app(GenerateRobotsTxt::class)->handle();
+    $document = new RobotsTxtRenderer()->render(...app(RobotsTxtViewModel::class)->data());
 
     expect($document)->toBe("User-agent: *\nDisallow: /\n");
 })->with([
@@ -39,7 +40,7 @@ test('every other deployment environment blocks all crawlers', function (string 
 test('search results stay crawlable so their noindex tag can be read', function (): void {
     config()->set('app.deployment_environment', 'production');
 
-    $document = app(GenerateRobotsTxt::class)->handle();
+    $document = new RobotsTxtRenderer()->render(...app(RobotsTxtViewModel::class)->data());
 
     expect($document)->not->toContain('Disallow: /search');
 });
