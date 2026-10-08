@@ -1,6 +1,7 @@
+@inject('markdown', 'App\Support\MarkdownRenderer')
 <x-layouts.app
     :title="$issue->title.' | Mouse28'"
-    :description="Str::limit($issue->excerpt ?: strip_tags(Str::markdown($issue->content, ['html_input' => 'strip'])), 160)"
+    :description="Str::limit($issue->excerpt ?: strip_tags($markdown->safe($issue->content)), 160)"
     og-type="article"
     og-image="/images/hero-family.jpg"
     :canonical="route('newsletter.issue', $issue)"
@@ -46,15 +47,7 @@
         <div class="mx-auto max-w-[72ch] px-4 sm:px-6">
             <article class="editorial-reading-column">
                 <div class="blog-article-content prose-navy prose text-navy/80 max-w-none text-[1.0625rem] leading-[1.85] wrap-anywhere">
-                    {!!
-                        Str::markdown($issue->content, [
-                            'html_input' => 'strip',
-                            'allow_unsafe_links' => false,
-                            'renderer' => [
-                                'soft_break' => "<br />\n",
-                            ],
-                        ])
-                    !!}
+                    {!! $markdown->safeWithLineBreaks($issue->content) !!}
                 </div>
             </article>
 
