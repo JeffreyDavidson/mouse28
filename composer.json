@@ -162,7 +162,8 @@
         ],
         "test:mutate:integrations": [
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/StructuredData.php --filter='structured data'",
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Actions/GenerateRobotsTxt.php --filter='(robots|crawlers|crawlable)'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/ViewModels/RobotsTxtViewModel.php --filter='(robots|crawlers|crawlable)'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/Feeds/RobotsTxtRenderer.php --filter='(disallowed paths|disallows every path)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/SafeReturnUrl.php --filter='(referrers|same origin)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/PodcastLinks.php --filter='links include configured services'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/BlogRssFeed.php --filter='blog feed'",
