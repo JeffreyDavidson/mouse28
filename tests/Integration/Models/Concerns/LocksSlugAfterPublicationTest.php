@@ -13,6 +13,8 @@ use Database\Factories\PostFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
 
+use function Pest\Laravel\travelTo;
+
 covers(LocksSlugAfterPublication::class);
 
 pest()->use(RefreshDatabase::class);
@@ -80,14 +82,14 @@ test('content saved as published without the publish action is locked', function
 })->with('slug locking content');
 
 test('the lock keeps its first timestamp when content is republished', function (): void {
-    Date::setTestNow('2026-10-02 12:00:00');
+    travelTo('2026-10-02 12:00:00');
     $post = Post::factory()
         ->draft()
         ->create();
     $post->publish();
     $lockedAt = $post->getAttribute('slug_locked_at');
 
-    Date::setTestNow('2026-10-04 12:00:00');
+    travelTo('2026-10-04 12:00:00');
     $post->unpublish();
     $post->publish();
 

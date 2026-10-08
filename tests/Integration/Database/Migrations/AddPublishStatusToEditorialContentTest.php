@@ -12,9 +12,12 @@ use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+
+use function Pest\Laravel\travelTo;
+
+const BACKFILL_RUN_AT = '2026-10-02 12:00:00';
 
 pest()->use(RefreshDatabase::class);
 
@@ -107,7 +110,7 @@ test('the migration adds a draft-by-default status indexed with the publish date
 })->with('legacy content tables');
 
 test('the backfill maps the legacy flag and publish date to a status', function (PostFactory|EpisodeFactory|GuideFactory|NewsletterIssueFactory $factory, string $table, bool $isPublished, ?string $publishedAt, bool $trashed, string $status, ?string $expectedDate): void {
-    Date::setTestNow('2026-10-02 12:00:00');
+    travelTo(BACKFILL_RUN_AT);
     $id = legacyPublicationRow($factory, $isPublished, $publishedAt, $trashed);
 
     runPublishStatusMigration();
@@ -127,7 +130,7 @@ test('the backfill maps the legacy flag and publish date to a status', function 
     ]);
 
 test('the backfill leaves statuses already set alone', function (PostFactory|EpisodeFactory|GuideFactory|NewsletterIssueFactory $factory, string $table): void {
-    Date::setTestNow('2026-10-02 12:00:00');
+    travelTo(BACKFILL_RUN_AT);
     $id = legacyPublicationRow($factory, true, '2026-09-01 09:00:00');
     DB::table($table)
         ->where('id', $id)
@@ -139,7 +142,7 @@ test('the backfill leaves statuses already set alone', function (PostFactory|Epi
 })->with('legacy content tables');
 
 test('running the migration again changes nothing', function (PostFactory|EpisodeFactory|GuideFactory|NewsletterIssueFactory $factory, string $table): void {
-    Date::setTestNow('2026-10-02 12:00:00');
+    travelTo(BACKFILL_RUN_AT);
     legacyPublicationRow($factory, false, null);
     legacyPublicationRow($factory, true, '2026-09-01 09:00:00');
     legacyPublicationRow($factory, true, '2026-10-09 09:00:00');
@@ -147,14 +150,14 @@ test('running the migration again changes nothing', function (PostFactory|Episod
     runPublishStatusMigration();
     $afterFirstRun = publicationColumns($factory);
 
-    Date::setTestNow('2026-10-20 12:00:00');
+    travelTo('2026-10-20 12:00:00');
     runPublishStatusMigration();
 
     expect(publicationColumns($factory))->toBe($afterFirstRun);
 })->with('legacy content tables');
 
 test('the migration refuses to finish while a published row is still a draft', function (PostFactory|EpisodeFactory|GuideFactory|NewsletterIssueFactory $factory, string $table): void {
-    Date::setTestNow('2026-10-02 12:00:00');
+    travelTo(BACKFILL_RUN_AT);
     $id = legacyPublicationRow($factory, true, '2026-09-01 09:00:00');
     // Simulates the previous release writing the row back as a draft after each backfill step.
     DB::listen(function (QueryExecuted $query) use ($table, $id): void {

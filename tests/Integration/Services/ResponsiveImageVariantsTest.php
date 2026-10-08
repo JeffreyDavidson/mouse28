@@ -5,10 +5,6 @@ use Illuminate\Filesystem\FilesystemAdapter;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-beforeEach(function (): void {
-    Storage::fake('public');
-});
-
 function storeResponsiveSource(string $path, int $width, int $height): void
 {
     Storage::disk('public')->put($path, UploadedFile::fake()

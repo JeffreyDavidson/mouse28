@@ -11,10 +11,6 @@ covers(GeneratePostImageVariants::class);
 
 pest()->use(RefreshDatabase::class);
 
-beforeEach(function (): void {
-    Storage::fake('public');
-});
-
 test('it backfills variants, skips verified posts and regenerates them with force', function (): void {
     Storage::disk('public')->put('posts/post.png', UploadedFile::fake()
         ->image('post.png', 1280, 72)

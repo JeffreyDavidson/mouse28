@@ -4,6 +4,8 @@ use App\Models\Episode;
 use App\Models\Podcast;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+use function Pest\Laravel\travel;
+
 pest()->use(RefreshDatabase::class);
 
 test('a podcast lists its episodes and its latest published one', function (): void {
@@ -51,7 +53,7 @@ test('trashing a podcast trashes its episodes and restoring it brings back only 
         ->for($podcast)
         ->create();
     $trashedEarlier->delete();
-    $this->travel(5)
+    travel(5)
         ->seconds();
     $episode = Episode::factory()
         ->for($podcast)
@@ -62,7 +64,7 @@ test('trashing a podcast trashes its episodes and restoring it brings back only 
     expect($episode->refresh()
         ->trashed())->toBeTrue();
 
-    $this->travel(5)
+    travel(5)
         ->seconds();
     $podcast->restore();
 
