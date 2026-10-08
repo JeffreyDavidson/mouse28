@@ -3,6 +3,7 @@
 use App\Mail\NewsletterIssueMail;
 use App\Models\NewsletterIssue;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\URL;
 
 covers(NewsletterIssueMail::class);
 
@@ -95,3 +96,17 @@ test('absolute, mailto, tel, anchor and protocol-relative links are left alone',
         ->assertSeeInHtml('href="//cdn.test/e"', false)
         ->assertSeeInText($markdown);
 });
+
+test('an issue email html matches its snapshot for readers and for tests', function (?string $unsubscribeUrl): void {
+    URL::forceRootUrl('https://mouse28.test');
+
+    $html = new NewsletterIssueMail(issueForMail("## Park day\n\nHello **readers**.\n\n> A quote"), $unsubscribeUrl)->render();
+
+    // Indentation and blank lines are not compared, so moving markup into a layout keeps the snapshot.
+    $lines = array_filter(array_map(trim(...), explode("\n", $html)), fn (string $line): bool => $line !== '');
+
+    expect(implode("\n", $lines))->toMatchSnapshot();
+})->with([
+    'reader' => ['https://mouse28.test/newsletter/unsubscribe/1?signature=abc'],
+    'test email' => [null],
+]);
