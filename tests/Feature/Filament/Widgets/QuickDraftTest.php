@@ -91,3 +91,14 @@ test('a draft title with no letters or numbers is rejected because it cannot nam
 
     expect(Post::query()->count())->toBe(0);
 });
+
+test('a non-administrator cannot save a post draft from the dashboard widget', function (): void {
+    actingAs(User::factory()->create());
+
+    livewire(QuickDraft::class)
+        ->set('data.title', 'Sneaky Draft')
+        ->call('saveDraft')
+        ->assertForbidden();
+
+    expect(Post::query()->count())->toBe(0);
+});
