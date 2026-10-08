@@ -7,6 +7,7 @@ use App\Models\Guide;
 use App\Models\Podcast;
 use App\Models\Post;
 use App\Models\User;
+use App\Support\Seo\JsonLd;
 use Illuminate\Support\Str;
 use UnexpectedValueException;
 
@@ -113,7 +114,7 @@ class StructuredData
         }
 
         if ($episode->duration_seconds) {
-            $podcastEpisode['duration'] = self::duration($episode->duration_seconds);
+            $podcastEpisode['duration'] = JsonLd::isoDuration($episode->duration_seconds);
         }
 
         $image = $episode->featured_image_url;
@@ -136,41 +137,18 @@ class StructuredData
             '@context' => 'https://schema.org',
             '@graph' => [
                 $content,
-                [
-                    '@type' => 'BreadcrumbList',
-                    'itemListElement' => [
-                        self::breadcrumb(1, 'Home', route('home')),
-                        self::breadcrumb(2, $sectionName, $sectionUrl),
-                        self::breadcrumb(3, $title, $url),
-                    ],
-                ],
+                JsonLd::breadcrumbList([
+                    ['name' => 'Home', 'url' => route('home')],
+                    ['name' => $sectionName, 'url' => $sectionUrl],
+                    ['name' => $title, 'url' => $url],
+                ]),
             ],
-        ];
-    }
-
-    /** @return array<string, mixed> */
-    private static function breadcrumb(int $position, string $name, string $url): array
-    {
-        return [
-            '@type' => 'ListItem',
-            'position' => $position,
-            'name' => $name,
-            'item' => $url,
         ];
     }
 
     private static function description(?string $metaDescription, ?string $summary, ?string $content): string
     {
         return Str::limit($metaDescription ?: $summary ?: PlainText::fromMarkdown($content), 200);
-    }
-
-    private static function duration(int $seconds): string
-    {
-        $hours = intdiv($seconds, 3600);
-        $minutes = intdiv($seconds % 3600, 60);
-        $remainingSeconds = $seconds % 60;
-
-        return "PT{$hours}H{$minutes}M{$remainingSeconds}S";
     }
 
     /**

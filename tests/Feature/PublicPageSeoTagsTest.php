@@ -24,7 +24,7 @@ function seoTags(TestResponse $response): string
     return implode("\n", $tags[0]);
 }
 
-test('public pages keep their seo and social tags', function (Closure $url, int $status): void {
+test('public pages keep their seo and social tags', function (string $url, int $status): void {
     Post::factory()->create([
         'title' => 'Snapshot Post',
         'slug' => 'snapshot-post',
@@ -36,7 +36,7 @@ test('public pages keep their seo and social tags', function (Closure $url, int 
         'description' => 'A snapshot episode description.',
     ]);
 
-    $response = get($url());
+    $response = get($url);
 
     $response->assertStatus($status);
     expect(seoTags($response))->toMatchSnapshot();

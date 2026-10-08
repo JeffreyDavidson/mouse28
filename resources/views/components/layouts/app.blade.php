@@ -1,4 +1,5 @@
 @props([
+    'pageMeta' => null,
     'title' => 'Mouse28 | Disney Parks Through Different Eyes',
     'description' => 'Disney parks through the eyes of a family raising a daughter with autism. Practical tips and stories from Jeffrey & Cassie Davidson.',
     'robots' => 'index,follow',
@@ -9,34 +10,31 @@
     'dispatchLayout' => false,
 ])
 
+{{--
+    A page passes its App\Data\PageMeta from its PageViewModel. Pages not moved to one yet pass
+    their metadata as the props above, and App\View\SiteSeo builds the same tags from them.
+--}}
+@use('App\Data\PageMeta')
+@inject('siteSeo', 'App\View\SiteSeo')
+
 @php
-    $canonicalUrl = $canonical ?: url()->current();
-
-    // The home page's canonical keeps its trailing slash ("https://host/"), as it has always been published.
-    if (parse_url($canonicalUrl, PHP_URL_PATH) === null) {
-        $canonicalUrl .= '/';
-    }
-
-    $socialTitle = $ogTitle ?: $title;
-    $socialImage = $ogImage ?: url('/images/logo.jpg');
-    $socialImage = Str::startsWith($socialImage, ['http://', 'https://'])
-        ? $socialImage
-        : url('/'.ltrim($socialImage, '/'));
-
-    $seoData = new \RalphJSmit\Laravel\SEO\Support\SEOData(
+    $pageMeta ??= new PageMeta($siteSeo->page(
         title: $title,
         description: $description,
-        image: $socialImage,
-        url: $canonicalUrl,
-        enableTitleSuffix: false,
-        type: $ogType,
-        site_name: 'Mouse28',
-        locale: '',
         robots: $robots,
-        canonical_url: $canonicalUrl,
-        openGraphTitle: $socialTitle,
-    );
+        ogTitle: $ogTitle,
+        ogType: $ogType,
+        ogImage: $ogImage,
+        canonical: $canonical,
+    ));
+    $socialTitle = $pageMeta->seo->openGraphTitle ?? $pageMeta->seo->title;
 @endphp
+
+@if ($pageMeta->structuredData !== [])
+    @push('head')
+        <x-structured-data :data="['@context' => 'https://schema.org', '@graph' => $pageMeta->structuredData]" />
+    @endpush
+@endif
 
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth antialiased">
@@ -46,7 +44,7 @@
     <meta name="theme-color" content="#1a1040" />
     <link rel="preload" href="/fonts/mouse28/poppins-400.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/mouse28/besley-latin.woff2" as="font" type="font/woff2" crossorigin />
-    {!! seo($seoData) !!}
+    {!! seo($pageMeta->seo) !!}
     <meta property="og:image:alt" content="{{ $socialTitle }}" />
     <meta name="twitter:image:alt" content="{{ $socialTitle }}" />
     <link rel="alternate" type="application/rss+xml" title="Mouse28 Blog" href="{{ route('rss.blog') }}" />

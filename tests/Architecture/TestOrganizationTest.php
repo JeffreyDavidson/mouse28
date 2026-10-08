@@ -81,6 +81,8 @@ test('test paths mirror their application source', function (string $suite): voi
         'Http/ProductionSmokeTest.php' => 'routes/web.php',
         'Support/DeploymentSmokeClientTest.php' => 'tests/Support/DeploymentSmokeClient.php',
         'PublicPageSeoTagsTest.php' => 'routes/web.php',
+        'View/Layouts/AppLayoutTest.php' => 'resources/views/components/layouts/app.blade.php',
+        'View/Layouts/ErrorLayoutTest.php' => 'resources/views/components/layouts/error.blade.php',
     ];
     $violations = [];
     $iterator = new RecursiveIteratorIterator(
