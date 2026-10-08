@@ -21,9 +21,7 @@ beforeEach(fn () => actingAs(User::factory()
 test('the SEO section is collapsed and titled SEO', function (): void {
     $section = SeoSection::make();
 
-    expect($section->getHeading())->toBe('SEO');
-    expect($section->getDescription())->toBe('Search engine optimization');
-    expect($section->isCollapsed())->toBeTrue();
+    expect([$section->getHeading(), $section->getDescription(), $section->isCollapsed()])->toBe(['SEO', 'Search engine optimization', true]);
 });
 
 test('forms offer the SEO fields', function (string $page): void {
