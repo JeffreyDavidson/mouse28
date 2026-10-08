@@ -15,6 +15,11 @@ return [
     'site_name' => 'Mouse28',
 
     /**
+     * The blog RSS feed's channel description (`/rss/blog`).
+     */
+    'feed_description' => 'Disney parks through the eyes of a family raising a daughter with autism. Practical tips and stories.',
+
+    /**
      * Use this setting to specify the path to the sitemap of your website. This exact path will outputted, so
      * you can use both a hardcoded url and a relative path. We recommend the latter.
      *

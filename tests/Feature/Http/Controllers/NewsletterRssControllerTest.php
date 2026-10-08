@@ -86,3 +86,11 @@ test('the newsletter feed renders this exact xml for a fixed set of issues', fun
         '</rss>',
     ]));
 });
+
+test('an empty newsletter feed is still valid', function (): void {
+    $response = get(route('newsletter.rss'))->assertOk();
+
+    $xml = new SimpleXMLElement($this->responseContent($response));
+
+    expect($xml->channel->item)->toBeEmpty();
+});

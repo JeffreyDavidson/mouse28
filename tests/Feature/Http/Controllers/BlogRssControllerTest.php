@@ -61,7 +61,7 @@ test('blog feed renders this exact xml for a fixed set of posts', function (): v
 
     $response = get(route('rss.blog'))->assertOk();
 
-    expect($this->responseContent($response))->toBe(implode('', [
+    expect($this->responseContent($response))->toBe(implode("\n", [
         '<?xml version="1.0" encoding="UTF-8"?>',
         '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">',
         '<channel>',
@@ -69,10 +69,11 @@ test('blog feed renders this exact xml for a fixed set of posts', function (): v
         '<link>'.route('blog.index').'</link>',
         '<description>Disney parks through the eyes of a family raising a daughter with autism. Practical tips and stories.</description>',
         '<language>en-us</language>',
-        '<atom:link href="'.route('rss.blog').'" rel="self" type="application/rss+xml"/>',
+        '<lastBuildDate>Mon, 05 Oct 2026 08:30:00 +0000</lastBuildDate>',
+        '<atom:link href="'.route('rss.blog').'" rel="self" type="application/rss+xml" />',
         '<image><url>'.url('/images/logo.jpg').'</url><title>Mouse28</title><link>'.route('home').'</link></image>',
         '<item>',
-        '<title>Tips &amp; &quot;tricks&quot; for &#039;parks&#039;</title>',
+        '<title>Tips &amp; "tricks" for \'parks\'</title>',
         '<link>'.route('blog.show', $tips).'</link>',
         '<guid isPermaLink="true">'.route('blog.show', $tips).'</guid>',
         '<description>Quiet &lt;spots&gt; &amp; shade.</description>',
