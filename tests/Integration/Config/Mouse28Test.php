@@ -21,3 +21,28 @@ test('the guides flag is parsed as a boolean', function (string $value, bool $ex
     'no' => ['no', false],
     'empty' => ['', false],
 ]);
+
+test('the homepage planning posts come from the three planning categories', function (): void {
+    expect(config('mouse28.home_planning_category_slugs'))->toBe(['park-accessibility', 'disney-tips', 'autism-awareness']);
+});
+
+test('post artwork styles cover the bundled categories and keep a general fallback', function (): void {
+    /** @var array<string, array{wash: string, ink: string, stamp: string}> $styles */
+    $styles = config('mouse28.post_artwork_styles');
+
+    expect(array_keys($styles))->toBe([
+        'disney-tips',
+        'park-accessibility',
+        'episode-recap',
+        'family-life',
+        'autism-awareness',
+        'disney-news',
+        'food-reviews',
+        'resort-reviews',
+        'disney-plus',
+        'merchandise',
+        'general',
+    ])
+        ->and($styles)
+        ->each->toHaveKeys(['wash', 'ink', 'stamp']);
+});

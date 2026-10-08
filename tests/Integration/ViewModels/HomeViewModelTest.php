@@ -131,3 +131,18 @@ test('homepage lists break publish-time ties by id so their order is stable on M
     expect($orderings)->not->toBeEmpty()
         ->each->toMatch(STABLE_PUBLISH_TIME_ORDER);
 });
+
+test('homepage planning posts follow the configured planning categories', function (): void {
+    config()->set('mouse28.guides_enabled', true);
+    config()->set('mouse28.home_planning_category_slugs', ['food-reviews']);
+    $planningPost = Post::factory()
+        ->inCategory('food-reviews')
+        ->create();
+    Post::factory()
+        ->inCategory('disney-tips')
+        ->create();
+
+    $data = app(HomeViewModel::class)->data();
+
+    expect($data['planningPosts']->modelKeys())->toBe([$planningPost->id]);
+});
