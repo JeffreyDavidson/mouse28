@@ -3,6 +3,7 @@
 use App\Models\Episode;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 
 use function Pest\Laravel\get;
@@ -38,6 +39,21 @@ test('preview links must be signed, untampered, and unexpired', function (string
 
     get($url)->assertForbidden();
 })->with(['unsigned', 'tampered', 'expired']);
+
+test('an invalid signature is refused before the draft is looked up, whether or not it exists', function (string $signature, bool $draftExists): void {
+    $episode = Episode::factory()
+        ->draft()
+        ->create();
+    $slug = $draftExists ? $episode->slug : 'missing-draft';
+    DB::enableQueryLog();
+
+    get(invalidlySignedRoute('preview.episode', ['episode' => $slug], $signature))
+        ->assertForbidden();
+
+    expect(DB::getQueryLog())->toBeEmpty();
+})
+    ->with('invalid signatures')
+    ->with('existing and missing records');
 
 test('the former numeric preview address no longer shows the draft', function (): void {
     $episode = Episode::factory()->draft()->create();

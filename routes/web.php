@@ -59,8 +59,9 @@ Route::middleware([EnsureValidNewsletterConfirmationLink::class, 'throttle:newsl
             ->name('newsletter.confirm.store');
     });
 Route::view('/newsletter/confirmed', 'pages.newsletter.confirmed')->name('newsletter.confirmed');
+// Shows the subscriber's email and a CSRF token, so it is never cached either.
 Route::get('/newsletter/unsubscribe/{subscriber}', [NewsletterUnsubscriptionController::class, 'create'])
-    ->middleware(['signed', 'throttle:newsletter-unsubscribe'])
+    ->middleware(['signed', 'throttle:newsletter-unsubscribe', 'cache.headers:no_store;private'])
     ->name('newsletter.unsubscribe');
 Route::delete('/newsletter/unsubscribe/{subscriber}', [NewsletterUnsubscriptionController::class, 'destroy'])
     ->middleware(['signed', 'throttle:newsletter-unsubscribe'])

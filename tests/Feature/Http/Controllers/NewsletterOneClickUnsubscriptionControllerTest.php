@@ -7,6 +7,7 @@ use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Session\TokenMismatchException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -62,6 +63,21 @@ test('an unsigned one-click post is refused', function (): void {
 
     expect($reader->refresh()->isActive())->toBeTrue();
 });
+
+test('an invalid signature is refused before the reader is looked up, whether or not they exist', function (string $signature, bool $readerExists): void {
+    $reader = Subscriber::factory()->create();
+    $subscriberId = $readerExists
+        ? $reader->id
+        : $reader->id + 1;
+    DB::enableQueryLog();
+
+    post(invalidlySignedRoute('newsletter.unsubscribe.oneClick', ['subscriber' => $subscriberId], $signature), ['List-Unsubscribe' => 'One-Click'])
+        ->assertForbidden();
+
+    expect(DB::getQueryLog())->toBeEmpty();
+})
+    ->with('invalid signatures')
+    ->with('existing and missing records');
 
 test('mail providers can post one-click requests without a forgery token', function (): void {
     $url = URL::signedRoute('newsletter.unsubscribe.oneClick', Subscriber::factory()->create());
