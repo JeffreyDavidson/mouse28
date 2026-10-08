@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Support\BlogRssFeed;
+use App\Support\Feeds\RssChannelRenderer;
+use App\ViewModels\RssFeedViewModel;
 use Illuminate\Http\Response;
 
 class BlogRssController
 {
-    public function __invoke(BlogRssFeed $feed): Response
+    public function __invoke(RssFeedViewModel $viewModel, RssChannelRenderer $renderer): Response
     {
-        return response($feed->content(), 200, ['Content-Type' => 'application/rss+xml']);
+        return response($renderer->render(...$viewModel->data()), 200, ['Content-Type' => 'application/rss+xml']);
     }
 }

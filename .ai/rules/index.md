@@ -16,3 +16,5 @@ Before planning or editing, find the row whose globs match the file's path and r
 | tests/Feature/** | .ai/rules/tests/feature.md |
 | tests/Browser/** | .ai/rules/tests/browser.md |
 | tests/Architecture/** | .ai/rules/tests/architecture.md |
+| app/Queries/** | .ai/rules/queries.md |
+| app/Support/Feeds/** | .ai/rules/feeds.md |

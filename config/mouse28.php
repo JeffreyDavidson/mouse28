@@ -22,6 +22,8 @@ return [
 
     'newsletter_feed_items' => max(1, (int) env('MOUSE28_NEWSLETTER_FEED_ITEMS', 20)),
 
+    'blog_feed_items' => max(1, (int) env('MOUSE28_BLOG_FEED_ITEMS', 20)),
+
     'search_results_per_page' => max(1, (int) env('MOUSE28_SEARCH_RESULTS_PER_PAGE', 6)),
 
     'preview_link_hours' => max(1, (int) env('MOUSE28_PREVIEW_LINK_HOURS', 24)),
