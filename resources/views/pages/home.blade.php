@@ -1,3 +1,4 @@
+@use('App\Presenters\EpisodePresenter')
 <x-layouts.app
     title="Mouse28 | Disney Parks Through Different Eyes"
     description="Accessibility tips, sensory-friendly park planning, family experiences, and the Mouse28 podcast from Jeffrey and Cassie Davidson."
@@ -54,25 +55,13 @@
                     class="hero-split-photo dispatch-photo-frame min-h-80 sm:min-h-96 md:min-h-0 md:rotate-1"
                     data-dispatch-motion="hero-photo"
                 >
-                    <picture>
-                        <source
-                            type="image/avif"
-                            srcset="/images/hero-family-640.avif 640w, /images/hero-family-768.avif 768w, /images/hero-family-1024.avif 1024w, /images/hero-family-1600.avif 1600w"
-                            sizes="(min-width: 768px) 60vw, (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
-                        />
-                        <source
-                            type="image/webp"
-                            srcset="/images/hero-family-640.webp 640w, /images/hero-family-768.webp 768w, /images/hero-family-1024.webp 1024w, /images/hero-family.webp 1600w"
-                            sizes="(min-width: 768px) 60vw, (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
-                        />
-                        <img
-                            src="/images/hero-family.webp"
-                            alt="Jeffrey and Cassie Davidson on Kilimanjaro Safaris at Disney's Animal Kingdom"
-                            width="1600"
-                            height="1600"
-                            fetchpriority="high"
-                        />
-                    </picture>
+                    <x-hero-picture
+                        sizes="(min-width: 768px) 60vw, (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
+                        src="/images/hero-family.webp"
+                        alt="Jeffrey and Cassie Davidson on Kilimanjaro Safaris at Disney's Animal Kingdom"
+                        width="1600"
+                        height="1600"
+                    />
                     <span
                         class="dispatch-paperclip border-gold absolute -top-2 right-8 z-10 hidden h-20 w-7 rotate-12 rounded-full border-[3px] md:block"
                         aria-hidden="true"
@@ -338,7 +327,7 @@
                                 <div class="min-w-0">
                                     <p class="text-gold text-sm tabular-nums sm:text-xs">
                                         Episode {{ $episode->episode_number }}
-                                        @if ($episode->duration_seconds) ·{{ \App\Presenters\EpisodePresenter::from($episode)->duration() }}@endif
+                                        @if ($episode->duration_seconds) ·{{ EpisodePresenter::from($episode)->duration() }}@endif
                                     </p>
                                     <h3 class="font-heading text-cream group-hover:text-gold mt-1 line-clamp-2 text-lg [font-weight:560] tracking-[-0.012em]">
                                         {{ $episode->title }}
