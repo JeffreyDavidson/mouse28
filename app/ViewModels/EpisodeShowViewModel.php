@@ -25,6 +25,7 @@ class EpisodeShowViewModel
      *     isSparseEpisode: bool,
      *     coverImage: string,
      *     coverSrcset: string|null,
+     *     shareImage: string,
      *     listenLinks: list<array{label: string, url: string, description: string}>,
      *     relatedPosts: Collection<int, Post>,
      *     previousEpisode: Episode|null,
@@ -36,6 +37,7 @@ class EpisodeShowViewModel
     {
         $podcast = $this->primaryPodcast->current();
         $presenter = EpisodePresenter::from($episode);
+        $podcastPresenter = PodcastPresenter::from($podcast);
 
         $data = [
             'episode' => $episode,
@@ -43,8 +45,9 @@ class EpisodeShowViewModel
             'embedUrl' => $episode->transistorEmbedUrl(),
             'duration' => $presenter->duration(),
             'isSparseEpisode' => $presenter->isSparse(),
-            'coverImage' => $presenter->coverImageUrl(PodcastPresenter::from($podcast)),
+            'coverImage' => $presenter->coverImageUrl($podcastPresenter),
             'coverSrcset' => $presenter->coverSrcset(),
+            'shareImage' => $presenter->shareImageUrl($podcastPresenter),
             'listenLinks' => PodcastLinks::for($podcast, $episode),
             'relatedPosts' => $episode->posts()
                 ->published()

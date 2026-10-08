@@ -105,3 +105,13 @@ test('each status page renders its recovery options', function (int $status, str
     'server error' => [500, 'Try again'],
     'maintenance' => [503, 'Try again'],
 ]);
+
+test('error pages stay out of search results without a canonical link', function (int $status): void {
+    config()->set('app.debug', false);
+    Route::get('/testing/no-canonical', fn () => abort($status));
+
+    get('/testing/no-canonical')
+        ->assertStatus($status)
+        ->assertSeeHtml('<meta name="robots" content="noindex, nofollow">')
+        ->assertDontSeeHtml('rel="canonical"');
+})->with([404, 419, 429, 500, 503]);

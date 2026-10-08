@@ -367,6 +367,18 @@ test('episode metadata falls back to its title and description', function (): vo
         ->assertSeeHtml('<meta property="og:image" content="'.url('/storage/episodes/trailer-meet-mouse28.webp').'">');
 });
 
+test('an episode without artwork shares the show cover', function (?string $podcastCover, string $shareImage): void {
+    Podcast::factory()->create(['cover_image_path' => $podcastCover]);
+    $episode = Episode::factory()->create(['featured_image_path' => null]);
+
+    get(route('episodes.show', $episode))->assertOk()
+        ->assertSeeHtml('<meta property="og:image" content="'.url($shareImage).'">')
+        ->assertDontSeeHtml('<meta property="og:image" content="'.url('/images/logo.jpg').'">');
+})->with([
+    'bundled cover' => [null, '/images/podcast/mouse28-cover.jpg'],
+    'uploaded cover' => ['podcasts/show-cover.jpg', '/storage/podcasts/show-cover.jpg'],
+]);
+
 test('landing page provides search and social metadata', function (): void {
     Podcast::query()->create([
         'name' => 'Mouse28 Weekly',
