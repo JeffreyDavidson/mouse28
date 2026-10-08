@@ -14,7 +14,9 @@ use function Pest\Livewire\livewire;
 pest()->use(RefreshDatabase::class);
 
 beforeEach(function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 });
 
 test('an issue can be saved as a draft', function (): void {

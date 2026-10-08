@@ -40,30 +40,44 @@ test('posts gain a nullable, indexed category_id', function (): void {
     $nullable = array_column(Schema::getColumns('posts'), 'nullable', 'name');
 
     expect($nullable['category_id'])->toBeTrue()
-        ->and(Schema::hasIndex('posts', ['category_id']))->toBeTrue();
+        ->and(Schema::hasIndex('posts', ['category_id']))
+        ->toBeTrue();
 });
 
 test('posts.category_id references categories and is set to null when its category is deleted', function (): void {
     expect(postCategoryForeignKeyCount())->toBe(1)
-        ->and(postForeignKeys('columns'))->toHaveKey('categories', ['category_id'])
-        ->and(postForeignKeys('foreign_columns'))->toHaveKey('categories', ['id'])
-        ->and(postForeignKeys('on_delete'))->toHaveKey('categories', 'set null');
+        ->and(postForeignKeys('columns'))
+        ->toHaveKey('categories', ['category_id'])
+        ->and(postForeignKeys('foreign_columns'))
+        ->toHaveKey('categories', ['id'])
+        ->and(postForeignKeys('on_delete'))
+        ->toHaveKey('categories', 'set null');
 });
 
 test('deleting a category leaves its posts without a category', function (): void {
     $category = Category::factory()->create();
-    $post = Post::factory()->for($category)->create();
+    $post = Post::factory()
+        ->for($category)
+        ->create();
     $otherPost = Post::factory()->create();
 
-    DB::table('categories')->where('id', $category->id)->delete();
+    DB::table('categories')
+        ->where('id', $category->id)
+        ->delete();
 
-    expect(DB::table('posts')->where('id', $post->id)->value('category_id'))->toBeNull()
-        ->and(DB::table('posts')->where('id', $otherPost->id)->value('category_id'))->toBe($otherPost->category_id);
+    expect(DB::table('posts')
+        ->where('id', $post->id)
+        ->value('category_id'))->toBeNull()
+        ->and(DB::table('posts')
+            ->where('id', $otherPost->id)
+            ->value('category_id'))
+        ->toBe($otherPost->category_id);
 });
 
 test('adding category_id keeps the other posts constraints and indexes', function (): void {
     expect(Schema::hasIndex('posts', ['slug'], 'unique'))->toBeTrue()
-        ->and(Schema::hasIndex('posts', ['status', 'published_at']))->toBeTrue();
+        ->and(Schema::hasIndex('posts', ['status', 'published_at']))
+        ->toBeTrue();
 });
 
 test('running the category_id migration again changes nothing', function (): void {
@@ -74,7 +88,12 @@ test('running the category_id migration again changes nothing', function (): voi
     runPostCategoryIdMigration();
 
     expect(Schema::getColumnListing('posts'))->toBe($columns)
-        ->and(Schema::getIndexes('posts'))->toHaveCount($indexes)
-        ->and(postCategoryForeignKeyCount())->toBe(1)
-        ->and(DB::table('posts')->where('id', $post->id)->value('category_id'))->toBe($post->category_id);
+        ->and(Schema::getIndexes('posts'))
+        ->toHaveCount($indexes)
+        ->and(postCategoryForeignKeyCount())
+        ->toBe(1)
+        ->and(DB::table('posts')
+            ->where('id', $post->id)
+            ->value('category_id'))
+        ->toBe($post->category_id);
 });

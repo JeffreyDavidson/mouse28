@@ -9,8 +9,12 @@ pest()->use(RefreshDatabase::class);
 
 test('blog feed is valid and excludes unpublished content', function (): void {
     $post = Post::factory()->create();
-    $draftPost = Post::factory()->draft()->create();
-    $scheduledPost = Post::factory()->scheduled()->create();
+    $draftPost = Post::factory()
+        ->draft()
+        ->create();
+    $scheduledPost = Post::factory()
+        ->scheduled()
+        ->create();
 
     $blogFeed = get(route('rss.blog'))
         ->assertOk()

@@ -19,28 +19,39 @@ test('suppressing an active reader unsubscribes them and records why', function 
     $reader->refresh();
 
     expect($found)->toBeTrue()
-        ->and($reader->unsubscribed_at)->not->toBeNull()
-        ->and($reader->suppressed_at)->not->toBeNull()
-        ->and($reader->suppression_reason)->toBe(SuppressionReason::Bounced)
-        ->and($reader->verification_token_hash)->toBeNull()
-        ->and($reader->isActive())->toBeFalse();
+        ->and($reader->unsubscribed_at)
+        ->not->toBeNull()
+        ->and($reader->suppressed_at)
+        ->not->toBeNull()
+        ->and($reader->suppression_reason)
+        ->toBe(SuppressionReason::Bounced)
+        ->and($reader->verification_token_hash)
+        ->toBeNull()
+        ->and($reader->isActive())
+        ->toBeFalse();
 });
 
 test('suppressing keeps the original unsubscribe date', function (): void {
     $this->freezeTime();
-    $reader = Subscriber::factory()->create(['unsubscribed_at' => now()->subDays(3)->startOfSecond()]);
+    $reader = Subscriber::factory()->create(['unsubscribed_at' => now()->subDays(3)
+        ->startOfSecond()]);
 
     app(SuppressSubscriber::class)->handle($reader->email, SuppressionReason::Complained);
 
-    expect($reader->refresh()->unsubscribed_at?->equalTo(now()->subDays(3)->startOfSecond()))->toBeTrue();
+    expect($reader->refresh()
+        ->unsubscribed_at?->equalTo(now()->subDays(3)
+        ->startOfSecond()))->toBeTrue();
 });
 
 test('suppressing a pending sign-up stops its confirmation', function (): void {
-    $reader = Subscriber::factory()->pending()->create();
+    $reader = Subscriber::factory()
+        ->pending()
+        ->create();
 
     app(SuppressSubscriber::class)->handle($reader->email, SuppressionReason::Bounced);
 
-    expect($reader->refresh()->isSuppressed())->toBeTrue();
+    expect($reader->refresh()
+        ->isSuppressed())->toBeTrue();
 });
 
 test('suppressing twice keeps the first reason and date', function (): void {
@@ -49,14 +60,17 @@ test('suppressing twice keeps the first reason and date', function (): void {
     $action = app(SuppressSubscriber::class);
 
     $action->handle($reader->email, SuppressionReason::Bounced);
-    $this->travel(2)->days();
+    $this->travel(2)
+        ->days();
     $found = $action->handle($reader->email, SuppressionReason::Complained);
 
     $reader->refresh();
 
     expect($found)->toBeTrue()
-        ->and($reader->suppression_reason)->toBe(SuppressionReason::Bounced)
-        ->and($reader->suppressed_at?->isSameDay(now()->subDays(2)))->toBeTrue();
+        ->and($reader->suppression_reason)
+        ->toBe(SuppressionReason::Bounced)
+        ->and($reader->suppressed_at?->isSameDay(now()->subDays(2)))
+        ->toBeTrue();
 });
 
 test('an unknown address changes nothing', function (): void {
@@ -65,5 +79,7 @@ test('an unknown address changes nothing', function (): void {
     $found = app(SuppressSubscriber::class)->handle('stranger@example.com', SuppressionReason::Bounced);
 
     expect($found)->toBeFalse()
-        ->and($reader->refresh()->isActive())->toBeTrue();
+        ->and($reader->refresh()
+            ->isActive())
+        ->toBeTrue();
 });

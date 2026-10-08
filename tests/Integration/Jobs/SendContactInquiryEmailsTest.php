@@ -38,8 +38,10 @@ test('contact emails record their successful sends and are not resent', function
     $inquiry->refresh();
 
     expect($inquiry->email_attempted_at)->not->toBeNull()
-        ->and($inquiry->notification_sent_at)->not->toBeNull()
-        ->and($inquiry->confirmation_sent_at)->not->toBeNull();
+        ->and($inquiry->notification_sent_at)
+        ->not->toBeNull()
+        ->and($inquiry->confirmation_sent_at)
+        ->not->toBeNull();
     Event::assertDispatchedTimes(MessageSent::class, 2);
 });
 
@@ -78,7 +80,8 @@ test('retry sends only the contact email that previously failed', function (): v
     $inquiry->refresh();
 
     expect($inquiry->notification_sent_at)->not->toBeNull()
-        ->and($inquiry->confirmation_sent_at)->toBeNull();
+        ->and($inquiry->confirmation_sent_at)
+        ->toBeNull();
     $notificationSentAt = $inquiry->notification_sent_at;
     $events->dispatcher->forget(MessageSending::class);
 
@@ -86,7 +89,8 @@ test('retry sends only the contact email that previously failed', function (): v
     $inquiry->refresh();
 
     expect($inquiry->notification_sent_at)->toEqual($notificationSentAt)
-        ->and($inquiry->confirmation_sent_at)->not->toBeNull();
+        ->and($inquiry->confirmation_sent_at)
+        ->not->toBeNull();
     Event::assertDispatchedTimes(MessageSent::class, 2);
     Event::assertDispatched(MessageSent::class, fn (MessageSent $event): bool => str_starts_with($event->message->getSubject() ?? '', 'We got your message!'));
 });
@@ -104,7 +108,8 @@ test('concurrent contact email sends are released while the inquiry is locked', 
         });
 
         $job->assertReleased(60);
-        expect($inquiry->refresh()->email_attempted_at)->toBeNull();
+        expect($inquiry->refresh()
+            ->email_attempted_at)->toBeNull();
         Event::assertNotDispatched(MessageSent::class);
     } finally {
         $lock->release();
@@ -121,8 +126,10 @@ test('cancelled contact emails are not recorded as sent and remain retryable', f
     $inquiry->refresh();
 
     expect($inquiry->email_attempted_at)->not->toBeNull()
-        ->and($inquiry->notification_sent_at)->toBeNull()
-        ->and($inquiry->confirmation_sent_at)->toBeNull();
+        ->and($inquiry->notification_sent_at)
+        ->toBeNull()
+        ->and($inquiry->confirmation_sent_at)
+        ->toBeNull();
     Event::assertNotDispatched(MessageSent::class);
 
     $events->dispatcher->forget(MessageSending::class);
@@ -131,7 +138,8 @@ test('cancelled contact emails are not recorded as sent and remain retryable', f
     $inquiry->refresh();
 
     expect($inquiry->notification_sent_at)->not->toBeNull()
-        ->and($inquiry->confirmation_sent_at)->not->toBeNull();
+        ->and($inquiry->confirmation_sent_at)
+        ->not->toBeNull();
     Event::assertDispatchedTimes(MessageSent::class, 2);
 });
 
@@ -143,7 +151,8 @@ test('contact emails support multiple configured administrator addresses', funct
     $inquiry->refresh();
 
     expect($inquiry->notification_sent_at)->not->toBeNull()
-        ->and($inquiry->confirmation_sent_at)->not->toBeNull();
+        ->and($inquiry->confirmation_sent_at)
+        ->not->toBeNull();
     Event::assertDispatchedTimes(MessageSent::class, 2);
     Event::assertDispatched(MessageSent::class, fn (MessageSent $event): bool => count($event->message->getTo()) === 2);
     Event::assertDispatched(MessageSent::class, fn (MessageSent $event): bool => count($event->message->getReplyTo()) === 2);
@@ -169,7 +178,8 @@ test('delivery middleware holds and releases the shared lock without resending s
     $middleware->handle($job, $send);
 
     expect($middleware->expiresAfter)->toBe(120)
-        ->and(Cache::lock("contact-emails:{$inquiry->id}", 120)->get(fn (): bool => true))->toBeTrue();
+        ->and(Cache::lock("contact-emails:{$inquiry->id}", 120)->get(fn (): bool => true))
+        ->toBeTrue();
     Event::assertDispatchedTimes(MessageSent::class, 2);
 });
 
@@ -190,7 +200,8 @@ test('delivery middleware releases the lock after an incomplete delivery', funct
     expect(fn () => $job->middleware()[0]->handle($job, function (SendContactInquiryEmails $job): void {
         $job->handle(app(Mailer::class));
     }))->toThrow(RuntimeException::class, 'Contact email delivery is incomplete.')
-        ->and(Cache::lock("contact-emails:{$inquiry->id}", 120)->get(fn (): bool => true))->toBeTrue();
+        ->and(Cache::lock("contact-emails:{$inquiry->id}", 120)->get(fn (): bool => true))
+        ->toBeTrue();
 });
 
 test('queue attributes route contact delivery to the default database queue with worker settings', function (): void {
@@ -221,7 +232,8 @@ test('queued contact jobs are encrypted and carry only the inquiry ID', function
     }
 
     expect($command)->not->toContain(SendContactInquiryEmails::class)
-        ->and(Crypt::decrypt($command))->toContain("i:{$inquiry->id};")
+        ->and(Crypt::decrypt($command))
+        ->toContain("i:{$inquiry->id};")
         ->not->toContain('Private Sender', 'private@example.test');
 });
 
@@ -240,15 +252,20 @@ test('old queued inquiries require manual review rather than automatic resending
     $job->handle(app(Mailer::class));
 
     $job->assertFailedWith(new RuntimeException('Contact delivery requires manual review after 23 hours.'));
-    expect($inquiry->refresh()->email_attempted_at)->toBeNull();
+    expect($inquiry->refresh()
+        ->email_attempted_at)->toBeNull();
     Event::assertNotDispatched(MessageSent::class);
 });
 
 test('provider idempotency keys are stable and separate each recipient purpose', function (): void {
     $inquiry = ContactInquiry::factory()->create();
-    $notification = new ContactMessageReceived($inquiry)->headers()->text;
-    $confirmation = new ContactMessageConfirmation($inquiry)->headers()->text;
+    $notification = new ContactMessageReceived($inquiry)->headers()
+        ->text;
+    $confirmation = new ContactMessageConfirmation($inquiry)->headers()
+        ->text;
 
-    expect($notification)->toBe(new ContactMessageReceived($inquiry->refresh())->headers()->text)
-        ->and($notification)->not->toBe($confirmation);
+    expect($notification)->toBe(new ContactMessageReceived($inquiry->refresh())->headers()
+        ->text)
+        ->and($notification)
+        ->not->toBe($confirmation);
 });

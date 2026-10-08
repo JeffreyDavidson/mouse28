@@ -15,8 +15,13 @@ beforeEach(function (): void {
 });
 
 test('it backfills variants for guide images and skips verified guides', function (): void {
-    Storage::disk('public')->put('guides/guide.png', UploadedFile::fake()->image('guide.png', 800, 45)->getContent());
-    Guide::factory()->create()->forceFill(['featured_image_path' => 'guides/guide.png'])->saveQuietly();
+    Storage::disk('public')->put('guides/guide.png', UploadedFile::fake()
+        ->image('guide.png', 800, 45)
+        ->getContent());
+    Guide::factory()
+        ->create()
+        ->forceFill(['featured_image_path' => 'guides/guide.png'])
+        ->saveQuietly();
 
     pendingCommand('guides:generate-image-variants')
         ->expectsOutputToContain('Generated responsive images for 1 guide.')
@@ -32,7 +37,10 @@ test('it backfills variants for guide images and skips verified guides', functio
 
 test('it fails when a guide image cannot be decoded', function (): void {
     Storage::disk('public')->put('guides/broken.png', 'not an image');
-    Guide::factory()->create()->forceFill(['featured_image_path' => 'guides/broken.png'])->saveQuietly();
+    Guide::factory()
+        ->create()
+        ->forceFill(['featured_image_path' => 'guides/broken.png'])
+        ->saveQuietly();
 
     pendingCommand('guides:generate-image-variants')
         ->expectsOutputToContain('Generated responsive images for 0 guides.')

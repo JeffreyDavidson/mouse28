@@ -34,7 +34,8 @@ test('the health endpoint reports an unavailable database as down', function ():
 
     DB::purge('unavailable');
     config()->set('database.default', $defaultConnection);
-    $response->assertStatus(500)->assertExactJson(['status' => 'down']);
+    $response->assertStatus(500)
+        ->assertExactJson(['status' => 'down']);
 });
 
 test('the health endpoint accepts fresh runtime heartbeats when runtime monitoring is enabled', function (): void {
@@ -49,8 +50,12 @@ test('the health endpoint accepts fresh runtime heartbeats when runtime monitori
 
 test('the health endpoint reports stale or misconfigured runtime heartbeats as down', function (int $schedulerAgeMinutes, int $queueAgeMinutes, int $maxAgeSeconds): void {
     config()->set(['app.debug' => false, 'health.runtime.enabled' => true, 'health.runtime.max_age_seconds' => $maxAgeSeconds]);
-    Cache::put(RuntimeHealthMonitor::SCHEDULER_HEARTBEAT_KEY, Date::now()->subMinutes($schedulerAgeMinutes)->getTimestamp());
-    Cache::put(RuntimeHealthMonitor::QUEUE_HEARTBEAT_KEY, Date::now()->subMinutes($queueAgeMinutes)->getTimestamp());
+    Cache::put(RuntimeHealthMonitor::SCHEDULER_HEARTBEAT_KEY, Date::now()
+        ->subMinutes($schedulerAgeMinutes)
+        ->getTimestamp());
+    Cache::put(RuntimeHealthMonitor::QUEUE_HEARTBEAT_KEY, Date::now()
+        ->subMinutes($queueAgeMinutes)
+        ->getTimestamp());
 
     getJson('/up')
         ->assertStatus(500)

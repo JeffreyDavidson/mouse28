@@ -39,10 +39,14 @@ class StoreContactRequest extends FormRequest
         $validated = $this->safe();
 
         return new ContactMessageData(
-            name: $validated->string('name')->toString(),
-            email: $validated->string('email')->toString(),
-            type: ContactType::from($validated->string('type')->toString()),
-            message: $validated->string('message')->toString(),
+            name: $validated->string('name')
+                ->toString(),
+            email: $validated->string('email')
+                ->toString(),
+            type: ContactType::from($validated->string('type')
+                ->toString()),
+            message: $validated->string('message')
+                ->toString(),
         );
     }
 

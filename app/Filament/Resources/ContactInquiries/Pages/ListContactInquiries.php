@@ -17,7 +17,9 @@ class ListContactInquiries extends ListRecords
     {
         return view('filament.resources.contact-inquiries.header', [
             'total' => ContactInquiry::query()->count(),
-            'new' => ContactInquiry::query()->where('status', ContactInquiryStatus::New)->count(),
+            'new' => ContactInquiry::query()
+                ->where('status', ContactInquiryStatus::New)
+                ->count(),
         ]);
     }
 }

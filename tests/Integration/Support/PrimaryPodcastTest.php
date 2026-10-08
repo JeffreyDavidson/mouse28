@@ -13,10 +13,14 @@ test('the current show uses the configured defaults without saving a record', fu
     $podcast = app(PrimaryPodcast::class)->current();
 
     expect($podcast->exists)->toBeFalse()
-        ->and($podcast->name)->toBe('Mouse28')
-        ->and($podcast->slug)->toBe('mouse28')
-        ->and($podcast->description)->toBe('Disney parks through the lens of raising a daughter with autism.')
-        ->and(Podcast::query()->exists())->toBeFalse();
+        ->and($podcast->name)
+        ->toBe('Mouse28')
+        ->and($podcast->slug)
+        ->toBe('mouse28')
+        ->and($podcast->description)
+        ->toBe('Disney parks through the lens of raising a daughter with autism.')
+        ->and(Podcast::query()->exists())
+        ->toBeFalse();
 });
 
 test('the default show values come from podcast configuration', function (): void {
@@ -34,17 +38,24 @@ test('the saved show is created once and found again', function (): void {
     $again = app(PrimaryPodcast::class)->findOrCreate();
 
     expect($again->id)->toBe($first->id)
-        ->and($again->name)->toBe('Mouse28 Weekly')
-        ->and($again->refresh()->is_active)->toBeTrue()
-        ->and(Podcast::query()->count())->toBe(1);
+        ->and($again->name)
+        ->toBe('Mouse28 Weekly')
+        ->and($again->refresh()
+            ->is_active)
+        ->toBeTrue()
+        ->and(Podcast::query()->count())
+        ->toBe(1);
 });
 
 test('the oldest show is the primary one', function (): void {
     $oldest = Podcast::factory()->create();
     Podcast::factory()->create();
 
-    expect(app(PrimaryPodcast::class)->current()->is($oldest))->toBeTrue()
-        ->and(app(PrimaryPodcast::class)->findOrCreate()->is($oldest))->toBeTrue();
+    expect(app(PrimaryPodcast::class)->current()
+        ->is($oldest))->toBeTrue()
+        ->and(app(PrimaryPodcast::class)->findOrCreate()
+            ->is($oldest))
+        ->toBeTrue();
 });
 
 test('the current show is read once per request', function (): void {
@@ -57,10 +68,12 @@ test('the current show is read once per request', function (): void {
     $secondRead = app(PrimaryPodcast::class)->current();
 
     expect($secondRead)->toBe($firstRead)
-        ->and(DB::getQueryLog())->toHaveCount(1);
+        ->and(DB::getQueryLog())
+        ->toHaveCount(1);
 });
 
 test('the podcast model leaves finding the primary show to the resolver', function (): void {
     expect(method_exists(Podcast::class, 'info'))->toBeFalse()
-        ->and(method_exists(Podcast::class, 'settings'))->toBeFalse();
+        ->and(method_exists(Podcast::class, 'settings'))
+        ->toBeFalse();
 });

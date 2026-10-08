@@ -31,13 +31,15 @@ function runDropLegacyPublishedAndBodyMigration(): void
 beforeEach(function (): void {
     foreach (['posts', 'episodes', 'guides', 'newsletter_issues'] as $table) {
         Schema::table($table, function (Blueprint $blueprint): void {
-            $blueprint->boolean('is_published')->default(false);
+            $blueprint->boolean('is_published')
+                ->default(false);
         });
     }
 
     foreach (['posts', 'guides'] as $table) {
         Schema::table($table, function (Blueprint $blueprint): void {
-            $blueprint->longText('body')->nullable();
+            $blueprint->longText('body')
+                ->nullable();
         });
     }
 });
@@ -62,7 +64,8 @@ test('the migration drops is_published and body', function (): void {
     $remaining = collect([
         ['posts', 'is_published'], ['episodes', 'is_published'], ['guides', 'is_published'], ['newsletter_issues', 'is_published'],
         ['posts', 'body'], ['guides', 'body'],
-    ])->filter(fn (array $pair): bool => Schema::hasColumn(...$pair))->all();
+    ])->filter(fn (array $pair): bool => Schema::hasColumn(...$pair))
+        ->all();
 
     expect($remaining)->toBeEmpty();
 });
@@ -75,14 +78,23 @@ test('the migration keeps status and content', function (PostFactory|GuideFactor
     runDropLegacyPublishedAndBodyMigration();
 
     // Assert
-    expect(DB::table($table)->where('id', $record->id)->value('content'))->toBe('Kept content.')
-        ->and(DB::table($table)->where('id', $record->id)->value('status'))->toBe($record->publishStatus()->value);
+    expect(DB::table($table)
+        ->where('id', $record->id)
+        ->value('content'))->toBe('Kept content.')
+        ->and(DB::table($table)
+            ->where('id', $record->id)
+            ->value('status'))
+        ->toBe($record->publishStatus()
+            ->value);
 })->with('body tables');
 
 test('the migration refuses to drop anything while a published row is still a draft', function (PostFactory|EpisodeFactory|GuideFactory|NewsletterIssueFactory $factory, string $table): void {
     // Arrange
-    $record = $factory->draft()->createOne();
-    DB::table($table)->where('id', $record->id)->update(['is_published' => true]);
+    $record = $factory->draft()
+        ->createOne();
+    DB::table($table)
+        ->where('id', $record->id)
+        ->update(['is_published' => true]);
 
     // Act
     $run = fn () => runDropLegacyPublishedAndBodyMigration();
@@ -90,13 +102,16 @@ test('the migration refuses to drop anything while a published row is still a dr
     // Assert
     expect($run)->toThrow(RuntimeException::class, "1 published {$table} row(s) still have the draft status.");
     expect(Schema::hasColumn('posts', 'is_published'))->toBeTrue()
-        ->and(Schema::hasColumn('posts', 'body'))->toBeTrue();
+        ->and(Schema::hasColumn('posts', 'body'))
+        ->toBeTrue();
 })->with('published flag tables');
 
 test('the migration refuses to drop anything while a row has a body but no content', function (PostFactory|GuideFactory $factory, string $table): void {
     // Arrange
     $record = $factory->createOne();
-    DB::table($table)->where('id', $record->id)->update(['body' => 'Only in body.', 'content' => null]);
+    DB::table($table)
+        ->where('id', $record->id)
+        ->update(['body' => 'Only in body.', 'content' => null]);
 
     // Act
     $run = fn () => runDropLegacyPublishedAndBodyMigration();

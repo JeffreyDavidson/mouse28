@@ -94,7 +94,9 @@ class PublicContentArchiveImporter
             $paths[] = $this->validator->validateMediaPath($podcastCover);
         }
 
-        return array_values(collect($paths)->unique()->sort()->all());
+        return array_values(collect($paths)->unique()
+            ->sort()
+            ->all());
     }
 
     /**
@@ -213,7 +215,8 @@ class PublicContentArchiveImporter
      */
     private function prunePublished(Builder $query, array $records): int
     {
-        $slugs = collect($records)->pluck('slug')->all();
+        $slugs = collect($records)->pluck('slug')
+            ->all();
 
         $deleted = $query
             ->published()

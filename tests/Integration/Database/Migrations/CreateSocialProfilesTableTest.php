@@ -17,8 +17,10 @@ beforeEach(function (): void {
     }
 
     Schema::table('podcasts', function (Blueprint $table): void {
-        $table->string('instagram_url')->nullable();
-        $table->string('tiktok_url')->nullable();
+        $table->string('instagram_url')
+            ->nullable();
+        $table->string('tiktok_url')
+            ->nullable();
     });
 });
 
@@ -36,23 +38,34 @@ function runSocialProfilesMigration(): void
 }
 
 test('existing podcast Instagram and TikTok links become social profiles', function (): void {
-    DB::table('podcasts')->where('id', primaryPodcast()->id)->update([
-        'instagram_url' => 'https://instagram.com/mouse28',
-        'tiktok_url' => 'https://tiktok.com/@mouse28',
-    ]);
+    DB::table('podcasts')
+        ->where('id', primaryPodcast()->id)
+        ->update([
+            'instagram_url' => 'https://instagram.com/mouse28',
+            'tiktok_url' => 'https://tiktok.com/@mouse28',
+        ]);
 
     runSocialProfilesMigration();
 
-    $profiles = SocialProfile::query()->orderBy('sort_order')->get();
+    $profiles = SocialProfile::query()
+        ->orderBy('sort_order')
+        ->get();
 
-    expect($profiles->pluck('platform')->all())->toBe([SocialPlatform::Instagram, SocialPlatform::TikTok])
-        ->and($profiles->pluck('url')->all())->toBe(['https://instagram.com/mouse28', 'https://tiktok.com/@mouse28'])
-        ->and($profiles->every(fn (SocialProfile $profile): bool => $profile->is_enabled && $profile->show_in_footer))->toBeTrue()
-        ->and($profiles->contains(fn (SocialProfile $profile): bool => $profile->show_on_contact))->toBeFalse();
+    expect($profiles->pluck('platform')
+        ->all())->toBe([SocialPlatform::Instagram, SocialPlatform::TikTok])
+        ->and($profiles->pluck('url')
+            ->all())
+        ->toBe(['https://instagram.com/mouse28', 'https://tiktok.com/@mouse28'])
+        ->and($profiles->every(fn (SocialProfile $profile): bool => $profile->is_enabled && $profile->show_in_footer))
+        ->toBeTrue()
+        ->and($profiles->contains(fn (SocialProfile $profile): bool => $profile->show_on_contact))
+        ->toBeFalse();
 });
 
 test('blank or missing podcast links create no profiles', function (): void {
-    DB::table('podcasts')->where('id', primaryPodcast()->id)->update(['instagram_url' => '', 'tiktok_url' => null]);
+    DB::table('podcasts')
+        ->where('id', primaryPodcast()->id)
+        ->update(['instagram_url' => '', 'tiktok_url' => null]);
 
     runSocialProfilesMigration();
 

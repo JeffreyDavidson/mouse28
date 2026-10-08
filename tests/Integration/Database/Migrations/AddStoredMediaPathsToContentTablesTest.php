@@ -18,7 +18,8 @@ beforeEach(function (): void {
         }
 
         Schema::table($table, function (Blueprint $blueprint): void {
-            $blueprint->string('cover_image')->nullable();
+            $blueprint->string('cover_image')
+                ->nullable();
         });
     }
 });
@@ -56,7 +57,9 @@ function legacyCoverRow(string $table, ?string $cover, bool $trashed = false): i
  */
 function storedMediaColumns(string $table, string $column, int $id): array
 {
-    $row = DB::table($table)->where('id', $id)->first(['cover_image', $column]);
+    $row = DB::table($table)
+        ->where('id', $id)
+        ->first(['cover_image', $column]);
 
     return ['cover_image' => $row?->cover_image, 'path' => $row?->{$column}];
 }
@@ -72,26 +75,33 @@ test('the migration adds a nullable path column and keeps cover_image', function
     $nullable = array_column(Schema::getColumns($table), 'nullable', 'name');
 
     expect(Schema::hasColumn($table, $column))->toBeTrue()
-        ->and($nullable[$column])->toBeTrue()
-        ->and(Schema::hasColumn($table, 'cover_image'))->toBeTrue();
+        ->and($nullable[$column])
+        ->toBeTrue()
+        ->and(Schema::hasColumn($table, 'cover_image'))
+        ->toBeTrue();
 })->with('stored media tables');
 
 test('the backfill copies cover_image into the new path column', function (string $table, string $column, ?string $cover, bool $trashed): void {
     $id = legacyCoverRow($table, $cover, $trashed);
-    DB::table($table)->where('id', $id)->update([$column => null]);
+    DB::table($table)
+        ->where('id', $id)
+        ->update([$column => null]);
 
     runStoredMediaPathsMigration();
 
     expect(storedMediaColumns($table, $column, $id))->toBe(['cover_image' => $cover, 'path' => $cover]);
-})->with('stored media tables')->with([
-    'a stored cover' => ['covers/cover.webp', false],
-    'a trashed row' => ['covers/trashed.webp', true],
-    'no cover' => [null, false],
-]);
+})->with('stored media tables')
+    ->with([
+        'a stored cover' => ['covers/cover.webp', false],
+        'a trashed row' => ['covers/trashed.webp', true],
+        'no cover' => [null, false],
+    ]);
 
 test('the backfill leaves an empty cover_image without a path', function (string $table, string $column): void {
     $id = legacyCoverRow($table, '');
-    DB::table($table)->where('id', $id)->update([$column => null]);
+    DB::table($table)
+        ->where('id', $id)
+        ->update([$column => null]);
 
     runStoredMediaPathsMigration();
 
@@ -100,7 +110,9 @@ test('the backfill leaves an empty cover_image without a path', function (string
 
 test('the backfill leaves a path already written alone', function (string $table, string $column): void {
     $id = legacyCoverRow($table, 'covers/old.webp');
-    DB::table($table)->where('id', $id)->update([$column => 'covers/new.webp']);
+    DB::table($table)
+        ->where('id', $id)
+        ->update([$column => 'covers/new.webp']);
 
     runStoredMediaPathsMigration();
 
@@ -109,24 +121,36 @@ test('the backfill leaves a path already written alone', function (string $table
 
 test('running the stored media migration again changes nothing', function (string $table, string $column): void {
     $ids = [legacyCoverRow($table, 'covers/one.webp'), legacyCoverRow($table, null)];
-    DB::table($table)->whereIn('id', $ids)->update([$column => null]);
+    DB::table($table)
+        ->whereIn('id', $ids)
+        ->update([$column => null]);
     runStoredMediaPathsMigration();
-    $afterFirstRun = DB::table($table)->orderBy('id')->get(['id', 'cover_image', $column])->toArray();
+    $afterFirstRun = DB::table($table)
+        ->orderBy('id')
+        ->get(['id', 'cover_image', $column])
+        ->toArray();
 
     runStoredMediaPathsMigration();
 
-    expect(DB::table($table)->orderBy('id')->get(['id', 'cover_image', $column])->toArray())->toEqual($afterFirstRun);
+    expect(DB::table($table)
+        ->orderBy('id')
+        ->get(['id', 'cover_image', $column])
+        ->toArray())->toEqual($afterFirstRun);
 })->with('stored media tables');
 
 test('the migration refuses to finish while a row has a cover_image but no path', function (string $table, string $column): void {
     $id = legacyCoverRow($table, 'covers/kept.webp');
-    DB::table($table)->where('id', $id)->update([$column => null]);
+    DB::table($table)
+        ->where('id', $id)
+        ->update([$column => null]);
     // Simulates the previous release clearing the path right after the backfill copied it.
     $cleared = false;
     DB::listen(function (QueryExecuted $query) use ($table, $column, $id, &$cleared): void {
         if (! $cleared && str_starts_with($query->sql, 'update') && str_contains($query->sql, $table) && str_contains($query->sql, 'cover_image')) {
             $cleared = true;
-            DB::table($table)->where('id', $id)->update([$column => null]);
+            DB::table($table)
+                ->where('id', $id)
+                ->update([$column => null]);
         }
     });
 

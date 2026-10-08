@@ -31,9 +31,12 @@ test('each author pivot holds the content key, the user key and a position under
     $defaults = array_column(Schema::getColumns($pivot), 'default', 'name');
 
     expect(array_keys($nullable))->toEqualCanonicalizing([$contentKey, 'user_id', 'position'])
-        ->and($nullable['position'])->toBeFalse()
-        ->and($defaults['position'])->toContain('0')
-        ->and(Schema::hasIndex($pivot, [$contentKey, 'user_id'], 'primary'))->toBeTrue();
+        ->and($nullable['position'])
+        ->toBeFalse()
+        ->and($defaults['position'])
+        ->toContain('0')
+        ->and(Schema::hasIndex($pivot, [$contentKey, 'user_id'], 'primary'))
+        ->toBeTrue();
 })->with('author pivot tables');
 
 test('each author pivot cascades deletes from both sides', function (string $pivot, string $contentKey, string $contentTable): void {
@@ -43,12 +46,19 @@ test('each author pivot cascades deletes from both sides', function (string $piv
 })->with('author pivot tables');
 
 test('running the author pivot migration again keeps the tables and their credits', function (): void {
-    $author = User::factory()->author()->create();
-    Post::factory()->withAuthors($author)->create();
-    Guide::factory()->withAuthors($author)->create();
+    $author = User::factory()
+        ->author()
+        ->create();
+    Post::factory()
+        ->withAuthors($author)
+        ->create();
+    Guide::factory()
+        ->withAuthors($author)
+        ->create();
 
     runAuthorPivotTablesMigration();
 
     expect(DB::table('post_user')->count())->toBe(1)
-        ->and(DB::table('guide_user')->count())->toBe(1);
+        ->and(DB::table('guide_user')->count())
+        ->toBe(1);
 });

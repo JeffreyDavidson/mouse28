@@ -19,7 +19,8 @@ class PodcastFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => Str::title(fake()->unique()->words(2, true)),
+            'name' => Str::title(fake()->unique()
+                ->words(2, true)),
             'description' => fake()->sentence(),
             'is_active' => true,
             'sort_order' => 0,

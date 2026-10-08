@@ -28,8 +28,13 @@ class ContentCalendar extends Widget
     public function getTimeline(): array
     {
         // The seven days are calendar days in the display timezone; the query compares UTC instants.
-        $start = Date::now(DisplayTimezone::name())->startOfDay()->utc();
-        $end = Date::now(DisplayTimezone::name())->addDays(7)->endOfDay()->utc();
+        $start = Date::now(DisplayTimezone::name())
+            ->startOfDay()
+            ->utc();
+        $end = Date::now(DisplayTimezone::name())
+            ->addDays(7)
+            ->endOfDay()
+            ->utc();
 
         $posts = Post::whereBetween('published_at', [$start, $end])
             ->select(['id', 'title', 'status', 'published_at'])
@@ -39,7 +44,8 @@ class ContentCalendar extends Widget
                 'title' => $post->title,
                 'type' => 'Post',
                 'date' => $post->published_at,
-                'status' => $post->publishStatus()->label(),
+                'status' => $post->publishStatus()
+                    ->label(),
                 'url' => PostResource::getUrl('edit', ['record' => $post]),
             ])
             ->toBase();
@@ -52,7 +58,8 @@ class ContentCalendar extends Widget
                 'title' => $episode->title,
                 'type' => 'Episode',
                 'date' => $episode->published_at,
-                'status' => $episode->publishStatus()->label(),
+                'status' => $episode->publishStatus()
+                    ->label(),
                 'url' => EpisodeResource::getUrl('edit', ['record' => $episode]),
             ])
             ->toBase();
@@ -65,11 +72,16 @@ class ContentCalendar extends Widget
                 'title' => $guide->title,
                 'type' => 'Guide',
                 'date' => $guide->published_at,
-                'status' => $guide->publishStatus()->label(),
+                'status' => $guide->publishStatus()
+                    ->label(),
                 'url' => GuideResource::getUrl('edit', ['record' => $guide]),
             ])
             ->toBase();
 
-        return $posts->merge($episodes)->merge($guides)->sortBy('date')->values()->all();
+        return $posts->merge($episodes)
+            ->merge($guides)
+            ->sortBy('date')
+            ->values()
+            ->all();
     }
 }

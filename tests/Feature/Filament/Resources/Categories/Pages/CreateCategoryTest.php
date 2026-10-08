@@ -13,14 +13,18 @@ use function Pest\Livewire\livewire;
 pest()->use(RefreshDatabase::class);
 
 test('an administrator can render the category create page', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     get(CategoryResource::getUrl('create'))
         ->assertOk();
 });
 
 test('an administrator can create a category with a description', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(CreateCategory::class)
         ->fillForm([
@@ -31,14 +35,19 @@ test('an administrator can create a category with a description', function (): v
         ->call('create')
         ->assertHasNoFormErrors();
 
-    expect(Category::query()->where('slug', 'sample-topic')->sole()->only(['name', 'description']))->toBe([
-        'name' => 'Sample Topic',
-        'description' => 'Sample description.',
-    ]);
+    expect(Category::query()
+        ->where('slug', 'sample-topic')
+        ->sole()
+        ->only(['name', 'description']))->toBe([
+            'name' => 'Sample Topic',
+            'description' => 'Sample description.',
+        ]);
 });
 
 test('category creation rejects a slug that is not normalized', function (string $slug): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(CreateCategory::class)
         ->fillForm([
@@ -48,7 +57,9 @@ test('category creation rejects a slug that is not normalized', function (string
         ->call('create')
         ->assertHasFormErrors(['slug' => 'regex']);
 
-    expect(Category::query()->where('name', 'Sample Topic')->exists())->toBeFalse();
+    expect(Category::query()
+        ->where('name', 'Sample Topic')
+        ->exists())->toBeFalse();
 })->with([
     'path traversal' => '../sample-topic',
     'spaces' => 'sample topic',
@@ -61,7 +72,9 @@ test('category creation rejects a slug that is not normalized', function (string
 test('category creation validates the name and slug', function (array $data, array $errors): void {
     Category::factory()->create(['slug' => 'existing-topic']);
     $categories = Category::query()->count();
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(CreateCategory::class)
         ->fillForm($data)

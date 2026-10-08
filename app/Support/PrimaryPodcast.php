@@ -30,7 +30,9 @@ final class PrimaryPodcast
 
     private function find(): ?Podcast
     {
-        return Podcast::query()->oldest('id')->first();
+        return Podcast::query()
+            ->oldest('id')
+            ->first();
     }
 
     /** @return array{name: string, slug: string, description: string} */

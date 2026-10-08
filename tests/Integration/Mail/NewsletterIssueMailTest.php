@@ -55,7 +55,8 @@ test('a test email is marked and carries no unsubscribe headers', function (): v
 
     $mail->assertSeeInHtml('This is a test email')
         ->assertSeeInText('This is a test email');
-    expect($mail->headers()->text)->toBeEmpty();
+    expect($mail->headers()
+        ->text)->toBeEmpty();
 });
 
 test('relative links and images become absolute in the html and text parts', function (): void {

@@ -18,7 +18,9 @@ test('a permanent bounce suppresses the recipient', function (): void {
     ]);
 
     expect($suppressed)->toBe(1)
-        ->and($reader->refresh()->suppression_reason)->toBe(SuppressionReason::Bounced);
+        ->and($reader->refresh()
+            ->suppression_reason)
+        ->toBe(SuppressionReason::Bounced);
 });
 
 test('a transient bounce is ignored', function (): void {
@@ -30,7 +32,9 @@ test('a transient bounce is ignored', function (): void {
     ]);
 
     expect($suppressed)->toBe(0)
-        ->and($reader->refresh()->isActive())->toBeTrue();
+        ->and($reader->refresh()
+            ->isActive())
+        ->toBeTrue();
 });
 
 test('complaints and provider suppressions record their reason', function (string $type, SuppressionReason $reason): void {
@@ -38,7 +42,8 @@ test('complaints and provider suppressions record their reason', function (strin
 
     app(HandleResendWebhook::class)->handle(['type' => $type, 'data' => ['to' => [$reader->email]]]);
 
-    expect($reader->refresh()->suppression_reason)->toBe($reason);
+    expect($reader->refresh()
+        ->suppression_reason)->toBe($reason);
 })->with([
     'complaint' => ['email.complained', SuppressionReason::Complained],
     'provider suppression' => ['email.suppressed', SuppressionReason::Bounced],
@@ -54,7 +59,10 @@ test('every recipient of an event is suppressed and unknown ones are skipped', f
     ]);
 
     expect($suppressed)->toBe(2)
-        ->and(Subscriber::query()->whereNotNull('suppressed_at')->count())->toBe(2);
+        ->and(Subscriber::query()
+            ->whereNotNull('suppressed_at')
+            ->count())
+        ->toBe(2);
 });
 
 test('other events and malformed payloads change nothing', function (array $event): void {
@@ -63,7 +71,9 @@ test('other events and malformed payloads change nothing', function (array $even
     $suppressed = app(HandleResendWebhook::class)->handle($event);
 
     expect($suppressed)->toBe(0)
-        ->and($reader->refresh()->isActive())->toBeTrue();
+        ->and($reader->refresh()
+            ->isActive())
+        ->toBeTrue();
 })->with([
     'delivered' => [['type' => 'email.delivered', 'data' => ['to' => ['reader@example.com']]]],
     'no type' => [['data' => ['to' => ['reader@example.com']]]],
