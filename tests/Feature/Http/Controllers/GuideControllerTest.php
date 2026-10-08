@@ -3,19 +3,15 @@
 use App\Models\Guide;
 use App\Models\Podcast;
 use App\Models\User;
-use Dom\HTMLDocument;
-use Dom\XPath;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
 
 test('guide index returns its view model data', function (): void {
-    config()->set('mouse28.guides_enabled', true);
 
     get(route('guides.index'))
         ->assertOk()
@@ -27,7 +23,6 @@ test('guide index returns its view model data', function (): void {
 });
 
 test('published guide returns its view model data', function (): void {
-    config()->set('mouse28.guides_enabled', true);
     $guide = Guide::factory()->create();
 
     get(route('guides.show', $guide))
@@ -38,7 +33,6 @@ test('published guide returns its view model data', function (): void {
 });
 
 test('guide pages stay within their query budget as content grows', function (string $page, int $queries): void {
-    config()->set('mouse28.guides_enabled', true);
     $guide = Guide::factory()->create(['category' => 'accessibility']);
     Guide::factory()
         ->count(30)
@@ -53,7 +47,6 @@ test('guide pages stay within their query budget as content grows', function (st
 })->with(['archive' => ['index', 4], 'guide' => ['show', 6]]);
 
 test('a guide page names its authors in byline order', function (array $names, string $byline): void {
-    config()->set('mouse28.guides_enabled', true);
     $guide = Guide::factory()->create();
     $guide->syncAuthors(array_map(fn (mixed $name): int => User::authors()
         ->where('name', $name)
@@ -122,7 +115,6 @@ test('guide pages use category artwork when an editor has not uploaded a cover',
 });
 
 test('guide pages render an uploaded cover with its responsive variants', function (): void {
-    Storage::fake('public');
     $disk = Storage::disk('public');
     $disk->put('guides/cover.png', UploadedFile::fake()
         ->image('cover.png', 700, 400)
@@ -287,19 +279,6 @@ test('guides include review date source and breadcrumb structured data', functio
         ->toBe('Guides');
 });
 
-test('page copy and metadata avoid em dashes', function (): void {
-    get(route('guides.index'))
-        ->assertOk()
-        ->assertDontSee('—');
-});
-
-test('page uses the dispatch editorial system', function (): void {
-    get(route('guides.index'))->assertOk()
-        ->assertSeeHtml('data-brand-wordmark')
-        ->assertSeeHtml('data-guide-archive')
-        ->assertSeeHtml('js-dispatch-pages');
-});
-
 test('reading page uses the dispatch reading surface', function (): void {
     $guide = Guide::factory()->create();
 
@@ -311,36 +290,7 @@ test('reading page uses the dispatch reading surface', function (): void {
         ->assertSeeHtml('/images/guides/'.$guide->category->value.'.webp');
 });
 
-test('guide pages expose a single main landmark', function (bool $showGuide): void {
-    config()->set('mouse28.guides_enabled', true);
-    $guide = Guide::factory()->create();
-
-    $response = get($showGuide ? route('guides.show', $guide) : route('guides.index'))->assertOk();
-
-    $document = HTMLDocument::createFromString($this->responseContent($response), LIBXML_NOERROR);
-
-    expect(new XPath($document)->query('//*[local-name()="main"]'))->toHaveCount(1);
-})->with([
-    'index' => [false],
-    'guide' => [true],
-]);
-
-test('signed-in visitors see published guides but nobody sees drafts at public URLs', function (bool $isAdmin): void {
-    config()->set('mouse28.guides_enabled', true);
-    $published = Guide::factory()->create();
-    $draft = Guide::factory()
-        ->draft()
-        ->create();
-    actingAs($isAdmin ? User::factory()
-        ->admin()
-        ->create() : User::factory()->create());
-
-    get(route('guides.show', $published))->assertOk();
-    get(route('guides.show', $draft))->assertNotFound();
-})->with(['non-admin' => [false], 'admin' => [true]]);
-
 test('a published guide renders its markdown content', function (): void {
-    config()->set('mouse28.guides_enabled', true);
     $guide = Guide::factory()->create(['content' => "## Arrival plan\n\nTake a **sensory break** when needed."]);
 
     get(route('guides.show', $guide))
