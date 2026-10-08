@@ -4,16 +4,11 @@ use App\Filament\Resources\Episodes\EpisodeResource;
 use App\Filament\Resources\Posts\PostResource;
 use App\Models\Episode;
 use App\Models\Post;
-use App\Models\User;
 use Filament\Pages\Dashboard;
 
-use function Pest\Laravel\actingAs;
+beforeEach(fn () => actingAsAdmin());
 
 test('administrator can save a Quick Draft from the dashboard', function (): void {
-    actingAs(User::factory()
-        ->admin()
-        ->create());
-
     visit(Dashboard::getUrl(panel: 'admin'))
         ->fill('input[placeholder="Post title..."]', 'Browser Smoke Draft')
         ->fill('textarea[placeholder="Quick notes or ideas..."]', 'Browser smoke test notes.')
@@ -27,10 +22,6 @@ test('administrator can save a Quick Draft from the dashboard', function (): voi
 })->group('browser-smoke');
 
 test('administrator can create a Post from the resource form', function (): void {
-    actingAs(User::factory()
-        ->admin()
-        ->create());
-
     visit(PostResource::getUrl('create'))
         ->fill('input[id="form.title"]', 'Browser Smoke Post')
         ->fill('input[id="form.slug"]', 'browser-smoke-post')
@@ -53,10 +44,6 @@ test('administrator can edit a Post from the resource form', function (): void {
         ->credited()
         ->create();
 
-    actingAs(User::factory()
-        ->admin()
-        ->create());
-
     visit(PostResource::getUrl('edit', ['record' => $post]))
         ->fill('input[id="form.title"]', 'Updated Browser Post')
         ->fill('input[id="form.slug"]', 'updated-browser-post')
@@ -70,10 +57,6 @@ test('administrator can edit a Post from the resource form', function (): void {
 })->group('browser-smoke');
 
 test('administrator can create an Episode from the resource form', function (): void {
-    actingAs(User::factory()
-        ->admin()
-        ->create());
-
     visit(EpisodeResource::getUrl('create'))
         ->fill('input[id="form.title"]', 'Browser Smoke Episode')
         ->fill('input[id="form.slug"]', 'browser-smoke-episode')
@@ -92,10 +75,6 @@ test('administrator can edit an Episode from the resource form', function (): vo
         ->draft()
         ->create();
 
-    actingAs(User::factory()
-        ->admin()
-        ->create());
-
     visit(EpisodeResource::getUrl('edit', ['record' => $episode]))
         ->fill('input[id="form.title"]', 'Updated Browser Episode')
         ->fill('input[id="form.slug"]', 'updated-browser-episode')
@@ -109,10 +88,6 @@ test('administrator can edit an Episode from the resource form', function (): vo
 })->group('browser-smoke');
 
 test('Post creation shows required category validation while preserving entered values', function (): void {
-    actingAs(User::factory()
-        ->admin()
-        ->create());
-
     visit(PostResource::getUrl('create'))
         ->fill('input[id="form.title"]', 'Browser Validation Post')
         ->fill('input[id="form.slug"]', 'browser-validation-post')
@@ -126,9 +101,6 @@ test('Post creation shows required category validation while preserving entered 
 
 test('Episode creation shows duplicate number validation while preserving entered values', function (): void {
     Episode::factory()->create(['episode_number' => 280]);
-    actingAs(User::factory()
-        ->admin()
-        ->create());
 
     visit(EpisodeResource::getUrl('create'))
         ->fill('input[id="form.title"]', 'Browser Duplicate Episode')

@@ -21,9 +21,7 @@ test('administrators see social profiles and others are forbidden', function ():
     actingAs(User::factory()->create());
     get(SocialProfileResource::getUrl())->assertForbidden();
 
-    actingAs(User::factory()
-        ->admin()
-        ->create());
+    actingAsAdmin();
     get(SocialProfileResource::getUrl())
         ->assertOk()
         ->assertSee(['Instagram', '@mouse28']);
@@ -32,9 +30,7 @@ test('administrators see social profiles and others are forbidden', function ():
 });
 
 test('an administrator can add a profile with sensible defaults', function (): void {
-    actingAs(User::factory()
-        ->admin()
-        ->create());
+    actingAsAdmin();
 
     livewire(CreateSocialProfile::class)
         ->fillForm([
@@ -58,9 +54,7 @@ test('an administrator can add a profile with sensible defaults', function (): v
 });
 
 test('profile data is validated', function (array $data, array $errors): void {
-    actingAs(User::factory()
-        ->admin()
-        ->create());
+    actingAsAdmin();
 
     livewire(CreateSocialProfile::class)
         ->fillForm($data)
@@ -78,9 +72,7 @@ test('profile data is validated', function (array $data, array $errors): void {
 ]);
 
 test('an administrator can edit and delete a profile', function (): void {
-    actingAs(User::factory()
-        ->admin()
-        ->create());
+    actingAsAdmin();
     $profile = SocialProfile::factory()->create();
 
     livewire(EditSocialProfile::class, ['record' => $profile->getRouteKey()])
