@@ -17,13 +17,18 @@ test('contact inquiries encrypt the sender name, email and message at rest', fun
         'message' => 'A question about visiting the parks.',
     ]);
 
-    $raw = DB::table('contact_inquiries')->where('id', $inquiry->id)->first(['name', 'email', 'message']);
+    $raw = DB::table('contact_inquiries')
+        ->where('id', $inquiry->id)
+        ->first(['name', 'email', 'message']);
     $inquiry->refresh();
 
     expect((array) $raw)->each->not->toBeIn(['Dale Cooper', 'dale@example.com', 'A question about visiting the parks.'])
-        ->and($inquiry->name)->toBe('Dale Cooper')
-        ->and($inquiry->email)->toBe('dale@example.com')
-        ->and($inquiry->message)->toBe('A question about visiting the parks.');
+        ->and($inquiry->name)
+        ->toBe('Dale Cooper')
+        ->and($inquiry->email)
+        ->toBe('dale@example.com')
+        ->and($inquiry->message)
+        ->toBe('A question about visiting the parks.');
 });
 
 test('contact inquiries store their type and default to the new status', function (ContactType $type): void {
@@ -37,8 +42,10 @@ test('contact inquiries store their type and default to the new status', functio
     $inquiry->refresh();
 
     expect($inquiry->type)->toBe($type)
-        ->and($inquiry->status)->toBe(ContactInquiryStatus::New)
-        ->and(DB::table('contact_inquiries')->value('type'))->toBe($type->value);
+        ->and($inquiry->status)
+        ->toBe(ContactInquiryStatus::New)
+        ->and(DB::table('contact_inquiries')->value('type'))
+        ->toBe($type->value);
 })->with(ContactType::cases());
 
 test('contact inquiries allow email retries only within 23 hours of submission', function (int $minutesAgo, bool $canRetry): void {

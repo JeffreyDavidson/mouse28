@@ -20,10 +20,14 @@ test('blog index data normalizes filters and metadata', function (): void {
     $data = app(PostIndexViewModel::class)->data($request);
 
     expect($data['category'])->toBe('disney-tips')
-        ->and($data['search'])->toHaveLength(100)
-        ->and($data['sort'])->toBe('oldest')
-        ->and($data['robots'])->toBe('noindex,follow')
-        ->and($data['canonicalUrl'])->toContain('category=disney-tips');
+        ->and($data['search'])
+        ->toHaveLength(100)
+        ->and($data['sort'])
+        ->toBe('oldest')
+        ->and($data['robots'])
+        ->toBe('noindex,follow')
+        ->and($data['canonicalUrl'])
+        ->toContain('category=disney-tips');
 });
 
 test('blog index data names the selected category in its metadata', function (): void {
@@ -33,10 +37,14 @@ test('blog index data names the selected category in its metadata', function ():
     $data = app(PostIndexViewModel::class)->data($request);
 
     expect($data['category'])->toBe('sample-topic')
-        ->and($data['pageTitle'])->toBe('Sample Topic | Mouse28')
-        ->and($data['pageDescription'])->toBe('Mouse28 Sample Topic articles, family experiences, and practical Disney park takeaways.')
-        ->and($data['canonicalUrl'])->toBe(route('blog.index', ['category' => 'sample-topic', 'page' => 2]))
-        ->and($data['robots'])->toBe('index,follow');
+        ->and($data['pageTitle'])
+        ->toBe('Sample Topic | Mouse28')
+        ->and($data['pageDescription'])
+        ->toBe('Mouse28 Sample Topic articles, family experiences, and practical Disney park takeaways.')
+        ->and($data['canonicalUrl'])
+        ->toBe(route('blog.index', ['category' => 'sample-topic', 'page' => 2]))
+        ->and($data['robots'])
+        ->toBe('index,follow');
 });
 
 test('blog index data ignores a category that does not exist', function (): void {
@@ -45,8 +53,10 @@ test('blog index data ignores a category that does not exist', function (): void
     $data = app(PostIndexViewModel::class)->data($request);
 
     expect($data['category'])->toBeEmpty()
-        ->and($data['pageTitle'])->toBe('Disney Parks Blog | Mouse28')
-        ->and($data['canonicalUrl'])->toBe(route('blog.index'));
+        ->and($data['pageTitle'])
+        ->toBe('Disney Parks Blog | Mouse28')
+        ->and($data['canonicalUrl'])
+        ->toBe(route('blog.index'));
 });
 
 test('blog index data looks up no category when none is requested', function (): void {
@@ -55,5 +65,6 @@ test('blog index data looks up no category when none is requested', function ():
     $data = app(PostIndexViewModel::class)->data(Request::create('/blog'));
 
     expect($data['category'])->toBeEmpty()
-        ->and(DB::getQueryLog())->toBeEmpty();
+        ->and(DB::getQueryLog())
+        ->toBeEmpty();
 });

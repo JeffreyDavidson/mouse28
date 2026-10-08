@@ -15,7 +15,8 @@ pest()->use(RefreshDatabase::class);
 beforeEach(function (): void {
     if (! Schema::hasColumn('posts', 'episode_id')) {
         Schema::table('posts', function (Blueprint $blueprint): void {
-            $blueprint->unsignedBigInteger('episode_id')->nullable();
+            $blueprint->unsignedBigInteger('episode_id')
+                ->nullable();
         });
     }
 });
@@ -39,10 +40,12 @@ function legacyEpisodeLinkPost(?int $episodeId, bool $trashed = false): int
 {
     $post = Post::factory()->create();
 
-    DB::table('posts')->where('id', $post->id)->update([
-        'episode_id' => $episodeId,
-        'deleted_at' => $trashed ? '2026-09-01 08:00:00' : null,
-    ]);
+    DB::table('posts')
+        ->where('id', $post->id)
+        ->update([
+            'episode_id' => $episodeId,
+            'deleted_at' => $trashed ? '2026-09-01 08:00:00' : null,
+        ]);
 
     return $post->id;
 }
@@ -102,8 +105,12 @@ test('the backfill keeps links already in the pivot', function (): void {
 });
 
 test('running the backfill again adds nothing', function (): void {
-    legacyEpisodeLinkPost(Episode::factory()->create()->id);
-    legacyEpisodeLinkPost(Episode::factory()->create()->id, trashed: true);
+    legacyEpisodeLinkPost(Episode::factory()
+        ->create()
+        ->id);
+    legacyEpisodeLinkPost(Episode::factory()
+        ->create()
+        ->id, trashed: true);
     legacyEpisodeLinkPost(null);
     runPostEpisodeLinkCopyMigration();
     $afterFirstRun = episodePostRows();
@@ -120,15 +127,21 @@ test('the backfill leaves the legacy episode link column in place', function ():
 
     runPostEpisodeLinkCopyMigration();
 
-    expect(DB::table('posts')->where('id', $postId)->value('episode_id'))->toBe($episode->id);
+    expect(DB::table('posts')
+        ->where('id', $postId)
+        ->value('episode_id'))->toBe($episode->id);
 });
 
 test('the backfill refuses to finish while a legacy episode link is missing from the pivot', function (): void {
-    $postId = legacyEpisodeLinkPost(Episode::factory()->create()->id);
+    $postId = legacyEpisodeLinkPost(Episode::factory()
+        ->create()
+        ->id);
     // Simulates the link disappearing between the copy and the check.
     DB::listen(function (QueryExecuted $query) use ($postId): void {
         if (str_starts_with($query->sql, 'insert') && str_contains($query->sql, 'episode_post')) {
-            DB::table('episode_post')->where('post_id', $postId)->delete();
+            DB::table('episode_post')
+                ->where('post_id', $postId)
+                ->delete();
         }
     });
 

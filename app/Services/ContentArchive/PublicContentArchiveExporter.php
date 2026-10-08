@@ -36,7 +36,9 @@ class PublicContentArchiveExporter
             ->published()
             ->orderBy('published_at')
             ->get(['id', ...PublicContentArchiveSchema::EPISODE_FIELDS])
-            ->map(fn (Episode $episode): array => [...$this->attributes($episode, PublicContentArchiveSchema::EPISODE_FIELDS), ...$this->seoAttributes($episode), 'tags' => $episode->tagsWithType('content')->pluck('name')->all()])
+            ->map(fn (Episode $episode): array => [...$this->attributes($episode, PublicContentArchiveSchema::EPISODE_FIELDS), ...$this->seoAttributes($episode), 'tags' => $episode->tagsWithType('content')
+                ->pluck('name')
+                ->all()])
             ->values()
             ->all();
 
@@ -52,7 +54,9 @@ class PublicContentArchiveExporter
                 'category_name' => $post->category?->name,
                 'authors' => $this->authorNames($post),
                 'episode_slugs' => $this->publishedEpisodeSlugs($post),
-                'tags' => $post->tagsWithType('content')->pluck('name')->all(),
+                'tags' => $post->tagsWithType('content')
+                    ->pluck('name')
+                    ->all(),
             ])
             ->values()
             ->all();
@@ -66,7 +70,9 @@ class PublicContentArchiveExporter
                 ...$this->attributes($guide, PublicContentArchiveSchema::GUIDE_FIELDS),
                 ...$this->seoAttributes($guide),
                 'authors' => $this->authorNames($guide),
-                'tags' => $guide->tagsWithType('content')->pluck('name')->all(),
+                'tags' => $guide->tagsWithType('content')
+                    ->pluck('name')
+                    ->all(),
             ])
             ->values()
             ->all();
@@ -106,7 +112,8 @@ class PublicContentArchiveExporter
     /** @return array<int, string> the names of the record's authors, in byline order */
     private function authorNames(Post|Guide $record): array
     {
-        return $record->authors->map(fn (User $author): string => $author->name)->all();
+        return $record->authors->map(fn (User $author): string => $author->name)
+            ->all();
     }
 
     /** @return list<string> the slugs of the post's live related episodes, in episode number order */

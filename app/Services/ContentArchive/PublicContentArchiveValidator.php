@@ -93,7 +93,8 @@ final class PublicContentArchiveValidator
 
         $validator = Validator::make($archive, $rules);
         if ($validator->fails()) {
-            throw new InvalidArgumentException('Invalid public content archive: '.implode(' ', $validator->errors()->all()));
+            throw new InvalidArgumentException('Invalid public content archive: '.implode(' ', $validator->errors()
+                ->all()));
         }
     }
 

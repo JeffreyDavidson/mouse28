@@ -16,7 +16,8 @@ class GenerateNewsletterRssFeed
             ->take(Config::integer('mouse28.newsletter_feed_items'))
             ->get();
 
-        $lastBuild = $issues->first()?->published_at?->toRssString() ?? Date::now()->toRssString();
+        $lastBuild = $issues->first()
+            ?->published_at?->toRssString() ?? Date::now()->toRssString();
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>'."\n";
         $xml .= '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">'."\n";

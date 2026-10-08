@@ -110,10 +110,16 @@ class BlogArchive extends Component
 
         $featuredPost = $this->hasDefaultFilters() && $posts->currentPage() === 1
             ? $posts->first()
-            : Post::published()->select($cardColumns)->with($cardRelations)->latest('published_at')->latest('id')->first();
+            : Post::published()
+                ->select($cardColumns)
+                ->with($cardRelations)
+                ->latest('published_at')
+                ->latest('id')
+                ->first();
 
         $archivePosts = $featuredPost && $this->hasDefaultFilters()
-            ? $posts->getCollection()->reject(fn (Post $post): bool => $post->is($featuredPost))
+            ? $posts->getCollection()
+                ->reject(fn (Post $post): bool => $post->is($featuredPost))
             : $posts->getCollection();
 
         return view('livewire.blog-archive', [
@@ -124,7 +130,9 @@ class BlogArchive extends Component
             'usedCategories' => $usedCategories,
             'selectedCategoryName' => $this->category === ''
                 ? null
-                : Category::query()->where('slug', $this->category)->value('name'),
+                : Category::query()
+                    ->where('slug', $this->category)
+                    ->value('name'),
         ]);
     }
 
@@ -137,7 +145,10 @@ class BlogArchive extends Component
 
     private function normalizedSearch(): string
     {
-        return Str::of($this->search)->trim()->limit(100, '')->toString();
+        return Str::of($this->search)
+            ->trim()
+            ->limit(100, '')
+            ->toString();
     }
 
     private function normalizedCategory(): string
@@ -152,7 +163,9 @@ class BlogArchive extends Component
             return '';
         }
 
-        $existingSlug = Category::query()->where('slug', $slug)->value('slug');
+        $existingSlug = Category::query()
+            ->where('slug', $slug)
+            ->value('slug');
 
         return is_string($existingSlug) ? $existingSlug : '';
     }

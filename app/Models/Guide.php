@@ -136,7 +136,8 @@ class Guide extends Model implements Publishable
             $query->orWhere(fn (Builder $query) => $query->missingSeo());
 
             $query->orWhere(function (Builder $query): void {
-                $query->whereIn('status', [PublishStatus::Published, PublishStatus::Scheduled])->whereNull('published_at');
+                $query->whereIn('status', [PublishStatus::Published, PublishStatus::Scheduled])
+                    ->whereNull('published_at');
             });
         });
     }

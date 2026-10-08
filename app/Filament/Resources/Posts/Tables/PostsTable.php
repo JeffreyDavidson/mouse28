@@ -70,12 +70,18 @@ class PostsTable
                     ->relationship('authors', 'name', fn (Builder $query): Builder => $query->where('users.is_author', true)),
                 Filter::make('missing_artwork')
                     ->query(fn (Builder $query): Builder => $query->where(function (Builder $query): void {
-                        $query->whereNull('featured_image_path')->orWhere('featured_image_path', '');
+                        $query->whereNull('featured_image_path')
+                            ->orWhere('featured_image_path', '');
                     })),
                 Filter::make('missing_seo')
-                    ->query(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->missingSeo()->select('id'))),
+                    ->query(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()
+                        ->missingSeo()
+                        ->select('id'))),
                 Filter::make('review_due')
-                    ->query(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->published()->reviewDue()->select('id'))),
+                    ->query(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()
+                        ->published()
+                        ->reviewDue()
+                        ->select('id'))),
                 TrashedFilter::make(),
             ])
             ->recordActions([

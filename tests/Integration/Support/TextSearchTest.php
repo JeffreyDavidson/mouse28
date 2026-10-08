@@ -18,7 +18,9 @@ test('text search matches terms as literal text in any listed column', function 
     $query = Post::query();
     TextSearch::constrain($query, ['title', 'excerpt', 'content'], $term);
 
-    expect($query->orderBy('id')->pluck('title')->all())->toBe($expectedTitles);
+    expect($query->orderBy('id')
+        ->pluck('title')
+        ->all())->toBe($expectedTitles);
 })->with([
     'percent sign' => ['100%', ['100% fun']],
     'underscore' => ['_', ['1000 steps', 'Wow!']],
@@ -33,5 +35,6 @@ test('text search groups its column matches so other constraints still apply', f
     $query = Post::query()->where('status', PublishStatus::Published);
     TextSearch::constrain($query, ['title', 'excerpt'], 'Castle');
 
-    expect($query->pluck('title')->all())->toBe(['Castle tour']);
+    expect($query->pluck('title')
+        ->all())->toBe(['Castle tour']);
 });

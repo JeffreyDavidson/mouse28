@@ -23,7 +23,8 @@ test('users gain a non-null author flag and a nullable bio', function (): void {
     $nullable = array_column(Schema::getColumns('users'), 'nullable', 'name');
 
     expect($nullable['is_author'])->toBeFalse()
-        ->and($nullable['bio'])->toBeTrue();
+        ->and($nullable['bio'])
+        ->toBeTrue();
 });
 
 test('a user inserted without the new columns is not an author and has no bio', function (): void {
@@ -33,13 +34,17 @@ test('a user inserted without the new columns is not an author and has no bio', 
         'password' => 'not-a-real-hash',
     ]);
 
-    expect(DB::table('users')->where('id', $id)->first(['is_author', 'bio']))
+    expect(DB::table('users')
+        ->where('id', $id)
+        ->first(['is_author', 'bio']))
         ->is_author->toEqual(0)
         ->bio->toBeNull();
 });
 
 test('running the user author fields migration again keeps each user\'s author flag and bio', function (): void {
-    $user = User::factory()->author()->create(['bio' => 'Sample bio.']);
+    $user = User::factory()
+        ->author()
+        ->create(['bio' => 'Sample bio.']);
 
     runUserAuthorFieldsMigration();
 

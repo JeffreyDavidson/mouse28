@@ -57,7 +57,8 @@ test('newsletter sign-up stores a pending reader and queues the confirmation ema
     $reader = Subscriber::query()->sole();
 
     expect($reader->email)->toBe('dale@example.com')
-        ->and($reader->isActive())->toBeFalse();
+        ->and($reader->isActive())
+        ->toBeFalse();
 
     Mail::assertQueued(NewsletterConfirmationMail::class, fn (NewsletterConfirmationMail $mail): bool => $mail->hasTo('dale@example.com'));
 });

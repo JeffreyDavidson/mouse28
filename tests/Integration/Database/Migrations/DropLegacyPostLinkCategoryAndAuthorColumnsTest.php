@@ -28,13 +28,19 @@ function runDropLegacyPostColumnsMigration(): void
 // The migrated schema no longer has the legacy columns, so put them back to look like production did before the drop.
 beforeEach(function (): void {
     Schema::table('posts', function (Blueprint $table): void {
-        $table->foreignId('episode_id')->nullable()->constrained()->nullOnDelete();
-        $table->string('category')->nullable();
-        $table->string('author')->nullable();
+        $table->foreignId('episode_id')
+            ->nullable()
+            ->constrained()
+            ->nullOnDelete();
+        $table->string('category')
+            ->nullable();
+        $table->string('author')
+            ->nullable();
     });
 
     Schema::table('guides', function (Blueprint $table): void {
-        $table->string('author')->default('both');
+        $table->string('author')
+            ->default('both');
     });
 });
 
@@ -64,15 +70,23 @@ test('the migration keeps the category link and the posts indexes', function ():
     runDropLegacyPostColumnsMigration();
 
     // Assert
-    expect(DB::table('posts')->where('id', $post->id)->value('category_id'))->toBe($category->id)
-        ->and(Schema::hasIndex('posts', ['slug'], 'unique'))->toBeTrue()
-        ->and(Schema::hasIndex('posts', ['status', 'published_at']))->toBeTrue();
+    expect(DB::table('posts')
+        ->where('id', $post->id)
+        ->value('category_id'))->toBe($category->id)
+        ->and(Schema::hasIndex('posts', ['slug'], 'unique'))
+        ->toBeTrue()
+        ->and(Schema::hasIndex('posts', ['status', 'published_at']))
+        ->toBeTrue();
 });
 
 test('the migration refuses to drop anything while a post has an episode link missing from the pivot', function (): void {
     // Arrange
     $post = Post::factory()->create();
-    DB::table('posts')->where('id', $post->id)->update(['episode_id' => Episode::factory()->create()->id]);
+    DB::table('posts')
+        ->where('id', $post->id)
+        ->update(['episode_id' => Episode::factory()
+            ->create()
+            ->id]);
 
     // Act
     $run = fn () => runDropLegacyPostColumnsMigration();
@@ -85,7 +99,9 @@ test('the migration refuses to drop anything while a post has an episode link mi
 test('the migration refuses to drop anything while a post has a category but no category_id', function (): void {
     // Arrange
     $post = Post::factory()->create(['category_id' => null]);
-    DB::table('posts')->where('id', $post->id)->update(['category' => 'disney-tips']);
+    DB::table('posts')
+        ->where('id', $post->id)
+        ->update(['category' => 'disney-tips']);
 
     // Act
     $run = fn () => runDropLegacyPostColumnsMigration();
@@ -98,8 +114,11 @@ test('the migration refuses to drop anything while a post has a category but no 
 test('the migration refuses to drop anything while a row has an author but no credited author user', function (PostFactory|GuideFactory $factory, string $table): void {
     // Arrange
     $record = $factory->createOne();
-    $record->authors()->detach();
-    DB::table($table)->where('id', $record->id)->update(['author' => 'jeffrey']);
+    $record->authors()
+        ->detach();
+    DB::table($table)
+        ->where('id', $record->id)
+        ->update(['author' => 'jeffrey']);
 
     // Act
     $run = fn () => runDropLegacyPostColumnsMigration();
@@ -107,7 +126,8 @@ test('the migration refuses to drop anything while a row has an author but no cr
     // Assert
     $pivot = $table === 'posts' ? 'post_user' : 'guide_user';
     expect($run)->toThrow(RuntimeException::class, "1 {$table} row(s) still have an author with no {$pivot} row.")
-        ->and(Schema::hasColumn('posts', 'episode_id'))->toBeTrue();
+        ->and(Schema::hasColumn('posts', 'episode_id'))
+        ->toBeTrue();
 })->with('author tables');
 
 test('the migration can run again after the columns are gone', function (): void {

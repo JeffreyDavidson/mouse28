@@ -14,7 +14,8 @@ pest()->use(RefreshDatabase::class);
 beforeEach(function (): void {
     if (! Schema::hasColumn('posts', 'category')) {
         Schema::table('posts', function (Blueprint $blueprint): void {
-            $blueprint->string('category')->nullable();
+            $blueprint->string('category')
+                ->nullable();
         });
     }
 });
@@ -38,11 +39,13 @@ function legacyCategoryPost(?string $category, bool $trashed = false): int
 {
     $post = Post::factory()->create();
 
-    DB::table('posts')->where('id', $post->id)->update([
-        'category' => $category,
-        'category_id' => null,
-        'deleted_at' => $trashed ? '2026-09-01 08:00:00' : null,
-    ]);
+    DB::table('posts')
+        ->where('id', $post->id)
+        ->update([
+            'category' => $category,
+            'category_id' => null,
+            'deleted_at' => $trashed ? '2026-09-01 08:00:00' : null,
+        ]);
 
     return $post->id;
 }
@@ -60,7 +63,10 @@ function postCategorySlug(int $postId): ?string
 /** @return array<mixed> category names keyed by slug */
 function categoryNamesBySlug(): array
 {
-    return DB::table('categories')->orderBy('id')->pluck('name', 'slug')->all();
+    return DB::table('categories')
+        ->orderBy('id')
+        ->pluck('name', 'slug')
+        ->all();
 }
 
 dataset('legacy post categories', [
@@ -95,18 +101,31 @@ test('the migration creates one category per legacy post category in order', fun
         'merchandise' => 'Merchandise',
         'general' => 'General',
     ])
-        ->and(DB::table('categories')->whereNotNull('description')->count())->toBe(0)
-        ->and(DB::table('categories')->whereNull('created_at')->count())->toBe(0);
+        ->and(DB::table('categories')
+            ->whereNotNull('description')
+            ->count())
+        ->toBe(0)
+        ->and(DB::table('categories')
+            ->whereNull('created_at')
+            ->count())
+        ->toBe(0);
 });
 
 test('the migration keeps a category that already exists', function (): void {
-    DB::table('categories')->where('slug', 'general')->update(['name' => 'Renamed General', 'description' => 'Kept']);
+    DB::table('categories')
+        ->where('slug', 'general')
+        ->update(['name' => 'Renamed General', 'description' => 'Kept']);
 
     runPostCategoryCopyMigration();
 
-    expect(DB::table('categories')->where('slug', 'general')->get(['name', 'description'])->map(fn (object $row): array => (array) $row)->all())
+    expect(DB::table('categories')
+        ->where('slug', 'general')
+        ->get(['name', 'description'])
+        ->map(fn (object $row): array => (array) $row)
+        ->all())
         ->toBe([['name' => 'Renamed General', 'description' => 'Kept']])
-        ->and(DB::table('categories')->count())->toBe(11);
+        ->and(DB::table('categories')->count())
+        ->toBe(11);
 });
 
 test('the backfill links each post to the category with its legacy slug', function (string $slug, string $name, bool $trashed): void {
@@ -115,11 +134,15 @@ test('the backfill links each post to the category with its legacy slug', functi
     runPostCategoryCopyMigration();
 
     expect(postCategorySlug($postId))->toBe($slug)
-        ->and(DB::table('categories')->where('slug', $slug)->value('name'))->toBe($name);
-})->with('legacy post categories')->with([
-    'a live post' => false,
-    'a trashed post' => true,
-]);
+        ->and(DB::table('categories')
+            ->where('slug', $slug)
+            ->value('name'))
+        ->toBe($name);
+})->with('legacy post categories')
+    ->with([
+        'a live post' => false,
+        'a trashed post' => true,
+    ]);
 
 test('the backfill links a legacy slug to a category created outside the standard list', function (): void {
     DB::table('categories')->insert(['name' => 'Water Parks', 'slug' => 'water-parks']);
@@ -135,7 +158,9 @@ test('the backfill leaves posts without a legacy category uncategorized', functi
 
     runPostCategoryCopyMigration();
 
-    expect(DB::table('posts')->where('id', $postId)->value('category_id'))->toBeNull();
+    expect(DB::table('posts')
+        ->where('id', $postId)
+        ->value('category_id'))->toBeNull();
 })->with([
     'a live post' => false,
     'a trashed post' => true,
@@ -143,8 +168,12 @@ test('the backfill leaves posts without a legacy category uncategorized', functi
 
 test('the backfill keeps a category_id that is already set', function (): void {
     $postId = legacyCategoryPost('disney-tips');
-    $generalId = DB::table('categories')->where('slug', 'general')->value('id');
-    DB::table('posts')->where('id', $postId)->update(['category_id' => $generalId]);
+    $generalId = DB::table('categories')
+        ->where('slug', 'general')
+        ->value('id');
+    DB::table('posts')
+        ->where('id', $postId)
+        ->update(['category_id' => $generalId]);
 
     runPostCategoryCopyMigration();
 
@@ -156,7 +185,9 @@ test('the backfill leaves the legacy category column in place', function (): voi
 
     runPostCategoryCopyMigration();
 
-    expect(DB::table('posts')->where('id', $postId)->value('category'))->toBe('family-life');
+    expect(DB::table('posts')
+        ->where('id', $postId)
+        ->value('category'))->toBe('family-life');
 });
 
 test('running the category backfill again changes nothing', function (): void {
@@ -164,13 +195,28 @@ test('running the category backfill again changes nothing', function (): void {
     legacyCategoryPost('general', trashed: true);
     legacyCategoryPost(null);
     runPostCategoryCopyMigration();
-    $categories = DB::table('categories')->orderBy('id')->get()->map(fn (object $row): array => (array) $row)->all();
-    $links = DB::table('posts')->orderBy('id')->pluck('category_id', 'id')->all();
+    $categories = DB::table('categories')
+        ->orderBy('id')
+        ->get()
+        ->map(fn (object $row): array => (array) $row)
+        ->all();
+    $links = DB::table('posts')
+        ->orderBy('id')
+        ->pluck('category_id', 'id')
+        ->all();
 
     runPostCategoryCopyMigration();
 
-    expect(DB::table('categories')->orderBy('id')->get()->map(fn (object $row): array => (array) $row)->all())->toBe($categories)
-        ->and(DB::table('posts')->orderBy('id')->pluck('category_id', 'id')->all())->toBe($links);
+    expect(DB::table('categories')
+        ->orderBy('id')
+        ->get()
+        ->map(fn (object $row): array => (array) $row)
+        ->all())->toBe($categories)
+        ->and(DB::table('posts')
+            ->orderBy('id')
+            ->pluck('category_id', 'id')
+            ->all())
+        ->toBe($links);
 });
 
 test('the backfill refuses to finish while a legacy category has no matching row', function (): void {
@@ -187,7 +233,9 @@ test('the backfill refuses to finish while a copied category link goes missing',
     DB::listen(function (QueryExecuted $query) use ($postId, &$cleared): void {
         if (! $cleared && str_starts_with($query->sql, 'update') && str_contains($query->sql, 'posts') && str_contains($query->sql, 'category_id')) {
             $cleared = true;
-            DB::table('posts')->where('id', $postId)->update(['category_id' => null]);
+            DB::table('posts')
+                ->where('id', $postId)
+                ->update(['category_id' => null]);
         }
     });
 

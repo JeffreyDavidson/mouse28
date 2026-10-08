@@ -20,7 +20,8 @@ class GuideFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => fake()->unique()->sentence(6),
+            'title' => fake()->unique()
+                ->sentence(6),
             'excerpt' => fake()->sentence(18),
             'content' => fake()->paragraphs(5, true),
             'category' => fake()->randomElement(GuideCategory::cases()),
@@ -42,7 +43,9 @@ class GuideFactory extends Factory
     /** Credits the guide to the first author, creating an author when none exists. */
     public function credited(): static
     {
-        return $this->withAuthors(User::authors()->first() ?? User::factory()->author()->create());
+        return $this->withAuthors(User::authors()->first() ?? User::factory()
+            ->author()
+            ->create());
     }
 
     public function draft(): static

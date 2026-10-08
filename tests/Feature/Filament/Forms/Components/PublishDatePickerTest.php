@@ -21,13 +21,25 @@ covers(PublishDatePicker::class);
 
 pest()->use(RefreshDatabase::class);
 
-beforeEach(fn () => actingAs(User::factory()->admin()->create()));
+beforeEach(fn () => actingAs(User::factory()
+    ->admin()
+    ->create()));
 
 dataset('publish date edit pages', [
-    'post' => [fn (): Model => Post::factory()->credited()->draft()->create(), EditPost::class],
-    'guide' => [fn (): Model => Guide::factory()->credited()->draft()->create(), EditGuide::class],
-    'episode' => [fn (): Model => Episode::factory()->draft()->create(), EditEpisode::class],
-    'newsletter issue' => [fn (): Model => NewsletterIssue::factory()->draft()->create(), EditNewsletterIssue::class],
+    'post' => [fn (): Model => Post::factory()
+        ->credited()
+        ->draft()
+        ->create(), EditPost::class],
+    'guide' => [fn (): Model => Guide::factory()
+        ->credited()
+        ->draft()
+        ->create(), EditGuide::class],
+    'episode' => [fn (): Model => Episode::factory()
+        ->draft()
+        ->create(), EditEpisode::class],
+    'newsletter issue' => [fn (): Model => NewsletterIssue::factory()
+        ->draft()
+        ->create(), EditNewsletterIssue::class],
 ]);
 
 dataset('eastern publish dates', [
@@ -45,10 +57,12 @@ test('a publish date entered in Eastern time is stored in UTC', function (Model 
         'id' => $record->getKey(),
         'published_at' => $stored,
     ]);
-})->with('publish date edit pages')->with('eastern publish dates');
+})->with('publish date edit pages')
+    ->with('eastern publish dates');
 
 test('a stored UTC publish date is shown in Eastern time with a timezone hint', function (Model $record, string $page): void {
-    $record->forceFill(['published_at' => '2026-10-06 01:00:00'])->save();
+    $record->forceFill(['published_at' => '2026-10-06 01:00:00'])
+        ->save();
 
     livewire($page, ['record' => $record->getRouteKey()])
         ->assertSet('data.published_at', '2026-10-05 21:00:00')

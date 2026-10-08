@@ -10,7 +10,9 @@ class SearchController
 {
     public function __invoke(SearchRequest $request, SearchViewModel $viewModel): View
     {
-        $query = $request->string('q')->trim()->toString();
+        $query = $request->string('q')
+            ->trim()
+            ->toString();
 
         return view('pages.search', $viewModel->data($query));
     }

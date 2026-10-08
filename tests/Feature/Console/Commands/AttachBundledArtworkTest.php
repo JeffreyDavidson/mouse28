@@ -33,8 +33,10 @@ test('failed artwork writes leave content unattached and return failure', functi
     // Arrange
     $post = Post::factory()->create(['slug' => 'welcome-to-mouse-28', 'featured_image_path' => null]);
     $disk = Double::for(FilesystemAdapter::class);
-    $disk->allows('exists')->returns(false);
-    $disk->allows('put')->returns(false);
+    $disk->allows('exists')
+        ->returns(false);
+    $disk->allows('put')
+        ->returns(false);
     Storage::set('public', $disk);
 
     // Act
@@ -42,7 +44,9 @@ test('failed artwork writes leave content unattached and return failure', functi
 
     // Assert
     expect($exitCode)->toBe(Command::FAILURE)
-        ->and($post->refresh()->featured_image_path)->toBeNull();
+        ->and($post->refresh()
+            ->featured_image_path)
+        ->toBeNull();
 });
 
 test('bundled artwork attaches matching records, preserves uploads, and is idempotent', function (): void {
@@ -90,16 +94,24 @@ test('bundled artwork attaches matching records, preserves uploads, and is idemp
             $publicDisk->assertExists($path);
         }
 
-        expect($post->refresh()->featured_image_path)->toBe('posts/example-post.webp')
-            ->and($uploadedPost->refresh()->featured_image_path)->toBe('posts/custom-upload.webp')
-            ->and($unmatchedPost->refresh()->featured_image_path)->toBeNull()
-            ->and($episode->refresh()->featured_image_path)->toBe('episodes/example-episode.webp');
+        expect($post->refresh()
+            ->featured_image_path)->toBe('posts/example-post.webp')
+            ->and($uploadedPost->refresh()
+                ->featured_image_path)
+            ->toBe('posts/custom-upload.webp')
+            ->and($unmatchedPost->refresh()
+                ->featured_image_path)
+            ->toBeNull()
+            ->and($episode->refresh()
+                ->featured_image_path)
+            ->toBe('episodes/example-episode.webp');
 
         $publicDisk->assertMissing('posts/unmatched-post.webp');
         $publicDisk->assertExists(['posts/responsive/example-post-480.webp', 'episodes/responsive/example-episode-480.webp']);
         $publicDisk->assertMissing(['posts/responsive/example-upload-480.webp', 'posts/responsive/example-post-1280.webp', 'episodes/responsive/example-episode-640.webp']);
         expect(getimagesize($publicDisk->path('episodes/responsive/example-episode-480.webp')))->toMatchArray([0 => 480, 1 => 480])
-            ->and(pendingCommand('content:attach-artwork')->run())->toBe(Command::SUCCESS);
+            ->and(pendingCommand('content:attach-artwork')->run())
+            ->toBe(Command::SUCCESS);
     } finally {
         File::deleteDirectory($sourceDirectory);
     }
@@ -153,9 +165,14 @@ test('bundled artwork ignores unsupported files and inactive concepts', function
         $publicDisk->assertMissing('posts/ignored-cover.jpg');
         $publicDisk->assertMissing('concepts/concept-story.webp');
 
-        expect($post->refresh()->featured_image_path)->toBe('posts/a-new-park-story.webp')
-            ->and($episode->refresh()->featured_image_path)->toBe('episodes/a-new-park-story.webp')
-            ->and($conceptPost->refresh()->featured_image_path)->toBeNull();
+        expect($post->refresh()
+            ->featured_image_path)->toBe('posts/a-new-park-story.webp')
+            ->and($episode->refresh()
+                ->featured_image_path)
+            ->toBe('episodes/a-new-park-story.webp')
+            ->and($conceptPost->refresh()
+                ->featured_image_path)
+            ->toBeNull();
     } finally {
         File::deleteDirectory($sourceDirectory);
     }
@@ -176,7 +193,8 @@ test('attached artwork that cannot be decoded stays attached and the command rep
             ->expectsOutputToContain('Responsive images could not be generated for 1 attached artwork files.')
             ->assertFailed();
 
-        expect($post->refresh()->featured_image_path)->toBe('posts/broken-story.webp');
+        expect($post->refresh()
+            ->featured_image_path)->toBe('posts/broken-story.webp');
     } finally {
         File::deleteDirectory($sourceDirectory);
     }
