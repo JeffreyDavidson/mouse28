@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\PublishStatus;
+use App\Models\Category;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
@@ -121,6 +122,21 @@ test('readiness asks for content until the content is written', function (PostFa
     'missing content' => [null, true],
     'empty content' => ['', true],
     'written content' => ['Plan a flexible arrival.', false],
+]);
+
+test('post readiness asks for the category that publishing requires', function (?int $categoryId, bool $asked): void {
+    $post = Post::factory()->make(['category_id' => $categoryId]);
+
+    $issues = EditorialReadiness::issues($post);
+
+    expect(in_array('Choose a category', $issues, true))->toBe($asked)
+        ->and(in_array('Choose a category', $post->publishingIssues(), true))
+        ->toBe($asked);
+})->with([
+    'no category' => [null, true],
+    'categorised' => [fn () => Category::factory()
+        ->create()
+        ->id, false],
 ]);
 
 test('episode readiness asks for the same playable media that publishing requires', function (?string $transistorUrl, ?string $youtubeUrl, bool $asked): void {

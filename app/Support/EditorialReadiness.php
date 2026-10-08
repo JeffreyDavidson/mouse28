@@ -46,6 +46,7 @@ class EditorialReadiness
         return array_values(array_filter([
             blank($post->excerpt) ? 'Add an excerpt' : null,
             blank($post->content) ? 'Add post content' : null,
+            blank($post->category_id) ? 'Choose a category' : null,
             blank($post->featured_image_path) ? 'Add a cover image' : null,
             filled($post->last_reviewed_at) && blank($post->source_url) ? 'Add an official source' : null,
             filled($post->source_url) && blank($post->last_reviewed_at) ? 'Set the review date' : null,

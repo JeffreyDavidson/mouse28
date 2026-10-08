@@ -281,6 +281,23 @@ test('posts without content need attention', function (?string $content): void {
     'empty' => [''],
 ]);
 
+test('posts without a category need attention', function (): void {
+    Post::factory()
+        ->withSeo('Complete title', 'Complete description')
+        ->create(['featured_image_path' => 'posts/complete.jpg']);
+    $uncategorised = Post::factory()
+        ->withSeo('Complete title', 'Complete description')
+        ->create([
+            'category_id' => null,
+            'featured_image_path' => 'posts/complete.jpg',
+        ]);
+
+    expect(Post::query()
+        ->needsAttention()
+        ->pluck('id')
+        ->all())->toBe([$uncategorised->id]);
+});
+
 test('post reading time counts the words in the content', function (?string $content, int $minutes): void {
     $post = Post::factory()->make(['content' => $content]);
 
