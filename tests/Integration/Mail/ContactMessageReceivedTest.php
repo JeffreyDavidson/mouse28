@@ -83,6 +83,7 @@ test('received contact email shows when it arrived in Eastern time and links to 
 
 test('received contact email html matches its snapshot', function (): void {
     URL::forceRootUrl('https://mouse28.test');
+    URL::forceScheme('https');
     $inquiry = ContactInquiry::factory()->make([
         'name' => 'Dale Cooper',
         'email' => 'dale@example.test',

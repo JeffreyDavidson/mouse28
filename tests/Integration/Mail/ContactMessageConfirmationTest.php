@@ -86,6 +86,7 @@ test('contact confirmation carries a mouse28 confirmation idempotency key', func
 
 test('contact confirmation html matches its snapshot', function (): void {
     URL::forceRootUrl('https://mouse28.test');
+    URL::forceScheme('https');
 
     $html = new ContactMessageConfirmation(ContactInquiry::factory()->make())->render();
 

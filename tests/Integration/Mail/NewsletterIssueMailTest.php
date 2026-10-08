@@ -99,6 +99,7 @@ test('absolute, mailto, tel, anchor and protocol-relative links are left alone',
 
 test('an issue email html matches its snapshot for readers and for tests', function (?string $unsubscribeUrl): void {
     URL::forceRootUrl('https://mouse28.test');
+    URL::forceScheme('https');
 
     $html = new NewsletterIssueMail(issueForMail("## Park day\n\nHello **readers**.\n\n> A quote"), $unsubscribeUrl)->render();
 
