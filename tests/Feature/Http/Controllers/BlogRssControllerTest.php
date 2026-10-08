@@ -3,6 +3,7 @@
 use App\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
@@ -24,4 +25,15 @@ test('blog feed is valid and excludes unpublished content', function (): void {
         ->assertDontSee($scheduledPost->title);
 
     expect(simplexml_load_string($this->responseContent($blogFeed)))->not->toBeFalse();
+});
+
+test('blog feed is served to feed readers without starting a session or setting cookies', function (): void {
+    config()->set('session.driver', 'database');
+
+    $response = get(route('rss.blog'))
+        ->assertOk()
+        ->assertHeaderMissing('Set-Cookie');
+
+    expect($response->headers->getCookies())->toBeEmpty();
+    assertDatabaseCount('sessions', 0);
 });

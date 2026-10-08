@@ -79,10 +79,16 @@ Route::post('/newsletter/unsubscribe/{subscriber}', NewsletterOneClickUnsubscrip
     ->name('newsletter.unsubscribe.oneClick');
 
 Route::get('/newsletter', [NewsletterIssueController::class, 'index'])->name('newsletter.index');
-Route::get('/newsletter/rss', NewsletterRssController::class)->name('newsletter.rss');
+// Feed readers poll this: no session, so a hit writes no session row or cookie.
+Route::get('/newsletter/rss', NewsletterRssController::class)
+    ->withoutMiddleware('web')
+    ->name('newsletter.rss');
 Route::get('/newsletter/{newsletterIssue:slug}', [NewsletterIssueController::class, 'show'])->name('newsletter.issue');
 
-Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
+// Crawlers poll this: no session, so a hit writes no session row or cookie.
+Route::get('/sitemap.xml', SitemapController::class)
+    ->withoutMiddleware('web')
+    ->name('sitemap');
 // Served like a static file (no session cookies, publicly cacheable) so crawlers and caches keep it.
 Route::get('/robots.txt', RobotsController::class)
     ->withoutMiddleware('web')
@@ -92,5 +98,10 @@ Route::post('/webhooks/resend', ResendWebhookController::class)
     ->withoutMiddleware('web')
     ->middleware('throttle:resend-webhook')
     ->name('webhooks.resend');
-Route::get('/rss/blog', BlogRssController::class)->name('rss.blog');
-Route::get('/rss/podcast', PodcastFeedRedirectController::class)->name('rss.podcast');
+// Feed readers and podcast apps poll /rss/blog and /rss/podcast: no session, so a hit writes no session row or cookie.
+Route::get('/rss/blog', BlogRssController::class)
+    ->withoutMiddleware('web')
+    ->name('rss.blog');
+Route::get('/rss/podcast', PodcastFeedRedirectController::class)
+    ->withoutMiddleware('web')
+    ->name('rss.podcast');

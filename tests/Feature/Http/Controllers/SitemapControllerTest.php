@@ -5,6 +5,7 @@ use App\Models\Guide;
 use App\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
@@ -46,4 +47,15 @@ test('sitemap is valid and excludes unpublished content', function (): void {
         ->assertDontSee($scheduledEpisode->slug);
 
     expect(simplexml_load_string($this->responseContent($sitemap)))->not->toBeFalse();
+});
+
+test('sitemap is served to crawlers without starting a session or setting cookies', function (): void {
+    config()->set('session.driver', 'database');
+
+    $response = get(route('sitemap'))
+        ->assertOk()
+        ->assertHeaderMissing('Set-Cookie');
+
+    expect($response->headers->getCookies())->toBeEmpty();
+    assertDatabaseCount('sessions', 0);
 });
