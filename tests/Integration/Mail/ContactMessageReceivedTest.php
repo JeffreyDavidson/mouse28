@@ -7,6 +7,7 @@ use App\Models\ContactInquiry;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\URL;
 
 test('received contact email uses accessible current branding without external fonts', function (): void {
     $inquiry = ContactInquiry::factory()->make();
@@ -78,4 +79,24 @@ test('received contact email shows when it arrived in Eastern time and links to 
     expect($html)->toContain('Oct 6, 2026', '9:30 PM')
         ->not->toContain('Oct 7, 2026', '1:30 AM')
         ->toContain('href="'.ContactInquiryResource::getUrl('view', ['record' => $inquiry]).'"');
+});
+
+test('received contact email html matches its snapshot', function (): void {
+    URL::forceRootUrl('https://mouse28.test');
+    URL::forceScheme('https');
+    $inquiry = ContactInquiry::factory()->make([
+        'name' => 'Dale Cooper',
+        'email' => 'dale@example.test',
+        'type' => ContactType::Accessibility,
+        'message' => "Line one & <two>\nLine three",
+    ]);
+    $inquiry->id = 42;
+    $inquiry->created_at = Date::parse('2026-10-07 01:30:00', 'UTC');
+
+    $html = new ContactMessageReceived($inquiry)->render();
+
+    // Indentation and blank lines are not compared, so moving markup into a layout keeps the snapshot.
+    $lines = array_filter(array_map(trim(...), explode("\n", $html)), fn (string $line): bool => $line !== '');
+
+    expect(implode("\n", $lines))->toMatchSnapshot();
 });
