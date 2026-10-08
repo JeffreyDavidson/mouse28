@@ -2,8 +2,11 @@
 
 use App\Models\Episode;
 use App\Models\Podcast;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Activitylog\Models\Activity;
 
+use function Pest\Laravel\actingAs;
 use function Pest\Laravel\travel;
 
 pest()->use(RefreshDatabase::class);
@@ -115,4 +118,29 @@ test('creating a podcast without a slug names it from its name', function (): vo
     $podcast = Podcast::factory()->create(['name' => 'Park Family Podcast', 'slug' => null]);
 
     expect($podcast->slug)->toBe('park-family-podcast');
+});
+
+test('podcast changes are recorded in the editorial log', function (): void {
+    $editor = User::factory()
+        ->admin()
+        ->create();
+    actingAs($editor);
+    $podcast = Podcast::factory()->create(['name' => 'Original name']);
+
+    $podcast->update(['name' => 'Updated name']);
+
+    $updated = Activity::query()
+        ->whereMorphedTo('subject', $podcast)
+        ->latest('id')
+        ->firstOrFail();
+    expect($updated->event)->toBe('updated')
+        ->and($updated->log_name)
+        ->toBe('editorial')
+        ->and($updated->causer_id)
+        ->toBe($editor->id)
+        ->and($updated->attribute_changes?->all() ?? [])
+        ->toEqual([
+            'attributes' => ['name' => 'Updated name'],
+            'old' => ['name' => 'Original name'],
+        ]);
 });

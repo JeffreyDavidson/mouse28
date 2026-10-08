@@ -5,8 +5,11 @@ namespace App\Models;
 use App\Contracts\Publishable;
 use App\Enums\PublishStatus;
 use App\Models\Attributes\PublishingStatus;
+use App\Models\Concerns\HasDraftScope;
 use App\Models\Concerns\HasPublishingStatus;
 use App\Models\Concerns\LocksSlugAfterPublication;
+use App\Models\Concerns\LogsEditorialActivity;
+use App\Models\Concerns\ScopesNewestFirst;
 use Carbon\CarbonInterface;
 use Database\Factories\NewsletterIssueFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -17,8 +20,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
-use Spatie\Activitylog\Models\Concerns\LogsActivity;
-use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property PublishStatus $status
@@ -26,6 +27,8 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property Carbon|null $sent_at
  * @property CarbonInterface|null $slug_locked_at
  *
+ * @method static Builder<static> drafts()
+ * @method static Builder<static> newestFirst()
  * @method static Builder<static> published()
  * @method static Builder<static> scheduled()
  * @method static Builder<static> unpublished()
@@ -44,26 +47,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class NewsletterIssue extends Model implements Publishable
 {
     /** @use HasFactory<NewsletterIssueFactory> */
-    use HasFactory, HasPublishingStatus, LocksSlugAfterPublication, SoftDeletes;
-
-    use LogsActivity;
-
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-            ->useLogName('editorial')
-            ->logOnly([
-                'title',
-                'slug',
-                'excerpt',
-                'content',
-                'status',
-                'published_at',
-                'sent_at',
-            ])
-            ->logOnlyDirty()
-            ->dontLogEmptyChanges();
-    }
+    use HasDraftScope, HasFactory, HasPublishingStatus, LocksSlugAfterPublication, LogsEditorialActivity, ScopesNewestFirst, SoftDeletes;
 
     /** @return HasMany<NewsletterDelivery, $this> */
     public function deliveries(): HasMany
