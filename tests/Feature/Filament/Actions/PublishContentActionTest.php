@@ -19,7 +19,11 @@ use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
 
-beforeEach(fn () => actingAs(User::factory()->admin()->create()));
+beforeEach(function (): void {
+    actingAs(User::factory()
+        ->admin()
+        ->create());
+});
 
 dataset('publishable edit pages', [
     'post' => [EditPost::class],
@@ -68,10 +72,11 @@ it('schedules content for a future publish date entered but not yet saved', func
         ->assertSchemaStateSet(['status' => PublishStatus::Scheduled->value]);
 
     $record->refresh();
+    $publishedAt = $record->publishedAt();
 
     expect($record->getAttribute('status'))
         ->toBe(PublishStatus::Scheduled)
-        ->and($record->publishedAt()?->equalTo($publishAt))
+        ->and($publishedAt?->equalTo($publishAt))
         ->toBeTrue();
 })->with('publishable edit pages');
 
@@ -93,10 +98,11 @@ it('publishes content immediately when the unsaved publish date is past or empty
         ->assertSchemaStateSet(['status' => PublishStatus::Published->value]);
 
     $record->refresh();
+    $publishedAt = $record->publishedAt();
 
     expect($record->getAttribute('status'))
         ->toBe(PublishStatus::Published)
-        ->and($record->publishedAt()?->equalTo($expectedPublishedAt))
+        ->and($publishedAt?->equalTo($expectedPublishedAt))
         ->toBeTrue();
 })
     ->with('publishable edit pages')
