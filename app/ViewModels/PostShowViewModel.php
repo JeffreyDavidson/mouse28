@@ -6,12 +6,14 @@ namespace App\ViewModels;
 
 use App\Models\Episode;
 use App\Models\Post;
-use App\Support\ContentContinuation;
+use App\Queries\RelatedPostsQuery;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class PostShowViewModel
 {
+    public function __construct(private readonly RelatedPostsQuery $relatedPostsQuery) {}
+
     /**
      * @return array{
      *     post: Post,
@@ -29,7 +31,7 @@ class PostShowViewModel
 
         $data = [
             'post' => $post,
-            'recentPosts' => ContentContinuation::relatedPosts($post, limit: 2),
+            'recentPosts' => $this->relatedPostsQuery->get($post, limit: 2),
         ];
 
         if ($preview) {

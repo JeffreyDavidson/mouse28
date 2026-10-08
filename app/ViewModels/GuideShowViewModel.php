@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\ViewModels;
 
 use App\Models\Guide;
-use App\Support\ContentContinuation;
+use App\Queries\RelatedGuidesQuery;
 use Illuminate\Database\Eloquent\Collection;
 
 class GuideShowViewModel
 {
+    public function __construct(private readonly RelatedGuidesQuery $relatedGuidesQuery) {}
+
     /**
      * @return array{
      *     guide: Guide,
@@ -23,7 +25,7 @@ class GuideShowViewModel
 
         $data = [
             'guide' => $guide,
-            'relatedGuides' => ContentContinuation::relatedGuides($guide),
+            'relatedGuides' => $this->relatedGuidesQuery->get($guide),
         ];
 
         if ($preview) {
