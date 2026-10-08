@@ -6,6 +6,8 @@ use App\Models\Guide;
 use App\Models\Podcast;
 use App\Models\Post;
 use App\Models\SocialProfile;
+use Dom\HTMLDocument;
+use Dom\XPath;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Laravel\get;
@@ -114,6 +116,20 @@ test('homepage preloads responsive AVIF hero artwork with a WebP fallback', func
     foreach ([640, 768, 1024, 1600] as $width) {
         expect(public_path("images/hero-family-{$width}.avif"))->toBeFile();
     }
+});
+
+test('homepage hero picture keeps its WebP fallback and layout sizes', function (): void {
+    $response = get(route('home'))
+        ->assertOk();
+
+    $xpath = new XPath(HTMLDocument::createFromString($this->responseContent($response), LIBXML_NOERROR));
+    $picture = '//*[contains(@class, "hero-split-photo")]/*[local-name()="picture"]';
+    $sizes = '(min-width: 768px) 60vw, (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)';
+    $alt = "Jeffrey and Cassie Davidson on Kilimanjaro Safaris at Disney's Animal Kingdom";
+
+    expect($xpath->query("{$picture}/*[local-name()=\"source\"][@sizes=\"{$sizes}\"]"))->toHaveCount(2)
+        ->and($xpath->query("{$picture}/*[local-name()=\"img\"][@src=\"/images/hero-family.webp\"][@alt=\"{$alt}\"][@width=\"1600\"][@height=\"1600\"]"))
+        ->toHaveCount(1);
 });
 
 test('homepage offers a smaller bundled podcast cover without replacing the original', function (): void {
