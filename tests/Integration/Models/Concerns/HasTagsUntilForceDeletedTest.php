@@ -23,7 +23,12 @@ test('trashing and restoring content keeps its tags', function (Post|Episode|Gui
     $content->delete();
     $content->restore();
 
-    expect($content->refresh()->tagsWithType('content')->pluck('name')->sort()->values()->all())
+    expect($content->refresh()
+        ->tagsWithType('content')
+        ->pluck('name')
+        ->sort()
+        ->values()
+        ->all())
         ->toBe(['Accessibility', 'Magic Kingdom']);
 })->with('taggable content');
 
@@ -32,7 +37,10 @@ test('trashed content keeps its tags while it is in the trash', function (Post|E
 
     $content->delete();
 
-    expect(DB::table('taggables')->where('taggable_type', $content->getMorphClass())->where('taggable_id', $content->getKey())->count())->toBe(1);
+    expect(DB::table('taggables')
+        ->where('taggable_type', $content->getMorphClass())
+        ->where('taggable_id', $content->getKey())
+        ->count())->toBe(1);
 })->with('taggable content');
 
 test('force deleting content detaches its tags', function (Post|Episode|Guide $content): void {
@@ -40,7 +48,10 @@ test('force deleting content detaches its tags', function (Post|Episode|Guide $c
 
     $content->forceDelete();
 
-    expect(DB::table('taggables')->where('taggable_type', $content->getMorphClass())->where('taggable_id', $content->getKey())->count())->toBe(0);
+    expect(DB::table('taggables')
+        ->where('taggable_type', $content->getMorphClass())
+        ->where('taggable_id', $content->getKey())
+        ->count())->toBe(0);
 })->with('taggable content');
 
 test('editorial content models keep tags until they are force deleted', function (string $model): void {

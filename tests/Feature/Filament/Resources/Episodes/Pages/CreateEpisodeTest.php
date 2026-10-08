@@ -13,7 +13,9 @@ use function Pest\Livewire\livewire;
 pest()->use(RefreshDatabase::class);
 
 test('episode creation validates required fields on the server', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(CreateEpisode::class)
         ->fillForm(['title' => null, 'slug' => null, 'episode_number' => null])
@@ -23,7 +25,9 @@ test('episode creation validates required fields on the server', function (): vo
 
 test('episode creation rejects a duplicate slug', function (): void {
     Episode::factory()->create(['slug' => 'existing-episode', 'episode_number' => 1]);
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(CreateEpisode::class)
         ->fillForm(['title' => 'Sample episode', 'slug' => 'existing-episode', 'episode_number' => 2])
@@ -33,7 +37,9 @@ test('episode creation rejects a duplicate slug', function (): void {
 
 test('episode creation validates numeric and URL storage constraints', function (string $field, mixed $value, string $rule): void {
     // Arrange
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
     $page = livewire(CreateEpisode::class);
 
     // Act
@@ -59,7 +65,9 @@ test('episode creation validates numeric and URL storage constraints', function 
 
 test('episode numbers remain reserved by existing and deleted episodes', function (bool $deleted): void {
     // Arrange
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
     $episode = Episode::factory()->create(['episode_number' => 42]);
     if ($deleted) {
         $episode->delete();
@@ -77,7 +85,9 @@ test('episode numbers remain reserved by existing and deleted episodes', functio
 
 test('a trailer can use episode zero with optional season and duration', function (): void {
     // Arrange
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
     $page = livewire(CreateEpisode::class);
 
     // Act
@@ -88,13 +98,17 @@ test('a trailer can use episode zero with optional season and duration', functio
     $page->assertHasNoFormErrors();
     $episode = Episode::query()->sole();
     expect($episode->episode_number)->toBe(0)
-        ->and($episode->season_number)->toBeNull()
-        ->and($episode->duration_seconds)->toBeNull();
+        ->and($episode->season_number)
+        ->toBeNull()
+        ->and($episode->duration_seconds)
+        ->toBeNull();
 });
 
 test('episode storage boundaries are accepted', function (): void {
     // Arrange
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
     $url = 'https://example.com/'.str_repeat('a', 255 - strlen('https://example.com/'));
     $transistorUrl = 'https://share.transistor.fm/s/'.str_repeat('a', 255 - strlen('https://share.transistor.fm/s/'));
     $page = livewire(CreateEpisode::class);
@@ -115,14 +129,20 @@ test('episode storage boundaries are accepted', function (): void {
     $page->assertHasNoFormErrors();
     $episode = Episode::query()->sole();
     expect($episode->episode_number)->toBe(2147483647)
-        ->and($episode->season_number)->toBe(4294967295)
-        ->and($episode->duration_seconds)->toBe(2147483647)
-        ->and($episode->transistor_url)->toBe($transistorUrl)
-        ->and($episode->youtube_url)->toBe($url);
+        ->and($episode->season_number)
+        ->toBe(4294967295)
+        ->and($episode->duration_seconds)
+        ->toBe(2147483647)
+        ->and($episode->transistor_url)
+        ->toBe($transistorUrl)
+        ->and($episode->youtube_url)
+        ->toBe($url);
 });
 
 test('authenticated user can render the create form', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     get(EpisodeResource::getUrl('create'))
         ->assertOk()
@@ -130,7 +150,9 @@ test('authenticated user can render the create form', function (): void {
 });
 
 test('create form explains editorial requirements', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     get(EpisodeResource::getUrl('create'))
         ->assertOk()
@@ -142,7 +164,9 @@ test('create form explains editorial requirements', function (): void {
 });
 
 test('the create form no longer offers per-episode Apple or Spotify links', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(CreateEpisode::class)
         ->assertFormFieldDoesNotExist('apple_url')

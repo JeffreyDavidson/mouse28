@@ -103,7 +103,8 @@ class AttachBundledArtwork extends Command
             $attached = (clone $query)
                 ->where('slug', $slug)
                 ->where(function (Builder $query): void {
-                    $query->whereNull('featured_image_path')->orWhere('featured_image_path', '');
+                    $query->whereNull('featured_image_path')
+                        ->orWhere('featured_image_path', '');
                 })
                 ->update(['featured_image_path' => $path]);
 

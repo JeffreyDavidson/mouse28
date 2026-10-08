@@ -31,9 +31,15 @@ test('search returns its view model data', function (): void {
 
 test('search stays within its query budget as content grows', function (): void {
     config()->set('mouse28.guides_enabled', true);
-    Post::factory()->count(30)->create(['title' => 'Disney planning']);
-    Guide::factory()->count(15)->create(['title' => 'Disney planning']);
-    Episode::factory()->count(15)->create(['title' => 'Disney planning']);
+    Post::factory()
+        ->count(30)
+        ->create(['title' => 'Disney planning']);
+    Guide::factory()
+        ->count(15)
+        ->create(['title' => 'Disney planning']);
+    Episode::factory()
+        ->count(15)
+        ->create(['title' => 'Disney planning']);
 
     // Includes one query for the footer social links and one for the post categories.
     $this->expectsDatabaseQueryCount(9);
@@ -44,9 +50,12 @@ test('search stays within its query budget as content grows', function (): void 
 
 test('search page is available from public navigation', function (): void {
     get(route('search'))
-        ->assertOk()->assertSee('Search posts, guides, and podcast episodes')->assertSeeHtml('noindex,follow');
+        ->assertOk()
+        ->assertSee('Search posts, guides, and podcast episodes')
+        ->assertSeeHtml('noindex,follow');
 
-    get(route('home'))->assertOk()->assertSeeHtml(route('search'))
+    get(route('home'))->assertOk()
+        ->assertSeeHtml(route('search'))
         ->assertSee('Search Mouse28');
 });
 
@@ -71,7 +80,8 @@ test('canonical URLs preserve an HTTP application origin', function (): void {
         URL::forceScheme(str_starts_with($applicationUrl, 'https://') ? 'https' : null);
     }
 
-    $response->assertOk()->assertSeeHtml('<link rel="canonical" href="http://localhost/search">');
+    $response->assertOk()
+        ->assertSeeHtml('<link rel="canonical" href="http://localhost/search">');
 });
 
 test('search groups matching published content', function (): void {
@@ -104,7 +114,8 @@ test('search escapes HTML and regex characters in the query and its matches', fu
 test('search paginates every content group with accurate totals', function (PostFactory|GuideFactory|EpisodeFactory $factory, string $pageName): void {
     config()->set('mouse28.guides_enabled', true);
     $oldest = $factory->createOne(['title' => 'Sensory oldest match']);
-    $factory->count(6)->create(['title' => 'Sensory recent match']);
+    $factory->count(6)
+        ->create(['title' => 'Sensory recent match']);
     $group = str_replace('Page', '', $pageName);
 
     get(route('search', ['q' => 'Sensory']))
@@ -131,8 +142,12 @@ test('search paginates every content group with accurate totals', function (Post
 
 test('search paginators keep other groups on their selected page', function (): void {
     config()->set('mouse28.guides_enabled', true);
-    Post::factory()->count(7)->create(['title' => 'Sensory post']);
-    Episode::factory()->count(7)->create(['title' => 'Sensory episode']);
+    Post::factory()
+        ->count(7)
+        ->create(['title' => 'Sensory post']);
+    Episode::factory()
+        ->count(7)
+        ->create(['title' => 'Sensory episode']);
 
     get(route('search', ['q' => 'Sensory', 'postsPage' => 2]))
         ->assertOk()
@@ -145,17 +160,25 @@ test('search paginators keep other groups on their selected page', function (): 
 });
 
 test('out of range search pages retain pagination to existing results', function (): void {
-    Post::factory()->count(7)->create(['title' => 'Sensory post']);
+    Post::factory()
+        ->count(7)
+        ->create(['title' => 'Sensory post']);
 
     get(route('search', ['q' => 'Sensory', 'postsPage' => 99]))
         ->assertOk()
-        ->assertSee('7 results for “Sensory”')->assertSee('Blog posts')->assertSeeHtml('postsPage=1');
+        ->assertSee('7 results for “Sensory”')
+        ->assertSee('Blog posts')
+        ->assertSeeHtml('postsPage=1');
 });
 
 test('search excludes drafts and scheduled content', function (): void {
     $publishedPost = Post::factory()->create(['title' => 'Accessible park planning']);
-    $draftGuide = Guide::factory()->draft()->create(['title' => 'Accessible draft guide']);
-    $scheduledEpisode = Episode::factory()->scheduled()->create(['title' => 'Accessible scheduled episode']);
+    $draftGuide = Guide::factory()
+        ->draft()
+        ->create(['title' => 'Accessible draft guide']);
+    $scheduledEpisode = Episode::factory()
+        ->scheduled()
+        ->create(['title' => 'Accessible scheduled episode']);
 
     get(route('search', ['q' => 'accessible']))
         ->assertOk()
@@ -173,7 +196,9 @@ test('empty search offers useful paths forward', function (): void {
 });
 
 test('text searches are not indexed', function (): void {
-    get(route('search', ['q' => 'sensory']))->assertOk()->assertSeeHtml('<meta name="robots" content="noindex,follow">')->assertSeeHtml('<link rel="canonical" href="'.route('search').'">');
+    get(route('search', ['q' => 'sensory']))->assertOk()
+        ->assertSeeHtml('<meta name="robots" content="noindex,follow">')
+        ->assertSeeHtml('<link rel="canonical" href="'.route('search').'">');
 });
 
 test('page copy and metadata avoid em dashes', function (): void {
@@ -183,7 +208,10 @@ test('page copy and metadata avoid em dashes', function (): void {
 });
 
 test('page uses the dispatch editorial system', function (): void {
-    get(route('search'))->assertOk()->assertSeeHtml('data-brand-wordmark')->assertSeeHtml('dispatch-page-field')->assertSeeHtml('js-dispatch-pages');
+    get(route('search'))->assertOk()
+        ->assertSeeHtml('data-brand-wordmark')
+        ->assertSeeHtml('dispatch-page-field')
+        ->assertSeeHtml('js-dispatch-pages');
 });
 
 test('repeated searches from one visitor are throttled with the branded page', function (): void {

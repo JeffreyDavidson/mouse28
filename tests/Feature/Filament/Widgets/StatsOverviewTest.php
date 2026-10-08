@@ -14,22 +14,35 @@ pest()->use(RefreshDatabase::class);
 
 test('stats overview reports published content review needs drafts and active subscribers', function (): void {
     Subscriber::factory()->create();
-    Subscriber::factory()->pending()->create();
-    Subscriber::factory()->unsubscribed()->create();
+    Subscriber::factory()
+        ->pending()
+        ->create();
+    Subscriber::factory()
+        ->unsubscribed()
+        ->create();
 
     Post::factory()->create([
         'source_url' => 'https://example.com/source',
         'last_reviewed_at' => now()->subYear(),
     ]);
-    Post::factory()->draft()->create();
+    Post::factory()
+        ->draft()
+        ->create();
     Guide::factory()->create(['last_reviewed_at' => now()]);
-    Guide::factory()->draft()->create();
+    Guide::factory()
+        ->draft()
+        ->create();
     Episode::factory()->create();
-    Episode::factory()->draft()->create();
+    Episode::factory()
+        ->draft()
+        ->create();
     Episode::factory()->create(['status' => PublishStatus::InReview]);
-    Post::factory()->scheduled()->create();
+    Post::factory()
+        ->scheduled()
+        ->create();
 
-    $stats = livewire(StatsOverview::class)->instance()->getStats();
+    $stats = livewire(StatsOverview::class)->instance()
+        ->getStats();
 
     expect(collect($stats)->map(fn (array $stat): array => [
         'label' => $stat['label'],

@@ -23,7 +23,8 @@ beforeEach(function (): void {
         }
 
         Schema::table($table, function (Blueprint $blueprint): void {
-            $blueprint->string('author')->nullable();
+            $blueprint->string('author')
+                ->nullable();
         });
     }
 });
@@ -47,10 +48,12 @@ function legacyAuthorRow(PostFactory|GuideFactory $factory, ?string $author, boo
 {
     $record = $factory->createOne();
 
-    DB::table($record->getTable())->where('id', $record->id)->update([
-        'author' => $author,
-        'deleted_at' => $trashed ? '2026-09-01 08:00:00' : null,
-    ]);
+    DB::table($record->getTable())
+        ->where('id', $record->id)
+        ->update([
+            'author' => $author,
+            'deleted_at' => $trashed ? '2026-09-01 08:00:00' : null,
+        ]);
 
     return $record->id;
 }
@@ -69,13 +72,20 @@ function creditedAuthorNames(string $pivot, string $contentKey, int $id): array
 /** @return array<mixed> */
 function authorPivotRows(string $pivot): array
 {
-    return DB::table($pivot)->orderBy('user_id')->get()->map(fn (object $row): array => (array) $row)->values()->all();
+    return DB::table($pivot)
+        ->orderBy('user_id')
+        ->get()
+        ->map(fn (object $row): array => (array) $row)
+        ->values()
+        ->all();
 }
 
 /** Removes the author users the migration created when the test database was built. */
 function forgetMigratedAuthors(): void
 {
-    DB::table('users')->where('is_author', true)->delete();
+    DB::table('users')
+        ->where('is_author', true)
+        ->delete();
 }
 
 dataset('author content tables', [
@@ -94,28 +104,41 @@ test('the migration creates the two authors as non-admin users with bios, placeh
 
     runContentAuthorCopyMigration();
 
-    $authors = User::query()->where('is_author', true)->orderBy('id')->get();
+    $authors = User::query()
+        ->where('is_author', true)
+        ->orderBy('id')
+        ->get();
 
-    expect($authors->map(fn (User $author): array => [$author->name, $author->email, $author->bio, $author->is_admin])->all())->toBe([
-        ['Jeffrey Davidson', 'jeffrey@authors.mouse28.invalid', 'Mouse28 co-host, theme park enthusiast, and candid chronicler of Disney family life.', false],
-        ['Cassie Davidson', 'cassie@authors.mouse28.invalid', 'Mouse28 co-host, accessibility advocate, and the planner behind the family\'s park days.', false],
-    ]);
+    expect($authors->map(fn (User $author): array => [$author->name, $author->email, $author->bio, $author->is_admin])
+        ->all())->toBe([
+            ['Jeffrey Davidson', 'jeffrey@authors.mouse28.invalid', 'Mouse28 co-host, theme park enthusiast, and candid chronicler of Disney family life.', false],
+            ['Cassie Davidson', 'cassie@authors.mouse28.invalid', 'Mouse28 co-host, accessibility advocate, and the planner behind the family\'s park days.', false],
+        ]);
 
     foreach ($authors as $author) {
         expect(Hash::isHashed($author->getAuthPassword()))->toBeTrue()
-            ->and(Hash::check('password', $author->getAuthPassword()))->toBeFalse()
-            ->and($author->email_verified_at)->toBeNull();
+            ->and(Hash::check('password', $author->getAuthPassword()))
+            ->toBeFalse()
+            ->and($author->email_verified_at)
+            ->toBeNull();
     }
 });
 
 test('the migration reuses an existing author with the same name and keeps a bio it already has', function (?string $bio, string $expectedBio): void {
     forgetMigratedAuthors();
-    $existing = User::factory()->author()->create(['name' => 'Jeffrey Davidson', 'bio' => $bio]);
+    $existing = User::factory()
+        ->author()
+        ->create(['name' => 'Jeffrey Davidson', 'bio' => $bio]);
 
     runContentAuthorCopyMigration();
 
-    expect(User::query()->where('name', 'Jeffrey Davidson')->pluck('id')->all())->toBe([$existing->id])
-        ->and($existing->refresh()->bio)->toBe($expectedBio);
+    expect(User::query()
+        ->where('name', 'Jeffrey Davidson')
+        ->pluck('id')
+        ->all())->toBe([$existing->id])
+        ->and($existing->refresh()
+            ->bio)
+        ->toBe($expectedBio);
 })->with([
     'an edited bio' => ['Edited sample bio.', 'Edited sample bio.'],
     'no bio' => [null, 'Mouse28 co-host, theme park enthusiast, and candid chronicler of Disney family life.'],
@@ -123,16 +146,28 @@ test('the migration reuses an existing author with the same name and keeps a bio
 
 test('the migration never reuses a same-named user who is not an author', function (): void {
     forgetMigratedAuthors();
-    $admin = User::factory()->admin()->create(['name' => 'Jeffrey Davidson', 'email' => 'sample-admin@example.test']);
+    $admin = User::factory()
+        ->admin()
+        ->create(['name' => 'Jeffrey Davidson', 'email' => 'sample-admin@example.test']);
     $postId = legacyAuthorRow(Post::factory(), 'jeffrey');
 
     runContentAuthorCopyMigration();
 
-    $author = User::query()->where('name', 'Jeffrey Davidson')->where('is_author', true)->sole();
+    $author = User::query()
+        ->where('name', 'Jeffrey Davidson')
+        ->where('is_author', true)
+        ->sole();
 
     expect($author->id)->not->toBe($admin->id)
-        ->and($admin->refresh())->is_author->toBeFalse()->bio->toBeNull()->is_admin->toBeTrue()
-        ->and(DB::table('post_user')->where('post_id', $postId)->pluck('user_id')->all())->toBe([$author->id]);
+        ->and($admin->refresh())
+        ->is_author->toBeFalse()
+        ->bio->toBeNull()
+        ->is_admin->toBeTrue()
+        ->and(DB::table('post_user')
+            ->where('post_id', $postId)
+            ->pluck('user_id')
+            ->all())
+        ->toBe([$author->id]);
 });
 
 test('the backfill credits each legacy author value in byline order', function (PostFactory|GuideFactory $factory, string $pivot, string $contentKey, string $legacyAuthor, array $names, bool $trashed): void {
@@ -141,18 +176,27 @@ test('the backfill credits each legacy author value in byline order', function (
     runContentAuthorCopyMigration();
 
     expect(creditedAuthorNames($pivot, $contentKey, $id))->toBe($names)
-        ->and(DB::table($pivot)->where($contentKey, $id)->orderBy('position')->pluck('position')->all())->toEqual(array_keys($names));
-})->with('author content tables')->with('legacy author credits')->with([
-    'a live row' => false,
-    'a trashed row' => true,
-]);
+        ->and(DB::table($pivot)
+            ->where($contentKey, $id)
+            ->orderBy('position')
+            ->pluck('position')
+            ->all())
+        ->toEqual(array_keys($names));
+})->with('author content tables')
+    ->with('legacy author credits')
+    ->with([
+        'a live row' => false,
+        'a trashed row' => true,
+    ]);
 
 test('the backfill leaves a post without a legacy author uncredited', function (bool $trashed): void {
     $postId = legacyAuthorRow(Post::factory(), null, $trashed);
 
     runContentAuthorCopyMigration();
 
-    expect(DB::table('post_user')->where('post_id', $postId)->count())->toBe(0);
+    expect(DB::table('post_user')
+        ->where('post_id', $postId)
+        ->count())->toBe(0);
 })->with([
     'a live post' => false,
     'a trashed post' => true,
@@ -165,17 +209,26 @@ test('the backfill keeps a credit that is already present', function (): void {
 
     runContentAuthorCopyMigration();
 
-    expect(DB::table('post_user')->where('post_id', $postId)->orderBy('position')->get(['user_id', 'position'])->map(fn (object $row): array => (array) $row)->all())
+    expect(DB::table('post_user')
+        ->where('post_id', $postId)
+        ->orderBy('position')
+        ->get(['user_id', 'position'])
+        ->map(fn (object $row): array => (array) $row)
+        ->all())
         ->toEqual([['user_id' => $cassieId, 'position' => 1], ['user_id' => $jeffreyId, 'position' => 5]]);
 });
 
 test('the backfill leaves the legacy author column in place', function (PostFactory|GuideFactory $factory): void {
     $record = $factory->createOne();
-    DB::table($record->getTable())->where('id', $record->id)->update(['author' => 'cassie']);
+    DB::table($record->getTable())
+        ->where('id', $record->id)
+        ->update(['author' => 'cassie']);
 
     runContentAuthorCopyMigration();
 
-    expect(DB::table($record->getTable())->where('id', $record->id)->value('author'))->toBe('cassie');
+    expect(DB::table($record->getTable())
+        ->where('id', $record->id)
+        ->value('author'))->toBe('cassie');
 })->with('author content tables');
 
 test('running the author backfill again changes nothing', function (): void {
@@ -185,21 +238,34 @@ test('running the author backfill again changes nothing', function (): void {
     legacyAuthorRow(Post::factory(), null);
     legacyAuthorRow(Guide::factory(), 'cassie');
     runContentAuthorCopyMigration();
-    $users = DB::table('users')->orderBy('id')->get()->map(fn (object $row): array => (array) $row)->all();
+    $users = DB::table('users')
+        ->orderBy('id')
+        ->get()
+        ->map(fn (object $row): array => (array) $row)
+        ->all();
     $postCredits = authorPivotRows('post_user');
     $guideCredits = authorPivotRows('guide_user');
 
     runContentAuthorCopyMigration();
 
-    expect(DB::table('users')->orderBy('id')->get()->map(fn (object $row): array => (array) $row)->all())->toBe($users)
-        ->and(authorPivotRows('post_user'))->toBe($postCredits)
-        ->and(authorPivotRows('guide_user'))->toBe($guideCredits)
-        ->and($postCredits)->toHaveCount(3)
-        ->and($guideCredits)->toHaveCount(1);
+    expect(DB::table('users')
+        ->orderBy('id')
+        ->get()
+        ->map(fn (object $row): array => (array) $row)
+        ->all())->toBe($users)
+        ->and(authorPivotRows('post_user'))
+        ->toBe($postCredits)
+        ->and(authorPivotRows('guide_user'))
+        ->toBe($guideCredits)
+        ->and($postCredits)
+        ->toHaveCount(3)
+        ->and($guideCredits)
+        ->toHaveCount(1);
 });
 
 test('the backfill refuses to finish while a legacy author value names no author', function (PostFactory|GuideFactory $factory, string $pivot): void {
-    $table = $factory->newModel()->getTable();
+    $table = $factory->newModel()
+        ->getTable();
     legacyAuthorRow($factory, 'someone-else');
 
     expect(fn () => runContentAuthorCopyMigration())
@@ -211,7 +277,9 @@ test('the backfill refuses to finish while a copied credit goes missing', functi
     // Simulates the credit disappearing between the copy and the check.
     DB::listen(function (QueryExecuted $query) use ($postId): void {
         if (str_starts_with($query->sql, 'insert') && str_contains($query->sql, 'post_user')) {
-            DB::table('post_user')->where('post_id', $postId)->delete();
+            DB::table('post_user')
+                ->where('post_id', $postId)
+                ->delete();
         }
     });
 

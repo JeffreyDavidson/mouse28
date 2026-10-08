@@ -17,7 +17,9 @@ pest()->use(RefreshDatabase::class);
 test('administrators see the categories list', function (): void {
     // Sorted first by name, so it is on the first page next to the standard categories.
     $category = Category::factory()->create(['name' => 'A Sample Topic']);
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     get(CategoryResource::getUrl())
         ->assertOk()
@@ -35,12 +37,20 @@ test('non-administrators cannot open the categories list', function (): void {
 });
 
 test('the categories list deletes the selected categories', function (): void {
-    $categories = Category::factory()->count(2)->create();
-    actingAs(User::factory()->admin()->create());
+    $categories = Category::factory()
+        ->count(2)
+        ->create();
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(ListCategories::class)
         ->selectTableRecords($categories)
-        ->callAction(TestAction::make(DeleteBulkAction::class)->table()->bulk());
+        ->callAction(TestAction::make(DeleteBulkAction::class)
+            ->table()
+            ->bulk());
 
-    expect(Category::query()->whereKey($categories->modelKeys())->count())->toBe(0);
+    expect(Category::query()
+        ->whereKey($categories->modelKeys())
+        ->count())->toBe(0);
 });

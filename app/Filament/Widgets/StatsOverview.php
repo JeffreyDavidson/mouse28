@@ -27,11 +27,21 @@ class StatsOverview extends Widget
         $publishedPosts = Post::published()->count();
         $publishedEpisodes = Episode::published()->count();
         $publishedGuides = Guide::published()->count();
-        $guidesDueForReview = Guide::published()->reviewDue()->count();
-        $postsDueForReview = Post::published()->reviewDue()->count();
-        $drafts = Post::query()->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])->count()
-            + Episode::query()->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])->count()
-            + Guide::query()->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])->count();
+        $guidesDueForReview = Guide::published()
+            ->reviewDue()
+            ->count();
+        $postsDueForReview = Post::published()
+            ->reviewDue()
+            ->count();
+        $drafts = Post::query()
+            ->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])
+            ->count()
+            + Episode::query()
+                ->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])
+                ->count()
+            + Guide::query()
+                ->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])
+                ->count();
 
         return [
             [

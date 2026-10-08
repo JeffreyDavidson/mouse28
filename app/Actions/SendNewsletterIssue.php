@@ -41,8 +41,11 @@ final class SendNewsletterIssue
         return DB::transaction(function () use ($issue): int {
             $queued = 0;
 
-            foreach (Subscriber::query()->active()->lazyById() as $subscriber) {
-                $delivery = $issue->deliveries()->create(['subscriber_id' => $subscriber->getKey()]);
+            foreach (Subscriber::query()
+                ->active()
+                ->lazyById() as $subscriber) {
+                $delivery = $issue->deliveries()
+                    ->create(['subscriber_id' => $subscriber->getKey()]);
 
                 DeliverNewsletterIssue::dispatch($delivery)
                     ->onConnection('database')

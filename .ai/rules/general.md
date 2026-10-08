@@ -22,3 +22,7 @@ The current Forge topology resolves trusted Cloudflare proxies in Nginx and pass
 
 ## Write Actions with handle()
 Classes in `app/Actions` expose a public, non-static `handle()` method and are never invokable (`__invoke`). Call them as `$action->handle(...)`. This matches The Laravel Architect's Actions, and `ArchitectureTest` enforces it. Filament's own Action classes in `app/Filament/Actions` are separate.
+
+## Put each chained call on its own line
+A method call chained onto another call from the same line fails `composer test:chains` (`scripts/check-method-chaining.php`, copied byte-for-byte from The Laravel Architect; part of `composer check` and CI). Write `Post::query()`, `->where(...)`, `->first()` on separate lines; a single call after a static start, property chains, enum `->value` and accesses inside arguments are fine. Merged migrations are never checked or edited.
+

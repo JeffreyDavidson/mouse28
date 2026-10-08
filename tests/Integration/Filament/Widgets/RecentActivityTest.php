@@ -29,7 +29,9 @@ test('activity shows the eight newest records even when one content type dominat
 
     $activity = app(RecentActivity::class)->getActivity();
 
-    expect(array_column($activity, 'label'))->toBe($records->take(8)->pluck('title')->all());
+    expect(array_column($activity, 'label'))->toBe($records->take(8)
+        ->pluck('title')
+        ->all());
 })->with([
     'posts' => fn () => Post::factory(),
     'episodes' => fn () => Episode::factory(),
@@ -38,7 +40,9 @@ test('activity shows the eight newest records even when one content type dominat
 
 test('activity includes guides and labels content by its publish status', function (): void {
     $guide = Guide::factory()->create(['title' => 'Updated Accessibility Guide']);
-    $post = Post::factory()->scheduled()->create(['title' => 'Scheduled Park Story']);
+    $post = Post::factory()
+        ->scheduled()
+        ->create(['title' => 'Scheduled Park Story']);
     $episode = Episode::factory()->create(['title' => 'Episode In Review', 'status' => PublishStatus::InReview]);
 
     $activity = collect(app(RecentActivity::class)->getActivity())->keyBy('label');
@@ -48,8 +52,10 @@ test('activity includes guides and labels content by its publish status', functi
             'type' => 'Published guide',
             'url' => GuideResource::getUrl('edit', ['record' => $guide]),
         ])
-        ->and($activity[$post->title])->toMatchArray(['type' => 'Scheduled post'])
-        ->and($activity[$episode->title])->toMatchArray(['type' => 'In Review episode']);
+        ->and($activity[$post->title])
+        ->toMatchArray(['type' => 'Scheduled post'])
+        ->and($activity[$episode->title])
+        ->toMatchArray(['type' => 'In Review episode']);
 });
 
 test('activity queries select only fields rendered by the widget', function (): void {

@@ -9,8 +9,10 @@ test('the test harness selects only its isolated database', function (): void {
     $connection = $mysql ? 'mysql' : 'sqlite';
 
     expect(config('database.default'))->toBe($mysql ? 'mysql' : 'sqlite')
-        ->and(config('database.connections.'.$connection.'.database'))->toBe($mysql ? 'mouse28_test' : ':memory:')
-        ->and(config('telescope.enabled'))->toBeFalse();
+        ->and(config('database.connections.'.$connection.'.database'))
+        ->toBe($mysql ? 'mouse28_test' : ':memory:')
+        ->and(config('telescope.enabled'))
+        ->toBeFalse();
 });
 
 test('the test harness keeps the public disk off the real storage', function (): void {
@@ -68,5 +70,6 @@ test('tests use non-delivering mail and disabled monitoring', function (): void 
 
     // Assert
     expect($mailer)->toBe('array')
-        ->and($nightwatch)->toBeFalse();
+        ->and($nightwatch)
+        ->toBeFalse();
 });

@@ -48,7 +48,9 @@ function homepagePodcastContentIsContainedScript(): string
 }
 
 test('homepage story columns stay separated at responsive breakpoints', function (): void {
-    Post::factory()->count(4)->create();
+    Post::factory()
+        ->count(4)
+        ->create();
 
     $page = visit(route('home'));
 

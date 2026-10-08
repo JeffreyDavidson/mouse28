@@ -27,7 +27,8 @@ test('the unsubscribe page asks for a click and does not unsubscribe on its own'
         ->assertSeeHtml('<meta name="robots" content="noindex,nofollow">')
         ->assertDontSeeHtml('data-newsletter-confirm');
 
-    expect($reader->refresh()->isActive())->toBeTrue();
+    expect($reader->refresh()
+        ->isActive())->toBeTrue();
 });
 
 test('the unsubscribe page, which shows the email and a forgery token, is never cached', function (): void {
@@ -45,8 +46,10 @@ test('unsubscribing deactivates the reader and returns to the newsletter sign-up
         ->assertRedirect(route('home').'#newsletter')
         ->assertSessionHas('newsletter_success', 'You have been unsubscribed.');
 
-    expect($reader->refresh()->isActive())->toBeFalse()
-        ->and($reader->unsubscribed_at)->not->toBeNull();
+    expect($reader->refresh()
+        ->isActive())->toBeFalse()
+        ->and($reader->unsubscribed_at)
+        ->not->toBeNull();
 });
 
 test('unsigned unsubscribe requests are refused', function (): void {
@@ -55,7 +58,8 @@ test('unsigned unsubscribe requests are refused', function (): void {
     get(route('newsletter.unsubscribe', $reader))->assertForbidden();
     delete(route('newsletter.unsubscribe.store', $reader))->assertForbidden();
 
-    expect($reader->refresh()->isActive())->toBeTrue();
+    expect($reader->refresh()
+        ->isActive())->toBeTrue();
 });
 
 test('an invalid signature is refused before the reader is looked up, whether or not they exist', function (string $method, string $routeName, string $signature, bool $readerExists): void {

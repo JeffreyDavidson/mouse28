@@ -17,7 +17,9 @@ pest()->use(RefreshDatabase::class);
 
 function pendingReaderWithToken(string $token = 'confirmation-token'): Subscriber
 {
-    $reader = Subscriber::factory()->pending()->create();
+    $reader = Subscriber::factory()
+        ->pending()
+        ->create();
     $reader->verification_token_hash = hash('sha256', $token);
     $reader->save();
 
@@ -48,7 +50,8 @@ test('the confirmation page submits itself in a browser but does not confirm on 
         ->assertSeeHtml('x-data="newsletterConfirm"')
         ->assertSeeHtml('<meta name="robots" content="noindex,nofollow">');
 
-    expect($reader->refresh()->verified_at)->toBeNull();
+    expect($reader->refresh()
+        ->verified_at)->toBeNull();
 });
 
 test('a link scanner fetching the confirmation link confirms nothing and leaves the link usable', function (string $method): void {
@@ -56,18 +59,22 @@ test('a link scanner fetching the confirmation link confirms nothing and leaves 
     $url = confirmationUrl($reader);
 
     foreach (range(1, 3) as $scan) {
-        $this->call($method, $url)->assertOk();
+        $this->call($method, $url)
+            ->assertOk();
     }
 
-    expect($reader->refresh()->verified_at)->toBeNull()
-        ->and($reader->verification_token_hash)->toBe(hash('sha256', 'confirmation-token'));
+    expect($reader->refresh()
+        ->verified_at)->toBeNull()
+        ->and($reader->verification_token_hash)
+        ->toBe(hash('sha256', 'confirmation-token'));
 
     post(URL::temporarySignedRoute('newsletter.confirm.store', Date::now()->addDay(), [
         'subscriber' => $reader,
         'token' => 'confirmation-token',
     ]))->assertRedirect(route('newsletter.confirmed'));
 
-    expect($reader->refresh()->isActive())->toBeTrue();
+    expect($reader->refresh()
+        ->isActive())->toBeTrue();
 })->with(['GET', 'HEAD']);
 
 test('the confirmation page is never cached, including by the back-forward cache', function (): void {
@@ -84,8 +91,10 @@ test('confirming activates the reader and shows the confirmed page', function ()
     ]))
         ->assertRedirect(route('newsletter.confirmed'));
 
-    expect($reader->refresh()->isActive())->toBeTrue()
-        ->and($reader->verification_token_hash)->toBeNull();
+    expect($reader->refresh()
+        ->isActive())->toBeTrue()
+        ->and($reader->verification_token_hash)
+        ->toBeNull();
 });
 
 function expectedExpiredLinkRedirect(): string
@@ -102,7 +111,8 @@ test('confirmation links that cannot be used send the reader back to the sign-up
         ->assertRedirect(expectedExpiredLinkRedirect())
         ->assertSessionHasErrorsIn('newsletter', ['email' => 'This confirmation link has expired or has already been used. If you already confirmed, you’re subscribed. Otherwise, sign up again below.']);
 
-    expect($reader->refresh()->verified_at)->toBeNull();
+    expect($reader->refresh()
+        ->verified_at)->toBeNull();
 })->with([
     'wrong token' => [fn (Subscriber $reader): string => confirmationUrl($reader, 'another-token')],
     'unsigned link' => [fn (Subscriber $reader): string => route('newsletter.confirm', ['subscriber' => $reader, 'token' => 'confirmation-token'])],
@@ -113,13 +123,15 @@ test('an expired confirmation link sends the reader back to the sign-up form', f
     $reader = pendingReaderWithToken();
     $url = confirmationUrl($reader);
 
-    $this->travel(25)->hours();
+    $this->travel(25)
+        ->hours();
 
     get($url)
         ->assertRedirect(expectedExpiredLinkRedirect())
         ->assertSessionHasErrorsIn('newsletter', ['email']);
 
-    expect($reader->refresh()->verified_at)->toBeNull();
+    expect($reader->refresh()
+        ->verified_at)->toBeNull();
 });
 
 test('a confirmation link cannot be used twice', function (): void {

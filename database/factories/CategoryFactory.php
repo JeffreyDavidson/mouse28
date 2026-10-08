@@ -19,7 +19,8 @@ class CategoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => Str::title(fake()->unique()->words(3, true)),
+            'name' => Str::title(fake()->unique()
+                ->words(3, true)),
             'description' => null,
         ];
     }

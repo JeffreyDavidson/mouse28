@@ -32,19 +32,27 @@ Route::get('/guides', [GuideController::class, 'index'])->name('guides.index');
 Route::get('/guides/{guide:slug}', [GuideController::class, 'show'])->name('guides.show');
 Route::get('/episodes', [EpisodeController::class, 'index'])->name('episodes.index');
 Route::get('/episodes/{episode:slug}', [EpisodeController::class, 'show'])->name('episodes.show');
-Route::get('/search', SearchController::class)->middleware('throttle:search')->name('search');
-Route::middleware('signed')->prefix('preview')->group(function (): void {
-    Route::get('/posts/{post:slug}', PreviewPostController::class)->name('preview.post');
-    Route::get('/guides/{guide:slug}', PreviewGuideController::class)->name('preview.guide');
-    Route::get('/episodes/{episode:slug}', PreviewEpisodeController::class)->name('preview.episode');
-    Route::get('/newsletter/{newsletterIssue:slug}', PreviewNewsletterIssueController::class)->name('preview.newsletter-issue');
-});
+Route::get('/search', SearchController::class)
+    ->middleware('throttle:search')
+    ->name('search');
+Route::middleware('signed')
+    ->prefix('preview')
+    ->group(function (): void {
+        Route::get('/posts/{post:slug}', PreviewPostController::class)->name('preview.post');
+        Route::get('/guides/{guide:slug}', PreviewGuideController::class)->name('preview.guide');
+        Route::get('/episodes/{episode:slug}', PreviewEpisodeController::class)->name('preview.episode');
+        Route::get('/newsletter/{newsletterIssue:slug}', PreviewNewsletterIssueController::class)->name('preview.newsletter-issue');
+    });
 Route::view('/about', 'pages.about')->name('about');
 Route::view('/privacy', 'pages.privacy')->name('privacy');
 Route::get('/contact', [ContactController::class, 'create'])->name('contact.create');
-Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:contact-form')->name('contact.store');
+Route::post('/contact', [ContactController::class, 'store'])
+    ->middleware('throttle:contact-form')
+    ->name('contact.store');
 
-Route::post('/newsletter', [NewsletterSubscriptionController::class, 'store'])->middleware('throttle:newsletter')->name('newsletter.subscribe');
+Route::post('/newsletter', [NewsletterSubscriptionController::class, 'store'])
+    ->middleware('throttle:newsletter')
+    ->name('newsletter.subscribe');
 // The middleware checks the signature and token; an unusable link, including
 // one whose subscriber was removed, goes back to the sign-up form.
 Route::middleware([EnsureValidNewsletterConfirmationLink::class, 'throttle:newsletter-confirm'])

@@ -24,7 +24,9 @@ test('guest can render the admin login', function (): void {
 
 test('enrolled administrators must provide a valid authenticator code to sign in', function (): void {
     Filament::setCurrentPanel(Filament::getPanel('admin'));
-    $user = User::factory()->admin()->create();
+    $user = User::factory()
+        ->admin()
+        ->create();
 
     $login = livewire(Login::class);
 
@@ -55,7 +57,10 @@ test('enrolled administrators must provide a valid authenticator code to sign in
 
 test('unenrolled administrators can sign in to complete required enrollment', function (): void {
     Filament::setCurrentPanel(Filament::getPanel('admin'));
-    $user = User::factory()->admin()->withoutAppAuthentication()->create();
+    $user = User::factory()
+        ->admin()
+        ->withoutAppAuthentication()
+        ->create();
 
     livewire(Login::class)
         ->fillForm(['email' => $user->email, 'password' => 'password'])
@@ -68,7 +73,9 @@ test('unenrolled administrators can sign in to complete required enrollment', fu
 
 test('administrators can sign in with a single use recovery code', function (): void {
     Filament::setCurrentPanel(Filament::getPanel('admin'));
-    $user = User::factory()->admin()->create();
+    $user = User::factory()
+        ->admin()
+        ->create();
     $provider = AppAuthentication::make()->recoverable();
     $codes = $provider->generateRecoveryCodes();
     $provider->saveRecoveryCodes($user, $codes);

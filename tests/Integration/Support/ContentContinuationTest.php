@@ -22,23 +22,36 @@ test('episode neighbors use IDs to break equal publication dates', function (): 
     $next = Episode::factory()->create(['published_at' => $previous->published_at]);
 
     expect(ContentContinuation::previousEpisode($current)?->id)->toBe($previous->id)
-        ->and(ContentContinuation::nextEpisode($current)?->id)->toBe($next->id);
+        ->and(ContentContinuation::nextEpisode($current)?->id)
+        ->toBe($next->id);
 });
 
 test('related posts prioritize category and fill remaining slots with recent posts', function (): void {
     $category = Category::factory()->create();
-    $current = Post::factory()->for($category)->create();
-    $olderMatch = Post::factory()->for($category)->create([
-        'published_at' => now()->subDays(4),
-    ]);
-    $newerMatch = Post::factory()->for($category)->create([
-        'published_at' => now()->subDays(3),
-    ]);
+    $current = Post::factory()
+        ->for($category)
+        ->create();
+    $olderMatch = Post::factory()
+        ->for($category)
+        ->create([
+            'published_at' => now()->subDays(4),
+        ]);
+    $newerMatch = Post::factory()
+        ->for($category)
+        ->create([
+            'published_at' => now()->subDays(3),
+        ]);
     $fallback = Post::factory()->create([
         'published_at' => now()->subDay(),
     ]);
-    Post::factory()->for($category)->draft()->create();
-    Post::factory()->for($category)->scheduled()->create();
+    Post::factory()
+        ->for($category)
+        ->draft()
+        ->create();
+    Post::factory()
+        ->for($category)
+        ->scheduled()
+        ->create();
 
     $related = ContentContinuation::relatedPosts($current, 3);
 
@@ -47,15 +60,22 @@ test('related posts prioritize category and fill remaining slots with recent pos
 
 test('related posts arrive with their category names loaded', function (): void {
     $category = Category::factory()->create(['name' => 'Sample Topic']);
-    $current = Post::factory()->for($category)->create();
-    Post::factory()->for($category)->create(['published_at' => now()->subDays(2)]);
+    $current = Post::factory()
+        ->for($category)
+        ->create();
+    Post::factory()
+        ->for($category)
+        ->create(['published_at' => now()->subDays(2)]);
     Post::factory()->create(['published_at' => now()->subDays(3)]);
 
     $related = ContentContinuation::relatedPosts($current);
 
     expect($related)->toHaveCount(2)
-        ->and($related->every(fn (Post $post): bool => $post->relationLoaded('category')))->toBeTrue()
-        ->and($related->first()?->category_label)->toBe('Sample Topic');
+        ->and($related->every(fn (Post $post): bool => $post->relationLoaded('category')))
+        ->toBeTrue()
+        ->and($related->first()
+            ?->category_label)
+        ->toBe('Sample Topic');
 });
 
 test('related posts of an uncategorized post start with other uncategorized posts', function (): void {
@@ -69,8 +89,12 @@ test('related posts of an uncategorized post start with other uncategorized post
 });
 
 test('continuation queries select only the fields rendered by their cards', function (): void {
-    $post = Post::factory()->inCategory('park-accessibility')->create();
-    Post::factory()->inCategory('park-accessibility')->create();
+    $post = Post::factory()
+        ->inCategory('park-accessibility')
+        ->create();
+    Post::factory()
+        ->inCategory('park-accessibility')
+        ->create();
     $guide = Guide::factory()->create(['category' => GuideCategory::Accessibility]);
     Guide::factory()->create(['category' => GuideCategory::Accessibility]);
     $currentEpisode = Episode::factory()->create(['published_at' => now()->subDay()]);
@@ -114,8 +138,12 @@ test('related guides prioritize category and respect the requested limit', funct
         'category' => GuideCategory::FamilyPlanning,
         'published_at' => now()->subDays(2),
     ]);
-    Guide::factory()->draft()->create(['category' => GuideCategory::Accessibility]);
-    Guide::factory()->scheduled()->create(['category' => GuideCategory::Accessibility]);
+    Guide::factory()
+        ->draft()
+        ->create(['category' => GuideCategory::Accessibility]);
+    Guide::factory()
+        ->scheduled()
+        ->create(['category' => GuideCategory::Accessibility]);
     $deleted = Guide::factory()->create(['category' => GuideCategory::Accessibility]);
     $deleted->delete();
 
@@ -130,8 +158,12 @@ test('related guides prioritize category and respect the requested limit', funct
 
 test('related guides return an empty collection when no other published guide exists', function (): void {
     $current = Guide::factory()->create();
-    Guide::factory()->draft()->create();
-    Guide::factory()->scheduled()->create();
+    Guide::factory()
+        ->draft()
+        ->create();
+    Guide::factory()
+        ->scheduled()
+        ->create();
 
     $related = ContentContinuation::relatedGuides($current);
 
@@ -144,8 +176,12 @@ test('episode neighbors are the nearest published dates rather than episode numb
     $next = Episode::factory()->create(['published_at' => now()->subDays(2), 'episode_number' => 5]);
     Episode::factory()->create(['published_at' => now()->subDays(5), 'episode_number' => 9]);
     Episode::factory()->create(['published_at' => now()->subDay(), 'episode_number' => 11]);
-    Episode::factory()->draft()->create(['published_at' => now()->subHours(73), 'episode_number' => 12]);
-    Episode::factory()->draft()->create(['published_at' => now()->subHours(71), 'episode_number' => 13]);
+    Episode::factory()
+        ->draft()
+        ->create(['published_at' => now()->subHours(73), 'episode_number' => 12]);
+    Episode::factory()
+        ->draft()
+        ->create(['published_at' => now()->subHours(71), 'episode_number' => 13]);
     $deleted = Episode::factory()->create(['published_at' => now()->subHours(70), 'episode_number' => 14]);
     $deleted->delete();
 
@@ -153,38 +189,54 @@ test('episode neighbors are the nearest published dates rather than episode numb
     $nextEpisode = ContentContinuation::nextEpisode($current);
 
     expect($previousEpisode?->id)->toBe($previous->id)
-        ->and($nextEpisode?->id)->toBe($next->id);
+        ->and($nextEpisode?->id)
+        ->toBe($next->id);
 });
 
 test('episode navigation returns null at the published collection boundaries', function (): void {
     $current = Episode::factory()->create();
-    Episode::factory()->draft()->create();
-    Episode::factory()->scheduled()->create();
+    Episode::factory()
+        ->draft()
+        ->create();
+    Episode::factory()
+        ->scheduled()
+        ->create();
 
     $previous = ContentContinuation::previousEpisode($current);
     $next = ContentContinuation::nextEpisode($current);
 
     expect($previous)->toBeNull()
-        ->and($next)->toBeNull();
+        ->and($next)
+        ->toBeNull();
 });
 
 test('an episode without a publication date has no chronological neighbors', function (): void {
-    $current = Episode::factory()->draft()->make();
+    $current = Episode::factory()
+        ->draft()
+        ->make();
     Episode::factory()->create();
 
     $previous = ContentContinuation::previousEpisode($current);
     $next = ContentContinuation::nextEpisode($current);
 
     expect($previous)->toBeNull()
-        ->and($next)->toBeNull();
+        ->and($next)
+        ->toBeNull();
 });
 
 test('related content and adjacent episodes break publish-time ties by id so their order is stable on MySQL', function (): void {
     $category = Category::factory()->create();
-    $post = Post::factory()->for($category)->create();
-    Post::factory()->for($category)->count(2)->create();
+    $post = Post::factory()
+        ->for($category)
+        ->create();
+    Post::factory()
+        ->for($category)
+        ->count(2)
+        ->create();
     $guide = Guide::factory()->create();
-    Guide::factory()->count(2)->create();
+    Guide::factory()
+        ->count(2)
+        ->create();
     $episode = Episode::factory()->create();
 
     $orderings = publishTimeOrderings(function () use ($post, $guide, $episode): void {

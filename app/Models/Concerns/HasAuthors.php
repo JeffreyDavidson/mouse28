@@ -37,7 +37,8 @@ trait HasAuthors
             $positions[$userId] = ['position' => $position];
         }
 
-        $this->authors()->sync($positions);
+        $this->authors()
+            ->sync($positions);
     }
 
     /**
@@ -54,7 +55,8 @@ trait HasAuthors
             return match ($names->count()) {
                 0 => 'Mouse28 Team',
                 1 => $names->sole(),
-                default => $names->map(fn (string $name): string => Str::before($name, ' '))->implode(' & '),
+                default => $names->map(fn (string $name): string => Str::before($name, ' '))
+                    ->implode(' & '),
             };
         });
     }

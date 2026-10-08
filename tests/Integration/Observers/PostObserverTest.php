@@ -14,7 +14,9 @@ covers(PostObserver::class);
 
 beforeEach(function (): void {
     Storage::fake('public');
-    $image = UploadedFile::fake()->image('post.png', 1280, 8)->getContent();
+    $image = UploadedFile::fake()
+        ->image('post.png', 1280, 8)
+        ->getContent();
     Storage::disk('public')->put('posts/old.png', $image);
     Storage::disk('public')->put('posts/new.png', $image);
 });

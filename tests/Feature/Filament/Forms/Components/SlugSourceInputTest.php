@@ -27,7 +27,9 @@ covers(SlugSourceInput::class);
 
 pest()->use(RefreshDatabase::class);
 
-beforeEach(fn () => actingAs(User::factory()->admin()->create()));
+beforeEach(fn () => actingAs(User::factory()
+    ->admin()
+    ->create()));
 
 dataset('slug create pages', [
     'post' => [CreatePost::class],
@@ -50,7 +52,8 @@ test('a new title keeps a slug the editor already wrote', function (string $page
 })->with('slug create pages');
 
 test('changing the title of saved content keeps its slug', function (PostFactory|GuideFactory|EpisodeFactory|NewsletterIssueFactory $factory, string $page): void {
-    $content = $factory->draft()->createOne(['slug' => 'original-address']);
+    $content = $factory->draft()
+        ->createOne(['slug' => 'original-address']);
 
     livewire($page, ['record' => $content->getRouteKey()])
         ->fillForm(['title' => 'A Better Title'])

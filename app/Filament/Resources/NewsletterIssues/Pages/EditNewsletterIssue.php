@@ -41,8 +41,11 @@ class EditNewsletterIssue extends EditRecord
             return null;
         }
 
-        $total = $this->record->deliveries()->count();
-        $delivered = $this->record->deliveries()->whereNotNull('sent_at')->count();
+        $total = $this->record->deliveries()
+            ->count();
+        $delivered = $this->record->deliveries()
+            ->whereNotNull('sent_at')
+            ->count();
 
         $sentOn = DisplayTimezone::convert($this->record->sent_at)?->format('M j, Y');
 
@@ -81,7 +84,9 @@ class EditNewsletterIssue extends EditRecord
                 ->requiresConfirmation()
                 ->modalHeading('Send this issue to subscribers?')
                 ->modalDescription(function (): string {
-                    $count = Subscriber::query()->active()->count();
+                    $count = Subscriber::query()
+                        ->active()
+                        ->count();
 
                     return "This emails the issue to {$count} active ".Str::plural('subscriber', $count).'. It cannot be undone.';
                 })
@@ -89,7 +94,9 @@ class EditNewsletterIssue extends EditRecord
                 ->action(function (SendNewsletterIssue $sendIssue): void {
                     $this->saveBeforeSending();
 
-                    if (! Subscriber::query()->active()->exists()) {
+                    if (! Subscriber::query()
+                        ->active()
+                        ->exists()) {
                         Notification::make()
                             ->warning()
                             ->title('There are no active subscribers to send to')

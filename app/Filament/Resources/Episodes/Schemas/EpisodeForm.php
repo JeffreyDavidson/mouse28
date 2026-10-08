@@ -150,7 +150,11 @@ class EpisodeForm
                             ->icon(Heroicon::OutlinedSignal)
                             ->description('Apple Podcasts and Spotify links are set once for the show in Podcast Settings.')
                             ->schema([
-                                TextInput::make('youtube_url')->url()->maxLength(255)->label('YouTube')->prefixIcon(Heroicon::OutlinedLink),
+                                TextInput::make('youtube_url')
+                                    ->url()
+                                    ->maxLength(255)
+                                    ->label('YouTube')
+                                    ->prefixIcon(Heroicon::OutlinedLink),
                             ]),
 
                         Section::make('SEO')
