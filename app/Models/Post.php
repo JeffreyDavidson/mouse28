@@ -4,15 +4,18 @@ namespace App\Models;
 
 use App\Contracts\Publishable;
 use App\Enums\PublishStatus;
-use App\Enums\SourceReviewStatus;
 use App\Models\Attributes\PublishingStatus;
 use App\Models\Concerns\HasAuthors;
+use App\Models\Concerns\HasDraftScope;
 use App\Models\Concerns\HasFeaturedImage;
 use App\Models\Concerns\HasPublishingStatus;
+use App\Models\Concerns\HasSourceReview;
 use App\Models\Concerns\HasTagsUntilForceDeleted;
 use App\Models\Concerns\LocksSlugAfterPublication;
+use App\Models\Concerns\LogsEditorialActivity;
 use App\Models\Concerns\ManagesStoredMedia;
 use App\Models\Concerns\ScopesMissingSeo;
+use App\Models\Concerns\ScopesNewestFirst;
 use App\Observers\PostObserver;
 use Carbon\CarbonInterface;
 use Database\Factories\PostFactory;
@@ -29,12 +32,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Date;
 use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
 use RalphJSmit\Laravel\SEO\Models\SEO;
 use RalphJSmit\Laravel\SEO\Support\HasSEO;
-use Spatie\Activitylog\Models\Concerns\LogsActivity;
-use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property-read SEO $seo
@@ -58,7 +58,9 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property-read string|null $featured_image_url
  * @property-read int $reading_time
  *
+ * @method static Builder<static> drafts()
  * @method static Builder<static> needsAttention()
+ * @method static Builder<static> newestFirst()
  * @method static Builder<static> published()
  * @method static Builder<static> reviewDue()
  * @method static Builder<static> scheduled()
@@ -85,32 +87,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class Post extends Model implements Publishable
 {
     /** @use HasFactory<PostFactory> */
-    use HasAuthors, HasFactory, HasFeaturedImage, HasPublishingStatus, HasSEO, HasTagsUntilForceDeleted, LocksSlugAfterPublication, ManagesStoredMedia, ScopesMissingSeo, SoftDeletes;
-
-    use LogsActivity;
-
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-            ->useLogName('editorial')
-            ->logOnly([
-                'title',
-                'slug',
-                'excerpt',
-                'content',
-                'review_notes',
-                'reviewed_by',
-                'reviewed_at',
-                'source_url',
-                'last_reviewed_at',
-                'featured_image_path',
-                'category_id',
-                'status',
-                'published_at',
-            ])
-            ->logOnlyDirty()
-            ->dontLogEmptyChanges();
-    }
+    use HasAuthors, HasDraftScope, HasFactory, HasFeaturedImage, HasPublishingStatus, HasSEO, HasSourceReview, HasTagsUntilForceDeleted, LocksSlugAfterPublication, LogsEditorialActivity, ManagesStoredMedia, ScopesMissingSeo, ScopesNewestFirst, SoftDeletes;
 
     protected function storedMediaAttributes(): array
     {
@@ -133,22 +110,6 @@ class Post extends Model implements Publishable
     public function episodes(): BelongsToMany
     {
         return $this->belongsToMany(Episode::class);
-    }
-
-    /**
-     * Posts whose official source has never been reviewed or was last reviewed longer
-     * ago than the configured interval.
-     *
-     * @param  Builder<static>  $query
-     */
-    #[Scope]
-    protected function reviewDue(Builder $query): void
-    {
-        $query->whereNotNull('source_url')
-            ->where(function (Builder $query): void {
-                $query->whereNull('last_reviewed_at')
-                    ->orWhere('last_reviewed_at', '<', $this->reviewCutoff());
-            });
     }
 
     /** @param Builder<static> $query */
@@ -198,26 +159,21 @@ class Post extends Model implements Publishable
         return Attribute::make(get: fn (): string => $this->category->name ?? '');
     }
 
-    public function isReviewDue(): bool
+    protected function sourceReviewIntervalDays(): int
     {
-        return filled($this->source_url)
-            && (! $this->last_reviewed_at || $this->last_reviewed_at->lt($this->reviewCutoff()));
+        return Config::integer('content.post_review_interval_days');
     }
 
-    public function sourceReviewStatus(): SourceReviewStatus
+    /** Posts are tracked for review only while they cite an official source. */
+    protected function tracksSourceReview(): bool
     {
-        if (blank($this->source_url)) {
-            return SourceReviewStatus::NotTracked;
-        }
-
-        return $this->isReviewDue()
-            ? SourceReviewStatus::ReviewDue
-            : SourceReviewStatus::Current;
+        return filled($this->source_url);
     }
 
-    private function reviewCutoff(): CarbonInterface
+    /** @param Builder<static> $query */
+    protected function whereTracksSourceReview(Builder $query): void
     {
-        return Date::today()->subDays(Config::integer('content.post_review_interval_days'));
+        $query->whereNotNull('source_url');
     }
 
     protected function casts(): array

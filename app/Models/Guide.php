@@ -5,15 +5,18 @@ namespace App\Models;
 use App\Contracts\Publishable;
 use App\Enums\GuideCategory;
 use App\Enums\PublishStatus;
-use App\Enums\SourceReviewStatus;
 use App\Models\Attributes\PublishingStatus;
 use App\Models\Concerns\HasAuthors;
+use App\Models\Concerns\HasDraftScope;
 use App\Models\Concerns\HasFeaturedImage;
 use App\Models\Concerns\HasPublishingStatus;
+use App\Models\Concerns\HasSourceReview;
 use App\Models\Concerns\HasTagsUntilForceDeleted;
 use App\Models\Concerns\LocksSlugAfterPublication;
+use App\Models\Concerns\LogsEditorialActivity;
 use App\Models\Concerns\ManagesStoredMedia;
 use App\Models\Concerns\ScopesMissingSeo;
+use App\Models\Concerns\ScopesNewestFirst;
 use App\Observers\GuideObserver;
 use Carbon\CarbonInterface;
 use Database\Factories\GuideFactory;
@@ -28,12 +31,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\Date;
 use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
 use RalphJSmit\Laravel\SEO\Models\SEO;
 use RalphJSmit\Laravel\SEO\Support\HasSEO;
-use Spatie\Activitylog\Models\Concerns\LogsActivity;
-use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property-read SEO $seo
@@ -52,7 +52,9 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property-read string|null $featured_image_url
  * @property-read int $reading_time
  *
+ * @method static Builder<static> drafts()
  * @method static Builder<static> needsAttention()
+ * @method static Builder<static> newestFirst()
  * @method static Builder<static> published()
  * @method static Builder<static> reviewDue()
  * @method static Builder<static> scheduled()
@@ -76,48 +78,11 @@ use Spatie\Activitylog\Support\LogOptions;
 class Guide extends Model implements Publishable
 {
     /** @use HasFactory<GuideFactory> */
-    use HasAuthors, HasFactory, HasFeaturedImage, HasPublishingStatus, HasSEO, HasTagsUntilForceDeleted, LocksSlugAfterPublication, ManagesStoredMedia, ScopesMissingSeo, SoftDeletes;
-
-    use LogsActivity;
-
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-            ->useLogName('editorial')
-            ->logOnly([
-                'title',
-                'slug',
-                'excerpt',
-                'content',
-                'category',
-                'featured_image_path',
-                'source_url',
-                'last_reviewed_at',
-                'status',
-                'published_at',
-            ])
-            ->logOnlyDirty()
-            ->dontLogEmptyChanges();
-    }
+    use HasAuthors, HasDraftScope, HasFactory, HasFeaturedImage, HasPublishingStatus, HasSEO, HasSourceReview, HasTagsUntilForceDeleted, LocksSlugAfterPublication, LogsEditorialActivity, ManagesStoredMedia, ScopesMissingSeo, ScopesNewestFirst, SoftDeletes;
 
     protected function storedMediaAttributes(): array
     {
         return ['featured_image_path'];
-    }
-
-    /**
-     * Guides that have never been reviewed or were last reviewed longer ago than the
-     * configured interval.
-     *
-     * @param  Builder<static>  $query
-     */
-    #[Scope]
-    protected function reviewDue(Builder $query): void
-    {
-        $query->where(function (Builder $query): void {
-            $query->whereNull('last_reviewed_at')
-                ->orWhere('last_reviewed_at', '<', $this->reviewCutoff());
-        });
     }
 
     /** @param Builder<static> $query */
@@ -154,24 +119,9 @@ class Guide extends Model implements Publishable
         return Attribute::make(get: fn (): int => max(1, (int) ceil(str_word_count(strip_tags($this->content ?? '')) / 200)));
     }
 
-    public function isReviewDue(): bool
+    protected function sourceReviewIntervalDays(): int
     {
-        return ! $this->last_reviewed_at || $this->last_reviewed_at->lt($this->reviewCutoff());
-    }
-
-    /**
-     * Guides are always tracked for review, so unlike posts they are never "not tracked".
-     */
-    public function sourceReviewStatus(): SourceReviewStatus
-    {
-        return $this->isReviewDue()
-            ? SourceReviewStatus::ReviewDue
-            : SourceReviewStatus::Current;
-    }
-
-    private function reviewCutoff(): CarbonInterface
-    {
-        return Date::today()->subDays(Config::integer('content.guide_review_interval_days'));
+        return Config::integer('content.guide_review_interval_days');
     }
 
     protected function casts(): array
