@@ -110,10 +110,10 @@ test('episode data prepares the player, duration and layout for the page', funct
         ->toBeFalse()
         ->and($sparseData['embedUrl'])
         ->toBeNull()
-        ->and($sparseData['duration'])
-        ->toBe('')
         ->and($sparseData['isSparseEpisode'])
-        ->toBeTrue();
+        ->toBeTrue()
+        ->and($sparseData['duration'])
+        ->toBeEmpty();
 });
 
 test('episode data uses the episode artwork as the cover', function (): void {
