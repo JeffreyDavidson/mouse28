@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Enums\NavigationGroup;
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Widgets\ContentCalendar;
 use App\Filament\Widgets\InspirationWidget;
@@ -16,7 +17,6 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Navigation\NavigationGroup;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -48,7 +48,6 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->brandName('Mouse28')
             ->brandLogo(view('filament.brand-logo'))
-            ->darkModeBrandLogo(view('filament.brand-logo'))
             ->darkMode(false)
             ->font('Poppins', provider: LocalFontProvider::class)
             ->login(Login::class)
@@ -73,17 +72,12 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => '#5b3e9e',
             ])
-            ->navigationGroups([
-                NavigationGroup::make('Content'),
-                NavigationGroup::make('Communication'),
-                NavigationGroup::make('Settings'),
-            ])
+            ->navigationGroups(NavigationGroup::class)
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
                 Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\Filament\Widgets')
             ->widgets([
                 WelcomeBanner::class,
                 StatsOverview::class,

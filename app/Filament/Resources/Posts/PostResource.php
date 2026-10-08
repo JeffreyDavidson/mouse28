@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Posts;
 
 use App\Enums\ContentType;
+use App\Enums\NavigationGroup;
 use App\Filament\Resources\Posts\Pages\CreatePost;
 use App\Filament\Resources\Posts\Pages\EditPost;
 use App\Filament\Resources\Posts\Pages\ListPosts;
@@ -26,7 +27,7 @@ class PostResource extends Resource
     protected static ?string $recordTitleAttribute = 'title';
 
     #[\Override]
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
+    protected static string|\UnitEnum|null $navigationGroup = NavigationGroup::Content;
 
     #[\Override]
     protected static ?int $navigationSort = 2;

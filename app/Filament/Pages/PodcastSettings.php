@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Enums\NavigationGroup;
 use App\Support\PrimaryPodcast;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -29,7 +30,7 @@ class PodcastSettings extends Page
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
     #[\Override]
-    protected static string|\UnitEnum|null $navigationGroup = 'Settings';
+    protected static string|\UnitEnum|null $navigationGroup = NavigationGroup::Settings;
 
     #[\Override]
     protected static ?string $navigationLabel = 'Podcast Settings';
