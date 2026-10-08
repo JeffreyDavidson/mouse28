@@ -1,8 +1,9 @@
 <?php
 
+use App\Services\ContentArchive\PublicContentArchiveSchema;
 use App\Services\ContentArchive\PublicContentArchiveValidator;
 
-covers(PublicContentArchiveValidator::class);
+covers(PublicContentArchiveValidator::class, PublicContentArchiveSchema::class);
 
 test('archive versions must match the supported integer version', function (mixed $version): void {
     $validator = new PublicContentArchiveValidator;

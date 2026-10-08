@@ -7,12 +7,13 @@ use App\Models\Guide;
 use App\Models\Post;
 use App\Models\User;
 use App\Services\ContentArchive\PublicContentArchiveExporter;
+use App\Services\ContentArchive\PublicContentArchiveSchema;
 use Database\Factories\EpisodeFactory;
 use Database\Factories\GuideFactory;
 use Database\Factories\PostFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-covers(PublicContentArchiveExporter::class);
+covers(PublicContentArchiveExporter::class, PublicContentArchiveSchema::class);
 
 pest()->use(RefreshDatabase::class);
 

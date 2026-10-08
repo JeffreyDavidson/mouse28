@@ -9,13 +9,21 @@ use App\Models\Post;
 use App\Models\User;
 use App\Services\ContentArchive\PublicContentArchiveExporter;
 use App\Services\ContentArchive\PublicContentArchiveImporter;
+use App\Services\ContentArchive\PublicContentArchiveRelations;
+use App\Services\ContentArchive\PublicContentArchiveSchema;
+use App\Services\ContentArchive\PublicContentArchiveValidator;
 use Database\Factories\EpisodeFactory;
 use Database\Factories\GuideFactory;
 use Database\Factories\PostFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 
-covers(PublicContentArchiveImporter::class);
+covers(
+    PublicContentArchiveImporter::class,
+    PublicContentArchiveRelations::class,
+    PublicContentArchiveSchema::class,
+    PublicContentArchiveValidator::class,
+);
 
 pest()->use(RefreshDatabase::class);
 

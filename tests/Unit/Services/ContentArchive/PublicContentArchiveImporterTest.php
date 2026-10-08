@@ -2,9 +2,10 @@
 
 use App\Services\ContentArchive\PublicContentArchiveImporter;
 use App\Services\ContentArchive\PublicContentArchiveRelations;
+use App\Services\ContentArchive\PublicContentArchiveSchema;
 use App\Services\ContentArchive\PublicContentArchiveValidator;
 
-covers(PublicContentArchiveImporter::class);
+covers(PublicContentArchiveImporter::class, PublicContentArchiveValidator::class, PublicContentArchiveSchema::class);
 
 test('media paths include all content types once in sorted order and skip legacy episode audio', function (): void {
     $service = new PublicContentArchiveImporter(new PublicContentArchiveValidator, new PublicContentArchiveRelations);
