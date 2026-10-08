@@ -93,39 +93,7 @@
 
                     {{-- Desktop Nav --}}
                     <div class="hidden items-center gap-10 md:flex">
-                        <a
-                            href="{{ route('home') }}"
-                            @if (request()->routeIs('home')) aria-current="page" @endif
-                            class="dispatch-nav-link inline-flex min-h-12 items-center text-sm font-medium tracking-wide"
-                        >Home</a>
-                        <a
-                            href="{{ route('blog.index') }}"
-                            @if (request()->routeIs('blog.*')) aria-current="page" @endif
-                            class="dispatch-nav-link inline-flex min-h-12 items-center text-sm font-medium tracking-wide"
-                        >Blog</a>
-                        <a
-                            href="{{ route('episodes.index') }}"
-                            @if (request()->routeIs('episodes.*')) aria-current="page" @endif
-                            class="dispatch-nav-link inline-flex min-h-12 items-center text-sm font-medium tracking-wide"
-                        >Podcast</a>
-                        <a
-                            href="{{ route('about') }}"
-                            @if (request()->routeIs('about')) aria-current="page" @endif
-                            class="dispatch-nav-link inline-flex min-h-12 items-center text-sm font-medium tracking-wide"
-                        >About</a>
-                        <a
-                            href="{{ route('contact.create') }}"
-                            @if (request()->routeIs('contact.*')) aria-current="page" @endif
-                            class="dispatch-nav-link inline-flex min-h-12 items-center text-sm font-medium tracking-wide"
-                        >Contact</a>
-                        <a
-                            href="{{ route('search') }}"
-                            @if (request()->routeIs('search')) aria-current="page" @endif
-                            class="dispatch-nav-search inline-flex size-12 items-center justify-center rounded-full"
-                            aria-label="Search Mouse28"
-                        >
-                            <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35m1.35-5.65a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z" /></svg>
-                        </a>
+                        <x-site-navigation placement="desktop" />
                     </div>
 
                     {{-- Mobile menu button (animated hamburger → X) --}}
@@ -160,30 +128,7 @@
                         id="no-script-navigation"
                         class="mt-2 flex flex-wrap gap-1 border-t border-white/10 pt-4 pb-5 md:hidden"
                     >
-                        <a
-                            href="{{ route('home') }}"
-                            class="inline-flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium text-white/80"
-                        >Home</a>
-                        <a
-                            href="{{ route('blog.index') }}"
-                            class="inline-flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium text-white/80"
-                        >Blog</a>
-                        <a
-                            href="{{ route('episodes.index') }}"
-                            class="inline-flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium text-white/80"
-                        >Podcast</a>
-                        <a
-                            href="{{ route('about') }}"
-                            class="inline-flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium text-white/80"
-                        >About</a>
-                        <a
-                            href="{{ route('contact.create') }}"
-                            class="inline-flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium text-white/80"
-                        >Contact</a>
-                        <a
-                            href="{{ route('search') }}"
-                            class="inline-flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium text-white/80"
-                        >Search</a>
+                        <x-site-navigation placement="noscript" />
                     </div>
                 </noscript>
 
@@ -203,36 +148,7 @@
                     x-cloak
                 >
                     <div class="flex flex-col gap-1">
-                        <a
-                            href="{{ route('home') }}"
-                            @if (request()->routeIs('home')) aria-current="page" @endif
-                            class="{{ request()->routeIs('home') ? 'text-gold bg-white/5' : 'text-white/80' }} flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium transition-colors hover:bg-white/5 hover:text-gold"
-                        >Home</a>
-                        <a
-                            href="{{ route('blog.index') }}"
-                            @if (request()->routeIs('blog.*')) aria-current="page" @endif
-                            class="{{ request()->routeIs('blog.*') ? 'text-gold bg-white/5' : 'text-white/80' }} flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium transition-colors hover:bg-white/5 hover:text-gold"
-                        >Blog</a>
-                        <a
-                            href="{{ route('episodes.index') }}"
-                            @if (request()->routeIs('episodes.*')) aria-current="page" @endif
-                            class="{{ request()->routeIs('episodes.*') ? 'text-gold bg-white/5' : 'text-white/80' }} flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium transition-colors hover:bg-white/5 hover:text-gold"
-                        >Podcast</a>
-                        <a
-                            href="{{ route('about') }}"
-                            @if (request()->routeIs('about')) aria-current="page" @endif
-                            class="{{ request()->routeIs('about') ? 'text-gold bg-white/5' : 'text-white/80' }} flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium transition-colors hover:bg-white/5 hover:text-gold"
-                        >About</a>
-                        <a
-                            href="{{ route('contact.create') }}"
-                            @if (request()->routeIs('contact.*')) aria-current="page" @endif
-                            class="{{ request()->routeIs('contact.*') ? 'text-gold bg-white/5' : 'text-white/80' }} flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium transition-colors hover:bg-white/5 hover:text-gold"
-                        >Contact</a>
-                        <a
-                            href="{{ route('search') }}"
-                            @if (request()->routeIs('search')) aria-current="page" @endif
-                            class="{{ request()->routeIs('search') ? 'text-gold bg-white/5' : 'text-white/80' }} flex min-h-12 items-center rounded-lg px-4 py-3 text-base font-medium transition-colors hover:bg-white/5 hover:text-gold"
-                        >Search</a>
+                        <x-site-navigation placement="mobile" />
                     </div>
                 </div>
             </div>
@@ -270,14 +186,14 @@
                     <p class="mb-4 text-base text-white/50 sm:text-sm">
                         New posts, episodes, and park tips straight to your inbox.
                     </p>
-                    @if (session('newsletter_success'))
+                    @session('newsletter_success')
                         <div
                             role="status"
                             class="border-gold/30 bg-gold/10 text-gold mb-3 rounded-xl border px-5 py-2.5 text-center text-base font-medium sm:text-sm"
                         >
-                            {{ session('newsletter_success') }}
+                            {{ $value }}
                         </div>
-                    @endif
+                    @endsession
                     <form action="{{ route('newsletter.subscribe') }}" method="POST" class="flex flex-col gap-2">
                         @csrf
                         <x-newsletter-protection honeypot-id="footer-newsletter-website" />
@@ -321,24 +237,7 @@
                             Explore
                         </h2>
                         <div class="flex flex-col gap-1 text-base sm:text-sm">
-                            <a
-                                href="{{ route('blog.index') }}"
-                                class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
-                            >Blog</a>
-                            @if (config('mouse28.guides_enabled'))
-                                <a
-                                    href="{{ route('guides.index') }}"
-                                    class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
-                                >Guides</a>
-                            @endif
-                            <a
-                                href="{{ route('episodes.index') }}"
-                                class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
-                            >Podcast</a>
-                            <a
-                                href="{{ route('about') }}"
-                                class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
-                            >About Us</a>
+                            <x-site-navigation placement="footer-explore" />
                         </div>
                     </div>
 
@@ -368,14 +267,7 @@
                             Connect
                         </h2>
                         <div class="flex flex-col gap-1 text-base sm:text-sm">
-                            <a
-                                href="{{ route('contact.create') }}"
-                                class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
-                            >Contact Us</a>
-                            <a
-                                href="{{ route('privacy') }}"
-                                class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
-                            >Privacy</a>
+                            <x-site-navigation placement="footer-connect" />
                             @foreach ($podcastLinks as $link)
                                 <a
                                     href="{{ $link['url'] }}"

@@ -48,20 +48,7 @@
                 <x-brand-wordmark />
             </a>
             <div class="hidden items-center gap-6 sm:flex">
-                <a
-                    href="{{ route('blog.index') }}"
-                    class="hover:text-gold inline-flex min-h-12 items-center text-sm font-medium text-white/75 transition-colors"
-                >Blog</a>
-                @if (config('mouse28.guides_enabled'))
-                    <a
-                        href="{{ route('guides.index') }}"
-                        class="hover:text-gold inline-flex min-h-12 items-center text-sm font-medium text-white/75 transition-colors"
-                    >Guides</a>
-                @endif
-                <a
-                    href="{{ route('episodes.index') }}"
-                    class="hover:text-gold inline-flex min-h-12 items-center text-sm font-medium text-white/75 transition-colors"
-                >Podcast</a>
+                <x-site-navigation placement="recovery" />
             </div>
         </nav>
     </header>
