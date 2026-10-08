@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\ContactInquiries\Pages;
 
-use App\Enums\ContactInquiryStatus;
 use App\Filament\Resources\ContactInquiries\ContactInquiryResource;
 use App\Models\ContactInquiry;
 use Filament\Resources\Pages\ListRecords;
@@ -18,7 +17,7 @@ class ListContactInquiries extends ListRecords
         return view('filament.resources.contact-inquiries.header', [
             'total' => ContactInquiry::query()->count(),
             'new' => ContactInquiry::query()
-                ->where('status', ContactInquiryStatus::New)
+                ->new()
                 ->count(),
         ]);
     }
