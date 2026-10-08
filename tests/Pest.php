@@ -7,6 +7,7 @@ use App\Support\PrimaryPodcast;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Testing\PendingCommand;
 use Tests\BrowserTestCase;
 use Tests\TestCase;
@@ -51,6 +52,27 @@ function publishTimeOrderings(Closure $callback): array
 
     return $orderings;
 }
+
+/**
+ * A link to the named route whose signature is missing or no longer matches the address.
+ *
+ * @param  array<string, mixed>  $parameters
+ */
+function invalidlySignedRoute(string $name, array $parameters, string $signature): string
+{
+    return match ($signature) {
+        'unsigned' => route($name, $parameters),
+        'tampered' => URL::signedRoute($name, $parameters).'0',
+        default => throw new InvalidArgumentException("Unknown signature case {$signature}."),
+    };
+}
+
+dataset('invalid signatures', ['unsigned', 'tampered']);
+
+dataset('existing and missing records', [
+    'existing record' => [true],
+    'missing record' => [false],
+]);
 
 /** Publish-time order with an id tie-breaker in the same direction, so equal times keep a stable order on MySQL. */
 const STABLE_PUBLISH_TIME_ORDER = '/"published_at" (asc|desc), "(?:\w+"\.")?id" \1/';

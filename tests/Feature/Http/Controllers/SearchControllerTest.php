@@ -97,6 +97,20 @@ test('search groups matching published content', function (): void {
         ->assertDontSee($unrelatedPost->title);
 });
 
+test('search escapes HTML and regex characters in the query and its matches', function (string $query): void {
+    Post::factory()->create(['title' => "Tips {$query} for parks"]);
+
+    get(route('search', ['q' => $query]))
+        ->assertOk()
+        ->assertSee('1 result for “'.$query.'”')
+        ->assertSee("Tips {$query} for parks")
+        ->assertDontSeeHtml("Tips {$query} for parks");
+})->with([
+    'markup' => '<b onclick="x">Q&A</b>',
+    'entity' => '&amp;',
+    'regex and markup' => '<i>(.*)+[a-z]/</i>',
+]);
+
 test('search paginates every content group with accurate totals', function (PostFactory|GuideFactory|EpisodeFactory $factory, string $pageName): void {
     config()->set('mouse28.guides_enabled', true);
     $oldest = $factory->createOne(['title' => 'Sensory oldest match']);
