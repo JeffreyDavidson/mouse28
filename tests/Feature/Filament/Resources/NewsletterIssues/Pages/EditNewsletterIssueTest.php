@@ -99,7 +99,7 @@ test('a draft without content is not published', function (): void {
 
     livewire(EditNewsletterIssue::class, ['record' => $issue->getRouteKey()])
         ->callAction('publish')
-        ->assertNotified('Newsletter Issue is not ready to publish');
+        ->assertHasErrors(['data.content' => 'required']);
 
     expect($issue->refresh()
         ->status)->toBe(PublishStatus::Draft);

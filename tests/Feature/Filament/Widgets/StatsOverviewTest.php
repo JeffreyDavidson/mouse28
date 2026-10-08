@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ContentType;
 use App\Enums\PublishStatus;
 use App\Filament\Widgets\StatsOverview;
 use App\Models\Episode;
@@ -75,4 +76,17 @@ test('stats overview reports published content review needs drafts and active su
             'description' => 'Active newsletter subscribers',
         ],
     ]);
+});
+
+test('stats overview takes the content stats icon and colour from the content type', function (): void {
+    $stats = collect(livewire(StatsOverview::class)->instance()
+        ->getStats())->keyBy('label');
+
+    foreach (ContentType::cases() as $type) {
+        expect($stats[$type->pluralLabel()])
+            ->toMatchArray([
+                'icon' => $type->getIcon(),
+                'textClass' => $type->textClass(),
+            ]);
+    }
 });

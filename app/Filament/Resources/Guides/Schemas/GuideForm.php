@@ -6,15 +6,16 @@ namespace App\Filament\Resources\Guides\Schemas;
 
 use App\Enums\GuideCategory;
 use App\Filament\Forms\Components\AuthorsSelect;
+use App\Filament\Forms\Components\ContentTagsInput;
+use App\Filament\Forms\Components\OptimizedImageUpload;
 use App\Filament\Forms\Components\PublishDatePicker;
 use App\Filament\Forms\Components\PublishStatusSelect;
+use App\Filament\Forms\Components\SeoSection;
 use App\Filament\Forms\Components\SlugInput;
 use App\Filament\Forms\Components\SlugSourceInput;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\SpatieTagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
@@ -22,7 +23,6 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Config;
-use RalphJSmit\Filament\SEO\SEO;
 
 class GuideForm
 {
@@ -36,8 +36,7 @@ class GuideForm
                     ->description('Basic guide information')
                     ->columns(4)
                     ->schema([
-                        SpatieTagsInput::make('tags')
-                            ->type('content')
+                        ContentTagsInput::make('tags')
                             ->columnSpanFull(),
                         SlugSourceInput::make('title')
                             ->required()
@@ -91,28 +90,11 @@ class GuideForm
                         Section::make('Media')
                             ->icon(Heroicon::OutlinedPhoto)
                             ->schema([
-                                FileUpload::make('featured_image_path')
-                                    ->label('Cover image')
-                                    ->image()
-                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                    ->maxSize(5120)
-                                    ->imageAspectRatio('1200:630')
-                                    ->automaticallyCropImagesToAspectRatio()
-                                    ->automaticallyResizeImagesMode('cover')
-                                    ->automaticallyResizeImagesToWidth('1600')
-                                    ->automaticallyResizeImagesToHeight('840')
-                                    ->disk('public')
-                                    ->directory('guides')
-                                    ->helperText('Landscape image (1.91:1), up to 5 MB. Uploads are cropped and resized automatically.'),
+                                OptimizedImageUpload::make('featured_image_path')
+                                    ->directory('guides'),
                             ]),
 
-                        Section::make('SEO')
-                            ->icon(Heroicon::OutlinedMagnifyingGlass)
-                            ->description('Search engine optimization')
-                            ->collapsed()
-                            ->schema([
-                                SEO::make(),
-                            ]),
+                        SeoSection::make(),
                     ]),
             ]);
     }

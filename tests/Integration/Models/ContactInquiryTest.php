@@ -80,3 +80,26 @@ test('reply links percent-encode the address and type label for mail clients', f
     'spaces in the subject' => ['dale@example.com', ContactType::General, 'mailto:dale@example.com?subject=Re%3A%20General%20Question'],
     'query delimiters in the address' => ['dale?cc=x&y@example.com', ContactType::Other, 'mailto:dale%3Fcc%3Dx%26y@example.com?subject=Re%3A%20Other'],
 ]);
+
+test('the new scope returns only inquiries that have not been opened', function (): void {
+    $new = ContactInquiry::factory()->create(['status' => ContactInquiryStatus::New]);
+    ContactInquiry::factory()->create(['status' => ContactInquiryStatus::InProgress]);
+    ContactInquiry::factory()->create(['status' => ContactInquiryStatus::Resolved]);
+
+    $ids = ContactInquiry::query()
+        ->new()
+        ->pluck('id')
+        ->all();
+
+    expect($ids)->toBe([$new->id]);
+});
+
+test('an inquiry knows whether it is new', function (ContactInquiryStatus $status, bool $expected): void {
+    $inquiry = ContactInquiry::factory()->make(['status' => $status]);
+
+    expect($inquiry->isNew())->toBe($expected);
+})->with([
+    'new' => [ContactInquiryStatus::New, true],
+    'in progress' => [ContactInquiryStatus::InProgress, false],
+    'resolved' => [ContactInquiryStatus::Resolved, false],
+]);

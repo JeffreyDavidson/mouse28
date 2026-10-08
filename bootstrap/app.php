@@ -5,6 +5,8 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Middleware\SubstituteBindings;
+use Illuminate\Routing\Middleware\ValidateSignature;
 use Sentry\Laravel\Integration;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -18,6 +20,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(AddSecurityHeaders::class);
         // Mail providers post RFC 8058 one-click unsubscribes without a session; the signed URL is the credential.
         $middleware->preventRequestForgery(except: ['newsletter/unsubscribe/*']);
+        // Check signed links before loading their models, so an unsigned link is
+        // rejected the same way whether or not its draft or subscriber exists.
+        $middleware->prependToPriorityList(before: SubstituteBindings::class, prepend: ValidateSignature::class);
         // Forge's Nginx resolves trusted proxy addresses before setting REMOTE_ADDR.
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -2,6 +2,8 @@
 
 use App\Filament\Pages\PodcastSettings;
 use App\Models\User;
+use App\Support\PrimaryPodcast;
+use Filament\Actions\Testing\TestAction;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -50,6 +52,45 @@ test('podcast links accept the full supported storage length', function (): void
     expect(primaryPodcast()->only(array_keys($links)))->toBe($links);
 });
 
+test('the settings form is filled from the saved podcast', function (): void {
+    actingAs(User::factory()
+        ->admin()
+        ->create());
+    $podcast = primaryPodcast();
+    $podcast->update([
+        'description' => 'Short pitch',
+        'long_description' => 'A longer show summary.',
+        'color' => '#5b3e9e',
+        'cover_image_path' => 'podcast/cover.png',
+        'apple_url' => 'https://example.com/apple',
+        'spotify_url' => 'https://example.com/spotify',
+        'youtube_url' => 'https://example.com/youtube',
+    ]);
+
+    livewire(PodcastSettings::class)->assertSchemaStateSet([
+        'name' => $podcast->name,
+        'description' => 'Short pitch',
+        'long_description' => 'A longer show summary.',
+        'color' => '#5b3e9e',
+        'apple_url' => 'https://example.com/apple',
+        'spotify_url' => 'https://example.com/spotify',
+        'youtube_url' => 'https://example.com/youtube',
+    ]);
+});
+
+test('the save action stores the settings', function (): void {
+    actingAs(User::factory()
+        ->admin()
+        ->create());
+
+    livewire(PodcastSettings::class)
+        ->fillForm(['name' => 'Renamed show'])
+        ->callAction(TestAction::make('save')->schemaComponent('actions', schema: 'form'))
+        ->assertHasNoFormErrors();
+
+    expect(primaryPodcast()->name)->toBe('Renamed show');
+});
+
 test('authenticated user can render podcast settings', function (): void {
     actingAs(User::factory()
         ->admin()
@@ -63,7 +104,6 @@ test('authenticated user can render podcast settings', function (): void {
 });
 
 test('podcast cover uploads enforce the five megabyte limit', function (int $size, bool $valid): void {
-    Storage::fake('public');
     actingAs(User::factory()
         ->admin()
         ->create());
@@ -117,14 +157,13 @@ test('podcast settings cannot be saved once admin access is revoked', function (
     $admin->is_admin = false;
 
     expect(fn () => $page->instance()
-        ->save())->toThrow(AuthorizationException::class)
+        ->save(app(PrimaryPodcast::class)))->toThrow(AuthorizationException::class)
         ->and($podcast->refresh()
             ->name)
         ->not->toBe('Changed name');
 });
 
 test('a replaced podcast cover is stored under podcast with variants and the previous file is removed', function (): void {
-    Storage::fake('public');
     actingAs(User::factory()
         ->admin()
         ->create());

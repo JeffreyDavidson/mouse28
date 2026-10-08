@@ -9,12 +9,14 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Date;
 
+use function Pest\Laravel\travelTo;
+
 covers(PreviewUrlGenerator::class);
 
 pest()->use(RefreshDatabase::class);
 
 test('preview links are signed slug addresses that expire after the configured hours', function (Post|Guide|Episode|NewsletterIssue $content, string $path): void {
-    Date::setTestNow('2026-09-27 12:00:00');
+    travelTo('2026-09-27 12:00:00');
     config()->set('mouse28.preview_link_hours', 6);
 
     $url = app(PreviewUrlGenerator::class)->for($content);

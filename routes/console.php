@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\DeploymentEnvironment;
 use App\Jobs\RecordQueueHeartbeat;
 use App\Models\Subscriber;
 use App\Support\Monitoring\Health\RuntimeHealthMonitor;
@@ -10,7 +11,7 @@ use Laravel\Nightwatch\Console\Sample;
 Schedule::command('telescope:prune', ['--hours' => Config::integer('telescope.retention_hours')])
     ->daily()
     ->withoutOverlapping()
-    ->when(fn (): bool => Config::boolean('telescope.enabled') && Config::string('app.deployment_environment') === 'staging');
+    ->when(fn (): bool => Config::boolean('telescope.enabled') && DeploymentEnvironment::current() === DeploymentEnvironment::Staging);
 
 Schedule::command('model:prune', ['--model' => [Subscriber::class]])
     ->daily()

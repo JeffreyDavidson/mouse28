@@ -10,10 +10,6 @@ covers(GenerateEpisodeImageVariants::class);
 
 pest()->use(RefreshDatabase::class);
 
-beforeEach(function (): void {
-    Storage::fake('public');
-});
-
 test('it backfills square variants for episode images, skips verified episodes and regenerates with force', function (): void {
     Storage::disk('public')->put('episodes/episode.png', UploadedFile::fake()
         ->image('episode.png', 1000, 700)

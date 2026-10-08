@@ -14,10 +14,6 @@ covers(VerifyResponsiveImages::class);
 
 pest()->use(RefreshDatabase::class);
 
-beforeEach(function (): void {
-    Storage::fake('public');
-});
-
 test('it reports aggregate results for every media type', function (): void {
     $image = UploadedFile::fake()
         ->image('image.png', 800, 500)

@@ -1,3 +1,4 @@
+@inject('markdown', 'App\Support\MarkdownRenderer')
 <x-layouts.app
     :title="($post->seo?->title ?: $post->title).' | Mouse28'"
     :description="$post->seo?->description ?: Str::limit($post->excerpt, 160)"
@@ -138,15 +139,7 @@
                 @endif
 
                 <div class="blog-article-content prose-navy prose text-navy/80 max-w-none text-[1.0625rem] leading-[1.85] wrap-anywhere">
-                    {!!
-                        Str::markdown($post->content ?? '', [
-                            'html_input' => 'strip',
-                            'allow_unsafe_links' => false,
-                            'renderer' => [
-                                'soft_break' => "<br />\n",
-                            ],
-                        ])
-                    !!}
+                    {!! $markdown->safeWithLineBreaks($post->content) !!}
                 </div>
 
                 @if ($post->source_url)

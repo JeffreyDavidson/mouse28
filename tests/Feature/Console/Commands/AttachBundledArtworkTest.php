@@ -50,8 +50,6 @@ test('failed artwork writes leave content unattached and return failure', functi
 });
 
 test('bundled artwork attaches matching records, preserves uploads, and is idempotent', function (): void {
-    Storage::fake('public');
-
     $sourceDirectory = storage_path('framework/testing/bundled-content-artwork');
     File::deleteDirectory($sourceDirectory);
     File::ensureDirectoryExists("{$sourceDirectory}/posts");
@@ -118,7 +116,6 @@ test('bundled artwork attaches matching records, preserves uploads, and is idemp
 });
 
 test('artwork attachment stops when a bundled file is missing', function (): void {
-    Storage::fake('public');
     config()->set('mouse28.content_artwork_path', storage_path('framework/testing/missing-artwork'));
 
     pendingCommand('content:attach-artwork')
@@ -127,8 +124,6 @@ test('artwork attachment stops when a bundled file is missing', function (): voi
 });
 
 test('bundled artwork ignores unsupported files and inactive concepts', function (): void {
-    Storage::fake('public');
-
     $sourceDirectory = storage_path('framework/testing/discovered-content-artwork');
     File::deleteDirectory($sourceDirectory);
     File::ensureDirectoryExists("{$sourceDirectory}/posts");
@@ -179,7 +174,6 @@ test('bundled artwork ignores unsupported files and inactive concepts', function
 });
 
 test('attached artwork that cannot be decoded stays attached and the command reports a failure', function (): void {
-    Storage::fake('public');
     $sourceDirectory = storage_path('framework/testing/undecodable-content-artwork');
     File::deleteDirectory($sourceDirectory);
     File::ensureDirectoryExists("{$sourceDirectory}/posts");

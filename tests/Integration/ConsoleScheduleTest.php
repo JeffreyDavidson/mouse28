@@ -24,6 +24,8 @@ test('Telescope pruning runs daily only on enabled staging', function (string $e
     'staging enabled' => ['staging', true, true],
     'staging disabled' => ['staging', false, false],
     'production' => ['production', true, false],
+    'wrong case staging' => ['Staging', true, false],
+    'unknown' => ['preview', true, false],
 ]);
 
 test('the runtime heartbeat is scheduled every minute only when runtime health is enabled', function (bool $enabled): void {

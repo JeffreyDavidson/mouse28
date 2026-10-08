@@ -110,6 +110,7 @@ test('drafts with their required details can be published while advisory details
         ->create();
     $record = Guide::factory()
         ->draft()
+        ->credited()
         ->create([
             'featured_image_path' => null,
         ]);

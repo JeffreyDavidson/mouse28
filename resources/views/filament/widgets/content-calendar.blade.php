@@ -22,12 +22,12 @@
                             <div class="mt-2 flex flex-wrap items-center gap-3">
                                 <time
                                     class="text-mouse-navy/75 text-sm"
-                                    datetime="{{ \Carbon\Carbon::parse($item['date'])->toIso8601String() }}"
+                                    datetime="{{ $item['date']->toIso8601String() }}"
                                 >
-                                    {{ \App\Support\DisplayTimezone::convert(\Carbon\Carbon::parse($item['date']))->format('M j, g:ia') }}
+                                    {{ \App\Support\DisplayTimezone::convert($item['date'])->format('M j, g:ia') }}
                                 </time>
-                                <x-filament::badge :color="match ($item['status']) { 'Published' => 'success', 'Scheduled' => 'primary', default => 'gray' }">
-                                    {{ $item['status'] }}
+                                <x-filament::badge :color="$item['status']->getColor()">
+                                    {{ $item['status']->getLabel() }}
                                 </x-filament::badge>
                             </div>
                         </a>

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Episodes;
 
+use App\Enums\ContentType;
 use App\Filament\Resources\Episodes\Pages\CreateEpisode;
 use App\Filament\Resources\Episodes\Pages\EditEpisode;
 use App\Filament\Resources\Episodes\Pages\ListEpisodes;
@@ -11,8 +12,8 @@ use App\Models\Episode;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -25,13 +26,16 @@ class EpisodeResource extends Resource
     protected static ?string $recordTitleAttribute = 'title';
 
     #[\Override]
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMicrophone;
-
-    #[\Override]
     protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     #[\Override]
     protected static ?int $navigationSort = 1;
+
+    #[\Override]
+    public static function getNavigationIcon(): BackedEnum|Htmlable|string|null
+    {
+        return ContentType::Episode->getIcon();
+    }
 
     public static function getGloballySearchableAttributes(): array
     {

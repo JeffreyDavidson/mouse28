@@ -2,7 +2,6 @@
 
 namespace App\Filament\Pages;
 
-use App\Models\Podcast;
 use App\Support\PrimaryPodcast;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -38,6 +37,7 @@ class PodcastSettings extends Page
     #[\Override]
     protected static ?string $title = 'Podcast Settings';
 
+    /** The Blade view draws its own page header, so Filament's default heading stays blank. */
     #[\Override]
     protected ?string $heading = '';
 
@@ -53,10 +53,7 @@ class PodcastSettings extends Page
     public function mount(PrimaryPodcast $primaryPodcast): void
     {
         $podcast = $primaryPodcast->findOrCreate();
-        $this->form->fill($podcast->only([
-            'name', 'description', 'long_description', 'color', 'cover_image_path',
-            'apple_url', 'spotify_url', 'youtube_url',
-        ]));
+        $this->form->fill($podcast->only(array_keys($this->form->getFlatFields())));
     }
 
     public function content(Schema $schema): Schema
@@ -129,20 +126,19 @@ class PodcastSettings extends Page
                     Action::make('save')
                         ->label('Save Settings')
                         ->icon(Heroicon::OutlinedCheck)
-                        ->authorize('update', Podcast::class)
-                        ->action(fn () => $this->save()),
-                ])->alignEnd(),
+                        ->action(fn (PrimaryPodcast $primaryPodcast) => $this->save($primaryPodcast)),
+                ])
+                    ->key('actions')
+                    ->alignEnd(),
             ])
             ->statePath('data');
     }
 
-    public function save(): void
+    public function save(PrimaryPodcast $primaryPodcast): void
     {
-        // Resolved here rather than injected: the Save action calls this method directly.
-        $podcast = app(PrimaryPodcast::class)->findOrCreate();
+        $podcast = $primaryPodcast->findOrCreate();
         Gate::authorize('update', $podcast);
-        $data = $this->form->getState();
-        $podcast->update($data);
+        $podcast->update($this->form->getState());
 
         Notification::make()
             ->title('Settings saved')

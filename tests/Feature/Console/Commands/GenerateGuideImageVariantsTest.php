@@ -10,10 +10,6 @@ covers(GenerateGuideImageVariants::class);
 
 pest()->use(RefreshDatabase::class);
 
-beforeEach(function (): void {
-    Storage::fake('public');
-});
-
 test('it backfills variants for guide images and skips verified guides', function (): void {
     Storage::disk('public')->put('guides/guide.png', UploadedFile::fake()
         ->image('guide.png', 800, 45)
