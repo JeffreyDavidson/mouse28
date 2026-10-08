@@ -117,7 +117,7 @@ For small changes, run the relevant focused checks:
 - `npm run build`
 - `git diff --check`
 
-Use `composer test:lint` to check formatting or `composer lint` to apply fixes.
+Use `composer test:lint` to check formatting or `composer lint` to apply fixes, and `composer test:chains` to check that chained method calls sit one per line.
 `composer test` excludes the separate `composer test:browser` suite.
 Pint's enabled Blade formatter requires the locked Prettier packages.
 

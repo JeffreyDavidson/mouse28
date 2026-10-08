@@ -34,21 +34,28 @@ test('the missing SEO scope finds records lacking a saved title or description',
     $record->seo->update(['title' => $title, 'description' => $description]);
 
     // Act
-    $ids = $record::query()->missingSeo()->pluck('id')->all();
+    $ids = $record::query()->missingSeo()
+        ->pluck('id')
+        ->all();
 
     // Assert
     expect($ids)->toBe($listed ? [$record->id] : []);
-})->with('models with SEO')->with('SEO values');
+})->with('models with SEO')
+    ->with('SEO values');
 
 test('the missing SEO scope reads each record\'s own SEO row', function (PostFactory|EpisodeFactory|GuideFactory $factory): void {
     // Arrange
-    $complete = $factory->withSeo()->createOne();
+    $complete = $factory->withSeo()
+        ->createOne();
     $incomplete = $factory->createOne();
 
     // Act
-    $ids = $incomplete::query()->missingSeo()->pluck('id')->all();
+    $ids = $incomplete::query()->missingSeo()
+        ->pluck('id')
+        ->all();
 
     // Assert
     expect($ids)->toBe([$incomplete->id])
-        ->and($ids)->not->toContain($complete->id);
+        ->and($ids)
+        ->not->toContain($complete->id);
 })->with('models with SEO');

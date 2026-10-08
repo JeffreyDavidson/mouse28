@@ -21,7 +21,8 @@ class SocialProfileFactory extends Factory
         return [
             'platform' => SocialPlatform::Instagram,
             'label' => null,
-            'url' => 'https://example.com/'.fake()->unique()->slug(2),
+            'url' => 'https://example.com/'.fake()->unique()
+                ->slug(2),
             'is_enabled' => true,
             'show_in_footer' => true,
             'show_on_contact' => false,

@@ -29,7 +29,8 @@ final class PublicContentArchiveRelations
             return;
         }
 
-        $post->category()->associate($this->category($attributes));
+        $post->category()
+            ->associate($this->category($attributes));
     }
 
     /**
@@ -49,10 +50,15 @@ final class PublicContentArchiveRelations
         $names = array_key_exists('authors', $attributes)
             ? (array) $attributes['authors']
             : $this->legacyAuthorNames($attributes['author']);
-        $authors = User::authors()->whereIn('name', $names)->get()->unique('name')->keyBy('name');
+        $authors = User::authors()
+            ->whereIn('name', $names)
+            ->get()
+            ->unique('name')
+            ->keyBy('name');
 
         $record->syncAuthors(array_filter(array_map(
-            fn (mixed $name): ?int => is_string($name) ? $authors->get($name)?->id : null,
+            fn (mixed $name): ?int => is_string($name) ? $authors->get($name)
+                ?->id : null,
             $names,
         )));
     }
@@ -68,7 +74,10 @@ final class PublicContentArchiveRelations
     {
         $slugs = $attributes['episode_slugs'] ?? $attributes['episode_slug'] ?? [];
 
-        $post->episodes()->sync(Episode::query()->whereIn('slug', is_array($slugs) ? $slugs : [$slugs])->pluck('id'));
+        $post->episodes()
+            ->sync(Episode::query()
+                ->whereIn('slug', is_array($slugs) ? $slugs : [$slugs])
+                ->pluck('id'));
     }
 
     /** @param array<string, mixed> $attributes */
@@ -78,10 +87,11 @@ final class PublicContentArchiveRelations
             return;
         }
 
-        $record->seo()->updateOrCreate([], [
-            'title' => $attributes['meta_title'] ?? null,
-            'description' => $attributes['meta_description'] ?? null,
-        ]);
+        $record->seo()
+            ->updateOrCreate([], [
+                'title' => $attributes['meta_title'] ?? null,
+                'description' => $attributes['meta_description'] ?? null,
+            ]);
     }
 
     /** @param array<string, mixed> $attributes */

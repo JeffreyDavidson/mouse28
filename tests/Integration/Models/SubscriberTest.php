@@ -11,13 +11,23 @@ pest()->use(RefreshDatabase::class);
 
 test('only confirmed sign-ups that have not unsubscribed are active', function (): void {
     $active = Subscriber::factory()->create();
-    $pending = Subscriber::factory()->pending()->create();
-    $unsubscribed = Subscriber::factory()->unsubscribed()->create();
+    $pending = Subscriber::factory()
+        ->pending()
+        ->create();
+    $unsubscribed = Subscriber::factory()
+        ->unsubscribed()
+        ->create();
 
-    expect(Subscriber::query()->active()->pluck('id')->all())->toBe([$active->id])
-        ->and($active->isActive())->toBeTrue()
-        ->and($pending->isActive())->toBeFalse()
-        ->and($unsubscribed->isActive())->toBeFalse();
+    expect(Subscriber::query()
+        ->active()
+        ->pluck('id')
+        ->all())->toBe([$active->id])
+        ->and($active->isActive())
+        ->toBeTrue()
+        ->and($pending->isActive())
+        ->toBeFalse()
+        ->and($unsubscribed->isActive())
+        ->toBeFalse();
 });
 
 test('the verification token hash is not mass assignable', function (): void {
@@ -29,7 +39,8 @@ test('the verification token hash is not mass assignable', function (): void {
     ]);
 
     expect($subscriber->email)->toBe('reader@example.test')
-        ->and($subscriber->getAttributes())->not->toHaveKey('verification_token_hash');
+        ->and($subscriber->getAttributes())
+        ->not->toHaveKey('verification_token_hash');
 });
 
 test('the verification token hash is hidden from serialization', function (): void {
@@ -50,7 +61,9 @@ test('stale readers are prunable', function (int $subscribedDaysAgo, ?int $verif
         'unsubscribed_at' => $unsubscribedDaysAgo === null ? null : Date::now()->subDays($unsubscribedDaysAgo),
     ]);
 
-    expect(new Subscriber()->prunable()->pluck('id')->all())->toBe([$subscriber->id]);
+    expect(new Subscriber()->prunable()
+        ->pluck('id')
+        ->all())->toBe([$subscriber->id]);
 })->with([
     'unconfirmed past the grace period' => [8, null, null],
     'unsubscribed past the grace period' => [365, 365, 31],
@@ -64,7 +77,8 @@ test('current readers are kept when pruning', function (int $subscribedDaysAgo, 
         'unsubscribed_at' => $unsubscribedDaysAgo === null ? null : Date::now()->subDays($unsubscribedDaysAgo),
     ]);
 
-    expect(new Subscriber()->prunable()->exists())->toBeFalse();
+    expect(new Subscriber()->prunable()
+        ->exists())->toBeFalse();
 })->with([
     'unconfirmed within the grace period' => [6, null, null],
     'unsubscribed within the grace period' => [365, 365, 29],
@@ -73,16 +87,25 @@ test('current readers are kept when pruning', function (int $subscribedDaysAgo, 
 
 test('suppressed readers are never active or pruned', function (): void {
     $this->freezeTime();
-    $suppressed = Subscriber::factory()->suppressed(SuppressionReason::Complained)->create([
-        'subscribed_at' => Date::now()->subYear(),
-        'unsubscribed_at' => Date::now()->subYear(),
-        'suppressed_at' => Date::now()->subYear(),
-    ]);
+    $suppressed = Subscriber::factory()
+        ->suppressed(SuppressionReason::Complained)
+        ->create([
+            'subscribed_at' => Date::now()->subYear(),
+            'unsubscribed_at' => Date::now()->subYear(),
+            'suppressed_at' => Date::now()->subYear(),
+        ]);
     $flagged = Subscriber::factory()->create(['suppressed_at' => Date::now()]);
 
-    expect(Subscriber::query()->active()->exists())->toBeFalse()
-        ->and($suppressed->isSuppressed())->toBeTrue()
-        ->and($flagged->isActive())->toBeFalse()
-        ->and($suppressed->suppression_reason)->toBe(SuppressionReason::Complained)
-        ->and(new Subscriber()->prunable()->exists())->toBeFalse();
+    expect(Subscriber::query()
+        ->active()
+        ->exists())->toBeFalse()
+        ->and($suppressed->isSuppressed())
+        ->toBeTrue()
+        ->and($flagged->isActive())
+        ->toBeFalse()
+        ->and($suppressed->suppression_reason)
+        ->toBe(SuppressionReason::Complained)
+        ->and(new Subscriber()->prunable()
+            ->exists())
+        ->toBeFalse();
 });

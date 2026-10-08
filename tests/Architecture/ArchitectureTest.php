@@ -47,8 +47,10 @@ foreach ($actionClasses as $actionClass) {
         $handle = $reflection->hasMethod('handle') ? $reflection->getMethod('handle') : null;
 
         expect($reflection->hasMethod('__invoke'))->toBeFalse("{$actionClass} must not be invokable.")
-            ->and($handle?->isPublic())->toBeTrue("{$actionClass} must define a public handle().")
-            ->and($handle?->isStatic())->toBeFalse("{$actionClass}::handle must be an instance method.");
+            ->and($handle?->isPublic())
+            ->toBeTrue("{$actionClass} must define a public handle().")
+            ->and($handle?->isStatic())
+            ->toBeFalse("{$actionClass}::handle must be an instance method.");
     });
 }
 

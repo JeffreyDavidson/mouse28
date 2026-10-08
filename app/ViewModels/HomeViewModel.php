@@ -32,7 +32,8 @@ class HomeViewModel
             ->take(4)
             ->get();
         $featuredPost = $posts->first();
-        $latestPosts = $posts->skip(1)->values();
+        $latestPosts = $posts->skip(1)
+            ->values();
         $latestEpisodes = Episode::published()
             ->select(['id', 'slug', 'title', 'description', 'episode_number', 'duration_seconds'])
             ->latest('published_at')

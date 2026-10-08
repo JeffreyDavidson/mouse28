@@ -79,7 +79,8 @@ class ContentContinuation
             ->where(function (Builder $query) use ($episode): void {
                 $query->where('published_at', '<', $episode->published_at)
                     ->orWhere(function (Builder $query) use ($episode): void {
-                        $query->where('published_at', $episode->published_at)->where('id', '<', $episode->id);
+                        $query->where('published_at', $episode->published_at)
+                            ->where('id', '<', $episode->id);
                     });
             })
             ->latest('published_at')
@@ -98,7 +99,8 @@ class ContentContinuation
             ->where(function (Builder $query) use ($episode): void {
                 $query->where('published_at', '>', $episode->published_at)
                     ->orWhere(function (Builder $query) use ($episode): void {
-                        $query->where('published_at', $episode->published_at)->where('id', '>', $episode->id);
+                        $query->where('published_at', $episode->published_at)
+                            ->where('id', '>', $episode->id);
                     });
             })
             ->oldest('published_at')

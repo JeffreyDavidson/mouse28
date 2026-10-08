@@ -15,7 +15,9 @@ use function Pest\Livewire\livewire;
 pest()->use(RefreshDatabase::class);
 
 test('an administrator can render the category edit page', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     get(CategoryResource::getUrl('edit', ['record' => Category::factory()->create()]))
         ->assertOk();
@@ -23,41 +25,53 @@ test('an administrator can render the category edit page', function (): void {
 
 test('an administrator can rename a category and keep its slug', function (): void {
     $category = Category::factory()->create(['slug' => 'sample-topic']);
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(EditCategory::class, ['record' => $category->getRouteKey()])
         ->fillForm(['name' => 'Renamed Topic', 'description' => 'Updated description.'])
         ->call('save')
         ->assertHasNoFormErrors();
 
-    expect($category->refresh()->only(['name', 'slug', 'description']))->toBe([
-        'name' => 'Renamed Topic',
-        'slug' => 'sample-topic',
-        'description' => 'Updated description.',
-    ]);
+    expect($category->refresh()
+        ->only(['name', 'slug', 'description']))->toBe([
+            'name' => 'Renamed Topic',
+            'slug' => 'sample-topic',
+            'description' => 'Updated description.',
+        ]);
 });
 
 test('category editing rejects the slug of another category', function (): void {
     Category::factory()->create(['slug' => 'existing-topic']);
     $category = Category::factory()->create(['slug' => 'sample-topic']);
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(EditCategory::class, ['record' => $category->getRouteKey()])
         ->fillForm(['slug' => 'existing-topic'])
         ->call('save')
         ->assertHasFormErrors(['slug' => 'unique']);
 
-    expect($category->refresh()->slug)->toBe('sample-topic');
+    expect($category->refresh()
+        ->slug)->toBe('sample-topic');
 });
 
 test('deleting a category from its edit page keeps its posts uncategorized', function (): void {
     $category = Category::factory()->create();
-    $post = Post::factory()->for($category)->create();
-    actingAs(User::factory()->admin()->create());
+    $post = Post::factory()
+        ->for($category)
+        ->create();
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(EditCategory::class, ['record' => $category->getRouteKey()])
         ->callAction(DeleteAction::class);
 
     expect(Category::query()->find($category->id))->toBeNull()
-        ->and($post->refresh()->category_id)->toBeNull();
+        ->and($post->refresh()
+            ->category_id)
+        ->toBeNull();
 });

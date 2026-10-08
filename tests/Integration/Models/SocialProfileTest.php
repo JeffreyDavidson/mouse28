@@ -17,9 +17,12 @@ test('a social profile casts its platform and flags', function (): void {
     ])->refresh();
 
     expect($profile->platform)->toBe(SocialPlatform::TikTok)
-        ->and($profile->is_enabled)->toBeTrue()
-        ->and($profile->show_in_footer)->toBeFalse()
-        ->and($profile->sort_order)->toBe(5);
+        ->and($profile->is_enabled)
+        ->toBeTrue()
+        ->and($profile->show_in_footer)
+        ->toBeFalse()
+        ->and($profile->sort_order)
+        ->toBe(5);
 });
 
 test('profiles for the footer are enabled, flagged for the footer and ordered', function (): void {
@@ -28,14 +31,26 @@ test('profiles for the footer are enabled, flagged for the footer and ordered', 
     SocialProfile::factory()->create(['is_enabled' => false]);
     SocialProfile::factory()->create(['show_in_footer' => false]);
 
-    expect(SocialProfile::query()->forFooter()->pluck('id')->all())->toBe([$first->id, $second->id]);
+    expect(SocialProfile::query()
+        ->forFooter()
+        ->pluck('id')
+        ->all())->toBe([$first->id, $second->id]);
 });
 
 test('profiles for the contact page are enabled, flagged for the page and ordered by id within a sort order', function (): void {
-    $first = SocialProfile::factory()->onContactPage()->create(['sort_order' => 10]);
-    $second = SocialProfile::factory()->onContactPage()->create(['sort_order' => 10]);
-    SocialProfile::factory()->onContactPage()->create(['is_enabled' => false]);
+    $first = SocialProfile::factory()
+        ->onContactPage()
+        ->create(['sort_order' => 10]);
+    $second = SocialProfile::factory()
+        ->onContactPage()
+        ->create(['sort_order' => 10]);
+    SocialProfile::factory()
+        ->onContactPage()
+        ->create(['is_enabled' => false]);
     SocialProfile::factory()->create();
 
-    expect(SocialProfile::query()->forContactPage()->pluck('id')->all())->toBe([$first->id, $second->id]);
+    expect(SocialProfile::query()
+        ->forContactPage()
+        ->pluck('id')
+        ->all())->toBe([$first->id, $second->id]);
 });

@@ -22,27 +22,37 @@ use function Pest\Livewire\livewire;
 pest()->use(RefreshDatabase::class);
 
 test('previously published URLs stay locked after clearing the date and unpublishing', function (): void {
-    actingAs(User::factory()->admin()->create());
-    $record = Post::factory()->credited()->create(['slug' => 'original-public-url']);
+    actingAs(User::factory()
+        ->admin()
+        ->create());
+    $record = Post::factory()
+        ->credited()
+        ->create(['slug' => 'original-public-url']);
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->fillForm(['published_at' => null])
         ->call('save')
         ->assertHasNoFormErrors();
-    $record->refresh()->update(['status' => PublishStatus::Draft]);
+    $record->refresh()
+        ->update(['status' => PublishStatus::Draft]);
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->fillForm(['slug' => 'replacement-url'])
         ->call('save')
         ->assertHasNoFormErrors();
 
-    expect($record->refresh()->slug)->toBe('original-public-url');
+    expect($record->refresh()
+        ->slug)->toBe('original-public-url');
 });
 
 test('authenticated user can render the edit form', function (): void {
-    $post = Post::factory()->draft()->create();
+    $post = Post::factory()
+        ->draft()
+        ->create();
 
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     get(PostResource::getUrl('edit', ['record' => $post]))
         ->assertOk()
@@ -52,16 +62,23 @@ test('authenticated user can render the edit form', function (): void {
 
 test('a replaced cover is stored under posts with variants and the previous file is removed', function (): void {
     Storage::fake('public');
-    Storage::disk('public')->put('posts/previous.png', UploadedFile::fake()->image('previous.png', 1000, 525)->getContent());
-    actingAs(User::factory()->admin()->create());
-    $record = Post::factory()->credited()->create(['featured_image_path' => 'posts/previous.png']);
+    Storage::disk('public')->put('posts/previous.png', UploadedFile::fake()
+        ->image('previous.png', 1000, 525)
+        ->getContent());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
+    $record = Post::factory()
+        ->credited()
+        ->create(['featured_image_path' => 'posts/previous.png']);
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->fillForm(['featured_image_path' => [UploadedFile::fake()->image('cover.png', 1000, 525)]])
         ->call('save')
         ->assertHasNoFormErrors();
 
-    $path = (string) $record->refresh()->featured_image_path;
+    $path = (string) $record->refresh()
+        ->featured_image_path;
     expect($path)->toStartWith('posts/')
         ->not->toBe('posts/previous.png');
     Storage::disk('public')->assertExists([$path, 'posts/responsive/'.pathinfo($path, PATHINFO_FILENAME).'-480.webp']);
@@ -69,7 +86,9 @@ test('a replaced cover is stored under posts with variants and the previous file
 });
 
 test('the edit page offers no manual artwork generation action', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
     $record = Post::factory()->create(['featured_image_path' => 'posts/cover.png']);
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
@@ -77,20 +96,29 @@ test('the edit page offers no manual artwork generation action', function (): vo
 });
 
 test('published URLs cannot be changed by submitted editor state', function (): void {
-    $record = Post::factory()->credited()->create(['slug' => 'permanent-url']);
-    actingAs(User::factory()->admin()->create());
+    $record = Post::factory()
+        ->credited()
+        ->create(['slug' => 'permanent-url']);
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->fillForm(['slug' => 'replacement-url'])
         ->call('save')
         ->assertHasNoFormErrors();
 
-    expect($record->refresh()->slug)->toBe('permanent-url');
+    expect($record->refresh()
+        ->slug)->toBe('permanent-url');
 });
 
 test('draft slugs reject characters that cannot form public routes', function (): void {
-    $record = Post::factory()->draft()->create();
-    actingAs(User::factory()->admin()->create());
+    $record = Post::factory()
+        ->draft()
+        ->create();
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->fillForm(['slug' => 'Invalid/URL'])
@@ -100,8 +128,12 @@ test('draft slugs reject characters that cannot form public routes', function ()
 
 test('edit page offers a draft preview', function (): void {
     Date::setTestNow('2026-09-27 12:00:00');
-    $admin = User::factory()->admin()->create();
-    $post = Post::factory()->draft()->create();
+    $admin = User::factory()
+        ->admin()
+        ->create();
+    $post = Post::factory()
+        ->draft()
+        ->create();
 
     actingAs($admin);
 
@@ -112,10 +144,15 @@ test('edit page offers a draft preview', function (): void {
 });
 
 test('drafts with their required details can be published while advisory details are missing', function (): void {
-    $admin = User::factory()->admin()->create();
-    $record = Post::factory()->draft()->credited()->create([
-        'featured_image_path' => null,
-    ]);
+    $admin = User::factory()
+        ->admin()
+        ->create();
+    $record = Post::factory()
+        ->draft()
+        ->credited()
+        ->create([
+            'featured_image_path' => null,
+        ]);
 
     actingAs($admin);
 
@@ -123,25 +160,32 @@ test('drafts with their required details can be published while advisory details
         ->callAction('publish')
         ->assertNotified('Post published');
 
-    expect($record->refresh()->status)->toBe(PublishStatus::Published)
-        ->and($record->published_at)->not->toBeNull();
+    expect($record->refresh()
+        ->status)->toBe(PublishStatus::Published)
+        ->and($record->published_at)
+        ->not->toBeNull();
 
 });
 
 test('published content can be explicitly unpublished', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
     $record = Post::factory()->create();
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->callAction('unpublish')
         ->assertNotified('Post unpublished');
 
-    expect($record->refresh()->status)->toBe(PublishStatus::Draft);
+    expect($record->refresh()
+        ->status)->toBe(PublishStatus::Draft);
 });
 
 test('deleted content leaves the public site and can be restored by an administrator', function (): void {
     // Arrange
-    $admin = User::factory()->admin()->create();
+    $admin = User::factory()
+        ->admin()
+        ->create();
     $record = Post::factory()->create();
 
     $record->delete();
@@ -163,11 +207,16 @@ test('deleted content leaves the public site and can be restored by an administr
 });
 
 test('publishing is blocked until editorial requirements are complete', function (): void {
-    $admin = User::factory()->admin()->create();
-    $post = Post::factory()->draft()->credited()->create([
-        'excerpt' => null,
-        'featured_image_path' => null,
-    ]);
+    $admin = User::factory()
+        ->admin()
+        ->create();
+    $post = Post::factory()
+        ->draft()
+        ->credited()
+        ->create([
+            'excerpt' => null,
+            'featured_image_path' => null,
+        ]);
 
     actingAs($admin);
 
@@ -175,23 +224,38 @@ test('publishing is blocked until editorial requirements are complete', function
         ->callAction('publish')
         ->assertNotified('Post is not ready to publish');
 
-    expect($post->refresh()->status)->toBe(PublishStatus::Draft);
+    expect($post->refresh()
+        ->status)->toBe(PublishStatus::Draft);
 });
 
 test('editor loads the post authors in byline order', function (): void {
-    [$jeffrey, $cassie] = User::authors()->get()->all();
-    $record = Post::factory()->draft()->withAuthors($cassie, $jeffrey)->create();
-    actingAs(User::factory()->admin()->create());
+    [$jeffrey, $cassie] = User::authors()
+        ->get()
+        ->all();
+    $record = Post::factory()
+        ->draft()
+        ->withAuthors($cassie, $jeffrey)
+        ->create();
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->assertSchemaStateSet(['authors' => [$cassie->id, $jeffrey->id]]);
 });
 
 test('editor saves the author and category selections', function (): void {
-    [$jeffrey, $cassie] = User::authors()->get()->all();
-    $record = Post::factory()->draft()->withAuthors($jeffrey, $cassie)->create();
+    [$jeffrey, $cassie] = User::authors()
+        ->get()
+        ->all();
+    $record = Post::factory()
+        ->draft()
+        ->withAuthors($jeffrey, $cassie)
+        ->create();
     $category = Category::factory()->create();
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->assertSchemaStateSet(['category_id' => $record->category_id])
@@ -199,14 +263,20 @@ test('editor saves the author and category selections', function (): void {
         ->call('save')
         ->assertHasNoFormErrors();
 
-    expect($record->refresh()->authors->modelKeys())->toBe([$jeffrey->id])
-        ->and($record->category_id)->toBe($category->id);
+    expect($record->refresh()
+        ->authors->modelKeys())->toBe([$jeffrey->id])
+        ->and($record->category_id)
+        ->toBe($category->id);
 });
 
 test('publishing actions disappear when admin access is revoked for the post', function (bool $isDraft, string $action): void {
-    $admin = User::factory()->admin()->create();
+    $admin = User::factory()
+        ->admin()
+        ->create();
     actingAs($admin);
-    $record = $isDraft ? Post::factory()->draft()->create() : Post::factory()->create();
+    $record = $isDraft ? Post::factory()
+        ->draft()
+        ->create() : Post::factory()->create();
     $page = livewire(EditPost::class, ['record' => $record->getRouteKey()]);
 
     $admin->is_admin = false;
@@ -218,14 +288,18 @@ test('publishing actions disappear when admin access is revoked for the post', f
 ]);
 
 test('publishing actions follow whether the post is a draft, live, or scheduled', function (PublishStatus $status, ?string $publishedAt, bool $canPublish): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
     $post = Post::factory()->create(['status' => $status, 'published_at' => $publishedAt]);
 
     $page = livewire(EditPost::class, ['record' => $post->getRouteKey()]);
 
     $canPublish
-        ? $page->assertActionVisible('publish')->assertActionHidden('unpublish')
-        : $page->assertActionHidden('publish')->assertActionVisible('unpublish');
+        ? $page->assertActionVisible('publish')
+            ->assertActionHidden('unpublish')
+        : $page->assertActionHidden('publish')
+            ->assertActionVisible('unpublish');
 })->with([
     'draft' => [PublishStatus::Draft, null, true],
     'in review' => [PublishStatus::InReview, null, true],
@@ -236,21 +310,33 @@ test('publishing actions follow whether the post is a draft, live, or scheduled'
 
 test('saving after publishing keeps the publication date the action set', function (): void {
     Date::setTestNow('2026-09-25 12:00:00');
-    actingAs(User::factory()->admin()->create());
-    $post = Post::factory()->draft()->credited()->create();
+    actingAs(User::factory()
+        ->admin()
+        ->create());
+    $post = Post::factory()
+        ->draft()
+        ->credited()
+        ->create();
 
     livewire(EditPost::class, ['record' => $post->getRouteKey()])
         ->callAction('publish')
         ->call('save')
         ->assertHasNoFormErrors();
 
-    expect($post->refresh()->status)->toBe(PublishStatus::Published)
-        ->and($post->published_at?->toDateTimeString())->toBe('2026-09-25 12:00:00');
+    expect($post->refresh()
+        ->status)->toBe(PublishStatus::Published)
+        ->and($post->published_at?->toDateTimeString())
+        ->toBe('2026-09-25 12:00:00');
 });
 
 test('the official source and its review date are saved together', function (): void {
-    actingAs(User::factory()->admin()->create());
-    $post = Post::factory()->draft()->credited()->create();
+    actingAs(User::factory()
+        ->admin()
+        ->create());
+    $post = Post::factory()
+        ->draft()
+        ->credited()
+        ->create();
 
     livewire(EditPost::class, ['record' => $post->getRouteKey()])
         ->fillForm([
@@ -260,13 +346,20 @@ test('the official source and its review date are saved together', function (): 
         ->call('save')
         ->assertHasNoFormErrors();
 
-    expect($post->refresh()->source_url)->toBe('https://example.test/official-source')
-        ->and($post->last_reviewed_at?->isToday())->toBeTrue();
+    expect($post->refresh()
+        ->source_url)->toBe('https://example.test/official-source')
+        ->and($post->last_reviewed_at?->isToday())
+        ->toBeTrue();
 });
 
 test('the official source and its review date are required together', function (array $data, string $missing): void {
-    actingAs(User::factory()->admin()->create());
-    $post = Post::factory()->draft()->credited()->create(['source_url' => null, 'last_reviewed_at' => null]);
+    actingAs(User::factory()
+        ->admin()
+        ->create());
+    $post = Post::factory()
+        ->draft()
+        ->credited()
+        ->create(['source_url' => null, 'last_reviewed_at' => null]);
 
     livewire(EditPost::class, ['record' => $post->getRouteKey()])
         ->fillForm($data)
@@ -278,8 +371,13 @@ test('the official source and its review date are required together', function (
 ]);
 
 test('the edit form loads and saves the post content', function (): void {
-    actingAs(User::factory()->admin()->create());
-    $record = Post::factory()->draft()->credited()->create(['content' => 'Original post content.']);
+    actingAs(User::factory()
+        ->admin()
+        ->create());
+    $record = Post::factory()
+        ->draft()
+        ->credited()
+        ->create(['content' => 'Original post content.']);
 
     $page = livewire(EditPost::class, ['record' => $record->getRouteKey()]);
     $page->assertSchemaStateSet(['content' => 'Original post content.']);
@@ -287,37 +385,58 @@ test('the edit form loads and saves the post content', function (): void {
         ->call('save')
         ->assertHasNoFormErrors();
 
-    expect($record->refresh()->content)->toBe("## Updated\n\nNew post content.");
+    expect($record->refresh()
+        ->content)->toBe("## Updated\n\nNew post content.");
 });
 
 test('the related episodes select loads the episodes already linked', function (): void {
-    $record = Post::factory()->draft()->create();
-    $episodes = Episode::factory()->count(2)->create();
-    $record->episodes()->attach($episodes);
-    actingAs(User::factory()->admin()->create());
+    $record = Post::factory()
+        ->draft()
+        ->create();
+    $episodes = Episode::factory()
+        ->count(2)
+        ->create();
+    $record->episodes()
+        ->attach($episodes);
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->assertSchemaStateSet(['episodes' => array_map(strval(...), $episodes->modelKeys())]);
 });
 
 test('editor replaces the related episodes with the selected ones', function (): void {
-    $record = Post::factory()->draft()->credited()->create();
-    $record->episodes()->attach(Episode::factory()->create());
-    $selected = Episode::factory()->count(2)->create();
-    actingAs(User::factory()->admin()->create());
+    $record = Post::factory()
+        ->draft()
+        ->credited()
+        ->create();
+    $record->episodes()
+        ->attach(Episode::factory()->create());
+    $selected = Episode::factory()
+        ->count(2)
+        ->create();
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->fillForm(['episodes' => $selected->modelKeys()])
         ->call('save')
         ->assertHasNoFormErrors();
 
-    expect($record->refresh()->episodes->modelKeys())->toEqualCanonicalizing($selected->modelKeys());
+    expect($record->refresh()
+        ->episodes->modelKeys())->toEqualCanonicalizing($selected->modelKeys());
 });
 
 test('the SEO section saves its title and description to the SEO row', function (): void {
     // Arrange
-    actingAs(User::factory()->admin()->create());
-    $record = Post::factory()->credited()->create();
+    actingAs(User::factory()
+        ->admin()
+        ->create());
+    $record = Post::factory()
+        ->credited()
+        ->create();
 
     // Act
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
@@ -329,17 +448,25 @@ test('the SEO section saves its title and description to the SEO row', function 
         ->assertHasNoFormErrors();
 
     // Assert
-    expect($record->refresh()->seo->title)->toBe('A saved SEO title')
-        ->and($record->seo->description)->toBe('A saved SEO description.');
+    expect($record->refresh()
+        ->seo->title)->toBe('A saved SEO title')
+        ->and($record->seo->description)
+        ->toBe('A saved SEO description.');
 });
 
 test('the review section opens only when the post has review notes', function (?string $notes, bool $collapsed): void {
-    actingAs(User::factory()->admin()->create());
-    $record = Post::factory()->draft()->credited()->create(['review_notes' => $notes]);
+    actingAs(User::factory()
+        ->admin()
+        ->create());
+    $record = Post::factory()
+        ->draft()
+        ->credited()
+        ->create(['review_notes' => $notes]);
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->assertFormFieldExists('review_notes', function (Textarea $field) use ($collapsed): bool {
-            $section = $field->getContainer()->getParentComponent();
+            $section = $field->getContainer()
+                ->getParentComponent();
 
             return $section instanceof Section && $section->isCollapsed() === $collapsed;
         });
@@ -349,8 +476,13 @@ test('the review section opens only when the post has review notes', function (?
 ]);
 
 test('the edit form loads and saves the review notes', function (): void {
-    actingAs(User::factory()->admin()->create());
-    $record = Post::factory()->draft()->credited()->create(['review_notes' => 'Check the park hours.']);
+    actingAs(User::factory()
+        ->admin()
+        ->create());
+    $record = Post::factory()
+        ->draft()
+        ->credited()
+        ->create(['review_notes' => 'Check the park hours.']);
 
     livewire(EditPost::class, ['record' => $record->getRouteKey()])
         ->assertSchemaStateSet(['review_notes' => 'Check the park hours.'])
@@ -358,5 +490,6 @@ test('the edit form loads and saves the review notes', function (): void {
         ->call('save')
         ->assertHasNoFormErrors();
 
-    expect($record->refresh()->review_notes)->toBe('Hours confirmed; add the new parade time.');
+    expect($record->refresh()
+        ->review_notes)->toBe('Hours confirmed; add the new parade time.');
 });

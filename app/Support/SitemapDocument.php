@@ -12,13 +12,29 @@ class SitemapDocument
 {
     public function content(): string
     {
-        $posts = Post::published()->select(['slug', 'updated_at'])->latest('published_at')->latest('id')->get();
-        $episodes = Episode::published()->select(['slug', 'updated_at'])->latest('published_at')->latest('id')->get();
-        $issues = NewsletterIssue::published()->select(['slug', 'updated_at'])->latest('published_at')->latest('id')->get();
+        $posts = Post::published()
+            ->select(['slug', 'updated_at'])
+            ->latest('published_at')
+            ->latest('id')
+            ->get();
+        $episodes = Episode::published()
+            ->select(['slug', 'updated_at'])
+            ->latest('published_at')
+            ->latest('id')
+            ->get();
+        $issues = NewsletterIssue::published()
+            ->select(['slug', 'updated_at'])
+            ->latest('published_at')
+            ->latest('id')
+            ->get();
         $guides = (new Guide)->newCollection();
 
         if (Config::boolean('mouse28.guides_enabled')) {
-            $guides = Guide::published()->select(['slug', 'updated_at'])->latest('published_at')->latest('id')->get();
+            $guides = Guide::published()
+                ->select(['slug', 'updated_at'])
+                ->latest('published_at')
+                ->latest('id')
+                ->get();
         }
 
         $xml = '<?xml version="1.0" encoding="UTF-8"?>';

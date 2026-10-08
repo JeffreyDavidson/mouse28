@@ -59,7 +59,8 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     #[Scope]
     protected function authors(Builder $query): void
     {
-        $query->where('is_author', true)->orderBy('id');
+        $query->where('is_author', true)
+            ->orderBy('id');
     }
 
     /**
@@ -69,7 +70,11 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
      */
     public static function authorIds(): array
     {
-        return array_values(static::query()->authors()->get()->map(fn (User $author): int => $author->id)->all());
+        return array_values(static::query()
+            ->authors()
+            ->get()
+            ->map(fn (User $author): int => $author->id)
+            ->all());
     }
 
     /** @use HasFactory<UserFactory> */

@@ -11,6 +11,8 @@ class SocialProfilesComposer
 {
     public function compose(View $view): void
     {
-        $view->with('footerSocialProfiles', SocialProfile::query()->forFooter()->get());
+        $view->with('footerSocialProfiles', SocialProfile::query()
+            ->forFooter()
+            ->get());
     }
 }

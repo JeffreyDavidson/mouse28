@@ -78,13 +78,17 @@ class AppServiceProvider extends ServiceProvider
 
         FilamentTimezone::set(DisplayTimezone::name(...));
 
-        RateLimiter::for('contact-form', fn (Request $request) => Limit::perMinute(Config::integer('mouse28.rate_limits.contact_form_per_minute'))->by($request->ip())->response(fn (Request $request) => redirect()->route('contact.create')
-            ->withErrors(['contact_rate_limit' => 'Too many contact attempts. Please wait a minute and try again.'], 'contact')
-            ->withInput($request->only(['name', 'email', 'type', 'message']))));
+        RateLimiter::for('contact-form', fn (Request $request) => Limit::perMinute(Config::integer('mouse28.rate_limits.contact_form_per_minute'))
+            ->by($request->ip())
+            ->response(fn (Request $request) => redirect()->route('contact.create')
+                ->withErrors(['contact_rate_limit' => 'Too many contact attempts. Please wait a minute and try again.'], 'contact')
+                ->withInput($request->only(['name', 'email', 'type', 'message']))));
 
-        RateLimiter::for('newsletter', fn (Request $request) => Limit::perMinute(Config::integer('mouse28.rate_limits.newsletter_per_minute'))->by($request->ip())->response(fn (Request $request) => redirect(SafeReturnUrl::from($request, route('home')).'#newsletter')
-            ->withErrors(['newsletter_rate_limit' => 'Too many signup attempts. Please wait a minute and try again.'], 'newsletter')
-            ->withInput($request->only('email'))));
+        RateLimiter::for('newsletter', fn (Request $request) => Limit::perMinute(Config::integer('mouse28.rate_limits.newsletter_per_minute'))
+            ->by($request->ip())
+            ->response(fn (Request $request) => redirect(SafeReturnUrl::from($request, route('home')).'#newsletter')
+                ->withErrors(['newsletter_rate_limit' => 'Too many signup attempts. Please wait a minute and try again.'], 'newsletter')
+                ->withInput($request->only('email'))));
 
         RateLimiter::for('newsletter-delivery', fn (): Limit => Limit::perSecond(Config::integer('mouse28.rate_limits.newsletter_delivery_per_second')));
 
