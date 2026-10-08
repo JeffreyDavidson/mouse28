@@ -6,6 +6,7 @@
 @source not '../../storage';
 @source '../**/*.blade.php';
 @source '../**/*.js';
+@source '../../config/mouse28.php';
 
 @theme {
     --color-navy: #1a1040;
