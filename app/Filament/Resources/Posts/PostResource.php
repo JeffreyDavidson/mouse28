@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Posts;
 
+use App\Enums\ContentType;
 use App\Filament\Resources\Posts\Pages\CreatePost;
 use App\Filament\Resources\Posts\Pages\EditPost;
 use App\Filament\Resources\Posts\Pages\ListPosts;
@@ -11,8 +12,8 @@ use App\Models\Post;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -25,13 +26,16 @@ class PostResource extends Resource
     protected static ?string $recordTitleAttribute = 'title';
 
     #[\Override]
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedDocumentText;
-
-    #[\Override]
     protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
     #[\Override]
     protected static ?int $navigationSort = 2;
+
+    #[\Override]
+    public static function getNavigationIcon(): BackedEnum|Htmlable|string|null
+    {
+        return ContentType::Post->getIcon();
+    }
 
     public static function getGloballySearchableAttributes(): array
     {

@@ -2,6 +2,7 @@
 @import '../../fonts.css';
 @import './overrides.css';
 
+@source '../../../../app/Enums/ContentType.php';
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/components/filament/**/*';
 @source '../../../../resources/views/filament/**/*';

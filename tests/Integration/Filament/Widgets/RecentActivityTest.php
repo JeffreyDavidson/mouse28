@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ContentType;
 use App\Enums\PublishStatus;
 use App\Filament\Resources\Guides\GuideResource;
 use App\Filament\Widgets\RecentActivity;
@@ -49,13 +50,14 @@ test('activity includes guides and labels content by its publish status', functi
 
     expect($activity[$guide->title])
         ->toMatchArray([
-            'type' => 'Published guide',
+            'type' => ContentType::Guide,
+            'status' => PublishStatus::Published,
             'url' => GuideResource::getUrl('edit', ['record' => $guide]),
         ])
         ->and($activity[$post->title])
-        ->toMatchArray(['type' => 'Scheduled post'])
+        ->toMatchArray(['type' => ContentType::Post, 'status' => PublishStatus::Scheduled])
         ->and($activity[$episode->title])
-        ->toMatchArray(['type' => 'In Review episode']);
+        ->toMatchArray(['type' => ContentType::Episode, 'status' => PublishStatus::InReview]);
 });
 
 test('activity queries select only fields rendered by the widget', function (): void {
