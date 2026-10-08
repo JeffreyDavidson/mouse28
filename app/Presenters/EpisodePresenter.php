@@ -50,6 +50,12 @@ final readonly class EpisodePresenter
         return $this->episode->featured_image_url ?: $podcast->coverImageUrl();
     }
 
+    /** The episode's own artwork as the social share image, or the show's when it has none. */
+    public function shareImageUrl(PodcastPresenter $podcast): string
+    {
+        return $this->episode->featured_image_url ?: $podcast->shareImageUrl();
+    }
+
     /** The artwork's square WebP variants; null when the episode has none. */
     public function coverSrcset(): ?string
     {

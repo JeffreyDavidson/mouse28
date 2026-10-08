@@ -121,7 +121,9 @@ test('episode data uses the episode artwork as the cover', function (): void {
 
     $data = app(EpisodeShowViewModel::class)->data($episode);
 
-    expect($data['coverImage'])->toBe(Storage::disk('public')->url('episodes/cover.png'));
+    expect($data['coverImage'])->toBe(Storage::disk('public')->url('episodes/cover.png'))
+        ->and($data['shareImage'])
+        ->toBe(Storage::disk('public')->url('episodes/cover.png'));
 });
 
 test('episode data without artwork uses the bundled cover', function (): void {
@@ -129,7 +131,9 @@ test('episode data without artwork uses the bundled cover', function (): void {
 
     expect($data['coverImage'])->toBe('/images/podcast/mouse28-cover.webp')
         ->and($data['coverSrcset'])
-        ->toBeNull();
+        ->toBeNull()
+        ->and($data['shareImage'])
+        ->toBe('/images/podcast/mouse28-cover.jpg');
 });
 
 test('episode data without artwork uses the uploaded podcast cover', function (): void {
@@ -137,7 +141,9 @@ test('episode data without artwork uses the uploaded podcast cover', function ()
 
     $data = app(EpisodeShowViewModel::class)->data(Episode::factory()->create());
 
-    expect($data['coverImage'])->toBe('/storage/podcast/cover.png');
+    expect($data['coverImage'])->toBe('/storage/podcast/cover.png')
+        ->and($data['shareImage'])
+        ->toBe('/storage/podcast/cover.png');
 });
 
 test('episode data lists the show links with the episode video in place of the channel', function (): void {

@@ -2,7 +2,7 @@
     :title="($episode->seo?->title ?: $episode->title).' | Mouse28'"
     :description="$episode->seo?->description ?: Str::limit($episode->description, 160)"
     :og-title="$episode->seo?->title ?: $episode->title"
-    :og-image="$episode->featured_image_url"
+    :og-image="$shareImage"
     :robots="($isPreview ?? false) ? 'noindex,nofollow' : ($episode->seo?->robots ?: 'index,follow')"
     :dispatch-layout="true"
 >

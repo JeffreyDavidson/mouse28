@@ -16,6 +16,10 @@
         robots: 'noindex, nofollow',
         openGraphTitle: $ogTitle,
     );
+
+    // An error page has no URL of its own to point search engines at.
+    $seoTags = seo($seoData);
+    $seoTags->tags = $seoTags->tags->reject(fn (object $tag): bool => $tag instanceof \RalphJSmit\Laravel\SEO\Tags\CanonicalTag);
 @endphp
 
 <!DOCTYPE html>
@@ -23,7 +27,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    {!! seo($seoData) !!}
+    {!! $seoTags !!}
 
     @vite('resources/css/app.css')
 </head>
