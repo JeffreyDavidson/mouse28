@@ -15,14 +15,20 @@ pest()->use(RefreshDatabase::class);
 
 test('sending queues one delivery for each active reader and marks the issue sent', function (): void {
     $active = Subscriber::factory()->create();
-    Subscriber::factory()->pending()->create();
-    Subscriber::factory()->unsubscribed()->create();
+    Subscriber::factory()
+        ->pending()
+        ->create();
+    Subscriber::factory()
+        ->unsubscribed()
+        ->create();
     $issue = NewsletterIssue::factory()->create();
 
     $queued = app(SendNewsletterIssue::class)->handle($issue);
 
     expect($queued)->toBe(1)
-        ->and($issue->refresh()->wasSent())->toBeTrue();
+        ->and($issue->refresh()
+            ->wasSent())
+        ->toBeTrue();
     assertDatabaseHas('newsletter_deliveries', [
         'newsletter_issue_id' => $issue->id,
         'subscriber_id' => $active->id,
@@ -33,14 +39,20 @@ test('sending queues one delivery for each active reader and marks the issue sen
 });
 
 test('sending with no active readers queues nothing and leaves the issue unsent', function (): void {
-    Subscriber::factory()->pending()->create();
-    Subscriber::factory()->unsubscribed()->create();
+    Subscriber::factory()
+        ->pending()
+        ->create();
+    Subscriber::factory()
+        ->unsubscribed()
+        ->create();
     $issue = NewsletterIssue::factory()->create();
 
     $queued = app(SendNewsletterIssue::class)->handle($issue);
 
     expect($queued)->toBe(0)
-        ->and($issue->refresh()->wasSent())->toBeFalse();
+        ->and($issue->refresh()
+            ->wasSent())
+        ->toBeFalse();
     assertDatabaseCount('newsletter_deliveries', 0);
     assertDatabaseCount('jobs', 0);
 });
@@ -54,13 +66,21 @@ test('issues that cannot be sent are refused without queueing anything', functio
     assertDatabaseCount('newsletter_deliveries', 0);
     assertDatabaseCount('jobs', 0);
 })->with([
-    'draft' => [fn (): NewsletterIssue => NewsletterIssue::factory()->draft()->create(), 'Only published newsletter issues can be sent.'],
-    'scheduled for later' => [fn (): NewsletterIssue => NewsletterIssue::factory()->scheduled()->create(), 'Only published newsletter issues can be sent.'],
-    'already sent' => [fn (): NewsletterIssue => NewsletterIssue::factory()->sent()->create(), 'This newsletter issue has already been sent.'],
+    'draft' => [fn (): NewsletterIssue => NewsletterIssue::factory()
+        ->draft()
+        ->create(), 'Only published newsletter issues can be sent.'],
+    'scheduled for later' => [fn (): NewsletterIssue => NewsletterIssue::factory()
+        ->scheduled()
+        ->create(), 'Only published newsletter issues can be sent.'],
+    'already sent' => [fn (): NewsletterIssue => NewsletterIssue::factory()
+        ->sent()
+        ->create(), 'This newsletter issue has already been sent.'],
 ]);
 
 test('a failure while queueing leaves nothing half sent and allows a clean second try', function (): void {
-    Subscriber::factory()->count(2)->create();
+    Subscriber::factory()
+        ->count(2)
+        ->create();
     $issue = NewsletterIssue::factory()->create();
     $inserts = 0;
     DB::connection()->beforeExecuting(function (string $query) use (&$inserts): void {
@@ -71,7 +91,9 @@ test('a failure while queueing leaves nothing half sent and allows a clean secon
 
     expect(fn () => app(SendNewsletterIssue::class)->handle($issue))
         ->toThrow(RuntimeException::class, 'Synthetic queue failure.')
-        ->and($issue->refresh()->wasSent())->toBeFalse();
+        ->and($issue->refresh()
+            ->wasSent())
+        ->toBeFalse();
     assertDatabaseCount('newsletter_deliveries', 0);
     assertDatabaseCount('jobs', 0);
 

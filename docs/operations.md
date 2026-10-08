@@ -293,9 +293,9 @@ site's branch setting.
 
 ## Syncing public content locally
 
-Run `php artisan content:sync-from-production --isolated=1` from the local Mouse28 checkout to replace local published posts, guides, episodes, podcast display metadata, and their referenced public media with the current production versions. The command uses the `cold-moon` SSH alias and `/home/forge/mouse28.com/current` site path by default; override them with `MOUSE28_PRODUCTION_SSH_HOST` and `MOUSE28_PRODUCTION_SITE_PATH` when the Forge target changes.
+Run `php artisan content:sync-production --isolated=1` from the local Mouse28 checkout to replace local published posts, guides, episodes, podcast display metadata, and their referenced public media with the current production versions. The command uses the `cold-moon` SSH alias and `/home/forge/mouse28.com/current` site path by default; override them with `MOUSE28_PRODUCTION_SSH_HOST` and `MOUSE28_PRODUCTION_SITE_PATH` when the Forge target changes.
 
-The sync is one-way and refuses to run when the current application environment is production. It never exports private users, subscribers, contact submissions, credentials, or environment-specific podcast email. Local drafts and scheduled content are preserved; stale currently published local records are soft deleted.
+The sync is one-way and refuses to run when the current application environment is production, or when the local `APP_URL` is the live site's address (mouse28.com or www.mouse28.com). It never exports private users, subscribers, contact submissions, credentials, or environment-specific podcast email. Local drafts and scheduled content are preserved; stale currently published local records are soft deleted.
 
 ## Application commands
 
@@ -311,8 +311,8 @@ Use these descriptive command names for new scripts. Existing names remain alias
 | `podcasts:generate-image-variants` | Generate missing responsive variants for the podcast cover (`--force`) | — |
 | `media:repair-responsive-images` | Generate missing variants for every media type, then verify them all (`--force`) | — |
 | `media:verify-responsive-images` | Report, without writing, whether every stored image has its required variants | — |
-| `content:sync-from-production --isolated=1` | Synchronize public content and media locally | `content:sync-production` |
-| `content:export-public` | Export published content to a JSON archive | — |
+| `content:sync-production --isolated=1` | Synchronize public content and media locally | `content:sync-from-production` |
+| `content:export-public` | Export published content to a JSON archive (absolute path) | — |
 | `content:import-public` | Import a public archive into a permitted environment | — |
 
 The generate and repair commands are isolatable: a second run while one is in progress stops with a nonzero exit code. They report counts only, never media paths, and exit nonzero when any source image is missing or cannot be decoded. `content:generate-responsive-artwork` and its `content:generate-artwork` and `content:generate-post-artwork` aliases were retired with the stored media release; use the commands above.

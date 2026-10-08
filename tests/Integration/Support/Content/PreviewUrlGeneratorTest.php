@@ -21,11 +21,23 @@ test('preview links are signed slug addresses that expire after the configured h
     parse_str((string) parse_url($url, PHP_URL_QUERY), $query);
 
     expect(parse_url($url, PHP_URL_PATH))->toBe("/preview/{$path}/{$content->slug}")
-        ->and((int) $query['expires'])->toBe(Date::now()->addHours(6)->getTimestamp())
-        ->and(Request::create($url)->hasValidSignature())->toBeTrue();
+        ->and((int) $query['expires'])
+        ->toBe(Date::now()
+            ->addHours(6)
+            ->getTimestamp())
+        ->and(Request::create($url)->hasValidSignature())
+        ->toBeTrue();
 })->with([
-    'post' => [fn (): Post => Post::factory()->draft()->create(), 'posts'],
-    'guide' => [fn (): Guide => Guide::factory()->draft()->create(), 'guides'],
-    'episode' => [fn (): Episode => Episode::factory()->draft()->create(), 'episodes'],
-    'newsletter issue' => [fn (): NewsletterIssue => NewsletterIssue::factory()->draft()->create(), 'newsletter'],
+    'post' => [fn (): Post => Post::factory()
+        ->draft()
+        ->create(), 'posts'],
+    'guide' => [fn (): Guide => Guide::factory()
+        ->draft()
+        ->create(), 'guides'],
+    'episode' => [fn (): Episode => Episode::factory()
+        ->draft()
+        ->create(), 'episodes'],
+    'newsletter issue' => [fn (): NewsletterIssue => NewsletterIssue::factory()
+        ->draft()
+        ->create(), 'newsletter'],
 ]);

@@ -43,6 +43,7 @@ final class DisplayTimezone
      */
     public static function convert(?CarbonInterface $date): ?CarbonInterface
     {
-        return $date?->copy()->setTimezone(self::name());
+        return $date?->copy()
+            ->setTimezone(self::name());
     }
 }

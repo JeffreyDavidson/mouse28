@@ -44,40 +44,54 @@ function remainingLegacyEpisodeMediaColumns(): array
 beforeEach(function (): void {
     if (! Schema::hasColumn('episodes', 'audio_url')) {
         Schema::table('episodes', function (Blueprint $table): void {
-            $table->string('audio_url')->nullable();
-            $table->string('audio_path')->nullable();
-            $table->string('apple_url')->nullable();
-            $table->string('spotify_url')->nullable();
+            $table->string('audio_url')
+                ->nullable();
+            $table->string('audio_path')
+                ->nullable();
+            $table->string('apple_url')
+                ->nullable();
+            $table->string('spotify_url')
+                ->nullable();
         });
     }
 
     if (! Schema::hasColumn('podcasts', 'instagram_url')) {
         Schema::table('podcasts', function (Blueprint $table): void {
-            $table->string('instagram_url')->nullable();
-            $table->string('tiktok_url')->nullable();
+            $table->string('instagram_url')
+                ->nullable();
+            $table->string('tiktok_url')
+                ->nullable();
         });
     }
 });
 
 test('the empty legacy columns are dropped and the migration can run again', function (): void {
     $episode = Episode::factory()->create();
-    DB::table('episodes')->where('id', $episode->id)->update(['audio_url' => '', 'apple_url' => null]);
+    DB::table('episodes')
+        ->where('id', $episode->id)
+        ->update(['audio_url' => '', 'apple_url' => null]);
     DB::table('podcasts')->update(['instagram_url' => '', 'tiktok_url' => null]);
 
     runDropLegacyEpisodeMediaMigration();
     runDropLegacyEpisodeMediaMigration();
 
     expect(remainingLegacyEpisodeMediaColumns())->toBeEmpty()
-        ->and(Episode::query()->whereKey($episode->id)->exists())->toBeTrue();
+        ->and(Episode::query()
+            ->whereKey($episode->id)
+            ->exists())
+        ->toBeTrue();
 });
 
 test('an episode value in any legacy column stops the drop with nothing changed', function (string $column): void {
     $episode = Episode::factory()->create();
     $episode->delete();
-    DB::table('episodes')->where('id', $episode->id)->update([$column => 'https://example.test/legacy']);
+    DB::table('episodes')
+        ->where('id', $episode->id)
+        ->update([$column => 'https://example.test/legacy']);
 
     expect(fn () => runDropLegacyEpisodeMediaMigration())->toThrow(RuntimeException::class)
-        ->and(remainingLegacyEpisodeMediaColumns())->toHaveCount(6);
+        ->and(remainingLegacyEpisodeMediaColumns())
+        ->toHaveCount(6);
 })->with(['audio_url', 'audio_path', 'apple_url', 'spotify_url']);
 
 test('a podcast social link with no matching social profile stops the drop', function (string $column): void {
@@ -85,7 +99,8 @@ test('a podcast social link with no matching social profile stops the drop', fun
     DB::table('podcasts')->update([$column => 'https://example.test/profile']);
 
     expect(fn () => runDropLegacyEpisodeMediaMigration())->toThrow(RuntimeException::class)
-        ->and(remainingLegacyEpisodeMediaColumns())->toHaveCount(6);
+        ->and(remainingLegacyEpisodeMediaColumns())
+        ->toHaveCount(6);
 })->with(['instagram_url', 'tiktok_url']);
 
 test('a podcast social link already copied to a social profile does not stop the drop', function (): void {

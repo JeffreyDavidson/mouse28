@@ -30,7 +30,9 @@ covers(PublishStatusSelect::class);
 
 pest()->use(RefreshDatabase::class);
 
-beforeEach(fn () => actingAs(User::factory()->admin()->create()));
+beforeEach(fn () => actingAs(User::factory()
+    ->admin()
+    ->create()));
 
 dataset('status edit pages', [
     'post' => [fn () => Post::factory()->credited(), EditPost::class],
@@ -51,18 +53,21 @@ test('create forms offer only pre-publication statuses', function (string $page,
 ]);
 
 test('a published status submitted through the form is rejected', function (PostFactory|GuideFactory|EpisodeFactory|NewsletterIssueFactory $factory, string $page): void {
-    $content = $factory->draft()->createOne();
+    $content = $factory->draft()
+        ->createOne();
 
     livewire($page, ['record' => $content->getRouteKey()])
         ->fillForm(['status' => PublishStatus::Published])
         ->call('save')
         ->assertHasFormErrors(['status']);
 
-    expect($content->refresh()->publishStatus())->toBe(PublishStatus::Draft);
+    expect($content->refresh()
+        ->publishStatus())->toBe(PublishStatus::Draft);
 })->with('status edit pages');
 
 test('live and scheduled statuses are locked while the rest of the form still saves', function (PostFactory|GuideFactory|EpisodeFactory|NewsletterIssueFactory $factory, string $page, int $days, PublishStatus $status): void {
-    $content = $factory->draft()->createOne(['published_at' => Date::now()->addDays($days)]);
+    $content = $factory->draft()
+        ->createOne(['published_at' => Date::now()->addDays($days)]);
     $content->publish();
 
     livewire($page, ['record' => $content->getRouteKey()])
@@ -74,11 +79,13 @@ test('live and scheduled statuses are locked while the rest of the form still sa
 
     expect($content->refresh())
         ->title->toBe('Edited title')
-        ->and($content->publishStatus())->toBe($status);
-})->with('status edit pages')->with([
-    'published' => [-1, PublishStatus::Published],
-    'scheduled' => [1, PublishStatus::Scheduled],
-]);
+        ->and($content->publishStatus())
+        ->toBe($status);
+})->with('status edit pages')
+    ->with([
+        'published' => [-1, PublishStatus::Published],
+        'scheduled' => [1, PublishStatus::Scheduled],
+    ]);
 
 test('a forged draft status never unpublishes live content', function (): void {
     $post = Post::factory()->create(['status' => PublishStatus::Published]);
@@ -87,16 +94,21 @@ test('a forged draft status never unpublishes live content', function (): void {
         ->fillForm(['status' => PublishStatus::Draft])
         ->call('save');
 
-    expect($post->refresh()->publishStatus())->toBe(PublishStatus::Published);
+    expect($post->refresh()
+        ->publishStatus())->toBe(PublishStatus::Published);
 });
 
 test('an editor can move a draft into review', function (): void {
-    $post = Post::factory()->draft()->credited()->create();
+    $post = Post::factory()
+        ->draft()
+        ->credited()
+        ->create();
 
     livewire(EditPost::class, ['record' => $post->getRouteKey()])
         ->fillForm(['status' => PublishStatus::InReview])
         ->call('save')
         ->assertHasNoFormErrors();
 
-    expect($post->refresh()->publishStatus())->toBe(PublishStatus::InReview);
+    expect($post->refresh()
+        ->publishStatus())->toBe(PublishStatus::InReview);
 });

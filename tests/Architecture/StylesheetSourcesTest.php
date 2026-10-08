@@ -23,7 +23,10 @@ test('views only use site palette colours the theme defines', function (): void 
     $defined = array_unique($tokens[1]);
     $undefined = [];
 
-    foreach (Finder::create()->files()->in("{$root}/resources/views")->name('*.blade.php') as $file) {
+    foreach (Finder::create()
+        ->files()
+        ->in("{$root}/resources/views")
+        ->name('*.blade.php') as $file) {
         preg_match_all('/\b(?:bg|text|border|ring|outline|decoration|from|via|to|fill|stroke|divide|placeholder|accent|caret|shadow)-((?:[a-z]+-)?(?:navy|cream|gold|purple)(?:-[a-z]+)?)\b/', $file->getContents(), $matches);
 
         foreach (array_diff(array_unique($matches[1]), $defined) as $colour) {

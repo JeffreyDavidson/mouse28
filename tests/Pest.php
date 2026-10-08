@@ -1,6 +1,8 @@
 <?php
 
+use App\Models\Guide;
 use App\Models\Podcast;
+use App\Models\Post;
 use App\Support\PrimaryPodcast;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -59,3 +61,41 @@ pest()->extend(TestCase::class)
 pest()->extend(BrowserTestCase::class)
     ->use(RefreshDatabase::class)
     ->in('Browser');
+
+/**
+ * @param  array<string, mixed>  $archive
+ * @return array<array-key, mixed>
+ */
+function firstArchivedRecord(array $archive, string $type): array
+{
+    $records = $archive[$type] ?? null;
+
+    if (! is_array($records) || ! is_array($records[0] ?? null)) {
+        throw new UnexpectedValueException("The archive has no {$type}.");
+    }
+
+    return $records[0];
+}
+
+/**
+ * Returns the archive with its first record of a type changed, optionally dropping keys.
+ *
+ * @param  array<string, mixed>  $archive
+ * @param  array<string, mixed>  $changes
+ * @param  list<string>  $without
+ * @return array<string, mixed>
+ */
+function withFirstArchivedRecord(array $archive, string $type, array $changes, array $without = []): array
+{
+    $record = firstArchivedRecord($archive, $type);
+    foreach ($without as $key) {
+        unset($record[$key]);
+    }
+
+    return [...$archive, $type => [[...$record, ...$changes]]];
+}
+
+dataset('archived written content', [
+    'posts' => [fn () => Post::factory(), 'posts'],
+    'guides' => [fn () => Guide::factory(), 'guides'],
+]);

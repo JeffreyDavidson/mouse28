@@ -21,7 +21,9 @@ test('administrators see social profiles and others are forbidden', function ():
     actingAs(User::factory()->create());
     get(SocialProfileResource::getUrl())->assertForbidden();
 
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
     get(SocialProfileResource::getUrl())
         ->assertOk()
         ->assertSee(['Instagram', '@mouse28']);
@@ -30,7 +32,9 @@ test('administrators see social profiles and others are forbidden', function ():
 });
 
 test('an administrator can add a profile with sensible defaults', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(CreateSocialProfile::class)
         ->fillForm([
@@ -43,14 +47,20 @@ test('an administrator can add a profile with sensible defaults', function (): v
     $profile = SocialProfile::query()->sole();
 
     expect($profile->platform)->toBe(SocialPlatform::Facebook)
-        ->and($profile->url)->toBe('https://facebook.com/mouse28')
-        ->and($profile->is_enabled)->toBeTrue()
-        ->and($profile->show_in_footer)->toBeTrue()
-        ->and($profile->show_on_contact)->toBeFalse();
+        ->and($profile->url)
+        ->toBe('https://facebook.com/mouse28')
+        ->and($profile->is_enabled)
+        ->toBeTrue()
+        ->and($profile->show_in_footer)
+        ->toBeTrue()
+        ->and($profile->show_on_contact)
+        ->toBeFalse();
 });
 
 test('profile data is validated', function (array $data, array $errors): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(CreateSocialProfile::class)
         ->fillForm($data)
@@ -68,7 +78,9 @@ test('profile data is validated', function (array $data, array $errors): void {
 ]);
 
 test('an administrator can edit and delete a profile', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
     $profile = SocialProfile::factory()->create();
 
     livewire(EditSocialProfile::class, ['record' => $profile->getRouteKey()])
@@ -76,8 +88,10 @@ test('an administrator can edit and delete a profile', function (): void {
         ->call('save')
         ->assertHasNoFormErrors();
 
-    expect($profile->refresh()->url)->toBe('https://tiktok.com/@mouse28')
-        ->and($profile->show_on_contact)->toBeTrue();
+    expect($profile->refresh()
+        ->url)->toBe('https://tiktok.com/@mouse28')
+        ->and($profile->show_on_contact)
+        ->toBeTrue();
 
     livewire(EditSocialProfile::class, ['record' => $profile->getRouteKey()])
         ->callAction('delete');

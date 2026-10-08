@@ -17,21 +17,28 @@ test('public content archive includes only published content', function (): void
     $episode = Episode::factory()->create([
         'slug' => 'example-episode',
     ]);
-    Episode::factory()->draft()->create([
-        'title' => 'Draft Episode',
-    ]);
+    Episode::factory()
+        ->draft()
+        ->create([
+            'title' => 'Draft Episode',
+        ]);
     Post::factory()->create([
         'slug' => 'example-post',
-    ])->episodes()->attach($episode);
-    Post::factory()->draft()->create([
-        'title' => 'Draft Post',
-    ]);
+    ])->episodes()
+        ->attach($episode);
+    Post::factory()
+        ->draft()
+        ->create([
+            'title' => 'Draft Post',
+        ]);
     Guide::factory()->create([
         'slug' => 'example-guide',
     ]);
-    Guide::factory()->draft()->create([
-        'title' => 'Draft Guide',
-    ]);
+    Guide::factory()
+        ->draft()
+        ->create([
+            'title' => 'Draft Guide',
+        ]);
     Podcast::query()->create([
         'name' => 'Example Podcast',
     ]);
@@ -41,12 +48,21 @@ test('public content archive includes only published content', function (): void
     $archive = publicArchive($archivePath);
 
     expect($exitCode)->toBe(Command::SUCCESS)
-        ->and($archive['version'])->toBe(1)
-        ->and(collect(publicArchiveRecords($archive, 'posts'))->pluck('slug')->all())->toBe(['example-post'])
-        ->and(collect(publicArchiveRecords($archive, 'episodes'))->pluck('slug')->all())->toBe(['example-episode'])
-        ->and(collect(publicArchiveRecords($archive, 'guides'))->pluck('slug')->all())->toBe(['example-guide'])
-        ->and(publicArchiveRecords($archive, 'posts')[0]['episode_slugs'])->toBe(['example-episode'])
-        ->and(File::get($archivePath))->not->toContain('Draft Post', 'Draft Guide', 'Draft Episode');
+        ->and($archive['version'])
+        ->toBe(1)
+        ->and(collect(publicArchiveRecords($archive, 'posts'))->pluck('slug')
+            ->all())
+        ->toBe(['example-post'])
+        ->and(collect(publicArchiveRecords($archive, 'episodes'))->pluck('slug')
+            ->all())
+        ->toBe(['example-episode'])
+        ->and(collect(publicArchiveRecords($archive, 'guides'))->pluck('slug')
+            ->all())
+        ->toBe(['example-guide'])
+        ->and(publicArchiveRecords($archive, 'posts')[0]['episode_slugs'])
+        ->toBe(['example-episode'])
+        ->and(File::get($archivePath))
+        ->not->toContain('Draft Post', 'Draft Guide', 'Draft Episode');
 
     File::delete($archivePath);
 });
@@ -107,3 +123,13 @@ function publicArchiveRecords(array $archive, string $key): array
 
     return $result;
 }
+
+test('public content archive export refuses a relative path', function (): void {
+    $exitCode = pendingCommand('content:export-public', ['path' => 'storage/public-content.json'])
+        ->expectsOutputToContain('The public content archive path must be absolute.')
+        ->run();
+
+    expect($exitCode)->toBe(Command::FAILURE)
+        ->and(File::exists(base_path('storage/public-content.json')))
+        ->toBeFalse();
+});

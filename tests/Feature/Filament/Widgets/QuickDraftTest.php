@@ -12,7 +12,9 @@ use function Pest\Livewire\livewire;
 pest()->use(RefreshDatabase::class);
 
 test('initializes the quick draft form state for Livewire entanglement', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(QuickDraft::class)
         ->assertSet('data.title', null)
@@ -25,14 +27,19 @@ test('duplicate maximum length titles keep generated slugs within the column lim
     foreach (range(2, 9) as $suffix) {
         Post::factory()->create(['slug' => str_repeat('a', 253)."-{$suffix}"]);
     }
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(QuickDraft::class)
         ->set('data.title', $title)
         ->call('saveDraft')
         ->assertNotified();
 
-    expect(Post::query()->where('title', $title)->sole()->slug)
+    expect(Post::query()
+        ->where('title', $title)
+        ->sole()
+        ->slug)
         ->toBe(str_repeat('a', 252).'-10');
 });
 
@@ -41,7 +48,9 @@ test('an administrator can save a post draft from the dashboard widget', functio
         'title' => 'Sensory-Friendly Park Notes',
         'slug' => 'sensory-friendly-park-notes',
     ]);
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(QuickDraft::class)
         ->set('data.title', 'Sensory-Friendly Park Notes')
@@ -49,19 +58,30 @@ test('an administrator can save a post draft from the dashboard widget', functio
         ->call('saveDraft')
         ->assertNotified();
 
-    $post = Post::query()->where('excerpt', 'Ideas to develop for a future post.')->sole();
+    $post = Post::query()
+        ->where('excerpt', 'Ideas to develop for a future post.')
+        ->sole();
 
     expect($post->title)->toBe('Sensory-Friendly Park Notes')
-        ->and($post->slug)->toBe('sensory-friendly-park-notes-2')
-        ->and($post->excerpt)->toBe('Ideas to develop for a future post.')
-        ->and($post->content)->toBe('Ideas to develop for a future post.')
-        ->and($post->authors->pluck('name')->all())->toBe(['Jeffrey Davidson', 'Cassie Davidson'])
-        ->and($post->author_name)->toBe('Jeffrey & Cassie')
-        ->and($post->status)->toBe(PublishStatus::Draft);
+        ->and($post->slug)
+        ->toBe('sensory-friendly-park-notes-2')
+        ->and($post->excerpt)
+        ->toBe('Ideas to develop for a future post.')
+        ->and($post->content)
+        ->toBe('Ideas to develop for a future post.')
+        ->and($post->authors->pluck('name')
+            ->all())
+        ->toBe(['Jeffrey Davidson', 'Cassie Davidson'])
+        ->and($post->author_name)
+        ->toBe('Jeffrey & Cassie')
+        ->and($post->status)
+        ->toBe(PublishStatus::Draft);
 });
 
 test('a draft title with no letters or numbers is rejected because it cannot name the post', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(QuickDraft::class)
         ->set('data.title', '!!!')

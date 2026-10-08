@@ -24,7 +24,8 @@ class ContactController
         SendContactMessage $sendContactMessage,
     ): RedirectResponse {
         if ($request->filled('website')) {
-            return redirect()->route('contact.create')->with('success', true);
+            return redirect()->route('contact.create')
+                ->with('success', true);
         }
 
         if (! $turnstile->passes($request, Config::string('services.turnstile.contact_action'))) {
@@ -35,6 +36,7 @@ class ContactController
 
         $sendContactMessage->handle($request->toData());
 
-        return redirect()->route('contact.create')->with('success', true);
+        return redirect()->route('contact.create')
+            ->with('success', true);
     }
 }

@@ -54,8 +54,16 @@ test('copying contact messages keeps every row with its ID, timestamps and deliv
 
     runContactCopyMigration();
 
-    expect(DB::table('contact_inquiries')->orderBy('id')->get(['id', 'created_at', 'updated_at', 'email_attempted_at', 'notification_sent_at', 'confirmation_sent_at'])->map(fn (object $row): array => (array) $row)->all())
-        ->toBe(DB::table('contact_messages')->orderBy('id')->get(['id', 'created_at', 'updated_at', 'email_attempted_at', 'notification_sent_at', 'confirmation_sent_at'])->map(fn (object $row): array => (array) $row)->all());
+    expect(DB::table('contact_inquiries')
+        ->orderBy('id')
+        ->get(['id', 'created_at', 'updated_at', 'email_attempted_at', 'notification_sent_at', 'confirmation_sent_at'])
+        ->map(fn (object $row): array => (array) $row)
+        ->all())
+        ->toBe(DB::table('contact_messages')
+            ->orderBy('id')
+            ->get(['id', 'created_at', 'updated_at', 'email_attempted_at', 'notification_sent_at', 'confirmation_sent_at'])
+            ->map(fn (object $row): array => (array) $row)
+            ->all());
 });
 
 test('copying contact messages encrypts personal fields at rest', function (): void {
@@ -63,13 +71,18 @@ test('copying contact messages encrypts personal fields at rest', function (): v
 
     runContactCopyMigration();
 
-    $raw = DB::table('contact_inquiries')->where('id', 7)->first(['name', 'email', 'message']);
+    $raw = DB::table('contact_inquiries')
+        ->where('id', 7)
+        ->first(['name', 'email', 'message']);
     $inquiry = ContactInquiry::query()->findOrFail(7);
 
     expect((array) $raw)->each->not->toBeIn(['Guest Hopeful', 'guest@example.test', 'I would love to join the podcast.'])
-        ->and($inquiry->name)->toBe('Guest Hopeful')
-        ->and($inquiry->email)->toBe('guest@example.test')
-        ->and($inquiry->message)->toBe('I would love to join the podcast.');
+        ->and($inquiry->name)
+        ->toBe('Guest Hopeful')
+        ->and($inquiry->email)
+        ->toBe('guest@example.test')
+        ->and($inquiry->message)
+        ->toBe('I would love to join the podcast.');
 });
 
 test('copying contact messages maps known topics to their type and keeps the message', function (): void {
@@ -100,11 +113,14 @@ test('copying contact messages maps unread to new and read to in progress', func
 
     runContactCopyMigration();
 
-    expect(ContactInquiry::query()->orderBy('id')->pluck('status', 'id')->all())->toBe([
-        3 => ContactInquiryStatus::InProgress,
-        7 => ContactInquiryStatus::New,
-        42 => ContactInquiryStatus::InProgress,
-    ]);
+    expect(ContactInquiry::query()
+        ->orderBy('id')
+        ->pluck('status', 'id')
+        ->all())->toBe([
+            3 => ContactInquiryStatus::InProgress,
+            7 => ContactInquiryStatus::New,
+            42 => ContactInquiryStatus::InProgress,
+        ]);
 });
 
 test('copying contact messages keeps the legacy table and continues new IDs after the copied ones', function (): void {
@@ -114,5 +130,6 @@ test('copying contact messages keeps the legacy table and continues new IDs afte
     $next = ContactInquiry::factory()->create();
 
     expect(DB::table('contact_messages')->count())->toBe(3)
-        ->and($next->id)->toBeGreaterThan(42);
+        ->and($next->id)
+        ->toBeGreaterThan(42);
 });

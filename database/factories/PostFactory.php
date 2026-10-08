@@ -21,7 +21,8 @@ class PostFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => fake()->unique()->sentence(6),
+            'title' => fake()->unique()
+                ->sentence(6),
             'excerpt' => fake()->sentence(18),
             'content' => fake()->paragraphs(5, true),
             'category_id' => Category::factory(),
@@ -34,7 +35,9 @@ class PostFactory extends Factory
     public function inCategory(string $slug): static
     {
         return $this->state(fn (): array => [
-            'category_id' => Category::query()->firstOrCreate(['slug' => $slug], ['name' => Str::headline($slug)])->id,
+            'category_id' => Category::query()
+                ->firstOrCreate(['slug' => $slug], ['name' => Str::headline($slug)])
+                ->id,
         ]);
     }
 
@@ -49,7 +52,9 @@ class PostFactory extends Factory
     /** Credits the post to the first author, creating an author when none exists. */
     public function credited(): static
     {
-        return $this->withAuthors(User::authors()->first() ?? User::factory()->author()->create());
+        return $this->withAuthors(User::authors()->first() ?? User::factory()
+            ->author()
+            ->create());
     }
 
     public function draft(): static

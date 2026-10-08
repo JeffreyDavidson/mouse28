@@ -18,11 +18,13 @@ class EpisodeFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => fake()->unique()->sentence(6),
+            'title' => fake()->unique()
+                ->sentence(6),
             'description' => fake()->sentence(18),
             'show_notes' => fake()->paragraphs(3, true),
             'transcript' => fake()->paragraphs(4, true),
-            'episode_number' => fake()->unique()->numberBetween(1, 10000),
+            'episode_number' => fake()->unique()
+                ->numberBetween(1, 10000),
             'season_number' => 1,
             'duration_seconds' => 1800,
             'status' => PublishStatus::Published,

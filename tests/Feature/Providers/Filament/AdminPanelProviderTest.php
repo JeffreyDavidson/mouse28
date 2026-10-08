@@ -29,7 +29,9 @@ test('authenticated user can render the admin dashboard', function (): void {
         'https://api.resend.com/*' => Http::response(['data' => []]),
     ]);
 
-    $user = User::factory()->admin()->create();
+    $user = User::factory()
+        ->admin()
+        ->create();
 
     $response = actingAs($user)
         ->get(Dashboard::getUrl(panel: 'admin'))
@@ -79,7 +81,10 @@ test('multi factor authentication is required outside the local environment', fu
 });
 
 test('unenrolled administrators must set up authentication before accessing content', function (): void {
-    $user = User::factory()->admin()->withoutAppAuthentication()->create();
+    $user = User::factory()
+        ->admin()
+        ->withoutAppAuthentication()
+        ->create();
 
     actingAs($user)
         ->get(Dashboard::getUrl(panel: 'admin'))
@@ -93,7 +98,8 @@ test('unenrolled administrators must set up authentication before accessing cont
     Filament::setCurrentPanel(Filament::getPanel('admin'));
     $setup = livewire(SetUpRequiredMultiFactorAuthentication::class)
         ->mountAction(TestAction::make('setUpAppAuthentication')->schemaComponent(true, 'content'));
-    $action = $setup->instance()->getMountedAction();
+    $action = $setup->instance()
+        ->getMountedAction();
     expect($action)->not->toBeNull();
     $encrypted = $action?->getArguments()['encrypted'];
     assert(is_string($encrypted));
@@ -109,7 +115,8 @@ test('unenrolled administrators must set up authentication before accessing cont
         ->assertHasNoFormErrors();
 
     expect(AppAuthentication::make()->isEnabled($user->refresh()))->toBeTrue()
-        ->and($user->getAppAuthenticationRecoveryCodes())->toHaveCount(8);
+        ->and($user->getAppAuthenticationRecoveryCodes())
+        ->toHaveCount(8);
 
     actingAs($user)
         ->get(Dashboard::getUrl(panel: 'admin'))
@@ -117,7 +124,9 @@ test('unenrolled administrators must set up authentication before accessing cont
 });
 
 test('administrators can manage authentication from their profile', function (): void {
-    $user = User::factory()->admin()->create();
+    $user = User::factory()
+        ->admin()
+        ->create();
 
     actingAs($user)
         ->get(EditProfile::getUrl(panel: 'admin'))

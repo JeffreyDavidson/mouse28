@@ -14,8 +14,12 @@ test('sitemap includes published content links and excludes unpublished records'
     config()->set('mouse28.guides_enabled', true);
     $post = Post::factory()->create();
     $guide = Guide::factory()->create();
-    $draftPost = Post::factory()->draft()->create();
-    $draftGuide = Guide::factory()->draft()->create();
+    $draftPost = Post::factory()
+        ->draft()
+        ->create();
+    $draftGuide = Guide::factory()
+        ->draft()
+        ->create();
 
     $content = app(SitemapDocument::class)->content();
 
@@ -39,8 +43,12 @@ test('sitemap omits guide routes and records when guides are disabled', function
 
 test('sitemap lists the newsletter archive and only live issues', function (): void {
     $live = NewsletterIssue::factory()->create();
-    $draft = NewsletterIssue::factory()->draft()->create();
-    $scheduled = NewsletterIssue::factory()->scheduled()->create();
+    $draft = NewsletterIssue::factory()
+        ->draft()
+        ->create();
+    $scheduled = NewsletterIssue::factory()
+        ->scheduled()
+        ->create();
 
     $content = app(SitemapDocument::class)->content();
 

@@ -23,10 +23,14 @@ test('the categories table holds a name, a unique slug and an optional descripti
     $nullable = array_column(Schema::getColumns('categories'), 'nullable', 'name');
 
     expect(Schema::getColumnListing('categories'))->toEqualCanonicalizing(['id', 'name', 'slug', 'description', 'created_at', 'updated_at'])
-        ->and($nullable['name'])->toBeFalse()
-        ->and($nullable['slug'])->toBeFalse()
-        ->and($nullable['description'])->toBeTrue()
-        ->and(Schema::hasIndex('categories', ['slug'], 'unique'))->toBeTrue();
+        ->and($nullable['name'])
+        ->toBeFalse()
+        ->and($nullable['slug'])
+        ->toBeFalse()
+        ->and($nullable['description'])
+        ->toBeTrue()
+        ->and(Schema::hasIndex('categories', ['slug'], 'unique'))
+        ->toBeTrue();
 });
 
 test('the categories table rejects a duplicate slug', function (): void {

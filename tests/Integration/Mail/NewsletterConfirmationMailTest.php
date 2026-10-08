@@ -13,7 +13,8 @@ test('the confirmation mail keeps the signed link intact in plain text', functio
     $mail->assertSeeInText($url);
     $mail->assertSeeInText('This link expires in 24 hours.');
     $mail->assertSeeInText('Mouse28');
-    expect($mail->envelope()->subject)->toBe('Confirm your Mouse28 newsletter sign-up');
+    expect($mail->envelope()
+        ->subject)->toBe('Confirm your Mouse28 newsletter sign-up');
 });
 
 test('the queued confirmation mail is encrypted', function (): void {

@@ -41,7 +41,8 @@ test('received contact email uses the readable type label and replies to the sen
     $envelope = new ContactMessageReceived($inquiry)->envelope();
 
     expect($envelope->subject)->toBe("New Contact: {$label}")
-        ->and($envelope->replyTo)->toEqual([new Address('dale@example.com', 'Dale Cooper')]);
+        ->and($envelope->replyTo)
+        ->toEqual([new Address('dale@example.com', 'Dale Cooper')]);
 })->with([
     'general' => [ContactType::General, 'General Question'],
     'accessibility' => [ContactType::Accessibility, 'Park Accessibility'],
@@ -61,7 +62,8 @@ test('received contact email carries a mouse28 notification idempotency key', fu
     $createdAt = Date::parse('2026-10-02 12:00:00');
     $inquiry->created_at = $createdAt;
 
-    $headers = new ContactMessageReceived($inquiry)->headers()->text;
+    $headers = new ContactMessageReceived($inquiry)->headers()
+        ->text;
 
     expect($headers['Resend-Idempotency-Key'])->toBe('mouse28-contact-'.hash('sha256', "https://mouse28.test|7|{$createdAt->toISOString()}").'-notification');
 });

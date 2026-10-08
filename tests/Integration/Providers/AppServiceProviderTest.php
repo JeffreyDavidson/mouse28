@@ -78,7 +78,8 @@ test('production database protection cannot be bypassed with force', function (s
 
         // Assert
         expect($result)->toBe(1)
-            ->and(Artisan::output())->toContain('prohibited from running');
+            ->and(Artisan::output())
+            ->toContain('prohibited from running');
     } finally {
         DB::prohibitDestructiveCommands(false);
     }
@@ -86,7 +87,9 @@ test('production database protection cannot be bypassed with force', function (s
 
 test('Nightwatch identifies administrators by a keyed digest without their profile details', function (): void {
     // Arrange
-    $admin = User::factory()->admin()->make(['id' => 42, 'name' => 'Private Administrator', 'email' => 'private@example.test']);
+    $admin = User::factory()
+        ->admin()
+        ->make(['id' => 42, 'name' => 'Private Administrator', 'email' => 'private@example.test']);
     config()->set('app.key', 'private-application-key');
     $resolver = app(Core::class)->userDetailsResolver
         ?? throw new UnexpectedValueException('The Nightwatch user resolver is not registered.');
@@ -96,7 +99,8 @@ test('Nightwatch identifies administrators by a keyed digest without their profi
 
     // Assert
     expect($userDetails)->toBe(['id' => hash_hmac('sha256', '42', 'private-application-key')])
-        ->and(serialize($userDetails))->not->toContain('Private Administrator', 'private@example.test');
+        ->and(serialize($userDetails))
+        ->not->toContain('Private Administrator', 'private@example.test');
 });
 
 test('newsletter deliveries are limited to the configured emails per second', function (): void {
@@ -109,7 +113,8 @@ test('newsletter deliveries are limited to the configured emails per second', fu
     }
 
     expect($limit->maxAttempts)->toBe(3)
-        ->and($limit->decaySeconds)->toBe(1);
+        ->and($limit->decaySeconds)
+        ->toBe(1);
 });
 
 test('Filament upgrades keep published assets at the committed non-executable file mode', function (): void {

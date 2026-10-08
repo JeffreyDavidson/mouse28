@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Support\PublicContentArchive;
+use App\Services\ContentArchive\PublicContentArchiveExporter;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -15,9 +15,15 @@ use Throwable;
 #[Description('Export only currently published Mouse28 content and public podcast metadata')]
 class ExportPublicContent extends Command
 {
-    public function handle(PublicContentArchive $archive): int
+    public function handle(PublicContentArchiveExporter $archive): int
     {
-        $path = (string) $this->argument('path');
+        $path = $this->argument('path');
+
+        if (! is_string($path) || ! str_starts_with($path, '/')) {
+            $this->error('The public content archive path must be absolute.');
+
+            return self::FAILURE;
+        }
 
         try {
             File::ensureDirectoryExists(dirname($path));

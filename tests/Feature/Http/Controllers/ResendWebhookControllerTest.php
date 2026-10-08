@@ -56,7 +56,8 @@ test('a verified complaint suppresses the subscriber', function (): void {
 
     postWebhook(complaintEvent($reader->email))->assertNoContent();
 
-    expect($reader->refresh()->isSuppressed())->toBeTrue();
+    expect($reader->refresh()
+        ->isSuppressed())->toBeTrue();
 });
 
 test('a verified event we do not use is accepted and ignored', function (): void {
@@ -64,7 +65,8 @@ test('a verified event we do not use is accepted and ignored', function (): void
 
     postWebhook(['type' => 'email.delivered', 'data' => ['to' => [$reader->email]]])->assertNoContent();
 
-    expect($reader->refresh()->isActive())->toBeTrue();
+    expect($reader->refresh()
+        ->isActive())->toBeTrue();
 });
 
 test('a repeated delivery is harmless', function (): void {
@@ -73,7 +75,9 @@ test('a repeated delivery is harmless', function (): void {
     postWebhook(complaintEvent($reader->email))->assertNoContent();
     postWebhook(complaintEvent($reader->email))->assertNoContent();
 
-    expect(Subscriber::query()->whereNotNull('suppressed_at')->count())->toBe(1);
+    expect(Subscriber::query()
+        ->whereNotNull('suppressed_at')
+        ->count())->toBe(1);
 });
 
 test('requests with a bad signature are rejected and change nothing', function (string $case): void {
@@ -88,7 +92,8 @@ test('requests with a bad signature are rejected and change nothing', function (
 
     call('POST', route('webhooks.resend'), [], [], [], $server, $body)->assertForbidden();
 
-    expect($reader->refresh()->isActive())->toBeTrue();
+    expect($reader->refresh()
+        ->isActive())->toBeTrue();
 })->with(['missing headers', 'old timestamp', 'wrong secret', 'tampered body']);
 
 test('a header carrying an old signature beside the valid one is accepted', function (): void {
@@ -103,7 +108,8 @@ test('a header carrying an old signature beside the valid one is accepted', func
 
     // Assert
     $response->assertNoContent();
-    expect($reader->refresh()->isSuppressed())->toBeTrue();
+    expect($reader->refresh()
+        ->isSuppressed())->toBeTrue();
 });
 
 test('a malformed signature header is rejected with forbidden instead of an error', function (string $signature): void {
@@ -117,7 +123,8 @@ test('a malformed signature header is rejected with forbidden instead of an erro
 
     // Assert
     $response->assertForbidden();
-    expect($reader->refresh()->isActive())->toBeTrue();
+    expect($reader->refresh()
+        ->isActive())->toBeTrue();
 })->with([
     'a version with no signature' => ['v1'],
     'an empty signature' => ['v1,'],
@@ -133,7 +140,8 @@ test('an unconfigured secret answers service unavailable', function (?string $se
 
     postWebhook(complaintEvent($reader->email))->assertServiceUnavailable();
 
-    expect($reader->refresh()->isActive())->toBeTrue();
+    expect($reader->refresh()
+        ->isActive())->toBeTrue();
 })->with([null, '']);
 
 test('a signed body that is not JSON is rejected', function (): void {
@@ -146,7 +154,8 @@ test('the endpoint uses no session or forgery middleware', function (): void {
     $route = Route::getRoutes()->getByName('webhooks.resend');
 
     expect($route?->excludedMiddleware())->toContain('web')
-        ->and($route?->gatherMiddleware())->toContain('throttle:resend-webhook');
+        ->and($route?->gatherMiddleware())
+        ->toContain('throttle:resend-webhook');
 });
 
 test('the endpoint is rate limited per address', function (): void {

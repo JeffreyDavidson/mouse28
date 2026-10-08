@@ -14,7 +14,9 @@ use function Pest\Livewire\livewire;
 pest()->use(RefreshDatabase::class);
 
 test('authenticated user can render the resource listing', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     get(GuideResource::getUrl())
         ->assertOk()
@@ -24,7 +26,9 @@ test('authenticated user can render the resource listing', function (): void {
 });
 
 test('content table shows readiness and the persisted publish status', function (): void {
-    $admin = User::factory()->admin()->create();
+    $admin = User::factory()
+        ->admin()
+        ->create();
     Guide::factory()->create(['status' => PublishStatus::InReview]);
 
     actingAs($admin);
@@ -36,10 +40,16 @@ test('content table shows readiness and the persisted publish status', function 
 });
 
 test('draft and scheduled tabs filter guides', function (): void {
-    $draft = Guide::factory()->draft()->create();
+    $draft = Guide::factory()
+        ->draft()
+        ->create();
     $inReview = Guide::factory()->create(['status' => PublishStatus::InReview]);
-    $scheduled = Guide::factory()->scheduled()->create();
-    actingAs(User::factory()->admin()->create());
+    $scheduled = Guide::factory()
+        ->scheduled()
+        ->create();
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(ListGuides::class)
         ->set('activeTab', 'drafts')
@@ -52,15 +62,22 @@ test('draft and scheduled tabs filter guides', function (): void {
 
 test('header does not count scheduled guides as published', function (): void {
     Guide::factory()->create();
-    Guide::factory()->scheduled()->create();
-    Guide::factory()->draft()->create();
+    Guide::factory()
+        ->scheduled()
+        ->create();
+    Guide::factory()
+        ->draft()
+        ->create();
     Guide::factory()->create(['status' => PublishStatus::InReview]);
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     $page = livewire(ListGuides::class);
     $component = $page->instance();
 
-    expect($component->getHeader()?->getData())
+    expect($component->getHeader()
+        ?->getData())
         ->toMatchArray([
             'published' => 1,
             'drafts' => 2,
@@ -68,7 +85,9 @@ test('header does not count scheduled guides as published', function (): void {
 });
 
 test('the review due filter and source review column show guides that need review', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
     $due = Guide::factory()->create(['last_reviewed_at' => null]);
     $current = Guide::factory()->create(['last_reviewed_at' => today()]);
 
@@ -80,9 +99,13 @@ test('the review due filter and source review column show guides that need revie
 });
 
 test('the review due filter counts published guides only, like the review due tab and dashboard', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
     $publishedDue = Guide::factory()->create(['last_reviewed_at' => null]);
-    $draftDue = Guide::factory()->draft()->create(['last_reviewed_at' => null]);
+    $draftDue = Guide::factory()
+        ->draft()
+        ->create(['last_reviewed_at' => null]);
 
     livewire(ListGuides::class)
         ->filterTable('review_due')
@@ -91,11 +114,21 @@ test('the review due filter counts published guides only, like the review due ta
 });
 
 test('the guides table filters by author', function (): void {
-    [$jeffrey, $cassie] = User::authors()->get()->all();
-    $byJeffrey = Guide::factory()->withAuthors($jeffrey)->create();
-    $byBoth = Guide::factory()->withAuthors($jeffrey, $cassie)->create();
-    $byCassie = Guide::factory()->withAuthors($cassie)->create();
-    actingAs(User::factory()->admin()->create());
+    [$jeffrey, $cassie] = User::authors()
+        ->get()
+        ->all();
+    $byJeffrey = Guide::factory()
+        ->withAuthors($jeffrey)
+        ->create();
+    $byBoth = Guide::factory()
+        ->withAuthors($jeffrey, $cassie)
+        ->create();
+    $byCassie = Guide::factory()
+        ->withAuthors($cassie)
+        ->create();
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(ListGuides::class)
         ->filterTable('authors', $cassie->id)
@@ -104,11 +137,21 @@ test('the guides table filters by author', function (): void {
 });
 
 test('global search finds guides by author name', function (): void {
-    [$jeffrey, $cassie] = User::authors()->get()->all();
-    $byJeffrey = Guide::factory()->withAuthors($jeffrey)->create(['title' => 'Sample guide one']);
-    Guide::factory()->withAuthors($cassie)->create(['title' => 'Sample guide two']);
-    actingAs(User::factory()->admin()->create());
+    [$jeffrey, $cassie] = User::authors()
+        ->get()
+        ->all();
+    $byJeffrey = Guide::factory()
+        ->withAuthors($jeffrey)
+        ->create(['title' => 'Sample guide one']);
+    Guide::factory()
+        ->withAuthors($cassie)
+        ->create(['title' => 'Sample guide two']);
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
-    expect(GuideResource::getGlobalSearchResults('Jeffrey')->pluck('title')->all())
+    expect(GuideResource::getGlobalSearchResults('Jeffrey')
+        ->pluck('title')
+        ->all())
         ->toBe([$byJeffrey->title]);
 });
