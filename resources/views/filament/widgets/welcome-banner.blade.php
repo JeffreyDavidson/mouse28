@@ -21,32 +21,17 @@
             </a>
         </div>
         <div class="mt-6 flex flex-col gap-3 @lg:flex-row @lg:flex-wrap">
-            <x-filament::button
-                tag="a"
-                :href="\App\Filament\Resources\Posts\PostResource::getUrl('create')"
-                :icon="\Filament\Support\Icons\Heroicon::OutlinedPlus"
-                class="min-h-12"
-            >
-                New Post
-            </x-filament::button>
-            <x-filament::button
-                tag="a"
-                :href="\App\Filament\Resources\Episodes\EpisodeResource::getUrl('create')"
-                color="gray"
-                :icon="\Filament\Support\Icons\Heroicon::OutlinedMicrophone"
-                class="min-h-12"
-            >
-                New Episode
-            </x-filament::button>
-            <x-filament::button
-                tag="a"
-                :href="\App\Filament\Resources\Guides\GuideResource::getUrl('create')"
-                color="gray"
-                :icon="\Filament\Support\Icons\Heroicon::OutlinedBookOpen"
-                class="min-h-12"
-            >
-                New Guide
-            </x-filament::button>
+            @foreach ($this->getCreateLinks() as $link)
+                <x-filament::button
+                    tag="a"
+                    :href="$link['url']"
+                    :color="$loop->first ? 'primary' : 'gray'"
+                    :icon="$loop->first ? \Filament\Support\Icons\Heroicon::OutlinedPlus : $link['type']->getIcon()"
+                    class="min-h-12"
+                >
+                    {{ $link['label'] }}
+                </x-filament::button>
+            @endforeach
         </div>
     </x-filament.dashboard-panel>
 </x-filament-widgets::widget>

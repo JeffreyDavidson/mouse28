@@ -9,25 +9,13 @@
                     <dt class="text-mouse-navy/75 flex items-center gap-2 truncate text-base font-medium @lg:text-sm">
                         <x-filament::icon
                             :icon="$stat['icon']"
-                            @class([
-                                'size-5 shrink-0',
-                                'text-mouse-purple' => $stat['color'] === 'purple',
-                                'text-mouse-purple-light' => $stat['color'] === 'purple-light',
-                                'text-mouse-gold-dark' => $stat['color'] === 'gold',
-                                'text-mouse-teal' => $stat['color'] === 'teal',
-                            ])
+                            @class(['size-5 shrink-0', $stat['textClass']])
                             aria-hidden="true"
                         />
                         <span>{{ $stat['label'] }}</span>
                     </dt>
-                    <dd @class([
-                        'mt-2 text-3xl font-semibold tabular-nums',
-                        'text-mouse-purple' => $stat['color'] === 'purple',
-                        'text-mouse-purple-light' => $stat['color'] === 'purple-light',
-                        'text-mouse-gold-dark' => $stat['color'] === 'gold',
-                        'text-mouse-teal' => $stat['color'] === 'teal',
-                    ])>
-                        {{ $stat['description'] === 'Unavailable' ? '—' : $stat['value'] }}
+                    <dd @class(['mt-2 text-3xl font-semibold tabular-nums', $stat['textClass']])>
+                        {{ $stat['value'] }}
                     </dd>
                     <dd class="text-mouse-navy/75 mt-1 text-sm">{{ $stat['description'] }}</dd>
                 </div>

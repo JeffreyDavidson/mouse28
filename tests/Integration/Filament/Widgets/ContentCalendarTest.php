@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\ContentType;
+use App\Enums\PublishStatus;
 use App\Filament\Resources\Guides\GuideResource;
 use App\Filament\Widgets\ContentCalendar;
 use App\Models\Episode;
@@ -23,8 +25,8 @@ test('timeline includes scheduled guides', function (): void {
 
     expect($timeline[$guide->title])
         ->toMatchArray([
-            'type' => 'Guide',
-            'status' => 'Scheduled',
+            'type' => ContentType::Guide,
+            'status' => PublishStatus::Scheduled,
             'url' => GuideResource::getUrl('edit', ['record' => $guide]),
         ]);
 });

@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\ContentType;
+use App\Enums\PublishStatus;
 use App\Filament\Resources\Episodes\EpisodeResource;
 use App\Filament\Resources\Guides\GuideResource;
 use App\Filament\Resources\Posts\PostResource;
@@ -39,27 +41,27 @@ test('content calendar lists the next seven days in chronological order', functi
 
     expect(collect($timeline)->map(fn (array $item): array => [
         ...$item,
-        'date' => $item['date']?->toIso8601String(),
+        'date' => $item['date']->toIso8601String(),
     ])->all())->toBe([
         [
             'title' => $episode->title,
-            'type' => 'Episode',
+            'type' => ContentType::Episode,
             'date' => $episode->published_at?->toIso8601String(),
-            'status' => 'Scheduled',
+            'status' => PublishStatus::Scheduled,
             'url' => EpisodeResource::getUrl('edit', ['record' => $episode]),
         ],
         [
             'title' => $post->title,
-            'type' => 'Post',
+            'type' => ContentType::Post,
             'date' => $post->published_at?->toIso8601String(),
-            'status' => 'Scheduled',
+            'status' => PublishStatus::Scheduled,
             'url' => PostResource::getUrl('edit', ['record' => $post]),
         ],
         [
             'title' => $guide->title,
-            'type' => 'Guide',
+            'type' => ContentType::Guide,
             'date' => $guide->published_at?->toIso8601String(),
-            'status' => 'Scheduled',
+            'status' => PublishStatus::Scheduled,
             'url' => GuideResource::getUrl('edit', ['record' => $guide]),
         ],
     ]);
@@ -91,4 +93,14 @@ test('content calendar covers the next seven Eastern days', function (): void {
 
     expect($titles)->toContain($lateTonight->title)
         ->toContain($pastMidnightUtc->title);
+});
+
+test('content calendar badges use the publish status colours', function (): void {
+    Post::factory()
+        ->scheduled()
+        ->create(['published_at' => now()->addDay()]);
+
+    livewire(ContentCalendar::class)
+        ->assertSeeHtml('fi-color-warning')
+        ->assertDontSeeHtml('fi-color-primary');
 });
