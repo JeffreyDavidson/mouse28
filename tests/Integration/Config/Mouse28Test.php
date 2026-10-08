@@ -46,3 +46,7 @@ test('post artwork styles cover the bundled categories and keep a general fallba
         ->and($styles)
         ->each->toHaveKeys(['wash', 'ink', 'stamp']);
 });
+
+test('the legacy search page size setting matches the search page size', function (): void {
+    expect(config('mouse28.search_results_per_page'))->toBe(config('search.per_page'));
+});

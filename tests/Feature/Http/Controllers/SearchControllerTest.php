@@ -23,9 +23,8 @@ test('search returns its view model data', function (): void {
         ->assertOk()
         ->assertViewIs('pages.search')
         ->assertViewHas('query')
-        ->assertViewHas('posts')
-        ->assertViewHas('guides')
-        ->assertViewHas('episodes')
+        ->assertViewHas('results')
+        ->assertViewHas('typeLabels')
         ->assertViewHas('resultCount');
 });
 
@@ -117,6 +116,7 @@ test('search paginates every content group with accurate totals', function (Post
     $factory->count(6)
         ->create(['title' => 'Sensory recent match']);
     $group = str_replace('Page', '', $pageName);
+    $nextPageUrl = route('search', ['q' => 'Sensory', $pageName => 2])."#search-{$group}";
 
     get(route('search', ['q' => 'Sensory']))
         ->assertOk()
@@ -124,10 +124,11 @@ test('search paginates every content group with accurate totals', function (Post
         ->assertSee('7 found')
         ->assertSee('Sensory recent match')
         ->assertDontSee($oldest->title)
-        ->assertViewHas($group, fn (LengthAwarePaginator $results): bool => $results->total() === 7
-            && $results->count() === 6
-            && str_contains((string) $results->nextPageUrl(), 'q=Sensory')
-            && str_contains((string) $results->nextPageUrl(), $pageName.'=2'));
+        ->assertSeeHtml(e($nextPageUrl))
+        ->assertViewHas('results', fn (array $results): bool => $results[$group] instanceof LengthAwarePaginator
+            && $results[$group]->total() === 7
+            && $results[$group]->count() === 6
+            && $results[$group]->nextPageUrl() === $nextPageUrl);
 
     get(route('search', ['q' => 'Sensory', $pageName => 2]))
         ->assertOk()
@@ -152,11 +153,14 @@ test('search paginators keep other groups on their selected page', function (): 
     get(route('search', ['q' => 'Sensory', 'postsPage' => 2]))
         ->assertOk()
         ->assertSee('14 results for “Sensory”')
-        ->assertViewHas('posts', fn (LengthAwarePaginator $posts): bool => $posts->currentPage() === 2 && $posts->count() === 1)
-        ->assertViewHas('episodes', fn (LengthAwarePaginator $episodes): bool => $episodes->currentPage() === 1
-            && $episodes->count() === 6
-            && str_contains((string) $episodes->nextPageUrl(), 'postsPage=2')
-            && str_contains((string) $episodes->nextPageUrl(), 'episodesPage=2'));
+        ->assertViewHas('results', fn (array $results): bool => $results['posts'] instanceof LengthAwarePaginator
+            && $results['episodes'] instanceof LengthAwarePaginator
+            && $results['posts']->currentPage() === 2
+            && $results['posts']->count() === 1
+            && $results['episodes']->currentPage() === 1
+            && $results['episodes']->count() === 6
+            && str_contains((string) $results['episodes']->nextPageUrl(), 'postsPage=2')
+            && str_contains((string) $results['episodes']->nextPageUrl(), 'episodesPage=2'));
 });
 
 test('out of range search pages retain pagination to existing results', function (): void {

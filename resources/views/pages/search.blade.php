@@ -121,51 +121,25 @@
                 </p>
 
                 <div class="space-y-12">
-                    @if ($posts->total() > 0)
-                        <x-search-results-section id="post-results-heading" title="Blog posts" :count="$posts->total()">
-                            @foreach ($posts as $post)
-                                <x-search-result-card
-                                    :href="route('blog.show', $post)"
-                                    :eyebrow="$post->category_label"
-                                    :title="$post->title"
-                                    :description="$post->excerpt"
-                                />
-                            @endforeach
-                            <x-slot:pagination>{{ $posts->links() }}</x-slot:pagination>
-                        </x-search-results-section>
-                    @endif
-
-                    @if ($guides->total() > 0)
-                        <x-search-results-section id="guide-results-heading" title="Guides" :count="$guides->total()">
-                            @foreach ($guides as $guide)
-                                <x-search-result-card
-                                    :href="route('guides.show', $guide)"
-                                    :eyebrow="$guide->category_label"
-                                    :title="$guide->title"
-                                    :description="$guide->excerpt"
-                                />
-                            @endforeach
-                            <x-slot:pagination>{{ $guides->links() }}</x-slot:pagination>
-                        </x-search-results-section>
-                    @endif
-
-                    @if ($episodes->total() > 0)
-                        <x-search-results-section
-                            id="episode-results-heading"
-                            title="Podcast episodes"
-                            :count="$episodes->total()"
-                        >
-                            @foreach ($episodes as $episode)
-                                <x-search-result-card
-                                    :href="route('episodes.show', $episode)"
-                                    eyebrow="Episode {{ $episode->episode_number }}"
-                                    :title="$episode->title"
-                                    :description="$episode->description"
-                                />
-                            @endforeach
-                            <x-slot:pagination>{{ $episodes->links() }}</x-slot:pagination>
-                        </x-search-results-section>
-                    @endif
+                    @foreach ($results as $type => $group)
+                        @if ($group->total() > 0)
+                            <x-search-results-section
+                                id="search-{{ $type }}"
+                                :title="$typeLabels[$type]"
+                                :count="$group->total()"
+                            >
+                                @foreach ($group as $result)
+                                    <x-search-result-card
+                                        :href="$result['url']"
+                                        :eyebrow="$result['eyebrow']"
+                                        :title="$result['title']"
+                                        :description="$result['description']"
+                                    />
+                                @endforeach
+                                <x-slot:pagination>{{ $group->links() }}</x-slot:pagination>
+                            </x-search-results-section>
+                        @endif
+                    @endforeach
                 </div>
             @endif
         </div>
