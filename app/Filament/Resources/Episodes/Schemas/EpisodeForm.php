@@ -4,23 +4,29 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\Episodes\Schemas;
 
+use App\Filament\Forms\Components\ContentTagsInput;
+use App\Filament\Forms\Components\OptimizedImageUpload;
 use App\Filament\Forms\Components\PublishDatePicker;
 use App\Filament\Forms\Components\PublishStatusSelect;
+use App\Filament\Forms\Components\SeoSection;
 use App\Filament\Forms\Components\SlugInput;
 use App\Filament\Forms\Components\SlugSourceInput;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\SpatieTagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
-use RalphJSmit\Filament\SEO\SEO;
 
 class EpisodeForm
 {
+    /** Largest value of a signed 32-bit integer column. */
+    private const int MAX_SIGNED_INT = 2147483647;
+
+    /** Largest value of an unsigned 32-bit integer column. */
+    private const int MAX_UNSIGNED_INT = 4294967295;
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -31,8 +37,7 @@ class EpisodeForm
                     ->description('Basic episode information')
                     ->columns(4)
                     ->schema([
-                        SpatieTagsInput::make('tags')
-                            ->type('content')
+                        ContentTagsInput::make('tags')
                             ->columnSpanFull(),
                         SlugSourceInput::make('title')
                             ->required()
@@ -44,14 +49,14 @@ class EpisodeForm
                         TextInput::make('episode_number')
                             ->integer()
                             ->minValue(0)
-                            ->maxValue(2147483647)
+                            ->maxValue(self::MAX_SIGNED_INT)
                             ->unique()
                             ->required()
                             ->columnSpan(1),
                         TextInput::make('season_number')
                             ->integer()
                             ->minValue(0)
-                            ->maxValue(4294967295)
+                            ->maxValue(self::MAX_UNSIGNED_INT)
                             ->default(1)
                             ->columnSpan(1),
                     ]),
@@ -86,23 +91,12 @@ class EpisodeForm
                                     ->rules(['regex:/\Ahttps:\/\/share\.transistor\.fm\/s\/[a-zA-Z0-9]+\/?\z/'])
                                     ->prefixIcon(Heroicon::OutlinedLink)
                                     ->helperText('Paste the episode share URL, such as https://share.transistor.fm/s/428d650c. Mouse28 builds the embedded player from it.'),
-                                FileUpload::make('featured_image_path')
-                                    ->label('Cover image')
-                                    ->image()
-                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                    ->maxSize(5120)
-                                    ->imageAspectRatio('1200:630')
-                                    ->automaticallyCropImagesToAspectRatio()
-                                    ->automaticallyResizeImagesMode('cover')
-                                    ->automaticallyResizeImagesToWidth('1600')
-                                    ->automaticallyResizeImagesToHeight('840')
-                                    ->disk('public')
-                                    ->directory('episodes')
-                                    ->helperText('Landscape image (1.91:1), up to 5 MB. Uploads are cropped and resized automatically.'),
+                                OptimizedImageUpload::make('featured_image_path')
+                                    ->directory('episodes'),
                                 TextInput::make('duration_seconds')
                                     ->integer()
                                     ->minValue(0)
-                                    ->maxValue(2147483647)
+                                    ->maxValue(self::MAX_SIGNED_INT)
                                     ->suffix('seconds')
                                     ->prefixIcon(Heroicon::OutlinedClock),
                             ]),
@@ -157,13 +151,7 @@ class EpisodeForm
                                     ->prefixIcon(Heroicon::OutlinedLink),
                             ]),
 
-                        Section::make('SEO')
-                            ->icon(Heroicon::OutlinedMagnifyingGlass)
-                            ->description('Search engine optimization')
-                            ->collapsed()
-                            ->schema([
-                                SEO::make(),
-                            ]),
+                        SeoSection::make(),
                     ]),
             ]);
     }
