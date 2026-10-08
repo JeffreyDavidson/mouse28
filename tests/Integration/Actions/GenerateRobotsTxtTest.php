@@ -29,8 +29,11 @@ test('every other deployment environment blocks all crawlers', function (string 
 
     expect($document)->toBe("User-agent: *\nDisallow: /\n");
 })->with([
-    'staging',
-    'local',
+    'staging' => ['staging'],
+    'local' => ['local'],
+    'unknown' => ['preview'],
+    'wrong case' => ['Production'],
+    'empty' => [''],
 ]);
 
 test('search results stay crawlable so their noindex tag can be read', function (): void {

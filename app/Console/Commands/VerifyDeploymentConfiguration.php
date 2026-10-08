@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\DeploymentEnvironment;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -19,7 +20,8 @@ class VerifyDeploymentConfiguration extends Command
         $appUrl = config('app.url');
         $canonicalUrl = config('mouse28.production_url');
         $deploymentEnvironment = config('app.deployment_environment');
-        $integrationChecks = $deploymentEnvironment === 'staging'
+        $isStaging = DeploymentEnvironment::current() === DeploymentEnvironment::Staging;
+        $integrationChecks = $isStaging
             ? [
                 [config('mail.default') === 'array', 'MAIL_MAILER must use the array transport on staging.'],
             ]
@@ -27,7 +29,7 @@ class VerifyDeploymentConfiguration extends Command
                 [$this->usesDeliveringMailer(config('mail.default')), 'MAIL_MAILER must use a delivering transport.'],
                 [$this->isConfigured(config('services.resend.key')), 'RESEND_API_KEY must be configured.'],
             ];
-        $observabilityChecks = $deploymentEnvironment === 'staging'
+        $observabilityChecks = $isStaging
             ? [
                 [config('nightwatch.enabled') === false, 'NIGHTWATCH_ENABLED must be false on staging.'],
                 [$this->isNotConfigured(config('nightwatch.token')), 'NIGHTWATCH_TOKEN must be empty on staging.'],
@@ -64,7 +66,7 @@ class VerifyDeploymentConfiguration extends Command
             [$this->usesConservativeRequestSampling(config('nightwatch.sampling.requests')), 'NIGHTWATCH_REQUEST_SAMPLE_RATE must be greater than 0 and no more than 0.1.'],
             [$this->isConfigured(config('sentry.dsn')), 'SENTRY_LARAVEL_DSN must be configured.'],
             [config('sentry.send_default_pii') === false, 'SENTRY_SEND_DEFAULT_PII must be false.'],
-            [$this->isDeploymentEnvironment($deploymentEnvironment), 'MOUSE28_DEPLOYMENT_ENVIRONMENT must be production or staging.'],
+            [DeploymentEnvironment::current() instanceof DeploymentEnvironment, 'MOUSE28_DEPLOYMENT_ENVIRONMENT must be production or staging.'],
             [config('sentry.environment') === $deploymentEnvironment, 'SENTRY_ENVIRONMENT must match MOUSE28_DEPLOYMENT_ENVIRONMENT.'],
             [$this->isConfigured(config('sentry.release')), 'SENTRY_RELEASE must be configured.'],
             [config('sentry.traces_sample_rate') === 0.0, 'SENTRY_TRACES_SAMPLE_RATE must be 0.0 until tracing is deliberately enabled.'],
@@ -142,11 +144,6 @@ class VerifyDeploymentConfiguration extends Command
     private function isNotConfigured(mixed $value): bool
     {
         return ! $this->isConfigured($value);
-    }
-
-    private function isDeploymentEnvironment(mixed $environment): bool
-    {
-        return is_string($environment) && in_array($environment, ['production', 'staging'], true);
     }
 
     private function usesPersistentDriver(mixed $driver): bool
