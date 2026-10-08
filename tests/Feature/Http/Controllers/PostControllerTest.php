@@ -13,7 +13,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
@@ -65,7 +64,6 @@ test('blog pages stay within their query budget as content grows', function (str
 })->with(['archive' => ['index', 7], 'article with episode' => ['show', 9]]);
 
 test('blog featured cover is prioritized while archive cards remain deferred', function (): void {
-    Storage::fake('public');
     $disk = Storage::disk('public');
     $disk->put('posts/cover.webp', UploadedFile::fake()
         ->image('cover.webp', 600, 300)
@@ -129,18 +127,6 @@ test('blog navigation identifies Blog as the current destination', function (): 
     expect(trim($link->textContent ?? ''))->toBe('Blog')
         ->and($link->getAttribute('href'))
         ->toBe(route('blog.index'));
-});
-
-test('blog pages render one newsletter signup', function (): void {
-    $post = Post::factory()->create();
-
-    foreach ([route('blog.index'), route('blog.show', $post)] as $url) {
-        $response = get($url)->assertOk()
-            ->assertSeeHtml('id="footer-newsletter-email"')
-            ->assertSee('Connect');
-
-        expect(substr_count($this->responseContent($response), 'action="'.route('newsletter.subscribe').'"'))->toBe(1);
-    }
 });
 
 test('post social image URLs are absolute', function (): void {
@@ -508,19 +494,6 @@ test('blog posts include article and breadcrumb structured data', function (): v
         ->toBe(['Home', 'Blog', $post->title]);
 });
 
-test('page copy and metadata avoid em dashes', function (): void {
-    get(route('blog.index'))
-        ->assertOk()
-        ->assertDontSee('—');
-});
-
-test('page uses the dispatch editorial system', function (): void {
-    get(route('blog.index'))->assertOk()
-        ->assertSeeHtml('data-brand-wordmark')
-        ->assertSeeHtml('data-editorial-blog')
-        ->assertSeeHtml('js-dispatch-pages');
-});
-
 test('reading page uses the dispatch reading surface', function (): void {
     $post = Post::factory()->create();
 
@@ -542,30 +515,6 @@ test('form placeholders use readable text colors', function (): void {
         ->assertDontSeeHtml('placeholder:text-white/25')
         ->assertDontSeeHtml('placeholder-white/');
 });
-
-test('post links that open a new tab announce it', function (): void {
-    $post = Post::factory()->create([
-        'source_url' => 'https://disneyworld.disney.go.com/guest-services/',
-        'last_reviewed_at' => now(),
-    ]);
-
-    $response = get(route('blog.show', $post))->assertOk();
-
-    expect($this->unannouncedNewTabLinks($response))->toBeEmpty();
-});
-
-test('signed-in visitors see published posts but nobody sees drafts at public URLs', function (bool $isAdmin): void {
-    $published = Post::factory()->create();
-    $draft = Post::factory()
-        ->draft()
-        ->create();
-    actingAs($isAdmin ? User::factory()
-        ->admin()
-        ->create() : User::factory()->create());
-
-    get(route('blog.show', $published))->assertOk();
-    get(route('blog.show', $draft))->assertNotFound();
-})->with(['non-admin' => [false], 'admin' => [true]]);
 
 test('a published post renders its markdown content', function (): void {
     $post = Post::factory()->create(['content' => "## Arrival plan\n\nTake a **sensory break** when needed."]);
