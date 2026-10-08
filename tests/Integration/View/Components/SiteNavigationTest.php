@@ -21,7 +21,7 @@ function navigationLinks(SiteNavigationPlacement $placement): array
 {
     return array_map(
         fn (array $link): array => [$link['label'] => $link['href']],
-        (new SiteNavigation($placement->value))->links(),
+        new SiteNavigation($placement->value)->links(),
     );
 }
 
@@ -35,9 +35,11 @@ test('the primary navigation lists the same links in the desktop, noscript and m
         ['Search' => route('search')],
     ];
 
-    expect(navigationLinks(SiteNavigationPlacement::Desktop))->toBe($expected);
-    expect(navigationLinks(SiteNavigationPlacement::Noscript))->toBe($expected);
-    expect(navigationLinks(SiteNavigationPlacement::Mobile))->toBe($expected);
+    expect(navigationLinks(SiteNavigationPlacement::Desktop))->toBe($expected)
+        ->and(navigationLinks(SiteNavigationPlacement::Noscript))
+        ->toBe($expected)
+        ->and(navigationLinks(SiteNavigationPlacement::Mobile))
+        ->toBe($expected);
 });
 
 test('the footer lists its own explore and connect links', function (): void {
@@ -47,11 +49,12 @@ test('the footer lists its own explore and connect links', function (): void {
         ['Blog' => route('blog.index')],
         ['Podcast' => route('episodes.index')],
         ['About Us' => route('about')],
-    ]);
-    expect(navigationLinks(SiteNavigationPlacement::FooterConnect))->toBe([
-        ['Contact Us' => route('contact.create')],
-        ['Privacy' => route('privacy')],
-    ]);
+    ])
+        ->and(navigationLinks(SiteNavigationPlacement::FooterConnect))
+        ->toBe([
+            ['Contact Us' => route('contact.create')],
+            ['Privacy' => route('privacy')],
+        ]);
 });
 
 test('the recovery navigation keeps the error page link set', function (): void {
@@ -84,7 +87,7 @@ test('guides are left out of the footer and recovery navigation while disabled',
 test('a link is active on its own route and on its section routes', function (string $routeName, string $activeLabel): void {
     visitRoute($routeName);
 
-    $active = collect((new SiteNavigation('mobile'))->links())
+    $active = collect(new SiteNavigation('mobile')->links())
         ->where('active', true)
         ->pluck('label')
         ->all();
@@ -106,12 +109,16 @@ test('the desktop and mobile menus mark the current page while the noscript menu
     $mobile = Blade::render('<x-site-navigation placement="mobile" />');
     $noscript = Blade::render('<x-site-navigation placement="noscript" />');
 
-    expect(substr_count($desktop, 'aria-current="page"'))->toBe(1);
-    expect($desktop)->toContain('dispatch-nav-link');
-    expect($desktop)->toContain('aria-label="Search Mouse28"');
-    expect(substr_count($mobile, 'aria-current="page"'))->toBe(1);
-    expect($mobile)->toContain('text-gold bg-white/5');
-    expect($noscript)->not->toContain('aria-current');
+    expect(substr_count($desktop, 'aria-current="page"'))->toBe(1)
+        ->and($desktop)
+        ->toContain('dispatch-nav-link')
+        ->toContain('aria-label="Search Mouse28"')
+        ->and(substr_count($mobile, 'aria-current="page"'))
+        ->toBe(1)
+        ->and($mobile)
+        ->toContain('text-gold bg-white/5')
+        ->and($noscript)
+        ->not->toContain('aria-current');
 });
 
 test('footer and recovery links render without a current page marker', function (string $placement): void {
@@ -119,8 +126,9 @@ test('footer and recovery links render without a current page marker', function 
 
     $html = Blade::render("<x-site-navigation placement=\"{$placement}\" />");
 
-    expect($html)->toContain('hover:text-gold');
-    expect($html)->not->toContain('aria-current');
+    expect($html)
+        ->toContain('hover:text-gold')
+        ->not->toContain('aria-current');
 })->with(['footer-explore', 'footer-connect', 'recovery']);
 
 test('an unknown placement is rejected', function (): void {
