@@ -38,6 +38,13 @@ test('raw HTML and unsafe links in the content never reach the email', function 
         ->assertDontSeeInHtml('javascript:', false);
 });
 
+test('a single line break in the content stays a soft break in the email html', function (): void {
+    $mail = new NewsletterIssueMail(issueForMail("First line\nSecond line"), 'https://example.test/unsubscribe');
+
+    $mail->assertSeeInHtml("First line\nSecond line", false)
+        ->assertDontSeeInHtml('First line<br', false);
+});
+
 test('a reader email offers one-click unsubscribe and a duplicate-proof key', function (): void {
     $unsubscribeUrl = 'https://example.test/newsletter/unsubscribe/1?signature=abc';
 
