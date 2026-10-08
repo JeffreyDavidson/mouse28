@@ -633,3 +633,18 @@ test('blog share links open without passing the page as referrer', function (): 
         ->assertSeeHtml('rel="noopener noreferrer"')
         ->assertDontSeeHtml('rel="noopener"');
 });
+
+test('blog share links point to the public post address', function (): void {
+    $post = Post::factory()->create(['title' => 'Sample share title']);
+    $publicUrl = urlencode(route('blog.show', $post));
+
+    $response = get(route('blog.show', $post));
+
+    $response->assertOk()
+        ->assertSeeHtml("https://twitter.com/intent/tweet?url={$publicUrl}&text=Sample+share+title\"")
+        ->assertSeeHtml("https://twitter.com/intent/tweet?url={$publicUrl}&text=Sample+share+title+%7C+Mouse28\"")
+        ->assertSeeHtml("https://www.facebook.com/sharer/sharer.php?u={$publicUrl}\"")
+        ->assertSeeHtml('aria-label="Share on X (opens in a new tab)"')
+        ->assertSeeHtml('aria-label="Share on Facebook (opens in a new tab)"')
+        ->assertSeeInOrder(['Post on X', 'Share on Facebook']);
+});
