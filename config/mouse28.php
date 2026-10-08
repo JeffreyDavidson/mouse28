@@ -14,6 +14,8 @@ return [
 
     'blog_posts_per_page' => max(1, (int) env('MOUSE28_BLOG_POSTS_PER_PAGE', 12)),
 
+    'blog_search_max_length' => max(1, (int) env('MOUSE28_BLOG_SEARCH_MAX_LENGTH', 100)),
+
     'episodes_per_page' => max(1, (int) env('MOUSE28_EPISODES_PER_PAGE', 12)),
 
     'guides_per_page' => max(1, (int) env('MOUSE28_GUIDES_PER_PAGE', 12)),
