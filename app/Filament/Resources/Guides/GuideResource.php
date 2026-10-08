@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Guides;
 
 use App\Enums\ContentType;
+use App\Enums\NavigationGroup;
 use App\Filament\Resources\Guides\Pages\CreateGuide;
 use App\Filament\Resources\Guides\Pages\EditGuide;
 use App\Filament\Resources\Guides\Pages\ListGuides;
@@ -26,7 +27,7 @@ class GuideResource extends Resource
     protected static ?string $recordTitleAttribute = 'title';
 
     #[\Override]
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
+    protected static string|\UnitEnum|null $navigationGroup = NavigationGroup::Content;
 
     #[\Override]
     protected static ?int $navigationSort = 1;
