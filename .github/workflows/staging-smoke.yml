@@ -16,7 +16,7 @@ jobs:
   smoke:
     if: vars.STAGED_RELEASES_ENABLED == 'true'
     name: Staging
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     environment: staging
 
