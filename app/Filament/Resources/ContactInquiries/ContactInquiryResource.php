@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ContactInquiries;
 
 use App\Enums\ContactInquiryStatus;
+use App\Enums\NavigationGroup;
 use App\Filament\Resources\ContactInquiries\Pages\ListContactInquiries;
 use App\Filament\Resources\ContactInquiries\Pages\ViewContactInquiry;
 use App\Filament\Resources\ContactInquiries\Tables\ContactInquiriesTable;
@@ -38,7 +39,7 @@ class ContactInquiryResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedEnvelope;
 
     #[\Override]
-    protected static string|\UnitEnum|null $navigationGroup = 'Communication';
+    protected static string|\UnitEnum|null $navigationGroup = NavigationGroup::Communication;
 
     #[\Override]
     protected static ?int $navigationSort = 1;

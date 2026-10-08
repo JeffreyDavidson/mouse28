@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\SocialProfiles;
 
+use App\Enums\NavigationGroup;
 use App\Filament\Resources\SocialProfiles\Pages\CreateSocialProfile;
 use App\Filament\Resources\SocialProfiles\Pages\EditSocialProfile;
 use App\Filament\Resources\SocialProfiles\Pages\ListSocialProfiles;
@@ -24,7 +25,7 @@ class SocialProfileResource extends Resource
     protected static string|\BackedEnum|null $navigationIcon = Heroicon::OutlinedGlobeAlt;
 
     #[\Override]
-    protected static string|\UnitEnum|null $navigationGroup = 'Settings';
+    protected static string|\UnitEnum|null $navigationGroup = NavigationGroup::Settings;
 
     #[\Override]
     protected static ?int $navigationSort = 2;
