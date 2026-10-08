@@ -18,7 +18,7 @@ use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
 
-test('previously published URLs stay locked after clearing the date and unpublishing', function (): void {
+test('previously published URLs stay locked after unpublishing and clearing the date', function (): void {
     actingAs(User::factory()
         ->admin()
         ->create());
@@ -26,15 +26,13 @@ test('previously published URLs stay locked after clearing the date and unpublis
         ->credited()
         ->create(['slug' => 'original-public-url']);
 
-    livewire(EditGuide::class, ['record' => $record->getRouteKey()])
-        ->fillForm(['published_at' => null])
-        ->call('save')
-        ->assertHasNoFormErrors();
-    $record->refresh()
-        ->update(['status' => PublishStatus::Draft]);
+    $record->update(['status' => PublishStatus::Draft]);
 
     livewire(EditGuide::class, ['record' => $record->getRouteKey()])
-        ->fillForm(['slug' => 'replacement-url'])
+        ->fillForm([
+            'published_at' => null,
+            'slug' => 'replacement-url',
+        ])
         ->call('save')
         ->assertHasNoFormErrors();
 

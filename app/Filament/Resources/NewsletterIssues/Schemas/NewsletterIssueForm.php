@@ -6,6 +6,7 @@ use App\Filament\Forms\Components\PublishDatePicker;
 use App\Filament\Forms\Components\PublishStatusSelect;
 use App\Filament\Forms\Components\SlugInput;
 use App\Filament\Forms\Components\SlugSourceInput;
+use App\Models\NewsletterIssue;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Components\Section;
@@ -54,7 +55,10 @@ class NewsletterIssueForm
                     ->schema([
                         PublishStatusSelect::make('status'),
                         PublishDatePicker::make('published_at')
-                            ->helperText('Optional. Leave blank to publish immediately, or choose a future date to schedule.'),
+                            ->disabled(fn (?NewsletterIssue $record): bool => $record?->wasSent() ?? false)
+                            ->helperText(fn (?NewsletterIssue $record): string => $record?->wasSent() === true
+                                ? 'Locked after sending, so emailed links keep working.'
+                                : 'Optional. Leave blank to publish immediately, or choose a future date to schedule.'),
                     ]),
             ]);
     }

@@ -207,6 +207,32 @@ test('sending explains when nobody is subscribed and keeps the issue unsent', fu
     $this->assertDatabaseCount('newsletter_deliveries', 0);
 });
 
+test('a sent issue keeps its publish date so emailed links keep working', function (): void {
+    $issue = NewsletterIssue::factory()
+        ->sent()
+        ->create();
+    $publishedAt = $issue->published_at;
+
+    livewire(EditNewsletterIssue::class, ['record' => $issue->getRouteKey()])
+        ->assertFormFieldDisabled('published_at')
+        ->assertSee('Locked after sending, so emailed links keep working.')
+        ->fillForm(['published_at' => Date::now()->addWeek()])
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($issue->refresh())
+        ->published_at->toEqual($publishedAt);
+});
+
+test('an issue that has not been sent keeps its publish date editable', function (): void {
+    $issue = NewsletterIssue::factory()
+        ->create();
+
+    livewire(EditNewsletterIssue::class, ['record' => $issue->getRouteKey()])
+        ->assertFormFieldEnabled('published_at')
+        ->assertDontSee('Locked after sending');
+});
+
 test('a test email goes to the admin addresses even for a draft', function (): void {
     Mail::fake();
     config()->set('mail.admin_address', 'owner@example.test');
