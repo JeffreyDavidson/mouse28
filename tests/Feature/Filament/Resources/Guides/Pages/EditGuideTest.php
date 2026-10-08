@@ -85,7 +85,7 @@ test('edit page offers a draft preview', function (): void {
 
 test('drafts with their required details can be published while advisory details are missing', function (): void {
     $admin = User::factory()->admin()->create();
-    $record = Guide::factory()->draft()->create([
+    $record = Guide::factory()->draft()->credited()->create([
         'featured_image_path' => null,
     ]);
 

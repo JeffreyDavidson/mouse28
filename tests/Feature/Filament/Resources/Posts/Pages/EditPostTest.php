@@ -113,7 +113,7 @@ test('edit page offers a draft preview', function (): void {
 
 test('drafts with their required details can be published while advisory details are missing', function (): void {
     $admin = User::factory()->admin()->create();
-    $record = Post::factory()->draft()->create([
+    $record = Post::factory()->draft()->credited()->create([
         'featured_image_path' => null,
     ]);
 
@@ -164,7 +164,7 @@ test('deleted content leaves the public site and can be restored by an administr
 
 test('publishing is blocked until editorial requirements are complete', function (): void {
     $admin = User::factory()->admin()->create();
-    $post = Post::factory()->draft()->create([
+    $post = Post::factory()->draft()->credited()->create([
         'excerpt' => null,
         'featured_image_path' => null,
     ]);
