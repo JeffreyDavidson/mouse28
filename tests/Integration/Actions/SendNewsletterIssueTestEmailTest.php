@@ -16,7 +16,9 @@ pest()->use(RefreshDatabase::class);
 test('a test email goes to every configured admin address and records nothing', function (): void {
     Mail::fake();
     config()->set('mail.admin_address', 'jeffrey@example.test, cassie@example.test, ');
-    $issue = NewsletterIssue::factory()->draft()->create();
+    $issue = NewsletterIssue::factory()
+        ->draft()
+        ->create();
 
     $recipients = app(SendNewsletterIssueTestEmail::class)->handle($issue);
 
@@ -25,6 +27,7 @@ test('a test email goes to every configured admin address and records nothing', 
         && $mail->hasTo('cassie@example.test')
         && $mail->unsubscribeUrl === null
         && $mail->idempotencyKey === null);
-    expect($issue->refresh()->wasSent())->toBeFalse();
+    expect($issue->refresh()
+        ->wasSent())->toBeFalse();
     assertDatabaseCount(NewsletterDelivery::class, 0);
 });

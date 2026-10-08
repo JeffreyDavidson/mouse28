@@ -11,7 +11,9 @@ beforeEach(function (): void {
 
 function storeResponsiveSource(string $path, int $width, int $height): void
 {
-    Storage::disk('public')->put($path, UploadedFile::fake()->image('source.png', $width, $height)->getContent());
+    Storage::disk('public')->put($path, UploadedFile::fake()
+        ->image('source.png', $width, $height)
+        ->getContent());
 }
 
 test('it generates a webp variant for every configured width without replacing the original', function (): void {
@@ -69,17 +71,27 @@ test('it reports missing and unsupported originals as failures', function (strin
     Storage::disk('public')->put('posts/broken.png', 'not an image');
 
     expect(app(ResponsiveImageVariants::class)->generate($path))->toBeFalse()
-        ->and(app(ResponsiveImageVariants::class)->hasRequiredVariants($path))->toBeFalse();
+        ->and(app(ResponsiveImageVariants::class)->hasRequiredVariants($path))
+        ->toBeFalse();
 })->with(['a missing original' => 'posts/missing.png', 'an unsupported original' => 'posts/broken.png']);
 
 test('it keeps existing variants when writing a replacement fails', function (): void {
-    $contents = UploadedFile::fake()->image('cover.png', 1280, 72)->getContent();
+    $contents = UploadedFile::fake()
+        ->image('cover.png', 1280, 72)
+        ->getContent();
     $disk = Mockery::mock(FilesystemAdapter::class);
-    $disk->expects('exists')->with('posts/cover.png')->andReturnTrue();
-    $disk->expects('get')->with('posts/cover.png')->andReturn($contents);
-    $disk->expects('put')->andReturnFalse();
+    $disk->expects('exists')
+        ->with('posts/cover.png')
+        ->andReturnTrue();
+    $disk->expects('get')
+        ->with('posts/cover.png')
+        ->andReturn($contents);
+    $disk->expects('put')
+        ->andReturnFalse();
     $disk->shouldNotReceive('delete');
-    Storage::shouldReceive('disk')->with('public')->andReturn($disk);
+    Storage::shouldReceive('disk')
+        ->with('public')
+        ->andReturn($disk);
 
     expect(app(ResponsiveImageVariants::class)->generate('posts/cover.png'))->toBeFalse();
 });

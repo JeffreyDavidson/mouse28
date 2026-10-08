@@ -20,9 +20,15 @@ class PostIndexViewModel
      */
     public function data(Request $request): array
     {
-        $category = $this->existingCategory($request->string('category')->toString())->slug ?? '';
-        $search = $request->string('q')->trim()->limit(100, '')->toString();
-        $sort = $request->string('sort', 'newest')->toString();
+        $category = $this->existingCategory($request->string('category')
+            ->toString())
+            ->slug ?? '';
+        $search = $request->string('q')
+            ->trim()
+            ->limit(100, '')
+            ->toString();
+        $sort = $request->string('sort', 'newest')
+            ->toString();
 
         if (! in_array($sort, ['newest', 'oldest'], true)) {
             $sort = 'newest';
@@ -41,7 +47,8 @@ class PostIndexViewModel
     /** @return array{pageTitle: string, pageDescription: string, canonicalUrl: string, robots: string} */
     public function metadata(string $category, string $search, string $sort, int $page): array
     {
-        $categoryLabel = $this->existingCategory($category)?->name;
+        $categoryLabel = $this->existingCategory($category)
+            ?->name;
 
         return [
             'pageTitle' => $categoryLabel ? "{$categoryLabel} | Mouse28" : 'Disney Parks Blog | Mouse28',

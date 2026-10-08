@@ -164,15 +164,18 @@ class Post extends Model implements Publishable
                 ->orWhere('featured_image_path', '')
                 ->orWhere(fn (Builder $query) => $query->missingSeo())
                 ->orWhere(function (Builder $query): void {
-                    $query->whereIn('status', [PublishStatus::Published, PublishStatus::Scheduled])->whereNull('published_at');
+                    $query->whereIn('status', [PublishStatus::Published, PublishStatus::Scheduled])
+                        ->whereNull('published_at');
                 })
                 ->orWhere(function (Builder $query): void {
-                    $query->whereNotNull('source_url')->whereNull('last_reviewed_at');
+                    $query->whereNotNull('source_url')
+                        ->whereNull('last_reviewed_at');
                 })
                 ->orWhere(function (Builder $query): void {
                     $query->whereNotNull('last_reviewed_at')
                         ->where(function (Builder $query): void {
-                            $query->whereNull('source_url')->orWhere('source_url', '');
+                            $query->whereNull('source_url')
+                                ->orWhere('source_url', '');
                         });
                 });
         });

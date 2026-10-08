@@ -24,6 +24,7 @@ class AdministratorSeeder extends Seeder
             ],
         );
 
-        $user->forceFill(['is_admin' => true])->save();
+        $user->forceFill(['is_admin' => true])
+            ->save();
     }
 }

@@ -30,7 +30,9 @@ test('action stores a contact inquiry and queues one email job without contact d
     app(SendContactMessage::class)->handle(contactMessageData());
 
     $inquiry = ContactInquiry::query()->sole();
-    $payload = DB::table('jobs')->sole()->payload;
+    $payload = DB::table('jobs')
+        ->sole()
+        ->payload;
     $encryptedCommand = data_get(json_decode(is_string($payload) ? $payload : '', true, flags: JSON_THROW_ON_ERROR), 'data.command');
 
     if (! is_string($encryptedCommand)) {
@@ -45,7 +47,8 @@ test('action stores a contact inquiry and queues one email job without contact d
         ->type->toBe(ContactType::Accessibility)
         ->message->toBe('Please help with this park question.')
         ->status->toBe(ContactInquiryStatus::New)
-        ->and($command)->toBeString()
+        ->and($command)
+        ->toBeString()
         ->toContain(SendContactInquiryEmails::class)
         ->toContain("i:{$inquiry->id};")
         ->not->toContain('Dale Cooper', 'dale@example.test', 'Please help with this park question.');

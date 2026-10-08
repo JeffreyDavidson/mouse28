@@ -68,10 +68,13 @@ class EpisodesTable
             ->filters([
                 Filter::make('missing_artwork')
                     ->query(fn (Builder $query): Builder => $query->where(function (Builder $query): void {
-                        $query->whereNull('featured_image_path')->orWhere('featured_image_path', '');
+                        $query->whereNull('featured_image_path')
+                            ->orWhere('featured_image_path', '');
                     })),
                 Filter::make('missing_seo')
-                    ->query(fn (Builder $query): Builder => $query->whereIn('episodes.id', Episode::query()->missingSeo()->select('id'))),
+                    ->query(fn (Builder $query): Builder => $query->whereIn('episodes.id', Episode::query()
+                        ->missingSeo()
+                        ->select('id'))),
                 TrashedFilter::make(),
             ])
             ->recordActions([

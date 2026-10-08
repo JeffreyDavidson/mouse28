@@ -19,8 +19,10 @@ test('the new-inquiry badge reuses its count including zero within the request',
     $second = ContactInquiryResource::getNavigationBadge();
 
     expect($first)->toBe($badge)
-        ->and($second)->toBe($badge)
-        ->and(DB::getQueryLog())->toHaveCount(1);
+        ->and($second)
+        ->toBe($badge)
+        ->and(DB::getQueryLog())
+        ->toHaveCount(1);
     DB::disableQueryLog();
 })->with([
     'new' => [ContactInquiryStatus::New, '1'],

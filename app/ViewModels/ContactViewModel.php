@@ -17,7 +17,9 @@ class ContactViewModel
             'contactEmail' => Config::string('mouse28.contact.email'),
             'contactFormAvailable' => filled(config('services.turnstile.site_key'))
                 && filled(config('services.turnstile.secret_key')),
-            'socialProfiles' => SocialProfile::query()->forContactPage()->get(),
+            'socialProfiles' => SocialProfile::query()
+                ->forContactPage()
+                ->get(),
         ];
     }
 }

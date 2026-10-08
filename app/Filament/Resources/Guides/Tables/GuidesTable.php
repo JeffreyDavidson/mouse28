@@ -26,10 +26,15 @@ class GuidesTable
             ->modifyQueryUsing(fn (Builder $query): Builder => $query->with('seo'))
             ->defaultSort('published_at', 'desc')
             ->columns([
-                TextColumn::make('title')->searchable()->limit(50),
+                TextColumn::make('title')
+                    ->searchable()
+                    ->limit(50),
                 TextColumn::make('category')
                     ->badge(),
-                TextColumn::make('last_reviewed_at')->date()->sortable()->placeholder('Not reviewed'),
+                TextColumn::make('last_reviewed_at')
+                    ->date()
+                    ->sortable()
+                    ->placeholder('Not reviewed'),
                 TextColumn::make('source_review_status')
                     ->label('Review')
                     ->state(fn (Guide $record): SourceReviewStatus => $record->sourceReviewStatus())
@@ -42,7 +47,9 @@ class GuidesTable
                     ->tooltip(fn (Guide $record): string => EditorialReadiness::summary($record)),
                 TextColumn::make('status')
                     ->badge(),
-                TextColumn::make('published_at')->date()->sortable(),
+                TextColumn::make('published_at')
+                    ->date()
+                    ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('category')->options(GuideCategory::class),
@@ -51,12 +58,18 @@ class GuidesTable
                     ->relationship('authors', 'name', fn (Builder $query): Builder => $query->where('users.is_author', true)),
                 Filter::make('missing_artwork')
                     ->query(fn (Builder $query): Builder => $query->where(function (Builder $query): void {
-                        $query->whereNull('featured_image_path')->orWhere('featured_image_path', '');
+                        $query->whereNull('featured_image_path')
+                            ->orWhere('featured_image_path', '');
                     })),
                 Filter::make('missing_seo')
-                    ->query(fn (Builder $query): Builder => $query->whereIn('guides.id', Guide::query()->missingSeo()->select('id'))),
+                    ->query(fn (Builder $query): Builder => $query->whereIn('guides.id', Guide::query()
+                        ->missingSeo()
+                        ->select('id'))),
                 Filter::make('review_due')
-                    ->query(fn (Builder $query): Builder => $query->whereIn('guides.id', Guide::query()->published()->reviewDue()->select('id'))),
+                    ->query(fn (Builder $query): Builder => $query->whereIn('guides.id', Guide::query()
+                        ->published()
+                        ->reviewDue()
+                        ->select('id'))),
                 TrashedFilter::make(),
             ])
             ->recordActions([

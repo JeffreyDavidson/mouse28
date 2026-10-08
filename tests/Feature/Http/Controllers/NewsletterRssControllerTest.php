@@ -12,8 +12,12 @@ pest()->use(RefreshDatabase::class);
 
 test('the newsletter feed is valid XML and lists only live issues', function (): void {
     $live = NewsletterIssue::factory()->create();
-    $draft = NewsletterIssue::factory()->draft()->create();
-    $scheduled = NewsletterIssue::factory()->scheduled()->create();
+    $draft = NewsletterIssue::factory()
+        ->draft()
+        ->create();
+    $scheduled = NewsletterIssue::factory()
+        ->scheduled()
+        ->create();
 
     $response = get(route('newsletter.rss'))
         ->assertOk()

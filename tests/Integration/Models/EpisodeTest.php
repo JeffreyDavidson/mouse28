@@ -11,51 +11,71 @@ use function Pest\Laravel\actingAs;
 pest()->use(RefreshDatabase::class);
 
 test('episode editorial changes record the actor and changed values only', function (): void {
-    $editor = User::factory()->admin()->create();
+    $editor = User::factory()
+        ->admin()
+        ->create();
     actingAs($editor);
     $record = Episode::factory()->create(['title' => 'Original title']);
-    $created = Activity::query()->latest('id')->firstOrFail();
+    $created = Activity::query()
+        ->latest('id')
+        ->firstOrFail();
 
     $record->update(['title' => 'Updated title']);
 
-    $updated = Activity::query()->latest('id')->firstOrFail();
+    $updated = Activity::query()
+        ->latest('id')
+        ->firstOrFail();
     expect($created->event)->toBe('created')
-        ->and($updated->event)->toBe('updated')
-        ->and($updated->log_name)->toBe('editorial')
-        ->and($updated->causer_id)->toBe($editor->id)
-        ->and($updated->subject_id)->toBe($record->id)
-        ->and($updated->attribute_changes?->all() ?? [])->toEqual([
+        ->and($updated->event)
+        ->toBe('updated')
+        ->and($updated->log_name)
+        ->toBe('editorial')
+        ->and($updated->causer_id)
+        ->toBe($editor->id)
+        ->and($updated->subject_id)
+        ->toBe($record->id)
+        ->and($updated->attribute_changes?->all() ?? [])
+        ->toEqual([
             'attributes' => ['title' => 'Updated title'],
             'old' => ['title' => 'Original title'],
         ]);
 
     $record->save();
 
-    expect(Activity::query()->whereMorphedTo('subject', $record)->count())->toBe(2);
+    expect(Activity::query()
+        ->whereMorphedTo('subject', $record)
+        ->count())->toBe(2);
 
     $record->delete();
     $record->restore();
 
-    expect(Activity::query()->whereMorphedTo('subject', $record)->pluck('event')->all())
+    expect(Activity::query()
+        ->whereMorphedTo('subject', $record)
+        ->pluck('event')
+        ->all())
         ->toBe(['created', 'updated', 'deleted', 'restored']);
 });
 
 test('episodes are ready to publish with a description and a Transistor episode URL', function (): void {
-    $episode = Episode::factory()->draft()->make([
-        'transistor_url' => 'https://share.transistor.fm/s/428d650c',
-        'show_notes' => null,
-        'featured_image_path' => null,
-        'duration_seconds' => null,
-    ]);
+    $episode = Episode::factory()
+        ->draft()
+        ->make([
+            'transistor_url' => 'https://share.transistor.fm/s/428d650c',
+            'show_notes' => null,
+            'featured_image_path' => null,
+            'duration_seconds' => null,
+        ]);
 
     expect($episode->publishingIssues())->toBeEmpty();
 });
 
 test('episodes cannot be published without each required detail', function (string $attribute, string $issue): void {
-    $episode = Episode::factory()->draft()->make([
-        'transistor_url' => 'https://share.transistor.fm/s/428d650c',
-        $attribute => null,
-    ]);
+    $episode = Episode::factory()
+        ->draft()
+        ->make([
+            'transistor_url' => 'https://share.transistor.fm/s/428d650c',
+            $attribute => null,
+        ]);
 
     expect($episode->publishingIssues())->toBe([$issue]);
 })->with([
@@ -64,7 +84,9 @@ test('episodes cannot be published without each required detail', function (stri
 ]);
 
 test('an episode has playable media with a Transistor share link or a YouTube video', function (?string $transistorUrl, ?string $youtubeUrl, bool $hasMedia): void {
-    $episode = Episode::factory()->draft()->make(['transistor_url' => $transistorUrl, 'youtube_url' => $youtubeUrl]);
+    $episode = Episode::factory()
+        ->draft()
+        ->make(['transistor_url' => $transistorUrl, 'youtube_url' => $youtubeUrl]);
 
     expect(in_array('Add a Transistor share link or a YouTube video', $episode->publishingIssues(), true))->toBe(! $hasMedia);
 })->with([
@@ -87,9 +109,12 @@ test('the Transistor player URL is built only from a share link', function (?str
 
 test('an episode relates to every post linked to it', function (): void {
     $episode = Episode::factory()->create();
-    $posts = Post::factory()->count(2)->create();
+    $posts = Post::factory()
+        ->count(2)
+        ->create();
 
-    $episode->posts()->attach($posts);
+    $episode->posts()
+        ->attach($posts);
 
     expect($episode->posts->modelKeys())->toEqualCanonicalizing($posts->modelKeys());
 });

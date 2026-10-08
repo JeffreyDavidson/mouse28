@@ -22,7 +22,8 @@ function runEpisodePostTableMigration(): void
 
 test('the pivot holds only the post and episode keys under a composite primary key', function (): void {
     expect(Schema::getColumnListing('episode_post'))->toEqualCanonicalizing(['post_id', 'episode_id'])
-        ->and(Schema::hasIndex('episode_post', ['post_id', 'episode_id'], 'primary'))->toBeTrue();
+        ->and(Schema::hasIndex('episode_post', ['post_id', 'episode_id'], 'primary'))
+        ->toBeTrue();
 });
 
 test('the pivot cascades deletes from both sides', function (): void {
@@ -33,7 +34,8 @@ test('the pivot cascades deletes from both sides', function (): void {
 
 test('running the pivot migration again keeps the table and its links', function (): void {
     $post = Post::factory()->create();
-    $post->episodes()->attach(Episode::factory()->create());
+    $post->episodes()
+        ->attach(Episode::factory()->create());
 
     runEpisodePostTableMigration();
 

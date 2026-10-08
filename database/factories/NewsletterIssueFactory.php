@@ -20,7 +20,8 @@ class NewsletterIssueFactory extends Factory
     public function definition(): array
     {
         return [
-            'title' => fake()->unique()->sentence(5),
+            'title' => fake()->unique()
+                ->sentence(5),
             'excerpt' => fake()->sentence(16),
             'content' => fake()->paragraphs(3, true),
             'status' => PublishStatus::Published,

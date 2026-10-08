@@ -22,9 +22,12 @@ beforeEach(function (): void {
         }
 
         Schema::table($table, function (Blueprint $blueprint): void {
-            $blueprint->string('meta_title')->nullable();
-            $blueprint->text('meta_description')->nullable();
-            $blueprint->string('og_image')->nullable();
+            $blueprint->string('meta_title')
+                ->nullable();
+            $blueprint->text('meta_description')
+                ->nullable();
+            $blueprint->string('og_image')
+                ->nullable();
         });
     }
 });
@@ -68,12 +71,17 @@ function legacyMetaRecord(PostFactory|EpisodeFactory|GuideFactory $factory, ?str
 {
     $record = $factory->createOne();
 
-    DB::table($record->getTable())->where('id', $record->id)->update([
-        'meta_title' => $title,
-        'meta_description' => $description,
-        'deleted_at' => $trashed ? '2026-09-01 08:00:00' : null,
-    ]);
-    DB::table('seo')->where('model_type', $record::class)->where('model_id', $record->id)->delete();
+    DB::table($record->getTable())
+        ->where('id', $record->id)
+        ->update([
+            'meta_title' => $title,
+            'meta_description' => $description,
+            'deleted_at' => $trashed ? '2026-09-01 08:00:00' : null,
+        ]);
+    DB::table('seo')
+        ->where('model_type', $record::class)
+        ->where('model_id', $record->id)
+        ->delete();
 
     return $record->id;
 }
@@ -81,7 +89,10 @@ function legacyMetaRecord(PostFactory|EpisodeFactory|GuideFactory $factory, ?str
 /** @return array{title: mixed, description: mixed}|null */
 function savedSeo(string $modelType, int $id): ?array
 {
-    $row = DB::table('seo')->where('model_type', $modelType)->where('model_id', $id)->first();
+    $row = DB::table('seo')
+        ->where('model_type', $modelType)
+        ->where('model_id', $id)
+        ->first();
 
     return $row === null ? null : ['title' => $row->title, 'description' => $row->description];
 }
@@ -102,7 +113,8 @@ test('the backfill copies meta values into SEO rows, soft-deleted records includ
 
     // Assert
     expect(savedSeo($modelType, $live))->toBe(['title' => 'Live title', 'description' => 'Live description'])
-        ->and(savedSeo($modelType, $trashed))->toBe(['title' => 'Trashed title', 'description' => null]);
+        ->and(savedSeo($modelType, $trashed))
+        ->toBe(['title' => 'Trashed title', 'description' => null]);
 })->with('seo models');
 
 test('the backfill fills the empty parts of an existing SEO row', function (PostFactory|EpisodeFactory|GuideFactory $factory, string $modelType): void {
@@ -121,14 +133,21 @@ test('the backfill never overwrites a value saved in the SEO row and can run aga
     // Arrange
     $id = legacyMetaRecord($factory, 'Legacy title', 'Legacy description');
     runSeoBackfill();
-    DB::table('seo')->where('model_type', $modelType)->where('model_id', $id)->update(['title' => 'Edited in the admin']);
+    DB::table('seo')
+        ->where('model_type', $modelType)
+        ->where('model_id', $id)
+        ->update(['title' => 'Edited in the admin']);
 
     // Act
     runSeoBackfill();
 
     // Assert
     expect(savedSeo($modelType, $id))->toBe(['title' => 'Edited in the admin', 'description' => 'Legacy description'])
-        ->and(DB::table('seo')->where('model_type', $modelType)->where('model_id', $id)->count())->toBe(1);
+        ->and(DB::table('seo')
+            ->where('model_type', $modelType)
+            ->where('model_id', $id)
+            ->count())
+        ->toBe(1);
 })->with('seo models');
 
 test('the backfill leaves records without meta values alone', function (PostFactory|EpisodeFactory|GuideFactory $factory, string $modelType): void {

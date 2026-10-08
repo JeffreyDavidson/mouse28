@@ -20,5 +20,7 @@ test('the application layout composer shares only enabled footer social profiles
 
     app('view')->callComposer($view);
 
-    expect(Collection::wrap($view->getData()['footerSocialProfiles'])->pluck('id')->all())->toBe([$shown->id]);
+    expect(Collection::wrap($view->getData()['footerSocialProfiles'])
+        ->pluck('id')
+        ->all())->toBe([$shown->id]);
 });

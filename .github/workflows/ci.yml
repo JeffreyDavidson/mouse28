@@ -75,6 +75,9 @@ jobs:
       - name: Check PHP and Blade formatting
         run: composer test:lint
 
+      - name: Check method-chain formatting
+        run: composer test:chains
+
       - name: Check JavaScript formatting
         run: npm run format:check
 

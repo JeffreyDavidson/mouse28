@@ -14,8 +14,12 @@ pest()->use(RefreshDatabase::class);
 test('the archive lists live issues newest first and hides the rest', function (): void {
     $older = NewsletterIssue::factory()->create(['title' => 'Older issue', 'published_at' => Date::now()->subDays(3)]);
     $newer = NewsletterIssue::factory()->create(['title' => 'Newer issue', 'excerpt' => 'Newer summary', 'published_at' => Date::now()->subDay()]);
-    $draft = NewsletterIssue::factory()->draft()->create(['title' => 'Draft issue']);
-    $scheduled = NewsletterIssue::factory()->scheduled()->create(['title' => 'Scheduled issue']);
+    $draft = NewsletterIssue::factory()
+        ->draft()
+        ->create(['title' => 'Draft issue']);
+    $scheduled = NewsletterIssue::factory()
+        ->scheduled()
+        ->create(['title' => 'Scheduled issue']);
     $trashed = NewsletterIssue::factory()->create(['title' => 'Trashed issue']);
     $trashed->delete();
 
@@ -44,7 +48,9 @@ test('the archive offers email and feed subscriptions and announces its feed', f
 
 test('archive pages hold the configured number of issues and each has its own canonical URL', function (): void {
     config()->set('mouse28.newsletter_issues_per_page', 2);
-    NewsletterIssue::factory()->count(3)->create();
+    NewsletterIssue::factory()
+        ->count(3)
+        ->create();
 
     get(route('newsletter.index'))
         ->assertOk()
@@ -88,8 +94,12 @@ test('a live issue renders its title, date, summary and Markdown safely', functi
 test('issues that are not live return not found', function (NewsletterIssue $issue): void {
     get(route('newsletter.issue', $issue))->assertNotFound();
 })->with([
-    'draft' => fn (): NewsletterIssue => NewsletterIssue::factory()->draft()->create(),
-    'scheduled' => fn (): NewsletterIssue => NewsletterIssue::factory()->scheduled()->create(),
+    'draft' => fn (): NewsletterIssue => NewsletterIssue::factory()
+        ->draft()
+        ->create(),
+    'scheduled' => fn (): NewsletterIssue => NewsletterIssue::factory()
+        ->scheduled()
+        ->create(),
     'trashed' => fn (): NewsletterIssue => tap(NewsletterIssue::factory()->create())->delete(),
 ]);
 

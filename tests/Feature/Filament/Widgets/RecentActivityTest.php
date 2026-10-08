@@ -24,19 +24,26 @@ test('recent activity combines content types in newest-first order and limits th
         'updated_at' => now()->subHours(2),
     ]);
 
-    Post::factory()->count(7)->create([
-        'updated_at' => now()->subHours(3),
-    ]);
+    Post::factory()
+        ->count(7)
+        ->create([
+            'updated_at' => now()->subHours(3),
+        ]);
 
-    $activity = livewire(RecentActivity::class)->instance()->getActivity();
+    $activity = livewire(RecentActivity::class)->instance()
+        ->getActivity();
 
     expect($activity)->toHaveCount(8)
-        ->and($activity[0])->toMatchArray([
+        ->and($activity[0])
+        ->toMatchArray([
             'label' => $latestPost->title,
             'type' => 'Published post',
             'url' => PostResource::getUrl('edit', ['record' => $latestPost]),
         ])
-        ->and(collect($activity)->pluck('label'))->toContain($episode->title)
-        ->and(collect($activity)->pluck('label'))->not->toContain($oldestPost->title)
-        ->and(collect($activity)->pluck('type'))->toContain('Published episode');
+        ->and(collect($activity)->pluck('label'))
+        ->toContain($episode->title)
+        ->and(collect($activity)->pluck('label'))
+        ->not->toContain($oldestPost->title)
+        ->and(collect($activity)->pluck('type'))
+        ->toContain('Published episode');
 });

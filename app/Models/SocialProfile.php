@@ -34,14 +34,16 @@ class SocialProfile extends Model
     #[Scope]
     protected function forFooter(Builder $query): void
     {
-        $query->enabledInOrder()->where('show_in_footer', true);
+        $query->enabledInOrder()
+            ->where('show_in_footer', true);
     }
 
     /** @param Builder<SocialProfile> $query */
     #[Scope]
     protected function forContactPage(Builder $query): void
     {
-        $query->enabledInOrder()->where('show_on_contact', true);
+        $query->enabledInOrder()
+            ->where('show_on_contact', true);
     }
 
     /** @param Builder<SocialProfile> $query */

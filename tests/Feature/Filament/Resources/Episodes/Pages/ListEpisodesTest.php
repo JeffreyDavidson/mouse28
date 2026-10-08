@@ -14,7 +14,9 @@ use function Pest\Livewire\livewire;
 pest()->use(RefreshDatabase::class);
 
 test('authenticated user can render the resource listing', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     get(EpisodeResource::getUrl())
         ->assertOk()
@@ -22,7 +24,9 @@ test('authenticated user can render the resource listing', function (): void {
 });
 
 test('content table shows readiness and the persisted publish status', function (): void {
-    $admin = User::factory()->admin()->create();
+    $admin = User::factory()
+        ->admin()
+        ->create();
     Episode::factory()->create(['status' => PublishStatus::InReview]);
 
     actingAs($admin);
@@ -34,10 +38,16 @@ test('content table shows readiness and the persisted publish status', function 
 });
 
 test('draft and scheduled tabs filter episodes', function (): void {
-    $draft = Episode::factory()->draft()->create();
+    $draft = Episode::factory()
+        ->draft()
+        ->create();
     $inReview = Episode::factory()->create(['status' => PublishStatus::InReview]);
-    $scheduled = Episode::factory()->scheduled()->create();
-    actingAs(User::factory()->admin()->create());
+    $scheduled = Episode::factory()
+        ->scheduled()
+        ->create();
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(ListEpisodes::class)
         ->set('activeTab', 'drafts')
@@ -51,10 +61,16 @@ test('draft and scheduled tabs filter episodes', function (): void {
 test('header does not count scheduled episodes as published', function (): void {
     // Arrange
     Episode::factory()->create();
-    Episode::factory()->scheduled()->create();
-    Episode::factory()->draft()->create();
+    Episode::factory()
+        ->scheduled()
+        ->create();
+    Episode::factory()
+        ->draft()
+        ->create();
     Episode::factory()->create(['status' => PublishStatus::InReview]);
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     // Act
     $page = livewire(ListEpisodes::class);

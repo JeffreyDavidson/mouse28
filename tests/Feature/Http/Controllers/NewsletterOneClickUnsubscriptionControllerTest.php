@@ -51,7 +51,8 @@ test('a signed one-click post unsubscribes the reader', function (): void {
     post(URL::signedRoute('newsletter.unsubscribe.oneClick', $reader), ['List-Unsubscribe' => 'One-Click'])
         ->assertNoContent();
 
-    expect($reader->refresh()->isActive())->toBeFalse();
+    expect($reader->refresh()
+        ->isActive())->toBeFalse();
 });
 
 test('an unsigned one-click post is refused', function (): void {
@@ -60,7 +61,8 @@ test('an unsigned one-click post is refused', function (): void {
     post(route('newsletter.unsubscribe.oneClick', $reader), ['List-Unsubscribe' => 'One-Click'])
         ->assertForbidden();
 
-    expect($reader->refresh()->isActive())->toBeTrue();
+    expect($reader->refresh()
+        ->isActive())->toBeTrue();
 });
 
 test('mail providers can post one-click requests without a forgery token', function (): void {

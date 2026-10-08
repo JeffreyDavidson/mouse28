@@ -190,7 +190,9 @@ test('branded recovery pages remain accessible and actionable', function (): voi
 });
 
 test('opening a confirmation link in a browser confirms in one click', function (): void {
-    $reader = Subscriber::factory()->pending()->create();
+    $reader = Subscriber::factory()
+        ->pending()
+        ->create();
     $reader->verification_token_hash = hash('sha256', 'browser-token');
     $reader->save();
 
@@ -204,5 +206,6 @@ test('opening a confirmation link in a browser confirms in one click', function 
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 
-    expect($reader->refresh()->isActive())->toBeTrue();
+    expect($reader->refresh()
+        ->isActive())->toBeTrue();
 })->group('browser-smoke');

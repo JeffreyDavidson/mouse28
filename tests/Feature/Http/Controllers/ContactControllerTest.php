@@ -52,13 +52,21 @@ beforeEach(function (): void {
 });
 
 test('contact page renders turnstile widget', function (): void {
-    $response = get(route('contact.create'))->assertOk()->assertSeeHtml('https://challenges.cloudflare.com/turnstile/v0/api.js')->assertSeeHtml('class="cf-turnstile"')->assertSeeHtml('data-sitekey="test-site-key"')->assertSeeHtml('data-action="contact-form"')->assertSeeHtml('data-appearance="interaction-only"')
+    $response = get(route('contact.create'))->assertOk()
+        ->assertSeeHtml('https://challenges.cloudflare.com/turnstile/v0/api.js')
+        ->assertSeeHtml('class="cf-turnstile"')
+        ->assertSeeHtml('data-sitekey="test-site-key"')
+        ->assertSeeHtml('data-action="contact-form"')
+        ->assertSeeHtml('data-appearance="interaction-only"')
         ->assertSee('Park Accessibility Question')
         ->assertSee('Guest on the Podcast')
-        ->assertDontSee('Share Your Story')->assertDontSee('Family Disney stories')->assertDontSeeHtml('value="story"');
+        ->assertDontSee('Share Your Story')
+        ->assertDontSee('Family Disney stories')
+        ->assertDontSeeHtml('value="story"');
 
     expect(substr_count((string) $response->getContent(), 'https://challenges.cloudflare.com/turnstile/v0/api.js'))->toBe(1)
-        ->and(array_column(ContactType::cases(), 'value'))->not->toContain('story');
+        ->and(array_column(ContactType::cases(), 'value'))
+        ->not->toContain('story');
 });
 
 test('contact errors and old input stay out of the newsletter form', function (): void {
@@ -77,13 +85,15 @@ test('contact errors and old input stay out of the newsletter form', function ()
         ->toMatch('/<input(?=[^>]*\bid="email")(?=[^>]*\btype="email")(?=[^>]*\bvalue="not-an-email")[^>]*>/')
         ->toMatch('/<input(?=[^>]*\bid="footer-newsletter-email")(?=[^>]*\btype="email")(?=[^>]*\bvalue="")[^>]*>/');
 
-    $response->assertSeeHtml('aria-describedby="email-error"')->assertDontSeeHtml('aria-describedby="newsletter-email-error"');
+    $response->assertSeeHtml('aria-describedby="email-error"')
+        ->assertDontSeeHtml('aria-describedby="newsletter-email-error"');
 });
 
 test('contact page uses the configured site contact email address', function (): void {
     config()->set('mouse28.contact.email', 'hello@mouse28.test');
 
-    get(route('contact.create'))->assertOk()->assertSeeHtml('href="mailto:hello@mouse28.test"')
+    get(route('contact.create'))->assertOk()
+        ->assertSeeHtml('href="mailto:hello@mouse28.test"')
         ->assertSee('hello@mouse28.test');
 });
 
@@ -306,7 +316,8 @@ test('contact page renders', function (): void {
 });
 
 test('contact page exposes SEO metadata', function (): void {
-    get(route('contact.create'))->assertOk()->assertSeeHtml('<meta name="description" content="Contact Jeffrey and Cassie about Mouse28, Disney park accessibility, family travel, collaborations, or the podcast.">');
+    get(route('contact.create'))->assertOk()
+        ->assertSeeHtml('<meta name="description" content="Contact Jeffrey and Cassie about Mouse28, Disney park accessibility, family travel, collaborations, or the podcast.">');
 });
 
 test('page copy and metadata avoid em dashes', function (): void {
@@ -316,14 +327,19 @@ test('page copy and metadata avoid em dashes', function (): void {
 });
 
 test('page uses the dispatch editorial system', function (): void {
-    get(route('contact.create'))->assertOk()->assertSeeHtml('data-brand-wordmark')->assertSeeHtml('dispatch-letter-form')->assertSeeHtml('js-dispatch-pages');
+    get(route('contact.create'))->assertOk()
+        ->assertSeeHtml('data-brand-wordmark')
+        ->assertSeeHtml('dispatch-letter-form')
+        ->assertSeeHtml('js-dispatch-pages');
 });
 
 test('form placeholders use readable text colors', function (): void {
     config()->set('services.turnstile.site_key', 'test-site-key');
     config()->set('services.turnstile.secret_key', 'test-secret-key');
 
-    get(route('contact.create'))->assertOk()->assertSeeHtml('placeholder:text-navy/65')->assertDontSeeHtml('placeholder:text-navy/30');
+    get(route('contact.create'))->assertOk()
+        ->assertSeeHtml('placeholder:text-navy/65')
+        ->assertDontSeeHtml('placeholder:text-navy/30');
 });
 
 /** @return array<string, string> */
@@ -374,20 +390,27 @@ test('contact page exposes a single main landmark without nested complementary r
     $xpath = new XPath($document);
 
     expect($xpath->query('//*[local-name()="main"]'))->toHaveCount(1)
-        ->and($xpath->query('//*[local-name()="main"]//*[local-name()="aside"]'))->toBeEmpty();
+        ->and($xpath->query('//*[local-name()="main"]//*[local-name()="aside"]'))
+        ->toBeEmpty();
 });
 
 test('the contact page lists enabled contact profiles using their label', function (): void {
-    SocialProfile::factory()->onContactPage()->create([
-        'platform' => SocialPlatform::Facebook,
-        'url' => 'https://facebook.com/mouse28',
-        'label' => 'Mouse28 on Facebook',
-    ]);
-    SocialProfile::factory()->onContactPage()->create([
-        'platform' => SocialPlatform::Instagram,
-        'url' => 'https://instagram.com/mouse28',
-    ]);
-    SocialProfile::factory()->onContactPage()->create(['url' => 'https://disabled.example.com/a', 'is_enabled' => false]);
+    SocialProfile::factory()
+        ->onContactPage()
+        ->create([
+            'platform' => SocialPlatform::Facebook,
+            'url' => 'https://facebook.com/mouse28',
+            'label' => 'Mouse28 on Facebook',
+        ]);
+    SocialProfile::factory()
+        ->onContactPage()
+        ->create([
+            'platform' => SocialPlatform::Instagram,
+            'url' => 'https://instagram.com/mouse28',
+        ]);
+    SocialProfile::factory()
+        ->onContactPage()
+        ->create(['url' => 'https://disabled.example.com/a', 'is_enabled' => false]);
 
     get(route('contact.create'))
         ->assertOk()

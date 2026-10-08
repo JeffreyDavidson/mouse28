@@ -15,7 +15,9 @@ pest()->use(RefreshDatabase::class);
 
 test('podcast links enforce their storage length without changing saved settings', function (string $field): void {
     // Arrange
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
     $podcast = primaryPodcast();
     $original = $podcast->getAttribute($field);
     $page = livewire(PodcastSettings::class);
@@ -26,12 +28,15 @@ test('podcast links enforce their storage length without changing saved settings
 
     // Assert
     $page->assertHasFormErrors([$field => 'max']);
-    expect($podcast->refresh()->getAttribute($field))->toBe($original);
+    expect($podcast->refresh()
+        ->getAttribute($field))->toBe($original);
 })->with(['apple_url', 'spotify_url', 'youtube_url']);
 
 test('podcast links accept the full supported storage length', function (): void {
     // Arrange
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
     $url = 'https://example.com/'.str_repeat('a', 255 - strlen('https://example.com/'));
     $links = array_fill_keys(['apple_url', 'spotify_url', 'youtube_url'], $url);
     $page = livewire(PodcastSettings::class);
@@ -46,7 +51,9 @@ test('podcast links accept the full supported storage length', function (): void
 });
 
 test('authenticated user can render podcast settings', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     get(PodcastSettings::getUrl())
         ->assertOk()
@@ -57,8 +64,12 @@ test('authenticated user can render podcast settings', function (): void {
 
 test('podcast cover uploads enforce the five megabyte limit', function (int $size, bool $valid): void {
     Storage::fake('public');
-    actingAs(User::factory()->admin()->create());
-    $cover = UploadedFile::fake()->image('cover.jpg')->size($size);
+    actingAs(User::factory()
+        ->admin()
+        ->create());
+    $cover = UploadedFile::fake()
+        ->image('cover.jpg')
+        ->size($size);
 
     $page = livewire(PodcastSettings::class)
         ->fillForm(['cover_image_path' => $cover])
@@ -77,7 +88,9 @@ test('podcast cover uploads enforce the five megabyte limit', function (int $siz
 ]);
 
 test('podcast cover uploads accept only JPEG, PNG and WebP images', function (UploadedFile $cover, bool $accepted): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     $page = livewire(PodcastSettings::class)
         ->fillForm(['cover_image_path' => $cover])
@@ -95,20 +108,29 @@ test('podcast cover uploads accept only JPEG, PNG and WebP images', function (Up
 ]);
 
 test('podcast settings cannot be saved once admin access is revoked', function (): void {
-    $admin = User::factory()->admin()->create();
+    $admin = User::factory()
+        ->admin()
+        ->create();
     actingAs($admin);
     $podcast = primaryPodcast();
     $page = livewire(PodcastSettings::class)->fillForm(['name' => 'Changed name']);
     $admin->is_admin = false;
 
-    expect(fn () => $page->instance()->save())->toThrow(AuthorizationException::class)
-        ->and($podcast->refresh()->name)->not->toBe('Changed name');
+    expect(fn () => $page->instance()
+        ->save())->toThrow(AuthorizationException::class)
+        ->and($podcast->refresh()
+            ->name)
+        ->not->toBe('Changed name');
 });
 
 test('a replaced podcast cover is stored under podcast with variants and the previous file is removed', function (): void {
     Storage::fake('public');
-    actingAs(User::factory()->admin()->create());
-    Storage::disk('public')->put('podcast/previous.png', UploadedFile::fake()->image('previous.png', 600, 600)->getContent());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
+    Storage::disk('public')->put('podcast/previous.png', UploadedFile::fake()
+        ->image('previous.png', 600, 600)
+        ->getContent());
     primaryPodcast()->update(['cover_image_path' => 'podcast/previous.png']);
 
     livewire(PodcastSettings::class)
@@ -124,7 +146,9 @@ test('a replaced podcast cover is stored under podcast with variants and the pre
 });
 
 test('the long description and show colour are saved with the settings', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(PodcastSettings::class)
         ->fillForm(['long_description' => 'A longer show summary.', 'color' => '#5b3e9e'])
@@ -137,7 +161,9 @@ test('the long description and show colour are saved with the settings', functio
 });
 
 test('the show colour must be a six digit hex colour', function (string $color): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(PodcastSettings::class)
         ->fillForm(['color' => $color])
