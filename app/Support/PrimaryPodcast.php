@@ -25,7 +25,7 @@ final class PrimaryPodcast
     /** The saved show, created from the defaults when no show exists yet. */
     public function findOrCreate(): Podcast
     {
-        return $this->find() ?? Podcast::query()->create($this->defaults());
+        return $this->find() ?? Podcast::create($this->defaults());
     }
 
     private function find(): ?Podcast

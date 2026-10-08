@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Filament\Auth\MultiFactor\App\Concerns\InteractsWithAppAuthentication;
 use Filament\Auth\MultiFactor\App\Concerns\InteractsWithAppAuthenticationRecovery;
@@ -35,6 +34,9 @@ use Illuminate\Notifications\Notifiable;
 ])]
 class User extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery
 {
+    /** @use HasFactory<UserFactory> */
+    use HasFactory, InteractsWithAppAuthentication, InteractsWithAppAuthenticationRecovery, Notifiable;
+
     /**
      * New users start without admin access or author credit, matching the column defaults, so neither flag is ever null.
      *
@@ -76,9 +78,6 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
             ->map(fn (User $author): int => $author->id)
             ->all());
     }
-
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, InteractsWithAppAuthentication, InteractsWithAppAuthenticationRecovery, Notifiable;
 
     /**
      * Get the attributes that should be cast.
