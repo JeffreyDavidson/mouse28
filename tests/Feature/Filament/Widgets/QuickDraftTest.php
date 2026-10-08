@@ -12,9 +12,7 @@ use function Pest\Livewire\livewire;
 pest()->use(RefreshDatabase::class);
 
 test('initializes the quick draft form state for Livewire entanglement', function (): void {
-    actingAs(User::factory()
-        ->admin()
-        ->create());
+    actingAsAdmin();
 
     livewire(QuickDraft::class)
         ->assertSet('data.title', null)
@@ -27,9 +25,7 @@ test('duplicate maximum length titles keep generated slugs within the column lim
     foreach (range(2, 9) as $suffix) {
         Post::factory()->create(['slug' => str_repeat('a', 253)."-{$suffix}"]);
     }
-    actingAs(User::factory()
-        ->admin()
-        ->create());
+    actingAsAdmin();
 
     livewire(QuickDraft::class)
         ->set('data.title', $title)
@@ -48,9 +44,7 @@ test('an administrator can save a post draft from the dashboard widget', functio
         'title' => 'Sensory-Friendly Park Notes',
         'slug' => 'sensory-friendly-park-notes',
     ]);
-    actingAs(User::factory()
-        ->admin()
-        ->create());
+    actingAsAdmin();
 
     livewire(QuickDraft::class)
         ->set('data.title', 'Sensory-Friendly Park Notes')
@@ -79,9 +73,7 @@ test('an administrator can save a post draft from the dashboard widget', functio
 });
 
 test('a draft title with no letters or numbers is rejected because it cannot name the post', function (): void {
-    actingAs(User::factory()
-        ->admin()
-        ->create());
+    actingAsAdmin();
 
     livewire(QuickDraft::class)
         ->set('data.title', '!!!')

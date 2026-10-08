@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Vite;
 
 use function Pest\Laravel\actingAs;
+use function Pest\Laravel\get;
 use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
@@ -40,12 +41,9 @@ test('authenticated user can render the admin dashboard', function (): void {
         'https://api.resend.com/*' => Http::response(['data' => []]),
     ]);
 
-    $user = User::factory()
-        ->admin()
-        ->create();
+    actingAsAdmin();
 
-    $response = actingAs($user)
-        ->get(Dashboard::getUrl(panel: 'admin'))
+    $response = get(Dashboard::getUrl(panel: 'admin'))
         ->assertOk();
 
     foreach ([WelcomeBanner::class, StatsOverview::class, RecentActivity::class, QuickDraft::class, ContentCalendar::class, InspirationWidget::class] as $widget) {
@@ -189,12 +187,9 @@ test('unenrolled administrators must set up authentication before accessing cont
 });
 
 test('administrators can manage authentication from their profile', function (): void {
-    $user = User::factory()
-        ->admin()
-        ->create();
+    actingAsAdmin();
 
-    actingAs($user)
-        ->get(EditProfile::getUrl(panel: 'admin'))
+    get(EditProfile::getUrl(panel: 'admin'))
         ->assertOk()
         ->assertSee('Regenerate recovery codes');
 });
