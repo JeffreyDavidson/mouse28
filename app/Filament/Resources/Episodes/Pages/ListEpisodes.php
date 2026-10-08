@@ -1,52 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Episodes\Pages;
 
-use App\Enums\PublishStatus;
+use App\Enums\ContentType;
+use App\Filament\Concerns\ListsContentByStatus;
 use App\Filament\Resources\Episodes\EpisodeResource;
-use App\Models\Episode;
 use Filament\Resources\Pages\ListRecords;
-use Filament\Schemas\Components\Tabs\Tab;
-use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Builder;
 
 class ListEpisodes extends ListRecords
 {
+    use ListsContentByStatus;
+
     #[\Override]
     protected static string $resource = EpisodeResource::class;
 
-    public function getTabs(): array
-    {
-        return [
-            'all' => Tab::make('All'),
-            'attention' => Tab::make('Needs attention')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('episodes.id', Episode::query()
-                    ->needsAttention()
-                    ->select('id'))),
-            'drafts' => Tab::make('Drafts')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('episodes.status', [PublishStatus::Draft, PublishStatus::InReview])),
-            'scheduled' => Tab::make('Scheduled')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('episodes.id', Episode::query()
-                    ->scheduled()
-                    ->select('id'))),
-            'published' => Tab::make('Published')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('episodes.id', Episode::query()
-                    ->published()
-                    ->select('id'))),
-        ];
-    }
+    #[\Override]
+    protected ?string $subheading = 'Manage your podcast episodes';
 
-    public function getHeader(): ?View
+    protected function contentType(): ContentType
     {
-        $published = Episode::published()->count();
-        $drafts = Episode::query()
-            ->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])
-            ->count();
-
-        return view('filament.resources.episodes.header', [
-            'published' => $published,
-            'drafts' => $drafts,
-            'createUrl' => EpisodeResource::getUrl('create'),
-        ]);
+        return ContentType::Episode;
     }
 }
