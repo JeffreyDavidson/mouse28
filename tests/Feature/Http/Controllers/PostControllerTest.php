@@ -22,10 +22,13 @@ test('blog index returns its view model data', function (): void {
     get(route('blog.index'))
         ->assertOk()
         ->assertViewIs('pages.blog.index')
-        ->assertViewHas('category')
-        ->assertViewHas('search')
-        ->assertViewHas('sort')
-        ->assertViewHas('pageTitle');
+        ->assertViewHas('pageTitle')
+        ->assertViewHas('pageDescription')
+        ->assertViewHas('canonicalUrl')
+        ->assertViewHas('robots')
+        ->assertViewMissing('category')
+        ->assertViewMissing('search')
+        ->assertViewMissing('sort');
 });
 
 test('published blog post returns its view model data', function (): void {

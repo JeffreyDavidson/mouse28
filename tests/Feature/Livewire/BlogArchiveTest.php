@@ -385,3 +385,46 @@ test('query string filters without a category look up no category by slug', func
     $page->assertSet('category', '');
     expect($emptySlugLookups)->toBe(0);
 });
+
+test('each archive update looks the selected category up once', function (string $method, array $arguments): void {
+    // Arrange
+    $category = Category::factory()->create(['slug' => 'sample-lookup-topic']);
+    Post::factory()
+        ->for($category)
+        ->create();
+    Livewire::withQueryParams(['category' => $category->slug]);
+    $page = livewire(BlogArchive::class);
+    $slugLookups = 0;
+    DB::listen(function (QueryExecuted $query) use (&$slugLookups): void {
+        if (in_array('sample-lookup-topic', $query->bindings, true)) {
+            $slugLookups++;
+        }
+    });
+
+    // Act
+    $page->{$method}(...$arguments);
+
+    // Assert
+    $page->assertSet('category', 'sample-lookup-topic')
+        ->assertDispatched('blog-metadata-updated', pageTitle: "{$category->name} | Mouse28");
+    expect($slugLookups)->toBe(1);
+})->with([
+    'select the category' => ['call', ['selectCategory', 'sample-lookup-topic']],
+    'search' => ['set', ['search', 'sample']],
+    'sort' => ['set', ['sort', 'oldest']],
+    'clear the search' => ['call', ['clearSearch']],
+]);
+
+test('the sort control offers each order by name', function (): void {
+    // Arrange
+    Post::factory()->create();
+
+    // Act
+    $page = livewire(BlogArchive::class);
+
+    // Assert
+    $page->assertSeeHtmlInOrder([
+        '<option value="newest">Newest first</option>',
+        '<option value="oldest">Oldest first</option>',
+    ]);
+});
