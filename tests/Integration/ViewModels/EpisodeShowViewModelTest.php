@@ -44,6 +44,18 @@ test('episode data includes posts linked to other episodes too', function (): vo
     expect($data['relatedPosts']->modelKeys())->toBe([$sharedPost->id]);
 });
 
+test('episode data links the neighbouring published episodes', function (): void {
+    $previous = Episode::factory()->create(['published_at' => now()->subDays(3)]);
+    $episode = Episode::factory()->create(['published_at' => now()->subDays(2)]);
+    $next = Episode::factory()->create(['published_at' => now()->subDay()]);
+
+    $data = app(EpisodeShowViewModel::class)->data($episode);
+
+    expect($data['previousEpisode']?->id)->toBe($previous->id)
+        ->and($data['nextEpisode']?->id)
+        ->toBe($next->id);
+});
+
 test('episode preview data marks the payload as a preview', function (): void {
     $episode = Episode::factory()
         ->draft()
