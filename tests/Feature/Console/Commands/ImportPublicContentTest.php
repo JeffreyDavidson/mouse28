@@ -113,3 +113,23 @@ test('public content archive requires an explicit staging override on the stagin
 
     File::delete($archivePath);
 });
+
+test('public content archive cannot be imported into any copy that uses the live site address', function (): void {
+    $archivePath = storage_path('framework/testing/public-content-live-address.json');
+    File::put($archivePath, json_encode([
+        'version' => 1,
+        'posts' => [],
+        'episodes' => [],
+        'guides' => [],
+        'podcast' => null,
+    ], JSON_THROW_ON_ERROR));
+    config()->set('app.url', 'https://mouse28.com');
+
+    $exitCode = pendingCommand('content:import-public', ['path' => $archivePath])
+        ->expectsOutputToContain('Public content cannot be imported into production.')
+        ->run();
+
+    expect($exitCode)->toBe(Command::FAILURE);
+
+    File::delete($archivePath);
+});

@@ -1,10 +1,10 @@
 <?php
 
-use App\Console\Commands\SyncPublicContentFromProduction;
+use App\Console\Commands\SyncProductionContent;
 use App\Enums\PublishStatus;
 use App\Models\Episode;
 use App\Models\Post;
-use App\Support\PublicContentArchive;
+use App\Services\ContentArchive\PublicContentArchiveExporter;
 use Illuminate\Console\CacheCommandMutex;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -19,7 +19,7 @@ test('sync rejects invalid content before replacing any local media', function (
     $disk = Storage::fake('public');
     $disk->put('posts/cover.webp', 'original bytes');
     $post = Post::factory()->create(['title' => 'Original', 'featured_image_path' => 'posts/cover.webp']);
-    $archive = app(PublicContentArchive::class)->export();
+    $archive = app(PublicContentArchiveExporter::class)->export();
     $archive['posts'][0]['title'] = 'Changed';
     $archive['posts'][0]['content'] = null;
     Process::fake(function (PendingProcess $process) use ($archive) {
@@ -42,7 +42,7 @@ test('sync rejects invalid content before replacing any local media', function (
 
 test('isolated sync refuses concurrent work through either command name', function (string $name): void {
     Process::fake();
-    $command = app(SyncPublicContentFromProduction::class);
+    $command = app(SyncProductionContent::class);
     $mutex = app(CacheCommandMutex::class);
     expect($mutex->create($command))->toBeTrue();
 
@@ -54,7 +54,7 @@ test('isolated sync refuses concurrent work through either command name', functi
     } finally {
         $mutex->forget($command);
     }
-})->with(['content:sync-from-production', 'content:sync-production']);
+})->with(['content:sync-production', 'content:sync-from-production']);
 
 test('sync stops before transferring media when a local draft collides', function (): void {
     // Arrange
@@ -62,7 +62,7 @@ test('sync stops before transferring media when a local draft collides', functio
     config()->set('mouse28.production_sync.ssh_host', 'cold-moon');
     config()->set('mouse28.production_sync.site_path', '/home/forge/mouse28.com/current');
     $post = Post::factory()->create(['featured_image_path' => 'posts/local.webp']);
-    $archive = app(PublicContentArchive::class)->export();
+    $archive = app(PublicContentArchiveExporter::class)->export();
     $post->update(['status' => PublishStatus::Draft]);
     Process::fake(function (PendingProcess $process) use ($archive) {
         $command = syncProcessArguments($process);
@@ -240,3 +240,15 @@ function publicContentArchive(array $overrides = []): array
         ...$overrides,
     ];
 }
+
+test('production content sync refuses to run where the site address is the live site', function (): void {
+    config()->set('app.url', 'https://mouse28.com');
+    Process::fake();
+    Process::preventStrayProcesses();
+
+    $exitCode = pendingCommand('content:sync-production')->run();
+
+    expect($exitCode)->toBe(Command::FAILURE);
+
+    Process::assertNothingRan();
+});
