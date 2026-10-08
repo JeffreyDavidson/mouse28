@@ -160,6 +160,7 @@ class Post extends Model implements Publishable
                 ->orWhere('excerpt', '')
                 ->orWhereNull('content')
                 ->orWhere('content', '')
+                ->orWhereNull('category_id')
                 ->orWhereNull('featured_image_path')
                 ->orWhere('featured_image_path', '')
                 ->orWhere(fn (Builder $query) => $query->missingSeo())
