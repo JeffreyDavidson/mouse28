@@ -40,7 +40,8 @@ test('about introduction groups its copy and preserves responsive safari artwork
     $xpath = new XPath($document);
 
     expect($xpath->query('//*[@id="about-heading"]/following-sibling::*[local-name()="p"]'))->toHaveCount(1)
-        ->and($xpath->query('//*[local-name()="h1"]'))->toHaveCount(1);
+        ->and($xpath->query('//*[local-name()="h1"]'))
+        ->toHaveCount(1);
 });
 
 test('primary navigation identifies About as the current destination', function (): void {
@@ -55,11 +56,13 @@ test('primary navigation identifies About as the current destination', function 
     expect($links)->toHaveCount(1);
     $link = $links->item(0) ?? throw new UnexpectedValueException('The current navigation link is missing.');
     expect(trim($link->textContent ?? ''))->toBe('About')
-        ->and($link->getAttribute('href'))->toBe(route('about'));
+        ->and($link->getAttribute('href'))
+        ->toBe(route('about'));
 });
 
 test('about page uses an editorial family story with separate host profiles', function (): void {
-    get(route('about'))->assertOk()->assertSeeHtml('data-about-editorial')
+    get(route('about'))->assertOk()
+        ->assertSeeHtml('data-about-editorial')
         ->assertSee('Jeffrey Davidson')
         ->assertSee('Cassie Davidson')
         ->assertDontSee('Park Visits')
@@ -74,7 +77,8 @@ test('landing page provides search and social metadata', function (): void {
         'cover_image_path' => 'podcasts/show-cover.jpg',
     ]);
 
-    get(route('about'))->assertOk()->assertSeeHtml('<meta property="og:title" content="About the Davidson Family | Mouse28">');
+    get(route('about'))->assertOk()
+        ->assertSeeHtml('<meta property="og:title" content="About the Davidson Family | Mouse28">');
 });
 
 test('page copy and metadata avoid em dashes', function (): void {
@@ -84,7 +88,10 @@ test('page copy and metadata avoid em dashes', function (): void {
 });
 
 test('page uses the dispatch editorial system', function (): void {
-    get(route('about'))->assertOk()->assertSeeHtml('data-brand-wordmark')->assertSeeHtml('data-about-editorial')->assertSeeHtml('js-dispatch-pages');
+    get(route('about'))->assertOk()
+        ->assertSeeHtml('data-brand-wordmark')
+        ->assertSeeHtml('data-about-editorial')
+        ->assertSeeHtml('js-dispatch-pages');
 });
 
 test('about page exposes a single main landmark', function (): void {

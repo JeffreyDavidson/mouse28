@@ -46,7 +46,8 @@ class PodcastSettings extends Page
 
     public static function canAccess(): bool
     {
-        return auth()->user()?->is_admin === true;
+        return auth()->user()
+            ?->is_admin === true;
     }
 
     public function mount(PrimaryPodcast $primaryPodcast): void
@@ -76,8 +77,12 @@ class PodcastSettings extends Page
                     ->description('Your podcast name, description, and cover art')
                     ->columns(2)
                     ->schema([
-                        TextInput::make('name')->required()->maxLength(255),
-                        Textarea::make('description')->rows(3)->columnSpanFull(),
+                        TextInput::make('name')
+                            ->required()
+                            ->maxLength(255),
+                        Textarea::make('description')
+                            ->rows(3)
+                            ->columnSpanFull(),
                         Textarea::make('long_description')
                             ->label('Long description')
                             ->rows(5)
@@ -103,11 +108,20 @@ class PodcastSettings extends Page
                     ->description('Where listeners can find your podcast')
                     ->columns(2)
                     ->schema([
-                        TextInput::make('apple_url')->url()->maxLength(255)->label('Apple Podcasts')
+                        TextInput::make('apple_url')
+                            ->url()
+                            ->maxLength(255)
+                            ->label('Apple Podcasts')
                             ->prefixIcon(Heroicon::OutlinedLink),
-                        TextInput::make('spotify_url')->url()->maxLength(255)->label('Spotify')
+                        TextInput::make('spotify_url')
+                            ->url()
+                            ->maxLength(255)
+                            ->label('Spotify')
                             ->prefixIcon(Heroicon::OutlinedLink),
-                        TextInput::make('youtube_url')->url()->maxLength(255)->label('YouTube')
+                        TextInput::make('youtube_url')
+                            ->url()
+                            ->maxLength(255)
+                            ->label('YouTube')
                             ->prefixIcon(Heroicon::OutlinedLink),
                     ]),
 

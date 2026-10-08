@@ -14,8 +14,12 @@ test('blog feed includes published metadata and excludes unpublished posts', fun
         'title' => 'Accessible Park Planning',
         'excerpt' => 'A practical planning guide.',
     ]);
-    $draft = Post::factory()->draft()->create(['title' => 'Draft Park Planning']);
-    $scheduled = Post::factory()->scheduled()->create(['title' => 'Scheduled Park Planning']);
+    $draft = Post::factory()
+        ->draft()
+        ->create(['title' => 'Draft Park Planning']);
+    $scheduled = Post::factory()
+        ->scheduled()
+        ->create(['title' => 'Scheduled Park Planning']);
 
     $content = app(BlogRssFeed::class)->content();
 
@@ -29,12 +33,15 @@ test('blog feed includes published metadata and excludes unpublished posts', fun
 
 test('blog feed limits entries to the newest twenty published posts', function (): void {
     $oldest = Post::factory()->create(['published_at' => now()->subDays(30)]);
-    Post::factory()->count(20)->create(['published_at' => now()->subDays(2)]);
+    Post::factory()
+        ->count(20)
+        ->create(['published_at' => now()->subDays(2)]);
 
     $content = app(BlogRssFeed::class)->content();
 
     expect(substr_count($content, '<item>'))->toBe(20)
-        ->and($content)->not->toContain($oldest->title);
+        ->and($content)
+        ->not->toContain($oldest->title);
 });
 
 test('blog feed describes a post without an excerpt from its content', function (): void {
@@ -50,7 +57,10 @@ test('blog feed describes a post without an excerpt from its content', function 
 
 test('blog feed names each post category by its escaped name', function (): void {
     $category = Category::factory()->create(['name' => 'Food & Drink']);
-    Post::factory()->for($category)->count(2)->create();
+    Post::factory()
+        ->for($category)
+        ->count(2)
+        ->create();
 
     $content = app(BlogRssFeed::class)->content();
 
@@ -81,7 +91,9 @@ test('blog feed describes a post without an excerpt in plain text from its markd
 ]);
 
 test('blog feed breaks publish-time ties by id so their order is stable on MySQL', function (): void {
-    Post::factory()->count(2)->create();
+    Post::factory()
+        ->count(2)
+        ->create();
 
     $orderings = publishTimeOrderings(fn () => app(BlogRssFeed::class)->content());
 

@@ -29,7 +29,9 @@ covers(SlugInput::class);
 
 pest()->use(RefreshDatabase::class);
 
-beforeEach(fn () => actingAs(User::factory()->admin()->create()));
+beforeEach(fn () => actingAs(User::factory()
+    ->admin()
+    ->create()));
 
 dataset('slug edit pages', [
     'post' => [fn () => Post::factory()->credited(), EditPost::class],
@@ -68,7 +70,8 @@ test('the slug of published content cannot be edited', function (PostFactory|Gui
 })->with('slug edit pages');
 
 test('the slug of a draft that was never published can be edited', function (PostFactory|GuideFactory|EpisodeFactory|NewsletterIssueFactory $factory, string $page): void {
-    $content = $factory->draft()->createOne();
+    $content = $factory->draft()
+        ->createOne();
 
     livewire($page, ['record' => $content->getRouteKey()])
         ->assertFormFieldEnabled('slug');

@@ -20,22 +20,33 @@ class ListGuides extends ListRecords
         return [
             'all' => Tab::make('All'),
             'attention' => Tab::make('Needs attention')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('guides.id', Guide::query()->needsAttention()->select('id'))),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('guides.id', Guide::query()
+                    ->needsAttention()
+                    ->select('id'))),
             'drafts' => Tab::make('Drafts')
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('guides.status', [PublishStatus::Draft, PublishStatus::InReview])),
             'scheduled' => Tab::make('Scheduled')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('guides.id', Guide::query()->scheduled()->select('id'))),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('guides.id', Guide::query()
+                    ->scheduled()
+                    ->select('id'))),
             'published' => Tab::make('Published')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('guides.id', Guide::query()->published()->select('id'))),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('guides.id', Guide::query()
+                    ->published()
+                    ->select('id'))),
             'review-due' => Tab::make('Review due')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('guides.id', Guide::query()->published()->reviewDue()->select('id'))),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('guides.id', Guide::query()
+                    ->published()
+                    ->reviewDue()
+                    ->select('id'))),
         ];
     }
 
     public function getHeader(): ?View
     {
         $published = Guide::published()->count();
-        $drafts = Guide::query()->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])->count();
+        $drafts = Guide::query()
+            ->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])
+            ->count();
 
         return view('filament.resources.guides.header', [
             'published' => $published,

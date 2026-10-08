@@ -20,22 +20,33 @@ class ListPosts extends ListRecords
         return [
             'all' => Tab::make('All'),
             'attention' => Tab::make('Needs attention')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->needsAttention()->select('id'))),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()
+                    ->needsAttention()
+                    ->select('id'))),
             'drafts' => Tab::make('Drafts')
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.status', [PublishStatus::Draft, PublishStatus::InReview])),
             'scheduled' => Tab::make('Scheduled')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->scheduled()->select('id'))),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()
+                    ->scheduled()
+                    ->select('id'))),
             'published' => Tab::make('Published')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->published()->select('id'))),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()
+                    ->published()
+                    ->select('id'))),
             'review-due' => Tab::make('Review due')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->published()->reviewDue()->select('id'))),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()
+                    ->published()
+                    ->reviewDue()
+                    ->select('id'))),
         ];
     }
 
     public function getHeader(): ?View
     {
         $published = Post::published()->count();
-        $drafts = Post::query()->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])->count();
+        $drafts = Post::query()
+            ->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])
+            ->count();
 
         return view('filament.resources.posts.header', [
             'published' => $published,

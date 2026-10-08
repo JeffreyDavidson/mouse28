@@ -99,7 +99,9 @@ class SampleContentSeeder extends Seeder
                 'title' => $title,
                 'excerpt' => 'This sample record exists to exercise the publishing workflow.',
                 'content' => 'Synthetic development content for testing lists, detail pages, and filters.',
-                'category_id' => Category::query()->where('slug', $categorySlug)->value('id'),
+                'category_id' => Category::query()
+                    ->where('slug', $categorySlug)
+                    ->value('id'),
                 'status' => $status,
                 'published_at' => $publishedAt,
             ],

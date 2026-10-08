@@ -54,9 +54,12 @@ test('readiness reports actionable issues for each content type', function (): v
     $episodeIssues = EditorialReadiness::issues($episode);
 
     expect($label)->toBe('3 missing')
-        ->and($postIssues)->toContain('Add a cover image')
-        ->and($guideIssues)->toContain('Add an official source', 'Set the review date')
-        ->and($episodeIssues)->not->toContain('Add audio', 'Add a transcript');
+        ->and($postIssues)
+        ->toContain('Add a cover image')
+        ->and($guideIssues)
+        ->toContain('Add an official source', 'Set the review date')
+        ->and($episodeIssues)
+        ->not->toContain('Add audio', 'Add a transcript');
 });
 
 test('episode readiness does not require deferred audio or transcripts', function (): void {
@@ -83,8 +86,10 @@ test('complete content is marked ready', function (): void {
     $summary = EditorialReadiness::summary($post);
 
     expect($issues)->toBeEmpty()
-        ->and($label)->toBe('Ready')
-        ->and($summary)->toBe('Ready to publish.');
+        ->and($label)
+        ->toBe('Ready')
+        ->and($summary)
+        ->toBe('Ready to publish.');
 });
 
 test('sourced posts require a matching official source and review date', function (): void {
@@ -101,7 +106,8 @@ test('sourced posts require a matching official source and review date', functio
     $missingSourceIssues = EditorialReadiness::issues($missingSource);
 
     expect($missingReviewDateIssues)->toContain('Set the review date')
-        ->and($missingSourceIssues)->toContain('Add an official source');
+        ->and($missingSourceIssues)
+        ->toContain('Add an official source');
 });
 
 test('readiness asks for content until the content is written', function (PostFactory|GuideFactory $factory, string $issue, ?string $content, bool $missing): void {
@@ -128,7 +134,8 @@ test('episode readiness asks for the same playable media that publishing require
     $issues = EditorialReadiness::issues($episode);
 
     expect(in_array('Add a Transistor share link or a YouTube video', $issues, true))->toBe($asked)
-        ->and(in_array('Add a Transistor share link or a YouTube video', $episode->publishingIssues(), true))->toBe($asked);
+        ->and(in_array('Add a Transistor share link or a YouTube video', $episode->publishingIssues(), true))
+        ->toBe($asked);
 })->with([
     'Transistor share link' => ['https://share.transistor.fm/s/428d650c', null, false],
     'YouTube video' => [null, 'https://www.youtube.com/watch?v=abc', false],
@@ -137,16 +144,22 @@ test('episode readiness asks for the same playable media that publishing require
 ]);
 
 test('episodes without playable media need attention', function (?string $transistorUrl, ?string $youtubeUrl, bool $needsAttention): void {
-    $episode = Episode::factory()->withSeo('A complete episode title', 'A complete episode description.')->create([
-        'featured_image_path' => 'episodes/complete.jpg',
-        'transistor_url' => $transistorUrl,
-        'youtube_url' => $youtubeUrl,
-    ]);
+    $episode = Episode::factory()
+        ->withSeo('A complete episode title', 'A complete episode description.')
+        ->create([
+            'featured_image_path' => 'episodes/complete.jpg',
+            'transistor_url' => $transistorUrl,
+            'youtube_url' => $youtubeUrl,
+        ]);
 
-    $listed = Episode::query()->needsAttention()->whereKey($episode->id)->exists();
+    $listed = Episode::query()
+        ->needsAttention()
+        ->whereKey($episode->id)
+        ->exists();
 
     expect($listed)->toBe($needsAttention)
-        ->and(EditorialReadiness::issues($episode->load('seo')) !== [])->toBe($needsAttention);
+        ->and(EditorialReadiness::issues($episode->load('seo')) !== [])
+        ->toBe($needsAttention);
 })->with([
     'Transistor share link' => ['https://share.transistor.fm/s/428d650c', null, false],
     'YouTube video' => [null, 'https://www.youtube.com/watch?v=abc', false],

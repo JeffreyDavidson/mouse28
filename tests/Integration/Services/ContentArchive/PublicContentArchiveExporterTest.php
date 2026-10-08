@@ -18,8 +18,12 @@ covers(PublicContentArchiveExporter::class, PublicContentArchiveSchema::class);
 pest()->use(RefreshDatabase::class);
 
 test('archive export writes each post category slug and name', function (): void {
-    Post::factory()->inCategory('disney-tips')->create(['published_at' => now()->subDays(2)]);
-    Post::factory()->for(Category::factory()->create(['name' => 'Water Parks', 'slug' => 'water-parks']))->create(['published_at' => now()->subDay()]);
+    Post::factory()
+        ->inCategory('disney-tips')
+        ->create(['published_at' => now()->subDays(2)]);
+    Post::factory()
+        ->for(Category::factory()->create(['name' => 'Water Parks', 'slug' => 'water-parks']))
+        ->create(['published_at' => now()->subDay()]);
 
     $archive = app(PublicContentArchiveExporter::class)->export();
 
@@ -35,14 +39,17 @@ test('archive export carries no category for an uncategorized post', function ()
     $archive = app(PublicContentArchiveExporter::class)->export();
 
     expect($archive['posts'][0]['category'])->toBeNull()
-        ->and($archive['posts'][0]['category_name'])->toBeNull();
+        ->and($archive['posts'][0]['category_name'])
+        ->toBeNull();
 });
 
 test('export includes only live content by its publish status', function (PostFactory|GuideFactory|EpisodeFactory $factory): void {
     $factory->createOne(['slug' => 'live-content']);
-    $factory->draft()->createOne();
+    $factory->draft()
+        ->createOne();
     $factory->createOne(['status' => PublishStatus::InReview]);
-    $factory->scheduled()->createOne();
+    $factory->scheduled()
+        ->createOne();
 
     $archive = app(PublicContentArchiveExporter::class)->export();
 
@@ -64,11 +71,19 @@ test('archive export writes the written content under the content key', function
 
 test('archive export lists the published related episodes of each post in episode number order', function (): void {
     $post = Post::factory()->create();
-    $post->episodes()->attach([
-        Episode::factory()->create(['slug' => 'later-episode', 'episode_number' => 12])->id,
-        Episode::factory()->create(['slug' => 'earlier-episode', 'episode_number' => 3])->id,
-        Episode::factory()->draft()->create(['slug' => 'draft-episode', 'episode_number' => 1])->id,
-    ]);
+    $post->episodes()
+        ->attach([
+            Episode::factory()
+                ->create(['slug' => 'later-episode', 'episode_number' => 12])
+                ->id,
+            Episode::factory()
+                ->create(['slug' => 'earlier-episode', 'episode_number' => 3])
+                ->id,
+            Episode::factory()
+                ->draft()
+                ->create(['slug' => 'draft-episode', 'episode_number' => 1])
+                ->id,
+        ]);
 
     $archive = app(PublicContentArchiveExporter::class)->export();
 
@@ -77,8 +92,11 @@ test('archive export lists the published related episodes of each post in episod
 });
 
 test('archive export writes the author names of each post and guide in byline order', function (PostFactory|GuideFactory $factory, string $type): void {
-    [$jeffrey, $cassie] = User::authors()->get()->all();
-    $factory->withAuthors($cassie, $jeffrey)->createOne();
+    [$jeffrey, $cassie] = User::authors()
+        ->get()
+        ->all();
+    $factory->withAuthors($cassie, $jeffrey)
+        ->createOne();
 
     $archive = app(PublicContentArchiveExporter::class)->export();
 
@@ -95,7 +113,9 @@ test('archive export writes an empty author list for content without authors', f
 test('archive export leaves out the private review fields of each post', function (): void {
     Post::factory()->create([
         'review_notes' => 'Private editorial note',
-        'reviewed_by' => User::factory()->create()->id,
+        'reviewed_by' => User::factory()
+            ->create()
+            ->id,
         'reviewed_at' => now(),
     ]);
 

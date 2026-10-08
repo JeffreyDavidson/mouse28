@@ -258,8 +258,12 @@ function useRealApplicationKey(): void
 
 test('stored two-factor values that the application key can read pass preflight', function (string $column): void {
     useRealApplicationKey();
-    $user = User::factory()->admin()->create();
-    DB::table('users')->where('id', $user->id)->update([$column => Crypt::encryptString('readable-value')]);
+    $user = User::factory()
+        ->admin()
+        ->create();
+    DB::table('users')
+        ->where('id', $user->id)
+        ->update([$column => Crypt::encryptString('readable-value')]);
 
     pendingCommand('app:verify-deployment')
         ->expectsOutputToContain('Deployment configuration is ready.')
@@ -268,9 +272,13 @@ test('stored two-factor values that the application key can read pass preflight'
 
 test('two-factor values stored under another key fail preflight without exposing them', function (string $column): void {
     useRealApplicationKey();
-    $user = User::factory()->admin()->create();
+    $user = User::factory()
+        ->admin()
+        ->create();
     $foreign = new Encrypter(random_bytes(32), 'aes-256-cbc')->encryptString('foreign-value');
-    DB::table('users')->where('id', $user->id)->update([$column => $foreign]);
+    DB::table('users')
+        ->where('id', $user->id)
+        ->update([$column => $foreign]);
 
     pendingCommand('app:verify-deployment')
         ->expectsOutputToContain('Stored two-factor secrets cannot be decrypted with APP_KEY (1 value);')
@@ -280,7 +288,9 @@ test('two-factor values stored under another key fail preflight without exposing
 
 test('accounts without two-factor values do not affect preflight', function (): void {
     useRealApplicationKey();
-    User::factory()->admin()->create();
+    User::factory()
+        ->admin()
+        ->create();
 
     pendingCommand('app:verify-deployment')
         ->expectsOutputToContain('Deployment configuration is ready.')

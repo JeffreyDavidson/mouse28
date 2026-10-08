@@ -22,9 +22,13 @@ class ListNewsletterIssues extends ListRecords
             'drafts' => Tab::make('Drafts')
                 ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('newsletter_issues.status', [PublishStatus::Draft, PublishStatus::InReview])),
             'scheduled' => Tab::make('Scheduled')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('newsletter_issues.id', NewsletterIssue::query()->scheduled()->select('id'))),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('newsletter_issues.id', NewsletterIssue::query()
+                    ->scheduled()
+                    ->select('id'))),
             'published' => Tab::make('Published')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('newsletter_issues.id', NewsletterIssue::query()->published()->select('id'))),
+                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('newsletter_issues.id', NewsletterIssue::query()
+                    ->published()
+                    ->select('id'))),
         ];
     }
 
@@ -32,7 +36,9 @@ class ListNewsletterIssues extends ListRecords
     {
         return view('filament.resources.newsletter-issues.header', [
             'published' => NewsletterIssue::published()->count(),
-            'drafts' => NewsletterIssue::query()->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])->count(),
+            'drafts' => NewsletterIssue::query()
+                ->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])
+                ->count(),
             'createUrl' => NewsletterIssueResource::getUrl('create'),
         ]);
     }
