@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PublishStatus;
 use App\Jobs\DeliverNewsletterIssue;
 use App\Mail\NewsletterIssueMail;
 use App\Models\NewsletterDelivery;
@@ -49,6 +50,22 @@ test('a delivery is dropped when the reader is no longer active', function (): v
     Mail::assertNothingSent();
     $this->assertModelMissing($delivery);
 });
+
+test('a delivery is dropped when the issue is no longer published', function (array $attributes): void {
+    /** @var array<string, mixed> $attributes */
+    Mail::fake();
+    $delivery = NewsletterDelivery::factory()
+        ->create();
+    $delivery->newsletterIssue?->update($attributes);
+
+    runDelivery($delivery);
+
+    Mail::assertNothingSent();
+    $this->assertModelMissing($delivery);
+})->with([
+    'unpublished' => [['status' => PublishStatus::Draft]],
+    'moved to a future date' => [fn (): array => ['published_at' => now()->addDay()]],
+]);
 
 test('a delivery stays unsent when the mail transport fails so it can be tried again', function (): void {
     $delivery = NewsletterDelivery::factory()->create();

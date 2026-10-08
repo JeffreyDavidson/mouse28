@@ -93,6 +93,23 @@ test('administrators can delete one reader or several', function (): void {
     expect(Subscriber::query()->count())->toBe(0);
 });
 
+test('suppressed readers cannot be deleted so the do-not-email list survives', function (): void {
+    $suppressed = Subscriber::factory()
+        ->suppressed()
+        ->create();
+
+    livewire(ListSubscribers::class)
+        ->filterTable('status', 'suppressed')
+        ->assertCanSeeTableRecords([$suppressed])
+        ->assertActionHidden(TestAction::make(DeleteAction::class)->table($suppressed))
+        ->selectTableRecords([$suppressed])
+        ->callAction(TestAction::make(DeleteBulkAction::class)
+            ->table()
+            ->bulk());
+
+    $this->assertModelExists($suppressed);
+});
+
 test('other users cannot reach the subscriber list', function (): void {
     actingAs(User::factory()->create());
 
