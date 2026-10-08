@@ -149,6 +149,7 @@ test('drafts with their required details can be published while advisory details
         ->create();
     $record = Post::factory()
         ->draft()
+        ->credited()
         ->create([
             'featured_image_path' => null,
         ]);
@@ -211,6 +212,7 @@ test('publishing is blocked until editorial requirements are complete', function
         ->create();
     $post = Post::factory()
         ->draft()
+        ->credited()
         ->create([
             'excerpt' => null,
             'featured_image_path' => null,
