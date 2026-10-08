@@ -17,6 +17,7 @@ use App\Support\PrimaryPodcast;
 use App\Support\SafeReturnUrl;
 use App\View\Composers\PodcastComposer;
 use App\View\Composers\SocialProfilesComposer;
+use Filament\Support\Events\FilamentUpgraded;
 use Filament\Support\Facades\FilamentTimezone;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
@@ -25,6 +26,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
@@ -65,6 +67,20 @@ class AppServiceProvider extends ServiceProvider
 
             if (Config::boolean('health.runtime.enabled')) {
                 app(RuntimeHealthMonitor::class)->ensureHealthy();
+            }
+        });
+
+        // Filament publishes assets through Filesystem::replace(), which marks them executable (0777 minus the umask).
+        // Restore the committed 0644 so `composer install` (via filament:upgrade) leaves git clean.
+        Event::listen(FilamentUpgraded::class, function (): void {
+            foreach (['css/filament', 'fonts/filament', 'js/filament'] as $directory) {
+                if (! File::isDirectory(public_path($directory))) {
+                    continue;
+                }
+
+                foreach (File::allFiles(public_path($directory)) as $file) {
+                    File::chmod($file->getPathname(), 0644);
+                }
             }
         });
 
