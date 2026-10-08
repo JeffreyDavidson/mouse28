@@ -6,7 +6,7 @@ use Illuminate\Support\ViewErrorBag;
 
 pest()->use(RefreshDatabase::class);
 
-test('the application layout composer shares podcast data with its view', function (): void {
+test('the application layout composer shares the podcast links with its view', function (): void {
     $view = view('components.layouts.app', [
         'errors' => new ViewErrorBag,
         'slot' => new HtmlString(''),
@@ -15,5 +15,6 @@ test('the application layout composer shares podcast data with its view', functi
     app('view')->callComposer($view);
     $data = $view->getData();
 
-    expect($data)->toHaveKeys(['podcast', 'podcastLinks']);
+    expect($data)->toHaveKey('podcastLinks')
+        ->not->toHaveKey('podcast');
 });
