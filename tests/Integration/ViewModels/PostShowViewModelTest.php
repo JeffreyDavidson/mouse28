@@ -60,6 +60,17 @@ test('post data includes recent posts', function (): void {
         ->not->toHaveKey('isPreview');
 });
 
+test('post data limits recent posts to two', function (): void {
+    $post = Post::factory()->create();
+    Post::factory()
+        ->count(3)
+        ->create(['category_id' => $post->category_id]);
+
+    $data = app(PostShowViewModel::class)->data($post);
+
+    expect($data['recentPosts'])->toHaveCount(2);
+});
+
 test('post data lists every published related episode in episode number order', function (): void {
     $post = Post::factory()->create();
     $later = Episode::factory()->create(['episode_number' => 12]);

@@ -156,7 +156,9 @@
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Services/ContentArchive/PublicContentArchiveValidator.php --filter='archive'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Services/ContentArchive/PublicContentImportGuard.php --filter='(content imports|cannot be imported|staging override|live site address)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/EditorialReadiness.php --filter='(without a publish date|readiness reports|episode readiness|complete content|sourced posts)'",
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/ContentContinuation.php --filter='(related posts|continuation queries|related guides|episode)'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Queries/RelatedPostsQuery.php --filter='related posts'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Queries/RelatedGuidesQuery.php --filter='related guides'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Queries/EpisodeNavigationQuery.php --filter='(episode navigation|without a publication date)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Models/Concerns/HasPublishingStatus.php --filter='(agree on what is live|publishing keeps|unpublishing returns)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Models/Concerns/ScopesMissingSeo.php --filter='missing SEO scope'"
         ],
