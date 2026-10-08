@@ -2,15 +2,14 @@
 
 namespace App\Filament\Resources\Episodes\Tables;
 
+use App\Filament\Tables\Actions\SoftDeleteBulkActions;
+use App\Filament\Tables\Filters\MissingArtworkFilter;
+use App\Filament\Tables\Filters\MissingSeoFilter;
 use App\Models\Episode;
+use App\Presenters\EpisodePresenter;
 use App\Support\EditorialReadiness;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -57,35 +56,18 @@ class EpisodesTable
                     ->sortable(),
                 TextColumn::make('duration_seconds')
                     ->label('Duration')
-                    ->formatStateUsing(function (?int $state): string {
-                        if (! $state) {
-                            return '—';
-                        }
-
-                        return sprintf('%d:%02d', floor($state / 60), $state % 60);
-                    }),
+                    ->formatStateUsing(fn (Episode $record): string => EpisodePresenter::from($record)->duration() ?: '—'),
             ])
             ->filters([
-                Filter::make('missing_artwork')
-                    ->query(fn (Builder $query): Builder => $query->where(function (Builder $query): void {
-                        $query->whereNull('featured_image_path')
-                            ->orWhere('featured_image_path', '');
-                    })),
-                Filter::make('missing_seo')
-                    ->query(fn (Builder $query): Builder => $query->whereIn('episodes.id', Episode::query()
-                        ->missingSeo()
-                        ->select('id'))),
+                MissingArtworkFilter::make(),
+                MissingSeoFilter::make(),
                 TrashedFilter::make(),
             ])
             ->recordActions([
                 EditAction::make(),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                ]),
+                SoftDeleteBulkActions::make(),
             ]);
     }
 }
