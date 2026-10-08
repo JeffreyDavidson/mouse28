@@ -58,6 +58,7 @@ test('contact page renders turnstile widget', function (): void {
         ->assertSeeHtml('data-sitekey="test-site-key"')
         ->assertSeeHtml('data-action="contact-form"')
         ->assertSeeHtml('data-appearance="interaction-only"')
+        ->assertSeeHtml('name="website"')
         ->assertSee('Park Accessibility Question')
         ->assertSee('Guest on the Podcast')
         ->assertDontSee('Share Your Story')
@@ -214,6 +215,32 @@ test('contact submission rejects failed turnstile verification before persistenc
     Mail::assertNothingSent();
 });
 
+test('contact submission rejects failed turnstile verification and keeps everything the visitor typed', function (): void {
+    Http::fake([
+        'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response(['success' => false]),
+    ]);
+
+    from(route('contact.create'))
+        ->post(route('contact.store'), contactPayload())
+        ->assertRedirect(route('contact.create'))
+        ->assertSessionHasErrorsIn('contact', ['cf-turnstile-response' => 'Please verify that you are human and try again.'])
+        ->assertSessionHasInput('name', 'Dale Cooper')
+        ->assertSessionHasInput('email', 'dale@example.com')
+        ->assertSessionHasInput('type', 'accessibility')
+        ->assertSessionHasInput('message', 'The contact form needs secure bot protection.');
+});
+
+test('contact submission rejects failed turnstile verification and returns to the page it came from', function (): void {
+    Http::fake([
+        'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response(['success' => false]),
+    ]);
+
+    from(route('home'))
+        ->post(route('contact.store'), contactPayload())
+        ->assertRedirect(route('home'))
+        ->assertSessionHasErrorsIn('contact', 'cf-turnstile-response');
+});
+
 test('contact submission rejects invalid turnstile metadata before persistence or mail', function (array $turnstileResponse, string $email): void {
     Mail::fake();
 
@@ -273,6 +300,22 @@ test('honeypot silently accepts bot submissions without persistence or mail', fu
 
     assertDatabaseCount('contact_inquiries', 0);
     Mail::assertNothingSent();
+    Http::assertNothingSent();
+});
+
+test('honeypot silently accepts bot submissions with invalid fields', function (): void {
+    Http::fake();
+
+    from(route('contact.create'))
+        ->post(route('contact.store'), [
+            'email' => 'not-an-email',
+            'website' => 'https://spam.example',
+        ])
+        ->assertRedirect(route('contact.create'))
+        ->assertSessionHas('success', true)
+        ->assertSessionHasNoErrors();
+
+    assertDatabaseCount('contact_inquiries', 0);
     Http::assertNothingSent();
 });
 
