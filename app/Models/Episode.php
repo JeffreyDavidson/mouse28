@@ -5,12 +5,15 @@ namespace App\Models;
 use App\Contracts\Publishable;
 use App\Enums\PublishStatus;
 use App\Models\Attributes\PublishingStatus;
+use App\Models\Concerns\HasDraftScope;
 use App\Models\Concerns\HasFeaturedImage;
 use App\Models\Concerns\HasPublishingStatus;
 use App\Models\Concerns\HasTagsUntilForceDeleted;
 use App\Models\Concerns\LocksSlugAfterPublication;
+use App\Models\Concerns\LogsEditorialActivity;
 use App\Models\Concerns\ManagesStoredMedia;
 use App\Models\Concerns\ScopesMissingSeo;
+use App\Models\Concerns\ScopesNewestFirst;
 use App\Observers\EpisodeObserver;
 use Carbon\CarbonInterface;
 use Database\Factories\EpisodeFactory;
@@ -27,8 +30,6 @@ use Illuminate\Support\Carbon;
 use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
 use RalphJSmit\Laravel\SEO\Models\SEO;
 use RalphJSmit\Laravel\SEO\Support\HasSEO;
-use Spatie\Activitylog\Models\Concerns\LogsActivity;
-use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property-read SEO $seo
@@ -43,13 +44,14 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property string|null $featured_image_path
  * @property-read string|null $featured_image_url
  *
+ * @method static Builder<static> drafts()
  * @method static Builder<static> needsAttention()
+ * @method static Builder<static> newestFirst()
  * @method static Builder<static> published()
  * @method static Builder<static> scheduled()
  * @method static Builder<static> unpublished()
  */
 #[Fillable([
-    'podcast_id',
     'title',
     'slug',
     'description',
@@ -59,6 +61,7 @@ use Spatie\Activitylog\Support\LogOptions;
     'season_number',
     'transistor_url',
     'youtube_url',
+    'podcast_id',
     'guest_name',
     'guest_title',
     'guest_url',
@@ -73,36 +76,7 @@ use Spatie\Activitylog\Support\LogOptions;
 class Episode extends Model implements Publishable
 {
     /** @use HasFactory<EpisodeFactory> */
-    use HasFactory, HasFeaturedImage, HasPublishingStatus, HasSEO, HasTagsUntilForceDeleted, LocksSlugAfterPublication, ManagesStoredMedia, ScopesMissingSeo, SoftDeletes;
-
-    use LogsActivity;
-
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-            ->useLogName('editorial')
-            ->logOnly([
-                'title',
-                'slug',
-                'description',
-                'show_notes',
-                'transcript',
-                'episode_number',
-                'season_number',
-                'transistor_url',
-                'youtube_url',
-                'podcast_id',
-                'guest_name',
-                'guest_title',
-                'guest_url',
-                'duration_seconds',
-                'featured_image_path',
-                'status',
-                'published_at',
-            ])
-            ->logOnlyDirty()
-            ->dontLogEmptyChanges();
-    }
+    use HasDraftScope, HasFactory, HasFeaturedImage, HasPublishingStatus, HasSEO, HasTagsUntilForceDeleted, LocksSlugAfterPublication, LogsEditorialActivity, ManagesStoredMedia, ScopesMissingSeo, ScopesNewestFirst, SoftDeletes;
 
     protected function storedMediaAttributes(): array
     {

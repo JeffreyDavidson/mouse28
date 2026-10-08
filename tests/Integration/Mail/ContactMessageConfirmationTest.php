@@ -6,6 +6,7 @@ use App\Models\ContactInquiry;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\URL;
 
 test('contact confirmation uses configured contact addresses for replies', function (string $configured, array $addresses): void {
     config()->set('mail.admin_address', $configured);
@@ -81,4 +82,16 @@ test('contact confirmation carries a mouse28 confirmation idempotency key', func
         ->text;
 
     expect($headers['Resend-Idempotency-Key'])->toBe('mouse28-contact-'.hash('sha256', "https://mouse28.test|7|{$createdAt->toISOString()}").'-confirmation');
+});
+
+test('contact confirmation html matches its snapshot', function (): void {
+    URL::forceRootUrl('https://mouse28.test');
+    URL::forceScheme('https');
+
+    $html = new ContactMessageConfirmation(ContactInquiry::factory()->make())->render();
+
+    // Indentation and blank lines are not compared, so moving markup into a layout keeps the snapshot.
+    $lines = array_filter(array_map(trim(...), explode("\n", $html)), fn (string $line): bool => $line !== '');
+
+    expect(implode("\n", $lines))->toMatchSnapshot();
 });

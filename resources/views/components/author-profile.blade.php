@@ -16,7 +16,7 @@
     <dl class="border-navy/15 mt-7 grid gap-5 border-t pt-5 sm:grid-cols-2">
         @foreach ($facts as $label => $value)
             <div>
-                <dt class="text-navy/55 text-sm">{{ $label }}</dt>
+                <dt class="text-navy/65 text-sm">{{ $label }}</dt>
                 <dd class="text-navy mt-1 font-semibold">{{ $value }}</dd>
             </div>
         @endforeach

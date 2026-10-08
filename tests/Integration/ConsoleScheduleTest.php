@@ -61,3 +61,15 @@ test('stale newsletter readers are pruned daily on one server', function (): voi
         ->and($event->onOneServer)
         ->toBeTrue();
 });
+
+test('a killed daily task releases its overlap lock well before its next run', function (string $command): void {
+    $event = collect(app(Schedule::class)->events())->sole(fn (Event $event): bool => str_contains((string) $event->command, $command));
+
+    expect($event->withoutOverlapping)
+        ->toBeTrue()
+        ->and($event->expiresAt)
+        ->toBe(60);
+})->with([
+    'telescope:prune',
+    'model:prune',
+]);

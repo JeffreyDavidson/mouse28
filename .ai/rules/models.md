@@ -50,3 +50,5 @@ Posts, guides, episodes and newsletter issues use `#[Sluggable(from: 'title', ma
 ## Keep post review notes private
 Posts have TLA's `review_notes`, `reviewed_by` (`Post::reviewer()`, NULL when the user is deleted) and `reviewed_at`. They are private editorial data: never export them in public archives, render them on public pages or overwrite them on import. Nothing sets `reviewed_by` / `reviewed_at` yet (as in TLA); change that in both sites together. Guides have no review fields.
 
+## Use the shared model concerns
+Editorial models log through `LogsEditorialActivity`, which logs the whole `$fillable` list; keep anything that must stay out of the activity feed out of `$fillable` (Post's private review fields are logged on purpose). Use `drafts()` for the Draft and In Review list and `newestFirst()` for newest-first ordering instead of writing `whereIn('status', [...])` or `latest('published_at')->latest('id')` again. Post and Guide source review lives in `HasSourceReview`; a model sets its interval and, like Post, narrows which records are tracked.

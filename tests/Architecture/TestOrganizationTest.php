@@ -44,6 +44,7 @@ test('test paths mirror their application source', function (string $suite): voi
     $suiteRoot = $projectRoot.'/tests/'.$suite.'/';
     $nonClassSources = [
         'TestHarnessTest.php' => 'tests/TestCase.php',
+        'PestHelpersTest.php' => 'tests/Pest.php',
         'Scripts/CheckMethodChainingTest.php' => 'scripts/check-method-chaining.php',
         'ConsoleScheduleTest.php' => 'routes/console.php',
         'AboutTest.php' => 'routes/web.php',

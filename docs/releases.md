@@ -107,6 +107,18 @@ For production approval, choose the successful staging run created for the
 merged `main` SHA. A newer staging deployment invalidates a pending manual
 review; select and review the new revision before promotion.
 
+### Recover from stuck or cancelled runs
+
+- **Release branch push CI cancelled** (for example by a GitHub runner
+  incident): staging only follows successful push CI, so re-run that CI run
+  with `gh run rerun <push-CI-run-id>`. Its success triggers `Deploy staging`
+  for the same SHA.
+- **Approved promotion has no runner after about five minutes:** nothing has
+  been deployed yet. Cancel the run and dispatch `Promote production` again
+  from `main` with the same revision and staging run ID, then approve it.
+- **A PR's CI never starts:** close and reopen the PR. The `reopened` event
+  starts CI on the same head SHA without a new commit.
+
 ## Promote production
 
 1. Choose a successful `Deploy staging` run for the full SHA on `main` that was

@@ -44,6 +44,19 @@ test('about introduction groups its copy and preserves responsive safari artwork
         ->toHaveCount(1);
 });
 
+test('about hero picture keeps its JPEG fallback and layout sizes', function (): void {
+    $response = get(route('about'))
+        ->assertOk();
+
+    $xpath = new XPath(HTMLDocument::createFromString($this->responseContent($response), LIBXML_NOERROR));
+    $picture = '//*[local-name()="figure"]//*[local-name()="picture"]';
+    $sizes = '(min-width: 1424px) 765px, (min-width: 1024px) calc(58.3333vw - 65.3333px), (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)';
+
+    expect($xpath->query("{$picture}/*[local-name()=\"source\"][@sizes=\"{$sizes}\"]"))->toHaveCount(2)
+        ->and($xpath->query("{$picture}/*[local-name()=\"img\"][@src=\"/images/hero-family.jpg\"][@width=\"2048\"][@height=\"1536\"][@class=\"aspect-[4/3] w-full object-cover object-center\"]"))
+        ->toHaveCount(1);
+});
+
 test('primary navigation identifies About as the current destination', function (): void {
     // Act
     $response = get(route('about'));
