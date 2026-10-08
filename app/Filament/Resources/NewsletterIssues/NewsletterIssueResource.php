@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\NewsletterIssues;
 
+use App\Enums\NavigationGroup;
 use App\Filament\Resources\NewsletterIssues\Pages\CreateNewsletterIssue;
 use App\Filament\Resources\NewsletterIssues\Pages\EditNewsletterIssue;
 use App\Filament\Resources\NewsletterIssues\Pages\ListNewsletterIssues;
@@ -28,7 +29,7 @@ class NewsletterIssueResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedNewspaper;
 
     #[\Override]
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
+    protected static string|\UnitEnum|null $navigationGroup = NavigationGroup::Content;
 
     #[\Override]
     protected static ?int $navigationSort = 3;

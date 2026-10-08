@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Episodes;
 
 use App\Enums\ContentType;
+use App\Enums\NavigationGroup;
 use App\Filament\Resources\Episodes\Pages\CreateEpisode;
 use App\Filament\Resources\Episodes\Pages\EditEpisode;
 use App\Filament\Resources\Episodes\Pages\ListEpisodes;
@@ -26,7 +27,7 @@ class EpisodeResource extends Resource
     protected static ?string $recordTitleAttribute = 'title';
 
     #[\Override]
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
+    protected static string|\UnitEnum|null $navigationGroup = NavigationGroup::Content;
 
     #[\Override]
     protected static ?int $navigationSort = 1;
