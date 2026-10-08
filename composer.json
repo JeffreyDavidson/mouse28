@@ -84,7 +84,7 @@
             "@php artisan test --exclude-testsuite=Browser --fail-on-risky"
         ],
         "test:architecture": "@php artisan test --compact --testsuite=Architecture --fail-on-risky",
-        "test:mysql": "MOUSE28_TEST_MYSQL=1 php artisan test --compact tests/Integration/Models tests/Integration/Database/Migrations tests/Integration/Support/PublicContentArchiveTest.php tests/Integration/Support/TextSearchTest.php tests/Feature/Filament/Resources/Posts/Pages/CreatePostTest.php tests/Feature/Filament/Resources/Episodes/Pages/CreateEpisodeTest.php tests/Feature/Filament/Resources/Guides/Pages/CreateGuideTest.php",
+        "test:mysql": "MOUSE28_TEST_MYSQL=1 php artisan test --compact tests/Integration/Models tests/Integration/Database/Migrations tests/Integration/Services/ContentArchive/PublicContentArchiveImporterTest.php tests/Integration/Services/ContentArchive/PublicContentArchiveExporterTest.php tests/Integration/Support/TextSearchTest.php tests/Feature/Filament/Resources/Posts/Pages/CreatePostTest.php tests/Feature/Filament/Resources/Episodes/Pages/CreateEpisodeTest.php tests/Feature/Filament/Resources/Guides/Pages/CreateGuideTest.php",
         "test:browser": "@php artisan test --testsuite=Browser --fail-on-risky",
         "test:browser:compatibility": "@php artisan test --compact --testsuite=Browser --group=browser-compatibility --fail-on-risky",
         "test:browser:smoke": "@php artisan test --compact --testsuite=Browser --group=browser-smoke --fail-on-risky",
@@ -121,7 +121,7 @@
         ],
         "test:mutate:commands": [
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Console/Commands/AttachBundledArtwork.php --filter='(failed artwork writes|bundled artwork attaches|artwork attachment stops|bundled artwork ignores|attached artwork that cannot be decoded)'",
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Console/Commands/ExportPublicContent.php --filter='public content archive includes'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Console/Commands/ExportPublicContent.php --filter='(public content archive includes|refuses a relative path)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Console/Commands/ImportPublicContent.php --filter='(public content archive is imported|cannot be imported|requires an explicit staging override)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Console/Commands/VerifyDeploymentConfiguration.php --filter='(safe production configuration|blank or non-string driver|safe staging configuration|unsafe production configuration|administrator recipients|observability validation)'"
         ],
@@ -147,7 +147,12 @@
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Livewire/BlogArchive.php --filter='(publication dates|query string filters|invalid query filters|selecting a category|clearing filters|featured story)'"
         ],
         "test:mutate:content": [
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/PublicContentArchive.php --filter='archive'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Services/ContentArchive/PublicContentArchiveExporter.php --filter='archive'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Services/ContentArchive/PublicContentArchiveImporter.php --filter='archive'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Services/ContentArchive/PublicContentArchiveRelations.php --filter='archive'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Services/ContentArchive/PublicContentArchiveSchema.php --filter='archive'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Services/ContentArchive/PublicContentArchiveValidator.php --filter='archive'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Services/ContentArchive/PublicContentImportGuard.php --filter='(content imports|cannot be imported|staging override|live site address)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/EditorialReadiness.php --filter='(without a publish date|readiness reports|episode readiness|complete content|sourced posts)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/ContentContinuation.php --filter='(related posts|continuation queries|related guides|episode)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Models/Concerns/HasPublishingStatus.php --filter='(agree on what is live|publishing keeps|unpublishing returns)'",

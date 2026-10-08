@@ -107,3 +107,12 @@ function publicArchiveRecords(array $archive, string $key): array
 
     return $result;
 }
+
+test('public content archive export refuses a relative path', function (): void {
+    $exitCode = pendingCommand('content:export-public', ['path' => 'storage/public-content.json'])
+        ->expectsOutputToContain('The public content archive path must be absolute.')
+        ->run();
+
+    expect($exitCode)->toBe(Command::FAILURE)
+        ->and(File::exists(base_path('storage/public-content.json')))->toBeFalse();
+});
