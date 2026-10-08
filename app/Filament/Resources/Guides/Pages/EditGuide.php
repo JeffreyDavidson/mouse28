@@ -2,17 +2,16 @@
 
 namespace App\Filament\Resources\Guides\Pages;
 
+use App\Enums\ContentType;
+use App\Filament\Actions\PreviewContentAction;
 use App\Filament\Actions\PublishContentAction;
 use App\Filament\Actions\UnpublishContentAction;
 use App\Filament\Resources\Guides\GuideResource;
 use App\Models\Guide;
-use App\Support\Content\PreviewUrlGenerator;
-use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\EditRecord;
-use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\View\View;
 
 /** @property Guide $record */
@@ -23,7 +22,8 @@ class EditGuide extends EditRecord
 
     public function getHeader(): ?View
     {
-        return view('filament.resources.guides.form-header', [
+        return view('filament.resources.content.form-header', [
+            'type' => ContentType::Guide,
             'title' => 'Edit Guide',
             'subtitle' => $this->record->title,
         ]);
@@ -34,11 +34,7 @@ class EditGuide extends EditRecord
         return [
             PublishContentAction::make(),
             UnpublishContentAction::make(),
-            Action::make('preview')
-                ->icon(Heroicon::OutlinedEye)
-                ->authorize('view')
-                ->url(fn (PreviewUrlGenerator $previewUrls): string => $previewUrls->for($this->record))
-                ->openUrlInNewTab(),
+            PreviewContentAction::make(),
             DeleteAction::make(),
             ForceDeleteAction::make(),
             RestoreAction::make(),

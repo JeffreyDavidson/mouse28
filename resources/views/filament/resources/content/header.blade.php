@@ -1,10 +1,6 @@
-<x-filament.page-header title="Episodes" subtitle="Manage your podcast episodes" class="mb-6">
+<x-filament.page-header :title="$type->pluralLabel()" :$subtitle class="mb-6">
     <x-slot:icon>
-        <x-filament::icon
-            :icon="\Filament\Support\Icons\Heroicon::OutlinedMicrophone"
-            class="text-mouse-gold-light size-8"
-            aria-hidden="true"
-        />
+        <x-filament::icon :icon="$type->getIcon()" class="text-mouse-gold-light size-8" aria-hidden="true" />
     </x-slot:icon>
 
     <x-slot:stats>
@@ -20,7 +16,7 @@
             :icon="\Filament\Support\Icons\Heroicon::OutlinedPlus"
             class="min-h-12"
         >
-            New Episode
+            New {{ $type->getLabel() }}
         </x-filament::button>
     </x-slot:actions>
 </x-filament.page-header>
