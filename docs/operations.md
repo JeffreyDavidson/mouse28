@@ -329,10 +329,35 @@ Use these descriptive command names for new scripts. Existing names remain alias
 | `content:sync-production --isolated=1` | Synchronize public content and media locally | `content:sync-from-production` |
 | `content:export-public` | Export published content to a JSON archive (absolute path) | — |
 | `content:import-public` | Import a public archive into a permitted environment | — |
+| `db:copy-to-sqlite <path> [--force]` | One-off: copy the database into a new, verified SQLite file (see "Moving the database from MySQL to SQLite") | — |
 
 The generate and repair commands are isolatable: a second run while one is in progress stops with a nonzero exit code. They report counts only, never media paths, and exit nonzero when any source image is missing or cannot be decoded. `content:generate-responsive-artwork` and its `content:generate-artwork` and `content:generate-post-artwork` aliases were retired with the stored media release; use the commands above.
 
 Use `--isolated=1` for sync so overlapping invocations stop with a nonzero exit code before remote processes or local writes. Both command names share the same isolation lock. The framework releases it on completion; interrupted locks expire after one hour. The existing Forge verification command remains supported through its alias; no deployment script changes are required.
+
+## Moving the database from MySQL to SQLite
+
+Mouse28 is moving to SQLite to match The Laravel Architect (owner decision 2026-10-09). The connection settings in `config/database.php` already match TLA's (`busy_timeout` 5000, WAL, `synchronous` NORMAL, `transaction_mode` IMMEDIATE). The live file sits outside the releases at `/home/forge/<site>/shared/database.sqlite`, with its `-wal` and `-shm` files beside it.
+
+`php artisan db:copy-to-sqlite <absolute path> [--force]` builds a new SQLite file from the migrations and copies every row of the current database into it, keeping ids. It then checks foreign keys and integrity and compares every table's row count and a content checksum. It fails, and deletes the half-built file, if anything differs.
+- **Left behind:** the cache tables, Telescope's tables, and empty tables no migration creates any more (production's `contact_message_replies` and `newsletter_subscribers`). It names those in its output. A leftover table that still holds rows stops the copy.
+- **Refusals:** an existing target file, a relative path, production without `--force`, and a source with pending migrations.
+
+**Staging first, then production.** These are owner steps, done at a quiet time, and they never print `.env` values.
+
+1. Production only: take and verify a fresh database backup.
+2. `php artisan down` in the site's `current` directory.
+3. `mkdir -p /home/forge/<site>/shared` (staging and production have no `shared/` yet).
+4. In `current`, run `php8.5 artisan db:copy-to-sqlite /home/forge/<site>/shared/database.sqlite --force`. Every table must report `match`; otherwise stop, delete the file and leave MySQL in place.
+5. In Forge, set the site's environment to `DB_CONNECTION=sqlite` and `DB_DATABASE=/home/forge/<site>/shared/database.sqlite`. Leave the MySQL `DB_HOST`/`DB_USERNAME`/`DB_PASSWORD` lines; they're ignored.
+6. Environment changes only reach a release on deploy. Re-run the staged deploy or the `Promote production` workflow for the revision that is already live (same `revision` and `staging_run_id`).
+7. `php artisan up`. The lead then checks read-only: `config('database.default')` is `sqlite`, the main pages and admin load, a queue job runs, no failed jobs, and the next hourly backup writes `*.sqlite.gz`.
+
+**Off-site backup:** before the production switch, the `mouse28-offsite` job (`export-database.php` / `backup.py`) must back up SQLite (`sqlite3 .backup` plus `PRAGMA integrity_check`) instead of `mysqldump`. The hourly `backup-all.py` already handles SQLite.
+
+**Rollback:** set `DB_CONNECTION=mysql` again and redeploy. The MySQL database stays untouched for 30 days. Anything written to SQLite after the switch would be lost, so roll back only in the first hours.
+
+**After:** drop the MySQL database after 30 days (owner). Remove `db:copy-to-sqlite` once both sites have switched, and remove the CI MySQL lane one release after production runs on SQLite.
 
 ## Resend bounce and complaint webhook
 
