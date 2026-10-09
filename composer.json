@@ -173,6 +173,7 @@
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/Feeds/RssChannelRenderer.php --filter='RssChannelRenderer'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/ViewModels/SitemapViewModel.php --filter='sitemap'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Queries/SitemapQuery.php --filter='sitemap'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Queries/SearchQuery.php --filter='search query'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Services/TurnstileVerifier.php --filter='(invalid credentials|verification|connection failure|blank|hostnames)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Support/TextSearch.php --filter='text search'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Rules/PassesTurnstile.php --filter='(accepts a token|rejects a token|rejects a missing)'"
