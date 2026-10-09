@@ -99,15 +99,6 @@
                     <div class="dispatch-letter-form rounded-xl bg-white p-5 shadow-[0_1.75rem_4rem_rgb(26_16_64/0.12)] sm:p-8 lg:p-10">
                         <form action="{{ route('contact.store') }}" method="POST" class="flex flex-col gap-6">
                             @csrf
-                            @if (config('services.turnstile.site_key'))
-                                @once('turnstile-api')
-                                    <script
-                                        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-                                        async
-                                        defer
-                                    ></script>
-                                @endonce
-                            @endif
 
                             @if ($errors->contact->has('contact_rate_limit'))
                                 <div
@@ -118,10 +109,7 @@
                                 </div>
                             @endif
 
-                            <div class="absolute top-[-9999px] left-[-9999px]" aria-hidden="true">
-                                <label for="website">Website</label>
-                                <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
-                            </div>
+                            <x-honeypot name="website" class="absolute top-[-9999px] left-[-9999px]" />
 
                             <div class="grid gap-5 sm:grid-cols-2">
                                 <div>
@@ -200,13 +188,7 @@
 
                             <div>
                                 @if (config('services.turnstile.site_key'))
-                                    <div
-                                        class="cf-turnstile"
-                                        data-sitekey="{{ config('services.turnstile.site_key') }}"
-                                        data-action="{{ config('services.turnstile.contact_action') }}"
-                                        data-theme="light"
-                                        data-appearance="interaction-only"
-                                    ></div>
+                                    <x-turnstile :action="config('services.turnstile.contact_action')" theme="light" />
                                 @else
                                     <p role="alert" class="text-sm text-red-800">
                                         Contact verification is temporarily unavailable. Please try again later.

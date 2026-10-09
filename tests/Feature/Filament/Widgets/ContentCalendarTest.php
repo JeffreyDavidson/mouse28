@@ -11,6 +11,7 @@ use App\Models\Guide;
 use App\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+use function Pest\Laravel\travelTo;
 use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
@@ -68,7 +69,7 @@ test('content calendar lists the next seven days in chronological order', functi
 });
 
 test('content calendar shows scheduled times in Eastern time', function (): void {
-    $this->travelTo('2026-10-05 12:00:00');
+    travelTo('2026-10-05 12:00:00');
     Post::factory()
         ->scheduled()
         ->create(['title' => 'Evening post', 'published_at' => '2026-10-07 01:00:00']);
@@ -79,7 +80,7 @@ test('content calendar shows scheduled times in Eastern time', function (): void
 });
 
 test('content calendar covers the next seven Eastern days', function (): void {
-    $this->travelTo('2026-10-06 02:00:00');
+    travelTo('2026-10-06 02:00:00');
     $lateTonight = Post::factory()
         ->scheduled()
         ->create(['published_at' => '2026-10-06 03:30:00']);

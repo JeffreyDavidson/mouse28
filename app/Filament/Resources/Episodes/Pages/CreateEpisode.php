@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Episodes\Pages;
 
+use App\Enums\ContentType;
 use App\Filament\Resources\Episodes\EpisodeResource;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Contracts\View\View;
@@ -13,7 +14,8 @@ class CreateEpisode extends CreateRecord
 
     public function getHeader(): ?View
     {
-        return view('filament.resources.episodes.form-header', [
+        return view('filament.resources.content.form-header', [
+            'type' => ContentType::Episode,
             'title' => 'Create Episode',
             'subtitle' => 'Add a new podcast episode',
         ]);

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PublishStatus;
 use App\Filament\Widgets\StatsOverview;
 use App\Models\Episode;
 use App\Models\Guide;
@@ -72,4 +73,22 @@ test('dashboard signals when a sourced published post is due for review', functi
     $stat = collect(app(StatsOverview::class)->getStats())->sole('label', 'Blog Posts');
 
     expect($stat['description'])->toBe('1 need review');
+});
+
+test('the drafts statistic counts draft and in review content of every type but not trashed drafts', function (): void {
+    Post::factory()
+        ->draft()
+        ->create();
+    Guide::factory()->create(['status' => PublishStatus::InReview]);
+    Episode::factory()
+        ->draft()
+        ->create();
+    Episode::factory()
+        ->draft()
+        ->create()
+        ->delete();
+
+    $stat = collect(app(StatsOverview::class)->getStats())->sole('label', 'Drafts');
+
+    expect($stat['value'])->toBe(3);
 });

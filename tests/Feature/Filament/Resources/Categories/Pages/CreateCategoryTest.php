@@ -3,29 +3,21 @@
 use App\Filament\Resources\Categories\CategoryResource;
 use App\Filament\Resources\Categories\Pages\CreateCategory;
 use App\Models\Category;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
 
-test('an administrator can render the category create page', function (): void {
-    actingAs(User::factory()
-        ->admin()
-        ->create());
+beforeEach(fn () => actingAsAdmin());
 
+test('an administrator can render the category create page', function (): void {
     get(CategoryResource::getUrl('create'))
         ->assertOk();
 });
 
 test('an administrator can create a category with a description', function (): void {
-    actingAs(User::factory()
-        ->admin()
-        ->create());
-
     livewire(CreateCategory::class)
         ->fillForm([
             'name' => 'Sample Topic',
@@ -45,10 +37,6 @@ test('an administrator can create a category with a description', function (): v
 });
 
 test('category creation rejects a slug that is not normalized', function (string $slug): void {
-    actingAs(User::factory()
-        ->admin()
-        ->create());
-
     livewire(CreateCategory::class)
         ->fillForm([
             'name' => 'Sample Topic',
@@ -72,9 +60,6 @@ test('category creation rejects a slug that is not normalized', function (string
 test('category creation validates the name and slug', function (array $data, array $errors): void {
     Category::factory()->create(['slug' => 'existing-topic']);
     $categories = Category::query()->count();
-    actingAs(User::factory()
-        ->admin()
-        ->create());
 
     livewire(CreateCategory::class)
         ->fillForm($data)
