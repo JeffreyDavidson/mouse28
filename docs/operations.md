@@ -343,19 +343,34 @@ Mouse28 is moving to SQLite to match The Laravel Architect (owner decision 2026-
 - **Left behind:** the cache tables, Telescope's tables, and empty tables no migration creates any more (production's `contact_message_replies` and `newsletter_subscribers`). It names those in its output. A leftover table that still holds rows stops the copy.
 - **Refusals:** an existing target file, a relative path, production without `--force`, and a source with pending migrations.
 
-**Staging first, then production.** These are owner steps, done at a quiet time, and they never print `.env` values.
+**Staging first, then production.** Staging switched on 2026-10-09. These are owner steps, done at a quiet time, and they never print `.env` values. The site stays in maintenance mode from the copy until the switch is live, and no deploy runs in between:
+- A deploy can't run in maintenance mode. Production's deploy script and both workflows' smoke checks load `/`, which returns 503 then.
+- Bringing the site up before the switch lets new writes reach MySQL after the copy, and those would be lost.
 
-1. Production only: take and verify a fresh database backup.
-2. `php artisan down` in the site's `current` directory.
-3. `mkdir -p /home/forge/<site>/shared` (staging and production have no `shared/` yet).
-4. In `current`, run `php8.5 artisan db:copy-to-sqlite /home/forge/<site>/shared/database.sqlite --force`. Every table must report `match`; otherwise stop, delete the file and leave MySQL in place.
-5. In Forge, set the site's environment to `DB_CONNECTION=sqlite` and `DB_DATABASE=/home/forge/<site>/shared/database.sqlite`. Leave the MySQL `DB_HOST`/`DB_USERNAME`/`DB_PASSWORD` lines; they're ignored.
-6. Environment changes only reach a release on deploy. Re-run the staged deploy or the `Promote production` workflow for the revision that is already live (same `revision` and `staging_run_id`).
-7. `php artisan up`. The lead then checks read-only: `config('database.default')` is `sqlite`, the main pages and admin load, a queue job runs, no failed jobs, and the next hourly backup writes `*.sqlite.gz`.
+1. Production only: confirm the latest off-site backup succeeded (`last-success.json`) and take and verify a fresh database backup.
+2. `php8.5 artisan down` in the site's `current` directory.
+3. `mkdir -p /home/forge/<site>/shared`.
+4. In `current`, run `php8.5 artisan db:copy-to-sqlite /home/forge/<site>/shared/database.sqlite --force`. Every table must report `match`; otherwise stop, delete the file, run `php8.5 artisan up` and leave MySQL in place.
+5. In Forge, set the site's environment to `DB_CONNECTION=sqlite` and `DB_DATABASE=/home/forge/<site>/shared/database.sqlite`. Keep the MySQL `DB_HOST`, `DB_USERNAME` and `DB_PASSWORD` lines, and note the old `DB_DATABASE` value: SQLite ignores them, and a rollback needs them.
+6. Apply the change to the running release without deploying. Forge saves only the site's master `.env`; each release has its own copy, made at deploy time. So copy the master over the release's copy, then rebuild the config cache: `cp /home/forge/<site>/.env /home/forge/<site>/current/.env`, then `php8.5 artisan optimize` in `current`.
+7. Restart the site's queue workers in Forge (Processes). `queue:restart` does not reach them: it writes its signal to the database cache, which is now SQLite, while the running workers still read MySQL. On staging the old worker kept polling MySQL until it was restarted.
+8. `php8.5 artisan config:show database.default` must print `sqlite`. Then `php8.5 artisan up`.
+9. The lead then checks read-only:
+   - the app reads the SQLite file and its row counts match the copy;
+   - MySQL's counts are unchanged since the copy;
+   - the main pages and the admin load;
+   - the workers started after the switch and a test job runs, with no failed jobs;
+   - the next hourly backup (at :07) writes `*.sqlite.gz`, which restores and passes `PRAGMA integrity_check`.
 
-**Off-site backup:** before the production switch, the `mouse28-offsite` job (`export-database.php` / `backup.py`) must back up SQLite (`sqlite3 .backup` plus `PRAGMA integrity_check`) instead of `mysqldump`. The hourly `backup-all.py` already handles SQLite.
+The next normal deploy copies the same master `.env`, so nothing else changes.
 
-**Rollback:** set `DB_CONNECTION=mysql` again and redeploy. The MySQL database stays untouched for 30 days. Anything written to SQLite after the switch would be lost, so roll back only in the first hours.
+**Off-site backup:** before the production switch, the `mouse28-offsite` job must already back up SQLite. Since 2026-10-09:
+- `export-database.php` dumps an SQLite database with `sqlite3 -readonly .dump`, which reads in one transaction, so the dump is consistent.
+- `backup.py` restores the dump into a scratch file and requires `PRAGMA integrity_check` and `PRAGMA foreign_key_check` to pass before it encrypts and uploads. It records `database_format=sqlite` or `mysql` in the manifest.
+- Restore an SQLite dump with `sqlite3 new.sqlite ".read database.sql"`.
+- The hourly `backup-all.py` already handles SQLite.
+
+**Rollback:** in Forge, set `DB_CONNECTION=mysql` and `DB_DATABASE` back to the MySQL database name. Then repeat steps 6–8 (copy the `.env`, `optimize`, restart the workers). The MySQL database stays untouched for 30 days. Anything written to SQLite after the switch would be lost, so roll back only in the first hours.
 
 **After:** drop the MySQL database after 30 days (owner). Remove `db:copy-to-sqlite` once both sites have switched, and remove the CI MySQL lane one release after production runs on SQLite.
 
