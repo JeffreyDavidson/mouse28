@@ -46,6 +46,13 @@ The Mouse28 name, Besley wordmark, Jeffrey and Cassie's identities, and the site
 
 The redesign may establish a more creative visual language while preserving factual copy, the blog-first information hierarchy, and the recognizable Mouse28 identity unless Jeffrey explicitly approves a change.
 
+Family content rules (from Jeffrey):
+
+- Cassie approves Mouse28 and family content before it is published.
+- No pity framing.
+- No personal stories without Cassie's OK.
+- No jokes about disability.
+
 ## Evidence on Hand
 
 - Real family and author photography in `public/images`.
