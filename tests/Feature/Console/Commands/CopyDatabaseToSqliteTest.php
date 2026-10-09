@@ -107,8 +107,16 @@ test('rows the migrations seed are replaced by the source rows, edits included',
         ->toBe(DB::table('categories')->count());
 });
 
-test('the cache and debug tables are left out of the copy', function (): void {
+test('the cache tables are left out of the copy', function (): void {
     DB::table('cache')->insert(['key' => 'cached', 'value' => 'value', 'expiration' => time() + 60]);
+
+    pendingCommand('db:copy-to-sqlite', ['target' => copiedDatabasePath()])->assertSuccessful();
+
+    expect(copiedDatabase()->table('cache')
+        ->count())->toBe(0);
+});
+
+test('telescope debug entries are left out of the copy', function (): void {
     DB::table('telescope_entries')->insert([
         'uuid' => (string) Str::uuid(),
         'batch_id' => (string) Str::uuid(),
@@ -121,12 +129,9 @@ test('the cache and debug tables are left out of the copy', function (): void {
 
     pendingCommand('db:copy-to-sqlite', ['target' => copiedDatabasePath()])->assertSuccessful();
 
-    expect(copiedDatabase()->table('cache')
-        ->count())->toBe(0)
-        ->and(copiedDatabase()->table('telescope_entries')
-            ->count())
-        ->toBe(0);
-});
+    expect(copiedDatabase()->table('telescope_entries')
+        ->count())->toBe(0);
+})->skip(fn (): bool => getenv('MOUSE28_TEST_MYSQL') === '1', 'In the MySQL lane Telescope keeps its tables on the SQLite test connection.');
 
 test('the copy refuses a target that already exists', function (): void {
     File::put(copiedDatabasePath(), 'existing');
