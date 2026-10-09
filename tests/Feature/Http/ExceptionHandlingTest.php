@@ -6,13 +6,29 @@ use function Pest\Laravel\get;
 use function Pest\Laravel\post;
 
 test('unknown URLs render the branded recovery page', function (): void {
-    get('/this-page-does-not-exist')->assertNotFound()->assertSeeHtml('<title>Page Not Found | Mouse28</title>')->assertSee('That page wandered off')->assertSeeHtml('dispatch-error-sheet')->assertSeeHtml('data-brand-wordmark')->assertSeeHtml('js-dispatch-errors')->assertSeeHtml(route('home'))->assertSeeHtml(route('search'))->assertSeeHtml(route('blog.index'))->assertSeeHtml(route('guides.index'))->assertSeeHtml(route('episodes.index'))->assertSeeHtml('placeholder:text-navy/60')->assertDontSeeHtml('placeholder:text-navy/35');
+    get('/this-page-does-not-exist')->assertNotFound()
+        ->assertSeeHtml('<title>Page Not Found | Mouse28</title>')
+        ->assertSee('That page wandered off')
+        ->assertSeeHtml('dispatch-error-sheet')
+        ->assertSeeHtml('data-brand-wordmark')
+        ->assertSeeHtml('js-dispatch-errors')
+        ->assertSeeHtml(route('home'))
+        ->assertSeeHtml(route('search'))
+        ->assertSeeHtml(route('blog.index'))
+        ->assertSeeHtml(route('guides.index'))
+        ->assertSeeHtml(route('episodes.index'))
+        ->assertSeeHtml('placeholder:text-navy/60')
+        ->assertDontSeeHtml('placeholder:text-navy/35');
 });
 
 test('expired sessions explain how to recover', function (): void {
     Route::get('/testing/expired-session', fn () => abort(419, 'Private session details'));
 
-    get('/testing/expired-session')->assertStatus(419)->assertSeeHtml('<title>Page Expired | Mouse28</title>')->assertSee('Your session took a break')->assertSeeHtml('dispatch-error-recovery')->assertSee('Return to the site')
+    get('/testing/expired-session')->assertStatus(419)
+        ->assertSeeHtml('<title>Page Expired | Mouse28</title>')
+        ->assertSee('Your session took a break')
+        ->assertSeeHtml('dispatch-error-recovery')
+        ->assertSee('Return to the site')
         ->assertDontSee('Private session details');
 });
 
@@ -41,20 +57,61 @@ test('unexpected errors render a safe branded response', function (): void {
         throw new RuntimeException('Sensitive database connection details');
     });
 
-    get('/testing/server-error')->assertStatus(500)->assertSeeHtml('<title>Something Went Wrong | Mouse28</title>')->assertDontSeeHtml('fonts.googleapis.com')->assertSee('The magic hit a snag')->assertSeeHtml('dispatch-error-marker')->assertSeeHtml('data-brand-wordmark')
+    get('/testing/server-error')->assertStatus(500)
+        ->assertSeeHtml('<title>Something Went Wrong | Mouse28</title>')
+        ->assertDontSeeHtml('fonts.googleapis.com')
+        ->assertSee('The magic hit a snag')
+        ->assertSeeHtml('dispatch-error-marker')
+        ->assertSeeHtml('data-brand-wordmark')
         ->assertDontSee('Sensitive database connection details');
 });
 
 test('maintenance responses offer a safe retry path', function (): void {
     Route::get('/testing/maintenance', fn () => abort(503, 'Private maintenance details'));
 
-    get('/testing/maintenance')->assertStatus(503)->assertSeeHtml('<title>We’ll Be Right Back | Mouse28</title>')->assertSee('We’re making a little magic')->assertSeeHtml('dispatch-error-sheet')->assertSeeHtml('/testing/maintenance')
+    get('/testing/maintenance')->assertStatus(503)
+        ->assertSeeHtml('<title>We’ll Be Right Back | Mouse28</title>')
+        ->assertSee('We’re making a little magic')
+        ->assertSeeHtml('dispatch-error-sheet')
+        ->assertSeeHtml('/testing/maintenance')
         ->assertDontSee('Private maintenance details');
 });
 
 test('throttled requests explain how to recover without being indexed', function (): void {
     Route::get('/testing/throttled', fn () => abort(429, 'Private throttle details'));
 
-    get('/testing/throttled')->assertTooManyRequests()->assertSeeHtml('<title>Too Many Requests | Mouse28</title>')->assertSee('Let’s take a breather')->assertSeeHtml('dispatch-error-sheet')->assertSee('Try again')->assertHeader('X-Robots-Tag', 'noindex, nofollow')
+    get('/testing/throttled')->assertTooManyRequests()
+        ->assertSeeHtml('<title>Too Many Requests | Mouse28</title>')
+        ->assertSee('Let’s take a breather')
+        ->assertSeeHtml('dispatch-error-sheet')
+        ->assertSee('Try again')
+        ->assertHeader('X-Robots-Tag', 'noindex, nofollow')
         ->assertDontSee('Private throttle details');
 });
+
+test('each status page renders its recovery options', function (int $status, string $recoveryLabel): void {
+    config()->set('app.debug', false);
+    Route::get('/testing/recovery-options', fn () => abort($status));
+
+    get('/testing/recovery-options')
+        ->assertStatus($status)
+        ->assertSeeHtml('dispatch-error-recovery')
+        ->assertSeeInOrder([$recoveryLabel, 'Go home'])
+        ->assertSeeHtml('href="'.route('home').'"')
+        ->assertSeeHtml('dispatch-error-secondary');
+})->with([
+    'expired session' => [419, 'Return to the site'],
+    'too many requests' => [429, 'Try again'],
+    'server error' => [500, 'Try again'],
+    'maintenance' => [503, 'Try again'],
+]);
+
+test('error pages stay out of search results without a canonical link', function (int $status): void {
+    config()->set('app.debug', false);
+    Route::get('/testing/no-canonical', fn () => abort($status));
+
+    get('/testing/no-canonical')
+        ->assertStatus($status)
+        ->assertSeeHtml('<meta name="robots" content="noindex, nofollow">')
+        ->assertDontSeeHtml('rel="canonical"');
+})->with([404, 419, 429, 500, 503]);

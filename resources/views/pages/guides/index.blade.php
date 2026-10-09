@@ -1,7 +1,9 @@
+@use('App\Enums\GuideCategory')
+
 <x-layouts.app
     :title="$pageTitle"
     :description="$pageDescription"
-    og-image="/images/guides/accessibility.webp"
+    :og-image="GuideCategory::Accessibility->artworkUrl()"
     :canonical="$canonicalUrl"
     :dispatch-layout="true"
 >
@@ -25,35 +27,16 @@
                 </div>
 
                 <div class="grid grid-cols-2 gap-2 sm:gap-3" aria-hidden="true">
-                    <img
-                        src="/images/guides/accessibility.webp"
-                        alt=""
-                        width="960"
-                        height="640"
-                        fetchpriority="high"
-                        class="aspect-[16/10] w-full rounded-xl object-cover"
-                    />
-                    <img
-                        src="/images/guides/park-strategy.webp"
-                        alt=""
-                        width="960"
-                        height="640"
-                        class="aspect-[16/10] w-full rounded-xl object-cover"
-                    />
-                    <img
-                        src="/images/guides/food-reviews.webp"
-                        alt=""
-                        width="960"
-                        height="640"
-                        class="aspect-[16/10] w-full rounded-xl object-cover"
-                    />
-                    <img
-                        src="/images/guides/family-planning.webp"
-                        alt=""
-                        width="960"
-                        height="640"
-                        class="aspect-[16/10] w-full rounded-xl object-cover"
-                    />
+                    @foreach (GuideCategory::cases() as $artworkCategory)
+                        <img
+                            src="{{ $artworkCategory->artworkUrl() }}"
+                            alt=""
+                            width="960"
+                            height="640"
+                            @if ($loop->first) fetchpriority="high" @endif
+                            class="aspect-[16/10] w-full rounded-xl object-cover"
+                        />
+                    @endforeach
                 </div>
             </div>
         </header>
@@ -67,7 +50,7 @@
                             @if (! $category) aria-current="page" @endif
                             class="{{ ! $category ? 'border-gold text-navy' : 'border-transparent text-navy/65 hover:text-purple' }} inline-flex min-h-14 items-center border-b-2 text-sm font-semibold transition-colors"
                         >All guides</a>
-                        @foreach (\App\Enums\GuideCategory::cases() as $categoryOption)
+                        @foreach (GuideCategory::cases() as $categoryOption)
                             <a
                                 href="{{ route('guides.index', ['category' => $categoryOption->value]) }}"
                                 @if ($category === $categoryOption->value) aria-current="page" @endif
@@ -81,7 +64,7 @@
                     <div class="mt-10 flex flex-wrap items-end justify-between gap-4 sm:mt-14">
                         <div>
                             <h2 class="font-heading text-4xl/[1.08] [font-weight:640] tracking-[-0.025em] text-balance sm:text-5xl">
-                                {{ $category ? (\App\Enums\GuideCategory::tryFrom($category)?->getLabel() ?? 'Guides') : 'The guide shelf' }}
+                                {{ $category ? (GuideCategory::tryFrom($category)?->getLabel() ?? 'Guides') : 'The guide shelf' }}
                             </h2>
                             <p class="text-navy/65 mt-3 max-w-xl text-base/7">
                                 Choose the guide that matches the day you are planning.
@@ -108,7 +91,7 @@
                     <section class="border-navy/15 mt-12 grid gap-7 border-y py-12 sm:mt-16 sm:py-16 lg:grid-cols-[5fr_7fr] lg:gap-20">
                         <h2 class="font-heading max-w-[15ch] text-4xl/[1.1] [font-weight:640] tracking-[-0.025em] text-balance sm:text-5xl">
                             @if ($category)
-                                No {{ \App\Enums\GuideCategory::tryFrom($category)?->getLabel() ?? 'matching' }} guides yet
+                                No {{ GuideCategory::tryFrom($category)?->getLabel() ?? 'matching' }} guides yet
                             @else
                                 Guides are on the way
                             @endif

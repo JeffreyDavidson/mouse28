@@ -30,6 +30,9 @@ daily, non-overlapping `telescope:prune` schedule runs only when Telescope is en
 and `MOUSE28_DEPLOYMENT_ENVIRONMENT=staging`. Verify Forge's scheduler invokes
 `php artisan schedule:run` for the staging site's current release before relying on
 this retention policy. This code change does not provision or change Forge cron.
+Its overlap lock, like the daily `model:prune` task's, expires after 60 minutes
+instead of the 24-hour default, so a run killed mid-way (out of memory, a hung
+server) cannot leave a lock that skips the next day's run.
 Contact-message retention remains manual and is unaffected.
 
 The audit-hardening release adds `slug_locked_at` to posts, guides, and episodes.
@@ -214,7 +217,8 @@ server.
 ### Installed production deploy script (site 3064716)
 
 Production's script predates the pipeline. The pins, the checkout block and the
-marker block were added to it; every other line is the original.
+marker block were added to it, and the asset build was moved ahead of the
+migration; every other line is the original.
 
 ```bash
 set -e
@@ -247,15 +251,17 @@ fi
 
 # PHP
 $FORGE_COMPOSER install --no-dev --no-interaction --prefer-dist --optimize-autoloader
-$FORGE_PHP artisan optimize
-$FORGE_PHP artisan app:verify-production --no-interaction
-$FORGE_PHP artisan storage:link --force
-$FORGE_PHP artisan migrate --force
 
 # JS — with memory cap for Next.js builds
 export NODE_OPTIONS="--max-old-space-size=1024"
 npm ci --production=false
 npm run build
+
+$FORGE_PHP artisan optimize
+$FORGE_PHP artisan app:verify-production --no-interaction
+$FORGE_PHP artisan storage:link --force
+# Migrate last: once the schema has changed, nothing may stop the release from activating.
+$FORGE_PHP artisan migrate --force
 
 # Activate only if everything succeeded
 $ACTIVATE_RELEASE()
@@ -287,15 +293,24 @@ $RESTART_QUEUES()
 echo "Deploy complete: $(date)"
 ```
 
+In both scripts `migrate --force` is the last step that can stop the deploy before
+`$ACTIVATE_RELEASE()`. The migration changes the shared live database, so once it
+has run the new release has to go live: a failure after it would leave the previous
+release serving a schema it was not written for. The asset install and build,
+caching, configuration check and `storage:link` therefore run first, and a failed
+`npm ci` or `npm run build` stops the deploy with the database untouched.
+Production built its assets after migrating until this order was adopted in
+October 2026.
+
 To roll a script back, paste the previous version into Forge, keep push-to-deploy
 off unless the earlier merge-triggered deployment is deliberately restored, and confirm the
 site's branch setting.
 
 ## Syncing public content locally
 
-Run `php artisan content:sync-from-production --isolated=1` from the local Mouse28 checkout to replace local published posts, guides, episodes, podcast display metadata, and their referenced public media with the current production versions. The command uses the `cold-moon` SSH alias and `/home/forge/mouse28.com/current` site path by default; override them with `MOUSE28_PRODUCTION_SSH_HOST` and `MOUSE28_PRODUCTION_SITE_PATH` when the Forge target changes.
+Run `php artisan content:sync-production --isolated=1` from the local Mouse28 checkout to replace local published posts, guides, episodes, podcast display metadata, and their referenced public media with the current production versions. The command uses the `cold-moon` SSH alias and `/home/forge/mouse28.com/current` site path by default; override them with `MOUSE28_PRODUCTION_SSH_HOST` and `MOUSE28_PRODUCTION_SITE_PATH` when the Forge target changes.
 
-The sync is one-way and refuses to run when the current application environment is production. It never exports private users, subscribers, contact submissions, credentials, or environment-specific podcast email. Local drafts and scheduled content are preserved; stale currently published local records are soft deleted.
+The sync is one-way and refuses to run when the current application environment is production, or when the local `APP_URL` is the live site's address (mouse28.com or www.mouse28.com). It never exports private users, subscribers, contact submissions, credentials, or environment-specific podcast email. Local drafts and scheduled content are preserved; stale currently published local records are soft deleted.
 
 ## Application commands
 
@@ -311,8 +326,8 @@ Use these descriptive command names for new scripts. Existing names remain alias
 | `podcasts:generate-image-variants` | Generate missing responsive variants for the podcast cover (`--force`) | — |
 | `media:repair-responsive-images` | Generate missing variants for every media type, then verify them all (`--force`) | — |
 | `media:verify-responsive-images` | Report, without writing, whether every stored image has its required variants | — |
-| `content:sync-from-production --isolated=1` | Synchronize public content and media locally | `content:sync-production` |
-| `content:export-public` | Export published content to a JSON archive | — |
+| `content:sync-production --isolated=1` | Synchronize public content and media locally | `content:sync-from-production` |
+| `content:export-public` | Export published content to a JSON archive (absolute path) | — |
 | `content:import-public` | Import a public archive into a permitted environment | — |
 
 The generate and repair commands are isolatable: a second run while one is in progress stops with a nonzero exit code. They report counts only, never media paths, and exit nonzero when any source image is missing or cannot be decoded. `content:generate-responsive-artwork` and its `content:generate-artwork` and `content:generate-post-artwork` aliases were retired with the stored media release; use the commands above.

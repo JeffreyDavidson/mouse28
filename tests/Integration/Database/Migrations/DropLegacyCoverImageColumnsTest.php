@@ -24,7 +24,8 @@ function runDropLegacyCoverImageMigration(): void
 beforeEach(function (): void {
     foreach (['posts', 'episodes', 'guides', 'podcasts'] as $table) {
         Schema::table($table, function (Blueprint $blueprint): void {
-            $blueprint->string('cover_image')->nullable();
+            $blueprint->string('cover_image')
+                ->nullable();
         });
     }
 });
@@ -74,7 +75,9 @@ test('the migration keeps the stored image path', function (string $table): void
     runDropLegacyCoverImageMigration();
 
     // Assert
-    expect(DB::table($table)->where('id', $id)->value($column))->toBe('covers/a.webp');
+    expect(DB::table($table)
+        ->where('id', $id)
+        ->value($column))->toBe('covers/a.webp');
 })->with('legacy cover tables');
 
 test('the migration refuses to drop anything while a row has a cover_image but no path', function (string $table): void {
@@ -87,7 +90,8 @@ test('the migration refuses to drop anything while a row has a cover_image but n
     // Assert
     expect($run)->toThrow(RuntimeException::class, "1 {$table} row(s) still have a cover_image but no");
     expect(Schema::hasColumn('posts', 'cover_image'))->toBeTrue()
-        ->and(Schema::hasColumn('podcasts', 'cover_image'))->toBeTrue();
+        ->and(Schema::hasColumn('podcasts', 'cover_image'))
+        ->toBeTrue();
 })->with('legacy cover tables');
 
 test('the migration ignores an empty cover_image without a path', function (string $table): void {

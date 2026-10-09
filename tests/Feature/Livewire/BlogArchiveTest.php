@@ -21,7 +21,9 @@ test('equal publication dates have stable ordering across archive pages', functi
     // Arrange
     $pageSize = 2;
     config()->set('mouse28.blog_posts_per_page', $pageSize);
-    $records = Post::factory()->count($pageSize + 1)->create(['published_at' => now()->subDay()]);
+    $records = Post::factory()
+        ->count($pageSize + 1)
+        ->create(['published_at' => now()->subDay()]);
     $ids = $records->modelKeys();
     rsort($ids);
 
@@ -29,37 +31,49 @@ test('equal publication dates have stable ordering across archive pages', functi
     $page = livewire(BlogArchive::class);
 
     // Assert
-    $page->assertViewHas('posts', fn (LengthAwarePaginator $posts): bool => $posts->getCollection()->pluck('id')->all() === array_slice($ids, 0, $pageSize));
+    $page->assertViewHas('posts', fn (LengthAwarePaginator $posts): bool => $posts->getCollection()
+        ->pluck('id')
+        ->all() === array_slice($ids, 0, $pageSize));
 
     // Act
     $page->call('setPage', 2);
 
     // Assert
-    $page->assertViewHas('posts', fn (LengthAwarePaginator $posts): bool => $posts->getCollection()->pluck('id')->all() === array_slice($ids, $pageSize, $pageSize));
+    $page->assertViewHas('posts', fn (LengthAwarePaginator $posts): bool => $posts->getCollection()
+        ->pluck('id')
+        ->all() === array_slice($ids, $pageSize, $pageSize));
 
     // Act
     $page->set('sort', 'oldest');
     sort($ids);
 
     // Assert
-    $page->assertViewHas('posts', fn (LengthAwarePaginator $posts): bool => $posts->getCollection()->pluck('id')->all() === array_slice($ids, 0, $pageSize));
+    $page->assertViewHas('posts', fn (LengthAwarePaginator $posts): bool => $posts->getCollection()
+        ->pluck('id')
+        ->all() === array_slice($ids, 0, $pageSize));
 });
 
 test('query string filters update the visible stories', function (): void {
     // Arrange
     $accessibility = Category::factory()->create();
     $dining = Category::factory()->create();
-    $newestPost = Post::factory()->for($accessibility)->create([
-        'title' => 'Newest accessible plan',
-        'published_at' => now()->subDay(),
-    ]);
-    $oldestPost = Post::factory()->for($accessibility)->create([
-        'title' => 'Oldest accessible plan',
-        'published_at' => now()->subWeek(),
-    ]);
-    $unrelatedPost = Post::factory()->for($dining)->create([
-        'title' => 'Unrelated dining review',
-    ]);
+    $newestPost = Post::factory()
+        ->for($accessibility)
+        ->create([
+            'title' => 'Newest accessible plan',
+            'published_at' => now()->subDay(),
+        ]);
+    $oldestPost = Post::factory()
+        ->for($accessibility)
+        ->create([
+            'title' => 'Oldest accessible plan',
+            'published_at' => now()->subWeek(),
+        ]);
+    $unrelatedPost = Post::factory()
+        ->for($dining)
+        ->create([
+            'title' => 'Unrelated dining review',
+        ]);
 
     Livewire::withQueryParams([
         'category' => $accessibility->slug,
@@ -77,10 +91,11 @@ test('query string filters update the visible stories', function (): void {
         ->assertSet('search', 'accessible')
         ->assertSet('sort', 'oldest')
         ->assertViewHas('hasAnyPosts', true)
-        ->assertViewHas('usedCategories', fn (Collection $categories): bool => $categories->pluck('slug')->all() === [
-            $accessibility->slug,
-            $dining->slug,
-        ]);
+        ->assertViewHas('usedCategories', fn (Collection $categories): bool => $categories->pluck('slug')
+            ->all() === [
+                $accessibility->slug,
+                $dining->slug,
+            ]);
 
     // Act
     $page->set('search', 'no matching story');
@@ -96,16 +111,25 @@ test('query string filters offer only categories with published stories, labelle
     $draftOnly = Category::factory()->create(['name' => 'Sample Draft Topic']);
     $scheduledOnly = Category::factory()->create(['name' => 'Sample Scheduled Topic']);
     Category::factory()->create(['name' => 'Sample Empty Topic']);
-    Post::factory()->for($used)->create();
-    Post::factory()->for($draftOnly)->draft()->create();
-    Post::factory()->for($scheduledOnly)->scheduled()->create();
+    Post::factory()
+        ->for($used)
+        ->create();
+    Post::factory()
+        ->for($draftOnly)
+        ->draft()
+        ->create();
+    Post::factory()
+        ->for($scheduledOnly)
+        ->scheduled()
+        ->create();
     Post::factory()->create(['category_id' => null]);
 
     // Act
     $page = livewire(BlogArchive::class);
 
     // Assert
-    $page->assertViewHas('usedCategories', fn (Collection $categories): bool => $categories->pluck('slug')->all() === [$used->slug])
+    $page->assertViewHas('usedCategories', fn (Collection $categories): bool => $categories->pluck('slug')
+        ->all() === [$used->slug])
         ->assertSeeHtml('href="'.e(route('blog.index', ['category' => $used->slug])).'"')
         ->assertSee('Sample Used Topic')
         ->assertDontSee('Sample Draft Topic')
@@ -116,7 +140,9 @@ test('query string filters offer only categories with published stories, labelle
 test('query string filters show the selected category name as the heading', function (): void {
     // Arrange
     $category = Category::factory()->create(['name' => 'Sample Heading Topic']);
-    Post::factory()->for($category)->create();
+    Post::factory()
+        ->for($category)
+        ->create();
     Livewire::withQueryParams(['category' => $category->slug]);
 
     // Act
@@ -183,7 +209,9 @@ test('selecting a category resets incompatible filters', function (): void {
 test('clearing filters restores the default archive state', function (): void {
     // Arrange
     Livewire::withQueryParams([
-        'category' => Category::factory()->create()->slug,
+        'category' => Category::factory()
+            ->create()
+            ->slug,
         'q' => 'accessible',
         'sort' => 'oldest',
     ]);
@@ -203,9 +231,11 @@ test('featured story remains visible on subsequent archive pages', function (): 
     // Arrange
     config()->set('mouse28.blog_posts_per_page', 2);
     $featuredPost = Post::factory()->create(['published_at' => now()]);
-    Post::factory()->count(2)->create([
-        'published_at' => now()->subDay(),
-    ]);
+    Post::factory()
+        ->count(2)
+        ->create([
+            'published_at' => now()->subDay(),
+        ]);
 
     Livewire::withQueryParams(['page' => 2]);
 
@@ -218,10 +248,18 @@ test('featured story remains visible on subsequent archive pages', function (): 
 
 test('featured story and archive cards show each post\'s byline from its loaded authors', function (): void {
     // Arrange
-    $jeffrey = User::factory()->author()->create(['name' => 'Jeffrey Sample']);
-    $cassie = User::factory()->author()->create(['name' => 'Cassie Sample']);
-    Post::factory()->withAuthors($jeffrey, $cassie)->create(['published_at' => now()]);
-    Post::factory()->withAuthors($cassie)->create(['published_at' => now()->subDay()]);
+    $jeffrey = User::factory()
+        ->author()
+        ->create(['name' => 'Jeffrey Sample']);
+    $cassie = User::factory()
+        ->author()
+        ->create(['name' => 'Cassie Sample']);
+    Post::factory()
+        ->withAuthors($jeffrey, $cassie)
+        ->create(['published_at' => now()]);
+    Post::factory()
+        ->withAuthors($cassie)
+        ->create(['published_at' => now()->subDay()]);
     Post::factory()->create(['published_at' => now()->subDays(2)]);
 
     // Act
@@ -235,8 +273,12 @@ test('featured story and archive cards show each post\'s byline from its loaded 
 
 test('featured story loads its authors when filters exclude it from the page', function (): void {
     // Arrange
-    $author = User::factory()->author()->create(['name' => 'Jeffrey Sample']);
-    Post::factory()->withAuthors($author)->create(['published_at' => now()]);
+    $author = User::factory()
+        ->author()
+        ->create(['name' => 'Jeffrey Sample']);
+    Post::factory()
+        ->withAuthors($author)
+        ->create(['published_at' => now()]);
 
     // Act
     $page = livewire(BlogArchive::class, ['sort' => 'oldest']);
@@ -250,9 +292,15 @@ test('featured story is independent of category search and sort filters', functi
     // Arrange
     $featuredPost = Post::factory()->create(['published_at' => now()]);
     $category = Category::factory()->create();
-    Post::factory()->for($category)->create();
-    Post::factory()->draft()->create();
-    Post::factory()->scheduled()->create();
+    Post::factory()
+        ->for($category)
+        ->create();
+    Post::factory()
+        ->draft()
+        ->create();
+    Post::factory()
+        ->scheduled()
+        ->create();
 
     $page = livewire(BlogArchive::class);
 
@@ -304,8 +352,11 @@ test('archive search matches text in the post content', function (): void {
 
 test('selecting a category that does not exist shows every story', function (): void {
     // Arrange
-    $posts = Post::factory()->count(2)->create();
-    Livewire::withQueryParams(['category' => $posts->first()?->category?->slug]);
+    $posts = Post::factory()
+        ->count(2)
+        ->create();
+    Livewire::withQueryParams(['category' => $posts->first()
+        ?->category?->slug]);
     $page = livewire(BlogArchive::class);
 
     // Act
@@ -333,4 +384,47 @@ test('query string filters without a category look up no category by slug', func
     // Assert
     $page->assertSet('category', '');
     expect($emptySlugLookups)->toBe(0);
+});
+
+test('each archive update looks the selected category up once', function (string $method, array $arguments): void {
+    // Arrange
+    $category = Category::factory()->create(['slug' => 'sample-lookup-topic']);
+    Post::factory()
+        ->for($category)
+        ->create();
+    Livewire::withQueryParams(['category' => $category->slug]);
+    $page = livewire(BlogArchive::class);
+    $slugLookups = 0;
+    DB::listen(function (QueryExecuted $query) use (&$slugLookups): void {
+        if (in_array('sample-lookup-topic', $query->bindings, true)) {
+            $slugLookups++;
+        }
+    });
+
+    // Act
+    $page->{$method}(...$arguments);
+
+    // Assert
+    $page->assertSet('category', 'sample-lookup-topic')
+        ->assertDispatched('blog-metadata-updated', pageTitle: "{$category->name} | Mouse28");
+    expect($slugLookups)->toBe(1);
+})->with([
+    'select the category' => ['call', ['selectCategory', 'sample-lookup-topic']],
+    'search' => ['set', ['search', 'sample']],
+    'sort' => ['set', ['sort', 'oldest']],
+    'clear the search' => ['call', ['clearSearch']],
+]);
+
+test('the sort control offers each order by name', function (): void {
+    // Arrange
+    Post::factory()->create();
+
+    // Act
+    $page = livewire(BlogArchive::class);
+
+    // Assert
+    $page->assertSeeHtmlInOrder([
+        '<option value="newest">Newest first</option>',
+        '<option value="oldest">Oldest first</option>',
+    ]);
 });

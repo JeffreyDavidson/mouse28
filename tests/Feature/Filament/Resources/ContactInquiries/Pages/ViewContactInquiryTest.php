@@ -22,7 +22,7 @@ pest()->use(RefreshDatabase::class);
 test('authenticated user can render the resource page', function (): void {
     $inquiry = ContactInquiry::factory()->create(['message' => 'A park question.', 'type' => ContactType::Guest]);
 
-    actingAs(User::factory()->admin()->create());
+    actingAsAdmin();
 
     get(ContactInquiryResource::getUrl('view', ['record' => $inquiry]))
         ->assertOk()
@@ -32,33 +32,36 @@ test('authenticated user can render the resource page', function (): void {
 
 test('opening a new inquiry marks it in progress', function (): void {
     $inquiry = ContactInquiry::factory()->create(['status' => ContactInquiryStatus::New]);
-    actingAs(User::factory()->admin()->create());
+    actingAsAdmin();
 
     livewire(ViewContactInquiry::class, ['record' => $inquiry->getRouteKey()])
         ->assertOk();
 
-    expect($inquiry->refresh()->status)->toBe(ContactInquiryStatus::InProgress);
+    expect($inquiry->refresh()
+        ->status)->toBe(ContactInquiryStatus::InProgress);
 });
 
 test('opening a resolved inquiry keeps its status', function (): void {
     $inquiry = ContactInquiry::factory()->create(['status' => ContactInquiryStatus::Resolved]);
-    actingAs(User::factory()->admin()->create());
+    actingAsAdmin();
 
     livewire(ViewContactInquiry::class, ['record' => $inquiry->getRouteKey()])
         ->assertOk();
 
-    expect($inquiry->refresh()->status)->toBe(ContactInquiryStatus::Resolved);
+    expect($inquiry->refresh()
+        ->status)->toBe(ContactInquiryStatus::Resolved);
 });
 
 test('mark resolved header action resolves the inquiry', function (): void {
     $inquiry = ContactInquiry::factory()->create(['status' => ContactInquiryStatus::InProgress]);
-    actingAs(User::factory()->admin()->create());
+    actingAsAdmin();
 
     livewire(ViewContactInquiry::class, ['record' => $inquiry->getRouteKey()])
         ->callAction('markResolved')
         ->assertActionHidden('markResolved');
 
-    expect($inquiry->refresh()->status)->toBe(ContactInquiryStatus::Resolved);
+    expect($inquiry->refresh()
+        ->status)->toBe(ContactInquiryStatus::Resolved);
 });
 
 test('delivery stamps are shown read-only with their sent times in Eastern time', function (): void {
@@ -67,7 +70,7 @@ test('delivery stamps are shown read-only with their sent times in Eastern time'
         'notification_sent_at' => Date::parse('2026-10-02 09:15:01'),
         'confirmation_sent_at' => null,
     ]);
-    actingAs(User::factory()->admin()->create());
+    actingAsAdmin();
 
     livewire(ViewContactInquiry::class, ['record' => $inquiry->getRouteKey()])
         ->assertSee('Administrator notification sent')
@@ -82,7 +85,7 @@ test('administrators queue retries without sending during the request', function
         'email_attempted_at' => Date::now(),
         'notification_sent_at' => Date::now(),
     ]);
-    actingAs(User::factory()->admin()->create());
+    actingAsAdmin();
 
     livewire(ViewContactInquiry::class, ['record' => $inquiry->getRouteKey()])
         ->assertActionVisible('retryEmails')
@@ -91,7 +94,8 @@ test('administrators queue retries without sending during the request', function
 
     Bus::assertDispatched(SendContactInquiryEmails::class, fn (SendContactInquiryEmails $job): bool => $job->contactInquiryId === $inquiry->id);
     Event::assertNotDispatched(MessageSent::class);
-    expect($inquiry->fresh()?->confirmation_sent_at)->toBeNull();
+    expect($inquiry->fresh()
+        ?->confirmation_sent_at)->toBeNull();
 });
 
 test('the retry action appears only after an incomplete delivery attempt', function (bool $attempted, bool $delivered, bool $visible): void {
@@ -100,7 +104,7 @@ test('the retry action appears only after an incomplete delivery attempt', funct
         'notification_sent_at' => $delivered ? Date::now() : null,
         'confirmation_sent_at' => $delivered ? Date::now() : null,
     ]);
-    actingAs(User::factory()->admin()->create());
+    actingAsAdmin();
 
     $page = livewire(ViewContactInquiry::class, ['record' => $inquiry->getRouteKey()]);
 
@@ -115,7 +119,7 @@ test('the retry action appears only after an incomplete delivery attempt', funct
 
 test('older contact inquiries do not invite retries with unknown delivery status', function (): void {
     $inquiry = ContactInquiry::factory()->create();
-    actingAs(User::factory()->admin()->create());
+    actingAsAdmin();
 
     livewire(ViewContactInquiry::class, ['record' => $inquiry->getRouteKey()])
         ->assertSee('Not tracked')
@@ -136,7 +140,7 @@ test('tracked inquiries outside the retry window cannot queue admin retries', fu
         'email_attempted_at' => Date::now()->subDay(),
         'created_at' => Date::now()->subDay(),
     ]);
-    actingAs(User::factory()->admin()->create());
+    actingAsAdmin();
 
     livewire(ViewContactInquiry::class, ['record' => $inquiry->getRouteKey()])
         ->assertActionDisabled('retryEmails')
@@ -147,7 +151,7 @@ test('tracked inquiries outside the retry window cannot queue admin retries', fu
 
 test('reply action opens an encoded mail draft', function (): void {
     $inquiry = ContactInquiry::factory()->create(['email' => 'dale@example.com', 'type' => ContactType::General]);
-    actingAs(User::factory()->admin()->create());
+    actingAsAdmin();
 
     livewire(ViewContactInquiry::class, ['record' => $inquiry->getRouteKey()])
         ->assertActionHasUrl('reply', 'mailto:dale@example.com?subject=Re%3A%20General%20Question');

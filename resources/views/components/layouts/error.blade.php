@@ -1,21 +1,24 @@
 @props([
+    'pageMeta' => null,
     'title' => 'Something Went Wrong | Mouse28',
     'description' => 'Mouse28 could not complete this request.',
     'ogTitle' => 'Mouse28',
 ])
 
+{{--
+    An error page may pass an App\Data\PageMeta; otherwise App\View\SiteSeo builds its noindex
+    tags from the props above. Error pages render no JSON-LD.
+--}}
+@use('App\Data\PageMeta')
+@use('RalphJSmit\Laravel\SEO\Tags\CanonicalTag')
+@inject('siteSeo', 'App\View\SiteSeo')
+
 @php
-    $seoData = new \RalphJSmit\Laravel\SEO\Support\SEOData(
-        title: $title,
-        description: $description,
-        image: url('/images/logo.jpg'),
-        url: url()->current(),
-        enableTitleSuffix: false,
-        site_name: 'Mouse28',
-        locale: '',
-        robots: 'noindex, nofollow',
-        openGraphTitle: $ogTitle,
-    );
+    $pageMeta ??= new PageMeta($siteSeo->errorPage($title, $description, $ogTitle));
+
+    // An error page has no URL of its own to point search engines at.
+    $seoTags = seo($pageMeta->seo);
+    $seoTags->tags = $seoTags->tags->reject(fn (object $tag): bool => $tag instanceof CanonicalTag);
 @endphp
 
 <!DOCTYPE html>
@@ -23,7 +26,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    {!! seo($seoData) !!}
+    {!! $seoTags !!}
 
     @vite('resources/css/app.css')
 </head>
@@ -48,20 +51,7 @@
                 <x-brand-wordmark />
             </a>
             <div class="hidden items-center gap-6 sm:flex">
-                <a
-                    href="{{ route('blog.index') }}"
-                    class="hover:text-gold inline-flex min-h-12 items-center text-sm font-medium text-white/75 transition-colors"
-                >Blog</a>
-                @if (config('mouse28.guides_enabled'))
-                    <a
-                        href="{{ route('guides.index') }}"
-                        class="hover:text-gold inline-flex min-h-12 items-center text-sm font-medium text-white/75 transition-colors"
-                    >Guides</a>
-                @endif
-                <a
-                    href="{{ route('episodes.index') }}"
-                    class="hover:text-gold inline-flex min-h-12 items-center text-sm font-medium text-white/75 transition-colors"
-                >Podcast</a>
+                <x-site-navigation placement="recovery" />
             </div>
         </nav>
     </header>

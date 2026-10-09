@@ -22,4 +22,10 @@ enum GuideCategory: string implements HasLabel
             self::FamilyPlanning => 'Family Planning',
         };
     }
+
+    /** The bundled artwork shown for a guide in this category that has no cover of its own. */
+    public function artworkUrl(): string
+    {
+        return "/images/guides/{$this->value}.webp";
+    }
 }

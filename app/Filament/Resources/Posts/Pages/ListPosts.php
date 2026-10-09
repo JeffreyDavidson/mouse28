@@ -1,46 +1,26 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Posts\Pages;
 
-use App\Enums\PublishStatus;
+use App\Enums\ContentType;
+use App\Filament\Concerns\ListsContentByStatus;
 use App\Filament\Resources\Posts\PostResource;
-use App\Models\Post;
 use Filament\Resources\Pages\ListRecords;
-use Filament\Schemas\Components\Tabs\Tab;
-use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Builder;
 
 class ListPosts extends ListRecords
 {
+    use ListsContentByStatus;
+
     #[\Override]
     protected static string $resource = PostResource::class;
 
-    public function getTabs(): array
-    {
-        return [
-            'all' => Tab::make('All'),
-            'attention' => Tab::make('Needs attention')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->needsAttention()->select('id'))),
-            'drafts' => Tab::make('Drafts')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.status', [PublishStatus::Draft, PublishStatus::InReview])),
-            'scheduled' => Tab::make('Scheduled')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->scheduled()->select('id'))),
-            'published' => Tab::make('Published')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->published()->select('id'))),
-            'review-due' => Tab::make('Review due')
-                ->modifyQueryUsing(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->published()->reviewDue()->select('id'))),
-        ];
-    }
+    #[\Override]
+    protected ?string $subheading = 'Create and manage your blog content';
 
-    public function getHeader(): ?View
+    protected function contentType(): ContentType
     {
-        $published = Post::published()->count();
-        $drafts = Post::query()->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])->count();
-
-        return view('filament.resources.posts.header', [
-            'published' => $published,
-            'drafts' => $drafts,
-            'createUrl' => PostResource::getUrl('create'),
-        ]);
+        return ContentType::Post;
     }
 }

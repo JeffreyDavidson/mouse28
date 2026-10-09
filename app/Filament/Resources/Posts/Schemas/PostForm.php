@@ -3,18 +3,19 @@
 namespace App\Filament\Resources\Posts\Schemas;
 
 use App\Filament\Forms\Components\AuthorsSelect;
+use App\Filament\Forms\Components\ContentTagsInput;
+use App\Filament\Forms\Components\OptimizedImageUpload;
 use App\Filament\Forms\Components\PublishDatePicker;
 use App\Filament\Forms\Components\PublishStatusSelect;
+use App\Filament\Forms\Components\SeoSection;
 use App\Filament\Forms\Components\SlugInput;
 use App\Filament\Forms\Components\SlugSourceInput;
 use App\Models\Category;
 use App\Models\Post;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\SpatieTagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
@@ -23,7 +24,6 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Config;
-use RalphJSmit\Filament\SEO\SEO;
 
 class PostForm
 {
@@ -37,8 +37,7 @@ class PostForm
                     ->description('Basic post information')
                     ->columns(4)
                     ->schema([
-                        SpatieTagsInput::make('tags')
-                            ->type('content')
+                        ContentTagsInput::make('tags')
                             ->columnSpanFull(),
                         SlugSourceInput::make('title')
                             ->required()
@@ -118,19 +117,8 @@ class PostForm
                         Section::make('Media')
                             ->icon(Heroicon::OutlinedPhoto)
                             ->schema([
-                                FileUpload::make('featured_image_path')
-                                    ->label('Cover image')
-                                    ->image()
-                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                    ->maxSize(5120)
-                                    ->imageAspectRatio('1200:630')
-                                    ->automaticallyCropImagesToAspectRatio()
-                                    ->automaticallyResizeImagesMode('cover')
-                                    ->automaticallyResizeImagesToWidth('1600')
-                                    ->automaticallyResizeImagesToHeight('840')
-                                    ->disk('public')
-                                    ->directory('posts')
-                                    ->helperText('Landscape image (1.91:1), up to 5 MB. Uploads are cropped and resized automatically.'),
+                                OptimizedImageUpload::make('featured_image_path')
+                                    ->directory('posts'),
                             ]),
 
                         Section::make('Publishing')
@@ -144,13 +132,7 @@ class PostForm
                             ]),
                     ]),
 
-                Section::make('SEO')
-                    ->icon(Heroicon::OutlinedMagnifyingGlass)
-                    ->description('Search engine optimization')
-                    ->collapsed()
-                    ->schema([
-                        SEO::make(),
-                    ]),
+                SeoSection::make(),
             ]);
     }
 }

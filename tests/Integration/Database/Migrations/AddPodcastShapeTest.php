@@ -48,7 +48,8 @@ function insertEpisodeRow(string $slug, ?int $podcastId = null, string $status =
 
 test('podcasts gain the multi-show columns with the existing show slugged and active', function (): void {
     expect(Schema::hasColumns('podcasts', ['slug', 'long_description', 'color', 'is_active', 'sort_order', 'deleted_at']))->toBeTrue()
-        ->and(Schema::hasColumns('episodes', ['podcast_id', 'guest_name', 'guest_title', 'guest_url']))->toBeTrue();
+        ->and(Schema::hasColumns('episodes', ['podcast_id', 'guest_name', 'guest_title', 'guest_url']))
+        ->toBeTrue();
 });
 
 test('existing episodes are attached to the one podcast and the backfill can run again', function (): void {
@@ -59,7 +60,12 @@ test('existing episodes are attached to the one podcast and the backfill can run
     runEpisodePodcastBackfill();
     runEpisodePodcastBackfill();
 
-    expect(DB::table('episodes')->whereIn('id', [$first, $second])->pluck('podcast_id')->unique()->values()->all())->toBe([$podcastId]);
+    expect(DB::table('episodes')
+        ->whereIn('id', [$first, $second])
+        ->pluck('podcast_id')
+        ->unique()
+        ->values()
+        ->all())->toBe([$podcastId]);
 });
 
 test('existing episodes without any podcast get the default Mouse28 show', function (): void {
@@ -69,8 +75,12 @@ test('existing episodes without any podcast get the default Mouse28 show', funct
 
     $podcast = DB::table('podcasts')->sole();
     expect($podcast->name)->toBe('Mouse28')
-        ->and($podcast->slug)->toBe('mouse28')
-        ->and(DB::table('episodes')->where('id', $episode)->value('podcast_id'))->toBe($podcast->id);
+        ->and($podcast->slug)
+        ->toBe('mouse28')
+        ->and(DB::table('episodes')
+            ->where('id', $episode)
+            ->value('podcast_id'))
+        ->toBe($podcast->id);
 });
 
 test('the backfill refuses to guess when several podcasts exist', function (): void {
@@ -89,14 +99,20 @@ test('the podcast slug backfill names the existing show mouse28', function (): v
 
     new ReflectionMethod($migration, 'backfillSlugs')->invoke($migration);
 
-    expect(DB::table('podcasts')->where('id', $id)->value('slug'))->toBe('mouse28');
+    expect(DB::table('podcasts')
+        ->where('id', $id)
+        ->value('slug'))->toBe('mouse28');
 });
 
 test('deleting a podcast row deletes its episodes in the database too', function (): void {
     $podcastId = DB::table('podcasts')->insertGetId(['name' => 'Show', 'slug' => 'show', 'created_at' => now(), 'updated_at' => now()]);
     $episode = insertEpisodeRow('linked', $podcastId);
 
-    DB::table('podcasts')->where('id', $podcastId)->delete();
+    DB::table('podcasts')
+        ->where('id', $podcastId)
+        ->delete();
 
-    expect(DB::table('episodes')->where('id', $episode)->exists())->toBeFalse();
+    expect(DB::table('episodes')
+        ->where('id', $episode)
+        ->exists())->toBeFalse();
 });

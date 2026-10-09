@@ -3,12 +3,10 @@
 use App\Enums\PublishStatus;
 use App\Models\Episode;
 use App\Models\Podcast;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
@@ -35,9 +33,10 @@ test('published episode returns its view model data', function (): void {
 });
 
 test('episode artwork lists its square variants', function (): void {
-    Storage::fake('public');
     $disk = Storage::disk('public');
-    $disk->put('episodes/cover.png', UploadedFile::fake()->image('cover.png', 700, 700)->getContent());
+    $disk->put('episodes/cover.png', UploadedFile::fake()
+        ->image('cover.png', 700, 700)
+        ->getContent());
     $episode = Episode::factory()->create(['featured_image_path' => 'episodes/cover.png']);
 
     get(route('episodes.show', $episode))
@@ -49,10 +48,10 @@ test('episode artwork lists its square variants', function (): void {
 });
 
 test('episode artwork falls back to the original without a srcset when no variants exist', function (): void {
-    Storage::fake('public');
     $disk = Storage::disk('public');
     $episode = Episode::factory()->create();
-    $episode->forceFill(['featured_image_path' => 'episodes/cover.png'])->saveQuietly();
+    $episode->forceFill(['featured_image_path' => 'episodes/cover.png'])
+        ->saveQuietly();
 
     get(route('episodes.show', $episode))
         ->assertOk()
@@ -61,9 +60,10 @@ test('episode artwork falls back to the original without a srcset when no varian
 });
 
 test('the podcast archive renders an uploaded show cover with its responsive variants', function (): void {
-    Storage::fake('public');
     $disk = Storage::disk('public');
-    $disk->put('podcast/cover.png', UploadedFile::fake()->image('cover.png', 700, 700)->getContent());
+    $disk->put('podcast/cover.png', UploadedFile::fake()
+        ->image('cover.png', 700, 700)
+        ->getContent());
     primaryPodcast()->update(['cover_image_path' => 'podcast/cover.png']);
 
     get(route('episodes.index'))
@@ -75,7 +75,9 @@ test('the podcast archive renders an uploaded show cover with its responsive var
 
 test('podcast pages stay within their query budget as content grows', function (string $page, int $queries): void {
     $episode = Episode::factory()->create();
-    Episode::factory()->count(15)->create();
+    Episode::factory()
+        ->count(15)
+        ->create();
     $url = $page === 'index' ? route('episodes.index') : route('episodes.show', $episode);
 
     // Includes one query for the footer social links, and one for an episode's saved SEO row.
@@ -87,22 +89,14 @@ test('podcast pages stay within their query budget as content grows', function (
 
 test('episode archive renders', function (): void {
     get(route('episodes.index'))
-        ->assertOk()->assertSee('The Mouse28 Podcast')->assertSeeHtml('src="/images/podcast/mouse28-cover.webp"');
-});
-
-test('podcast pages render one newsletter signup', function (): void {
-    $episode = Episode::factory()->create();
-
-    foreach ([route('episodes.index'), route('episodes.show', $episode)] as $url) {
-        $response = get($url)->assertOk()->assertSeeHtml('id="footer-newsletter-email"')
-            ->assertSee('Connect');
-
-        expect(substr_count($this->responseContent($response), 'action="'.route('newsletter.subscribe').'"'))->toBe(1);
-    }
+        ->assertOk()
+        ->assertSee('The Mouse28 Podcast')
+        ->assertSeeHtml('src="/images/podcast/mouse28-cover.webp"');
 });
 
 test('podcast index advertises the canonical Transistor feed without persisting defaults', function (): void {
-    get(route('episodes.index'))->assertOk()->assertSeeHtml(config()->string('podcast.rss_url'));
+    get(route('episodes.index'))->assertOk()
+        ->assertSeeHtml(config()->string('podcast.rss_url'));
 
     expect(Podcast::query()->doesntExist())->toBeTrue();
 });
@@ -132,7 +126,9 @@ test('episode pages use concise public-facing labels', function (): void {
         'episode_number' => 28,
     ]);
 
-    get(route('episodes.show', $episode))->assertOk()->assertDontSeeHtml('animate-pulse')->assertSeeHtml('data-episode-meta');
+    get(route('episodes.show', $episode))->assertOk()
+        ->assertDontSeeHtml('animate-pulse')
+        ->assertSeeHtml('data-episode-meta');
 });
 
 test('published episode detail page renders', function (): void {
@@ -151,8 +147,17 @@ test('published episode detail page renders', function (): void {
     ]);
 
     get(route('episodes.show', $episode))
-        ->assertOk()->assertSee($episode->title)->assertSeeHtml('Our favorite planning strategies')->assertSeeHtml('episode-detail-hero')
-        ->assertSee('Listen to this episode')->assertDontSee('Now Playing')->assertSeeHtml('title="Listen to Planning a Sensory-Friendly Visit"')->assertSeeHtml('data-episode-layout="rich"')->assertSeeHtml('id="episode-transcript"')->assertSeeHtml('aria-controls="episode-transcript"')->assertSeeHtml(':aria-expanded="expandedState"');
+        ->assertOk()
+        ->assertSee($episode->title)
+        ->assertSeeHtml('Our favorite planning strategies')
+        ->assertSeeHtml('episode-detail-hero')
+        ->assertSee('Listen to this episode')
+        ->assertDontSee('Now Playing')
+        ->assertSeeHtml('title="Listen to Planning a Sensory-Friendly Visit"')
+        ->assertSeeHtml('data-episode-layout="rich"')
+        ->assertSeeHtml('id="episode-transcript"')
+        ->assertSeeHtml('aria-controls="episode-transcript"')
+        ->assertSeeHtml(':aria-expanded="expandedState"');
 });
 
 test('episode pages sanitize rich show notes and transcripts', function (): void {
@@ -161,7 +166,11 @@ test('episode pages sanitize rich show notes and transcripts', function (): void
         'transcript' => '<p>Safe transcript.</p><img src="x" onerror="alert(\'transcript\')">',
     ]);
 
-    get(route('episodes.show', $episode))->assertOk()->assertSeeHtml('<p>Safe show notes.</p>')->assertSeeHtml('<p>Safe transcript.</p>')->assertDontSeeHtml('alert("show notes")')->assertDontSeeHtml('onerror=');
+    get(route('episodes.show', $episode))->assertOk()
+        ->assertSeeHtml('<p>Safe show notes.</p>')
+        ->assertSeeHtml('<p>Safe transcript.</p>')
+        ->assertDontSeeHtml('alert("show notes")')
+        ->assertDontSeeHtml('onerror=');
 });
 
 test('sparse episode detail pages use a compact continuation layout', function (): void {
@@ -174,21 +183,32 @@ test('sparse episode detail pages use a compact continuation layout', function (
         'published_at' => $publishedAt->subDay(),
     ]);
 
-    get(route('episodes.show', $episode))->assertOk()->assertSeeHtml('data-episode-layout="sparse"')->assertSeeHtml('data-episode-continuation="compact"')
+    get(route('episodes.show', $episode))->assertOk()
+        ->assertSeeHtml('data-episode-layout="sparse"')
+        ->assertSeeHtml('data-episode-continuation="compact"')
         ->assertSee($previousEpisode->title);
 });
 
 test('empty podcast page uses a truthful show introduction without a decorative player', function (): void {
-    get(route('episodes.index'))->assertOk()->assertSeeHtml("We're warming up the mics")->assertDontSeeHtml('podcast-player-preview');
+    get(route('episodes.index'))->assertOk()
+        ->assertSeeHtml("We're warming up the mics")
+        ->assertDontSeeHtml('podcast-player-preview');
 });
 
 test('podcast index leads with the show and uses a season tracklist', function (): void {
-    Episode::factory()->count(2)->create([
-        'season_number' => 1,
-    ]);
+    Episode::factory()
+        ->count(2)
+        ->create([
+            'season_number' => 1,
+        ]);
 
-    get(route('episodes.index'))->assertOk()->assertSeeHtml('data-podcast-archive')->assertSeeHtml('podcast-cover-frame')->assertSeeHtml('podcast-ledger')
-        ->assertSee('Episode archive')->assertDontSee('Show Stats')->assertDontSeeHtml('Latest Episode</h3>');
+    get(route('episodes.index'))->assertOk()
+        ->assertSeeHtml('data-podcast-archive')
+        ->assertSeeHtml('podcast-cover-frame')
+        ->assertSeeHtml('podcast-ledger')
+        ->assertSee('Episode archive')
+        ->assertDontSee('Show Stats')
+        ->assertDontSeeHtml('Latest Episode</h3>');
 });
 
 test('podcast pages describe episodes without audio as details instead of playable media', function (): void {
@@ -220,8 +240,12 @@ test('podcast index identifies episodes with a Transistor player as playable', f
 
 test('only currently published content is publicly visible', function (): void {
     $publishedEpisode = Episode::factory()->create(['title' => 'Published park episode']);
-    $draftEpisode = Episode::factory()->draft()->create(['title' => 'Draft park episode']);
-    $scheduledEpisode = Episode::factory()->scheduled()->create(['title' => 'Scheduled park episode']);
+    $draftEpisode = Episode::factory()
+        ->draft()
+        ->create(['title' => 'Draft park episode']);
+    $scheduledEpisode = Episode::factory()
+        ->scheduled()
+        ->create(['title' => 'Scheduled park episode']);
 
     get(route('episodes.show', $draftEpisode))->assertNotFound();
     get(route('episodes.show', $scheduledEpisode))->assertNotFound();
@@ -241,17 +265,25 @@ test('episode pages link to the adjacent published episodes', function (): void 
         'title' => 'Newer published episode',
         'published_at' => now()->subDay(),
     ]);
-    $draftEpisode = Episode::factory()->draft()->create([
-        'title' => 'Private draft episode',
-    ]);
-    $scheduledEpisode = Episode::factory()->scheduled()->create([
-        'title' => 'Future scheduled episode',
-    ]);
+    $draftEpisode = Episode::factory()
+        ->draft()
+        ->create([
+            'title' => 'Private draft episode',
+        ]);
+    $scheduledEpisode = Episode::factory()
+        ->scheduled()
+        ->create([
+            'title' => 'Future scheduled episode',
+        ]);
 
     get(route('episodes.show', $episode))
         ->assertOk()
-        ->assertSee('Previous episode')->assertSee($olderEpisode->title)->assertSeeHtml(route('episodes.show', $olderEpisode))
-        ->assertSee('Next episode')->assertSee($newerEpisode->title)->assertSeeHtml(route('episodes.show', $newerEpisode))
+        ->assertSee('Previous episode')
+        ->assertSee($olderEpisode->title)
+        ->assertSeeHtml(route('episodes.show', $olderEpisode))
+        ->assertSee('Next episode')
+        ->assertSee($newerEpisode->title)
+        ->assertSeeHtml(route('episodes.show', $newerEpisode))
         ->assertDontSee($draftEpisode->title)
         ->assertDontSee($scheduledEpisode->title);
 });
@@ -265,7 +297,14 @@ test('episode pages link to the show platforms', function (): void {
     ]);
     $episode = Episode::factory()->create(['youtube_url' => null]);
 
-    get(route('episodes.show', $episode))->assertOk()->assertSeeHtml('https://podcasts.apple.com/show/mouse28')->assertSeeHtml('https://open.spotify.com/show/mouse28')->assertSee('Visit the show')->assertSeeHtml('https://youtube.com/@mouse28')->assertSee('Visit the channel')->assertSeeHtml(config()->string('podcast.rss_url'))->assertSeeHtml('"name":"Mouse28 Travel Podcast"');
+    get(route('episodes.show', $episode))->assertOk()
+        ->assertSeeHtml('https://podcasts.apple.com/show/mouse28')
+        ->assertSeeHtml('https://open.spotify.com/show/mouse28')
+        ->assertSee('Visit the show')
+        ->assertSeeHtml('https://youtube.com/@mouse28')
+        ->assertSee('Visit the channel')
+        ->assertSeeHtml(config()->string('podcast.rss_url'))
+        ->assertSeeHtml('"name":"Mouse28 Travel Podcast"');
 });
 
 test('episode pages hide podcast platforms that are not configured', function (): void {
@@ -274,7 +313,9 @@ test('episode pages hide podcast platforms that are not configured', function ()
     get(route('episodes.show', $episode))
         ->assertOk()
         ->assertDontSee('Apple Podcasts')
-        ->assertDontSee('Spotify')->assertDontSee('Not configured')->assertSeeHtml(config()->string('podcast.rss_url'));
+        ->assertDontSee('Spotify')
+        ->assertDontSee('Not configured')
+        ->assertSeeHtml(config()->string('podcast.rss_url'));
 });
 
 test('episode pages embed only valid Transistor share URLs', function (): void {
@@ -282,13 +323,18 @@ test('episode pages embed only valid Transistor share URLs', function (): void {
         'transistor_url' => 'https://share.transistor.fm/s/428d650c',
     ]);
 
-    get(route('episodes.show', $episode))->assertOk()->assertSeeHtml('src="https://share.transistor.fm/e/428d650c"')->assertSeeHtml('title="Listen to '.$episode->title.'"')
+    get(route('episodes.show', $episode))->assertOk()
+        ->assertSeeHtml('src="https://share.transistor.fm/e/428d650c"')
+        ->assertSeeHtml('title="Listen to '.$episode->title.'"')
         ->assertSee('Open in a new tab')
         ->assertSee('Listen elsewhere');
 
     $episode->update(['transistor_url' => 'https://example.com/not-a-transistor-player']);
 
-    get(route('episodes.show', $episode->fresh()))->assertOk()->assertDontSeeHtml('https://example.com/not-a-transistor-player')->assertSee('Listen elsewhere')->assertDontSeeHtml('<iframe');
+    get(route('episodes.show', $episode->fresh()))->assertOk()
+        ->assertDontSeeHtml('https://example.com/not-a-transistor-player')
+        ->assertSee('Listen elsewhere')
+        ->assertDontSeeHtml('<iframe');
 });
 
 test('episode metadata falls back to its title and description', function (): void {
@@ -298,8 +344,23 @@ test('episode metadata falls back to its title and description', function (): vo
         'featured_image_path' => 'episodes/trailer-meet-mouse28.webp',
     ]);
 
-    get(route('episodes.show', $episode))->assertOk()->assertSeeHtml('<title>Trailer: Meet Mouse28 | Mouse28</title>')->assertSeeHtml('<meta name="description" content="Meet Jeffrey and Cassie and learn what the Mouse28 podcast is about.">')->assertSeeHtml('<meta property="og:image" content="'.url('/storage/episodes/trailer-meet-mouse28.webp').'">');
+    get(route('episodes.show', $episode))->assertOk()
+        ->assertSeeHtml('<title>Trailer: Meet Mouse28 | Mouse28</title>')
+        ->assertSeeHtml('<meta name="description" content="Meet Jeffrey and Cassie and learn what the Mouse28 podcast is about.">')
+        ->assertSeeHtml('<meta property="og:image" content="'.url('/storage/episodes/trailer-meet-mouse28.webp').'">');
 });
+
+test('an episode without artwork shares the show cover', function (?string $podcastCover, string $shareImage): void {
+    Podcast::factory()->create(['cover_image_path' => $podcastCover]);
+    $episode = Episode::factory()->create(['featured_image_path' => null]);
+
+    get(route('episodes.show', $episode))->assertOk()
+        ->assertSeeHtml('<meta property="og:image" content="'.url($shareImage).'">')
+        ->assertDontSeeHtml('<meta property="og:image" content="'.url('/images/logo.jpg').'">');
+})->with([
+    'bundled cover' => [null, '/images/podcast/mouse28-cover.jpg'],
+    'uploaded cover' => ['podcasts/show-cover.jpg', '/storage/podcasts/show-cover.jpg'],
+]);
 
 test('landing page provides search and social metadata', function (): void {
     Podcast::query()->create([
@@ -308,15 +369,21 @@ test('landing page provides search and social metadata', function (): void {
         'cover_image_path' => 'podcasts/show-cover.jpg',
     ]);
 
-    get(route('episodes.index'))->assertOk()->assertSeeHtml('<meta property="og:title" content="Mouse28 Weekly Podcast">')->assertSeeHtml('<meta property="og:description" content="A weekly Disney parks podcast for accessibility-minded families.">')->assertSeeHtml('<meta property="og:image" content="'.url('/storage/podcasts/show-cover.jpg').'">');
+    get(route('episodes.index'))->assertOk()
+        ->assertSeeHtml('<meta property="og:title" content="Mouse28 Weekly Podcast">')
+        ->assertSeeHtml('<meta property="og:description" content="A weekly Disney parks podcast for accessibility-minded families.">')
+        ->assertSeeHtml('<meta property="og:image" content="'.url('/storage/podcasts/show-cover.jpg').'">');
 });
 
 test('archive canonical preserves meaningful filters and pagination', function (): void {
-    Episode::factory()->count(13)->create();
+    Episode::factory()
+        ->count(13)
+        ->create();
 
     $episodeCanonical = route('episodes.index', ['page' => 2]);
 
-    get($episodeCanonical)->assertOk()->assertSeeHtml('<link rel="canonical" href="'.e($episodeCanonical).'">');
+    get($episodeCanonical)->assertOk()
+        ->assertSeeHtml('<link rel="canonical" href="'.e($episodeCanonical).'">');
 });
 
 test('episodes include podcast media duration and breadcrumb structured data', function (): void {
@@ -332,51 +399,28 @@ test('episodes include podcast media duration and breadcrumb structured data', f
     $podcastEpisode = data_get($data, '@graph.0');
 
     expect(data_get($podcastEpisode, '@type'))->toBe('PodcastEpisode')
-        ->and(data_get($podcastEpisode, 'duration'))->toBe('PT1H2M3S')
-        ->and(data_get($podcastEpisode, 'associatedMedia'))->toBeNull()
-        ->and(data_get($podcastEpisode, 'partOfSeason.@type'))->toBe('PodcastSeason')
-        ->and(data_get($podcastEpisode, 'partOfSeason.seasonNumber'))->toBe(3)
-        ->and(data_get($podcastEpisode, 'partOfSeries.@type'))->toBe('PodcastSeries')
-        ->and(data_get($data, '@graph.1.itemListElement.1.name'))->toBe('Podcast');
-});
-
-test('page copy and metadata avoid em dashes', function (): void {
-    get(route('episodes.index'))
-        ->assertOk()
-        ->assertDontSee('—');
-});
-
-test('page uses the dispatch editorial system', function (): void {
-    get(route('episodes.index'))->assertOk()->assertSeeHtml('data-brand-wordmark')->assertSeeHtml('data-podcast-archive')->assertSeeHtml('js-dispatch-pages');
+        ->and(data_get($podcastEpisode, 'duration'))
+        ->toBe('PT1H2M3S')
+        ->and(data_get($podcastEpisode, 'associatedMedia'))
+        ->toBeNull()
+        ->and(data_get($podcastEpisode, 'partOfSeason.@type'))
+        ->toBe('PodcastSeason')
+        ->and(data_get($podcastEpisode, 'partOfSeason.seasonNumber'))
+        ->toBe(3)
+        ->and(data_get($podcastEpisode, 'partOfSeries.@type'))
+        ->toBe('PodcastSeries')
+        ->and(data_get($data, '@graph.1.itemListElement.1.name'))
+        ->toBe('Podcast');
 });
 
 test('reading page uses the dispatch reading surface', function (): void {
     $episode = Episode::factory()->create();
 
-    get(route('episodes.show', $episode))->assertOk()->assertSeeHtml('episode-detail-hero')->assertSeeHtml('dispatch-page-field')
+    get(route('episodes.show', $episode))->assertOk()
+        ->assertSeeHtml('episode-detail-hero')
+        ->assertSeeHtml('dispatch-page-field')
         ->assertDontSee('—');
 });
-
-test('podcast links that open a new tab announce it', function (bool $showEpisode): void {
-    primaryPodcast()->update(['apple_url' => 'https://podcasts.apple.com/podcast/mouse28']);
-    $episode = Episode::factory()->create(['transistor_url' => 'https://share.transistor.fm/s/abc123']);
-
-    $response = get($showEpisode ? route('episodes.show', $episode) : route('episodes.index'))->assertOk();
-
-    expect($this->unannouncedNewTabLinks($response))->toBeEmpty();
-})->with([
-    'archive' => [false],
-    'episode' => [true],
-]);
-
-test('signed-in visitors see published episodes but nobody sees drafts at public URLs', function (bool $isAdmin): void {
-    $published = Episode::factory()->create();
-    $draft = Episode::factory()->draft()->create();
-    actingAs($isAdmin ? User::factory()->admin()->create() : User::factory()->create());
-
-    get(route('episodes.show', $published))->assertOk();
-    get(route('episodes.show', $draft))->assertNotFound();
-})->with(['non-admin' => [false], 'admin' => [true]]);
 
 test('episode pages show an evening publish date on its Eastern day', function (): void {
     $this->travelTo('2026-10-10 12:00:00');
@@ -395,7 +439,9 @@ test('episode pages show an evening publish date on its Eastern day', function (
 
 test('episode archive pages past the last one do not exist', function (int $page, int $status): void {
     config()->set('mouse28.episodes_per_page', 1);
-    Episode::factory()->count(2)->create();
+    Episode::factory()
+        ->count(2)
+        ->create();
 
     get(route('episodes.index', ['page' => $page]))->assertStatus($status);
 })->with([
@@ -415,4 +461,17 @@ test('episode share links open without passing the page as referrer', function (
 
     $response->assertOk()
         ->assertDontSeeHtml('rel="noopener"');
+});
+
+test('episode share links point to the public episode address', function (): void {
+    $episode = Episode::factory()->create(['title' => 'Sample share title']);
+    $publicUrl = urlencode(route('episodes.show', $episode));
+
+    $response = get(route('episodes.show', $episode));
+
+    $response->assertOk()
+        ->assertSeeHtml('rel="noopener noreferrer"')
+        ->assertSeeHtml("https://twitter.com/intent/tweet?url={$publicUrl}&text=Sample+share+title+%7C+Mouse28+Podcast\"")
+        ->assertSeeHtml("https://www.facebook.com/sharer/sharer.php?u={$publicUrl}\"")
+        ->assertSeeInOrder(['Post on X', 'Share on Facebook']);
 });

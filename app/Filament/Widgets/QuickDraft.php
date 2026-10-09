@@ -14,6 +14,7 @@ use Filament\Forms\Contracts\HasForms;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
 use Filament\Widgets\Widget;
+use Illuminate\Support\Facades\Gate;
 
 /** @property-read Schema $form */
 class QuickDraft extends Widget implements HasForms
@@ -55,9 +56,11 @@ class QuickDraft extends Widget implements HasForms
 
     public function saveDraft(): void
     {
+        Gate::authorize('create', Post::class);
+
         $state = $this->form->getState();
 
-        $post = Post::query()->create([
+        $post = Post::create([
             'title' => $state['title'],
             'excerpt' => $state['notes'] ?? null,
             'content' => $state['notes'] ?? '',

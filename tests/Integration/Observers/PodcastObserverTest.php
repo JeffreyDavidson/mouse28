@@ -11,8 +11,9 @@ pest()->use(RefreshDatabase::class);
 covers(PodcastObserver::class);
 
 beforeEach(function (): void {
-    Storage::fake('public');
-    $image = UploadedFile::fake()->image('podcast.png', 1280, 1280)->getContent();
+    $image = UploadedFile::fake()
+        ->image('podcast.png', 1280, 1280)
+        ->getContent();
     Storage::disk('public')->put('podcast/old.png', $image);
     Storage::disk('public')->put('podcast/new.png', $image);
 });

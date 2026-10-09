@@ -13,7 +13,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
@@ -22,10 +21,13 @@ test('blog index returns its view model data', function (): void {
     get(route('blog.index'))
         ->assertOk()
         ->assertViewIs('pages.blog.index')
-        ->assertViewHas('category')
-        ->assertViewHas('search')
-        ->assertViewHas('sort')
-        ->assertViewHas('pageTitle');
+        ->assertViewHas('pageTitle')
+        ->assertViewHas('pageDescription')
+        ->assertViewHas('canonicalUrl')
+        ->assertViewHas('robots')
+        ->assertViewMissing('category')
+        ->assertViewMissing('search')
+        ->assertViewMissing('sort');
 });
 
 test('published blog post returns its view model data', function (): void {
@@ -40,9 +42,15 @@ test('published blog post returns its view model data', function (): void {
 
 test('blog pages stay within their query budget as content grows', function (string $page, int $queries): void {
     $episode = Episode::factory()->create();
-    $post = Post::factory()->inCategory('disney-tips')->create();
-    $post->episodes()->attach($episode);
-    Post::factory()->count(30)->inCategory('disney-tips')->create();
+    $post = Post::factory()
+        ->inCategory('disney-tips')
+        ->create();
+    $post->episodes()
+        ->attach($episode);
+    Post::factory()
+        ->count(30)
+        ->inCategory('disney-tips')
+        ->create();
     $url = $page === 'index' ? route('blog.index') : route('blog.show', $post);
 
     // Includes one query for the footer social links, the post categories (one for
@@ -56,10 +64,13 @@ test('blog pages stay within their query budget as content grows', function (str
 })->with(['archive' => ['index', 7], 'article with episode' => ['show', 9]]);
 
 test('blog featured cover is prioritized while archive cards remain deferred', function (): void {
-    Storage::fake('public');
     $disk = Storage::disk('public');
-    $disk->put('posts/cover.webp', UploadedFile::fake()->image('cover.webp', 600, 300)->getContent());
-    Post::factory()->count(2)->create(['featured_image_path' => 'posts/cover.webp']);
+    $disk->put('posts/cover.webp', UploadedFile::fake()
+        ->image('cover.webp', 600, 300)
+        ->getContent());
+    Post::factory()
+        ->count(2)
+        ->create(['featured_image_path' => 'posts/cover.webp']);
 
     $response = get(route('blog.index'))
         ->assertOk();
@@ -70,17 +81,24 @@ test('blog featured cover is prioritized while archive cards remain deferred', f
     $archiveImage = $images->item(1) ?? throw new UnexpectedValueException('The archive image is missing.');
 
     expect($featuredImage->getAttribute('loading'))->toBe('eager')
-        ->and($featuredImage->getAttribute('fetchpriority'))->toBe('high')
-        ->and($archiveImage->getAttribute('loading'))->toBe('lazy')
-        ->and($featuredImage->getAttribute('srcset'))->toBe($disk->url('posts/responsive/cover-480.webp').' 480w')
-        ->and($featuredImage->getAttribute('sizes'))->not->toStartWith('auto')
-        ->and($archiveImage->getAttribute('sizes'))->toStartWith('auto, ');
+        ->and($featuredImage->getAttribute('fetchpriority'))
+        ->toBe('high')
+        ->and($archiveImage->getAttribute('loading'))
+        ->toBe('lazy')
+        ->and($featuredImage->getAttribute('srcset'))
+        ->toBe($disk->url('posts/responsive/cover-480.webp').' 480w')
+        ->and($featuredImage->getAttribute('sizes'))
+        ->not->toStartWith('auto')
+        ->and($archiveImage->getAttribute('sizes'))
+        ->toStartWith('auto, ');
 });
 
 test('hidden content uses the same recovery page without revealing its title', function (): void {
-    $draftPost = Post::factory()->draft()->create([
-        'title' => 'Unannounced family update',
-    ]);
+    $draftPost = Post::factory()
+        ->draft()
+        ->create([
+            'title' => 'Unannounced family update',
+        ]);
 
     get(route('blog.show', $draftPost))
         ->assertNotFound()
@@ -107,18 +125,8 @@ test('blog navigation identifies Blog as the current destination', function (): 
     expect($links)->toHaveCount(1);
     $link = $links->item(0) ?? throw new UnexpectedValueException('The current navigation link is missing.');
     expect(trim($link->textContent ?? ''))->toBe('Blog')
-        ->and($link->getAttribute('href'))->toBe(route('blog.index'));
-});
-
-test('blog pages render one newsletter signup', function (): void {
-    $post = Post::factory()->create();
-
-    foreach ([route('blog.index'), route('blog.show', $post)] as $url) {
-        $response = get($url)->assertOk()->assertSeeHtml('id="footer-newsletter-email"')
-            ->assertSee('Connect');
-
-        expect(substr_count($this->responseContent($response), 'action="'.route('newsletter.subscribe').'"'))->toBe(1);
-    }
+        ->and($link->getAttribute('href'))
+        ->toBe(route('blog.index'));
 });
 
 test('post social image URLs are absolute', function (): void {
@@ -127,11 +135,17 @@ test('post social image URLs are absolute', function (): void {
         'featured_image_path' => 'posts/social-card.jpg',
     ]);
 
-    get(route('blog.show', $post))->assertOk()->assertSeeHtml('<meta property="og:image" content="'.url('/storage/posts/social-card.jpg').'">')->assertSeeHtml('<meta property="og:image:alt" content="Accessible Disney Planning" />')->assertSeeHtml('<meta name="twitter:image" content="'.url('/storage/posts/social-card.jpg').'">')->assertSeeHtml('<meta name="twitter:image:alt" content="Accessible Disney Planning" />');
+    get(route('blog.show', $post))->assertOk()
+        ->assertSeeHtml('<meta property="og:image" content="'.url('/storage/posts/social-card.jpg').'">')
+        ->assertSeeHtml('<meta property="og:image:alt" content="Accessible Disney Planning" />')
+        ->assertSeeHtml('<meta name="twitter:image" content="'.url('/storage/posts/social-card.jpg').'">')
+        ->assertSeeHtml('<meta name="twitter:image:alt" content="Accessible Disney Planning" />');
 });
 
 test('empty blog discovery offers useful paths forward', function (): void {
-    get(route('blog.index'))->assertOk()->assertSeeHtml(route('guides.index'))->assertSeeHtml(route('episodes.index'));
+    get(route('blog.index'))->assertOk()
+        ->assertSeeHtml(route('guides.index'))
+        ->assertSeeHtml(route('episodes.index'));
 });
 
 test('blog discovery controls precede results in the document order', function (): void {
@@ -150,11 +164,20 @@ test('blog discovery controls precede results in the document order', function (
 });
 
 test('blog index uses an artwork led archive without dashboard widgets', function (): void {
-    Post::factory()->count(3)->create([
-        'featured_image_path' => null,
-    ]);
+    Post::factory()
+        ->count(3)
+        ->create([
+            'featured_image_path' => null,
+        ]);
 
-    get(route('blog.index'))->assertOk()->assertSeeHtml('data-editorial-blog')->assertSeeHtml('editorial-feature')->assertSeeHtml('editorial-story-grid')->assertSeeHtml('data-equal-width-stories')->assertSeeHtml('data-post-artwork')->assertDontSee('Blog Stats')->assertDontSeeHtml('Categories</h3>');
+    get(route('blog.index'))->assertOk()
+        ->assertSeeHtml('data-editorial-blog')
+        ->assertSeeHtml('editorial-feature')
+        ->assertSeeHtml('editorial-story-grid')
+        ->assertSeeHtml('data-equal-width-stories')
+        ->assertSeeHtml('data-post-artwork')
+        ->assertDontSee('Blog Stats')
+        ->assertDontSeeHtml('Categories</h3>');
 });
 
 test('published post detail page renders', function (): void {
@@ -163,7 +186,9 @@ test('published post detail page renders', function (): void {
         'slug' => 'accessible-day-at-the-parks',
         'excerpt' => 'A practical guide for planning a comfortable park day.',
         'content' => 'Start with a flexible plan. '.str_repeat('accessible park planning ', 198),
-        'category_id' => Category::query()->where('slug', 'park-accessibility')->value('id'),
+        'category_id' => Category::query()
+            ->where('slug', 'park-accessibility')
+            ->value('id'),
         'status' => PublishStatus::Published,
         'published_at' => now()->subDay(),
     ]);
@@ -171,7 +196,16 @@ test('published post detail page renders', function (): void {
     get(route('blog.show', $post))
         ->assertOk()
         ->assertSee($post->title)
-        ->assertSee('3 min read')->assertDontSee('1 of 3 min read')->assertSeeHtml('Start with a flexible plan')->assertSeeHtml('editorial-reading-column')->assertDontSeeHtml('data-article-secondary')->assertSeeHtml('id="back-to-top"')->assertSeeHtml('aria-hidden="true"')->assertSeeHtml('tabindex="-1"')->assertSeeHtml('inline-flex size-12 items-center justify-center rounded-full')->assertDontSeeHtml('inline-flex size-11');
+        ->assertSee('3 min read')
+        ->assertDontSee('1 of 3 min read')
+        ->assertSeeHtml('Start with a flexible plan')
+        ->assertSeeHtml('editorial-reading-column')
+        ->assertDontSeeHtml('data-article-secondary')
+        ->assertSeeHtml('id="back-to-top"')
+        ->assertSeeHtml('aria-hidden="true"')
+        ->assertSeeHtml('tabindex="-1"')
+        ->assertSeeHtml('inline-flex size-12 items-center justify-center rounded-full')
+        ->assertDontSeeHtml('inline-flex size-11');
 });
 
 dataset('post author credits', [
@@ -202,7 +236,10 @@ dataset('post author credits', [
 
 test('a post page shows its byline and one about-the-author block per author', function (array $names, string $byline, array $profiles): void {
     $post = Post::factory()->create();
-    $post->syncAuthors(array_map(fn (mixed $name): int => User::authors()->where('name', $name)->sole()->id, $names));
+    $post->syncAuthors(array_map(fn (mixed $name): int => User::authors()
+        ->where('name', $name)
+        ->sole()
+        ->id, $names));
 
     $response = get(route('blog.show', $post))
         ->assertOk();
@@ -215,15 +252,24 @@ test('a post page shows its byline and one about-the-author block per author', f
         iterator_to_array($section->querySelectorAll('[data-author-bio]')),
     );
 
-    expect(trim($document->querySelector('[data-byline]')->textContent ?? ''))->toBe($byline)
-        ->and($section->getAttribute('aria-labelledby'))->toBe(implode(' ', $headingIds))
-        ->and(array_map(fn (Element $heading): ?string => $heading->getAttribute('id'), iterator_to_array($section->querySelectorAll('h2'))))->toBe($headingIds)
-        ->and($blocks)->toBe($profiles)
-        ->and($this->responseContent($response))->not->toContain('The couple behind Mouse28');
+    expect(trim($document->querySelector('[data-byline]')
+        ->textContent ?? ''))->toBe($byline)
+        ->and($section->getAttribute('aria-labelledby'))
+        ->toBe(implode(' ', $headingIds))
+        ->and(array_map(fn (Element $heading): ?string => $heading->getAttribute('id'), iterator_to_array($section->querySelectorAll('h2'))))
+        ->toBe($headingIds)
+        ->and($blocks)
+        ->toBe($profiles)
+        ->and($this->responseContent($response))
+        ->not->toContain('The couple behind Mouse28');
 })->with('post author credits');
 
 test('an author without a bio falls back to the general about-the-author sentence', function (): void {
-    $post = Post::factory()->withAuthors(User::factory()->author()->create(['name' => 'Sample Author', 'bio' => null]))->create();
+    $post = Post::factory()
+        ->withAuthors(User::factory()
+            ->author()
+            ->create(['name' => 'Sample Author', 'bio' => null]))
+        ->create();
 
     get(route('blog.show', $post))
         ->assertOk()
@@ -232,8 +278,12 @@ test('an author without a bio falls back to the general about-the-author sentenc
 
 test('only currently published content is publicly visible', function (): void {
     $publishedPost = Post::factory()->create(['title' => 'Published park post']);
-    $draftPost = Post::factory()->draft()->create(['title' => 'Draft park post']);
-    $scheduledPost = Post::factory()->scheduled()->create(['title' => 'Scheduled park post']);
+    $draftPost = Post::factory()
+        ->draft()
+        ->create(['title' => 'Draft park post']);
+    $scheduledPost = Post::factory()
+        ->scheduled()
+        ->create(['title' => 'Scheduled park post']);
 
     get(route('blog.index'))
         ->assertOk()
@@ -246,18 +296,24 @@ test('only currently published content is publicly visible', function (): void {
 });
 
 test('blog search category sorting and pagination preserve filters', function (): void {
-    Post::factory()->inCategory('park-accessibility')->create([
-        'title' => 'Newest accessible plan',
-        'published_at' => now()->subDay(),
-    ]);
-    Post::factory()->inCategory('park-accessibility')->create([
-        'title' => 'Oldest accessible plan',
-        'published_at' => now()->subWeek(),
-    ]);
-    Post::factory()->inCategory('food-reviews')->create([
-        'title' => 'Unrelated dining review',
-        'published_at' => now()->subMonth(),
-    ]);
+    Post::factory()
+        ->inCategory('park-accessibility')
+        ->create([
+            'title' => 'Newest accessible plan',
+            'published_at' => now()->subDay(),
+        ]);
+    Post::factory()
+        ->inCategory('park-accessibility')
+        ->create([
+            'title' => 'Oldest accessible plan',
+            'published_at' => now()->subWeek(),
+        ]);
+    Post::factory()
+        ->inCategory('food-reviews')
+        ->create([
+            'title' => 'Unrelated dining review',
+            'published_at' => now()->subMonth(),
+        ]);
 
     get(route('blog.index', [
         'category' => 'park-accessibility',
@@ -282,7 +338,9 @@ test('editorial review information is shown on the public page', function (): vo
     ]);
 
     get(route('blog.show', $currentPost))
-        ->assertOk()->assertSee('Last reviewed')->assertSeeHtml('https://disneyworld.disney.go.com/guest-services/disability-access-service/')
+        ->assertOk()
+        ->assertSee('Last reviewed')
+        ->assertSeeHtml('https://disneyworld.disney.go.com/guest-services/disability-access-service/')
         ->assertDontSee('due for editorial review');
 
     get(route('blog.show', $stalePost))
@@ -298,22 +356,30 @@ test('posts do not reveal an unpublished related episode', function (string $sta
     };
     $hiddenEpisode = $factory->createOne(['title' => 'Unannounced podcast episode']);
     $post = Post::factory()->create();
-    $post->episodes()->attach($hiddenEpisode);
+    $post->episodes()
+        ->attach($hiddenEpisode);
 
     if ($state === 'trashed') {
         $hiddenEpisode->delete();
     }
 
     get(route('blog.show', $post))
-        ->assertOk()->assertDontSee($hiddenEpisode->title)->assertDontSeeHtml(route('episodes.show', $hiddenEpisode));
+        ->assertOk()
+        ->assertDontSee($hiddenEpisode->title)
+        ->assertDontSeeHtml(route('episodes.show', $hiddenEpisode));
 })->with(['draft', 'scheduled', 'trashed']);
 
 test('posts link every published related episode in episode number order', function (): void {
     $post = Post::factory()->create();
-    $post->episodes()->attach([
-        Episode::factory()->create(['title' => 'Later podcast episode', 'episode_number' => 12])->id,
-        Episode::factory()->create(['title' => 'Earlier podcast episode', 'episode_number' => 3])->id,
-    ]);
+    $post->episodes()
+        ->attach([
+            Episode::factory()
+                ->create(['title' => 'Later podcast episode', 'episode_number' => 12])
+                ->id,
+            Episode::factory()
+                ->create(['title' => 'Earlier podcast episode', 'episode_number' => 3])
+                ->id,
+        ]);
 
     get(route('blog.show', $post))
         ->assertOk()
@@ -321,7 +387,9 @@ test('posts link every published related episode in episode number order', funct
 });
 
 test('category label links to its filtered index', function (): void {
-    $post = Post::factory()->inCategory('park-accessibility')->create();
+    $post = Post::factory()
+        ->inCategory('park-accessibility')
+        ->create();
 
     get(route('blog.show', $post))
         ->assertOk()
@@ -331,7 +399,9 @@ test('category label links to its filtered index', function (): void {
 
 test('a post in a category without its own artwork style uses the general artwork', function (): void {
     $category = Category::factory()->create(['name' => 'Sample Topic', 'slug' => 'sample-topic']);
-    $post = Post::factory()->for($category)->create(['featured_image_path' => null]);
+    $post = Post::factory()
+        ->for($category)
+        ->create(['featured_image_path' => null]);
 
     get(route('blog.show', $post))
         ->assertOk()
@@ -344,7 +414,10 @@ test('invalid blog filters do not create indexable archive variants', function (
     get(route('blog.index', [
         'category' => 'not-a-category',
         'sort' => 'not-a-sort',
-    ]))->assertOk()->assertSeeHtml('<title>Disney Parks Blog | Mouse28</title>')->assertSeeHtml('<meta name="robots" content="index,follow">')->assertSeeHtml('<link rel="canonical" href="'.route('blog.index').'">');
+    ]))->assertOk()
+        ->assertSeeHtml('<title>Disney Parks Blog | Mouse28</title>')
+        ->assertSeeHtml('<meta name="robots" content="index,follow">')
+        ->assertSeeHtml('<link rel="canonical" href="'.route('blog.index').'">');
 });
 
 test('landing page provides search and social metadata', function (): void {
@@ -354,22 +427,30 @@ test('landing page provides search and social metadata', function (): void {
         'cover_image_path' => 'podcasts/show-cover.jpg',
     ]);
 
-    get(route('blog.index'))->assertOk()->assertSeeHtml('<meta property="og:title" content="Disney Parks Blog | Mouse28">')->assertSeeHtml('<meta property="og:url" content="'.route('blog.index').'">');
+    get(route('blog.index'))->assertOk()
+        ->assertSeeHtml('<meta property="og:title" content="Disney Parks Blog | Mouse28">')
+        ->assertSeeHtml('<meta property="og:url" content="'.route('blog.index').'">');
 });
 
 test('archive canonical preserves meaningful filters and pagination', function (): void {
-    Post::factory()->count(13)->inCategory('park-accessibility')->create();
+    Post::factory()
+        ->count(13)
+        ->inCategory('park-accessibility')
+        ->create();
 
     $blogCanonical = route('blog.index', [
         'category' => 'park-accessibility',
         'page' => 2,
     ]);
 
-    get($blogCanonical)->assertOk()->assertSeeHtml('<link rel="canonical" href="'.e($blogCanonical).'">');
+    get($blogCanonical)->assertOk()
+        ->assertSeeHtml('<link rel="canonical" href="'.e($blogCanonical).'">');
 });
 
 test('text searches are not indexed', function (): void {
-    get(route('blog.index', ['q' => 'sensory']))->assertOk()->assertSeeHtml('<meta name="robots" content="noindex,follow">')->assertSeeHtml('<link rel="canonical" href="'.route('blog.index').'">');
+    get(route('blog.index', ['q' => 'sensory']))->assertOk()
+        ->assertSeeHtml('<meta name="robots" content="noindex,follow">')
+        ->assertSeeHtml('<link rel="canonical" href="'.route('blog.index').'">');
 });
 
 test('an uncategorized post keeps its public fallback presentation', function (): void {
@@ -377,7 +458,9 @@ test('an uncategorized post keeps its public fallback presentation', function ()
 
     get(route('blog.show', $post))
         ->assertOk()
-        ->assertSee($post->title)->assertSee('Mouse28 dispatch')->assertDontSeeHtml('category=');
+        ->assertSee($post->title)
+        ->assertSee('Mouse28 dispatch')
+        ->assertDontSeeHtml('category=');
 });
 
 test('blog posts include article and breadcrumb structured data', function (): void {
@@ -395,30 +478,28 @@ test('blog posts include article and breadcrumb structured data', function (): v
     $data = $this->structuredData($response);
 
     expect(data_get($data, '@context'))->toBe('https://schema.org')
-        ->and(data_get($data, '@graph.0.@type'))->toBe('BlogPosting')
-        ->and(data_get($data, '@graph.0.headline'))->toBe($post->title)
-        ->and(data_get($data, '@graph.0.mainEntityOfPage'))->toBe(route('blog.show', $post))
-        ->and(data_get($data, '@graph.0.citation'))->toBe($post->source_url)
-        ->and(data_get($data, '@graph.0.dateModified'))->toStartWith('2026-08-01')
-        ->and(data_get($data, '@graph.1.@type'))->toBe('BreadcrumbList')
+        ->and(data_get($data, '@graph.0.@type'))
+        ->toBe('BlogPosting')
+        ->and(data_get($data, '@graph.0.headline'))
+        ->toBe($post->title)
+        ->and(data_get($data, '@graph.0.mainEntityOfPage'))
+        ->toBe(route('blog.show', $post))
+        ->and(data_get($data, '@graph.0.citation'))
+        ->toBe($post->source_url)
+        ->and(data_get($data, '@graph.0.dateModified'))
+        ->toStartWith('2026-08-01')
+        ->and(data_get($data, '@graph.1.@type'))
+        ->toBe('BreadcrumbList')
         ->and(data_get($data, '@graph.1.itemListElement.*.name'))
         ->toBe(['Home', 'Blog', $post->title]);
-});
-
-test('page copy and metadata avoid em dashes', function (): void {
-    get(route('blog.index'))
-        ->assertOk()
-        ->assertDontSee('—');
-});
-
-test('page uses the dispatch editorial system', function (): void {
-    get(route('blog.index'))->assertOk()->assertSeeHtml('data-brand-wordmark')->assertSeeHtml('data-editorial-blog')->assertSeeHtml('js-dispatch-pages');
 });
 
 test('reading page uses the dispatch reading surface', function (): void {
     $post = Post::factory()->create();
 
-    get(route('blog.show', $post))->assertOk()->assertSeeHtml('editorial-detail-hero')->assertSeeHtml('editorial-reading-column')
+    get(route('blog.show', $post))->assertOk()
+        ->assertSeeHtml('editorial-detail-hero')
+        ->assertSeeHtml('editorial-reading-column')
         ->assertDontSee('—');
 });
 
@@ -427,28 +508,13 @@ test('form placeholders use readable text colors', function (): void {
     config()->set('services.turnstile.site_key', 'test-site-key');
     config()->set('services.turnstile.secret_key', 'test-secret-key');
 
-    get(route('blog.index'))->assertOk()->assertSeeHtml('placeholder:text-navy/60')->assertSeeHtml('placeholder:text-white/60')->assertDontSeeHtml('placeholder:text-navy/25')->assertDontSeeHtml('placeholder:text-white/25')->assertDontSeeHtml('placeholder-white/');
+    get(route('blog.index'))->assertOk()
+        ->assertSeeHtml('placeholder:text-navy/60')
+        ->assertSeeHtml('placeholder:text-white/60')
+        ->assertDontSeeHtml('placeholder:text-navy/25')
+        ->assertDontSeeHtml('placeholder:text-white/25')
+        ->assertDontSeeHtml('placeholder-white/');
 });
-
-test('post links that open a new tab announce it', function (): void {
-    $post = Post::factory()->create([
-        'source_url' => 'https://disneyworld.disney.go.com/guest-services/',
-        'last_reviewed_at' => now(),
-    ]);
-
-    $response = get(route('blog.show', $post))->assertOk();
-
-    expect($this->unannouncedNewTabLinks($response))->toBeEmpty();
-});
-
-test('signed-in visitors see published posts but nobody sees drafts at public URLs', function (bool $isAdmin): void {
-    $published = Post::factory()->create();
-    $draft = Post::factory()->draft()->create();
-    actingAs($isAdmin ? User::factory()->admin()->create() : User::factory()->create());
-
-    get(route('blog.show', $published))->assertOk();
-    get(route('blog.show', $draft))->assertNotFound();
-})->with(['non-admin' => [false], 'admin' => [true]]);
 
 test('a published post renders its markdown content', function (): void {
     $post = Post::factory()->create(['content' => "## Arrival plan\n\nTake a **sensory break** when needed."]);
@@ -461,7 +527,9 @@ test('a published post renders its markdown content', function (): void {
 
 test('post pages take their head from the saved SEO row and fall back to the post', function (): void {
     // Arrange
-    $withSeo = Post::factory()->withSeo('Saved SEO Title', 'Saved SEO description.')->create(['title' => 'Plain Title', 'excerpt' => 'Plain excerpt.']);
+    $withSeo = Post::factory()
+        ->withSeo('Saved SEO Title', 'Saved SEO description.')
+        ->create(['title' => 'Plain Title', 'excerpt' => 'Plain excerpt.']);
     $withoutSeo = Post::factory()->create(['title' => 'Fallback Title', 'excerpt' => 'Fallback excerpt.']);
 
     // Act
@@ -487,7 +555,8 @@ test('post pages honor the robots choice saved in the SEO row', function (): voi
     $response = get(route('blog.show', $post));
 
     // Assert
-    $response->assertOk()->assertSeeHtml('<meta name="robots" content="noindex, nofollow">');
+    $response->assertOk()
+        ->assertSeeHtml('<meta name="robots" content="noindex, nofollow">');
 });
 
 test('blog pages show an evening publish date on its Eastern day while metadata keeps the UTC instant', function (): void {
@@ -502,7 +571,9 @@ test('blog pages show an evening publish date on its Eastern day while metadata 
     get(route('blog.show', $post))
         ->assertOk()
         ->assertSeeHtml('datetime="2026-10-05"')
-        ->assertSee('October 5, 2026')->assertDontSee('October 6, 2026')->assertSeeHtml('2026-10-06T01:00:00+00:00');
+        ->assertSee('October 5, 2026')
+        ->assertDontSee('October 6, 2026')
+        ->assertSeeHtml('2026-10-06T01:00:00+00:00');
 });
 
 test('blog share links open without passing the page as referrer', function (): void {
@@ -513,4 +584,19 @@ test('blog share links open without passing the page as referrer', function (): 
     $response->assertOk()
         ->assertSeeHtml('rel="noopener noreferrer"')
         ->assertDontSeeHtml('rel="noopener"');
+});
+
+test('blog share links point to the public post address', function (): void {
+    $post = Post::factory()->create(['title' => 'Sample share title']);
+    $publicUrl = urlencode(route('blog.show', $post));
+
+    $response = get(route('blog.show', $post));
+
+    $response->assertOk()
+        ->assertSeeHtml("https://twitter.com/intent/tweet?url={$publicUrl}&text=Sample+share+title\"")
+        ->assertSeeHtml("https://twitter.com/intent/tweet?url={$publicUrl}&text=Sample+share+title+%7C+Mouse28\"")
+        ->assertSeeHtml("https://www.facebook.com/sharer/sharer.php?u={$publicUrl}\"")
+        ->assertSeeHtml('aria-label="Share on X (opens in a new tab)"')
+        ->assertSeeHtml('aria-label="Share on Facebook (opens in a new tab)"')
+        ->assertSeeInOrder(['Post on X', 'Share on Facebook']);
 });

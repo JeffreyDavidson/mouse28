@@ -57,7 +57,8 @@ test('newsletter sign-up stores a pending reader and queues the confirmation ema
     $reader = Subscriber::query()->sole();
 
     expect($reader->email)->toBe('dale@example.com')
-        ->and($reader->isActive())->toBeFalse();
+        ->and($reader->isActive())
+        ->toBeFalse();
 
     Mail::assertQueued(NewsletterConfirmationMail::class, fn (NewsletterConfirmationMail $mail): bool => $mail->hasTo('dale@example.com'));
 });
@@ -81,7 +82,8 @@ test('newsletter sign-up rejects an invalid turnstile response', function (): vo
     from(route('home'))
         ->post(route('newsletter.subscribe'), newsletterPayload())
         ->assertRedirect(route('home').'#newsletter')
-        ->assertSessionHasErrorsIn('newsletter', 'cf-turnstile-response');
+        ->assertSessionHasErrorsIn('newsletter', ['cf-turnstile-response' => 'Please verify that you are human and try again.'])
+        ->assertSessionHasInput('email', 'Dale@Example.com');
 
     assertDatabaseCount('subscribers', 0);
     Mail::assertNothingQueued();
@@ -124,6 +126,19 @@ test('newsletter honeypot silently accepts a bot without storing or sending anyt
     assertDatabaseCount('subscribers', 0);
     Http::assertNothingSent();
     Mail::assertNothingQueued();
+});
+
+test('newsletter honeypot silently accepts a bot with an invalid email', function (): void {
+    Http::fake();
+
+    from(route('home'))
+        ->post(route('newsletter.subscribe'), ['email' => 'not-an-email', 'website_url' => 'https://spam.example'])
+        ->assertRedirect(route('home').'#newsletter')
+        ->assertSessionHas('newsletter_success', 'Check your email to confirm your sign-up.')
+        ->assertSessionHasNoErrors();
+
+    assertDatabaseCount('subscribers', 0);
+    Http::assertNothingSent();
 });
 
 test('newsletter rate limit ignores spoofed forwarded IPs', function (): void {

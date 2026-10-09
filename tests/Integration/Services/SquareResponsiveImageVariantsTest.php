@@ -4,12 +4,10 @@ use App\Services\SquareResponsiveImageVariants;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-beforeEach(function (): void {
-    Storage::fake('public');
-});
-
 test('it generates centered square variants up to the shorter side of a wide original', function (): void {
-    Storage::disk('public')->put('episodes/cover.png', UploadedFile::fake()->image('cover.png', 1731, 909)->getContent());
+    Storage::disk('public')->put('episodes/cover.png', UploadedFile::fake()
+        ->image('cover.png', 1731, 909)
+        ->getContent());
 
     $generated = app(SquareResponsiveImageVariants::class)->generate('episodes/cover.png');
 
@@ -40,11 +38,14 @@ test('it crops the center of the original', function (): void {
         ?: throw new UnexpectedValueException('The square variant could not be decoded.');
     $pixel = imagecolorsforindex($variant, (int) imagecolorat($variant, 50, 50));
     expect($pixel['blue'])->toBeGreaterThan(200)
-        ->and($pixel['red'])->toBeLessThan(50);
+        ->and($pixel['red'])
+        ->toBeLessThan(50);
 });
 
 test('it verifies square variants against the shorter side of the original', function (): void {
-    Storage::disk('public')->put('episodes/cover.png', UploadedFile::fake()->image('cover.png', 1000, 700)->getContent());
+    Storage::disk('public')->put('episodes/cover.png', UploadedFile::fake()
+        ->image('cover.png', 1000, 700)
+        ->getContent());
     $images = app(SquareResponsiveImageVariants::class);
 
     expect($images->hasRequiredVariants('episodes/cover.png'))->toBeFalse();
@@ -63,6 +64,8 @@ test('it rejects an unsupported original', function (): void {
     $images = app(SquareResponsiveImageVariants::class);
 
     expect($images->generate('episodes/broken.png'))->toBeFalse()
-        ->and($images->hasRequiredVariants('episodes/broken.png'))->toBeFalse()
-        ->and($images->hasRequiredVariants('episodes/missing.png'))->toBeFalse();
+        ->and($images->hasRequiredVariants('episodes/broken.png'))
+        ->toBeFalse()
+        ->and($images->hasRequiredVariants('episodes/missing.png'))
+        ->toBeFalse();
 });

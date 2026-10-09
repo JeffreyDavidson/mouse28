@@ -41,26 +41,14 @@
 
                 <figure>
                     <div class="overflow-hidden rounded-xl">
-                        <picture>
-                            <source
-                                type="image/avif"
-                                srcset="/images/hero-family-640.avif 640w, /images/hero-family-768.avif 768w, /images/hero-family-1024.avif 1024w, /images/hero-family-1600.avif 1600w"
-                                sizes="(min-width: 1424px) 765px, (min-width: 1024px) calc(58.3333vw - 65.3333px), (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
-                            />
-                            <source
-                                srcset="/images/hero-family-640.webp 640w, /images/hero-family-768.webp 768w, /images/hero-family-1024.webp 1024w, /images/hero-family.webp 1600w"
-                                sizes="(min-width: 1424px) 765px, (min-width: 1024px) calc(58.3333vw - 65.3333px), (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
-                                type="image/webp"
-                            />
-                            <img
-                                src="/images/hero-family.jpg"
-                                alt="Jeffrey and Cassie enjoying the Kilimanjaro Safaris at Disney's Animal Kingdom"
-                                width="2048"
-                                height="1536"
-                                fetchpriority="high"
-                                class="aspect-[4/3] w-full object-cover object-center"
-                            />
-                        </picture>
+                        <x-hero-picture
+                            sizes="(min-width: 1424px) 765px, (min-width: 1024px) calc(58.3333vw - 65.3333px), (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
+                            src="/images/hero-family.jpg"
+                            alt="Jeffrey and Cassie enjoying the Kilimanjaro Safaris at Disney's Animal Kingdom"
+                            width="2048"
+                            height="1536"
+                            class="aspect-[4/3] w-full object-cover object-center"
+                        />
                     </div>
                     <figcaption class="text-cream/60 mt-3 text-right text-sm">
                         Kilimanjaro Safaris at Disney's Animal Kingdom

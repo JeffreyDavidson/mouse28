@@ -18,7 +18,7 @@ concurrency:
 jobs:
   browser-smoke:
     name: Browser smoke (Chromium)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
 
     steps:
@@ -75,7 +75,7 @@ jobs:
 
   compatibility:
     name: Compatibility (${{ matrix.name }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     strategy:
       fail-fast: false

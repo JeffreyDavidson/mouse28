@@ -13,20 +13,31 @@ use function Pest\Laravel\actingAs;
 pest()->use(RefreshDatabase::class);
 
 test('guide editorial changes record the actor and changed values only', function (): void {
-    $editor = User::factory()->admin()->create();
+    $editor = User::factory()
+        ->admin()
+        ->create();
     actingAs($editor);
     $record = Guide::factory()->create(['title' => 'Original title']);
-    $created = Activity::query()->latest('id')->firstOrFail();
+    $created = Activity::query()
+        ->latest('id')
+        ->firstOrFail();
 
     $record->update(['title' => 'Updated title']);
 
-    $updated = Activity::query()->latest('id')->firstOrFail();
+    $updated = Activity::query()
+        ->latest('id')
+        ->firstOrFail();
     expect($created->event)->toBe('created')
-        ->and($updated->event)->toBe('updated')
-        ->and($updated->log_name)->toBe('editorial')
-        ->and($updated->causer_id)->toBe($editor->id)
-        ->and($updated->subject_id)->toBe($record->id)
-        ->and($updated->attribute_changes?->all() ?? [])->toEqual([
+        ->and($updated->event)
+        ->toBe('updated')
+        ->and($updated->log_name)
+        ->toBe('editorial')
+        ->and($updated->causer_id)
+        ->toBe($editor->id)
+        ->and($updated->subject_id)
+        ->toBe($record->id)
+        ->and($updated->attribute_changes?->all() ?? [])
+        ->toEqual([
             'attributes' => ['title' => 'Updated title'],
             'old' => ['title' => 'Original title'],
         ]);
@@ -38,7 +49,9 @@ test('guide editorial changes record the actor and changed values only', functio
     $record->delete();
     $record->restore();
 
-    expect(Activity::query()->pluck('event')->all())
+    expect(Activity::query()
+        ->pluck('event')
+        ->all())
         ->toBe(['created', 'updated', 'deleted', 'restored']);
 });
 
@@ -70,10 +83,14 @@ test('editorial review dates determine the review queue', function (): void {
         ->all();
 
     expect($currentIsDue)->toBeFalse()
-        ->and($staleIsDue)->toBeTrue()
-        ->and($boundaryIsDue)->toBeFalse()
-        ->and($unreviewedIsDue)->toBeTrue()
-        ->and($reviewDueIds)->toEqualCanonicalizing([$staleGuide->id, $unreviewedGuide->id]);
+        ->and($staleIsDue)
+        ->toBeTrue()
+        ->and($boundaryIsDue)
+        ->toBeFalse()
+        ->and($unreviewedIsDue)
+        ->toBeTrue()
+        ->and($reviewDueIds)
+        ->toEqualCanonicalizing([$staleGuide->id, $unreviewedGuide->id]);
 });
 
 test('guide categories round trip through their existing database strings', function (): void {
@@ -89,28 +106,37 @@ test('guide categories round trip through their existing database strings', func
     $record->refresh();
 
     expect($record->category)->toBe(GuideCategory::FamilyPlanning)
-        ->and($record->getRawOriginal('category'))->toBe('family-planning')
-        ->and($record->toArray()['category'])->toBe('family-planning');
+        ->and($record->getRawOriginal('category'))
+        ->toBe('family-planning')
+        ->and($record->toArray()['category'])
+        ->toBe('family-planning');
 });
 
 test('guides credit authors through the pivot only', function (): void {
     $guide = new Guide;
 
     expect($guide->getFillable())->not->toContain('author')
-        ->and($guide->getCasts())->not->toHaveKey('author')
-        ->and($guide->getActivitylogOptions()->logAttributes)->not->toContain('author');
+        ->and($guide->getCasts())
+        ->not->toHaveKey('author')
+        ->and($guide->getActivitylogOptions()
+            ->logAttributes)
+        ->not->toContain('author');
 });
 
 test('guides are ready to publish with content, an excerpt, an official source, and a review date', function (): void {
-    $guide = Guide::factory()->draft()->make([
-        'featured_image_path' => null,
-    ]);
+    $guide = Guide::factory()
+        ->draft()
+        ->make([
+            'featured_image_path' => null,
+        ]);
 
     expect($guide->publishingIssues())->toBeEmpty();
 });
 
 test('guides cannot be published without each required detail', function (string $attribute, string $issue): void {
-    $guide = Guide::factory()->draft()->make([$attribute => null]);
+    $guide = Guide::factory()
+        ->draft()
+        ->make([$attribute => null]);
 
     expect($guide->publishingIssues())->toBe([$issue]);
 })->with([
@@ -144,14 +170,19 @@ test('the guide review interval comes from content configuration', function (): 
 });
 
 test('guides without content need attention', function (?string $content): void {
-    $guide = Guide::factory()->withSeo('Complete title', 'Complete description')->create([
-        'content' => $content,
-        'featured_image_path' => 'guides/complete.jpg',
-        'source_url' => 'https://example.test/source',
-        'last_reviewed_at' => Date::today(),
-    ]);
+    $guide = Guide::factory()
+        ->withSeo('Complete title', 'Complete description')
+        ->create([
+            'content' => $content,
+            'featured_image_path' => 'guides/complete.jpg',
+            'source_url' => 'https://example.test/source',
+            'last_reviewed_at' => Date::today(),
+        ]);
 
-    expect(Guide::query()->needsAttention()->pluck('id')->all())->toBe([$guide->id]);
+    expect(Guide::query()
+        ->needsAttention()
+        ->pluck('id')
+        ->all())->toBe([$guide->id]);
 })->with([
     'missing' => [null],
     'empty' => [''],
@@ -172,10 +203,13 @@ test('guide content edits are recorded in the editorial log', function (): void 
 
     $record->update(['content' => 'Updated content']);
 
-    expect(Activity::query()->latest('id')->firstOrFail()->attribute_changes?->all() ?? [])->toEqual([
-        'attributes' => ['content' => 'Updated content'],
-        'old' => ['content' => 'Original content'],
-    ]);
+    expect(Activity::query()
+        ->latest('id')
+        ->firstOrFail()
+        ->attribute_changes?->all() ?? [])->toEqual([
+            'attributes' => ['content' => 'Updated content'],
+            'old' => ['content' => 'Original content'],
+        ]);
 });
 
 test('creating a guide without a slug names it from its title', function (): void {

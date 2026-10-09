@@ -11,13 +11,14 @@ covers(GeneratePostImageVariants::class);
 
 pest()->use(RefreshDatabase::class);
 
-beforeEach(function (): void {
-    Storage::fake('public');
-});
-
 test('it backfills variants, skips verified posts and regenerates them with force', function (): void {
-    Storage::disk('public')->put('posts/post.png', UploadedFile::fake()->image('post.png', 1280, 72)->getContent());
-    Post::factory()->create()->forceFill(['featured_image_path' => 'posts/post.png'])->saveQuietly();
+    Storage::disk('public')->put('posts/post.png', UploadedFile::fake()
+        ->image('post.png', 1280, 72)
+        ->getContent());
+    Post::factory()
+        ->create()
+        ->forceFill(['featured_image_path' => 'posts/post.png'])
+        ->saveQuietly();
 
     pendingCommand('posts:generate-image-variants')
         ->expectsOutputToContain('Generated responsive images for 1 post.')
@@ -38,7 +39,8 @@ test('it backfills variants, skips verified posts and regenerates them with forc
 
 test('it fails without exposing the path when a post image is missing', function (): void {
     $post = Post::factory()->create();
-    $post->forceFill(['featured_image_path' => 'posts/private-name.png'])->saveQuietly();
+    $post->forceFill(['featured_image_path' => 'posts/private-name.png'])
+        ->saveQuietly();
 
     pendingCommand('posts:generate-image-variants')
         ->expectsOutputToContain("Skipped post {$post->id}: its source image is missing or unsupported.")

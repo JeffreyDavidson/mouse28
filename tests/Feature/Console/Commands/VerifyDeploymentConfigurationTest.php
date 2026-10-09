@@ -109,6 +109,37 @@ test('safe staging configuration passes with isolated observability', function (
     expect($exitCode)->toBe(Command::SUCCESS);
 });
 
+test('a deployment environment other than production or staging fails preflight', function (mixed $environment): void {
+    config()->set([
+        'app.deployment_environment' => $environment,
+        'sentry.environment' => $environment,
+    ]);
+
+    pendingCommand('app:verify-deployment')
+        ->expectsOutputToContain('MOUSE28_DEPLOYMENT_ENVIRONMENT must be production or staging.')
+        ->doesntExpectOutputToContain('SENTRY_ENVIRONMENT must match MOUSE28_DEPLOYMENT_ENVIRONMENT.')
+        ->assertFailed();
+})->with([
+    'local' => ['local'],
+    'unknown' => ['preview'],
+    'wrong case' => ['Production'],
+    'empty' => [''],
+    'missing' => [null],
+]);
+
+test('an unrecognised deployment environment is held to the production rules', function (): void {
+    config()->set([
+        'app.deployment_environment' => 'Staging',
+        'sentry.environment' => 'Staging',
+        'mail.default' => 'array',
+    ]);
+
+    pendingCommand('app:verify-deployment')
+        ->expectsOutputToContain('MAIL_MAILER must use a delivering transport.')
+        ->doesntExpectOutputToContain('MAIL_MAILER must use the array transport on staging.')
+        ->assertFailed();
+});
+
 test('staging rejects a live mail transport', function (): void {
     config()->set([
         'app.url' => 'https://staging.mouse28.com',
@@ -258,8 +289,12 @@ function useRealApplicationKey(): void
 
 test('stored two-factor values that the application key can read pass preflight', function (string $column): void {
     useRealApplicationKey();
-    $user = User::factory()->admin()->create();
-    DB::table('users')->where('id', $user->id)->update([$column => Crypt::encryptString('readable-value')]);
+    $user = User::factory()
+        ->admin()
+        ->create();
+    DB::table('users')
+        ->where('id', $user->id)
+        ->update([$column => Crypt::encryptString('readable-value')]);
 
     pendingCommand('app:verify-deployment')
         ->expectsOutputToContain('Deployment configuration is ready.')
@@ -268,9 +303,13 @@ test('stored two-factor values that the application key can read pass preflight'
 
 test('two-factor values stored under another key fail preflight without exposing them', function (string $column): void {
     useRealApplicationKey();
-    $user = User::factory()->admin()->create();
+    $user = User::factory()
+        ->admin()
+        ->create();
     $foreign = new Encrypter(random_bytes(32), 'aes-256-cbc')->encryptString('foreign-value');
-    DB::table('users')->where('id', $user->id)->update([$column => $foreign]);
+    DB::table('users')
+        ->where('id', $user->id)
+        ->update([$column => $foreign]);
 
     pendingCommand('app:verify-deployment')
         ->expectsOutputToContain('Stored two-factor secrets cannot be decrypted with APP_KEY (1 value);')
@@ -280,7 +319,9 @@ test('two-factor values stored under another key fail preflight without exposing
 
 test('accounts without two-factor values do not affect preflight', function (): void {
     useRealApplicationKey();
-    User::factory()->admin()->create();
+    User::factory()
+        ->admin()
+        ->create();
 
     pendingCommand('app:verify-deployment')
         ->expectsOutputToContain('Deployment configuration is ready.')

@@ -10,13 +10,14 @@ covers(GenerateEpisodeImageVariants::class);
 
 pest()->use(RefreshDatabase::class);
 
-beforeEach(function (): void {
-    Storage::fake('public');
-});
-
 test('it backfills square variants for episode images, skips verified episodes and regenerates with force', function (): void {
-    Storage::disk('public')->put('episodes/episode.png', UploadedFile::fake()->image('episode.png', 1000, 700)->getContent());
-    Episode::factory()->create()->forceFill(['featured_image_path' => 'episodes/episode.png'])->saveQuietly();
+    Storage::disk('public')->put('episodes/episode.png', UploadedFile::fake()
+        ->image('episode.png', 1000, 700)
+        ->getContent());
+    Episode::factory()
+        ->create()
+        ->forceFill(['featured_image_path' => 'episodes/episode.png'])
+        ->saveQuietly();
 
     pendingCommand('episodes:generate-image-variants')
         ->expectsOutputToContain('Generated responsive images for 1 episode.')
@@ -36,7 +37,10 @@ test('it backfills square variants for episode images, skips verified episodes a
 });
 
 test('it fails when an episode image is missing', function (): void {
-    Episode::factory()->create()->forceFill(['featured_image_path' => 'episodes/missing.png'])->saveQuietly();
+    Episode::factory()
+        ->create()
+        ->forceFill(['featured_image_path' => 'episodes/missing.png'])
+        ->saveQuietly();
 
     pendingCommand('episodes:generate-image-variants')
         ->expectsOutputToContain('Generated responsive images for 0 episodes.')

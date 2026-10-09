@@ -33,13 +33,14 @@ test('invalid credentials fail without contacting Turnstile', function (string $
 
     expect($passes)->toBeFalse();
     Http::assertNothingSent();
-})->with(['token', 'secret'])->with([
-    'missing' => [null],
-    'empty' => [''],
-    'whitespace' => ['   '],
-    'integer' => [123],
-    'array' => [['unexpected']],
-]);
+})->with(['token', 'secret'])
+    ->with([
+        'missing' => [null],
+        'empty' => [''],
+        'whitespace' => ['   '],
+        'integer' => [123],
+        'array' => [['unexpected']],
+    ]);
 
 test('verification submits form credentials and accepts a case insensitive allowed hostname', function (): void {
     Http::fake([

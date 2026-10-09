@@ -2,14 +2,12 @@
 
 namespace App\Filament\Widgets;
 
-use App\Filament\Resources\Episodes\EpisodeResource;
-use App\Filament\Resources\Guides\GuideResource;
-use App\Filament\Resources\Posts\PostResource;
+use App\Enums\ContentType;
+use App\Enums\PublishStatus;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
-use Carbon\Carbon;
-use Filament\Support\Icons\Heroicon;
+use Carbon\CarbonInterface;
 use Filament\Widgets\Widget;
 
 class RecentActivity extends Widget
@@ -23,66 +21,52 @@ class RecentActivity extends Widget
     #[\Override]
     protected string $view = 'filament.widgets.recent-activity';
 
-    /** @return array<int, array{icon: Heroicon, color: string, label: string, type: string, time: Carbon|null, url: string}> */
+    /** @return array<int, array{type: ContentType, status: PublishStatus, label: string, time: CarbonInterface, url: string}> */
     public function getActivity(): array
     {
         $items = [];
 
-        foreach (Post::select(['id', 'title', 'status', 'published_at', 'updated_at'])->latest('updated_at')->limit(8)->get() as $post) {
-            $items[] = $this->activityItem(
-                Heroicon::OutlinedDocumentText,
-                'purple',
-                $post->title,
-                $post->publishStatus()->label().' post',
-                $post->updated_at,
-                PostResource::getUrl('edit', ['record' => $post]),
-            );
+        foreach (Post::select(['id', 'title', 'status', 'published_at', 'updated_at'])
+            ->latest('updated_at')
+            ->limit(8)
+            ->get() as $post) {
+            $items[] = $this->activityItem(ContentType::Post, $post);
         }
 
-        foreach (Episode::select(['id', 'title', 'status', 'published_at', 'updated_at'])->latest('updated_at')->limit(8)->get() as $episode) {
-            $items[] = $this->activityItem(
-                Heroicon::OutlinedMicrophone,
-                'gold',
-                $episode->title,
-                $episode->publishStatus()->label().' episode',
-                $episode->updated_at,
-                EpisodeResource::getUrl('edit', ['record' => $episode]),
-            );
+        foreach (Episode::select(['id', 'title', 'status', 'published_at', 'updated_at'])
+            ->latest('updated_at')
+            ->limit(8)
+            ->get() as $episode) {
+            $items[] = $this->activityItem(ContentType::Episode, $episode);
         }
 
-        foreach (Guide::select(['id', 'title', 'status', 'published_at', 'updated_at'])->latest('updated_at')->limit(8)->get() as $guide) {
-            $items[] = $this->activityItem(
-                Heroicon::OutlinedBookOpen,
-                'teal',
-                $guide->title,
-                $guide->publishStatus()->label().' guide',
-                $guide->updated_at,
-                GuideResource::getUrl('edit', ['record' => $guide]),
-            );
+        foreach (Guide::select(['id', 'title', 'status', 'published_at', 'updated_at'])
+            ->latest('updated_at')
+            ->limit(8)
+            ->get() as $guide) {
+            $items[] = $this->activityItem(ContentType::Guide, $guide);
         }
 
-        return collect($items)->sortByDesc('time')->take(8)->values()->all();
+        return collect($items)->filter()
+            ->sortByDesc('time')
+            ->take(8)
+            ->values()
+            ->all();
     }
 
-    /**
-     * @param  'gold'|'purple'|'teal'  $color
-     * @return array{icon: Heroicon, color: string, label: string, type: string, time: Carbon|null, url: string}
-     */
-    private function activityItem(
-        Heroicon $icon,
-        string $color,
-        string $label,
-        string $type,
-        ?Carbon $time,
-        string $url,
-    ): array {
+    /** @return array{type: ContentType, status: PublishStatus, label: string, time: CarbonInterface, url: string}|null */
+    private function activityItem(ContentType $type, Post|Episode|Guide $record): ?array
+    {
+        if ($record->updated_at === null) {
+            return null;
+        }
+
         return [
-            'icon' => $icon,
-            'color' => $color,
-            'label' => $label,
             'type' => $type,
-            'time' => $time,
-            'url' => $url,
+            'status' => $record->publishStatus(),
+            'label' => $record->title,
+            'time' => $record->updated_at,
+            'url' => $type->resource()::getUrl('edit', ['record' => $record]),
         ];
     }
 }

@@ -2,24 +2,21 @@
 
 namespace App\Console\Commands;
 
-use App\Support\PublicContentArchive;
+use App\Services\ContentArchive\PublicContentArchiveImporter;
+use App\Services\ContentArchive\PublicContentImportGuard;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Uri;
 use Throwable;
 
-#[Signature('content:import-public {path : Absolute path to a JSON archive} {--staging : Permit an import on the configured Mouse28 staging hostname}')]
+#[Signature('content:import-public {path : Absolute path to a JSON archive} {--staging : Permit an import on the Mouse28 staging hostname when APP_ENV is production}')]
 #[Description('Import a public Mouse28 content archive into staging or another non-production environment')]
 class ImportPublicContent extends Command
 {
-    private const string STAGING_HOST = 'staging.mouse28.com';
-
-    public function handle(PublicContentArchive $archive): int
+    public function handle(PublicContentArchiveImporter $archive, PublicContentImportGuard $guard): int
     {
-        if ($this->importIsBlocked()) {
+        if (! $guard->allows($this->option('staging') === true)) {
             $this->error('Public content cannot be imported into production.');
 
             return self::FAILURE;
@@ -52,15 +49,5 @@ class ImportPublicContent extends Command
         $this->info("Imported {$counts['posts']} posts, {$counts['guides']} guides, {$counts['episodes']} episodes, and {$counts['podcast']} podcast record.");
 
         return self::SUCCESS;
-    }
-
-    private function importIsBlocked(): bool
-    {
-        if (! app()->isProduction()) {
-            return false;
-        }
-
-        return ! $this->option('staging')
-            || Uri::of(Config::string('app.url'))->host() !== self::STAGING_HOST;
     }
 }

@@ -39,8 +39,10 @@ test('post structured data prioritizes metadata and the newest content timestamp
         'dateModified' => '2026-08-03T00:00:00+00:00',
         'image' => url($post->featured_image_url),
         'citation' => 'https://source.example/park-tips',
-    ])->and(data_get($article, '@id'))->toBe(route('blog.show', $post).'#blog-posting')
-        ->and(data_get($data, '@graph.1.itemListElement'))->toContain([
+    ])->and(data_get($article, '@id'))
+        ->toBe(route('blog.show', $post).'#blog-posting')
+        ->and(data_get($data, '@graph.1.itemListElement'))
+        ->toContain([
             '@type' => 'ListItem',
             'position' => 2,
             'name' => 'Blog',
@@ -75,18 +77,25 @@ test('post and guide structured data use content fallbacks without optional meta
     $guideArticle = data_get(StructuredData::forGuide($guide), '@graph.0');
 
     expect(data_get($postArticle, 'description'))->not->toContain('<')
-        ->and(data_get($postArticle, 'description'))->toHaveLength(203)
-        ->and(data_get($postArticle, 'description'))->toEndWith('...')
-        ->and(data_get($postArticle, 'dateModified'))->toBe('2026-08-02T12:00:00+00:00')
-        ->and(data_get($postArticle, 'image'))->toBe(url($post->featured_image_url))
-        ->and($postArticle)->not->toHaveKeys(['citation'])
-        ->and($guideArticle)->toMatchArray([
+        ->and(data_get($postArticle, 'description'))
+        ->toHaveLength(203)
+        ->and(data_get($postArticle, 'description'))
+        ->toEndWith('...')
+        ->and(data_get($postArticle, 'dateModified'))
+        ->toBe('2026-08-02T12:00:00+00:00')
+        ->and(data_get($postArticle, 'image'))
+        ->toBe(url($post->featured_image_url))
+        ->and($postArticle)
+        ->not->toHaveKeys(['citation'])
+        ->and($guideArticle)
+        ->toMatchArray([
             '@type' => 'Article',
             'headline' => 'Fallback Guide',
             'description' => 'Guide excerpt.',
             'dateModified' => '2026-08-02T12:00:00+00:00',
         ])
-        ->and($guideArticle)->not->toHaveKeys(['image', 'citation']);
+        ->and($guideArticle)
+        ->not->toHaveKeys(['image', 'citation']);
 });
 
 test('episode structured data includes configured podcast metadata', function (): void {
@@ -139,9 +148,12 @@ test('episode structured data omits unavailable media metadata and uses the defa
     $podcastEpisode = data_get(StructuredData::forEpisode($episode), '@graph.0');
 
     expect(data_get($podcastEpisode, 'name'))->toBe('Episode 43')
-        ->and(data_get($podcastEpisode, 'description'))->toBe('Episode notes.')
-        ->and(data_get($podcastEpisode, 'partOfSeries.name'))->toBe('Mouse28')
-        ->and($podcastEpisode)->not->toHaveKeys([
+        ->and(data_get($podcastEpisode, 'description'))
+        ->toBe('Episode notes.')
+        ->and(data_get($podcastEpisode, 'partOfSeries.name'))
+        ->toBe('Mouse28')
+        ->and($podcastEpisode)
+        ->not->toHaveKeys([
             'partOfSeason',
             'duration',
             'associatedMedia',
@@ -151,7 +163,9 @@ test('episode structured data omits unavailable media metadata and uses the defa
 
 test('post structured data names the post category as the article section', function (?string $name, string $section): void {
     $post = Post::factory()->create([
-        'category_id' => $name === null ? null : Category::factory()->create(['name' => $name])->id,
+        'category_id' => $name === null ? null : Category::factory()
+            ->create(['name' => $name])
+            ->id,
     ]);
 
     expect(data_get(StructuredData::forPost($post), '@graph.0.articleSection'))->toBe($section);
@@ -170,14 +184,18 @@ dataset('structured data authors', [
 ]);
 
 test('post and guide structured data credit one author as a person and several as a list in byline order', function (array $names, array $author): void {
-    $authorIds = array_map(fn (mixed $name): int => User::factory()->author()->create(['name' => $name])->id, $names);
+    $authorIds = array_map(fn (mixed $name): int => User::factory()
+        ->author()
+        ->create(['name' => $name])
+        ->id, $names);
     $post = Post::factory()->create();
     $guide = Guide::factory()->create();
     $post->syncAuthors($authorIds);
     $guide->syncAuthors($authorIds);
 
     expect(data_get(StructuredData::forPost($post->refresh()), '@graph.0.author'))->toBe($author)
-        ->and(data_get(StructuredData::forGuide($guide->refresh()), '@graph.0.author'))->toBe($author);
+        ->and(data_get(StructuredData::forGuide($guide->refresh()), '@graph.0.author'))
+        ->toBe($author);
 })->with('structured data authors');
 
 test('post structured data describes markdown content in plain text', function (): void {

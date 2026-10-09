@@ -3,15 +3,14 @@
 namespace App\Filament\Resources\Posts\Tables;
 
 use App\Enums\SourceReviewStatus;
+use App\Filament\Tables\Actions\SoftDeleteBulkActions;
+use App\Filament\Tables\Filters\MissingArtworkFilter;
+use App\Filament\Tables\Filters\MissingSeoFilter;
+use App\Filament\Tables\Filters\ReviewDueFilter;
 use App\Models\Post;
 use App\Support\EditorialReadiness;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
@@ -68,25 +67,16 @@ class PostsTable
                 SelectFilter::make('authors')
                     ->label('Author')
                     ->relationship('authors', 'name', fn (Builder $query): Builder => $query->where('users.is_author', true)),
-                Filter::make('missing_artwork')
-                    ->query(fn (Builder $query): Builder => $query->where(function (Builder $query): void {
-                        $query->whereNull('featured_image_path')->orWhere('featured_image_path', '');
-                    })),
-                Filter::make('missing_seo')
-                    ->query(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->missingSeo()->select('id'))),
-                Filter::make('review_due')
-                    ->query(fn (Builder $query): Builder => $query->whereIn('posts.id', Post::query()->published()->reviewDue()->select('id'))),
+                MissingArtworkFilter::make(),
+                MissingSeoFilter::make(),
+                ReviewDueFilter::make(),
                 TrashedFilter::make(),
             ])
             ->recordActions([
                 EditAction::make(),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
-                ]),
+                SoftDeleteBulkActions::make(),
             ]);
     }
 }

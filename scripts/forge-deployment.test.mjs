@@ -85,6 +85,55 @@ test('release safeguards keep feature integration, pre-merge staging, and produc
     assert.ok(operations.includes('test "${FORGE_VAR_SOURCE_BRANCH:-}" = main'));
 });
 
+test('the documented deploy scripts build assets before migrating and migrate last before activation', () => {
+    const operations = readFileSync(new URL('../docs/operations.md', import.meta.url), 'utf8');
+    const scripts = {
+        staging: [
+            /### Installed staging deploy script[\s\S]*?```bash\n([\s\S]*?)\n```/,
+            ['npm ci', 'artisan app:verify-deployment'],
+        ],
+        production: [
+            /### Installed production deploy script[\s\S]*?```bash\n([\s\S]*?)\n```/,
+            ['npm ci --production=false', 'artisan app:verify-production'],
+        ],
+    };
+
+    for (const [site, [pattern, [install, verify]]] of Object.entries(scripts)) {
+        const script = operations.match(pattern)?.[1];
+
+        assert.ok(script, `${site} script is missing`);
+
+        const steps = [
+            '$FORGE_COMPOSER install',
+            install,
+            'npm run build',
+            'artisan optimize',
+            verify,
+            'artisan storage:link',
+            'artisan migrate --force',
+            '$ACTIVATE_RELEASE()',
+        ];
+        const positions = steps.map(step => script.indexOf(step));
+
+        for (const [index, step] of steps.entries()) {
+            assert.ok(positions[index] >= 0, `${site}: ${step} is missing`);
+            assert.equal(script.split(step).length - 1, 1, `${site}: ${step} must appear once`);
+        }
+        assert.deepEqual(
+            [...positions].sort((a, b) => a - b),
+            positions,
+            `${site} steps are out of order`,
+        );
+
+        // Nothing between the migration and activation may stop the deploy.
+        const afterMigration = script
+            .slice(script.indexOf('\n', positions[6]), positions[7])
+            .split('\n')
+            .filter(line => line.trim() !== '' && !line.trim().startsWith('#'));
+        assert.deepEqual(afterMigration, [], `${site} runs commands between migrating and activating`);
+    }
+});
+
 test('rejects a production hook before any staging deployment network request', async () => {
     let requests = 0;
     await assert.rejects(

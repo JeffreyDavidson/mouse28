@@ -51,8 +51,12 @@ class SubscribersTable
                     }),
             ])
             ->recordActions([
-                DeleteAction::make(),
+                DeleteAction::make()
+                    ->hidden(fn (Subscriber $record): bool => $record->isSuppressed()),
             ])
+            ->checkIfRecordIsSelectableUsing(
+                fn (Subscriber $record): bool => ! $record->isSuppressed(),
+            )
             ->toolbarActions([
                 DeleteBulkAction::make(),
             ])

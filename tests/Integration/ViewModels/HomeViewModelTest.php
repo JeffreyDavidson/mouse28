@@ -24,13 +24,16 @@ test('homepage content queries select only fields rendered by their cards', func
     expect($data['featuredPost']?->getAttributes() ?? [])
         ->toHaveKeys(['id', 'slug', 'title', 'category_id', 'featured_image_path'])
         ->not->toHaveKeys(['content', 'excerpt', 'meta_description', 'category'])
-        ->and($data['latestPosts']->firstOrFail()->getAttributes())
+        ->and($data['latestPosts']->firstOrFail()
+            ->getAttributes())
         ->toHaveKeys(['id', 'slug', 'title', 'category_id', 'featured_image_path', 'published_at'])
         ->not->toHaveKeys(['content', 'excerpt', 'meta_description', 'category'])
-        ->and($data['latestGuides']->sole()->getAttributes())
+        ->and($data['latestGuides']->sole()
+            ->getAttributes())
         ->toHaveKeys(['id', 'slug', 'title', 'excerpt', 'category', 'featured_image_path'])
         ->not->toHaveKeys(['content', 'meta_description'])
-        ->and($data['latestEpisodes']->sole()->getAttributes())
+        ->and($data['latestEpisodes']->sole()
+            ->getAttributes())
         ->toHaveKeys(['id', 'slug', 'title', 'description', 'episode_number', 'duration_seconds'])
         ->not->toHaveKeys(['show_notes', 'transcript', 'meta_description']);
 });
@@ -38,13 +41,16 @@ test('homepage content queries select only fields rendered by their cards', func
 test('homepage planning posts select only their rendered fields', function (): void {
     config()->set('mouse28.guides_enabled', true);
 
-    Post::factory()->inCategory('park-accessibility')->create([
-        'title' => 'Sensory planning post',
-    ]);
+    Post::factory()
+        ->inCategory('park-accessibility')
+        ->create([
+            'title' => 'Sensory planning post',
+        ]);
 
     $data = app(HomeViewModel::class)->data();
 
-    expect($data['planningPosts']->sole()->getAttributes())
+    expect($data['planningPosts']->sole()
+        ->getAttributes())
         ->toHaveKeys(['id', 'slug', 'title', 'category_id', 'featured_image_path'])
         ->not->toHaveKeys(['content', 'excerpt', 'meta_description', 'category']);
 });
@@ -52,22 +58,37 @@ test('homepage planning posts select only their rendered fields', function (): v
 test('homepage posts arrive with their category names loaded', function (): void {
     config()->set('mouse28.guides_enabled', true);
     $category = Category::factory()->create(['name' => 'Sample Topic']);
-    Post::factory()->for($category)->count(2)->create();
-    Post::factory()->inCategory('disney-tips')->create(['published_at' => now()->subWeek()]);
+    Post::factory()
+        ->for($category)
+        ->count(2)
+        ->create();
+    Post::factory()
+        ->inCategory('disney-tips')
+        ->create(['published_at' => now()->subWeek()]);
 
     $data = app(HomeViewModel::class)->data();
 
     expect($data['featuredPost']?->relationLoaded('category'))->toBeTrue()
-        ->and($data['featuredPost']?->category_label)->toBe('Sample Topic')
-        ->and($data['latestPosts']->every(fn (Post $post): bool => $post->relationLoaded('category')))->toBeTrue()
-        ->and($data['planningPosts']->sole()->relationLoaded('category'))->toBeTrue()
-        ->and($data['planningPosts']->sole()->category_label)->toBe('Disney Tips');
+        ->and($data['featuredPost']?->category_label)
+        ->toBe('Sample Topic')
+        ->and($data['latestPosts']->every(fn (Post $post): bool => $post->relationLoaded('category')))
+        ->toBeTrue()
+        ->and($data['planningPosts']->sole()
+            ->relationLoaded('category'))
+        ->toBeTrue()
+        ->and($data['planningPosts']->sole()
+            ->category_label)
+        ->toBe('Disney Tips');
 });
 
 test('homepage planning posts come only from the three planning categories', function (string $slug): void {
     config()->set('mouse28.guides_enabled', true);
-    $planningPost = Post::factory()->inCategory($slug)->create(['published_at' => now()->subDays(2)]);
-    Post::factory()->inCategory('general')->create(['published_at' => now()->subDay()]);
+    $planningPost = Post::factory()
+        ->inCategory($slug)
+        ->create(['published_at' => now()->subDays(2)]);
+    Post::factory()
+        ->inCategory('general')
+        ->create(['published_at' => now()->subDay()]);
     Post::factory()->create(['published_at' => now()->subHour()]);
     Post::factory()->create(['category_id' => null]);
 
@@ -78,10 +99,19 @@ test('homepage planning posts come only from the three planning categories', fun
 
 test('homepage planning posts are the two newest published planning stories', function (): void {
     config()->set('mouse28.guides_enabled', true);
-    $newest = Post::factory()->inCategory('autism-awareness')->create(['published_at' => now()->subDay()]);
-    $second = Post::factory()->inCategory('park-accessibility')->create(['published_at' => now()->subDays(2)]);
-    Post::factory()->inCategory('disney-tips')->create(['published_at' => now()->subDays(3)]);
-    Post::factory()->inCategory('disney-tips')->draft()->create();
+    $newest = Post::factory()
+        ->inCategory('autism-awareness')
+        ->create(['published_at' => now()->subDay()]);
+    $second = Post::factory()
+        ->inCategory('park-accessibility')
+        ->create(['published_at' => now()->subDays(2)]);
+    Post::factory()
+        ->inCategory('disney-tips')
+        ->create(['published_at' => now()->subDays(3)]);
+    Post::factory()
+        ->inCategory('disney-tips')
+        ->draft()
+        ->create();
 
     $data = app(HomeViewModel::class)->data();
 
@@ -90,7 +120,9 @@ test('homepage planning posts are the two newest published planning stories', fu
 
 test('homepage lists break publish-time ties by id so their order is stable on MySQL', function (): void {
     config()->set('mouse28.guides_enabled', true);
-    Post::factory()->count(3)->create();
+    Post::factory()
+        ->count(3)
+        ->create();
     Episode::factory()->create();
     Guide::factory()->create();
 
@@ -98,4 +130,19 @@ test('homepage lists break publish-time ties by id so their order is stable on M
 
     expect($orderings)->not->toBeEmpty()
         ->each->toMatch(STABLE_PUBLISH_TIME_ORDER);
+});
+
+test('homepage planning posts follow the configured planning categories', function (): void {
+    config()->set('mouse28.guides_enabled', true);
+    config()->set('mouse28.home_planning_category_slugs', ['food-reviews']);
+    $planningPost = Post::factory()
+        ->inCategory('food-reviews')
+        ->create();
+    Post::factory()
+        ->inCategory('disney-tips')
+        ->create();
+
+    $data = app(HomeViewModel::class)->data();
+
+    expect($data['planningPosts']->modelKeys())->toBe([$planningPost->id]);
 });

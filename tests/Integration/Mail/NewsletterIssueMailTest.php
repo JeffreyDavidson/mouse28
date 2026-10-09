@@ -3,6 +3,7 @@
 use App\Mail\NewsletterIssueMail;
 use App\Models\NewsletterIssue;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\URL;
 
 covers(NewsletterIssueMail::class);
 
@@ -38,6 +39,13 @@ test('raw HTML and unsafe links in the content never reach the email', function 
         ->assertDontSeeInHtml('javascript:', false);
 });
 
+test('a single line break in the content stays a soft break in the email html', function (): void {
+    $mail = new NewsletterIssueMail(issueForMail("First line\nSecond line"), 'https://example.test/unsubscribe');
+
+    $mail->assertSeeInHtml("First line\nSecond line", false)
+        ->assertDontSeeInHtml('First line<br', false);
+});
+
 test('a reader email offers one-click unsubscribe and a duplicate-proof key', function (): void {
     $unsubscribeUrl = 'https://example.test/newsletter/unsubscribe/1?signature=abc';
 
@@ -55,7 +63,8 @@ test('a test email is marked and carries no unsubscribe headers', function (): v
 
     $mail->assertSeeInHtml('This is a test email')
         ->assertSeeInText('This is a test email');
-    expect($mail->headers()->text)->toBeEmpty();
+    expect($mail->headers()
+        ->text)->toBeEmpty();
 });
 
 test('relative links and images become absolute in the html and text parts', function (): void {
@@ -74,6 +83,19 @@ test('relative links and images become absolute in the html and text parts', fun
         ->assertDontSeeInText('](/');
 });
 
+test('spaces inside angle-bracket link destinations are trimmed in the html and text parts', function (): void {
+    config()->set('app.url', 'https://example.test');
+    $issue = issueForMail("[Post](< /blog/z >)\n\n![Pic](< /storage/pic.png >)");
+
+    $mail = new NewsletterIssueMail($issue, 'https://example.test/unsubscribe');
+
+    $mail->assertSeeInHtml('href="https://example.test/blog/z"', false)
+        ->assertSeeInHtml('src="https://example.test/storage/pic.png"', false)
+        ->assertDontSeeInHtml('%20', false)
+        ->assertSeeInText('[Post](<https://example.test/blog/z>)')
+        ->assertSeeInText('![Pic](<https://example.test/storage/pic.png>)');
+});
+
 test('absolute, mailto, tel, anchor and protocol-relative links are left alone', function (): void {
     config()->set('app.url', 'https://example.test');
     $markdown = '[A](https://other.test/a) [B](mailto:me@example.com) [C](tel:+15555550100) [D](#section) [E](//cdn.test/e)';
@@ -87,3 +109,18 @@ test('absolute, mailto, tel, anchor and protocol-relative links are left alone',
         ->assertSeeInHtml('href="//cdn.test/e"', false)
         ->assertSeeInText($markdown);
 });
+
+test('an issue email html matches its snapshot for readers and for tests', function (?string $unsubscribeUrl): void {
+    URL::forceRootUrl('https://mouse28.test');
+    URL::forceScheme('https');
+
+    $html = new NewsletterIssueMail(issueForMail("## Park day\n\nHello **readers**.\n\n> A quote"), $unsubscribeUrl)->render();
+
+    // Indentation and blank lines are not compared, so moving markup into a layout keeps the snapshot.
+    $lines = array_filter(array_map(trim(...), explode("\n", $html)), fn (string $line): bool => $line !== '');
+
+    expect(implode("\n", $lines))->toMatchSnapshot();
+})->with([
+    'reader' => ['https://mouse28.test/newsletter/unsubscribe/1?signature=abc'],
+    'test email' => [null],
+]);

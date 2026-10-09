@@ -14,21 +14,29 @@ covers(RepairResponsiveImages::class);
 
 pest()->use(RefreshDatabase::class);
 
-beforeEach(function (): void {
-    Storage::fake('public');
-});
-
 test('it repairs variants for posts, episodes, guides and the podcast, then verifies them', function (): void {
-    $wide = UploadedFile::fake()->image('wide.png', 1000, 520)->getContent();
+    $wide = UploadedFile::fake()
+        ->image('wide.png', 1000, 520)
+        ->getContent();
     Storage::disk('public')->put('posts/post.png', $wide);
     Storage::disk('public')->put('posts/responsive/post-1280.webp', 'obsolete');
     Storage::disk('public')->put('episodes/episode.png', $wide);
     Storage::disk('public')->put('guides/guide.png', $wide);
     Storage::disk('public')->put('podcast/cover.png', $wide);
-    Post::factory()->create()->forceFill(['featured_image_path' => 'posts/post.png'])->saveQuietly();
-    Episode::factory()->create()->forceFill(['featured_image_path' => 'episodes/episode.png'])->saveQuietly();
-    Guide::factory()->create()->forceFill(['featured_image_path' => 'guides/guide.png'])->saveQuietly();
-    primaryPodcast()->forceFill(['cover_image_path' => 'podcast/cover.png'])->saveQuietly();
+    Post::factory()
+        ->create()
+        ->forceFill(['featured_image_path' => 'posts/post.png'])
+        ->saveQuietly();
+    Episode::factory()
+        ->create()
+        ->forceFill(['featured_image_path' => 'episodes/episode.png'])
+        ->saveQuietly();
+    Guide::factory()
+        ->create()
+        ->forceFill(['featured_image_path' => 'guides/guide.png'])
+        ->saveQuietly();
+    primaryPodcast()->forceFill(['cover_image_path' => 'podcast/cover.png'])
+        ->saveQuietly();
     app(ResponsiveImageVariants::class)->generate('podcast/cover.png');
 
     pendingCommand('media:repair-responsive-images')
@@ -54,9 +62,17 @@ test('it repairs variants for posts, episodes, guides and the podcast, then veri
 
 test('it repairs the remaining media before reporting a failure', function (): void {
     Storage::disk('public')->put('posts/broken.png', 'not an image');
-    Storage::disk('public')->put('guides/guide.png', UploadedFile::fake()->image('guide.png', 800, 45)->getContent());
-    Post::factory()->create()->forceFill(['featured_image_path' => 'posts/broken.png'])->saveQuietly();
-    Guide::factory()->create()->forceFill(['featured_image_path' => 'guides/guide.png'])->saveQuietly();
+    Storage::disk('public')->put('guides/guide.png', UploadedFile::fake()
+        ->image('guide.png', 800, 45)
+        ->getContent());
+    Post::factory()
+        ->create()
+        ->forceFill(['featured_image_path' => 'posts/broken.png'])
+        ->saveQuietly();
+    Guide::factory()
+        ->create()
+        ->forceFill(['featured_image_path' => 'guides/guide.png'])
+        ->saveQuietly();
 
     pendingCommand('media:repair-responsive-images')
         ->expectsOutputToContain('Generated responsive images for 1 guide.')

@@ -20,10 +20,12 @@ test('external public fonts match the stylesheet and contain WOFF2 data', functi
     sort($externalFonts);
 
     expect($stylesheetFonts)->not->toBeEmpty()
-        ->and($externalFonts)->toBe($stylesheetFonts);
+        ->and($externalFonts)
+        ->toBe($stylesheetFonts);
 
     foreach ($externalFonts as $font) {
         expect($root.'/public'.$font)->toBeFile()
-            ->and(file_get_contents($root.'/public'.$font, false, null, 0, 4))->toBe('wOF2');
+            ->and(file_get_contents($root.'/public'.$font, false, null, 0, 4))
+            ->toBe('wOF2');
     }
 });

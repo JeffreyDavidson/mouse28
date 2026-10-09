@@ -18,5 +18,6 @@ test('contact message data retains typed fields through serialization', function
     }
 
     expect($restored)->toEqual($data)
-        ->and($restored->type)->toBe(ContactType::Accessibility);
+        ->and($restored->type)
+        ->toBe(ContactType::Accessibility);
 });

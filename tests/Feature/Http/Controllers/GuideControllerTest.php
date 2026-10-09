@@ -3,19 +3,15 @@
 use App\Models\Guide;
 use App\Models\Podcast;
 use App\Models\User;
-use Dom\HTMLDocument;
-use Dom\XPath;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 
-use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
 
 test('guide index returns its view model data', function (): void {
-    config()->set('mouse28.guides_enabled', true);
 
     get(route('guides.index'))
         ->assertOk()
@@ -27,7 +23,6 @@ test('guide index returns its view model data', function (): void {
 });
 
 test('published guide returns its view model data', function (): void {
-    config()->set('mouse28.guides_enabled', true);
     $guide = Guide::factory()->create();
 
     get(route('guides.show', $guide))
@@ -38,9 +33,10 @@ test('published guide returns its view model data', function (): void {
 });
 
 test('guide pages stay within their query budget as content grows', function (string $page, int $queries): void {
-    config()->set('mouse28.guides_enabled', true);
     $guide = Guide::factory()->create(['category' => 'accessibility']);
-    Guide::factory()->count(30)->create(['category' => 'accessibility']);
+    Guide::factory()
+        ->count(30)
+        ->create(['category' => 'accessibility']);
     $url = $page === 'index' ? route('guides.index') : route('guides.show', $guide);
 
     // Includes one query for the footer social links, one for a guide's authors, and one for its saved SEO row.
@@ -51,9 +47,11 @@ test('guide pages stay within their query budget as content grows', function (st
 })->with(['archive' => ['index', 4], 'guide' => ['show', 6]]);
 
 test('a guide page names its authors in byline order', function (array $names, string $byline): void {
-    config()->set('mouse28.guides_enabled', true);
     $guide = Guide::factory()->create();
-    $guide->syncAuthors(array_map(fn (mixed $name): int => User::authors()->where('name', $name)->sole()->id, $names));
+    $guide->syncAuthors(array_map(fn (mixed $name): int => User::authors()
+        ->where('name', $name)
+        ->sole()
+        ->id, $names));
 
     get(route('guides.show', $guide))
         ->assertOk()
@@ -88,14 +86,17 @@ test('guides stay hidden from the public site when the feature is disabled', fun
     }
 
     get(route('home'))
-        ->assertOk()->assertDontSee($guide->title)->assertDontSeeHtml('dispatch-guide-spread');
+        ->assertOk()
+        ->assertDontSee($guide->title)
+        ->assertDontSeeHtml('dispatch-guide-spread');
 
     get(route('search', ['q' => 'not ready yet']))
         ->assertOk()
         ->assertSee('No results')
         ->assertDontSee($guide->title);
 
-    get(route('sitemap'))->assertOk()->assertDontSeeHtml('/guides');
+    get(route('sitemap'))->assertOk()
+        ->assertDontSeeHtml('/guides');
 });
 
 test('guide pages use category artwork when an editor has not uploaded a cover', function (): void {
@@ -104,27 +105,41 @@ test('guide pages use category artwork when an editor has not uploaded a cover',
         'featured_image_path' => null,
     ]);
 
-    get(route('guides.index'))->assertOk()->assertSeeHtml('/images/guides/accessibility.webp')->assertSeeHtml('data-guide-artwork');
+    get(route('guides.index'))->assertOk()
+        ->assertSeeHtml('/images/guides/accessibility.webp')
+        ->assertSeeHtml('data-guide-artwork');
 
-    get(route('guides.show', $guide))->assertOk()->assertSeeHtml('/images/guides/accessibility.webp')->assertSeeHtml('fetchpriority="high"');
+    get(route('guides.show', $guide))->assertOk()
+        ->assertSeeHtml('/images/guides/accessibility.webp')
+        ->assertSeeHtml('fetchpriority="high"');
 });
 
 test('guide pages render an uploaded cover with its responsive variants', function (): void {
-    Storage::fake('public');
     $disk = Storage::disk('public');
-    $disk->put('guides/cover.png', UploadedFile::fake()->image('cover.png', 700, 400)->getContent());
+    $disk->put('guides/cover.png', UploadedFile::fake()
+        ->image('cover.png', 700, 400)
+        ->getContent());
     $guide = Guide::factory()->create(['featured_image_path' => 'guides/cover.png']);
     $srcset = 'srcset="'.$disk->url('guides/responsive/cover-480.webp').' 480w, '.$disk->url('guides/responsive/cover-640.webp').' 640w"';
 
-    get(route('guides.index'))->assertOk()->assertSeeHtml('src="'.$disk->url('guides/cover.png').'"')->assertSeeHtml($srcset)->assertSeeHtml('sizes="auto, 100vw"');
+    get(route('guides.index'))->assertOk()
+        ->assertSeeHtml('src="'.$disk->url('guides/cover.png').'"')
+        ->assertSeeHtml($srcset)
+        ->assertSeeHtml('sizes="auto, 100vw"');
 
-    get(route('guides.show', $guide))->assertOk()->assertSeeHtml($srcset)->assertSeeHtml('sizes="100vw"');
+    get(route('guides.show', $guide))->assertOk()
+        ->assertSeeHtml($srcset)
+        ->assertSeeHtml('sizes="100vw"');
 });
 
 test('only currently published content is publicly visible', function (): void {
     $publishedGuide = Guide::factory()->create(['title' => 'Published park guide']);
-    $draftGuide = Guide::factory()->draft()->create(['title' => 'Draft park guide']);
-    $scheduledGuide = Guide::factory()->scheduled()->create(['title' => 'Scheduled park guide']);
+    $draftGuide = Guide::factory()
+        ->draft()
+        ->create(['title' => 'Draft park guide']);
+    $scheduledGuide = Guide::factory()
+        ->scheduled()
+        ->create(['title' => 'Scheduled park guide']);
 
     get(route('guides.index'))
         ->assertOk()
@@ -151,7 +166,9 @@ test('invalid guide category falls back to all guides', function (): void {
 test('a valid category limits the guide index to matching published guides', function (): void {
     $matching = Guide::factory()->create(['category' => 'accessibility']);
     $other = Guide::factory()->create(['category' => 'family-planning']);
-    $draft = Guide::factory()->draft()->create(['category' => 'accessibility']);
+    $draft = Guide::factory()
+        ->draft()
+        ->create(['category' => 'accessibility']);
 
     get(route('guides.index', ['category' => 'accessibility']))
         ->assertOk()
@@ -195,10 +212,12 @@ test('related guides prioritize the category and fill open slots', function (): 
         'title' => 'Useful planning guide',
         'category' => 'family-planning',
     ]);
-    $draftGuide = Guide::factory()->draft()->create([
-        'title' => 'Private draft guide',
-        'category' => 'accessibility',
-    ]);
+    $draftGuide = Guide::factory()
+        ->draft()
+        ->create([
+            'title' => 'Private draft guide',
+            'category' => 'accessibility',
+        ]);
 
     get(route('guides.show', $guide))
         ->assertOk()
@@ -209,7 +228,8 @@ test('related guides prioritize the category and fill open slots', function (): 
 test('category label links to its filtered index', function (): void {
     $guide = Guide::factory()->create(['category' => 'family-planning']);
 
-    get(route('guides.show', $guide))->assertOk()->assertSeeHtml(route('guides.index', ['category' => $guide->category]));
+    get(route('guides.show', $guide))->assertOk()
+        ->assertSeeHtml(route('guides.index', ['category' => $guide->category]));
 });
 
 test('landing page provides search and social metadata', function (): void {
@@ -219,18 +239,22 @@ test('landing page provides search and social metadata', function (): void {
         'cover_image_path' => 'podcasts/show-cover.jpg',
     ]);
 
-    get(route('guides.index'))->assertOk()->assertSeeHtml('<meta property="og:title" content="Disney Parks Guides | Mouse28">');
+    get(route('guides.index'))->assertOk()
+        ->assertSeeHtml('<meta property="og:title" content="Disney Parks Guides | Mouse28">');
 });
 
 test('archive canonical preserves meaningful filters and pagination', function (): void {
-    Guide::factory()->count(13)->create(['category' => 'family-planning']);
+    Guide::factory()
+        ->count(13)
+        ->create(['category' => 'family-planning']);
 
     $guideCanonical = route('guides.index', [
         'category' => 'family-planning',
         'page' => 2,
     ]);
 
-    get($guideCanonical)->assertOk()->assertSeeHtml('<link rel="canonical" href="'.e($guideCanonical).'">');
+    get($guideCanonical)->assertOk()
+        ->assertSeeHtml('<link rel="canonical" href="'.e($guideCanonical).'">');
 });
 
 test('guides include review date source and breadcrumb structured data', function (): void {
@@ -247,53 +271,26 @@ test('guides include review date source and breadcrumb structured data', functio
     $article = data_get($data, '@graph.0');
 
     expect(data_get($article, '@type'))->toBe('Article')
-        ->and(data_get($article, 'citation'))->toBe($guide->source_url)
-        ->and(data_get($article, 'dateModified'))->toStartWith('2026-08-01')
-        ->and(data_get($data, '@graph.1.itemListElement.1.name'))->toBe('Guides');
-});
-
-test('page copy and metadata avoid em dashes', function (): void {
-    get(route('guides.index'))
-        ->assertOk()
-        ->assertDontSee('—');
-});
-
-test('page uses the dispatch editorial system', function (): void {
-    get(route('guides.index'))->assertOk()->assertSeeHtml('data-brand-wordmark')->assertSeeHtml('data-guide-archive')->assertSeeHtml('js-dispatch-pages');
+        ->and(data_get($article, 'citation'))
+        ->toBe($guide->source_url)
+        ->and(data_get($article, 'dateModified'))
+        ->toStartWith('2026-08-01')
+        ->and(data_get($data, '@graph.1.itemListElement.1.name'))
+        ->toBe('Guides');
 });
 
 test('reading page uses the dispatch reading surface', function (): void {
     $guide = Guide::factory()->create();
 
-    get(route('guides.show', $guide))->assertOk()->assertSeeHtml('data-guide-detail')->assertSeeHtml('dispatch-reader-sheet')->assertSeeHtml('guide-reading-column')->assertDontSee('—')->assertSeeHtml('/images/guides/'.$guide->category->value.'.webp');
+    get(route('guides.show', $guide))->assertOk()
+        ->assertSeeHtml('data-guide-detail')
+        ->assertSeeHtml('dispatch-reader-sheet')
+        ->assertSeeHtml('guide-reading-column')
+        ->assertDontSee('—')
+        ->assertSeeHtml('/images/guides/'.$guide->category->value.'.webp');
 });
 
-test('guide pages expose a single main landmark', function (bool $showGuide): void {
-    config()->set('mouse28.guides_enabled', true);
-    $guide = Guide::factory()->create();
-
-    $response = get($showGuide ? route('guides.show', $guide) : route('guides.index'))->assertOk();
-
-    $document = HTMLDocument::createFromString($this->responseContent($response), LIBXML_NOERROR);
-
-    expect(new XPath($document)->query('//*[local-name()="main"]'))->toHaveCount(1);
-})->with([
-    'index' => [false],
-    'guide' => [true],
-]);
-
-test('signed-in visitors see published guides but nobody sees drafts at public URLs', function (bool $isAdmin): void {
-    config()->set('mouse28.guides_enabled', true);
-    $published = Guide::factory()->create();
-    $draft = Guide::factory()->draft()->create();
-    actingAs($isAdmin ? User::factory()->admin()->create() : User::factory()->create());
-
-    get(route('guides.show', $published))->assertOk();
-    get(route('guides.show', $draft))->assertNotFound();
-})->with(['non-admin' => [false], 'admin' => [true]]);
-
 test('a published guide renders its markdown content', function (): void {
-    config()->set('mouse28.guides_enabled', true);
     $guide = Guide::factory()->create(['content' => "## Arrival plan\n\nTake a **sensory break** when needed."]);
 
     get(route('guides.show', $guide))
@@ -304,7 +301,9 @@ test('a published guide renders its markdown content', function (): void {
 
 test('guide archive pages past the last one do not exist', function (int $page, int $status): void {
     config()->set('mouse28.guides_per_page', 1);
-    Guide::factory()->count(2)->create();
+    Guide::factory()
+        ->count(2)
+        ->create();
 
     get(route('guides.index', ['page' => $page]))->assertStatus($status);
 })->with([

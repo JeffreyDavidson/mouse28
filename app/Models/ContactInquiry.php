@@ -8,6 +8,8 @@ use App\Enums\ContactInquiryStatus;
 use App\Enums\ContactType;
 use Database\Factories\ContactInquiryFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
@@ -16,6 +18,8 @@ use Illuminate\Support\Facades\Date;
  * A message sent through the public contact form. Contact details are encrypted
  * at rest. Inquiries are kept until an administrator deletes them, so this model
  * is intentionally not prunable (The Laravel Architect prunes; see .ai/rules/models.md).
+ *
+ * @method static Builder<static> new()
  *
  * @property ContactType $type
  * @property ContactInquiryStatus $status
@@ -39,7 +43,23 @@ class ContactInquiry extends Model
      * Resend keeps idempotency keys for 24 hours, so emails are only retried
      * within 23 hours of submission; later resends could deliver duplicates.
      */
-    private const int EMAIL_RETRY_WINDOW_HOURS = 23;
+    public const int EMAIL_RETRY_WINDOW_HOURS = 23;
+
+    /**
+     * Inquiries nobody has opened yet.
+     *
+     * @param  Builder<static>  $query
+     */
+    #[Scope]
+    protected function new(Builder $query): void
+    {
+        $query->where('status', ContactInquiryStatus::New);
+    }
+
+    public function isNew(): bool
+    {
+        return $this->status === ContactInquiryStatus::New;
+    }
 
     /**
      * Whether the provider still honours the idempotency keys for this inquiry's emails.

@@ -21,10 +21,14 @@ use function Pest\Laravel\actingAs;
 
 test('newsletter subscriber statuses remain readable on desktop and mobile', function (): void {
     // Arrange
-    actingAs(User::factory()->admin()->create());
+    actingAsAdmin();
     Subscriber::factory()->create(['email' => 'active@example.com']);
-    Subscriber::factory()->pending()->create(['email' => 'waiting@example.com']);
-    Subscriber::factory()->unsubscribed()->create(['email' => 'left@example.com']);
+    Subscriber::factory()
+        ->pending()
+        ->create(['email' => 'waiting@example.com']);
+    Subscriber::factory()
+        ->unsubscribed()
+        ->create(['email' => 'left@example.com']);
 
     // Act
     $page = visit(SubscriberResource::getUrl());
@@ -50,7 +54,7 @@ test('newsletter subscriber statuses remain readable on desktop and mobile', fun
 
 test('newsletter subscriber table and pagination use the full available width', function (): void {
     // Arrange
-    actingAs(User::factory()->admin()->create());
+    actingAsAdmin();
     Subscriber::factory()->create();
 
     // Act
@@ -86,7 +90,7 @@ test('newsletter subscriber table and pagination use the full available width', 
 
 test('mobile admin user menu meets the minimum touch target', function (): void {
     // Arrange
-    actingAs(User::factory()->admin()->create());
+    actingAsAdmin();
 
     // Act
     $page = visit(PodcastSettings::getUrl());
@@ -191,7 +195,7 @@ function filamentDropdownAriaStateScript(string $triggerSelector, bool $isExpand
 
 test('user menu keeps expanded state on its button and closes with Escape', function (): void {
     // Arrange
-    actingAs(User::factory()->admin()->create());
+    actingAsAdmin();
 
     // Act
     $page = visit(PodcastSettings::getUrl());
@@ -208,7 +212,7 @@ test('user menu keeps expanded state on its button and closes with Escape', func
 
 test('column manager keeps expanded state on its button and closes with Escape', function (): void {
     // Arrange
-    actingAs(User::factory()->admin()->create());
+    actingAsAdmin();
     Post::factory()->create();
 
     // Act
@@ -226,7 +230,7 @@ test('column manager keeps expanded state on its button and closes with Escape',
 
 test('table pagination selects have an accessible name', function (): void {
     // Arrange
-    actingAs(User::factory()->admin()->create());
+    actingAsAdmin();
     Post::factory()->create();
 
     // Act
@@ -247,7 +251,7 @@ test('table pagination selects have an accessible name', function (): void {
 
 test('related episodes combobox exposes an accessible searchable listbox', function (): void {
     // Arrange
-    actingAs(User::factory()->admin()->create());
+    actingAsAdmin();
     Episode::factory()->create(['title' => 'Example Episode']);
 
     // Act
@@ -310,7 +314,7 @@ test('related episodes combobox exposes an accessible searchable listbox', funct
 
 test('mobile resource status tabs scroll without overlapping labels', function (): void {
     // Arrange
-    actingAs(User::factory()->admin()->create());
+    actingAsAdmin();
 
     $pages = [
         PostResource::getUrl(),
@@ -352,7 +356,7 @@ test('mobile resource status tabs scroll without overlapping labels', function (
 
 test('mobile table filter reset and checkbox labels meet the minimum touch target', function (): void {
     // Arrange
-    actingAs(User::factory()->admin()->create());
+    actingAsAdmin();
     Post::factory()->create();
 
     // Act
@@ -391,7 +395,7 @@ test('mobile table filter reset and checkbox labels meet the minimum touch targe
 
 test('table filter dropdown keeps its expanded state on the trigger button', function (): void {
     // Arrange
-    actingAs(User::factory()->admin()->create());
+    actingAsAdmin();
     Post::factory()->create();
 
     // Act
@@ -415,7 +419,7 @@ test('table filter dropdown keeps its expanded state on the trigger button', fun
 
 test('mobile Filament controls meet the minimum touch target across admin pages', function (): void {
     // Arrange
-    actingAs(User::factory()->admin()->create());
+    actingAsAdmin();
     Post::factory()->create(['published_at' => now()]);
     Episode::factory()->create();
     Guide::factory()->create();
@@ -479,10 +483,14 @@ function unexpectedAdminJavaScriptErrorCountScript(): string
 
 test('dashboard remains readable with long content on desktop and mobile', function (): void {
     // Arrange
-    actingAs(User::factory()->admin()->create(['name' => 'Alex Example']));
-    Post::factory()->draft()->create([
-        'title' => 'A sample story about making a family afternoon easier to plan',
-    ]);
+    actingAs(User::factory()
+        ->admin()
+        ->create(['name' => 'Alex Example']));
+    Post::factory()
+        ->draft()
+        ->create([
+            'title' => 'A sample story about making a family afternoon easier to plan',
+        ]);
 
     // Act
     $page = visit(Dashboard::getUrl(panel: 'admin'));
@@ -534,7 +542,6 @@ test('admin login controls remain usable on narrow screens', function (): void {
 })->group('browser-smoke');
 
 test('authenticated admin pages expose no unnamed artwork or decorative glyphs', function (): void {
-    $user = User::factory()->admin()->create();
     $post = Post::factory()->create();
     $guide = Guide::factory()->create();
     $episode = Episode::factory()->create();
@@ -546,7 +553,7 @@ test('authenticated admin pages expose no unnamed artwork or decorative glyphs',
         'message' => 'Could you share your accessibility planning tips?',
     ]);
 
-    actingAs($user);
+    actingAsAdmin();
 
     $urls = [
         Dashboard::getUrl(panel: 'admin'),
@@ -583,7 +590,7 @@ test('authenticated admin pages expose no unnamed artwork or decorative glyphs',
 })->group('browser-smoke');
 
 test('dashboard Quick Draft loads without Livewire entanglement errors', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAsAdmin();
 
     visit(Dashboard::getUrl(panel: 'admin'))
         ->assertSee('Quick Draft')
@@ -595,7 +602,7 @@ test('dashboard Quick Draft loads without Livewire entanglement errors', functio
 })->group('browser-smoke');
 
 test('episode resource header and table remain usable on narrow screens', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAsAdmin();
     Episode::factory()->create(['title' => 'Example Episode']);
 
     $page = visit(EpisodeResource::getUrl());

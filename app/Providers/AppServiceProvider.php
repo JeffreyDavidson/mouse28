@@ -17,6 +17,7 @@ use App\Support\PrimaryPodcast;
 use App\Support\SafeReturnUrl;
 use App\View\Composers\PodcastComposer;
 use App\View\Composers\SocialProfilesComposer;
+use Filament\Support\Events\FilamentUpgraded;
 use Filament\Support\Facades\FilamentTimezone;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
@@ -25,6 +26,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
@@ -68,6 +70,20 @@ class AppServiceProvider extends ServiceProvider
             }
         });
 
+        // Filament publishes assets through Filesystem::replace(), which marks them executable (0777 minus the umask).
+        // Restore the committed 0644 so `composer install` (via filament:upgrade) leaves git clean.
+        Event::listen(FilamentUpgraded::class, function (): void {
+            foreach (['css/filament', 'fonts/filament', 'js/filament'] as $directory) {
+                if (! File::isDirectory(public_path($directory))) {
+                    continue;
+                }
+
+                foreach (File::allFiles(public_path($directory)) as $file) {
+                    File::chmod($file->getPathname(), 0644);
+                }
+            }
+        });
+
         View::composer('components.layouts.app', PodcastComposer::class);
         View::composer('components.layouts.app', SocialProfilesComposer::class);
 
@@ -78,13 +94,17 @@ class AppServiceProvider extends ServiceProvider
 
         FilamentTimezone::set(DisplayTimezone::name(...));
 
-        RateLimiter::for('contact-form', fn (Request $request) => Limit::perMinute(Config::integer('mouse28.rate_limits.contact_form_per_minute'))->by($request->ip())->response(fn (Request $request) => redirect()->route('contact.create')
-            ->withErrors(['contact_rate_limit' => 'Too many contact attempts. Please wait a minute and try again.'], 'contact')
-            ->withInput($request->only(['name', 'email', 'type', 'message']))));
+        RateLimiter::for('contact-form', fn (Request $request) => Limit::perMinute(Config::integer('mouse28.rate_limits.contact_form_per_minute'))
+            ->by($request->ip())
+            ->response(fn (Request $request) => redirect()->route('contact.create')
+                ->withErrors(['contact_rate_limit' => 'Too many contact attempts. Please wait a minute and try again.'], 'contact')
+                ->withInput($request->only(['name', 'email', 'type', 'message']))));
 
-        RateLimiter::for('newsletter', fn (Request $request) => Limit::perMinute(Config::integer('mouse28.rate_limits.newsletter_per_minute'))->by($request->ip())->response(fn (Request $request) => redirect(SafeReturnUrl::from($request, route('home')).'#newsletter')
-            ->withErrors(['newsletter_rate_limit' => 'Too many signup attempts. Please wait a minute and try again.'], 'newsletter')
-            ->withInput($request->only('email'))));
+        RateLimiter::for('newsletter', fn (Request $request) => Limit::perMinute(Config::integer('mouse28.rate_limits.newsletter_per_minute'))
+            ->by($request->ip())
+            ->response(fn (Request $request) => redirect(SafeReturnUrl::from($request, route('home')).'#newsletter')
+                ->withErrors(['newsletter_rate_limit' => 'Too many signup attempts. Please wait a minute and try again.'], 'newsletter')
+                ->withInput($request->only('email'))));
 
         RateLimiter::for('newsletter-delivery', fn (): Limit => Limit::perSecond(Config::integer('mouse28.rate_limits.newsletter_delivery_per_second')));
 

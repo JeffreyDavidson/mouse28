@@ -2,13 +2,14 @@
 
 namespace App\Livewire;
 
+use App\Data\BlogFilters;
+use App\Enums\BlogSort;
 use App\Models\Category;
 use App\Models\Post;
 use App\Support\TextSearch;
 use App\ViewModels\PostIndexViewModel;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -24,33 +25,33 @@ class BlogArchive extends Component
     #[Url(history: true, except: '')]
     public string $category = '';
 
-    #[Url(history: true, except: 'newest')]
-    public string $sort = 'newest';
+    #[Url(history: true, except: BlogSort::Newest->value)]
+    public string $sort = BlogSort::Newest->value;
+
+    /**
+     * This request's normalised filters, so the metadata and the render share
+     * one category lookup. Livewire does not keep it between requests.
+     */
+    private ?BlogFilters $filters = null;
 
     public function mount(): void
     {
-        $this->normalizeFilters();
+        $this->applyFilters($this->filtersFromProperties());
     }
 
     public function updatedSearch(): void
     {
-        $this->search = $this->normalizedSearch();
-        $this->resetPage();
-        $this->dispatchMetadata(1);
+        $this->filtersChanged($this->filtersFromProperties());
     }
 
     public function updatedCategory(): void
     {
-        $this->category = $this->normalizedCategory();
-        $this->resetPage();
-        $this->dispatchMetadata(1);
+        $this->filtersChanged($this->filtersFromProperties());
     }
 
     public function updatedSort(): void
     {
-        $this->sort = $this->normalizedSort();
-        $this->resetPage();
-        $this->dispatchMetadata(1);
+        $this->filtersChanged($this->filtersFromProperties());
     }
 
     public function applySearch(): void
@@ -60,27 +61,17 @@ class BlogArchive extends Component
 
     public function clearSearch(): void
     {
-        $this->search = '';
-        $this->resetPage();
-        $this->dispatchMetadata(1);
+        $this->filtersChanged(BlogFilters::fromInput($this->category, '', $this->sort));
     }
 
     public function selectCategory(string $category): void
     {
-        $this->category = $this->existingCategorySlug($category);
-        $this->search = '';
-        $this->sort = 'newest';
-        $this->resetPage();
-        $this->dispatchMetadata(1);
+        $this->filtersChanged(BlogFilters::fromInput($category, '', BlogSort::Newest->value));
     }
 
     public function clearFilters(): void
     {
-        $this->category = '';
-        $this->search = '';
-        $this->sort = 'newest';
-        $this->resetPage();
-        $this->dispatchMetadata(1);
+        $this->filtersChanged(new BlogFilters);
     }
 
     public function updatedPaginators(int $page, string $pageName): void
@@ -92,6 +83,7 @@ class BlogArchive extends Component
 
     public function render(): View
     {
+        $filters = $this->filters();
         $cardColumns = ['id', 'slug', 'title', 'excerpt', 'content', 'category_id', 'featured_image_path', 'published_at'];
         $cardRelations = ['category:id,name,slug', 'authors:id,name'];
         $usedCategories = Category::query()
@@ -102,18 +94,23 @@ class BlogArchive extends Component
         $posts = Post::published()
             ->select($cardColumns)
             ->with($cardRelations)
-            ->when($this->category, fn (Builder $query) => $query->whereRelation('category', 'slug', $this->category))
-            ->when($this->search, fn (Builder $query) => TextSearch::constrain($query, ['title', 'excerpt', 'content'], $this->search))
-            ->orderBy('published_at', $this->sort === 'oldest' ? 'asc' : 'desc')
-            ->orderBy('id', $this->sort === 'oldest' ? 'asc' : 'desc')
+            ->when($filters->category, fn (Builder $query, Category $category) => $query->whereBelongsTo($category))
+            ->when($filters->search, fn (Builder $query, string $search) => TextSearch::constrain($query, ['title', 'excerpt', 'content'], $search))
+            ->orderBy('published_at', $filters->sort->direction())
+            ->orderBy('id', $filters->sort->direction())
             ->paginate(Config::integer('mouse28.blog_posts_per_page'));
 
-        $featuredPost = $this->hasDefaultFilters() && $posts->currentPage() === 1
+        $featuredPost = $filters->isDefault() && $posts->currentPage() === 1
             ? $posts->first()
-            : Post::published()->select($cardColumns)->with($cardRelations)->latest('published_at')->latest('id')->first();
+            : Post::published()
+                ->select($cardColumns)
+                ->with($cardRelations)
+                ->newestFirst()
+                ->first();
 
-        $archivePosts = $featuredPost && $this->hasDefaultFilters()
-            ? $posts->getCollection()->reject(fn (Post $post): bool => $post->is($featuredPost))
+        $archivePosts = $featuredPost && $filters->isDefault()
+            ? $posts->getCollection()
+                ->reject(fn (Post $post): bool => $post->is($featuredPost))
             : $posts->getCollection();
 
         return view('livewire.blog-archive', [
@@ -122,56 +119,42 @@ class BlogArchive extends Component
             'archivePosts' => $archivePosts,
             'hasAnyPosts' => $featuredPost !== null,
             'usedCategories' => $usedCategories,
-            'selectedCategoryName' => $this->category === ''
-                ? null
-                : Category::query()->where('slug', $this->category)->value('name'),
+            'selectedCategoryName' => $filters->category?->name,
         ]);
     }
 
-    private function normalizeFilters(): void
+    private function filtersChanged(BlogFilters $filters): void
     {
-        $this->search = $this->normalizedSearch();
-        $this->category = $this->normalizedCategory();
-        $this->sort = $this->normalizedSort();
+        $this->applyFilters($filters);
+        $this->resetPage();
+        $this->dispatchMetadata(1);
     }
 
-    private function normalizedSearch(): string
+    /** Writes the normalised filters back to the URL-bound properties. */
+    private function applyFilters(BlogFilters $filters): void
     {
-        return Str::of($this->search)->trim()->limit(100, '')->toString();
+        $this->filters = $filters;
+        $this->category = $filters->categorySlug();
+        $this->search = $filters->search;
+        $this->sort = $filters->sort->value;
     }
 
-    private function normalizedCategory(): string
+    /** The filters for a request with no filter update, such as a page change. */
+    private function filters(): BlogFilters
     {
-        return $this->existingCategorySlug($this->category);
+        return $this->filters ??= $this->filtersFromProperties();
     }
 
-    /** The slug when a category with it exists, otherwise an empty string (all stories). */
-    private function existingCategorySlug(string $slug): string
+    private function filtersFromProperties(): BlogFilters
     {
-        if ($slug === '') {
-            return '';
-        }
-
-        $existingSlug = Category::query()->where('slug', $slug)->value('slug');
-
-        return is_string($existingSlug) ? $existingSlug : '';
-    }
-
-    private function normalizedSort(): string
-    {
-        return in_array($this->sort, ['newest', 'oldest'], true) ? $this->sort : 'newest';
-    }
-
-    private function hasDefaultFilters(): bool
-    {
-        return $this->search === '' && $this->category === '' && $this->sort === 'newest';
+        return BlogFilters::fromInput($this->category, $this->search, $this->sort);
     }
 
     private function dispatchMetadata(int $page): void
     {
         $this->dispatch(
             'blog-metadata-updated',
-            ...app(PostIndexViewModel::class)->metadata($this->category, $this->search, $this->sort, $page),
+            ...app(PostIndexViewModel::class)->metadata($this->filters(), $page),
         );
     }
 }

@@ -14,13 +14,18 @@ test('Telescope pruning runs daily only on enabled staging', function (string $e
     $event = collect(app(Schedule::class)->events())->sole(fn (Event $event): bool => str_contains((string) $event->command, 'telescope:prune'));
 
     expect($event->expression)->toBe('0 0 * * *')
-        ->and($event->command)->toContain('telescope:prune', '--hours=48')
-        ->and($event->withoutOverlapping)->toBeTrue()
-        ->and($event->filtersPass($this->app))->toBe($runs);
+        ->and($event->command)
+        ->toContain('telescope:prune', '--hours=48')
+        ->and($event->withoutOverlapping)
+        ->toBeTrue()
+        ->and($event->filtersPass($this->app))
+        ->toBe($runs);
 })->with([
     'staging enabled' => ['staging', true, true],
     'staging disabled' => ['staging', false, false],
     'production' => ['production', true, false],
+    'wrong case staging' => ['Staging', true, false],
+    'unknown' => ['preview', true, false],
 ]);
 
 test('the runtime heartbeat is scheduled every minute only when runtime health is enabled', function (bool $enabled): void {
@@ -28,7 +33,8 @@ test('the runtime heartbeat is scheduled every minute only when runtime health i
     $event = collect(app(Schedule::class)->events())->sole(fn (Event $event): bool => str_starts_with((string) $event->description, 'runtime-health:heartbeat:'));
 
     expect($event->expression)->toBe('* * * * *')
-        ->and($event->filtersPass($this->app))->toBe($enabled);
+        ->and($event->filtersPass($this->app))
+        ->toBe($enabled);
 })->with(['enabled' => [true], 'disabled' => [false]]);
 
 test('the runtime heartbeat records the scheduler and probes the queue', function (): void {
@@ -48,7 +54,22 @@ test('stale newsletter readers are pruned daily on one server', function (): voi
     $event = collect(app(Schedule::class)->events())->sole(fn (Event $event): bool => str_contains((string) $event->command, 'model:prune'));
 
     expect($event->expression)->toBe('0 0 * * *')
-        ->and($event->command)->toContain('model:prune', "--model='".Subscriber::class."'")
-        ->and($event->withoutOverlapping)->toBeTrue()
-        ->and($event->onOneServer)->toBeTrue();
+        ->and($event->command)
+        ->toContain('model:prune', "--model='".Subscriber::class."'")
+        ->and($event->withoutOverlapping)
+        ->toBeTrue()
+        ->and($event->onOneServer)
+        ->toBeTrue();
 });
+
+test('a killed daily task releases its overlap lock well before its next run', function (string $command): void {
+    $event = collect(app(Schedule::class)->events())->sole(fn (Event $event): bool => str_contains((string) $event->command, $command));
+
+    expect($event->withoutOverlapping)
+        ->toBeTrue()
+        ->and($event->expiresAt)
+        ->toBe(60);
+})->with([
+    'telescope:prune',
+    'model:prune',
+]);

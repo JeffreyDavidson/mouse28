@@ -11,12 +11,10 @@ pest()->use(RefreshDatabase::class);
 
 covers(GuideObserver::class);
 
-beforeEach(function (): void {
-    Storage::fake('public');
-});
-
 test('guide images get variants that follow the image through replacement and deletion', function (): void {
-    $image = UploadedFile::fake()->image('guide.png', 1280, 8)->getContent();
+    $image = UploadedFile::fake()
+        ->image('guide.png', 1280, 8)
+        ->getContent();
     Storage::disk('public')->put('guides/old.png', $image);
     Storage::disk('public')->put('guides/new.png', $image);
 

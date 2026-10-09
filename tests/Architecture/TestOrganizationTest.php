@@ -44,6 +44,8 @@ test('test paths mirror their application source', function (string $suite): voi
     $suiteRoot = $projectRoot.'/tests/'.$suite.'/';
     $nonClassSources = [
         'TestHarnessTest.php' => 'tests/TestCase.php',
+        'PestHelpersTest.php' => 'tests/Pest.php',
+        'Scripts/CheckMethodChainingTest.php' => 'scripts/check-method-chaining.php',
         'ConsoleScheduleTest.php' => 'routes/console.php',
         'AboutTest.php' => 'routes/web.php',
         'PrivacyTest.php' => 'routes/web.php',
@@ -76,8 +78,13 @@ test('test paths mirror their application source', function (string $suite): voi
         'Database/Migrations/AddReviewFieldsToPostsTableTest.php' => 'database/migrations/2026_10_07_222557_add_review_fields_to_posts_table.php',
         'Database/Migrations/DropLegacyEpisodeMediaAndPodcastSocialColumnsTest.php' => 'database/migrations/2026_10_07_031500_drop_legacy_episode_media_and_podcast_social_columns.php',
         'Config/MediaTest.php' => 'config/media.php',
+        'Config/SearchTest.php' => 'config/search.php',
         'Http/ProductionSmokeTest.php' => 'routes/web.php',
         'Support/DeploymentSmokeClientTest.php' => 'tests/Support/DeploymentSmokeClient.php',
+        'PublicPageSeoTagsTest.php' => 'routes/web.php',
+        'View/Layouts/AppLayoutTest.php' => 'resources/views/components/layouts/app.blade.php',
+        'View/Layouts/ErrorLayoutTest.php' => 'resources/views/components/layouts/error.blade.php',
+        'PublicPageConventionsTest.php' => 'routes/web.php',
     ];
     $violations = [];
     $iterator = new RecursiveIteratorIterator(

@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Support\SitemapDocument;
+use App\Support\Feeds\SitemapRenderer;
+use App\ViewModels\SitemapViewModel;
 use Illuminate\Http\Response;
 
 class SitemapController
 {
-    public function __invoke(SitemapDocument $sitemap): Response
+    public function __invoke(SitemapViewModel $viewModel, SitemapRenderer $renderer): Response
     {
-        return response($sitemap->content(), 200, ['Content-Type' => 'application/xml']);
+        return response($renderer->render(...$viewModel->data()), 200, ['Content-Type' => 'application/xml']);
     }
 }

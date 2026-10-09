@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\ContentType;
+use App\Enums\PublishStatus;
 use App\Filament\Resources\Guides\GuideResource;
 use App\Filament\Widgets\ContentCalendar;
 use App\Models\Episode;
@@ -12,25 +14,33 @@ use Illuminate\Support\Facades\DB;
 pest()->use(RefreshDatabase::class);
 
 test('timeline includes scheduled guides', function (): void {
-    $guide = Guide::factory()->scheduled()->create([
-        'title' => 'Airport Accessibility Guide',
-        'published_at' => now()->addDays(3),
-    ]);
+    $guide = Guide::factory()
+        ->scheduled()
+        ->create([
+            'title' => 'Airport Accessibility Guide',
+            'published_at' => now()->addDays(3),
+        ]);
 
     $timeline = collect(app(ContentCalendar::class)->getTimeline())->keyBy('title');
 
     expect($timeline[$guide->title])
         ->toMatchArray([
-            'type' => 'Guide',
-            'status' => 'Scheduled',
+            'type' => ContentType::Guide,
+            'status' => PublishStatus::Scheduled,
             'url' => GuideResource::getUrl('edit', ['record' => $guide]),
         ]);
 });
 
 test('timeline queries select only fields rendered by the calendar', function (): void {
-    Post::factory()->scheduled()->create(['published_at' => now()->addDay()]);
-    Episode::factory()->scheduled()->create(['published_at' => now()->addDays(2)]);
-    Guide::factory()->scheduled()->create(['published_at' => now()->addDays(3)]);
+    Post::factory()
+        ->scheduled()
+        ->create(['published_at' => now()->addDay()]);
+    Episode::factory()
+        ->scheduled()
+        ->create(['published_at' => now()->addDays(2)]);
+    Guide::factory()
+        ->scheduled()
+        ->create(['published_at' => now()->addDays(3)]);
 
     $queries = [];
 

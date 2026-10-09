@@ -1,3 +1,5 @@
+@use('App\Enums\BlogSort')
+
 <div data-blog-browser aria-busy="false" wire:loading.attr="aria-busy">
     <section class="editorial-index-hero bg-navy text-cream relative overflow-hidden">
         <div class="relative mx-auto max-w-[86rem] px-4 py-12 sm:px-6 sm:py-16 lg:py-20">
@@ -65,7 +67,7 @@
                             @if ($category)
                                 <input type="hidden" name="category" value="{{ $category }}" />
                             @endif
-                            @if ($sort !== 'newest')
+                            @if ($sort !== BlogSort::Newest->value)
                                 <input type="hidden" name="sort" value="{{ $sort }}" />
                             @endif
                             <label for="blog-search" class="text-navy mb-2 block text-sm font-semibold"
@@ -85,7 +87,7 @@
                                 />
                                 @if ($search)
                                     <a
-                                        href="{{ route('blog.index', array_filter(['category' => $category, 'sort' => $sort !== 'newest' ? $sort : null])) }}"
+                                        href="{{ route('blog.index', array_filter(['category' => $category, 'sort' => $sort !== BlogSort::Newest->value ? $sort : null])) }}"
                                         wire:click.prevent="clearSearch"
                                         data-preserve-blog-filter-position
                                         class="text-navy/65 hover:text-purple absolute top-1/2 right-0 flex size-12 -translate-y-1/2 items-center justify-center data-loading:pointer-events-none data-loading:opacity-60"
@@ -139,8 +141,9 @@
                                     data-preserve-blog-filter-position
                                     class="border-navy/15 bg-cream text-navy focus:border-purple focus:ring-purple/20 min-h-12 w-full min-w-44 appearance-none rounded-xl border py-3 pr-12 pl-4 text-base transition-opacity outline-none focus:ring-2 data-loading:opacity-60 motion-reduce:transition-none"
                                 >
-                                    <option value="newest">Newest first</option>
-                                    <option value="oldest">Oldest first</option>
+                                    @foreach (BlogSort::cases() as $sortOption)
+                                        <option value="{{ $sortOption->value }}">{{ $sortOption->label() }}</option>
+                                    @endforeach
                                 </select>
                                 <svg data-blog-sort-chevron aria-hidden="true" class="text-navy/55 pointer-events-none absolute top-1/2 right-4 size-5 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6" />

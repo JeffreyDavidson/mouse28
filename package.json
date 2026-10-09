@@ -30,6 +30,9 @@
         "@alpinejs/csp": "^3.16.2"
     },
     "overrides": {
+        "@tailwindcss/typography": {
+            "postcss-selector-parser": "^7.1.6"
+        },
         "concurrently": {
             "shell-quote": "^1.12.0"
         }

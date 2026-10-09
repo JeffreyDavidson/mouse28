@@ -17,13 +17,18 @@ test('contact inquiries encrypt the sender name, email and message at rest', fun
         'message' => 'A question about visiting the parks.',
     ]);
 
-    $raw = DB::table('contact_inquiries')->where('id', $inquiry->id)->first(['name', 'email', 'message']);
+    $raw = DB::table('contact_inquiries')
+        ->where('id', $inquiry->id)
+        ->first(['name', 'email', 'message']);
     $inquiry->refresh();
 
     expect((array) $raw)->each->not->toBeIn(['Dale Cooper', 'dale@example.com', 'A question about visiting the parks.'])
-        ->and($inquiry->name)->toBe('Dale Cooper')
-        ->and($inquiry->email)->toBe('dale@example.com')
-        ->and($inquiry->message)->toBe('A question about visiting the parks.');
+        ->and($inquiry->name)
+        ->toBe('Dale Cooper')
+        ->and($inquiry->email)
+        ->toBe('dale@example.com')
+        ->and($inquiry->message)
+        ->toBe('A question about visiting the parks.');
 });
 
 test('contact inquiries store their type and default to the new status', function (ContactType $type): void {
@@ -37,8 +42,10 @@ test('contact inquiries store their type and default to the new status', functio
     $inquiry->refresh();
 
     expect($inquiry->type)->toBe($type)
-        ->and($inquiry->status)->toBe(ContactInquiryStatus::New)
-        ->and(DB::table('contact_inquiries')->value('type'))->toBe($type->value);
+        ->and($inquiry->status)
+        ->toBe(ContactInquiryStatus::New)
+        ->and(DB::table('contact_inquiries')->value('type'))
+        ->toBe($type->value);
 })->with(ContactType::cases());
 
 test('contact inquiries allow email retries only within 23 hours of submission', function (int $minutesAgo, bool $canRetry): void {
@@ -72,4 +79,27 @@ test('reply links percent-encode the address and type label for mail clients', f
 })->with([
     'spaces in the subject' => ['dale@example.com', ContactType::General, 'mailto:dale@example.com?subject=Re%3A%20General%20Question'],
     'query delimiters in the address' => ['dale?cc=x&y@example.com', ContactType::Other, 'mailto:dale%3Fcc%3Dx%26y@example.com?subject=Re%3A%20Other'],
+]);
+
+test('the new scope returns only inquiries that have not been opened', function (): void {
+    $new = ContactInquiry::factory()->create(['status' => ContactInquiryStatus::New]);
+    ContactInquiry::factory()->create(['status' => ContactInquiryStatus::InProgress]);
+    ContactInquiry::factory()->create(['status' => ContactInquiryStatus::Resolved]);
+
+    $ids = ContactInquiry::query()
+        ->new()
+        ->pluck('id')
+        ->all();
+
+    expect($ids)->toBe([$new->id]);
+});
+
+test('an inquiry knows whether it is new', function (ContactInquiryStatus $status, bool $expected): void {
+    $inquiry = ContactInquiry::factory()->make(['status' => $status]);
+
+    expect($inquiry->isNew())->toBe($expected);
+})->with([
+    'new' => [ContactInquiryStatus::New, true],
+    'in progress' => [ContactInquiryStatus::InProgress, false],
+    'resolved' => [ContactInquiryStatus::Resolved, false],
 ]);

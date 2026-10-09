@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PublishStatus;
 use App\Jobs\DeliverNewsletterIssue;
 use App\Mail\NewsletterIssueMail;
 use App\Models\NewsletterDelivery;
@@ -23,18 +24,23 @@ test('a delivery emails the issue with a personal unsubscribe link and is marked
 
     runDelivery($delivery);
 
-    $recipient = Subscriber::query()->findOrFail($delivery->subscriber_id)->email;
+    $recipient = Subscriber::query()
+        ->findOrFail($delivery->subscriber_id)
+        ->email;
     Mail::assertSent(NewsletterIssueMail::class, fn (NewsletterIssueMail $mail): bool => $mail->hasTo($recipient)
         && $mail->issue->id === $delivery->newsletter_issue_id
         && str_contains((string) $mail->unsubscribeUrl, 'signature=')
         && $mail->idempotencyKey === 'mouse28-newsletter-'.hash('sha256', implode('|', [config()->string('app.url'), $delivery->id, $delivery->created_at?->toISOString()])));
-    expect($delivery->refresh()->sent_at)->not->toBeNull();
+    expect($delivery->refresh()
+        ->sent_at)->not->toBeNull();
 });
 
 test('a delivery that was already sent is never emailed again', function (): void {
     Mail::fake();
 
-    runDelivery(NewsletterDelivery::factory()->sent()->create());
+    runDelivery(NewsletterDelivery::factory()
+        ->sent()
+        ->create());
 
     Mail::assertNothingSent();
 });
@@ -50,12 +56,30 @@ test('a delivery is dropped when the reader is no longer active', function (): v
     $this->assertModelMissing($delivery);
 });
 
+test('a delivery is dropped when the issue is no longer published', function (array $attributes): void {
+    /** @var array<string, mixed> $attributes */
+    Mail::fake();
+    $delivery = NewsletterDelivery::factory()
+        ->create();
+    $delivery->newsletterIssue?->update($attributes);
+
+    runDelivery($delivery);
+
+    Mail::assertNothingSent();
+    $this->assertModelMissing($delivery);
+})->with([
+    'unpublished' => [['status' => PublishStatus::Draft]],
+    'moved to a future date' => [fn (): array => ['published_at' => now()->addDay()]],
+]);
+
 test('a delivery stays unsent when the mail transport fails so it can be tried again', function (): void {
     $delivery = NewsletterDelivery::factory()->create();
     Mail::shouldReceive('to')->andThrow(new RuntimeException('mail transport unavailable'));
 
     expect(fn () => runDelivery($delivery))->toThrow(RuntimeException::class, 'mail transport unavailable')
-        ->and($delivery->refresh()->sent_at)->toBeNull();
+        ->and($delivery->refresh()
+            ->sent_at)
+        ->toBeNull();
 });
 
 test('deliveries go out through the newsletter send rate limit', function (): void {
@@ -73,7 +97,8 @@ test('a delivery is abandoned before the queue hands it to another worker', func
 
     // Assert
     expect($timeout)->toBe(60)
-        ->and($timeout)->toBeLessThan(config()->integer('queue.connections.database.retry_after'));
+        ->and($timeout)
+        ->toBeLessThan(config()->integer('queue.connections.database.retry_after'));
 });
 
 test('a delivery key stays the same across attempts', function (): void {
@@ -89,7 +114,8 @@ test('a delivery key stays the same across attempts', function (): void {
     // Assert
     $keys = Mail::sent(NewsletterIssueMail::class)->pluck('idempotencyKey');
     expect($keys)->toHaveCount(2)
-        ->and($keys->unique())->toHaveCount(1);
+        ->and($keys->unique())
+        ->toHaveCount(1);
 });
 
 test('a delivery key differs when a database reset reuses the same delivery id', function (): void {
@@ -107,5 +133,6 @@ test('a delivery key differs when a database reset reuses the same delivery id',
     // Assert
     $keys = Mail::sent(NewsletterIssueMail::class)->pluck('idempotencyKey');
     expect($keys)->toHaveCount(2)
-        ->and($keys->unique())->toHaveCount(2);
+        ->and($keys->unique())
+        ->toHaveCount(2);
 });

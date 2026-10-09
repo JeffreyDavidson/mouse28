@@ -11,12 +11,10 @@ pest()->use(RefreshDatabase::class);
 
 covers(EpisodeObserver::class);
 
-beforeEach(function (): void {
-    Storage::fake('public');
-});
-
 test('episode images get square variants that follow the image through replacement and deletion', function (): void {
-    $image = UploadedFile::fake()->image('episode.png', 900, 500)->getContent();
+    $image = UploadedFile::fake()
+        ->image('episode.png', 900, 500)
+        ->getContent();
     Storage::disk('public')->put('episodes/old.png', $image);
     Storage::disk('public')->put('episodes/new.png', $image);
 

@@ -2,6 +2,7 @@
 
 use App\Models\User;
 use App\Providers\AppServiceProvider;
+use Filament\Support\Events\FilamentUpgraded;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Console\Migrations\FreshCommand;
 use Illuminate\Database\Console\Migrations\RefreshCommand;
@@ -11,8 +12,10 @@ use Illuminate\Database\Console\WipeCommand;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\RateLimiter;
 use Laravel\Nightwatch\Core;
+use Symfony\Component\Finder\SplFileInfo;
 
 test('the application registers its service provider', function (): void {
     // Act
@@ -75,7 +78,8 @@ test('production database protection cannot be bypassed with force', function (s
 
         // Assert
         expect($result)->toBe(1)
-            ->and(Artisan::output())->toContain('prohibited from running');
+            ->and(Artisan::output())
+            ->toContain('prohibited from running');
     } finally {
         DB::prohibitDestructiveCommands(false);
     }
@@ -83,7 +87,9 @@ test('production database protection cannot be bypassed with force', function (s
 
 test('Nightwatch identifies administrators by a keyed digest without their profile details', function (): void {
     // Arrange
-    $admin = User::factory()->admin()->make(['id' => 42, 'name' => 'Private Administrator', 'email' => 'private@example.test']);
+    $admin = User::factory()
+        ->admin()
+        ->make(['id' => 42, 'name' => 'Private Administrator', 'email' => 'private@example.test']);
     config()->set('app.key', 'private-application-key');
     $resolver = app(Core::class)->userDetailsResolver
         ?? throw new UnexpectedValueException('The Nightwatch user resolver is not registered.');
@@ -93,7 +99,8 @@ test('Nightwatch identifies administrators by a keyed digest without their profi
 
     // Assert
     expect($userDetails)->toBe(['id' => hash_hmac('sha256', '42', 'private-application-key')])
-        ->and(serialize($userDetails))->not->toContain('Private Administrator', 'private@example.test');
+        ->and(serialize($userDetails))
+        ->not->toContain('Private Administrator', 'private@example.test');
 });
 
 test('newsletter deliveries are limited to the configured emails per second', function (): void {
@@ -106,5 +113,29 @@ test('newsletter deliveries are limited to the configured emails per second', fu
     }
 
     expect($limit->maxAttempts)->toBe(3)
-        ->and($limit->decaySeconds)->toBe(1);
+        ->and($limit->decaySeconds)
+        ->toBe(1);
+});
+
+test('Filament upgrades keep published assets at the committed non-executable file mode', function (): void {
+    // Arrange
+    $publicPath = sys_get_temp_dir().'/mouse28-filament-assets-'.bin2hex(random_bytes(4));
+    $this->app->usePublicPath($publicPath);
+
+    try {
+        // filament:upgrade publishes the assets, then dispatches FilamentUpgraded.
+        Artisan::call('filament:assets');
+
+        // Act
+        FilamentUpgraded::dispatch();
+
+        // Assert
+        $modes = collect(File::allFiles($publicPath))
+            ->mapWithKeys(fn (SplFileInfo $file): array => [$file->getRelativePathname() => decoct(fileperms($file->getPathname()) & 0777)]);
+
+        expect($modes)->not->toBeEmpty()
+            ->each->toBe('644');
+    } finally {
+        File::deleteDirectory($publicPath);
+    }
 });

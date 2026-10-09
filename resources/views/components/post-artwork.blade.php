@@ -1,3 +1,5 @@
+@use('App\Presenters\PostPresenter')
+
 @props([
     'post',
     'compact' => false,
@@ -5,23 +7,9 @@
     'sizes' => '(min-width: 1376px) 644px, (min-width: 768px) calc(50vw - 44px), (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)',
 ])
 
-@inject('responsiveImages', 'App\Services\ResponsiveImageVariants')
-
 @php
-    $artworkStyles = [
-        'disney-tips' => ['wash' => 'from-gold/35 via-cream to-purple/15', 'ink' => 'text-navy', 'stamp' => 'Planning note'],
-        'park-accessibility' => ['wash' => 'from-purple/30 via-cream to-gold/20', 'ink' => 'text-purple-dark', 'stamp' => 'Access field note'],
-        'episode-recap' => ['wash' => 'from-emerald-800/25 via-cream to-gold/20', 'ink' => 'text-emerald-900', 'stamp' => 'From the podcast'],
-        'family-life' => ['wash' => 'from-blue-800/25 via-cream to-gold/25', 'ink' => 'text-blue-950', 'stamp' => 'Family dispatch'],
-        'autism-awareness' => ['wash' => 'from-pink-800/20 via-cream to-purple/20', 'ink' => 'text-pink-950', 'stamp' => 'Different perspectives'],
-        'disney-news' => ['wash' => 'from-orange-700/25 via-cream to-purple/15', 'ink' => 'text-orange-950', 'stamp' => 'Park bulletin'],
-        'food-reviews' => ['wash' => 'from-amber-800/25 via-cream to-gold/25', 'ink' => 'text-amber-950', 'stamp' => 'Table notes'],
-        'resort-reviews' => ['wash' => 'from-teal-800/25 via-cream to-gold/20', 'ink' => 'text-teal-950', 'stamp' => 'Resort field note'],
-        'disney-plus' => ['wash' => 'from-indigo-800/25 via-cream to-purple/20', 'ink' => 'text-indigo-950', 'stamp' => 'Watch list'],
-        'merchandise' => ['wash' => 'from-rose-800/20 via-cream to-gold/25', 'ink' => 'text-rose-950', 'stamp' => 'Things we found'],
-        'general' => ['wash' => 'from-cyan-900/20 via-cream to-gold/20', 'ink' => 'text-navy', 'stamp' => 'Mouse28 dispatch'],
-    ];
-    $artworkStyle = $artworkStyles[$post->category?->slug] ?? $artworkStyles['general'];
+    $presenter = PostPresenter::from($post);
+    $artworkStyle = $presenter->artworkStyle();
     $monogram = Str::of($post->title)
         ->replaceMatches('/[^\pL\pN\s]+/u', '')
         ->explode(' ')
@@ -34,7 +22,7 @@
 @if ($post->featured_image_url)
     <img
         src="{{ $post->featured_image_url }}"
-        @if ($srcset = $responsiveImages->srcset($post->featured_image_path))
+        @if ($srcset = $presenter->featuredImageSrcset())
             srcset="{{ $srcset }}"
             sizes="{{ ($priority ? '' : 'auto, ').$sizes }}"
         @endif

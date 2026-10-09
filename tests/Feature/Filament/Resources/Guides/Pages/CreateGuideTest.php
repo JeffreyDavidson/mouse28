@@ -17,18 +17,23 @@ use function Pest\Livewire\livewire;
 pest()->use(RefreshDatabase::class);
 
 test('a guide can be saved as a draft before it is ready for publication', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(CreateGuide::class)
         ->fillForm(['title' => 'Sample guide', 'slug' => 'sample-guide', 'category' => GuideCategory::cases()[0], 'content' => 'Draft text'])
         ->call('create')
         ->assertHasNoFormErrors();
 
-    expect(Guide::query()->sole())->content->toBe('Draft text')->status->toBe(PublishStatus::Draft);
+    expect(Guide::query()->sole())->content->toBe('Draft text')
+        ->status->toBe(PublishStatus::Draft);
 });
 
 test('guide creation validates required content on the server', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(CreateGuide::class)
         ->fillForm(['title' => 'Sample guide', 'slug' => 'sample-guide', 'category' => GuideCategory::cases()[0], 'content' => null])
@@ -38,7 +43,9 @@ test('guide creation validates required content on the server', function (): voi
 
 test('guide creation rejects a duplicate slug', function (): void {
     Guide::factory()->create(['slug' => 'existing-guide']);
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(CreateGuide::class)
         ->fillForm(['title' => 'Sample guide', 'slug' => 'existing-guide', 'category' => GuideCategory::cases()[0], 'content' => 'Draft text'])
@@ -47,7 +54,9 @@ test('guide creation rejects a duplicate slug', function (): void {
 });
 
 test('authenticated user can render the create form', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     get(GuideResource::getUrl('create'))
         ->assertOk()
@@ -56,7 +65,9 @@ test('authenticated user can render the create form', function (): void {
 });
 
 test('create form explains editorial requirements', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     get(GuideResource::getUrl('create'))
         ->assertOk()
@@ -65,22 +76,32 @@ test('create form explains editorial requirements', function (): void {
 });
 
 test('the guide form credits every author by default, in order', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(CreateGuide::class)
-        ->assertSchemaStateSet(['authors' => User::authors()->pluck('id')->all()]);
+        ->assertSchemaStateSet(['authors' => User::authors()
+            ->pluck('id')
+            ->all()]);
 });
 
 test('the guide form offers only authors in its author select', function (): void {
-    actingAs(User::factory()->admin()->create(['name' => 'Sample Admin']));
+    actingAs(User::factory()
+        ->admin()
+        ->create(['name' => 'Sample Admin']));
 
     livewire(CreateGuide::class)
         ->assertFormFieldExists('authors', fn (Select $field): bool => $field->isMultiple()
-            && collect($field->getOptions())->sort()->values()->all() === ['Cassie Davidson', 'Jeffrey Davidson']);
+            && collect($field->getOptions())->sort()
+                ->values()
+                ->all() === ['Cassie Davidson', 'Jeffrey Davidson']);
 });
 
 test('guide creation requires at least one author', function (): void {
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(CreateGuide::class)
         ->fillForm(['title' => 'Sample guide', 'slug' => 'sample-guide', 'category' => GuideCategory::cases()[0], 'content' => 'Draft text', 'authors' => []])
@@ -92,13 +113,21 @@ test('guide creation requires at least one author', function (): void {
 
 test('a new guide credits the selected authors in the order they were chosen', function (): void {
     [$jeffreyId, $cassieId] = User::authorIds();
-    actingAs(User::factory()->admin()->create());
+    actingAs(User::factory()
+        ->admin()
+        ->create());
 
     livewire(CreateGuide::class)
         ->fillForm(['title' => 'Sample guide', 'slug' => 'sample-guide', 'category' => GuideCategory::cases()[0], 'content' => 'Draft text', 'authors' => [$cassieId, $jeffreyId]])
         ->call('create')
         ->assertHasNoFormErrors();
 
-    expect(Guide::query()->sole()->authors->modelKeys())->toBe([$cassieId, $jeffreyId])
-        ->and(DB::table('guide_user')->orderBy('user_id')->pluck('position', 'user_id')->all())->toEqual([$jeffreyId => 1, $cassieId => 0]);
+    expect(Guide::query()
+        ->sole()
+        ->authors->modelKeys())->toBe([$cassieId, $jeffreyId])
+        ->and(DB::table('guide_user')
+            ->orderBy('user_id')
+            ->pluck('position', 'user_id')
+            ->all())
+        ->toEqual([$jeffreyId => 1, $cassieId => 0]);
 });

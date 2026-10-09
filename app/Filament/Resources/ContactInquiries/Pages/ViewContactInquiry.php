@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ContactInquiries\Pages;
 
 use App\Enums\ContactInquiryStatus;
+use App\Filament\Actions\ReplyToInquiryAction;
 use App\Filament\Resources\ContactInquiries\ContactInquiryResource;
 use App\Jobs\SendContactInquiryEmails;
 use App\Models\ContactInquiry;
@@ -28,7 +29,7 @@ class ViewContactInquiry extends ViewRecord
     {
         parent::mount($record);
 
-        if ($this->record->status === ContactInquiryStatus::New) {
+        if ($this->record->isNew()) {
             $this->record->update(['status' => ContactInquiryStatus::InProgress]);
         }
     }
@@ -45,7 +46,7 @@ class ViewContactInquiry extends ViewRecord
                         ->copyable(),
                     TextEntry::make('type')
                         ->badge()
-                        ->color('warning'),
+                        ->color(ContactInquiryResource::TYPE_BADGE_COLOR),
                     TextEntry::make('created_at')
                         ->dateTime('M j, Y g:i A')
                         ->label('Received'),
@@ -87,7 +88,10 @@ class ViewContactInquiry extends ViewRecord
                 ->requiresConfirmation()
                 ->modalDescription('Only emails without a recorded successful send will be retried. A provider timeout can leave delivery uncertain; check the provider before retrying.')
                 ->disabled(fn (ContactInquiry $record): bool => ! $record->canRetryEmails())
-                ->tooltip('Retries are available for 23 hours after submission. Older messages require manual review with the mail provider.')
+                ->tooltip(sprintf(
+                    'Retries are available for %d hours after submission. Older messages require manual review with the mail provider.',
+                    ContactInquiry::EMAIL_RETRY_WINDOW_HOURS,
+                ))
                 ->action(function (ContactInquiry $record): void {
                     dispatch(new SendContactInquiryEmails($record->id));
 
@@ -98,11 +102,7 @@ class ViewContactInquiry extends ViewRecord
                         ->send();
                 }),
             ContactInquiryResource::markResolvedAction(),
-            Action::make('reply')
-                ->label('Reply')
-                ->icon(Heroicon::OutlinedPaperAirplane)
-                ->url(fn (): string => $this->record->replyMailtoUrl())
-                ->openUrlInNewTab(),
+            ReplyToInquiryAction::make(),
             DeleteAction::make(),
         ];
     }

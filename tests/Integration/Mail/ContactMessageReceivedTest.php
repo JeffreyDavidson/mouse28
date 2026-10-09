@@ -7,6 +7,7 @@ use App\Models\ContactInquiry;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\URL;
 
 test('received contact email uses accessible current branding without external fonts', function (): void {
     $inquiry = ContactInquiry::factory()->make();
@@ -41,7 +42,8 @@ test('received contact email uses the readable type label and replies to the sen
     $envelope = new ContactMessageReceived($inquiry)->envelope();
 
     expect($envelope->subject)->toBe("New Contact: {$label}")
-        ->and($envelope->replyTo)->toEqual([new Address('dale@example.com', 'Dale Cooper')]);
+        ->and($envelope->replyTo)
+        ->toEqual([new Address('dale@example.com', 'Dale Cooper')]);
 })->with([
     'general' => [ContactType::General, 'General Question'],
     'accessibility' => [ContactType::Accessibility, 'Park Accessibility'],
@@ -61,7 +63,8 @@ test('received contact email carries a mouse28 notification idempotency key', fu
     $createdAt = Date::parse('2026-10-02 12:00:00');
     $inquiry->created_at = $createdAt;
 
-    $headers = new ContactMessageReceived($inquiry)->headers()->text;
+    $headers = new ContactMessageReceived($inquiry)->headers()
+        ->text;
 
     expect($headers['Resend-Idempotency-Key'])->toBe('mouse28-contact-'.hash('sha256', "https://mouse28.test|7|{$createdAt->toISOString()}").'-notification');
 });
@@ -76,4 +79,24 @@ test('received contact email shows when it arrived in Eastern time and links to 
     expect($html)->toContain('Oct 6, 2026', '9:30 PM')
         ->not->toContain('Oct 7, 2026', '1:30 AM')
         ->toContain('href="'.ContactInquiryResource::getUrl('view', ['record' => $inquiry]).'"');
+});
+
+test('received contact email html matches its snapshot', function (): void {
+    URL::forceRootUrl('https://mouse28.test');
+    URL::forceScheme('https');
+    $inquiry = ContactInquiry::factory()->make([
+        'name' => 'Dale Cooper',
+        'email' => 'dale@example.test',
+        'type' => ContactType::Accessibility,
+        'message' => "Line one & <two>\nLine three",
+    ]);
+    $inquiry->id = 42;
+    $inquiry->created_at = Date::parse('2026-10-07 01:30:00', 'UTC');
+
+    $html = new ContactMessageReceived($inquiry)->render();
+
+    // Indentation and blank lines are not compared, so moving markup into a layout keeps the snapshot.
+    $lines = array_filter(array_map(trim(...), explode("\n", $html)), fn (string $line): bool => $line !== '');
+
+    expect(implode("\n", $lines))->toMatchSnapshot();
 });

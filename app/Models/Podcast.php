@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\LogsEditorialActivity;
 use App\Observers\PodcastObserver;
 use Database\Factories\PodcastFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -14,8 +15,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
-use Spatie\Activitylog\Models\Concerns\LogsActivity;
-use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * A show, in The Laravel Architect's multi-show model. Mouse28 runs one show, found by
@@ -44,9 +43,8 @@ use Spatie\Activitylog\Support\LogOptions;
 class Podcast extends Model
 {
     /** @use HasFactory<PodcastFactory> */
-    use HasFactory;
+    use HasFactory, LogsEditorialActivity;
 
-    use LogsActivity;
     use SoftDeletes {
         performDeleteOnModel as performSoftDeleteOnModel;
     }
@@ -127,26 +125,5 @@ class Podcast extends Model
     protected function active(Builder $query): void
     {
         $query->where('is_active', true);
-    }
-
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-            ->useLogName('editorial')
-            ->logOnly([
-                'name',
-                'slug',
-                'description',
-                'long_description',
-                'cover_image_path',
-                'color',
-                'apple_url',
-                'spotify_url',
-                'youtube_url',
-                'is_active',
-                'sort_order',
-            ])
-            ->logOnlyDirty()
-            ->dontLogEmptyChanges();
     }
 }

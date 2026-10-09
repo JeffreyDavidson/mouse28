@@ -2,7 +2,7 @@
 
 namespace App\Filament\Widgets;
 
-use App\Enums\PublishStatus;
+use App\Enums\ContentType;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
@@ -21,53 +21,55 @@ class StatsOverview extends Widget
     #[\Override]
     protected string $view = 'filament.widgets.stats-overview';
 
-    /** @return list<array{label: string, value: int, icon: Heroicon, description: string, color: 'gold'|'purple'|'purple-light'|'teal'}> */
+    /** @return list<array{label: string, value: int, icon: Heroicon, description: string, textClass: string}> */
     public function getStats(): array
     {
         $publishedPosts = Post::published()->count();
         $publishedEpisodes = Episode::published()->count();
         $publishedGuides = Guide::published()->count();
-        $guidesDueForReview = Guide::published()->reviewDue()->count();
-        $postsDueForReview = Post::published()->reviewDue()->count();
-        $drafts = Post::query()->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])->count()
-            + Episode::query()->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])->count()
-            + Guide::query()->whereIn('status', [PublishStatus::Draft, PublishStatus::InReview])->count();
+        $guidesDueForReview = Guide::published()
+            ->reviewDue()
+            ->count();
+        $postsDueForReview = Post::published()
+            ->reviewDue()
+            ->count();
+        $drafts = Post::drafts()->count() + Episode::drafts()->count() + Guide::drafts()->count();
 
         return [
             [
-                'label' => 'Blog Posts',
+                'label' => ContentType::Post->pluralLabel(),
                 'value' => $publishedPosts,
-                'icon' => Heroicon::OutlinedDocumentText,
+                'icon' => ContentType::Post->getIcon(),
                 'description' => $postsDueForReview > 0 ? "{$postsDueForReview} need review" : 'Reviews current',
-                'color' => 'purple',
+                'textClass' => ContentType::Post->textClass(),
             ],
             [
-                'label' => 'Episodes',
+                'label' => ContentType::Episode->pluralLabel(),
                 'value' => $publishedEpisodes,
-                'icon' => Heroicon::OutlinedMicrophone,
+                'icon' => ContentType::Episode->getIcon(),
                 'description' => 'Published',
-                'color' => 'gold',
+                'textClass' => ContentType::Episode->textClass(),
             ],
             [
-                'label' => 'Guides',
+                'label' => ContentType::Guide->pluralLabel(),
                 'value' => $publishedGuides,
-                'icon' => Heroicon::OutlinedBookOpen,
+                'icon' => ContentType::Guide->getIcon(),
                 'description' => $guidesDueForReview > 0 ? "{$guidesDueForReview} need review" : 'Reviews current',
-                'color' => 'teal',
+                'textClass' => ContentType::Guide->textClass(),
             ],
             [
                 'label' => 'Drafts',
                 'value' => $drafts,
                 'icon' => Heroicon::OutlinedPencilSquare,
                 'description' => 'All content',
-                'color' => 'gold',
+                'textClass' => 'text-mouse-gold-dark',
             ],
             [
                 'label' => 'Subscribers',
                 'value' => Subscriber::active()->count(),
                 'icon' => Heroicon::OutlinedUsers,
                 'description' => 'Active newsletter subscribers',
-                'color' => 'purple-light',
+                'textClass' => 'text-mouse-purple-light',
             ],
         ];
     }

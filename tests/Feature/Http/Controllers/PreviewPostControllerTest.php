@@ -4,6 +4,7 @@ use App\Models\Episode;
 use App\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 
 use function Pest\Laravel\get;
@@ -11,7 +12,9 @@ use function Pest\Laravel\get;
 pest()->use(RefreshDatabase::class);
 
 test('a signed preview link shows the draft to anyone holding it without exposing it to search', function (): void {
-    $post = Post::factory()->draft()->create();
+    $post = Post::factory()
+        ->draft()
+        ->create();
 
     get(URL::temporarySignedRoute('preview.post', Date::now()->addHour(), ['post' => $post]))
         ->assertOk()
@@ -25,7 +28,9 @@ test('a signed preview link shows the draft to anyone holding it without exposin
 });
 
 test('preview links must be signed, untampered, and unexpired', function (string $case): void {
-    $post = Post::factory()->draft()->create();
+    $post = Post::factory()
+        ->draft()
+        ->create();
     $signed = URL::temporarySignedRoute('preview.post', Date::now()->addHour(), ['post' => $post]);
     $url = match ($case) {
         'unsigned' => route('preview.post', $post),
@@ -40,18 +45,43 @@ test('preview links must be signed, untampered, and unexpired', function (string
     get($url)->assertForbidden();
 })->with(['unsigned', 'tampered', 'expired']);
 
+test('an invalid signature is refused before the draft is looked up, whether or not it exists', function (string $signature, bool $draftExists): void {
+    $post = Post::factory()
+        ->draft()
+        ->create();
+    $slug = $draftExists ? $post->slug : 'missing-draft';
+    DB::enableQueryLog();
+
+    get(invalidlySignedRoute('preview.post', ['post' => $slug], $signature))
+        ->assertForbidden();
+
+    expect(DB::getQueryLog())->toBeEmpty();
+})
+    ->with('invalid signatures')
+    ->with('existing and missing records');
+
 test('the former numeric preview address no longer shows the draft', function (): void {
-    $post = Post::factory()->draft()->create();
+    $post = Post::factory()
+        ->draft()
+        ->create();
 
     expect(get("/preview/posts/{$post->id}")->status())->toBeIn([403, 404]);
 });
 
 test('a signed preview links every related episode, published or not', function (): void {
-    $post = Post::factory()->draft()->create();
-    $post->episodes()->attach([
-        Episode::factory()->draft()->create(['title' => 'Unannounced podcast episode'])->id,
-        Episode::factory()->create(['title' => 'Released podcast episode'])->id,
-    ]);
+    $post = Post::factory()
+        ->draft()
+        ->create();
+    $post->episodes()
+        ->attach([
+            Episode::factory()
+                ->draft()
+                ->create(['title' => 'Unannounced podcast episode'])
+                ->id,
+            Episode::factory()
+                ->create(['title' => 'Released podcast episode'])
+                ->id,
+        ]);
 
     get(URL::temporarySignedRoute('preview.post', Date::now()->addHour(), ['post' => $post]))
         ->assertOk()
@@ -60,7 +90,9 @@ test('a signed preview links every related episode, published or not', function 
 });
 
 test('share links on a preview point to the public post, never the signed preview link', function (): void {
-    $post = Post::factory()->draft()->create();
+    $post = Post::factory()
+        ->draft()
+        ->create();
     $previewUrl = URL::temporarySignedRoute('preview.post', Date::now()->addHour(), ['post' => $post]);
 
     $response = get($previewUrl);

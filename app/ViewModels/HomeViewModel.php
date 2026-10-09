@@ -27,23 +27,21 @@ class HomeViewModel
         $posts = Post::published()
             ->select(['id', 'slug', 'title', 'category_id', 'featured_image_path', 'published_at'])
             ->with('category:id,name,slug')
-            ->latest('published_at')
-            ->latest('id')
+            ->newestFirst()
             ->take(4)
             ->get();
         $featuredPost = $posts->first();
-        $latestPosts = $posts->skip(1)->values();
+        $latestPosts = $posts->skip(1)
+            ->values();
         $latestEpisodes = Episode::published()
             ->select(['id', 'slug', 'title', 'description', 'episode_number', 'duration_seconds'])
-            ->latest('published_at')
-            ->latest('id')
+            ->newestFirst()
             ->take(3)
             ->get();
         $latestGuides = Config::boolean('mouse28.guides_enabled')
             ? Guide::published()
                 ->select(['id', 'slug', 'title', 'excerpt', 'category', 'featured_image_path'])
-                ->latest('published_at')
-                ->latest('id')
+                ->newestFirst()
                 ->take(2)
                 ->get()
             : new Collection;
@@ -51,9 +49,8 @@ class HomeViewModel
             ? Post::published()
                 ->select(['id', 'slug', 'title', 'category_id', 'featured_image_path'])
                 ->with('category:id,name,slug')
-                ->whereHas('category', fn (Builder $query) => $query->whereIn('slug', ['park-accessibility', 'disney-tips', 'autism-awareness']))
-                ->latest('published_at')
-                ->latest('id')
+                ->whereHas('category', fn (Builder $query) => $query->whereIn('slug', Config::array('mouse28.home_planning_category_slugs')))
+                ->newestFirst()
                 ->take(2)
                 ->get()
             : new Collection;

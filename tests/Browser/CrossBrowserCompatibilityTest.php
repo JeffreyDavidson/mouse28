@@ -8,7 +8,8 @@ use Symfony\Component\Process\Process;
 
 use function Pest\Laravel\get;
 
-pest()->browser()->timeout(10000);
+pest()->browser()
+    ->timeout(10000);
 
 test('public reading and form surfaces work across supported browsers', function (): void {
     config()->set('services.turnstile.site_key', '1x00000000000000000000AA');

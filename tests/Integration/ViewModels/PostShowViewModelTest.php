@@ -21,12 +21,17 @@ function postWithEveryKindOfRelatedEpisode(): array
 {
     $episodes = [
         'published' => Episode::factory()->create(['episode_number' => 30]),
-        'draft' => Episode::factory()->draft()->create(['episode_number' => 10]),
-        'scheduled' => Episode::factory()->scheduled()->create(['episode_number' => 20]),
+        'draft' => Episode::factory()
+            ->draft()
+            ->create(['episode_number' => 10]),
+        'scheduled' => Episode::factory()
+            ->scheduled()
+            ->create(['episode_number' => 20]),
         'trashed' => Episode::factory()->create(['episode_number' => 5]),
     ];
     $post = Post::factory()->create();
-    $post->episodes()->attach(array_map(fn (Episode $episode): int => $episode->id, $episodes));
+    $post->episodes()
+        ->attach(array_map(fn (Episode $episode): int => $episode->id, $episodes));
     $episodes['trashed']->delete();
 
     return [$post, $episodes];
@@ -51,14 +56,27 @@ test('post data includes recent posts', function (): void {
     $data = app(PostShowViewModel::class)->data($post);
 
     expect($data['recentPosts']->modelKeys())->toContain($recentPost->id)
-        ->and($data)->not->toHaveKey('isPreview');
+        ->and($data)
+        ->not->toHaveKey('isPreview');
+});
+
+test('post data limits recent posts to two', function (): void {
+    $post = Post::factory()->create();
+    Post::factory()
+        ->count(3)
+        ->create(['category_id' => $post->category_id]);
+
+    $data = app(PostShowViewModel::class)->data($post);
+
+    expect($data['recentPosts'])->toHaveCount(2);
 });
 
 test('post data lists every published related episode in episode number order', function (): void {
     $post = Post::factory()->create();
     $later = Episode::factory()->create(['episode_number' => 12]);
     $earlier = Episode::factory()->create(['episode_number' => 3]);
-    $post->episodes()->attach([$later->id, $earlier->id]);
+    $post->episodes()
+        ->attach([$later->id, $earlier->id]);
 
     $data = app(PostShowViewModel::class)->data($post);
 
@@ -79,7 +97,8 @@ test('post data for a preview lists every related episode that is not trashed', 
     $previewData = app(PostShowViewModel::class)->data($post, preview: true);
 
     expect(relatedEpisodeIds($previewData['post']))->toBe([$episodes['draft']->id, $episodes['scheduled']->id, $episodes['published']->id])
-        ->and($previewData)->toHaveKey('isPreview', true);
+        ->and($previewData)
+        ->toHaveKey('isPreview', true);
 });
 
 test('post data loads the category of the post', function (): void {
@@ -88,15 +107,23 @@ test('post data loads the category of the post', function (): void {
     $data = app(PostShowViewModel::class)->data($post);
 
     expect($data['post']->relationLoaded('category'))->toBeTrue()
-        ->and($data['post']->category_label)->toBe($post->category?->name);
+        ->and($data['post']->category_label)
+        ->toBe($post->category?->name);
 });
 
 test('post data loads the authors of the post in byline order', function (): void {
-    [$first, $second] = User::factory()->author()->count(2)->create()->all();
-    $post = Post::factory()->withAuthors($second, $first)->create();
+    [$first, $second] = User::factory()
+        ->author()
+        ->count(2)
+        ->create()
+        ->all();
+    $post = Post::factory()
+        ->withAuthors($second, $first)
+        ->create();
 
     $data = app(PostShowViewModel::class)->data($post);
 
     expect($data['post']->relationLoaded('authors'))->toBeTrue()
-        ->and($data['post']->authors->modelKeys())->toBe([$second->id, $first->id]);
+        ->and($data['post']->authors->modelKeys())
+        ->toBe([$second->id, $first->id]);
 });
