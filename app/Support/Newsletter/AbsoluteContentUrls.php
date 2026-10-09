@@ -23,12 +23,13 @@ class AbsoluteContentUrls
     }
 
     /**
-     * Rewrite the link and image destinations of raw Markdown, for the plain-text part.
+     * Rewrite the link and image destinations of raw Markdown, for the plain-text part,
+     * trimming spaces inside an angle-bracket destination (`[text](< /path >)`).
      */
     public function inMarkdown(string $markdown): string
     {
         return preg_replace_callback(
-            '/(\]\(\s*<?)([^)\s>]+)/',
+            '/(\]\(\s*<?)\s*([^)\s>]+)(?:\s+(?=>))?/',
             fn (array $match): string => "{$match[1]}{$this->absoluteUrl($match[2])}",
             $markdown,
         ) ?? $markdown;

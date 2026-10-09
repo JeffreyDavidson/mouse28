@@ -52,3 +52,12 @@ test('the line break preset turns a soft line break into a visible break', funct
 test('a missing source renders as nothing', function (string $preset): void {
     expect(new MarkdownRenderer()->{$preset}(null))->toBe('');
 })->with(['safe', 'safeWithLineBreaks']);
+
+test('every preset trims spaces around angle-bracket link and image destinations', function (string $preset): void {
+    $html = new MarkdownRenderer()->{$preset}("[Post](< /blog/z >)\n\n![Pic](< /storage/pic.png >)");
+
+    expect($html)
+        ->toContain('href="/blog/z"')
+        ->toContain('src="/storage/pic.png"')
+        ->not->toContain('%20');
+})->with(['safe', 'safeWithLineBreaks']);

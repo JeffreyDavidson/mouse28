@@ -83,6 +83,19 @@ test('relative links and images become absolute in the html and text parts', fun
         ->assertDontSeeInText('](/');
 });
 
+test('spaces inside angle-bracket link destinations are trimmed in the html and text parts', function (): void {
+    config()->set('app.url', 'https://example.test');
+    $issue = issueForMail("[Post](< /blog/z >)\n\n![Pic](< /storage/pic.png >)");
+
+    $mail = new NewsletterIssueMail($issue, 'https://example.test/unsubscribe');
+
+    $mail->assertSeeInHtml('href="https://example.test/blog/z"', false)
+        ->assertSeeInHtml('src="https://example.test/storage/pic.png"', false)
+        ->assertDontSeeInHtml('%20', false)
+        ->assertSeeInText('[Post](<https://example.test/blog/z>)')
+        ->assertSeeInText('![Pic](<https://example.test/storage/pic.png>)');
+});
+
 test('absolute, mailto, tel, anchor and protocol-relative links are left alone', function (): void {
     config()->set('app.url', 'https://example.test');
     $markdown = '[A](https://other.test/a) [B](mailto:me@example.com) [C](tel:+15555550100) [D](#section) [E](//cdn.test/e)';
