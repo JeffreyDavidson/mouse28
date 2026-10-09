@@ -2,12 +2,14 @@
 
 namespace App\Support;
 
+use App\Support\Markdown\TrimLinkDestinationsExtension;
 use Illuminate\Support\Str;
 
 /**
  * Renders untrusted Markdown to HTML with named safety presets, so every caller
  * gets the same options instead of repeating them. Every preset strips raw HTML
- * and refuses unsafe link schemes such as javascript:.
+ * and refuses unsafe link schemes such as javascript:, and trims stray spaces around
+ * link and image destinations (`[text](< /path >)` would otherwise link to `%20/path%20`).
  */
 class MarkdownRenderer
 {
@@ -20,7 +22,7 @@ class MarkdownRenderer
         return Str::markdown($markdown ?? '', [
             'html_input' => 'strip',
             'allow_unsafe_links' => false,
-        ]);
+        ], [new TrimLinkDestinationsExtension]);
     }
 
     /**
@@ -35,6 +37,6 @@ class MarkdownRenderer
             'renderer' => [
                 'soft_break' => "<br />\n",
             ],
-        ]);
+        ], [new TrimLinkDestinationsExtension]);
     }
 }

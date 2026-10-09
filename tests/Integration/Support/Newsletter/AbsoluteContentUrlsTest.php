@@ -38,3 +38,10 @@ test('absolute, mailto, tel, anchor, protocol-relative and empty urls are left a
 test('an empty html attribute stays empty', function (): void {
     expect(new AbsoluteContentUrls()->inHtml('<a href="">A</a>'))->toBe('<a href="">A</a>');
 });
+
+test('markdown angle-bracket destinations with spaces become clean absolute urls', function (): void {
+    $markdown = "[Post](< /blog/z >)\n\n![Pic](< /storage/pic.png >)";
+
+    expect(new AbsoluteContentUrls()->inMarkdown($markdown))
+        ->toBe("[Post](<https://example.test/blog/z>)\n\n![Pic](<https://example.test/storage/pic.png>)");
+});
