@@ -18,3 +18,4 @@ Before planning or editing, find the row whose globs match the file's path and r
 | tests/Architecture/** | .ai/rules/tests/architecture.md |
 | app/Queries/** | .ai/rules/queries.md |
 | app/Support/Feeds/** | .ai/rules/feeds.md |
+| app/Rules/** | .ai/rules/rules.md |

@@ -1,20 +1,8 @@
-<div class="sr-only" aria-hidden="true">
-    <label for="{{ $honeypotId }}">Website</label>
-    <input id="{{ $honeypotId }}" type="text" name="website_url" tabindex="-1" autocomplete="off" />
-</div>
+<x-honeypot name="website_url" :id="$honeypotId" class="sr-only" />
 
 @if (config('services.turnstile.site_key'))
-    @once('turnstile-api')
-        <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-    @endonce
     <div class="flex justify-center">
-        <div
-            class="cf-turnstile"
-            data-sitekey="{{ config('services.turnstile.site_key') }}"
-            data-action="{{ config('services.turnstile.newsletter_action') }}"
-            data-theme="dark"
-            data-appearance="interaction-only"
-        ></div>
+        <x-turnstile :action="config('services.turnstile.newsletter_action')" theme="dark" />
     </div>
 @endif
 
