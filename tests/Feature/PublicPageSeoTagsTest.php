@@ -3,12 +3,21 @@
 use App\Models\Episode;
 use App\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Testing\TestResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 use function Pest\Laravel\get;
 
 pest()->use(RefreshDatabase::class);
+
+// The snapshots hold absolute URLs, so pin the root URL the way CI renders it; a developer's
+// own APP_URL (for example https://mouse28.test) would otherwise change every tag.
+beforeEach(function (): void {
+    config()->set('app.url', 'http://localhost');
+    URL::forceRootUrl('http://localhost');
+    URL::forceScheme('http');
+});
 
 /**
  * The exact bytes of the head's title, meta and canonical tags, one per line, so a layout
