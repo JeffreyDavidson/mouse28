@@ -1,25 +1,24 @@
 @props([
+    'pageMeta' => null,
     'title' => 'Something Went Wrong | Mouse28',
     'description' => 'Mouse28 could not complete this request.',
     'ogTitle' => 'Mouse28',
 ])
 
+{{--
+    An error page may pass an App\Data\PageMeta; otherwise App\View\SiteSeo builds its noindex
+    tags from the props above. Error pages render no JSON-LD.
+--}}
+@use('App\Data\PageMeta')
+@use('RalphJSmit\Laravel\SEO\Tags\CanonicalTag')
+@inject('siteSeo', 'App\View\SiteSeo')
+
 @php
-    $seoData = new \RalphJSmit\Laravel\SEO\Support\SEOData(
-        title: $title,
-        description: $description,
-        image: url('/images/logo.jpg'),
-        url: url()->current(),
-        enableTitleSuffix: false,
-        site_name: 'Mouse28',
-        locale: '',
-        robots: 'noindex, nofollow',
-        openGraphTitle: $ogTitle,
-    );
+    $pageMeta ??= new PageMeta($siteSeo->errorPage($title, $description, $ogTitle));
 
     // An error page has no URL of its own to point search engines at.
-    $seoTags = seo($seoData);
-    $seoTags->tags = $seoTags->tags->reject(fn (object $tag): bool => $tag instanceof \RalphJSmit\Laravel\SEO\Tags\CanonicalTag);
+    $seoTags = seo($pageMeta->seo);
+    $seoTags->tags = $seoTags->tags->reject(fn (object $tag): bool => $tag instanceof CanonicalTag);
 @endphp
 
 <!DOCTYPE html>

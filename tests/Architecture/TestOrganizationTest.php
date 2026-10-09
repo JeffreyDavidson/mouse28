@@ -81,6 +81,9 @@ test('test paths mirror their application source', function (string $suite): voi
         'Config/SearchTest.php' => 'config/search.php',
         'Http/ProductionSmokeTest.php' => 'routes/web.php',
         'Support/DeploymentSmokeClientTest.php' => 'tests/Support/DeploymentSmokeClient.php',
+        'PublicPageSeoTagsTest.php' => 'routes/web.php',
+        'View/Layouts/AppLayoutTest.php' => 'resources/views/components/layouts/app.blade.php',
+        'View/Layouts/ErrorLayoutTest.php' => 'resources/views/components/layouts/error.blade.php',
         'PublicPageConventionsTest.php' => 'routes/web.php',
     ];
     $violations = [];
