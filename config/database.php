@@ -38,10 +38,13 @@ return [
             'database' => env('DB_DATABASE', database_path('database.sqlite')),
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
-            'busy_timeout' => null,
-            'journal_mode' => null,
-            'synchronous' => null,
-            'transaction_mode' => 'DEFERRED',
+            'busy_timeout' => 5000,
+            'journal_mode' => 'WAL',
+            'synchronous' => 'NORMAL',
+            // IMMEDIATE takes the write lock at BEGIN, so a concurrent writer waits on
+            // busy_timeout. DEFERRED read-then-write transactions (the database queue's
+            // job reservation) fail at once with "database is locked" instead.
+            'transaction_mode' => 'IMMEDIATE',
         ],
 
         'mysql' => [
