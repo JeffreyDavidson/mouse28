@@ -341,7 +341,9 @@ Mouse28 is moving to SQLite to match The Laravel Architect (owner decision 2026-
 
 `php artisan db:copy-to-sqlite <absolute path> [--force]` builds a new SQLite file from the migrations and copies every row of the current database into it, keeping ids. It then checks foreign keys and integrity and compares every table's row count and a content checksum. It fails, and deletes the half-built file, if anything differs.
 - **Left behind:** the cache tables, Telescope's tables, and empty tables no migration creates any more (production's `contact_message_replies` and `newsletter_subscribers`). It names those in its output. A leftover table that still holds rows stops the copy.
-- **Refusals:** an existing target file, a relative path, production without `--force`, and a source with pending migrations.
+- **Old migration records:** rows in the source's `migrations` table whose migration files were deleted are named and not carried over. Production has three: an earlier `create_guides_table`, `create_contact_message_replies_table` and `create_newsletter_subscribers_table`. The new file records only the migrations it ran.
+- **Different columns:** an empty table whose columns differ from what the migrations create is named and copied empty. Production's `guides` table is empty but still has `icon`, `park` and `sort_order` from the earlier migration. A table with different columns that holds rows stops the copy.
+- **Refusals:** an existing target file, a relative path, production without `--force`, and a source with pending migrations (a current migration the source has not run).
 
 **Staging first, then production.** Staging switched on 2026-10-09. These are owner steps, done at a quiet time, and they never print `.env` values. The site stays in maintenance mode from the copy until the switch is live, and no deploy runs in between:
 - A deploy can't run in maintenance mode. Production's deploy script and both workflows' smoke checks load `/`, which returns 503 then.
