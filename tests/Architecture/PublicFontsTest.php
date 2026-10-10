@@ -29,3 +29,28 @@ test('external public fonts match the stylesheet and contain WOFF2 data', functi
             ->toBe('wOF2');
     }
 });
+
+test('every public font family ships its open font licence text', function (): void {
+    $directory = dirname(__DIR__, 2).'/public/fonts/mouse28';
+    $fonts = glob($directory.'/*.woff2');
+
+    if ($fonts === false) {
+        throw new RuntimeException('Unable to list the public fonts.');
+    }
+
+    $families = array_unique(array_map(
+        static fn (string $font): string => ucfirst(explode('-', basename($font))[0]),
+        $fonts,
+    ));
+
+    expect($families)->not->toBeEmpty();
+
+    foreach ($families as $family) {
+        $licence = "{$directory}/OFL-{$family}.txt";
+
+        expect($licence)->toBeFile()
+            ->and(file_get_contents($licence))
+            ->toContain("The {$family} Project Authors")
+            ->toContain('SIL Open Font License, Version 1.1');
+    }
+});
