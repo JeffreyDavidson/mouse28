@@ -65,6 +65,10 @@ Each content edit page's Preview action builds a shareable signed link with `App
 
 The migration that introduces `is_admin` promotes existing accounts because every existing account had panel access under the previous behavior. New accounts default to non-administrators.
 
+## Shared package
+
+`jeffreydavidson/creator-kit` (private, installed from GitHub as a `vcs` repository) holds content features Mouse28 shares with The Laravel Architect. It is installed but nothing in the app uses it yet; each adoption phase moves one area onto it. Until the responsive-image phase, the package's `media:verify-responsive-images` and `media:repair-responsive-images` commands share their names with Mouse28's own, and the app's commands are the ones that run (pinned by tests).
+
 ## External integrations
 
 Newsletter sign-ups are double opt-in and stored in the `subscribers` table. `POST /newsletter` (`newsletter.subscribe`, handled by `NewsletterSubscriptionController`) is protected by a honeypot (`website_url`), Turnstile verification, validation, and an IP rate limit; it always answers "Check your email to confirm your sign-up.", whether or not the address already exists, so it cannot be used to discover subscribers. The admin lists subscribers in the `SubscriberResource` ("Newsletter Subscribers" under Communication; list-only, since readers join through the public form). Each row shows a status derived by `SubscriberStatus::for()` (Active, Pending confirmation, Unsubscribed or Suppressed, as text and colour), and the list can be searched by email, filtered by status, and deleted singly or in bulk. Suppressed subscribers have no delete action and cannot be selected for bulk delete, so the do-not-email list cannot be erased from the admin. The header and the dashboard "Subscribers" stat count from the database (the stat counts only active readers). Resend only delivers email; it is not read or written for subscriber data (the earlier Resend audience reader and the one-time import command were removed once the database became the source of truth; the import was skipped because the legacy audience was mostly spam sign-ups).

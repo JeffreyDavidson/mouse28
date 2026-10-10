@@ -164,7 +164,7 @@ Keep the established rounded language: compact rounded controls, slightly softer
 
 ### Navigation and identity
 
-Use the typographic Mouse28 wordmark in Besley. The illustrated podcast mark belongs to podcast content. Sidebar labels use cream on navy; the current destination uses a cream surface with navy text and icon. Hover and focus remain distinguishable from the active destination. Mobile navigation uses Filament's own drawer and toggle.
+Use the typographic Mouse28 wordmark in Besley. The illustrated podcast mark belongs to podcast content. The site icon (browser tab, phone home screen, and admin tab) is the gold Besley “28” on navy; the `x-site-icons` component links it from both public layouts. Sidebar labels use cream on navy; the current destination uses a cream surface with navy text and icon. Hover and focus remain distinguishable from the active destination. Mobile navigation uses Filament's own drawer and toggle.
 
 ### Actions
 

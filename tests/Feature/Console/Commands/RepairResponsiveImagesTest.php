@@ -7,12 +7,17 @@ use App\Models\Post;
 use App\Services\ResponsiveImageVariants;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 covers(RepairResponsiveImages::class);
 
 pest()->use(RefreshDatabase::class);
+
+test('the app command answers to its name while creator-kit registers one with the same name', function (): void {
+    expect(Artisan::all()['media:repair-responsive-images'])->toBeInstanceOf(RepairResponsiveImages::class);
+});
 
 test('it repairs variants for posts, episodes, guides and the podcast, then verifies them', function (): void {
     $wide = UploadedFile::fake()

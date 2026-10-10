@@ -21,6 +21,13 @@ test('unknown URLs render the branded recovery page', function (): void {
         ->assertDontSeeHtml('placeholder:text-navy/35');
 });
 
+test('error pages link the site icons', function (): void {
+    get('/this-page-does-not-exist')->assertNotFound()
+        ->assertSeeHtml('<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />')
+        ->assertSeeHtml('<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />')
+        ->assertSeeHtml('<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />');
+});
+
 test('expired sessions explain how to recover', function (): void {
     Route::get('/testing/expired-session', fn () => abort(419, 'Private session details'));
 

@@ -91,6 +91,10 @@ test('admin panel has no dark mode brand logo while dark mode is off', function 
         ->toBeNull();
 });
 
+test('admin panel uses the site favicon', function (): void {
+    expect(Filament::getPanel('admin')->getFavicon())->toBe('/images/favicon-32.png');
+});
+
 test('admin navigation keeps each item in its group and sort position', function (): void {
     $positions = [
         'Episodes' => [EpisodeResource::getNavigationGroup(), EpisodeResource::getNavigationSort()],

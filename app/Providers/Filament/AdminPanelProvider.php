@@ -48,6 +48,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->brandName('Mouse28')
             ->brandLogo(view('filament.brand-logo'))
+            ->favicon('/images/favicon-32.png')
             ->darkMode(false)
             ->font('Poppins', provider: LocalFontProvider::class)
             ->login(Login::class)

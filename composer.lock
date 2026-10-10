@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4719bcf1f095854d504de734a87b921f",
+    "content-hash": "5af947a2b3d032fb58b30328d5a0cbde",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -2271,6 +2271,124 @@
                 "source": "https://github.com/Jean85/pretty-package-versions/tree/2.1.1"
             },
             "time": "2025-03-19T14:43:43+00:00"
+        },
+        {
+            "name": "jeffreydavidson/creator-kit",
+            "version": "v0.14.0",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:JeffreyDavidson/creator-kit.git",
+                "reference": "7eab895a42cee505b7c5861a0d6d6fae0449b269"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/JeffreyDavidson/creator-kit/zipball/7eab895a42cee505b7c5861a0d6d6fae0449b269",
+                "reference": "7eab895a42cee505b7c5861a0d6d6fae0449b269",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^5.7",
+                "intervention/image": "^4.0",
+                "laravel/framework": "^13.26",
+                "league/commonmark": "^2.10",
+                "php": "^8.5",
+                "ralphjsmit/laravel-filament-seo": "^2.2",
+                "ralphjsmit/laravel-seo": "^1.8",
+                "resend/resend-php": "^1.16",
+                "spatie/laravel-tags": "^4.11"
+            },
+            "require-dev": {
+                "driftingly/rector-laravel": "^2.6",
+                "larastan/larastan": "^3.10",
+                "laravel/pint": "^1.30.5",
+                "orchestra/testbench": "^11.3",
+                "pestphp/pest": "^5.1",
+                "pestphp/pest-plugin-arch": "^5.0",
+                "pestphp/pest-plugin-laravel": "^5.0",
+                "pestphp/pest-plugin-livewire": "^5.0",
+                "pestphp/pest-plugin-phpstan": "^5.0",
+                "pestphp/pest-plugin-rector": "^5.0",
+                "pestphp/pest-plugin-type-coverage": "^5.0",
+                "phpstan/extension-installer": "^1.4",
+                "rector/rector": "^2.6"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "JeffreyDavidson\\CreatorKit\\CreatorKitServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "JeffreyDavidson\\CreatorKit\\": "src/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "JeffreyDavidson\\CreatorKit\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "lint": [
+                    "vendor/bin/pint"
+                ],
+                "test:lint": [
+                    "vendor/bin/pint --test"
+                ],
+                "rector": [
+                    "vendor/bin/rector process --no-progress-bar"
+                ],
+                "rector:pest": [
+                    "vendor/bin/rector process --config=rector-pest.php --no-progress-bar"
+                ],
+                "test:rector": [
+                    "vendor/bin/rector process --dry-run --no-progress-bar"
+                ],
+                "test:rector:pest": [
+                    "vendor/bin/rector process --config=rector-pest.php --dry-run --no-progress-bar"
+                ],
+                "test:types": [
+                    "vendor/bin/phpstan analyse --memory-limit=1G --no-progress --error-format=table"
+                ],
+                "test:types:pest": [
+                    "vendor/bin/phpstan analyse --configuration=phpstan-pest.neon --memory-limit=1G --no-progress --error-format=table"
+                ],
+                "test": [
+                    "vendor/bin/pest --fail-on-risky"
+                ],
+                "test:architecture": [
+                    "vendor/bin/pest --testsuite=Architecture --fail-on-risky"
+                ],
+                "test:type-coverage": [
+                    "php -d memory_limit=2G vendor/bin/pest --type-coverage --min=100 --compact"
+                ],
+                "check": [
+                    "@composer validate --strict --no-check-publish",
+                    "@composer audit",
+                    "@test:lint",
+                    "php scripts/check-method-chaining.php",
+                    "@test:types",
+                    "@test:types:pest",
+                    "@test:rector",
+                    "@test:rector:pest",
+                    "@test",
+                    "@test:type-coverage"
+                ]
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Shared content features for The Laravel Architect and Mouse28: publishing, admin screens, newsletter, contact, SEO, feeds and Markdown.",
+            "keywords": [
+                "laravel"
+            ],
+            "support": {
+                "source": "https://github.com/JeffreyDavidson/creator-kit/tree/v0.14.0",
+                "issues": "https://github.com/JeffreyDavidson/creator-kit/issues"
+            },
+            "time": "2026-10-10T16:32:11+00:00"
         },
         {
             "name": "kirschbaum-development/eloquent-power-joins",
@@ -5873,16 +5991,16 @@
         },
         {
             "name": "resend/resend-php",
-            "version": "v1.15.0",
+            "version": "v1.16.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/resend/resend-php.git",
-                "reference": "048d4d481ca6c29c6542f4a48d49f01bd5196d6b"
+                "reference": "9ebdef978287dcd8cd17a399eebc977aa21cb402"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/resend/resend-php/zipball/048d4d481ca6c29c6542f4a48d49f01bd5196d6b",
-                "reference": "048d4d481ca6c29c6542f4a48d49f01bd5196d6b",
+                "url": "https://api.github.com/repos/resend/resend-php/zipball/9ebdef978287dcd8cd17a399eebc977aa21cb402",
+                "reference": "9ebdef978287dcd8cd17a399eebc977aa21cb402",
                 "shasum": ""
             },
             "require": {
@@ -5926,9 +6044,9 @@
             ],
             "support": {
                 "issues": "https://github.com/resend/resend-php/issues",
-                "source": "https://github.com/resend/resend-php/tree/v1.15.0"
+                "source": "https://github.com/resend/resend-php/tree/v1.16.0"
             },
-            "time": "2026-09-11T19:42:51+00:00"
+            "time": "2026-09-25T18:18:55+00:00"
         },
         {
             "name": "ryangjchandler/blade-capture-directive",

@@ -8,11 +8,16 @@ use App\Services\ResponsiveImageVariants;
 use App\Services\SquareResponsiveImageVariants;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
 
 covers(VerifyResponsiveImages::class);
 
 pest()->use(RefreshDatabase::class);
+
+test('the app command answers to its name while creator-kit registers one with the same name', function (): void {
+    expect(Artisan::all()['media:verify-responsive-images'])->toBeInstanceOf(VerifyResponsiveImages::class);
+});
 
 test('it reports aggregate results for every media type', function (): void {
     $image = UploadedFile::fake()
