@@ -58,6 +58,9 @@ jobs:
           key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
           restore-keys: composer-${{ runner.os }}-
       - name: Install PHP dependencies
+        env:
+          # Read access to the private creator-kit package.
+          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
         run: composer install --no-interaction --prefer-dist --no-progress
 
       - name: Audit PHP dependencies
@@ -222,6 +225,9 @@ jobs:
           key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
           restore-keys: composer-${{ runner.os }}-
       - name: Install PHP dependencies
+        env:
+          # Read access to the private creator-kit package.
+          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
         run: composer install --no-interaction --prefer-dist --no-progress
 
       - name: Run mutation tests
@@ -287,6 +293,9 @@ jobs:
           key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
           restore-keys: composer-${{ runner.os }}-
       - name: Install PHP dependencies
+        env:
+          # Read access to the private creator-kit package.
+          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
         run: composer install --no-interaction --prefer-dist --no-progress
       - name: Check migrations and database-sensitive workflows
         run: composer test:mysql

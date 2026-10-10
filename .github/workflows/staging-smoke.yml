@@ -30,6 +30,7 @@ jobs:
         with:
           composer-username: ${{ secrets.FILAMENTEXAMPLES_COMPOSER_USERNAME }}
           composer-password: ${{ secrets.FILAMENTEXAMPLES_COMPOSER_PASSWORD }}
+          composer-auth: ${{ secrets.COMPOSER_AUTH }}
 
       - name: Run bounded staging smoke tests
         env:
