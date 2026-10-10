@@ -98,6 +98,12 @@ from the Cloudflare policy, before any deployment was triggered. Release
   the policy omits makes `Promote production` fail at its staging recheck with
   "Release marker returned HTTP 302" before it triggers any deployment (this
   happened on 2026-09-29). `mouse28.com` itself is not behind Cloudflare Access.
+- Repository secret `COMPOSER_AUTH`: Composer auth JSON with read access to the
+  private `jeffreydavidson/creator-kit` package. Every `composer install` in CI and
+  the `deployment-runtime` action receives it; a guard test in
+  `scripts/forge-deployment.test.mjs` fails if one doesn't. On cold-moon the `forge`
+  user's global Composer auth holds the GitHub token the deploys use. Locally,
+  Composer needs a GitHub token (or `gh` login) that can read the package.
 - Never paste tokens or hook URLs into chat, logs, repository files or workflow
   inputs. Forge's Deployments page shows the deploy-hook URL, token included, in its
   page text: read that page with element inspection, not page-text extraction.
