@@ -42,6 +42,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#1a1040" />
+    <x-site-icons />
     <link rel="preload" href="/fonts/mouse28/poppins-400.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="preload" href="/fonts/mouse28/besley-latin.woff2" as="font" type="font/woff2" crossorigin />
     {!! seo($pageMeta->seo) !!}

@@ -263,6 +263,13 @@ test('landing page provides search and social metadata', function (): void {
         ->assertSeeHtml('<meta property="og:image" content="'.url('/images/hero-family.jpg').'">');
 });
 
+test('landing page links the site icons', function (): void {
+    get(route('home'))->assertOk()
+        ->assertSeeHtml('<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32.png" />')
+        ->assertSeeHtml('<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16.png" />')
+        ->assertSeeHtml('<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png" />');
+});
+
 test('homepage newsletter form renders bot protection', function (): void {
     config()->set('services.resend.key', 'resend-test-key');
     config()->set('services.turnstile.site_key', 'turnstile-test-site-key');
