@@ -3,6 +3,7 @@
 use App\Console\Commands\CopyDatabaseToSqlite;
 use App\Models\ContactInquiry;
 use App\Models\Episode;
+use App\Models\Guide;
 use App\Models\Post;
 use Illuminate\Console\Command;
 use Illuminate\Database\Connection;
@@ -166,6 +167,65 @@ test('the copy refuses to run in production without --force', function (): void 
         ->and(File::exists(copiedDatabasePath()))
         ->toBeFalse();
 });
+
+test('migrations recorded on the source whose files were removed are named and not carried over', function (): void {
+    DB::table('migrations')->insert(['migration' => '2020_01_01_000000_create_retired_table', 'batch' => 1]);
+
+    $exitCode = pendingCommand('db:copy-to-sqlite', ['target' => copiedDatabasePath()])
+        ->expectsOutputToContain('2020_01_01_000000_create_retired_table')
+        ->run();
+
+    expect($exitCode)->toBe(Command::SUCCESS)
+        ->and(copiedDatabase()->table('migrations')
+            ->where('migration', '2020_01_01_000000_create_retired_table')
+            ->exists())
+        ->toBeFalse();
+});
+
+test('the copy refuses a source with pending migrations', function (): void {
+    $latest = DB::table('migrations')
+        ->orderByDesc('id')
+        ->value('migration');
+    DB::table('migrations')
+        ->where('migration', $latest)
+        ->delete();
+
+    $exitCode = pendingCommand('db:copy-to-sqlite', ['target' => copiedDatabasePath()])
+        ->expectsOutputToContain('pending migrations')
+        ->run();
+
+    expect($exitCode)->toBe(Command::FAILURE)
+        ->and(File::exists(copiedDatabasePath()))
+        ->toBeFalse();
+});
+
+test('an empty source table whose columns differ from the migrations is named and copied empty', function (): void {
+    Schema::table('guides', fn (Blueprint $table) => $table->string('icon')
+        ->nullable());
+
+    $exitCode = pendingCommand('db:copy-to-sqlite', ['target' => copiedDatabasePath()])
+        ->expectsOutputToContain('guides')
+        ->run();
+
+    expect($exitCode)->toBe(Command::SUCCESS)
+        ->and(copiedDatabase()->getSchemaBuilder()
+            ->hasColumn('guides', 'icon'))
+        ->toBeFalse();
+})->skip(fn (): bool => getenv('MOUSE28_TEST_MYSQL') === '1', 'Changing a table commits the MySQL test transaction.');
+
+test('the copy stops when a table whose columns differ from the migrations holds rows', function (): void {
+    Schema::table('guides', fn (Blueprint $table) => $table->string('icon')
+        ->nullable());
+    Guide::factory()->create();
+
+    $exitCode = pendingCommand('db:copy-to-sqlite', ['target' => copiedDatabasePath()])
+        ->expectsOutputToContain('guides')
+        ->run();
+
+    expect($exitCode)->toBe(Command::FAILURE)
+        ->and(File::exists(copiedDatabasePath()))
+        ->toBeFalse();
+})->skip(fn (): bool => getenv('MOUSE28_TEST_MYSQL') === '1', 'Changing a table commits the MySQL test transaction.');
 
 test('an empty source table the migrations no longer create is left behind and named', function (): void {
     Schema::create('retired_table', fn (Blueprint $table) => $table->id());

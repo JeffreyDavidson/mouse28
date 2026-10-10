@@ -19,8 +19,10 @@ use Throwable;
  * copies every row of the current database into it (keeping ids), then proves the copy
  * by comparing each table's row count and a content checksum. The cache tables and
  * Telescope's debug tables are left behind; they rebuild themselves. So are empty tables
- * the migrations no longer create (leftovers of removed features); one that still holds
- * rows stops the copy.
+ * the migrations no longer create (leftovers of removed features), and the source's
+ * records of migrations whose files were deleted. An empty table whose columns differ is
+ * copied empty. A leftover table, or a table with different columns, that still holds rows
+ * stops the copy.
  */
 #[Signature('db:copy-to-sqlite {target : Absolute path for the new SQLite database file} {--force : Allow running in production}')]
 #[Description('Copy the current database into a new, freshly migrated SQLite file and verify every table')]
@@ -126,13 +128,23 @@ class CopyDatabaseToSqlite extends Command
         return DB::connection(self::TARGET_CONNECTION);
     }
 
+    /**
+     * Every current migration must have run on the source. Rows the source still records
+     * for migration files that were later deleted are only named: their tables are checked
+     * like any other leftover table.
+     */
     private function assertSameMigrations(Connection $source, Connection $copy): void
     {
-        $missing = array_diff($this->migrationNames($source), $this->migrationNames($copy));
-        $extra = array_diff($this->migrationNames($copy), $this->migrationNames($source));
+        $pending = array_diff($this->migrationNames($copy), $this->migrationNames($source));
 
-        if ($missing !== [] || $extra !== []) {
-            throw new RuntimeException('The source and the new file have run different migrations: '.implode(', ', [...$missing, ...$extra]).'. Run the pending migrations on the source first.');
+        if ($pending !== []) {
+            throw new RuntimeException('The source has pending migrations: '.implode(', ', $pending).'. Run them on the source first.');
+        }
+
+        $retired = array_diff($this->migrationNames($source), $this->migrationNames($copy));
+
+        if ($retired !== []) {
+            $this->warn('Not carried over (recorded on the source, but the migration files no longer exist): '.implode(', ', $retired).'.');
         }
     }
 
@@ -146,7 +158,8 @@ class CopyDatabaseToSqlite extends Command
     }
 
     /**
-     * The tables to copy: every table both databases have, with the same columns.
+     * The tables to copy: every table both databases have. Their columns must match,
+     * unless the source table is empty.
      *
      * @return list<string>
      */
@@ -176,9 +189,17 @@ class CopyDatabaseToSqlite extends Command
             sort($sourceColumns);
             sort($copyColumns);
 
-            if ($sourceColumns !== $copyColumns) {
+            if ($sourceColumns === $copyColumns) {
+                continue;
+            }
+
+            if ($source->table($table)
+                ->exists()) {
                 throw new RuntimeException("The {$table} table has different columns in the source and the new file.");
             }
+
+            // Nothing is lost: the table is copied empty, with the columns the migrations create.
+            $this->warn("The empty {$table} table has different columns in the source; it is copied empty with the migrations' columns.");
         }
 
         return array_values($sourceTables);
