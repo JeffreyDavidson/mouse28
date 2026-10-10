@@ -23,6 +23,35 @@ const marker = (id = 1, sha = revision) =>
     Response.json({ revision: sha, deployment_id: id }, { headers: { 'Cache-Control': 'no-store' } });
 const timedOut = () => Object.assign(new Error('connect ETIMEDOUT test-secret'), { code: 'ETIMEDOUT' });
 
+test('every composer install receives the token for the private creator-kit package', () => {
+    const read = (path) => readFileSync(new URL(`../.github/${path}`, import.meta.url), 'utf8');
+
+    for (const path of ['workflows/ci.yml', 'workflows/browser-smoke.yml']) {
+        const installs = read(path).match(/- name: Install PHP dependencies[\s\S]*?composer install[^\n]*/g) ?? [];
+        assert.ok(installs.length > 0, `${path} has no composer install step`);
+        for (const install of installs) {
+            assert.match(install, /COMPOSER_AUTH: \$\{\{ secrets\.COMPOSER_AUTH \}\}/, path);
+        }
+    }
+
+    const action = read('actions/deployment-runtime/action.yml');
+    assert.match(action, /composer-auth:\s+required: true/);
+    assert.match(action, /COMPOSER_AUTH: \$\{\{ inputs\.composer-auth \}\}/);
+
+    for (const path of [
+        'workflows/deploy-staging.yml',
+        'workflows/promote-production.yml',
+        'workflows/production-smoke.yml',
+        'workflows/staging-smoke.yml',
+    ]) {
+        const uses = read(path).match(/uses: \.\/\.github\/actions\/deployment-runtime[\s\S]*?(?=\n\s*- )/g) ?? [];
+        assert.ok(uses.length > 0, `${path} does not use the deployment runtime`);
+        for (const use of uses) {
+            assert.match(use, /composer-auth: \$\{\{ secrets\.COMPOSER_AUTH \}\}/, path);
+        }
+    }
+});
+
 test('staging workflow uses the guarded deployment operation instead of a separate mutation and wait', () => {
     const workflow = readFileSync(new URL('../.github/workflows/deploy-staging.yml', import.meta.url), 'utf8');
     assert.match(workflow, /node scripts\/forge-deployment\.mjs deploy staging "\$EXPECTED_REVISION"/);
