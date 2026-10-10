@@ -15,6 +15,18 @@ The homepage content order is:
 6. About
 7. Newsletter
 
+## Meta Repo
+
+Plans, the status list, and brand work for Mouse28 live in the private `mouse28-meta` repository, checked out at `~/Projects/mouse28-meta`, not in this repository. This replaces the global `tasks/todo.md`, `_plans/status.md`, and `branding/` locations for this project.
+
+- Write the plan for a piece of work to `cycles/YYYY-MM-DD-short-name/summary.md` there, keep its progress notes current, and finish with the review section in the same file.
+- Keep the status list at `status.md` there.
+- Keep brand rounds under `brand/` there.
+- Follow that repository's `README.md`: commit straight to `main` and push at the end of a task.
+- If the checkout is missing, say so and ask; do not fall back to creating `tasks/`, `_plans/`, or `branding/` here.
+
+This repository holds only what describes the application as it is today.
+
 ## Stack
 
 - PHP 8.5
