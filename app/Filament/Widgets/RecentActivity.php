@@ -3,12 +3,12 @@
 namespace App\Filament\Widgets;
 
 use App\Enums\ContentType;
-use App\Enums\PublishStatus;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
 use Carbon\CarbonInterface;
 use Filament\Widgets\Widget;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 
 class RecentActivity extends Widget
 {

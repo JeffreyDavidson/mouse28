@@ -1,7 +1,6 @@
 <?php
 
 use App\Console\Commands\ImportPublicContent;
-use App\Enums\PublishStatus;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Podcast;
@@ -9,6 +8,7 @@ use App\Models\Post;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 
 covers(ImportPublicContent::class);
 

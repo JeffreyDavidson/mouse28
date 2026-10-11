@@ -1,7 +1,5 @@
 <?php
 
-use App\Enums\PublishStatus;
-use App\Models\Concerns\HasDraftScope;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\NewsletterIssue;
@@ -11,6 +9,8 @@ use Database\Factories\GuideFactory;
 use Database\Factories\NewsletterIssueFactory;
 use Database\Factories\PostFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
+use JeffreyDavidson\CreatorKit\Models\Concerns\HasDraftScope;
 
 covers(HasDraftScope::class);
 

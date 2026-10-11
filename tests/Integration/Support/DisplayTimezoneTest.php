@@ -1,7 +1,7 @@
 <?php
 
-use App\Support\DisplayTimezone;
 use Illuminate\Support\Facades\Date;
+use JeffreyDavidson\CreatorKit\Support\Time\DisplayTimezone;
 
 covers(DisplayTimezone::class);
 

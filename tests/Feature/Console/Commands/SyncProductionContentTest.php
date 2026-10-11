@@ -1,7 +1,6 @@
 <?php
 
 use App\Console\Commands\SyncProductionContent;
-use App\Enums\PublishStatus;
 use App\Models\Episode;
 use App\Models\Post;
 use App\Services\ContentArchive\PublicContentArchiveExporter;
@@ -12,6 +11,7 @@ use Illuminate\Process\PendingProcess;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Process;
 use Illuminate\Support\Facades\Storage;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 
 pest()->use(RefreshDatabase::class);
 

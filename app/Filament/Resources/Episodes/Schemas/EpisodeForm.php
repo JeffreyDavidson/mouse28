@@ -6,10 +6,7 @@ namespace App\Filament\Resources\Episodes\Schemas;
 
 use App\Filament\Forms\Components\ContentTagsInput;
 use App\Filament\Forms\Components\OptimizedImageUpload;
-use App\Filament\Forms\Components\PublishDatePicker;
-use App\Filament\Forms\Components\PublishStatusSelect;
 use App\Filament\Forms\Components\SeoSection;
-use App\Filament\Forms\Components\SlugInput;
 use App\Filament\Forms\Components\SlugSourceInput;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
@@ -18,6 +15,10 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishDatePicker;
+use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishStatusSelect;
+use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SlugInput;
+use JeffreyDavidson\CreatorKit\Support\Time\DisplayTimezone;
 
 class EpisodeForm
 {
@@ -107,7 +108,9 @@ class EpisodeForm
                             ->schema([
                                 PublishStatusSelect::make('status')
                                     ->withoutReview(),
+                                // The picker's own timezone helper text is replaced by this form's helper text, so show it as a hint.
                                 PublishDatePicker::make('published_at')
+                                    ->hint(fn (): string => DisplayTimezone::label())
                                     ->label('Publish Date')
                                     ->helperText('Optional. Leave blank to publish immediately, or choose a future date to schedule.'),
                             ]),

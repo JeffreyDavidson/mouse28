@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\PublishStatus;
 use App\Enums\SourceReviewStatus;
 use App\Models\Category;
 use App\Models\Episode;
@@ -9,6 +8,7 @@ use App\Models\User;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 use Spatie\Activitylog\Models\Activity;
 
 use function Pest\Laravel\actingAs;
