@@ -176,3 +176,13 @@ test('ContactController serves the form through create and store', function (): 
 
     expect($publicMethods)->toBe(['create', 'store']);
 });
+
+test('feeds and Markdown are rendered by creator-kit, not by app copies', function (string $class): void {
+    expect(class_exists($class))->toBeFalse();
+})->with([
+    'App\Support\Feeds\RobotsTxtRenderer',
+    'App\Support\Feeds\RssChannelRenderer',
+    'App\Support\Feeds\SitemapRenderer',
+    'App\Support\Markdown\TrimLinkDestinationsExtension',
+    'App\Support\MarkdownRenderer',
+]);

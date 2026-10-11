@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Support\Feeds\RssChannelRenderer;
 use App\ViewModels\NewsletterRssFeedViewModel;
 use Illuminate\Http\Response;
+use JeffreyDavidson\CreatorKit\Support\Feeds\RssChannelRenderer;
 
 class NewsletterRssController
 {
