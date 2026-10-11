@@ -4,8 +4,6 @@ namespace App\Filament\Resources\Guides\Pages;
 
 use App\Enums\ContentType;
 use App\Filament\Actions\PreviewContentAction;
-use App\Filament\Actions\PublishContentAction;
-use App\Filament\Actions\UnpublishContentAction;
 use App\Filament\Resources\Guides\GuideResource;
 use App\Models\Guide;
 use Filament\Actions\DeleteAction;
@@ -13,6 +11,8 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Contracts\View\View;
+use JeffreyDavidson\CreatorKit\Filament\Actions\PublishContentAction;
+use JeffreyDavidson\CreatorKit\Filament\Actions\UnpublishContentAction;
 
 /** @property Guide $record */
 class EditGuide extends EditRecord

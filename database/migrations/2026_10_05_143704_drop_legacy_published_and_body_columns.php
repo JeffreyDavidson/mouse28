@@ -1,11 +1,11 @@
 <?php
 
-use App\Enums\PublishStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 
 return new class extends Migration
 {

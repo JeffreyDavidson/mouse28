@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\PublishStatus;
 use App\Filament\Widgets\StatsOverview;
 use App\Models\Episode;
 use App\Models\Guide;
@@ -8,6 +7,7 @@ use App\Models\Post;
 use App\Models\Subscriber;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 
 pest()->use(RefreshDatabase::class);
 

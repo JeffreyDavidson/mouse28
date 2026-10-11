@@ -1,7 +1,7 @@
 <?php
 
-use App\Support\Feeds\RobotsTxtRenderer;
 use App\ViewModels\RobotsTxtViewModel;
+use JeffreyDavidson\CreatorKit\Support\Feeds\RobotsTxtRenderer;
 
 covers(RobotsTxtViewModel::class);
 

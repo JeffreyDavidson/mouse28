@@ -1,7 +1,6 @@
 <?php
 
 use App\Enums\ContentType;
-use App\Enums\PublishStatus;
 use App\Filament\Resources\Guides\GuideResource;
 use App\Filament\Widgets\ContentCalendar;
 use App\Models\Episode;
@@ -10,6 +9,7 @@ use App\Models\Post;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 
 pest()->use(RefreshDatabase::class);
 

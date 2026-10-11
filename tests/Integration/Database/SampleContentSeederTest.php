@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\PublishStatus;
 use App\Models\Category;
 use App\Models\Guide;
 use App\Models\NewsletterIssue;
@@ -9,6 +8,7 @@ use App\Models\Subscriber;
 use App\Models\User;
 use Database\Seeders\SampleContentSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 
 covers(SampleContentSeeder::class);
 

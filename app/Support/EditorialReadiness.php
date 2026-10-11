@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Support;
 
-use App\Enums\PublishStatus;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 
 class EditorialReadiness
 {

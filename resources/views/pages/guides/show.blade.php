@@ -1,4 +1,4 @@
-@inject('markdown', 'App\Support\MarkdownRenderer')
+@inject('markdown', 'JeffreyDavidson\CreatorKit\Support\Markdown\MarkdownRenderer')
 <x-layouts.app
     :title="($guide->seo?->title ?: $guide->title).' | Mouse28'"
     :description="$guide->seo?->description ?: Str::limit($guide->excerpt, 160)"

@@ -1,7 +1,6 @@
 <?php
 
 use App\Enums\ContentType;
-use App\Enums\PublishStatus;
 use App\Filament\Resources\Guides\GuideResource;
 use App\Filament\Widgets\RecentActivity;
 use App\Models\Episode;
@@ -13,6 +12,7 @@ use Database\Factories\PostFactory;
 use Illuminate\Database\Events\QueryExecuted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 
 pest()->use(RefreshDatabase::class);
 

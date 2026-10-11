@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services\ContentArchive;
 
-use App\Enums\PublishStatus;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Podcast;
@@ -12,6 +11,7 @@ use App\Models\Post;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 use UnexpectedValueException;
 
 /**

@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Support\DisplayTimezone;
 use App\Support\Monitoring\Health\RuntimeHealthMonitor;
 use App\Support\Monitoring\Nightwatch\RedactNightwatchCacheEvent;
 use App\Support\Monitoring\Nightwatch\RedactNightwatchCommand;
@@ -31,6 +30,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use JeffreyDavidson\CreatorKit\Support\Time\DisplayTimezone;
 use Laravel\Nightwatch\Facades\Nightwatch;
 use Sentry\ClientBuilder;
 

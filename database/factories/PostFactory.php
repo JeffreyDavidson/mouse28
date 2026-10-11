@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Enums\PublishStatus;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\User;
 use Database\Factories\Concerns\HasSeoState;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 
 /** @extends Factory<Post> */
 class PostFactory extends Factory

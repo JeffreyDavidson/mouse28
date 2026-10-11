@@ -8,10 +8,7 @@ use App\Enums\GuideCategory;
 use App\Filament\Forms\Components\AuthorsSelect;
 use App\Filament\Forms\Components\ContentTagsInput;
 use App\Filament\Forms\Components\OptimizedImageUpload;
-use App\Filament\Forms\Components\PublishDatePicker;
-use App\Filament\Forms\Components\PublishStatusSelect;
 use App\Filament\Forms\Components\SeoSection;
-use App\Filament\Forms\Components\SlugInput;
 use App\Filament\Forms\Components\SlugSourceInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\MarkdownEditor;
@@ -23,6 +20,9 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Config;
+use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishDatePicker;
+use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishStatusSelect;
+use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SlugInput;
 
 class GuideForm
 {
@@ -81,8 +81,7 @@ class GuideForm
                             ->description('Save the guide, then use the Publish action when its content is ready.')
                             ->schema([
                                 PublishStatusSelect::make('status'),
-                                PublishDatePicker::make('published_at')
-                                    ->helperText('Optional. Leave blank to publish immediately, or choose a future date to schedule.'),
+                                PublishDatePicker::make('published_at'),
                             ]),
                     ]),
                 Grid::make(2)

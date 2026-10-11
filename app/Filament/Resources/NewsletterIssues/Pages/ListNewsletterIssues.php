@@ -2,13 +2,13 @@
 
 namespace App\Filament\Resources\NewsletterIssues\Pages;
 
-use App\Enums\PublishStatus;
 use App\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
 use App\Models\NewsletterIssue;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 
 class ListNewsletterIssues extends ListRecords
 {

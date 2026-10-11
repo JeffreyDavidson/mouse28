@@ -1,4 +1,4 @@
-@inject('markdown', 'App\Support\MarkdownRenderer')
+@inject('markdown', 'JeffreyDavidson\CreatorKit\Support\Markdown\MarkdownRenderer')
 <x-layouts.app
     :title="$issue->title.' | Mouse28'"
     :description="Str::limit($issue->excerpt ?: strip_tags($markdown->safe($issue->content)), 160)"

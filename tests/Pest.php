@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\PublishStatus;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Podcast;
@@ -21,6 +20,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Testing\PendingCommand;
 use Illuminate\Testing\TestResponse;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\BrowserTestCase;
 use Tests\TestCase;
