@@ -186,3 +186,22 @@ test('feeds and Markdown are rendered by creator-kit, not by app copies', functi
     'App\Support\Markdown\TrimLinkDestinationsExtension',
     'App\Support\MarkdownRenderer',
 ]);
+
+test('the publishing core comes from creator-kit, not from app copies', function (string $class): void {
+    expect(class_exists($class) || interface_exists($class) || trait_exists($class) || enum_exists($class))->toBeFalse();
+})->with([
+    'App\Contracts\Publishable',
+    'App\Enums\PublishStatus',
+    'App\Models\Attributes\PublishingStatus',
+    'App\Models\Concerns\HasPublishingConfiguration',
+    'App\Models\Concerns\HasPublicationDate',
+    'App\Models\Concerns\HasPublishingStatus',
+    'App\Models\Concerns\LocksSlugAfterPublication',
+    'App\Models\Concerns\HasDraftScope',
+    'App\Filament\Actions\PublishContentAction',
+    'App\Filament\Actions\UnpublishContentAction',
+    'App\Filament\Forms\Components\PublishStatusSelect',
+    'App\Filament\Forms\Components\PublishDatePicker',
+    'App\Filament\Forms\Components\SlugInput',
+    'App\Support\DisplayTimezone',
+]);

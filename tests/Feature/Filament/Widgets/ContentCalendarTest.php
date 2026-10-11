@@ -1,7 +1,6 @@
 <?php
 
 use App\Enums\ContentType;
-use App\Enums\PublishStatus;
 use App\Filament\Resources\Episodes\EpisodeResource;
 use App\Filament\Resources\Guides\GuideResource;
 use App\Filament\Resources\Posts\PostResource;
@@ -10,6 +9,7 @@ use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 
 use function Pest\Laravel\travelTo;
 use function Pest\Livewire\livewire;

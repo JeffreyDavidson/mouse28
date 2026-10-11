@@ -2,10 +2,10 @@
 
 namespace Database\Factories;
 
-use App\Enums\PublishStatus;
 use App\Models\NewsletterIssue;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Date;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 
 /**
  * @extends Factory<NewsletterIssue>

@@ -2,9 +2,6 @@
 
 namespace App\Filament\Resources\NewsletterIssues\Schemas;
 
-use App\Filament\Forms\Components\PublishDatePicker;
-use App\Filament\Forms\Components\PublishStatusSelect;
-use App\Filament\Forms\Components\SlugInput;
 use App\Filament\Forms\Components\SlugSourceInput;
 use App\Models\NewsletterIssue;
 use Filament\Forms\Components\MarkdownEditor;
@@ -15,6 +12,9 @@ use Filament\Support\Icons\Heroicon;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Route as Router;
 use Illuminate\Support\Str;
+use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishDatePicker;
+use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishStatusSelect;
+use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SlugInput;
 
 class NewsletterIssueForm
 {
@@ -58,7 +58,7 @@ class NewsletterIssueForm
                             ->disabled(fn (?NewsletterIssue $record): bool => $record?->wasSent() ?? false)
                             ->helperText(fn (?NewsletterIssue $record): string => $record?->wasSent() === true
                                 ? 'Locked after sending, so emailed links keep working.'
-                                : 'Optional. Leave blank to publish immediately, or choose a future date to schedule.'),
+                                : PublishDatePicker::HELPER_TEXT),
                     ]),
             ]);
     }

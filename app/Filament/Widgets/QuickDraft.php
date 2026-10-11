@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Widgets;
 
-use App\Enums\PublishStatus;
 use App\Models\Post;
 use App\Models\User;
 use Filament\Forms\Components\Textarea;
@@ -15,6 +14,7 @@ use Filament\Notifications\Notification;
 use Filament\Schemas\Schema;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Gate;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 
 /** @property-read Schema $form */
 class QuickDraft extends Widget implements HasForms

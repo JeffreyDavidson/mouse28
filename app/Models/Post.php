@@ -2,16 +2,10 @@
 
 namespace App\Models;
 
-use App\Contracts\Publishable;
-use App\Enums\PublishStatus;
-use App\Models\Attributes\PublishingStatus;
 use App\Models\Concerns\HasAuthors;
-use App\Models\Concerns\HasDraftScope;
 use App\Models\Concerns\HasFeaturedImage;
-use App\Models\Concerns\HasPublishingStatus;
 use App\Models\Concerns\HasSourceReview;
 use App\Models\Concerns\HasTagsUntilForceDeleted;
-use App\Models\Concerns\LocksSlugAfterPublication;
 use App\Models\Concerns\LogsEditorialActivity;
 use App\Models\Concerns\ManagesStoredMedia;
 use App\Models\Concerns\ScopesMissingSeo;
@@ -32,6 +26,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
+use JeffreyDavidson\CreatorKit\Contracts\Publishable;
+use JeffreyDavidson\CreatorKit\Contracts\ReportsPublishingIssues;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
+use JeffreyDavidson\CreatorKit\Models\Attributes\PublishingStatus;
+use JeffreyDavidson\CreatorKit\Models\Concerns\HasDraftScope;
+use JeffreyDavidson\CreatorKit\Models\Concerns\HasPublishingStatus;
+use JeffreyDavidson\CreatorKit\Models\Concerns\LocksSlugAfterPublication;
 use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
 use RalphJSmit\Laravel\SEO\Models\SEO;
 use RalphJSmit\Laravel\SEO\Support\HasSEO;
@@ -84,7 +85,7 @@ use RalphJSmit\Laravel\SEO\Support\HasSEO;
 #[ObservedBy(PostObserver::class)]
 #[PublishingStatus]
 #[Sluggable(from: 'title', maxLength: 255)]
-class Post extends Model implements Publishable
+class Post extends Model implements Publishable, ReportsPublishingIssues
 {
     /** @use HasFactory<PostFactory> */
     use HasAuthors, HasDraftScope, HasFactory, HasFeaturedImage, HasPublishingStatus, HasSEO, HasSourceReview, HasTagsUntilForceDeleted, LocksSlugAfterPublication, LogsEditorialActivity, ManagesStoredMedia, ScopesMissingSeo, ScopesNewestFirst, SoftDeletes;

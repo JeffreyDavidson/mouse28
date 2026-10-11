@@ -1,7 +1,5 @@
 <?php
 
-use App\Enums\PublishStatus;
-use App\Filament\Forms\Components\PublishDatePicker;
 use App\Filament\Resources\Episodes\Pages\EditEpisode;
 use App\Filament\Resources\Guides\Pages\EditGuide;
 use App\Filament\Resources\NewsletterIssues\Pages\EditNewsletterIssue;
@@ -13,6 +11,8 @@ use App\Models\Post;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
+use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishDatePicker;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
@@ -67,7 +67,9 @@ test('a stored UTC publish date is shown in Eastern time with a timezone hint', 
 
     livewire($page, ['record' => $record->getRouteKey()])
         ->assertSet('data.published_at', '2026-10-05 21:00:00')
-        ->assertSee('Eastern Time (America/New_York)');
+        ->assertSee('Publish Date')
+        ->assertSee('Eastern Time (America/New_York)')
+        ->assertSee('Leave blank to publish immediately');
 })->with('publish date edit pages');
 
 dataset('live publish date edit pages', [

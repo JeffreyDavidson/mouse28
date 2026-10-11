@@ -2,12 +2,6 @@
 
 namespace App\Models;
 
-use App\Contracts\Publishable;
-use App\Enums\PublishStatus;
-use App\Models\Attributes\PublishingStatus;
-use App\Models\Concerns\HasDraftScope;
-use App\Models\Concerns\HasPublishingStatus;
-use App\Models\Concerns\LocksSlugAfterPublication;
 use App\Models\Concerns\LogsEditorialActivity;
 use App\Models\Concerns\ScopesNewestFirst;
 use Carbon\CarbonInterface;
@@ -19,6 +13,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use JeffreyDavidson\CreatorKit\Contracts\Publishable;
+use JeffreyDavidson\CreatorKit\Contracts\ReportsPublishingIssues;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
+use JeffreyDavidson\CreatorKit\Models\Attributes\PublishingStatus;
+use JeffreyDavidson\CreatorKit\Models\Concerns\HasDraftScope;
+use JeffreyDavidson\CreatorKit\Models\Concerns\HasPublishingStatus;
+use JeffreyDavidson\CreatorKit\Models\Concerns\LocksSlugAfterPublication;
 use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
 
 /**
@@ -44,7 +45,7 @@ use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
 ])]
 #[PublishingStatus]
 #[Sluggable(from: 'title', maxLength: 255)]
-class NewsletterIssue extends Model implements Publishable
+class NewsletterIssue extends Model implements Publishable, ReportsPublishingIssues
 {
     /** @use HasFactory<NewsletterIssueFactory> */
     use HasDraftScope, HasFactory, HasPublishingStatus, LocksSlugAfterPublication, LogsEditorialActivity, ScopesNewestFirst, SoftDeletes;

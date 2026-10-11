@@ -1,8 +1,5 @@
 <?php
 
-use App\Contracts\Publishable;
-use App\Enums\PublishStatus;
-use App\Models\Concerns\HasPublishingStatus;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\NewsletterIssue;
@@ -13,6 +10,9 @@ use Database\Factories\NewsletterIssueFactory;
 use Database\Factories\PostFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
+use JeffreyDavidson\CreatorKit\Contracts\Publishable;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
+use JeffreyDavidson\CreatorKit\Models\Concerns\HasPublishingStatus;
 
 covers(HasPublishingStatus::class);
 

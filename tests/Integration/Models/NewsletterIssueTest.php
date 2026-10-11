@@ -1,12 +1,12 @@
 <?php
 
-use App\Contracts\Publishable;
-use App\Enums\PublishStatus;
 use App\Models\NewsletterDelivery;
 use App\Models\NewsletterIssue;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
+use JeffreyDavidson\CreatorKit\Contracts\Publishable;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 use Spatie\Activitylog\Models\Activity;
 
 use function Pest\Laravel\actingAs;

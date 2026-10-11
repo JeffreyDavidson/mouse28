@@ -6,13 +6,13 @@ namespace App\Mail;
 
 use App\Filament\Resources\ContactInquiries\ContactInquiryResource;
 use App\Models\ContactInquiry;
-use App\Support\DisplayTimezone;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Mailables\Headers;
 use Illuminate\Support\Facades\Config;
+use JeffreyDavidson\CreatorKit\Support\Time\DisplayTimezone;
 
 /**
  * Notifies the administrators of a contact inquiry. Sent by SendContactInquiryEmails,

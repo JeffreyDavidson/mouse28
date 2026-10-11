@@ -24,7 +24,7 @@
                                     class="text-mouse-navy/75 text-sm"
                                     datetime="{{ $item['date']->toIso8601String() }}"
                                 >
-                                    {{ \App\Support\DisplayTimezone::convert($item['date'])->format('M j, g:ia') }}
+                                    {{ \JeffreyDavidson\CreatorKit\Support\Time\DisplayTimezone::convert($item['date'])->format('M j, g:ia') }}
                                 </time>
                                 <x-filament::badge :color="$item['status']->getColor()">
                                     {{ $item['status']->getLabel() }}

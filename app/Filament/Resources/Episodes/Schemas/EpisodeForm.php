@@ -6,10 +6,7 @@ namespace App\Filament\Resources\Episodes\Schemas;
 
 use App\Filament\Forms\Components\ContentTagsInput;
 use App\Filament\Forms\Components\OptimizedImageUpload;
-use App\Filament\Forms\Components\PublishDatePicker;
-use App\Filament\Forms\Components\PublishStatusSelect;
 use App\Filament\Forms\Components\SeoSection;
-use App\Filament\Forms\Components\SlugInput;
 use App\Filament\Forms\Components\SlugSourceInput;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
@@ -18,6 +15,9 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishDatePicker;
+use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishStatusSelect;
+use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SlugInput;
 
 class EpisodeForm
 {
@@ -107,9 +107,7 @@ class EpisodeForm
                             ->schema([
                                 PublishStatusSelect::make('status')
                                     ->withoutReview(),
-                                PublishDatePicker::make('published_at')
-                                    ->label('Publish Date')
-                                    ->helperText('Optional. Leave blank to publish immediately, or choose a future date to schedule.'),
+                                PublishDatePicker::make('published_at'),
                             ]),
                     ]),
 

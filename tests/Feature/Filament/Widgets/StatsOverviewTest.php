@@ -1,13 +1,13 @@
 <?php
 
 use App\Enums\ContentType;
-use App\Enums\PublishStatus;
 use App\Filament\Widgets\StatsOverview;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
 use App\Models\Subscriber;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 
 use function Pest\Livewire\livewire;
 

@@ -1,7 +1,6 @@
 <?php
 
 use App\Enums\GuideCategory;
-use App\Enums\PublishStatus;
 use App\Filament\Resources\Guides\GuideResource;
 use App\Filament\Resources\Guides\Pages\CreateGuide;
 use App\Models\Guide;
@@ -9,6 +8,7 @@ use App\Models\User;
 use Filament\Forms\Components\Select;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;

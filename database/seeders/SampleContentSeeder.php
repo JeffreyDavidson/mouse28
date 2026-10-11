@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Enums\GuideCategory;
-use App\Enums\PublishStatus;
 use App\Models\Category;
 use App\Models\Episode;
 use App\Models\Guide;
@@ -13,6 +12,7 @@ use App\Models\Subscriber;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 
 class SampleContentSeeder extends Seeder
 {

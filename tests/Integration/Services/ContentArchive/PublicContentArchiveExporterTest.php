@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\PublishStatus;
 use App\Models\Category;
 use App\Models\Episode;
 use App\Models\Guide;
@@ -12,6 +11,7 @@ use Database\Factories\EpisodeFactory;
 use Database\Factories\GuideFactory;
 use Database\Factories\PostFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 
 covers(PublicContentArchiveExporter::class, PublicContentArchiveSchema::class);
 

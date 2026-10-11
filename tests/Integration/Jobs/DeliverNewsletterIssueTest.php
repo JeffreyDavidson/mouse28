@@ -1,6 +1,5 @@
 <?php
 
-use App\Enums\PublishStatus;
 use App\Jobs\DeliverNewsletterIssue;
 use App\Mail\NewsletterIssueMail;
 use App\Models\NewsletterDelivery;
@@ -8,6 +7,7 @@ use App\Models\Subscriber;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Queue\Middleware\RateLimited;
 use Illuminate\Support\Facades\Mail;
+use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 
 covers(DeliverNewsletterIssue::class);
 
