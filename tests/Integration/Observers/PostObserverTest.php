@@ -67,7 +67,7 @@ test('a failed generation logs a warning without the path and still saves the po
     Storage::disk('public')->put('posts/private-name.png', 'not an image');
     Log::shouldReceive('warning')
         ->once()
-        ->with('Responsive post image generation failed. Run posts:generate-image-variants to retry.');
+        ->with('Responsive post image generation failed. Run media:repair-responsive-images to retry.');
 
     $post = Post::factory()->create(['featured_image_path' => 'posts/private-name.png']);
 

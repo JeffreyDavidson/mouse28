@@ -3,7 +3,7 @@ paths:
   - 'app/Console/Commands/**'
   - 'app/Services/ContentArchive/**'
   - 'resources/content-artwork/**'
-  - 'app/Services/*ResponsiveImage*.php'
+  - 'config/creator-kit.php'
   - 'resources/views/components/post-artwork.blade.php'
   - 'resources/views/pages/episodes/show.blade.php'
 ---
@@ -20,4 +20,4 @@ Forge runs staging with APP_ENV=production. `PublicContentImportGuard` decides: 
 Repository-ready post covers live directly in `resources/content-artwork/posts` as `<post-slug>.webp`; `content:attach-artwork` discovers and attaches them automatically. Keep drafts, alternatives, demo artwork, and unassigned concepts in `resources/content-artwork/concepts`, which the command must ignore.
 
 ## Keep responsive image generation outside page requests
-Responsive variants are generated on save by the model observers (`ResponsiveImageLifecycle`) and by the `*:generate-image-variants` and `media:repair-responsive-images` commands; rendering only checks which variants exist and falls back to the original. Preserve originals. Variants are `{dir}/responsive/{filename}-{width}.webp` for `config('media.responsive_widths')`; posts, guides and the podcast use TLA's `ResponsiveImageVariants` unchanged, episodes use the mouse28-only `SquareResponsiveImageVariants` (centered square crops) so the square frame never shows a stretched wide image. Variant names are not content fingerprints and post variants are served with a one-year immutable edge policy, so never overwrite a stored image or variant in place with different content: store a new file and point the record at it. Production generation and repair runs require separate approval. The legacy content-addressed variants (`posts/responsive/<sha256>-*.webp`, `episodes/responsive/v1/`) are unreferenced and only a guarded, dry-run-first prune may remove them.
+Responsive variants are generated on save by the model observers (creator-kit's `StoredMediaLifecycle`) and by the `*:generate-image-variants` and `media:repair-responsive-images` commands; rendering only checks which variants exist and falls back to the original. Preserve originals. Variants are `{dir}/responsive/{filename}-{width}.webp` for `config('creator-kit.media.responsive_widths')`; posts, guides and the podcast use creator-kit's `ResponsiveImageVariants`, episodes its `SquareResponsiveImageVariants` (centered square crops) so the square frame never shows a stretched wide image. Variant names are not content fingerprints and post variants are served with a one-year immutable edge policy, so never overwrite a stored image or variant in place with different content: store a new file and point the record at it. Production generation and repair runs require separate approval. The legacy content-addressed variants (`posts/responsive/<sha256>-*.webp`, `episodes/responsive/v1/`) are unreferenced and only a guarded, dry-run-first prune may remove them.

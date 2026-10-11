@@ -2,7 +2,7 @@
 
 use App\Models\Episode;
 use App\Presenters\EpisodePresenter;
-use App\Services\SquareResponsiveImageVariants;
+use JeffreyDavidson\CreatorKit\Services\Media\SquareResponsiveImageVariants;
 
 covers(EpisodePresenter::class);
 

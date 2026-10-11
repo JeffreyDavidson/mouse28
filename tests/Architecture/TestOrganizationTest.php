@@ -91,7 +91,10 @@ test('test paths mirror their application source', function (string $suite): voi
         'Database/Migrations/DropLegacyMetaColumnsTest.php' => 'database/migrations/2026_10_06_003047_drop_legacy_meta_columns.php',
         'Database/Migrations/AddReviewFieldsToPostsTableTest.php' => 'database/migrations/2026_10_07_222557_add_review_fields_to_posts_table.php',
         'Database/Migrations/DropLegacyEpisodeMediaAndPodcastSocialColumnsTest.php' => 'database/migrations/2026_10_07_031500_drop_legacy_episode_media_and_podcast_social_columns.php',
-        'Config/MediaTest.php' => 'config/media.php',
+        'Config/MediaTest.php' => 'config/creator-kit.php',
+        // The package's commands, run against Mouse28's models and its list in config/creator-kit.php.
+        'Console/Commands/RepairResponsiveImagesTest.php' => 'config/creator-kit.php',
+        'Console/Commands/VerifyResponsiveImagesTest.php' => 'config/creator-kit.php',
         'Config/SearchTest.php' => 'config/search.php',
         'Config/DatabaseTest.php' => 'config/database.php',
         'Http/ProductionSmokeTest.php' => 'routes/web.php',

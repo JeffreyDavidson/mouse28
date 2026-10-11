@@ -5,20 +5,20 @@ declare(strict_types=1);
 namespace App\Observers;
 
 use App\Models\Episode;
-use App\Services\ResponsiveImageLifecycle;
-use App\Services\SquareResponsiveImageVariants;
 use App\Support\PrimaryPodcast;
+use JeffreyDavidson\CreatorKit\Services\Media\SquareResponsiveImageVariants;
+use JeffreyDavidson\CreatorKit\Services\Media\StoredMediaLifecycle;
 
 /**
  * Episode covers are shown in square frames, so their variants are square crops.
  */
 class EpisodeObserver
 {
-    private readonly ResponsiveImageLifecycle $lifecycle;
+    private readonly StoredMediaLifecycle $lifecycle;
 
     public function __construct(SquareResponsiveImageVariants $images, private readonly PrimaryPodcast $primaryPodcast)
     {
-        $this->lifecycle = new ResponsiveImageLifecycle($images);
+        $this->lifecycle = new StoredMediaLifecycle($images);
     }
 
     /** Mouse28 has one show, so an episode created without a podcast joins it. */
@@ -42,6 +42,6 @@ class EpisodeObserver
 
     public function forceDeleted(Episode $episode): void
     {
-        $this->lifecycle->deleted($episode, 'featured_image_path');
+        $this->lifecycle->forceDeleted($episode, 'featured_image_path', 'episode');
     }
 }

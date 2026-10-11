@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Observers;
 
 use App\Models\Guide;
-use App\Services\ResponsiveImageLifecycle;
+use JeffreyDavidson\CreatorKit\Services\Media\StoredMediaLifecycle;
 
 class GuideObserver
 {
-    public function __construct(private readonly ResponsiveImageLifecycle $lifecycle) {}
+    public function __construct(private readonly StoredMediaLifecycle $lifecycle) {}
 
     public function created(Guide $guide): void
     {
@@ -23,6 +23,6 @@ class GuideObserver
 
     public function forceDeleted(Guide $guide): void
     {
-        $this->lifecycle->deleted($guide, 'featured_image_path');
+        $this->lifecycle->forceDeleted($guide, 'featured_image_path', 'guide');
     }
 }
