@@ -18,7 +18,6 @@ use Filament\Support\Icons\Heroicon;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishDatePicker;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishStatusSelect;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SlugInput;
-use JeffreyDavidson\CreatorKit\Support\Time\DisplayTimezone;
 
 class EpisodeForm
 {
@@ -108,11 +107,7 @@ class EpisodeForm
                             ->schema([
                                 PublishStatusSelect::make('status')
                                     ->withoutReview(),
-                                // The picker's own timezone helper text is replaced by this form's helper text, so show it as a hint.
-                                PublishDatePicker::make('published_at')
-                                    ->hint(fn (): string => DisplayTimezone::label())
-                                    ->label('Publish Date')
-                                    ->helperText('Optional. Leave blank to publish immediately, or choose a future date to schedule.'),
+                                PublishDatePicker::make('published_at'),
                             ]),
                     ]),
 

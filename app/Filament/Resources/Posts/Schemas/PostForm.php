@@ -24,7 +24,6 @@ use Illuminate\Support\Facades\Config;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishDatePicker;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishStatusSelect;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SlugInput;
-use JeffreyDavidson\CreatorKit\Support\Time\DisplayTimezone;
 
 class PostForm
 {
@@ -127,11 +126,7 @@ class PostForm
                             ->description('Save the post, then use the Publish action when its content is ready.')
                             ->schema([
                                 PublishStatusSelect::make('status'),
-                                // The picker's own timezone helper text is replaced by this form's helper text, so show it as a hint.
-                                PublishDatePicker::make('published_at')
-                                    ->hint(fn (): string => DisplayTimezone::label())
-                                    ->label('Publish Date')
-                                    ->helperText('Optional. Leave blank to publish immediately, or choose a future date to schedule.'),
+                                PublishDatePicker::make('published_at'),
                             ]),
                     ]),
 

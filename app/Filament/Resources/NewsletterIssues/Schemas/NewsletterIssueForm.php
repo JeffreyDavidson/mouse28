@@ -15,7 +15,6 @@ use Illuminate\Support\Str;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishDatePicker;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishStatusSelect;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SlugInput;
-use JeffreyDavidson\CreatorKit\Support\Time\DisplayTimezone;
 
 class NewsletterIssueForm
 {
@@ -55,13 +54,11 @@ class NewsletterIssueForm
                     ->description('Save the issue, then use the Publish action when its content is ready.')
                     ->schema([
                         PublishStatusSelect::make('status'),
-                        // The picker's own timezone helper text is replaced by this form's helper text, so show it as a hint.
                         PublishDatePicker::make('published_at')
-                            ->hint(fn (): string => DisplayTimezone::label())
                             ->disabled(fn (?NewsletterIssue $record): bool => $record?->wasSent() ?? false)
                             ->helperText(fn (?NewsletterIssue $record): string => $record?->wasSent() === true
                                 ? 'Locked after sending, so emailed links keep working.'
-                                : 'Optional. Leave blank to publish immediately, or choose a future date to schedule.'),
+                                : PublishDatePicker::HELPER_TEXT),
                     ]),
             ]);
     }
