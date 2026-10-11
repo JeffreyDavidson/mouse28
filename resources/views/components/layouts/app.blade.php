@@ -11,10 +11,10 @@
 ])
 
 {{--
-    A page passes its App\Data\PageMeta from its PageViewModel. Pages not moved to one yet pass
+    A page passes its JeffreyDavidson\CreatorKit\Data\PageMeta from its PageViewModel. Pages not moved to one yet pass
     their metadata as the props above, and App\View\SiteSeo builds the same tags from them.
 --}}
-@use('App\Data\PageMeta')
+@use('JeffreyDavidson\CreatorKit\Data\PageMeta')
 @inject('siteSeo', 'App\View\SiteSeo')
 
 @php

@@ -7,8 +7,8 @@ use App\Models\Guide;
 use App\Models\Podcast;
 use App\Models\Post;
 use App\Models\User;
-use App\Support\Seo\JsonLd;
 use Illuminate\Support\Str;
+use JeffreyDavidson\CreatorKit\Support\Seo\JsonLd;
 use UnexpectedValueException;
 
 class StructuredData

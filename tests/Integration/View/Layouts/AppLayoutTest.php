@@ -1,9 +1,9 @@
 <?php
 
-use App\Data\PageMeta;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ViewErrorBag;
+use JeffreyDavidson\CreatorKit\Data\PageMeta;
 use RalphJSmit\Laravel\SEO\Support\SEOData;
 
 pest()->use(RefreshDatabase::class);

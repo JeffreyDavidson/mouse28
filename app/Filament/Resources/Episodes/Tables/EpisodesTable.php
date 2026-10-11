@@ -4,7 +4,6 @@ namespace App\Filament\Resources\Episodes\Tables;
 
 use App\Filament\Tables\Actions\SoftDeleteBulkActions;
 use App\Filament\Tables\Filters\MissingArtworkFilter;
-use App\Filament\Tables\Filters\MissingSeoFilter;
 use App\Models\Episode;
 use App\Presenters\EpisodePresenter;
 use App\Support\EditorialReadiness;
@@ -13,6 +12,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use JeffreyDavidson\CreatorKit\Filament\Tables\Filters\MissingSeoFilter;
 
 class EpisodesTable
 {

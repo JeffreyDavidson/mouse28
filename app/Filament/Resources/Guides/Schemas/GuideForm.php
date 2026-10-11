@@ -8,7 +8,6 @@ use App\Enums\GuideCategory;
 use App\Filament\Forms\Components\AuthorsSelect;
 use App\Filament\Forms\Components\ContentTagsInput;
 use App\Filament\Forms\Components\OptimizedImageUpload;
-use App\Filament\Forms\Components\SeoSection;
 use App\Filament\Forms\Components\SlugSourceInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\MarkdownEditor;
@@ -22,6 +21,7 @@ use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Config;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishDatePicker;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishStatusSelect;
+use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SeoSection;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SlugInput;
 
 class GuideForm

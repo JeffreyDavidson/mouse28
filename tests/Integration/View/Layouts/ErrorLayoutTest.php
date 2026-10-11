@@ -1,7 +1,7 @@
 <?php
 
-use App\Data\PageMeta;
 use Illuminate\Support\Facades\Blade;
+use JeffreyDavidson\CreatorKit\Data\PageMeta;
 use RalphJSmit\Laravel\SEO\Support\SEOData;
 
 test('the error layout renders the seo tags of the page meta it is given without a canonical link', function (): void {

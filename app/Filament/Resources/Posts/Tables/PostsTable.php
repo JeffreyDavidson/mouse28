@@ -5,7 +5,6 @@ namespace App\Filament\Resources\Posts\Tables;
 use App\Enums\SourceReviewStatus;
 use App\Filament\Tables\Actions\SoftDeleteBulkActions;
 use App\Filament\Tables\Filters\MissingArtworkFilter;
-use App\Filament\Tables\Filters\MissingSeoFilter;
 use App\Filament\Tables\Filters\ReviewDueFilter;
 use App\Models\Post;
 use App\Support\EditorialReadiness;
@@ -15,6 +14,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use JeffreyDavidson\CreatorKit\Filament\Tables\Filters\MissingSeoFilter;
 
 class PostsTable
 {
