@@ -205,3 +205,16 @@ test('the publishing core comes from creator-kit, not from app copies', function
     'App\Filament\Forms\Components\SlugInput',
     'App\Support\DisplayTimezone',
 ]);
+
+test('the SEO building blocks come from creator-kit, not from app copies', function (string $class): void {
+    expect(class_exists($class) || interface_exists($class) || trait_exists($class))->toBeFalse();
+})->with([
+    'App\Support\Seo\JsonLd',
+    'App\Support\Seo\CollectionListing',
+    'App\Support\TextSearch',
+    'App\Data\PageMeta',
+    'App\Contracts\PageViewModel',
+    'App\Filament\Forms\Components\SeoSection',
+    'App\Models\Concerns\ScopesMissingSeo',
+    'App\Filament\Tables\Filters\MissingSeoFilter',
+]);

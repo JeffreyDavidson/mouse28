@@ -8,11 +8,11 @@ use App\Enums\SearchContentType;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
-use App\Support\TextSearch;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Config;
+use JeffreyDavidson\CreatorKit\Support\Search\TextSearch;
 
 /**
  * @phpstan-type SearchResultPage LengthAwarePaginator<int, Post>|LengthAwarePaginator<int, Guide>|LengthAwarePaginator<int, Episode>
