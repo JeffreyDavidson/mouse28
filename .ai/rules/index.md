@@ -17,5 +17,5 @@ Before planning or editing, find the row whose globs match the file's path and r
 | tests/Browser/** | .ai/rules/tests/browser.md |
 | tests/Architecture/** | .ai/rules/tests/architecture.md |
 | app/Queries/** | .ai/rules/queries.md |
-| app/ViewModels/**, app/View/SiteSeo.php, app/Data/PageMeta.php, app/Contracts/PageViewModel.php, app/Support/Seo/**, resources/views/components/layouts/** | .ai/rules/view-models.md |
+| app/ViewModels/**, app/View/SiteSeo.php, resources/views/components/layouts/** | .ai/rules/view-models.md |
 | app/Rules/** | .ai/rules/rules.md |

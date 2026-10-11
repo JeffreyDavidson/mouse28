@@ -6,10 +6,10 @@
 ])
 
 {{--
-    An error page may pass an App\Data\PageMeta; otherwise App\View\SiteSeo builds its noindex
+    An error page may pass an JeffreyDavidson\CreatorKit\Data\PageMeta; otherwise App\View\SiteSeo builds its noindex
     tags from the props above. Error pages render no JSON-LD.
 --}}
-@use('App\Data\PageMeta')
+@use('JeffreyDavidson\CreatorKit\Data\PageMeta')
 @use('RalphJSmit\Laravel\SEO\Tags\CanonicalTag')
 @inject('siteSeo', 'App\View\SiteSeo')
 

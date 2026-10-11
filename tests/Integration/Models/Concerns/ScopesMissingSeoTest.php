@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Concerns\ScopesMissingSeo;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
@@ -8,6 +7,7 @@ use Database\Factories\EpisodeFactory;
 use Database\Factories\GuideFactory;
 use Database\Factories\PostFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use JeffreyDavidson\CreatorKit\Models\Concerns\ScopesMissingSeo;
 
 pest()->use(RefreshDatabase::class);
 

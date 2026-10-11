@@ -1,9 +1,9 @@
 <?php
 
 use App\Models\Post;
-use App\Support\TextSearch;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
+use JeffreyDavidson\CreatorKit\Support\Search\TextSearch;
 
 covers(TextSearch::class);
 

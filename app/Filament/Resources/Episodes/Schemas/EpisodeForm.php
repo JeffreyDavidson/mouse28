@@ -6,7 +6,6 @@ namespace App\Filament\Resources\Episodes\Schemas;
 
 use App\Filament\Forms\Components\ContentTagsInput;
 use App\Filament\Forms\Components\OptimizedImageUpload;
-use App\Filament\Forms\Components\SeoSection;
 use App\Filament\Forms\Components\SlugSourceInput;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
@@ -17,6 +16,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishDatePicker;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishStatusSelect;
+use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SeoSection;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SlugInput;
 
 class EpisodeForm

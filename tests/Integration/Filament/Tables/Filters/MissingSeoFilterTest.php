@@ -1,6 +1,5 @@
 <?php
 
-use App\Filament\Tables\Filters\MissingSeoFilter;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
@@ -8,6 +7,7 @@ use Database\Factories\EpisodeFactory;
 use Database\Factories\GuideFactory;
 use Database\Factories\PostFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use JeffreyDavidson\CreatorKit\Filament\Tables\Filters\MissingSeoFilter;
 
 pest()->use(RefreshDatabase::class);
 
