@@ -3,12 +3,12 @@
 namespace App\Mail;
 
 use App\Models\NewsletterIssue;
-use App\Support\MarkdownRenderer;
 use App\Support\Newsletter\AbsoluteContentUrls;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Mailables\Headers;
+use JeffreyDavidson\CreatorKit\Support\Markdown\MarkdownRenderer;
 
 /**
  * A newsletter issue for one recipient. Delivery jobs send it immediately, so it is
