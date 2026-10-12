@@ -19,13 +19,10 @@ use Database\Factories\GuideFactory;
 use Database\Factories\NewsletterIssueFactory;
 use Database\Factories\PostFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SlugInput;
 use JeffreyDavidson\CreatorKit\Filament\Resources\Categories\Pages\CreateCategory;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Livewire\livewire;
-
-covers(SlugInput::class);
 
 pest()->use(RefreshDatabase::class);
 

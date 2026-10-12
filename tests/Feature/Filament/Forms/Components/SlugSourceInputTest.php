@@ -18,12 +18,9 @@ use Database\Factories\GuideFactory;
 use Database\Factories\NewsletterIssueFactory;
 use Database\Factories\PostFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SlugSourceInput;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Livewire\livewire;
-
-covers(SlugSourceInput::class);
 
 pest()->use(RefreshDatabase::class);
 

@@ -11,8 +11,6 @@ use JeffreyDavidson\CreatorKit\Filament\Tables\Filters\MissingSeoFilter;
 
 pest()->use(RefreshDatabase::class);
 
-covers(MissingSeoFilter::class);
-
 dataset('models with SEO', [
     'posts' => [fn () => Post::factory()],
     'guides' => [fn () => Guide::factory()],

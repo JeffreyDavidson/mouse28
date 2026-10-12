@@ -7,11 +7,8 @@ use Database\Factories\EpisodeFactory;
 use Database\Factories\GuideFactory;
 use Database\Factories\PostFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use JeffreyDavidson\CreatorKit\Models\Concerns\ScopesMissingSeo;
 
 pest()->use(RefreshDatabase::class);
-
-covers(ScopesMissingSeo::class);
 
 dataset('models with SEO', [
     'posts' => [fn () => Post::factory()],

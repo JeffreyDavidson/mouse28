@@ -14,8 +14,6 @@ use JeffreyDavidson\CreatorKit\Contracts\Publishable;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 use JeffreyDavidson\CreatorKit\Models\Concerns\HasPublishingStatus;
 
-covers(HasPublishingStatus::class);
-
 pest()->use(RefreshDatabase::class);
 
 dataset('publishable content', [
