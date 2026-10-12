@@ -1,6 +1,5 @@
 <?php
 
-use App\Filament\Forms\Components\SlugSourceInput;
 use App\Filament\Resources\Episodes\Pages\CreateEpisode;
 use App\Filament\Resources\Episodes\Pages\EditEpisode;
 use App\Filament\Resources\Guides\Pages\CreateGuide;
@@ -22,8 +21,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Livewire\livewire;
-
-covers(SlugSourceInput::class);
 
 pest()->use(RefreshDatabase::class);
 

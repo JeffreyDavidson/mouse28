@@ -10,9 +10,6 @@ use Database\Factories\NewsletterIssueFactory;
 use Database\Factories\PostFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
-use JeffreyDavidson\CreatorKit\Models\Concerns\HasDraftScope;
-
-covers(HasDraftScope::class);
 
 pest()->use(RefreshDatabase::class);
 

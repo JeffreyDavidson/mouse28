@@ -10,8 +10,6 @@ use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SeoSection;
 use function Pest\Laravel\actingAs;
 use function Pest\Livewire\livewire;
 
-covers(SeoSection::class);
-
 pest()->use(RefreshDatabase::class);
 
 beforeEach(fn () => actingAs(User::factory()

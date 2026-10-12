@@ -11,11 +11,8 @@ use Database\Factories\PostFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
-use JeffreyDavidson\CreatorKit\Models\Concerns\LocksSlugAfterPublication;
 
 use function Pest\Laravel\travelTo;
-
-covers(LocksSlugAfterPublication::class);
 
 pest()->use(RefreshDatabase::class);
 

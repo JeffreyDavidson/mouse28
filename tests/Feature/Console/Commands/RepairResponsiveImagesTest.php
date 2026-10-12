@@ -11,8 +11,6 @@ use Illuminate\Support\Facades\Storage;
 use JeffreyDavidson\CreatorKit\Console\Commands\RepairResponsiveImages;
 use JeffreyDavidson\CreatorKit\Services\Media\ResponsiveImageVariants;
 
-covers(RepairResponsiveImages::class);
-
 pest()->use(RefreshDatabase::class);
 
 test('creator-kit provides the media:repair-responsive-images command', function (): void {

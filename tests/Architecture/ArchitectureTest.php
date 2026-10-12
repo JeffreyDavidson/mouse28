@@ -230,3 +230,37 @@ test('responsive images are handled by creator-kit, not by app copies', function
     'App\Console\Commands\RepairResponsiveImages',
     'App\Console\Commands\VerifyResponsiveImages',
 ]);
+
+test('the category and social profile screens come from creator-kit, not from app copies', function (string $class): void {
+    expect(class_exists($class))->toBeFalse();
+})->with([
+    'App\Filament\Resources\Categories\CategoryResource',
+    'App\Filament\Resources\SocialProfiles\SocialProfileResource',
+    'App\Filament\Forms\Components\SlugSourceInput',
+]);
+
+/*
+ * With code coverage on (the mutation lanes), a covers() target outside app/ is reported as a
+ * warning, and a mutation run that picks up such a test fails before it mutates anything.
+ */
+test('no test names a creator-kit class as its coverage target', function (): void {
+    $offenders = [];
+
+    foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator(dirname(__DIR__))) as $file) {
+        if (! $file instanceof SplFileInfo || ! str_ends_with($file->getFilename(), 'Test.php')) {
+            continue;
+        }
+
+        $source = (string) file_get_contents($file->getPathname());
+
+        if (preg_match('/^covers\((\w+)::class\)/m', $source, $covered) !== 1) {
+            continue;
+        }
+
+        if (preg_match('/^use JeffreyDavidson\\\\CreatorKit\\\\[\w\\\\]*\\\\'.$covered[1].';/m', $source) === 1) {
+            $offenders[] = $file->getFilename();
+        }
+    }
+
+    expect($offenders)->toBeEmpty(implode(', ', $offenders));
+});

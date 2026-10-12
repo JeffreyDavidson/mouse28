@@ -12,13 +12,10 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
-use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishDatePicker;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Livewire\livewire;
-
-covers(PublishDatePicker::class);
 
 pest()->use(RefreshDatabase::class);
 

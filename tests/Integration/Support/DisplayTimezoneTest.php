@@ -3,8 +3,6 @@
 use Illuminate\Support\Facades\Date;
 use JeffreyDavidson\CreatorKit\Support\Time\DisplayTimezone;
 
-covers(DisplayTimezone::class);
-
 test('the display timezone defaults to Eastern time', function (): void {
     expect(DisplayTimezone::name())->toBe('America/New_York');
 });
