@@ -32,11 +32,11 @@ test('guide images get variants that follow the image through replacement and de
     Storage::disk('public')->assertMissing(['guides/responsive/new-480.webp', 'guides/responsive/new-1280.webp']);
 });
 
-test('a failed guide generation logs a warning naming the guide command', function (): void {
+test('a failed guide generation logs a warning naming the repair command', function (): void {
     Storage::disk('public')->put('guides/broken.png', 'not an image');
     Log::shouldReceive('warning')
         ->once()
-        ->with('Responsive guide image generation failed. Run guides:generate-image-variants to retry.');
+        ->with('Responsive guide image generation failed. Run media:repair-responsive-images to retry.');
 
     Guide::factory()->create(['featured_image_path' => 'guides/broken.png']);
 });

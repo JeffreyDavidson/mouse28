@@ -34,11 +34,11 @@ test('episode images get square variants that follow the image through replaceme
     Storage::disk('public')->assertMissing('episodes/responsive/new-480.webp');
 });
 
-test('a failed episode generation logs a warning naming the episode command', function (): void {
+test('a failed episode generation logs a warning naming the repair command', function (): void {
     Storage::disk('public')->put('episodes/broken.png', 'not an image');
     Log::shouldReceive('warning')
         ->once()
-        ->with('Responsive episode image generation failed. Run episodes:generate-image-variants to retry.');
+        ->with('Responsive episode image generation failed. Run media:repair-responsive-images to retry.');
 
     Episode::factory()->create(['featured_image_path' => 'episodes/broken.png']);
 });

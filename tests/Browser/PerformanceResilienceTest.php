@@ -2,10 +2,10 @@
 
 use App\Models\Episode;
 use App\Models\Post;
-use App\Services\ResponsiveImageVariants;
-use App\Services\SquareResponsiveImageVariants;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use JeffreyDavidson\CreatorKit\Services\Media\ResponsiveImageVariants;
+use JeffreyDavidson\CreatorKit\Services\Media\SquareResponsiveImageVariants;
 
 test('mobile visitors receive one preloaded responsive AVIF hero and a lean public script', function (): void {
     $page = visit(route('home'))

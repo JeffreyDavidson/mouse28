@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Presenters;
 
 use App\Models\Podcast;
-use App\Services\ResponsiveImageVariants;
+use JeffreyDavidson\CreatorKit\Services\Media\ResponsiveImageVariants;
 
 /**
  * Presents the show's cover artwork. The cover is the uploaded image, or the bundled

@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Models\Podcast;
-use App\Services\ResponsiveImageVariants;
-use App\Services\ResponsiveImageWorkflow;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\Isolatable;
+use JeffreyDavidson\CreatorKit\Services\Media\ResponsiveImageVariants;
+use JeffreyDavidson\CreatorKit\Services\Media\ResponsiveImageWorkflow;
 
 #[Signature('podcasts:generate-image-variants {--force : Regenerate variants that already pass verification}')]
 #[Description('Generate responsive WebP variants for existing podcast cover images')]
@@ -29,10 +29,10 @@ class GeneratePodcastImageVariants extends Command implements Isolatable
             'cover_image_path',
             'podcast',
             (bool) $this->option('force'),
-            $images,
             function (string $message): void {
                 $this->warn($message);
             },
+            $images,
         );
 
         $noun = $generated === 1 ? 'podcast' : 'podcasts';

@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Observers;
 
 use App\Models\Post;
-use App\Services\ResponsiveImageLifecycle;
+use JeffreyDavidson\CreatorKit\Services\Media\StoredMediaLifecycle;
 
 class PostObserver
 {
-    public function __construct(private readonly ResponsiveImageLifecycle $lifecycle) {}
+    public function __construct(private readonly StoredMediaLifecycle $lifecycle) {}
 
     public function created(Post $post): void
     {
@@ -23,6 +23,6 @@ class PostObserver
 
     public function forceDeleted(Post $post): void
     {
-        $this->lifecycle->deleted($post, 'featured_image_path');
+        $this->lifecycle->forceDeleted($post, 'featured_image_path', 'post');
     }
 }

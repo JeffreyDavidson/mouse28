@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Models\Episode;
-use App\Services\ResponsiveImageWorkflow;
-use App\Services\SquareResponsiveImageVariants;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Console\Isolatable;
+use JeffreyDavidson\CreatorKit\Services\Media\ResponsiveImageWorkflow;
+use JeffreyDavidson\CreatorKit\Services\Media\SquareResponsiveImageVariants;
 
 #[Signature('episodes:generate-image-variants {--force : Regenerate variants that already pass verification}')]
 #[Description('Generate square responsive WebP variants for existing episode images')]
@@ -29,10 +29,10 @@ class GenerateEpisodeImageVariants extends Command implements Isolatable
             'featured_image_path',
             'episode',
             (bool) $this->option('force'),
-            $images,
             function (string $message): void {
                 $this->warn($message);
             },
+            $images,
         );
 
         $noun = $generated === 1 ? 'episode' : 'episodes';

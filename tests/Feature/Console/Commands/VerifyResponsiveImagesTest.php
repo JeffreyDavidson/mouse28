@@ -1,21 +1,21 @@
 <?php
 
-use App\Console\Commands\VerifyResponsiveImages;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
-use App\Services\ResponsiveImageVariants;
-use App\Services\SquareResponsiveImageVariants;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
+use JeffreyDavidson\CreatorKit\Console\Commands\VerifyResponsiveImages;
+use JeffreyDavidson\CreatorKit\Services\Media\ResponsiveImageVariants;
+use JeffreyDavidson\CreatorKit\Services\Media\SquareResponsiveImageVariants;
 
 covers(VerifyResponsiveImages::class);
 
 pest()->use(RefreshDatabase::class);
 
-test('the app command answers to its name while creator-kit registers one with the same name', function (): void {
+test('creator-kit provides the media:verify-responsive-images command', function (): void {
     expect(Artisan::all()['media:verify-responsive-images'])->toBeInstanceOf(VerifyResponsiveImages::class);
 });
 
