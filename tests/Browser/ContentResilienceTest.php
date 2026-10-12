@@ -3,8 +3,8 @@
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
-use App\Services\ResponsiveImageVariants;
 use Illuminate\Support\Facades\Storage;
+use JeffreyDavidson\CreatorKit\Services\Media\ResponsiveImageVariants;
 
 function homepageStoryColumnsDoNotOverlapScript(): string
 {

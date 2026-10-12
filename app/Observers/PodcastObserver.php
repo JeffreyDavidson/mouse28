@@ -6,18 +6,18 @@ namespace App\Observers;
 
 use App\Models\Episode;
 use App\Models\Podcast;
-use App\Services\ResponsiveImageLifecycle;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use JeffreyDavidson\CreatorKit\Services\Media\StoredMediaLifecycle;
 
 /**
- * Removes a replaced podcast cover after commit, and a deleted podcast's cover only when
- * it is permanently deleted, so a trashed podcast can be restored with its cover. Also
- * restores the episodes that were trashed together with the podcast.
+ * Keeps the podcast cover's files in step through creator-kit's StoredMediaLifecycle: a
+ * replaced cover is removed after commit, and a deleted podcast's cover only when it is
+ * permanently deleted, so a trashed podcast can be restored with its cover. Also restores
+ * the episodes that were trashed together with the podcast.
  */
 class PodcastObserver
 {
-    public function __construct(private readonly ResponsiveImageLifecycle $lifecycle) {}
+    public function __construct(private readonly StoredMediaLifecycle $lifecycle) {}
 
     /** Until the sluggable package arrives (Phase 6 slice 8), a podcast created without a slug is slugged from its name. */
     public function creating(Podcast $podcast): void
@@ -35,10 +35,6 @@ class PodcastObserver
     public function updated(Podcast $podcast): void
     {
         $this->lifecycle->updated($podcast, 'cover_image_path', 'podcast');
-
-        if ($podcast->wasChanged('cover_image_path')) {
-            $this->deleteOriginalAfterCommit($podcast, $podcast->getPrevious()['cover_image_path'] ?? null);
-        }
     }
 
     /**
@@ -61,19 +57,6 @@ class PodcastObserver
 
     public function forceDeleted(Podcast $podcast): void
     {
-        $this->lifecycle->deleted($podcast, 'cover_image_path');
-        $this->deleteOriginalAfterCommit($podcast, $podcast->cover_image_path);
-    }
-
-    private function deleteOriginalAfterCommit(Podcast $podcast, mixed $path): void
-    {
-        if (! is_string($path) || blank($path)) {
-            return;
-        }
-
-        $podcast->getConnection()
-            ->afterCommit(function () use ($path): void {
-                Storage::disk('public')->delete($path);
-            });
+        $this->lifecycle->forceDeleted($podcast, 'cover_image_path', 'podcast');
     }
 }

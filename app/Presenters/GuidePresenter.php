@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Presenters;
 
 use App\Models\Guide;
-use App\Services\ResponsiveImageVariants;
+use JeffreyDavidson\CreatorKit\Services\Media\ResponsiveImageVariants;
 
 /** Display formatting for a guide's artwork: its own cover, or its category's bundled image. */
 final readonly class GuidePresenter

@@ -1,21 +1,21 @@
 <?php
 
-use App\Console\Commands\RepairResponsiveImages;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
-use App\Services\ResponsiveImageVariants;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use JeffreyDavidson\CreatorKit\Console\Commands\RepairResponsiveImages;
+use JeffreyDavidson\CreatorKit\Services\Media\ResponsiveImageVariants;
 
 covers(RepairResponsiveImages::class);
 
 pest()->use(RefreshDatabase::class);
 
-test('the app command answers to its name while creator-kit registers one with the same name', function (): void {
+test('creator-kit provides the media:repair-responsive-images command', function (): void {
     expect(Artisan::all()['media:repair-responsive-images'])->toBeInstanceOf(RepairResponsiveImages::class);
 });
 

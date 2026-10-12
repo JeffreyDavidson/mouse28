@@ -72,3 +72,21 @@ function browserAlpineReadyScript(string $selector): string
 {
     return browserWaitForScript("document.querySelector('{$selector}')?._x_dataStack !== undefined");
 }
+
+/**
+ * Build a script that resolves true once every Filament file upload field on the page has loaded.
+ *
+ * An upload field fetches its stored files through Livewire just after the page loads. If the
+ * form is filled first, that response can land after the newer edits were synced, and Livewire
+ * then restores the stale form state it carries, silently discarding what was typed.
+ */
+function browserFileUploadsReadyScript(): string
+{
+    return browserWaitForScript(<<<'JS'
+        (() => {
+            const uploads = [...document.querySelectorAll('.fi-fo-file-upload')];
+
+            return uploads.length > 0 && uploads.every((upload) => upload.querySelector('.filepond--root') !== null);
+        })()
+        JS);
+}

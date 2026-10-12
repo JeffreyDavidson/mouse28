@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Presenters;
 
 use App\Models\Post;
-use App\Services\ResponsiveImageVariants;
 use Illuminate\Support\Facades\Config;
+use JeffreyDavidson\CreatorKit\Services\Media\ResponsiveImageVariants;
 
 /** Display formatting for a post's cover and the artwork shown when it has none. */
 final readonly class PostPresenter

@@ -4,8 +4,6 @@ namespace App\Console\Commands;
 
 use App\Models\Episode;
 use App\Models\Post;
-use App\Services\ResponsiveImageVariants;
-use App\Services\SquareResponsiveImageVariants;
 use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
@@ -13,6 +11,9 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use JeffreyDavidson\CreatorKit\Contracts\ResponsiveImages;
+use JeffreyDavidson\CreatorKit\Services\Media\ResponsiveImageVariants;
+use JeffreyDavidson\CreatorKit\Services\Media\SquareResponsiveImageVariants;
 use Symfony\Component\Finder\SplFileInfo;
 
 #[Signature('content:attach-bundled-artwork', aliases: ['content:attach-artwork'])]
@@ -95,7 +96,7 @@ class AttachBundledArtwork extends Command
      * @param  Builder<Post>|Builder<Episode>  $query
      * @param  array<string, string>  $artwork
      */
-    private function attach(Builder $query, array $artwork, ResponsiveImageVariants $images): int
+    private function attach(Builder $query, array $artwork, ResponsiveImages $images): int
     {
         $updated = 0;
 

@@ -3,8 +3,8 @@
 namespace App\Presenters;
 
 use App\Models\Episode;
-use App\Services\SquareResponsiveImageVariants;
 use Illuminate\Support\Str;
+use JeffreyDavidson\CreatorKit\Services\Media\SquareResponsiveImageVariants;
 
 /**
  * Display formatting for an episode. From The Laravel Architect's presenter; Mouse28

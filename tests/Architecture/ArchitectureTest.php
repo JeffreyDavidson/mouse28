@@ -218,3 +218,15 @@ test('the SEO building blocks come from creator-kit, not from app copies', funct
     'App\Models\Concerns\ScopesMissingSeo',
     'App\Filament\Tables\Filters\MissingSeoFilter',
 ]);
+
+test('responsive images are handled by creator-kit, not by app copies', function (string $class): void {
+    expect(class_exists($class))->toBeFalse();
+})->with([
+    'App\Services\ResponsiveImageVariants',
+    'App\Services\SquareResponsiveImageVariants',
+    'App\Services\ResponsiveImageWorkflow',
+    'App\Services\ResponsiveImageRepairWorkflow',
+    'App\Services\ResponsiveImageLifecycle',
+    'App\Console\Commands\RepairResponsiveImages',
+    'App\Console\Commands\VerifyResponsiveImages',
+]);

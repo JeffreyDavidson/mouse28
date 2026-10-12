@@ -23,6 +23,7 @@ test('administrator can save a Quick Draft from the dashboard', function (): voi
 
 test('administrator can create a Post from the resource form', function (): void {
     visit(PostResource::getUrl('create'))
+        ->assertScript(browserFileUploadsReadyScript(), true)
         ->fill('input[id="form.title"]', 'Browser Smoke Post')
         ->fill('input[id="form.slug"]', 'browser-smoke-post')
         ->click('button[role="combobox"][id="form.category_id"]')
@@ -45,6 +46,7 @@ test('administrator can edit a Post from the resource form', function (): void {
         ->create();
 
     visit(PostResource::getUrl('edit', ['record' => $post]))
+        ->assertScript(browserFileUploadsReadyScript(), true)
         ->fill('input[id="form.title"]', 'Updated Browser Post')
         ->fill('input[id="form.slug"]', 'updated-browser-post')
         ->click('button[wire\\:target="save"]')
@@ -58,6 +60,7 @@ test('administrator can edit a Post from the resource form', function (): void {
 
 test('administrator can create an Episode from the resource form', function (): void {
     visit(EpisodeResource::getUrl('create'))
+        ->assertScript(browserFileUploadsReadyScript(), true)
         ->fill('input[id="form.title"]', 'Browser Smoke Episode')
         ->fill('input[id="form.slug"]', 'browser-smoke-episode')
         ->fill('input[id="form.episode_number"]', '280')
@@ -76,6 +79,7 @@ test('administrator can edit an Episode from the resource form', function (): vo
         ->create();
 
     visit(EpisodeResource::getUrl('edit', ['record' => $episode]))
+        ->assertScript(browserFileUploadsReadyScript(), true)
         ->fill('input[id="form.title"]', 'Updated Browser Episode')
         ->fill('input[id="form.slug"]', 'updated-browser-episode')
         ->click('button[wire\\:target="save"]')
@@ -89,6 +93,7 @@ test('administrator can edit an Episode from the resource form', function (): vo
 
 test('Post creation shows required category validation while preserving entered values', function (): void {
     visit(PostResource::getUrl('create'))
+        ->assertScript(browserFileUploadsReadyScript(), true)
         ->fill('input[id="form.title"]', 'Browser Validation Post')
         ->fill('input[id="form.slug"]', 'browser-validation-post')
         ->click('button[wire\\:target="create"]')
@@ -103,6 +108,7 @@ test('Episode creation shows duplicate number validation while preserving entere
     Episode::factory()->create(['episode_number' => 280]);
 
     visit(EpisodeResource::getUrl('create'))
+        ->assertScript(browserFileUploadsReadyScript(), true)
         ->fill('input[id="form.title"]', 'Browser Duplicate Episode')
         ->fill('input[id="form.slug"]', 'browser-duplicate-episode')
         ->fill('input[id="form.episode_number"]', '280')
