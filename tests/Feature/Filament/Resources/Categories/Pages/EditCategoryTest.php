@@ -1,11 +1,11 @@
 <?php
 
-use App\Filament\Resources\Categories\CategoryResource;
-use App\Filament\Resources\Categories\Pages\EditCategory;
 use App\Models\Category;
 use App\Models\Post;
 use Filament\Actions\DeleteAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Categories\CategoryResource;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Categories\Pages\EditCategory;
 
 use function Pest\Laravel\get;
 use function Pest\Livewire\livewire;

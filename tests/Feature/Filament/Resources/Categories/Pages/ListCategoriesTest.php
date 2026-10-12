@@ -1,12 +1,12 @@
 <?php
 
-use App\Filament\Resources\Categories\CategoryResource;
-use App\Filament\Resources\Categories\Pages\ListCategories;
 use App\Models\Category;
 use App\Models\User;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\Testing\TestAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Categories\CategoryResource;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Categories\Pages\ListCategories;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;

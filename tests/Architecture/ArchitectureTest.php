@@ -230,3 +230,11 @@ test('responsive images are handled by creator-kit, not by app copies', function
     'App\Console\Commands\RepairResponsiveImages',
     'App\Console\Commands\VerifyResponsiveImages',
 ]);
+
+test('the category and social profile screens come from creator-kit, not from app copies', function (string $class): void {
+    expect(class_exists($class))->toBeFalse();
+})->with([
+    'App\Filament\Resources\Categories\CategoryResource',
+    'App\Filament\Resources\SocialProfiles\SocialProfileResource',
+    'App\Filament\Forms\Components\SlugSourceInput',
+]);

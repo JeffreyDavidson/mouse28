@@ -1,6 +1,5 @@
 <?php
 
-use App\Filament\Forms\Components\SlugSourceInput;
 use App\Filament\Resources\Episodes\Pages\CreateEpisode;
 use App\Filament\Resources\Episodes\Pages\EditEpisode;
 use App\Filament\Resources\Guides\Pages\CreateGuide;
@@ -19,6 +18,7 @@ use Database\Factories\GuideFactory;
 use Database\Factories\NewsletterIssueFactory;
 use Database\Factories\PostFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SlugSourceInput;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Livewire\livewire;
