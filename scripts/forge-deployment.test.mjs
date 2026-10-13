@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import {
     accessCredentialDiagnostics,
@@ -24,7 +25,7 @@ const marker = (id = 1, sha = revision) =>
 const timedOut = () => Object.assign(new Error('connect ETIMEDOUT test-secret'), { code: 'ETIMEDOUT' });
 
 test('every composer install receives the token for the private creator-kit package', () => {
-    const read = (path) => readFileSync(new URL(`../.github/${path}`, import.meta.url), 'utf8');
+    const read = path => readFileSync(new URL(`../.github/${path}`, import.meta.url), 'utf8');
 
     for (const path of ['workflows/ci.yml', 'workflows/browser-smoke.yml']) {
         const installs = read(path).match(/- name: Install PHP dependencies[\s\S]*?composer install[^\n]*/g) ?? [];
@@ -776,4 +777,186 @@ test('times out without retrying an accepted deployment', async () => {
         /11 minutes/,
     );
     assert.equal(posts, 1);
+});
+
+function stagingPromotionDecision(overrides = {}) {
+    const workflow = readFileSync(new URL('../.github/workflows/promote-production.yml', import.meta.url), 'utf8');
+    const validation = workflow.match(
+        /- name: Validate the successful staging run[\s\S]*?run: \|\n([\s\S]*?)(?=\n            - uses:)/,
+    )?.[1];
+    assert.ok(validation, 'Promotion validation Bash must exist');
+    assert.match(workflow, /staging_run_attempt:\n\s+description:[^\n]+\n\s+required: true\n\s+type: string/);
+    assert.match(workflow, /STAGING_RUN_ATTEMPT: \$\{\{ inputs\.staging_run_attempt \}\}/);
+    const repo = 'owner/site';
+    const successfulRun = stagingPromotionFixture();
+    const successfulJob = {
+        run_id: 123,
+        run_attempt: 2,
+        name: `Stage ${revision}`,
+        status: 'completed',
+        conclusion: 'success',
+    };
+    const encode = value => (typeof value === 'string' ? value : JSON.stringify(value));
+    const responses = {
+        current: successfulRun,
+        attempt: successfulRun,
+        jobs: [{ jobs: [successfulJob] }],
+        ...overrides,
+    };
+    const bash = `
+gh() {
+    case "$2" in
+        "repos/$GITHUB_REPOSITORY/actions/runs/$STAGING_RUN_ID/attempts/$STAGING_RUN_ATTEMPT/jobs")
+            [[ " $* " == *" --paginate "* && " $* " == *" --slurp "* ]] || return 22
+            [ "$FAIL_API" != jobs ] || return 1
+            printf '%s' "$JOBS_RESPONSE"
+            ;;
+        "repos/$GITHUB_REPOSITORY/actions/runs/$STAGING_RUN_ID/attempts/$STAGING_RUN_ATTEMPT")
+            [ "$FAIL_API" != attempt ] || return 1
+            printf '%s' "$ATTEMPT_RESPONSE"
+            ;;
+        "repos/$GITHUB_REPOSITORY/actions/runs/$STAGING_RUN_ID/jobs")
+            # The original validator used run-wide jobs, which can be from the previous attempt.
+            printf '%s' "$LEGACY_JOBS_RESPONSE"
+            ;;
+        "repos/$GITHUB_REPOSITORY/actions/runs/$STAGING_RUN_ID")
+            [ "$FAIL_API" != current ] || return 1
+            printf '%s' "$CURRENT_RESPONSE"
+            ;;
+        *) return 23 ;;
+    esac
+}
+${validation.replace(/^ {18}/gm, '')}
+printf 'FORGE_TRIGGER_ALLOWED\\n'
+`;
+    return spawnSync('bash', ['-e', '-o', 'pipefail', '-c', bash], {
+        encoding: 'utf8',
+        timeout: 5000,
+        env: {
+            ...process.env,
+            GITHUB_REPOSITORY: repo,
+            EXPECTED_REVISION: revision,
+            STAGING_RUN_ID: '123',
+            STAGING_RUN_ATTEMPT: overrides.inputAttempt ?? '2',
+            CURRENT_RESPONSE: encode(responses.current),
+            ATTEMPT_RESPONSE: encode(responses.attempt),
+            JOBS_RESPONSE: encode(responses.jobs),
+            LEGACY_JOBS_RESPONSE: JSON.stringify({ jobs: [successfulJob] }),
+            FAIL_API: overrides.failApi ?? '',
+        },
+    });
+}
+
+function assertPromotionDenied(overrides) {
+    const result = stagingPromotionDecision(overrides);
+    assert.equal(result.error, undefined);
+    assert.notEqual(result.status, 0, result.stdout + result.stderr);
+    assert.ok(!result.stdout.includes('FORGE_TRIGGER_ALLOWED'));
+}
+
+test('promotion rejects previous success while the intended staging retry has not registered', () => {
+    assertPromotionDenied({
+        current: { ...stagingPromotionFixture(), run_attempt: 1 },
+        failApi: 'attempt',
+    });
+});
+
+test('promotion accepts only the successful reviewed staging attempt and its job', () => {
+    const result = stagingPromotionDecision();
+    assert.equal(result.status, 0, result.stdout + result.stderr);
+    assert.ok(result.stdout.includes('FORGE_TRIGGER_ALLOWED'));
+});
+
+test('promotion rejects stale, pending and unsuccessful attempt metadata', () => {
+    for (const endpoint of ['current', 'attempt']) {
+        for (const fields of [
+            { run_attempt: 1 },
+            { run_attempt: 3 },
+            { status: 'queued', conclusion: null },
+            { status: 'in_progress', conclusion: null },
+            ...['failure', 'cancelled', 'skipped', 'neutral', 'timed_out', 'action_required'].map(conclusion => ({
+                conclusion,
+            })),
+            { id: 999 },
+            { head_sha: 'b'.repeat(40) },
+            { event: 'push' },
+            { head_branch: 'release/2026.10.0' },
+            { head_repository: { full_name: 'other/site' } },
+            { path: '.github/workflows/ci.yml' },
+        ]) {
+            const valid = stagingPromotionFixture();
+            assertPromotionDenied({ [endpoint]: { ...valid, ...fields } });
+        }
+    }
+});
+
+function stagingPromotionFixture() {
+    return {
+        id: 123,
+        run_attempt: 2,
+        head_sha: revision,
+        conclusion: 'success',
+        status: 'completed',
+        event: 'workflow_run',
+        head_branch: 'main',
+        head_repository: { full_name: 'owner/site' },
+        path: '.github/workflows/deploy-staging.yml',
+    };
+}
+
+test('promotion rejects missing, skipped, stale or unrelated staging jobs', () => {
+    const validJob = {
+        run_id: 123,
+        run_attempt: 2,
+        name: `Stage ${revision}`,
+        status: 'completed',
+        conclusion: 'success',
+    };
+    assertPromotionDenied({ jobs: [{ jobs: [] }] });
+    for (const fields of [
+        { run_id: 999 },
+        { run_attempt: 1 },
+        { name: 'Other job' },
+        { status: 'in_progress', conclusion: null },
+        { conclusion: 'skipped' },
+        { conclusion: 'failure' },
+    ]) {
+        assertPromotionDenied({ jobs: [{ jobs: [{ ...validJob, ...fields }] }] });
+    }
+});
+
+test('promotion finds the reviewed successful staging job on later API pages', () => {
+    const result = stagingPromotionDecision({
+        jobs: [
+            { jobs: [] },
+            {
+                jobs: [
+                    {
+                        run_id: 123,
+                        run_attempt: 2,
+                        name: `Stage ${revision}`,
+                        status: 'completed',
+                        conclusion: 'success',
+                    },
+                ],
+            },
+        ],
+    });
+    assert.equal(result.status, 0, result.stdout + result.stderr);
+    assert.ok(result.stdout.includes('FORGE_TRIGGER_ALLOWED'));
+});
+
+test('promotion rejects API errors and empty or malformed staging evidence', () => {
+    for (const endpoint of ['current', 'attempt', 'jobs']) {
+        assertPromotionDenied({ failApi: endpoint });
+        for (const response of ['', 'not json', 'null', '{}', '[]']) {
+            assertPromotionDenied({ [endpoint]: response });
+        }
+    }
+});
+
+test('promotion requires a positive reviewed attempt input', () => {
+    for (const inputAttempt of ['', '0', '-1', '2.5', 'invalid']) {
+        assertPromotionDenied({ inputAttempt });
+    }
 });
