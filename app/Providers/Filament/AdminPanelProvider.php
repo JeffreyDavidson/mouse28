@@ -11,6 +11,7 @@ use App\Filament\Widgets\QuickDraft;
 use App\Filament\Widgets\RecentActivity;
 use App\Filament\Widgets\StatsOverview;
 use App\Filament\Widgets\WelcomeBanner;
+use App\Http\Controllers\AssetReviewFileController;
 use App\Models\Category;
 use App\Models\SocialProfile;
 use App\Models\User;
@@ -30,6 +31,7 @@ use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use JeffreyDavidson\CreatorKit\Filament\CreatorKitPlugin;
@@ -50,6 +52,12 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->authenticatedRoutes(function (Panel $panel): void {
+                Route::get('/asset-review-files/{assetReview}/{file}', AssetReviewFileController::class)
+                    ->middleware($panel->isMultiFactorAuthenticationRequired() ? [$panel->getMultiFactorAuthenticationRequiredMiddleware()] : [])
+                    ->whereNumber('file')
+                    ->name('assetReviews.file');
+            })
             ->brandName('Mouse28')
             ->brandLogo(view('filament.brand-logo'))
             ->favicon('/images/favicon-32.png')
