@@ -12,6 +12,10 @@ on:
                 description: Successful Deploy staging workflow run ID for that SHA
                 required: true
                 type: string
+            staging_run_attempt:
+                description: Successful staging attempt reviewed for that SHA
+                required: true
+                type: string
 
 concurrency:
     group: release-promotion
