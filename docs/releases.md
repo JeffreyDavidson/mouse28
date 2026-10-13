@@ -115,14 +115,19 @@ review; select and review the new revision before promotion.
   for the same SHA.
 - **Approved promotion has no runner after about five minutes:** nothing has
   been deployed yet. Cancel the run and dispatch `Promote production` again
-  from `main` with the same revision and staging run ID, then approve it.
+  from `main` with the same revision, staging run ID and reviewed attempt, then
+  approve it.
 - **A PR's CI never starts:** close and reopen the PR. The `reopened` event
   starts CI on the same head SHA without a new commit.
 
 ## Promote production
 
 1. Choose a successful `Deploy staging` run for the full SHA on `main` that was
-   created after the release PR merged.
+   created after the release PR merged. Record its run ID and the exact
+   `run_attempt` reviewed; both identify the staging evidence for approval.
+   Before requesting a staging retry, record the next attempt. Wait for that
+   exact attempt to register and complete successfully, then review its staging
+   deployment. An earlier success on the same run ID cannot clear the retry.
 2. Confirm rollback artifacts, migration safety, media requirements, queue
    worker prerequisites and any one-time commands from `operations.md`. Code
    rollback does not undo database migrations. Prefer forward-compatible
@@ -130,13 +135,15 @@ review; select and review the new revision before promotion.
 3. **`cold-moon` is shared.** GitHub's concurrency lock covers only this
    repository. Check Forge for a running deployment on any `cold-moon` site and
    never promote Mouse28 and The Laravel Architect at the same time.
-4. Dispatch `Promote production` **from main**, providing that staging run ID
-   and the full revision. This request is not a substitute for environment
+4. Dispatch `Promote production` **from main**, providing that staging run ID,
+   reviewed `staging_run_attempt` and the full revision. This request is not a substitute for environment
    approval.
 5. Review the waiting `production` environment job and approve the exact
    revision. The workflow validates the staging run's workflow, source
-   repository, event, branch, conclusion and SHA, and verifies staging still
-   serves it before triggering production. Old approvals cannot authorize a
+   repository, event, branch, exact attempt, conclusion and SHA, and requires the
+   successful staging job from that attempt. A newer attempt invalidates the
+   previous review; review it before dispatching again. The workflow verifies
+   staging still serves it before triggering production. Old approvals cannot authorize a
    different SHA.
 6. Require production deployment verification and the HTTP smoke suite to pass.
    A timed-out trigger is an uncertain deployment: inspect Forge before retrying.
@@ -144,6 +151,16 @@ review; select and review the new revision before promotion.
    tag, `vYYYY.MM.N`, on the full deployed SHA. Verify no existing tag uses that
    version, push the tag without force, and record the Forge deployment and
    workflow run. Never move or reuse a tag.
+
+The staging attempt is required; do not infer it from the current run after a
+retry. Use the values captured from the staging execution you reviewed:
+
+```bash
+gh workflow run promote-production.yml --repo JeffreyDavidson/mouse28 --ref main \
+  -f revision='<full-reviewed-SHA>' \
+  -f staging_run_id='<reviewed-staging-run-ID>' \
+  -f staging_run_attempt='<reviewed-staging-attempt>'
+```
 
 ## Synchronize develop after release
 
