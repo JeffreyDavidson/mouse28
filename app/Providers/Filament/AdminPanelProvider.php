@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Enums\NavigationGroup;
+use App\Enums\SocialPlatform;
 use App\Filament\Pages\Auth\Login;
 use App\Filament\Widgets\ContentCalendar;
 use App\Filament\Widgets\InspirationWidget;
@@ -10,6 +11,9 @@ use App\Filament\Widgets\QuickDraft;
 use App\Filament\Widgets\RecentActivity;
 use App\Filament\Widgets\StatsOverview;
 use App\Filament\Widgets\WelcomeBanner;
+use App\Http\Controllers\AssetReviewFileController;
+use App\Models\Category;
+use App\Models\SocialProfile;
 use App\Models\User;
 use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\FontProviders\LocalFontProvider;
@@ -27,8 +31,10 @@ use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use JeffreyDavidson\CreatorKit\Filament\CreatorKitPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -46,6 +52,12 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->authenticatedRoutes(function (Panel $panel): void {
+                Route::get('/asset-review-files/{assetReview}/{file}', AssetReviewFileController::class)
+                    ->middleware($panel->isMultiFactorAuthenticationRequired() ? [$panel->getMultiFactorAuthenticationRequiredMiddleware()] : [])
+                    ->whereNumber('file')
+                    ->name('assetReviews.file');
+            })
             ->brandName('Mouse28')
             ->brandLogo(view('filament.brand-logo'))
             ->favicon('/images/favicon-32.png')
@@ -74,6 +86,11 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => '#5b3e9e',
             ])
             ->navigationGroups(NavigationGroup::class)
+            ->plugin(
+                CreatorKitPlugin::make()
+                    ->categories(Category::class, NavigationGroup::Content, 2)
+                    ->socialProfiles(SocialProfile::class, SocialPlatform::class, NavigationGroup::Settings, 2),
+            )
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([

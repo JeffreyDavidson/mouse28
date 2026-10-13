@@ -1,13 +1,13 @@
 <?php
 
 use App\Enums\SocialPlatform;
-use App\Filament\Resources\SocialProfiles\Pages\CreateSocialProfile;
-use App\Filament\Resources\SocialProfiles\Pages\EditSocialProfile;
-use App\Filament\Resources\SocialProfiles\Pages\ListSocialProfiles;
-use App\Filament\Resources\SocialProfiles\SocialProfileResource;
 use App\Models\SocialProfile;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use JeffreyDavidson\CreatorKit\Filament\Resources\SocialProfiles\Pages\CreateSocialProfile;
+use JeffreyDavidson\CreatorKit\Filament\Resources\SocialProfiles\Pages\EditSocialProfile;
+use JeffreyDavidson\CreatorKit\Filament\Resources\SocialProfiles\Pages\ListSocialProfiles;
+use JeffreyDavidson\CreatorKit\Filament\Resources\SocialProfiles\SocialProfileResource;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -68,7 +68,7 @@ test('profile data is validated', function (array $data, array $errors): void {
     'insecure url' => [['platform' => 'instagram', 'url' => 'http://example.com/a'], ['url']],
     'not a url' => [['platform' => 'instagram', 'url' => 'not a url'], ['url']],
     'url too long' => [['platform' => 'instagram', 'url' => 'https://example.com/'.str_repeat('a', 2040)], ['url' => 'max']],
-    'other without a label' => [['platform' => 'other', 'url' => 'https://example.com/a', 'label' => ''], ['label' => 'required_if']],
+    'other without a label' => [['platform' => 'other', 'url' => 'https://example.com/a', 'label' => ''], ['label' => 'required']],
 ]);
 
 test('an administrator can edit and delete a profile', function (): void {

@@ -11,8 +11,6 @@ use JeffreyDavidson\CreatorKit\Console\Commands\VerifyResponsiveImages;
 use JeffreyDavidson\CreatorKit\Services\Media\ResponsiveImageVariants;
 use JeffreyDavidson\CreatorKit\Services\Media\SquareResponsiveImageVariants;
 
-covers(VerifyResponsiveImages::class);
-
 pest()->use(RefreshDatabase::class);
 
 test('creator-kit provides the media:verify-responsive-images command', function (): void {

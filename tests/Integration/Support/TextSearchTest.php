@@ -5,8 +5,6 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 use JeffreyDavidson\CreatorKit\Support\Search\TextSearch;
 
-covers(TextSearch::class);
-
 pest()->use(RefreshDatabase::class);
 
 /** @param list<string> $expectedTitles */

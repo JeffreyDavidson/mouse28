@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\NewsletterIssues\Schemas;
 
-use App\Filament\Forms\Components\SlugSourceInput;
 use App\Models\NewsletterIssue;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Textarea;
@@ -15,6 +14,7 @@ use Illuminate\Support\Str;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishDatePicker;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishStatusSelect;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SlugInput;
+use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SlugSourceInput;
 
 class NewsletterIssueForm
 {
