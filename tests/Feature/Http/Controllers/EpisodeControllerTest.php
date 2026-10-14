@@ -438,21 +438,31 @@ test('episode pages show an evening publish date on its Eastern day', function (
 });
 
 test('the last episode archive page renders', function (): void {
+    // Arrange
     config()->set('mouse28.episodes_per_page', 1);
     Episode::factory()
         ->count(2)
         ->create();
 
-    get(route('episodes.index', ['page' => 2]))->assertOk();
+    // Act
+    $response = get(route('episodes.index', ['page' => 2]));
+
+    // Assert
+    $response->assertOk();
 });
 
 test('episode archive pages past the last one do not exist', function (int $page): void {
+    // Arrange
     config()->set('mouse28.episodes_per_page', 1);
     Episode::factory()
         ->count(2)
         ->create();
 
-    get(route('episodes.index', ['page' => $page]))->assertNotFound();
+    // Act
+    $response = get(route('episodes.index', ['page' => $page]));
+
+    // Assert
+    $response->assertNotFound();
 })->with([
     'one past the last page' => [3],
     'far past the last page' => [999],

@@ -30,6 +30,7 @@ test('a signed preview link shows the draft without exposing it to search', func
 });
 
 test('expired preview links return forbidden', function (): void {
+    // Arrange
     $issue = NewsletterIssue::factory()
         ->draft()
         ->create();
@@ -37,16 +38,25 @@ test('expired preview links return forbidden', function (): void {
 
     travel(2)->hours();
 
-    get($signed)->assertForbidden();
+    // Act
+    $response = get($signed);
+
+    // Assert
+    $response->assertForbidden();
 });
 
 test('tampered temporary preview links return forbidden', function (): void {
+    // Arrange
     $issue = NewsletterIssue::factory()
         ->draft()
         ->create();
     $signed = URL::temporarySignedRoute('preview.newsletter-issue', Date::now()->addHour(), ['newsletterIssue' => $issue]);
 
-    get("{$signed}0")->assertForbidden();
+    // Act
+    $response = get("{$signed}0");
+
+    // Assert
+    $response->assertForbidden();
 });
 
 test('an invalid signature is refused before the draft is looked up, whether or not it exists', function (string $signature, bool $draftExists): void {

@@ -23,6 +23,7 @@ $files = [];
 
 foreach ($paths as $path) {
     $absolutePath = str_starts_with($path, '/') ? $path : $root.'/'.ltrim($path, '/');
+    $absolutePath = realpath($absolutePath) ?: $absolutePath;
 
     if (is_file($absolutePath)) {
         $files[] = $absolutePath;

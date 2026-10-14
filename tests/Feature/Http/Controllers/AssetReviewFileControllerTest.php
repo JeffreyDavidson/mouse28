@@ -21,31 +21,44 @@ beforeEach(function (): void {
 });
 
 test('guests requesting review images are redirected to the panel login', function (): void {
+    // Arrange
     $record = AssetReview::factory()
         ->create(['files' => ['asset-reviews/card.png']]);
     $url = route('filament.admin.assetReviews.file', ['assetReview' => $record, 'file' => 0]);
 
-    get($url)
+    // Act
+    $response = get($url);
+
+    // Assert
+    $response
         ->assertRedirect(route('filament.admin.auth.login'));
 });
 
 test('ordinary users cannot view private review images', function (): void {
+    // Arrange
     $record = AssetReview::factory()
         ->create(['files' => ['asset-reviews/card.png']]);
     actingAs(User::factory()
         ->create());
 
-    get(route('filament.admin.assetReviews.file', ['assetReview' => $record, 'file' => 0]))
+    // Act
+    $response = get(route('filament.admin.assetReviews.file', ['assetReview' => $record, 'file' => 0]));
+
+    // Assert
+    $response
         ->assertForbidden();
 });
 
 test('an administrator can preview the private image without shared caching', function (): void {
+    // Arrange
     actingAsAdmin();
     $record = AssetReview::factory()
         ->create(['files' => ['asset-reviews/card.png']]);
 
+    // Act
     $response = get(route('filament.admin.assetReviews.file', ['assetReview' => $record, 'file' => 0]));
 
+    // Assert
     $response->assertOk()
         ->assertHeader('Content-Type', 'image/png')
         ->assertHeader('Content-Disposition', 'inline; filename=card.png')
@@ -57,12 +70,15 @@ test('an administrator can preview the private image without shared caching', fu
 });
 
 test('an administrator can download the private image as an attachment', function (): void {
+    // Arrange
     actingAsAdmin();
     $record = AssetReview::factory()
         ->create(['files' => ['asset-reviews/card.png']]);
 
+    // Act
     $response = get(route('filament.admin.assetReviews.file', ['assetReview' => $record, 'file' => 0, 'download' => 1]));
 
+    // Assert
     $response->assertOk()
         ->assertHeader('Content-Type', 'image/png')
         ->assertHeader('Content-Disposition', 'attachment; filename=card.png')
@@ -87,11 +103,16 @@ test('a saved path cannot escape the review file directory', function (): void {
 });
 
 test('missing images and out of range indexes return not found', function (int $file): void {
+    // Arrange
     actingAsAdmin();
     $record = AssetReview::factory()
         ->create(['files' => ['asset-reviews/missing.png']]);
 
-    get(route('filament.admin.assetReviews.file', ['assetReview' => $record, 'file' => $file]))
+    // Act
+    $response = get(route('filament.admin.assetReviews.file', ['assetReview' => $record, 'file' => $file]));
+
+    // Assert
+    $response
         ->assertNotFound();
 })
     ->with(['missing saved file' => 0, 'out of range index' => 1]);

@@ -200,14 +200,19 @@ test('contact page keeps the chosen type after a validation error', function ():
 });
 
 test('contact submission rejects failed verification, preserves input and causes no persistence or delivery', function (): void {
+    // Arrange
     Mail::fake();
 
     Http::fake([
         'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response(['success' => false]),
     ]);
 
-    from(route('contact.create'))
-        ->post(route('contact.store'), contactPayload())
+    // Act
+    $response = from(route('contact.create'))
+        ->post(route('contact.store'), contactPayload());
+
+    // Assert
+    $response
         ->assertRedirect(route('contact.create'))
         ->assertSessionHasErrorsIn('contact', ['cf-turnstile-response' => 'Please verify that you are human and try again.'])
         ->assertSessionHasInput('name', 'Dale Cooper')

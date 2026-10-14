@@ -300,21 +300,31 @@ test('a published guide renders its markdown content', function (): void {
 });
 
 test('the last guide archive page renders', function (): void {
+    // Arrange
     config()->set('mouse28.guides_per_page', 1);
     Guide::factory()
         ->count(2)
         ->create();
 
-    get(route('guides.index', ['page' => 2]))->assertOk();
+    // Act
+    $response = get(route('guides.index', ['page' => 2]));
+
+    // Assert
+    $response->assertOk();
 });
 
 test('guide archive pages past the last one do not exist', function (int $page): void {
+    // Arrange
     config()->set('mouse28.guides_per_page', 1);
     Guide::factory()
         ->count(2)
         ->create();
 
-    get(route('guides.index', ['page' => $page]))->assertNotFound();
+    // Act
+    $response = get(route('guides.index', ['page' => $page]));
+
+    // Assert
+    $response->assertNotFound();
 })->with([
     'one past the last page' => [3],
     'far past the last page' => [999],
