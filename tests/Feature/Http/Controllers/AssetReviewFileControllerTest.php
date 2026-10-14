@@ -20,16 +20,22 @@ beforeEach(function (): void {
             ->getContent());
 });
 
-test('review images require an administrator session', function (): void {
+test('guests requesting review images are redirected to the panel login', function (): void {
     $record = AssetReview::factory()
         ->create(['files' => ['asset-reviews/card.png']]);
     $url = route('filament.admin.assetReviews.file', ['assetReview' => $record, 'file' => 0]);
 
     get($url)
-        ->assertRedirect();
+        ->assertRedirect(route('filament.admin.auth.login'));
+});
+
+test('ordinary users cannot view private review images', function (): void {
+    $record = AssetReview::factory()
+        ->create(['files' => ['asset-reviews/card.png']]);
     actingAs(User::factory()
         ->create());
-    get($url)
+
+    get(route('filament.admin.assetReviews.file', ['assetReview' => $record, 'file' => 0]))
         ->assertForbidden();
 });
 
@@ -41,7 +47,27 @@ test('an administrator can preview the private image without shared caching', fu
     $response = get(route('filament.admin.assetReviews.file', ['assetReview' => $record, 'file' => 0]));
 
     $response->assertOk()
-        ->assertHeader('Content-Type', 'image/png');
+        ->assertHeader('Content-Type', 'image/png')
+        ->assertHeader('Content-Disposition', 'inline; filename=card.png')
+        ->assertHeader('X-Content-Type-Options', 'nosniff')
+        ->assertHeader('X-Robots-Tag', 'noindex, nofollow');
+    expect($response->headers->get('Cache-Control'))
+        ->toContain('private')
+        ->toContain('no-store');
+});
+
+test('an administrator can download the private image as an attachment', function (): void {
+    actingAsAdmin();
+    $record = AssetReview::factory()
+        ->create(['files' => ['asset-reviews/card.png']]);
+
+    $response = get(route('filament.admin.assetReviews.file', ['assetReview' => $record, 'file' => 0, 'download' => 1]));
+
+    $response->assertOk()
+        ->assertHeader('Content-Type', 'image/png')
+        ->assertHeader('Content-Disposition', 'attachment; filename=card.png')
+        ->assertHeader('X-Content-Type-Options', 'nosniff')
+        ->assertHeader('X-Robots-Tag', 'noindex, nofollow');
     expect($response->headers->get('Cache-Control'))
         ->toContain('private')
         ->toContain('no-store');
@@ -68,7 +94,7 @@ test('missing images and out of range indexes return not found', function (int $
     get(route('filament.admin.assetReviews.file', ['assetReview' => $record, 'file' => $file]))
         ->assertNotFound();
 })
-    ->with([0, 1]);
+    ->with(['missing saved file' => 0, 'out of range index' => 1]);
 
 test('HTML cannot be served as a review image', function (): void {
     actingAsAdmin();

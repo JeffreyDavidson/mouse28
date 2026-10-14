@@ -299,17 +299,25 @@ test('a published guide renders its markdown content', function (): void {
         ->assertSeeHtml('<strong>sensory break</strong>');
 });
 
-test('guide archive pages past the last one do not exist', function (int $page, int $status): void {
+test('the last guide archive page renders', function (): void {
     config()->set('mouse28.guides_per_page', 1);
     Guide::factory()
         ->count(2)
         ->create();
 
-    get(route('guides.index', ['page' => $page]))->assertStatus($status);
+    get(route('guides.index', ['page' => 2]))->assertOk();
+});
+
+test('guide archive pages past the last one do not exist', function (int $page): void {
+    config()->set('mouse28.guides_per_page', 1);
+    Guide::factory()
+        ->count(2)
+        ->create();
+
+    get(route('guides.index', ['page' => $page]))->assertNotFound();
 })->with([
-    'last page' => [2, 200],
-    'one past the last page' => [3, 404],
-    'far past the last page' => [999, 404],
+    'one past the last page' => [3],
+    'far past the last page' => [999],
 ]);
 
 test('an empty guide archive still renders its first page', function (): void {
