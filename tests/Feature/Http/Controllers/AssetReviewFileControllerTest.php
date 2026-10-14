@@ -38,6 +38,7 @@ test('ordinary users cannot view private review images', function (): void {
     // Arrange
     $record = AssetReview::factory()
         ->create(['files' => ['asset-reviews/card.png']]);
+
     actingAs(User::factory()
         ->create());
 
@@ -52,6 +53,7 @@ test('ordinary users cannot view private review images', function (): void {
 test('an administrator can preview the private image without shared caching', function (): void {
     // Arrange
     actingAsAdmin();
+
     $record = AssetReview::factory()
         ->create(['files' => ['asset-reviews/card.png']]);
 
@@ -64,6 +66,7 @@ test('an administrator can preview the private image without shared caching', fu
         ->assertHeader('Content-Disposition', 'inline; filename=card.png')
         ->assertHeader('X-Content-Type-Options', 'nosniff')
         ->assertHeader('X-Robots-Tag', 'noindex, nofollow');
+
     expect($response->headers->get('Cache-Control'))
         ->toContain('private')
         ->toContain('no-store');
@@ -72,6 +75,7 @@ test('an administrator can preview the private image without shared caching', fu
 test('an administrator can download the private image as an attachment', function (): void {
     // Arrange
     actingAsAdmin();
+
     $record = AssetReview::factory()
         ->create(['files' => ['asset-reviews/card.png']]);
 
@@ -84,6 +88,7 @@ test('an administrator can download the private image as an attachment', functio
         ->assertHeader('Content-Disposition', 'attachment; filename=card.png')
         ->assertHeader('X-Content-Type-Options', 'nosniff')
         ->assertHeader('X-Robots-Tag', 'noindex, nofollow');
+
     expect($response->headers->get('Cache-Control'))
         ->toContain('private')
         ->toContain('no-store');
@@ -105,6 +110,7 @@ test('a saved path cannot escape the review file directory', function (): void {
 test('missing images and out of range indexes return not found', function (int $file): void {
     // Arrange
     actingAsAdmin();
+
     $record = AssetReview::factory()
         ->create(['files' => ['asset-reviews/missing.png']]);
 

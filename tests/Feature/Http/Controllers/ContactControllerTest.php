@@ -207,9 +207,11 @@ test('contact submission rejects failed verification, preserves input and causes
         'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response(['success' => false]),
     ]);
 
+    $payload = contactPayload();
+
     // Act
     $response = from(route('contact.create'))
-        ->post(route('contact.store'), contactPayload());
+        ->post(route('contact.store'), $payload);
 
     // Assert
     $response
