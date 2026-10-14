@@ -12,8 +12,8 @@ declare(strict_types=1);
 
 $root = dirname(__DIR__);
 $paths = array_slice($argv, 1);
-$ignoredDirectories = ['.git', 'node_modules', 'storage', 'vendor'];
-$ignoredPrefixes = ['database/migrations/'];
+$ignoredDirectories = ['.git', '.worktrees', 'node_modules', 'storage', 'vendor'];
+$ignoredPrefixes = ['database/migrations/', '.claude/worktrees/', '.codex/worktrees/'];
 
 if ($paths === []) {
     $paths = ['.'];
@@ -35,7 +35,23 @@ foreach ($paths as $path) {
     }
 
     $iterator = new RecursiveIteratorIterator(
-        new RecursiveDirectoryIterator($absolutePath, FilesystemIterator::SKIP_DOTS)
+        new RecursiveCallbackFilterIterator(
+            new RecursiveDirectoryIterator($absolutePath, FilesystemIterator::SKIP_DOTS),
+            function (SplFileInfo $file) use ($root, $ignoredDirectories, $ignoredPrefixes): bool {
+                if (in_array($file->getFilename(), $ignoredDirectories, true)) {
+                    return false;
+                }
+
+                $relativePath = substr($file->getPathname(), strlen($root) + 1).'/';
+                foreach ($ignoredPrefixes as $prefix) {
+                    if (str_starts_with($relativePath, $prefix)) {
+                        return false;
+                    }
+                }
+
+                return true;
+            },
+        ),
     );
 
     foreach ($iterator as $file) {
