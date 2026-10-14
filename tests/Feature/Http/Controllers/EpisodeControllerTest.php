@@ -4,6 +4,7 @@ use App\Models\Episode;
 use App\Models\Podcast;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Storage;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 
@@ -440,15 +441,24 @@ test('episode pages show an evening publish date on its Eastern day', function (
 test('the last episode archive page renders', function (): void {
     // Arrange
     config()->set('mouse28.episodes_per_page', 1);
+    $olderEpisode = Episode::factory()
+        ->create(['title' => 'Older episode', 'published_at' => '2020-01-01 12:00:00']);
     Episode::factory()
-        ->count(2)
-        ->create();
+        ->create(['title' => 'Newer episode', 'published_at' => '2020-01-02 12:00:00']);
 
     // Act
     $response = get(route('episodes.index', ['page' => 2]));
 
     // Assert
-    $response->assertOk();
+    $response
+        ->assertOk()
+        ->assertViewHas('episodes', fn (LengthAwarePaginator $episodes): bool => $episodes->getCollection()
+            ->pluck('id')
+            ->all() === [$olderEpisode->id]
+            && $episodes->currentPage() === 2
+            && $episodes->lastPage() === 2
+            && $episodes->total() === 2)
+        ->assertSeeText($olderEpisode->title);
 });
 
 test('episode archive pages past the last one do not exist', function (int $page): void {
