@@ -2,7 +2,6 @@
 
 use App\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
 use App\Filament\Resources\NewsletterIssues\Pages\EditNewsletterIssue;
-use App\Jobs\DeliverNewsletterIssue;
 use App\Mail\NewsletterIssueMail;
 use App\Models\NewsletterDelivery;
 use App\Models\NewsletterIssue;
@@ -13,6 +12,7 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
+use JeffreyDavidson\CreatorKit\Jobs\DeliverNewsletterIssue;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -235,7 +235,7 @@ test('an issue that has not been sent keeps its publish date editable', function
 
 test('a test email goes to the admin addresses even for a draft', function (): void {
     Mail::fake();
-    config()->set('mail.admin_address', 'owner@example.test');
+    config()->set('creator-kit.newsletter.test_recipients', ['owner@example.test']);
     $issue = NewsletterIssue::factory()
         ->draft()
         ->create();
@@ -294,7 +294,7 @@ test('a draft slug cannot be changed to one used by a fixed newsletter page', fu
 
 test('a test email sends the unsaved edits on screen and saves them', function (): void {
     Mail::fake();
-    config()->set('mail.admin_address', 'owner@example.test');
+    config()->set('creator-kit.newsletter.test_recipients', ['owner@example.test']);
     $issue = NewsletterIssue::factory()
         ->draft()
         ->create(['title' => 'Saved title', 'content' => 'Saved content.']);

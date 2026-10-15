@@ -7,7 +7,6 @@ use App\Http\Controllers\GuideController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NewsletterConfirmationController;
 use App\Http\Controllers\NewsletterIssueController;
-use App\Http\Controllers\NewsletterOneClickUnsubscriptionController;
 use App\Http\Controllers\NewsletterRssController;
 use App\Http\Controllers\NewsletterSubscriptionController;
 use App\Http\Controllers\NewsletterUnsubscriptionController;
@@ -17,13 +16,11 @@ use App\Http\Controllers\PreviewEpisodeController;
 use App\Http\Controllers\PreviewGuideController;
 use App\Http\Controllers\PreviewNewsletterIssueController;
 use App\Http\Controllers\PreviewPostController;
-use App\Http\Controllers\ResendWebhookController;
 use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
-use App\Http\Middleware\EnsureValidNewsletterConfirmationLink;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
+use JeffreyDavidson\CreatorKit\Routing\NewsletterRoutes;
 
 Route::get('/', HomeController::class)->name('home');
 Route::get('/blog', [PostController::class, 'index'])->name('blog.index');
@@ -50,33 +47,17 @@ Route::post('/contact', [ContactController::class, 'store'])
     ->middleware('throttle:contact-form')
     ->name('contact.store');
 
-Route::post('/newsletter', [NewsletterSubscriptionController::class, 'store'])
-    ->middleware('throttle:newsletter')
-    ->name('newsletter.subscribe');
-// The middleware checks the signature and token; an unusable link, including
-// one whose subscriber was removed, goes back to the sign-up form.
-Route::middleware([EnsureValidNewsletterConfirmationLink::class, 'throttle:newsletter-confirm'])
-    ->missing(fn (): RedirectResponse => EnsureValidNewsletterConfirmationLink::redirectToSignupForm())
-    ->group(function (): void {
-        // Not stored anywhere, so the back button reloads the page instead of restoring
-        // a form already submitted, and the CSRF token and email are never cached.
-        Route::get('/newsletter/confirm/{subscriber}/{token}', [NewsletterConfirmationController::class, 'create'])
-            ->middleware('cache.headers:no_store;private')
-            ->name('newsletter.confirm');
-        Route::post('/newsletter/confirm/{subscriber}/{token}', [NewsletterConfirmationController::class, 'store'])
-            ->name('newsletter.confirm.store');
-    });
-Route::view('/newsletter/confirmed', 'pages.newsletter.confirmed')->name('newsletter.confirmed');
-// Shows the subscriber's email and a CSRF token, so it is never cached either.
-Route::get('/newsletter/unsubscribe/{subscriber}', [NewsletterUnsubscriptionController::class, 'create'])
-    ->middleware(['signed', 'throttle:newsletter-unsubscribe', 'cache.headers:no_store;private'])
-    ->name('newsletter.unsubscribe');
-Route::delete('/newsletter/unsubscribe/{subscriber}', [NewsletterUnsubscriptionController::class, 'destroy'])
-    ->middleware(['signed', 'throttle:newsletter-unsubscribe'])
-    ->name('newsletter.unsubscribe.store');
-Route::post('/newsletter/unsubscribe/{subscriber}', NewsletterOneClickUnsubscriptionController::class)
-    ->middleware(['signed', 'throttle:newsletter-unsubscribe'])
-    ->name('newsletter.unsubscribe.oneClick');
+// The newsletter's subscription routes and the Resend webhook come from creator-kit: the
+// package owns the URLs, route names, signature checks and limiter names; these are Mouse28's
+// pages. They come before /newsletter/{newsletterIssue:slug}, so "confirmed" is never an issue slug.
+NewsletterRoutes::register(
+    subscribe: [NewsletterSubscriptionController::class, 'store'],
+    confirm: [NewsletterConfirmationController::class, 'create'],
+    confirmStore: [NewsletterConfirmationController::class, 'store'],
+    confirmed: 'pages.newsletter.confirmed',
+    unsubscribe: [NewsletterUnsubscriptionController::class, 'create'],
+    unsubscribeDestroy: [NewsletterUnsubscriptionController::class, 'destroy'],
+);
 
 Route::get('/newsletter', [NewsletterIssueController::class, 'index'])->name('newsletter.index');
 // Feed readers poll this: no session, so a hit writes no session row or cookie.
@@ -93,11 +74,6 @@ Route::get('/sitemap.xml', SitemapController::class)
 Route::get('/robots.txt', RobotsController::class)
     ->withoutMiddleware('web')
     ->name('robots');
-// Server-to-server: no session, cookies or forgery token; the Resend signature is the credential.
-Route::post('/webhooks/resend', ResendWebhookController::class)
-    ->withoutMiddleware('web')
-    ->middleware('throttle:resend-webhook')
-    ->name('webhooks.resend');
 // Feed readers and podcast apps poll /rss/blog and /rss/podcast: no session, so a hit writes no session row or cookie.
 Route::get('/rss/blog', BlogRssController::class)
     ->withoutMiddleware('web')

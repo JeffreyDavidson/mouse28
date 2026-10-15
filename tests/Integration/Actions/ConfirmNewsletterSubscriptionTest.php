@@ -1,12 +1,10 @@
 <?php
 
-use App\Actions\ConfirmNewsletterSubscription;
 use App\Models\Subscriber;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use JeffreyDavidson\CreatorKit\Actions\ConfirmNewsletterSubscription;
 
 pest()->use(RefreshDatabase::class);
-
-covers(ConfirmNewsletterSubscription::class);
 
 test('confirming a sign-up verifies the reader and clears pending state', function (): void {
     $reader = Subscriber::factory()

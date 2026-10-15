@@ -264,3 +264,22 @@ test('no test names a creator-kit class as its coverage target', function (): vo
 
     expect($offenders)->toBeEmpty(implode(', ', $offenders));
 });
+
+test('the newsletter workflow comes from creator-kit, not from app copies', function (string $class): void {
+    expect(class_exists($class) || enum_exists($class))->toBeFalse();
+})->with([
+    'App\Actions\ConfirmNewsletterSubscription',
+    'App\Actions\HandleResendWebhook',
+    'App\Actions\RequestNewsletterSubscription',
+    'App\Actions\SendNewsletterIssue',
+    'App\Actions\SendNewsletterIssueTestEmail',
+    'App\Actions\SuppressSubscriber',
+    'App\Actions\UnsubscribeFromNewsletter',
+    'App\Enums\SubscriberStatus',
+    'App\Enums\SuppressionReason',
+    'App\Jobs\DeliverNewsletterIssue',
+    'App\Http\Controllers\NewsletterOneClickUnsubscriptionController',
+    'App\Http\Controllers\ResendWebhookController',
+    'App\Http\Middleware\EnsureValidNewsletterConfirmationLink',
+    'App\Support\Newsletter\UnsubscribeUrlGenerator',
+]);

@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\NewsletterOneClickUnsubscriptionController;
 use App\Models\Subscriber;
 use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -12,8 +11,6 @@ use Illuminate\Support\Facades\URL;
 use Symfony\Component\HttpFoundation\Response;
 
 use function Pest\Laravel\post;
-
-covers(NewsletterOneClickUnsubscriptionController::class);
 
 pest()->use(RefreshDatabase::class);
 
@@ -82,9 +79,21 @@ test('an invalid signature is refused before the reader is looked up, whether or
     ->with('existing and missing records');
 
 test('mail providers can post one-click requests without a forgery token', function (): void {
-    $url = URL::signedRoute('newsletter.unsubscribe.oneClick', Subscriber::factory()->create());
+    // Arrange
+    $router = app('router');
+    $routes = $router->getRoutes();
 
-    expect(forgeryCheckedStatus($url))->toBe(204);
+    // Act
+    $oneClick = $router->gatherRouteMiddleware($routes->getByName('newsletter.unsubscribe.oneClick') ?? throw new RuntimeException('Missing one-click route.'));
+    $unsubscribe = $router->gatherRouteMiddleware($routes->getByName('newsletter.unsubscribe.store') ?? throw new RuntimeException('Missing unsubscribe route.'));
+    $subscribe = $router->gatherRouteMiddleware($routes->getByName('newsletter.subscribe') ?? throw new RuntimeException('Missing subscribe route.'));
+
+    // Assert
+    expect($oneClick)->not->toContain(PreventRequestForgery::class)
+        ->and($unsubscribe)
+        ->toContain(PreventRequestForgery::class)
+        ->and($subscribe)
+        ->toContain(PreventRequestForgery::class);
 });
 
 test('other posts keep forgery protection', function (): void {

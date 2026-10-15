@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Models\Concerns\LogsEditorialActivity;
@@ -13,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use JeffreyDavidson\CreatorKit\Contracts\NewsletterIssue as NewsletterIssueContract;
 use JeffreyDavidson\CreatorKit\Contracts\Publishable;
 use JeffreyDavidson\CreatorKit\Contracts\ReportsPublishingIssues;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
@@ -20,12 +23,16 @@ use JeffreyDavidson\CreatorKit\Models\Attributes\PublishingStatus;
 use JeffreyDavidson\CreatorKit\Models\Concerns\HasDraftScope;
 use JeffreyDavidson\CreatorKit\Models\Concerns\HasPublishingStatus;
 use JeffreyDavidson\CreatorKit\Models\Concerns\LocksSlugAfterPublication;
+use JeffreyDavidson\CreatorKit\Models\Concerns\SendsAsNewsletter;
 use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
 
 /**
  * @property PublishStatus $status
  * @property Carbon|null $published_at
  * @property Carbon|null $sent_at
+ *
+ * @method HasMany<NewsletterDelivery, $this> deliveries()
+ *
  * @property CarbonInterface|null $slug_locked_at
  *
  * @method static Builder<static> drafts()
@@ -45,21 +52,10 @@ use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
 ])]
 #[PublishingStatus]
 #[Sluggable(from: 'title', maxLength: 255)]
-class NewsletterIssue extends Model implements Publishable, ReportsPublishingIssues
+class NewsletterIssue extends Model implements NewsletterIssueContract, Publishable, ReportsPublishingIssues
 {
     /** @use HasFactory<NewsletterIssueFactory> */
-    use HasDraftScope, HasFactory, HasPublishingStatus, LocksSlugAfterPublication, LogsEditorialActivity, ScopesNewestFirst, SoftDeletes;
-
-    /** @return HasMany<NewsletterDelivery, $this> */
-    public function deliveries(): HasMany
-    {
-        return $this->hasMany(NewsletterDelivery::class);
-    }
-
-    public function wasSent(): bool
-    {
-        return $this->sent_at !== null;
-    }
+    use HasDraftScope, HasFactory, HasPublishingStatus, LocksSlugAfterPublication, LogsEditorialActivity, ScopesNewestFirst, SendsAsNewsletter, SoftDeletes;
 
     /**
      * The details that must be present before publishing.
