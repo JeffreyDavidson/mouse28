@@ -12,12 +12,25 @@ test('creator-kit uses Mouse28 newsletter models', function (): void {
     ]);
 });
 
-test('a test send goes to the admin addresses, one per comma-separated entry', function (): void {
-    // Both settings read MAIL_ADMIN_ADDRESS when the configuration loads, so they cannot drift apart.
-    $adminAddresses = array_values(array_filter(array_map(trim(...), explode(',', config()->string('mail.admin_address')))));
+test('a test send goes to each admin address, ignoring spaces and empty entries', function (): void {
+    // Arrange
+    $previous = $_SERVER['MAIL_ADMIN_ADDRESS'] ?? null;
+    $_SERVER['MAIL_ADMIN_ADDRESS'] = ' jeffrey@example.test, cassie@example.test ,, ';
 
-    expect(config('creator-kit.newsletter.test_recipients'))->toBe($adminAddresses)
-        ->not->toBeEmpty();
+    // Act
+    try {
+        /** @var array{newsletter: array{test_recipients: list<string>}} $configuration */
+        $configuration = require config_path('creator-kit.php');
+    } finally {
+        if ($previous === null) {
+            unset($_SERVER['MAIL_ADMIN_ADDRESS']);
+        } else {
+            $_SERVER['MAIL_ADMIN_ADDRESS'] = $previous;
+        }
+    }
+
+    // Assert
+    expect($configuration['newsletter']['test_recipients'])->toBe(['jeffrey@example.test', 'cassie@example.test']);
 });
 
 test('an unusable confirmation link goes back to the home page sign-up form', function (): void {
