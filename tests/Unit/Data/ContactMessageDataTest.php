@@ -21,3 +21,24 @@ test('contact message data retains typed fields through serialization', function
         ->and($restored->type)
         ->toBe(ContactType::Accessibility);
 });
+
+test('contact message data gives creator-kit the inquiry attributes', function (): void {
+    // Arrange
+    $data = new ContactMessageData(
+        name: 'Jane Doe',
+        email: 'jane@example.com',
+        type: ContactType::Accessibility,
+        message: 'A park accessibility question.',
+    );
+
+    // Act
+    $attributes = $data->toAttributes();
+
+    // Assert
+    expect($attributes)->toBe([
+        'name' => 'Jane Doe',
+        'email' => 'jane@example.com',
+        'type' => 'accessibility',
+        'message' => 'A park accessibility question.',
+    ]);
+});

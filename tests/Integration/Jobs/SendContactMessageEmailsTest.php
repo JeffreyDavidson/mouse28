@@ -1,8 +1,8 @@
 <?php
 
-use App\Jobs\SendContactInquiryEmails;
 use App\Jobs\SendContactMessageEmails;
 use Illuminate\Support\Facades\Bus;
+use JeffreyDavidson\CreatorKit\Jobs\SendContactInquiryEmails;
 
 covers(SendContactMessageEmails::class);
 

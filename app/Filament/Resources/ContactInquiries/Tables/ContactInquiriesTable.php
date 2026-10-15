@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Resources\ContactInquiries\Tables;
 
-use App\Enums\ContactInquiryStatus;
 use App\Enums\ContactType;
 use App\Filament\Actions\ReplyToInquiryAction;
 use App\Filament\Resources\ContactInquiries\ContactInquiryResource;
@@ -15,6 +14,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use JeffreyDavidson\CreatorKit\Enums\ContactInquiryStatus;
 
 class ContactInquiriesTable
 {

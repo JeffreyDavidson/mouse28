@@ -3,7 +3,6 @@
 use App\Enums\ContactType;
 use App\Enums\SocialPlatform;
 use App\Http\Requests\StoreContactRequest;
-use App\Jobs\SendContactInquiryEmails;
 use App\Models\ContactInquiry;
 use App\Models\SocialProfile;
 use Dom\HTMLDocument;
@@ -13,6 +12,7 @@ use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
+use JeffreyDavidson\CreatorKit\Jobs\SendContactInquiryEmails;
 
 use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\from;

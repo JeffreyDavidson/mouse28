@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Config;
 use JeffreyDavidson\CreatorKit\Support\Time\DisplayTimezone;
 
 /**
- * Notifies the administrators of a contact inquiry. Sent by SendContactInquiryEmails,
+ * Notifies the administrators of a contact inquiry. Sent by creator-kit's SendContactInquiryEmails,
  * which records the send so retries never deliver it twice.
  */
 class ContactMessageReceived extends Mailable

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\ContactEmails;
 use App\Services\NewsletterEmails;
 use App\Support\Monitoring\Health\RuntimeHealthMonitor;
 use App\Support\Monitoring\Nightwatch\RedactNightwatchCacheEvent;
@@ -31,6 +32,7 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use JeffreyDavidson\CreatorKit\Contracts\ContactMails;
 use JeffreyDavidson\CreatorKit\Contracts\NewsletterMails;
 use JeffreyDavidson\CreatorKit\Support\Time\DisplayTimezone;
 use Laravel\Nightwatch\Facades\Nightwatch;
@@ -41,6 +43,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->scoped(PrimaryPodcast::class);
+        $this->app->bind(ContactMails::class, ContactEmails::class);
         $this->app->bind(NewsletterMails::class, NewsletterEmails::class);
 
         $this->app->afterResolving(ClientBuilder::class, function (ClientBuilder $clientBuilder): void {

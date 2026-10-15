@@ -1,12 +1,11 @@
 <?php
 
-use App\Enums\ContactInquiryStatus;
 use App\Enums\ContactType;
 use App\Models\ContactInquiry;
-use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use JeffreyDavidson\CreatorKit\Enums\ContactInquiryStatus;
 
 pest()->use(RefreshDatabase::class);
 
@@ -66,7 +65,16 @@ test('contact inquiries without a submission time cannot retry emails', function
 });
 
 test('contact inquiries are kept until an administrator deletes them', function (): void {
-    expect(class_uses_recursive(ContactInquiry::class))->not->toContain(Prunable::class);
+    // Arrange
+    $inquiry = ContactInquiry::factory()->create(['created_at' => Date::now()->subYears(5)]);
+
+    // Act
+    pendingCommand('model:prune', ['--model' => [ContactInquiry::class]])
+        ->assertSuccessful()
+        ->run();
+
+    // Assert
+    expect($inquiry->fresh())->not->toBeNull();
 });
 
 test('reply links percent-encode the address and type label for mail clients', function (string $email, ContactType $type, string $url): void {
