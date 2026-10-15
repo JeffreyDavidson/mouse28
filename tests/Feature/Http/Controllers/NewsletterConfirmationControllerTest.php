@@ -1,8 +1,6 @@
 <?php
 
-use App\Actions\ConfirmNewsletterSubscription;
 use App\Http\Controllers\NewsletterConfirmationController;
-use App\Http\Middleware\EnsureValidNewsletterConfirmationLink;
 use App\Models\Subscriber;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
@@ -13,7 +11,7 @@ use function Pest\Laravel\get;
 use function Pest\Laravel\post;
 use function Pest\Laravel\travel;
 
-covers(NewsletterConfirmationController::class, EnsureValidNewsletterConfirmationLink::class, ConfirmNewsletterSubscription::class);
+covers(NewsletterConfirmationController::class);
 
 pest()->use(RefreshDatabase::class);
 

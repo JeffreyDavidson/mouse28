@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\UnsubscribeFromNewsletter;
 use App\Models\Subscriber;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
+use JeffreyDavidson\CreatorKit\Actions\UnsubscribeFromNewsletter;
 
 class NewsletterUnsubscriptionController
 {

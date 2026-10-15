@@ -1,13 +1,11 @@
 <?php
 
-use App\Actions\HandleResendWebhook;
-use App\Enums\SuppressionReason;
 use App\Models\Subscriber;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use JeffreyDavidson\CreatorKit\Actions\HandleResendWebhook;
+use JeffreyDavidson\CreatorKit\Enums\SuppressionReason;
 
 pest()->use(RefreshDatabase::class);
-
-covers(HandleResendWebhook::class);
 
 test('a permanent bounce suppresses the recipient', function (): void {
     $reader = Subscriber::factory()->create(['email' => 'reader@example.com']);

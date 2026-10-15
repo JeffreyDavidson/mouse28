@@ -1,6 +1,5 @@
 <?php
 
-use App\Actions\RequestNewsletterSubscription;
 use App\Http\Controllers\NewsletterSubscriptionController;
 use App\Http\Requests\SubscribeNewsletterRequest;
 use App\Mail\NewsletterConfirmationMail;
@@ -12,7 +11,7 @@ use Illuminate\Support\Facades\Mail;
 use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\from;
 
-covers(NewsletterSubscriptionController::class, SubscribeNewsletterRequest::class, RequestNewsletterSubscription::class);
+covers(NewsletterSubscriptionController::class, SubscribeNewsletterRequest::class);
 
 pest()->use(RefreshDatabase::class);
 

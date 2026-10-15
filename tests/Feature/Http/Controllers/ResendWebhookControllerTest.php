@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\ResendWebhookController;
 use App\Models\Subscriber;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Route;
@@ -8,8 +7,6 @@ use Illuminate\Testing\TestResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 use function Pest\Laravel\call;
-
-covers(ResendWebhookController::class);
 
 pest()->use(RefreshDatabase::class);
 

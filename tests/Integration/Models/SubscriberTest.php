@@ -1,9 +1,9 @@
 <?php
 
-use App\Enums\SuppressionReason;
 use App\Models\Subscriber;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
+use JeffreyDavidson\CreatorKit\Enums\SuppressionReason;
 
 covers(Subscriber::class);
 

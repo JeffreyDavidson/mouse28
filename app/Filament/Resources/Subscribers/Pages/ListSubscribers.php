@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources\Subscribers\Pages;
 
-use App\Enums\SubscriberStatus;
 use App\Filament\Resources\Subscribers\SubscriberResource;
 use App\Models\Subscriber;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Contracts\View\View;
+use JeffreyDavidson\CreatorKit\Enums\SubscriberStatus;
 
 class ListSubscribers extends ListRecords
 {
@@ -25,9 +25,8 @@ class ListSubscribers extends ListRecords
 
     private function countWithStatus(SubscriberStatus $status): int
     {
-        $query = Subscriber::query();
-        $status->scope($query);
-
-        return $query->count();
+        return Subscriber::query()
+            ->withStatus($status)
+            ->count();
     }
 }

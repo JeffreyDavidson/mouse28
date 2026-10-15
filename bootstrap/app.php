@@ -18,8 +18,6 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->append(AddSecurityHeaders::class);
-        // Mail providers post RFC 8058 one-click unsubscribes without a session; the signed URL is the credential.
-        $middleware->preventRequestForgery(except: ['newsletter/unsubscribe/*']);
         // Check signed links before loading their models, so an unsigned link is
         // rejected the same way whether or not its draft or subscriber exists.
         $middleware->prependToPriorityList(before: SubstituteBindings::class, prepend: ValidateSignature::class);

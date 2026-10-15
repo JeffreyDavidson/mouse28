@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Middleware\EnsureValidNewsletterConfirmationLink;
 use App\Models\Subscriber;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
@@ -9,8 +8,6 @@ use Illuminate\Support\Facades\URL;
 use function Pest\Laravel\call;
 use function Pest\Laravel\get;
 use function Pest\Laravel\post;
-
-covers(EnsureValidNewsletterConfirmationLink::class);
 
 pest()->use(RefreshDatabase::class);
 

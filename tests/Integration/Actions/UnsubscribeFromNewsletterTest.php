@@ -1,12 +1,10 @@
 <?php
 
-use App\Actions\UnsubscribeFromNewsletter;
 use App\Models\Subscriber;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use JeffreyDavidson\CreatorKit\Actions\UnsubscribeFromNewsletter;
 
 pest()->use(RefreshDatabase::class);
-
-covers(UnsubscribeFromNewsletter::class);
 
 test('unsubscribing records the date and clears any pending token', function (): void {
     $reader = Subscriber::factory()->create();
