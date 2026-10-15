@@ -199,35 +199,32 @@ test('contact page keeps the chosen type after a validation error', function ():
     expect($response->getContent())->toMatch('/<option\s+value="guest"\s+selected/');
 });
 
-test('contact submission rejects failed turnstile verification before persistence or mail', function (): void {
+test('contact submission rejects failed verification, preserves input and causes no persistence or delivery', function (): void {
+    // Arrange
     Mail::fake();
 
     Http::fake([
         'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response(['success' => false]),
     ]);
 
-    from(route('contact.create'))
-        ->post(route('contact.store'), contactPayload())
-        ->assertRedirect(route('contact.create'))
-        ->assertSessionHasErrorsIn('contact', 'cf-turnstile-response');
+    $payload = contactPayload();
 
-    assertDatabaseCount('contact_inquiries', 0);
-    Mail::assertNothingSent();
-});
+    // Act
+    $response = from(route('contact.create'))
+        ->post(route('contact.store'), $payload);
 
-test('contact submission rejects failed turnstile verification and keeps everything the visitor typed', function (): void {
-    Http::fake([
-        'https://challenges.cloudflare.com/turnstile/v0/siteverify' => Http::response(['success' => false]),
-    ]);
-
-    from(route('contact.create'))
-        ->post(route('contact.store'), contactPayload())
+    // Assert
+    $response
         ->assertRedirect(route('contact.create'))
         ->assertSessionHasErrorsIn('contact', ['cf-turnstile-response' => 'Please verify that you are human and try again.'])
         ->assertSessionHasInput('name', 'Dale Cooper')
         ->assertSessionHasInput('email', 'dale@example.com')
         ->assertSessionHasInput('type', 'accessibility')
         ->assertSessionHasInput('message', 'The contact form needs secure bot protection.');
+
+    assertDatabaseCount('contact_inquiries', 0);
+    Mail::assertNothingSent();
+    Bus::assertNotDispatched(SendContactInquiryEmails::class);
 });
 
 test('contact submission rejects failed turnstile verification and returns to the page it came from', function (): void {

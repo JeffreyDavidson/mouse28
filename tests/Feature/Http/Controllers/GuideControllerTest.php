@@ -5,6 +5,7 @@ use App\Models\Podcast;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Storage;
 
 use function Pest\Laravel\get;
@@ -299,17 +300,44 @@ test('a published guide renders its markdown content', function (): void {
         ->assertSeeHtml('<strong>sensory break</strong>');
 });
 
-test('guide archive pages past the last one do not exist', function (int $page, int $status): void {
+test('the last guide archive page renders', function (): void {
+    // Arrange
+    config()->set('mouse28.guides_per_page', 1);
+    $olderGuide = Guide::factory()
+        ->create(['title' => 'Older guide', 'published_at' => '2020-01-01 12:00:00']);
+    Guide::factory()
+        ->create(['title' => 'Newer guide', 'published_at' => '2020-01-02 12:00:00']);
+
+    // Act
+    $response = get(route('guides.index', ['page' => 2]));
+
+    // Assert
+    $response
+        ->assertOk()
+        ->assertViewHas('guides', fn (LengthAwarePaginator $guides): bool => $guides->getCollection()
+            ->pluck('id')
+            ->all() === [$olderGuide->id]
+            && $guides->currentPage() === 2
+            && $guides->lastPage() === 2
+            && $guides->total() === 2)
+        ->assertSeeText($olderGuide->title);
+});
+
+test('guide archive pages past the last one do not exist', function (int $page): void {
+    // Arrange
     config()->set('mouse28.guides_per_page', 1);
     Guide::factory()
         ->count(2)
         ->create();
 
-    get(route('guides.index', ['page' => $page]))->assertStatus($status);
+    // Act
+    $response = get(route('guides.index', ['page' => $page]));
+
+    // Assert
+    $response->assertNotFound();
 })->with([
-    'last page' => [2, 200],
-    'one past the last page' => [3, 404],
-    'far past the last page' => [999, 404],
+    'one past the last page' => [3],
+    'far past the last page' => [999],
 ]);
 
 test('an empty guide archive still renders its first page', function (): void {
