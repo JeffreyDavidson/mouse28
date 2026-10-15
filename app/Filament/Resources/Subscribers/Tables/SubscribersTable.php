@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Subscribers\Tables;
 
-use App\Enums\SubscriberStatus;
 use App\Models\Subscriber;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -11,6 +10,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use JeffreyDavidson\CreatorKit\Enums\SubscriberStatus;
 
 class SubscribersTable
 {
@@ -24,7 +24,7 @@ class SubscribersTable
                     ->copyable()
                     ->icon(Heroicon::OutlinedEnvelope),
                 TextColumn::make('status')
-                    ->state(fn (Subscriber $record): SubscriberStatus => SubscriberStatus::for($record))
+                    ->state(fn (Subscriber $record): SubscriberStatus => $record->status())
                     ->badge(),
                 TextColumn::make('subscribed_at')
                     ->label('Subscribed')
@@ -47,7 +47,14 @@ class SubscribersTable
                             return;
                         }
 
-                        SubscriberStatus::tryFrom($status)?->scope($query);
+                        $subscriberStatus = SubscriberStatus::tryFrom($status);
+
+                        if ($subscriberStatus === null) {
+                            return;
+                        }
+
+                        /** @var Builder<Subscriber> $query */
+                        $query->withStatus($subscriberStatus);
                     }),
             ])
             ->recordActions([

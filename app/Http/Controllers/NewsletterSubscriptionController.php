@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\RequestNewsletterSubscription;
 use App\Http\Requests\SubscribeNewsletterRequest;
 use Illuminate\Http\RedirectResponse;
+use JeffreyDavidson\CreatorKit\Actions\RequestNewsletterSubscription;
 
 class NewsletterSubscriptionController
 {

@@ -1,13 +1,11 @@
 <?php
 
-use App\Actions\SuppressSubscriber;
-use App\Enums\SuppressionReason;
 use App\Models\Subscriber;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use JeffreyDavidson\CreatorKit\Actions\SuppressSubscriber;
+use JeffreyDavidson\CreatorKit\Enums\SuppressionReason;
 
 pest()->use(RefreshDatabase::class);
-
-covers(SuppressSubscriber::class);
 
 test('suppressing an active reader unsubscribes them and records why', function (): void {
     $reader = Subscriber::factory()->create(['email' => 'reader@example.com']);

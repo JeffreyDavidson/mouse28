@@ -1,7 +1,7 @@
 <?php
 
-use App\Enums\SubscriberStatus;
 use Filament\Support\Icons\Heroicon;
+use JeffreyDavidson\CreatorKit\Enums\SubscriberStatus;
 
 test('subscriber statuses expose explicit labels colors and icons', function (): void {
     $details = [];

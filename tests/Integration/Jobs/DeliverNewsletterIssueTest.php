@@ -1,15 +1,15 @@
 <?php
 
-use App\Jobs\DeliverNewsletterIssue;
 use App\Mail\NewsletterIssueMail;
 use App\Models\NewsletterDelivery;
 use App\Models\Subscriber;
+use Illuminate\Contracts\Mail\Mailer;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Queue\Attributes\Timeout;
 use Illuminate\Queue\Middleware\RateLimited;
 use Illuminate\Support\Facades\Mail;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
-
-covers(DeliverNewsletterIssue::class);
+use JeffreyDavidson\CreatorKit\Jobs\DeliverNewsletterIssue;
 
 pest()->use(RefreshDatabase::class);
 
@@ -74,7 +74,10 @@ test('a delivery is dropped when the issue is no longer published', function (ar
 
 test('a delivery stays unsent when the mail transport fails so it can be tried again', function (): void {
     $delivery = NewsletterDelivery::factory()->create();
-    Mail::shouldReceive('to')->andThrow(new RuntimeException('mail transport unavailable'));
+    $mailer = Mockery::mock(Mailer::class);
+    $mailer->shouldReceive('to')
+        ->andThrow(new RuntimeException('mail transport unavailable'));
+    app()->instance(Mailer::class, $mailer);
 
     expect(fn () => runDelivery($delivery))->toThrow(RuntimeException::class, 'mail transport unavailable')
         ->and($delivery->refresh()
@@ -93,7 +96,10 @@ test('a delivery is abandoned before the queue hands it to another worker', func
     $job = new DeliverNewsletterIssue(NewsletterDelivery::factory()->create());
 
     // Act
-    $timeout = $job->timeout;
+    $timeout = new ReflectionClass($job)
+        ->getAttributes(Timeout::class)[0]
+        ->newInstance()
+        ->timeout;
 
     // Assert
     expect($timeout)->toBe(60)

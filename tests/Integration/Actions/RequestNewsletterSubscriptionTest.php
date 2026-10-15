@@ -1,6 +1,5 @@
 <?php
 
-use App\Actions\RequestNewsletterSubscription;
 use App\Mail\NewsletterConfirmationMail;
 use App\Models\Subscriber;
 use Illuminate\Contracts\Mail\Mailer;
@@ -12,10 +11,9 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
+use JeffreyDavidson\CreatorKit\Actions\RequestNewsletterSubscription;
 
 pest()->use(RefreshDatabase::class);
-
-covers(RequestNewsletterSubscription::class);
 
 function queuedConfirmationUrl(): string
 {

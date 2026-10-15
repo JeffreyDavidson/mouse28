@@ -1,17 +1,17 @@
 <?php
 
-use App\Actions\ConfirmNewsletterSubscription;
 use App\Http\Controllers\NewsletterConfirmationController;
-use App\Http\Middleware\EnsureValidNewsletterConfirmationLink;
 use App\Models\Subscriber;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\URL;
 
+use function Pest\Laravel\call;
 use function Pest\Laravel\get;
 use function Pest\Laravel\post;
+use function Pest\Laravel\travel;
 
-covers(NewsletterConfirmationController::class, EnsureValidNewsletterConfirmationLink::class, ConfirmNewsletterSubscription::class);
+covers(NewsletterConfirmationController::class);
 
 pest()->use(RefreshDatabase::class);
 
@@ -59,7 +59,7 @@ test('a link scanner fetching the confirmation link confirms nothing and leaves 
     $url = confirmationUrl($reader);
 
     foreach (range(1, 3) as $scan) {
-        $this->call($method, $url)
+        call($method, $url)
             ->assertOk();
     }
 
@@ -123,7 +123,7 @@ test('an expired confirmation link sends the reader back to the sign-up form', f
     $reader = pendingReaderWithToken();
     $url = confirmationUrl($reader);
 
-    $this->travel(25)
+    travel(25)
         ->hours();
 
     get($url)

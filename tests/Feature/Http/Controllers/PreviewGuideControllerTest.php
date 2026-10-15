@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 
 use function Pest\Laravel\get;
+use function Pest\Laravel\travel;
 
 pest()->use(RefreshDatabase::class);
 
@@ -26,23 +27,35 @@ test('a signed preview link shows the draft to anyone holding it without exposin
         ->assertHeader('X-Robots-Tag', 'noindex, nofollow');
 });
 
-test('preview links must be signed, untampered, and unexpired', function (string $case): void {
+test('expired preview links return forbidden', function (): void {
+    // Arrange
     $guide = Guide::factory()
         ->draft()
         ->create();
     $signed = URL::temporarySignedRoute('preview.guide', Date::now()->addHour(), ['guide' => $guide]);
-    $url = match ($case) {
-        'unsigned' => route('preview.guide', $guide),
-        'tampered' => "{$signed}0",
-        default => $signed,
-    };
 
-    if ($case === 'expired') {
-        Date::setTestNow(Date::now()->addHours(2));
-    }
+    travel(2)->hours();
 
-    get($url)->assertForbidden();
-})->with(['unsigned', 'tampered', 'expired']);
+    // Act
+    $response = get($signed);
+
+    // Assert
+    $response->assertForbidden();
+});
+
+test('tampered temporary preview links return forbidden', function (): void {
+    // Arrange
+    $guide = Guide::factory()
+        ->draft()
+        ->create();
+    $signed = URL::temporarySignedRoute('preview.guide', Date::now()->addHour(), ['guide' => $guide]);
+
+    // Act
+    $response = get("{$signed}0");
+
+    // Assert
+    $response->assertForbidden();
+});
 
 test('an invalid signature is refused before the draft is looked up, whether or not it exists', function (string $signature, bool $draftExists): void {
     $guide = Guide::factory()

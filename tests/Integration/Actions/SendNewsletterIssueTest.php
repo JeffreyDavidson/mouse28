@@ -1,15 +1,14 @@
 <?php
 
-use App\Actions\SendNewsletterIssue;
 use App\Models\NewsletterIssue;
 use App\Models\Subscriber;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
+use JeffreyDavidson\CreatorKit\Actions\SendNewsletterIssue;
+use JeffreyDavidson\CreatorKit\Exceptions\NewsletterIssueCannotBeSent;
 
 use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\assertDatabaseHas;
-
-covers(SendNewsletterIssue::class);
 
 pest()->use(RefreshDatabase::class);
 
@@ -61,7 +60,7 @@ test('issues that cannot be sent are refused without queueing anything', functio
     Subscriber::factory()->create();
 
     expect(fn () => app(SendNewsletterIssue::class)->handle($issue))
-        ->toThrow(LogicException::class, $message);
+        ->toThrow(NewsletterIssueCannotBeSent::class, $message);
 
     assertDatabaseCount('newsletter_deliveries', 0);
     assertDatabaseCount('jobs', 0);

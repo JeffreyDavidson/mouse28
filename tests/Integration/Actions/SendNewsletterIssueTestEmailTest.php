@@ -1,21 +1,19 @@
 <?php
 
-use App\Actions\SendNewsletterIssueTestEmail;
 use App\Mail\NewsletterIssueMail;
 use App\Models\NewsletterDelivery;
 use App\Models\NewsletterIssue;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
+use JeffreyDavidson\CreatorKit\Actions\SendNewsletterIssueTestEmail;
 
 use function Pest\Laravel\assertDatabaseCount;
-
-covers(SendNewsletterIssueTestEmail::class);
 
 pest()->use(RefreshDatabase::class);
 
 test('a test email goes to every configured admin address and records nothing', function (): void {
     Mail::fake();
-    config()->set('mail.admin_address', 'jeffrey@example.test, cassie@example.test, ');
+    config()->set('creator-kit.newsletter.test_recipients', ['jeffrey@example.test', 'cassie@example.test']);
     $issue = NewsletterIssue::factory()
         ->draft()
         ->create();
