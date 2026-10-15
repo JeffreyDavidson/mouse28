@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\ContactInquiries;
 
-use App\Enums\ContactInquiryStatus;
 use App\Enums\NavigationGroup;
 use App\Filament\Resources\ContactInquiries\Pages\ListContactInquiries;
 use App\Filament\Resources\ContactInquiries\Pages\ViewContactInquiry;
@@ -15,6 +14,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
+use JeffreyDavidson\CreatorKit\Enums\ContactInquiryStatus;
 
 class ContactInquiryResource extends Resource
 {

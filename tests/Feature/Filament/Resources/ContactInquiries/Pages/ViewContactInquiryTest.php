@@ -1,10 +1,8 @@
 <?php
 
-use App\Enums\ContactInquiryStatus;
 use App\Enums\ContactType;
 use App\Filament\Resources\ContactInquiries\ContactInquiryResource;
 use App\Filament\Resources\ContactInquiries\Pages\ViewContactInquiry;
-use App\Jobs\SendContactInquiryEmails;
 use App\Models\ContactInquiry;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -12,6 +10,8 @@ use Illuminate\Mail\Events\MessageSent;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Event;
+use JeffreyDavidson\CreatorKit\Enums\ContactInquiryStatus;
+use JeffreyDavidson\CreatorKit\Jobs\SendContactInquiryEmails;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;

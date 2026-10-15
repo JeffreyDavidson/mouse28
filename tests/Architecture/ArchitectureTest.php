@@ -283,3 +283,10 @@ test('the newsletter workflow comes from creator-kit, not from app copies', func
     'App\Http\Middleware\EnsureValidNewsletterConfirmationLink',
     'App\Support\Newsletter\UnsubscribeUrlGenerator',
 ]);
+
+test('the contact workflow comes from creator-kit, not from app copies', function (string $class): void {
+    expect(class_exists($class) || enum_exists($class))->toBeFalse();
+})->with([
+    'App\Actions\SendContactMessage',
+    'App\Enums\ContactInquiryStatus',
+]);

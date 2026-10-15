@@ -1,11 +1,11 @@
 <?php
 
-use App\Enums\ContactInquiryStatus;
 use App\Filament\Resources\ContactInquiries\ContactInquiryResource;
 use App\Models\ContactInquiry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use JeffreyDavidson\CreatorKit\Enums\ContactInquiryStatus;
 
 pest()->use(RefreshDatabase::class);
 

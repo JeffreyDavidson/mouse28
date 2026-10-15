@@ -1,11 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\ContactInquiries\Pages;
 
-use App\Enums\ContactInquiryStatus;
 use App\Filament\Actions\ReplyToInquiryAction;
 use App\Filament\Resources\ContactInquiries\ContactInquiryResource;
-use App\Jobs\SendContactInquiryEmails;
 use App\Models\ContactInquiry;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
@@ -15,6 +15,8 @@ use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use JeffreyDavidson\CreatorKit\Actions\RetryContactInquiryEmails;
+use JeffreyDavidson\CreatorKit\Enums\ContactInquiryStatus;
 
 /** @property ContactInquiry $record */
 class ViewContactInquiry extends ViewRecord
@@ -83,8 +85,7 @@ class ViewContactInquiry extends ViewRecord
                 ->label('Retry unsent emails')
                 ->icon(Heroicon::OutlinedArrowPath)
                 ->authorize('update')
-                ->visible(fn (ContactInquiry $record): bool => $record->email_attempted_at !== null
-                    && ($record->notification_sent_at === null || $record->confirmation_sent_at === null))
+                ->visible(fn (ContactInquiry $record): bool => $record->hasUnsentEmails())
                 ->requiresConfirmation()
                 ->modalDescription('Only emails without a recorded successful send will be retried. A provider timeout can leave delivery uncertain; check the provider before retrying.')
                 ->disabled(fn (ContactInquiry $record): bool => ! $record->canRetryEmails())
@@ -92,8 +93,8 @@ class ViewContactInquiry extends ViewRecord
                     'Retries are available for %d hours after submission. Older messages require manual review with the mail provider.',
                     ContactInquiry::EMAIL_RETRY_WINDOW_HOURS,
                 ))
-                ->action(function (ContactInquiry $record): void {
-                    dispatch(new SendContactInquiryEmails($record->id));
+                ->action(function (ContactInquiry $record, RetryContactInquiryEmails $retryEmails): void {
+                    $retryEmails->handle($record);
 
                     Notification::make()
                         ->title('Email delivery queued')

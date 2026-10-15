@@ -82,6 +82,8 @@ test('test paths mirror their application source', function (string $suite): voi
         'Actions/SuppressSubscriberTest.php' => 'vendor/jeffreydavidson/creator-kit/src/Actions/SuppressSubscriber.php',
         'Actions/UnsubscribeFromNewsletterTest.php' => 'vendor/jeffreydavidson/creator-kit/src/Actions/UnsubscribeFromNewsletter.php',
         'Jobs/DeliverNewsletterIssueTest.php' => 'vendor/jeffreydavidson/creator-kit/src/Jobs/DeliverNewsletterIssue.php',
+        'Actions/SendContactMessageTest.php' => 'vendor/jeffreydavidson/creator-kit/src/Actions/SendContactMessage.php',
+        'Config/CreatorKitContactTest.php' => 'config/creator-kit.php',
         'Filament/Forms/Components/SlugSourceInputTest.php' => 'vendor/jeffreydavidson/creator-kit/src/Filament/Forms/Components/SlugSourceInput.php',
         'Filament/Resources/Categories/CategoryResourceTest.php' => 'vendor/jeffreydavidson/creator-kit/src/Filament/Resources/Categories/CategoryResource.php',
         'Filament/Resources/Categories/Pages/CreateCategoryTest.php' => 'vendor/jeffreydavidson/creator-kit/src/Filament/Resources/Categories/Pages/CreateCategory.php',

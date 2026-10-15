@@ -18,4 +18,19 @@ final readonly class ContactMessageData
         public ContactType $type,
         public string $message,
     ) {}
+
+    /**
+     * The inquiry's attributes for creator-kit's SendContactMessage.
+     *
+     * @return array{name: string, email: string, type: string, message: string}
+     */
+    public function toAttributes(): array
+    {
+        return [
+            'name' => $this->name,
+            'email' => $this->email,
+            'type' => $this->type->value,
+            'message' => $this->message,
+        ];
+    }
 }

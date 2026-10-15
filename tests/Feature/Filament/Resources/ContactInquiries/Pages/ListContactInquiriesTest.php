@@ -1,12 +1,12 @@
 <?php
 
-use App\Enums\ContactInquiryStatus;
 use App\Enums\ContactType;
 use App\Filament\Resources\ContactInquiries\ContactInquiryResource;
 use App\Filament\Resources\ContactInquiries\Pages\ListContactInquiries;
 use App\Models\ContactInquiry;
 use Filament\Actions\Testing\TestAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use JeffreyDavidson\CreatorKit\Enums\ContactInquiryStatus;
 
 use function Pest\Laravel\get;
 use function Pest\Livewire\livewire;

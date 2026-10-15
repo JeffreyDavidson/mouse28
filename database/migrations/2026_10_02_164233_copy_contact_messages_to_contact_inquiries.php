@@ -1,10 +1,10 @@
 <?php
 
-use App\Enums\ContactInquiryStatus;
 use App\Enums\ContactType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use JeffreyDavidson\CreatorKit\Enums\ContactInquiryStatus;
 
 return new class extends Migration
 {
