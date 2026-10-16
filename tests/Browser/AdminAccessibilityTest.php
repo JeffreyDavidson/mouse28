@@ -5,9 +5,7 @@ use App\Filament\Pages\PodcastSettings;
 use App\Filament\Resources\ContactInquiries\ContactInquiryResource;
 use App\Filament\Resources\Episodes\EpisodeResource;
 use App\Filament\Resources\Guides\GuideResource;
-use App\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
 use App\Filament\Resources\Posts\PostResource;
-use App\Filament\Resources\Subscribers\SubscriberResource;
 use App\Models\ContactInquiry;
 use App\Models\Episode;
 use App\Models\Guide;
@@ -16,6 +14,8 @@ use App\Models\Post;
 use App\Models\Subscriber;
 use App\Models\User;
 use Filament\Pages\Dashboard;
+use JeffreyDavidson\CreatorKit\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Subscribers\SubscriberResource;
 
 use function Pest\Laravel\actingAs;
 

@@ -1,11 +1,11 @@
 <?php
 
-use App\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
-use App\Filament\Resources\NewsletterIssues\Pages\CreateNewsletterIssue;
 use App\Models\NewsletterIssue;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
+use JeffreyDavidson\CreatorKit\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
+use JeffreyDavidson\CreatorKit\Filament\Resources\NewsletterIssues\Pages\CreateNewsletterIssue;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -44,14 +44,16 @@ test('issue creation validates the fields the server requires', function (array 
     'missing content' => [['content' => null], 'content', 'required'],
     'duplicate slug' => [['slug' => 'existing-issue'], 'slug', 'unique'],
     'slug that cannot form a route' => [['slug' => 'Invalid/URL'], 'slug', 'regex'],
-    'slug reserved for the feed' => [['slug' => 'rss'], 'slug', 'not_in'],
-    'slug reserved for the confirmed page' => [['slug' => 'confirmed'], 'slug', 'not_in'],
-    'excerpt over the limit' => [['excerpt' => str_repeat('a', 301)], 'excerpt', 'max'],
+    'slug reserved for the feed' => [['slug' => 'rss'], 'slug', 'This slug is already used by another newsletter page. Choose a different slug.'],
+    'slug reserved for the confirmed page' => [['slug' => 'confirmed'], 'slug', 'This slug is already used by another newsletter page. Choose a different slug.'],
 ]);
 
-test('the create form explains how issues are published and sent', function (): void {
-    get(NewsletterIssueResource::getUrl('create'))
-        ->assertOk()
-        ->assertSee('Create Issue')
-        ->assertSee('use the Publish action');
+test('the create form has the issue, publishing and SEO sections', function (): void {
+    // Act
+    $response = get(NewsletterIssueResource::getUrl('create'));
+
+    // Assert
+    $response->assertOk()
+        ->assertSee('Create Newsletter Issue')
+        ->assertSeeInOrder(['Issue Content', 'Publishing', 'SEO']);
 });

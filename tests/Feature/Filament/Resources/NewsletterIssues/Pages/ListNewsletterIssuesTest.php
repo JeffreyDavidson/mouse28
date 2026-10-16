@@ -1,14 +1,15 @@
 <?php
 
-use App\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
-use App\Filament\Resources\NewsletterIssues\Pages\ListNewsletterIssues;
 use App\Models\NewsletterIssue;
 use App\Models\User;
 use Filament\Actions\Testing\TestAction;
+use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\URL;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
+use JeffreyDavidson\CreatorKit\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
+use JeffreyDavidson\CreatorKit\Filament\Resources\NewsletterIssues\Pages\ListNewsletterIssues;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -26,7 +27,7 @@ test('administrators can render the issue list', function (): void {
     get(NewsletterIssueResource::getUrl())
         ->assertOk()
         ->assertSee('Newsletter Issues')
-        ->assertSee('New Issue');
+        ->assertSee('New newsletter issue');
 });
 
 test('the list shows each issue with a readable status', function (): void {
@@ -65,7 +66,8 @@ test('the tabs narrow the list to drafts, scheduled or published issues', functi
     'published' => ['published', 'published'],
 ]);
 
-test('the header does not count scheduled issues as published', function (): void {
+test('the tab counts do not count scheduled issues as published', function (): void {
+    // Arrange
     NewsletterIssue::factory()->create();
     NewsletterIssue::factory()
         ->scheduled()
@@ -75,10 +77,18 @@ test('the header does not count scheduled issues as published', function (): voi
         ->create();
     NewsletterIssue::factory()->create(['status' => PublishStatus::InReview]);
 
-    $header = livewire(ListNewsletterIssues::class)->instance()
-        ->getHeader();
+    // Act
+    $tabs = livewire(ListNewsletterIssues::class)->instance()
+        ->getTabs();
 
-    expect($header?->getData())->toMatchArray(['published' => 1, 'drafts' => 2]);
+    // Assert
+    expect(array_map(fn (Tab $tab): mixed => $tab->getBadge(), $tabs))->toBe([
+        'all' => '4',
+        'drafts' => '2',
+        'scheduled' => '1',
+        'unpublished' => '3',
+        'published' => '1',
+    ]);
 });
 
 test('issues can be found by title', function (): void {

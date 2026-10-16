@@ -4,8 +4,6 @@ use App\Filament\Resources\Episodes\Pages\CreateEpisode;
 use App\Filament\Resources\Episodes\Pages\EditEpisode;
 use App\Filament\Resources\Guides\Pages\CreateGuide;
 use App\Filament\Resources\Guides\Pages\EditGuide;
-use App\Filament\Resources\NewsletterIssues\Pages\CreateNewsletterIssue;
-use App\Filament\Resources\NewsletterIssues\Pages\EditNewsletterIssue;
 use App\Filament\Resources\Posts\Pages\CreatePost;
 use App\Filament\Resources\Posts\Pages\EditPost;
 use App\Models\Category;
@@ -20,6 +18,8 @@ use Database\Factories\NewsletterIssueFactory;
 use Database\Factories\PostFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use JeffreyDavidson\CreatorKit\Filament\Resources\Categories\Pages\CreateCategory;
+use JeffreyDavidson\CreatorKit\Filament\Resources\NewsletterIssues\Pages\CreateNewsletterIssue;
+use JeffreyDavidson\CreatorKit\Filament\Resources\NewsletterIssues\Pages\EditNewsletterIssue;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Livewire\livewire;

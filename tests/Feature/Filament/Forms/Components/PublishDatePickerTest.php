@@ -2,7 +2,6 @@
 
 use App\Filament\Resources\Episodes\Pages\EditEpisode;
 use App\Filament\Resources\Guides\Pages\EditGuide;
-use App\Filament\Resources\NewsletterIssues\Pages\EditNewsletterIssue;
 use App\Filament\Resources\Posts\Pages\EditPost;
 use App\Models\Episode;
 use App\Models\Guide;
@@ -12,6 +11,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
+use JeffreyDavidson\CreatorKit\Filament\Resources\NewsletterIssues\Pages\EditNewsletterIssue;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;

@@ -91,6 +91,27 @@ test('a live issue renders its title, date, summary and Markdown safely', functi
         ->assertSeeHtml('href="'.route('newsletter.index').'"');
 });
 
+test('a live issue uses its saved SEO title, description and robots, falling back to its own', function (): void {
+    // Arrange
+    $saved = NewsletterIssue::factory()->create(['title' => 'Fallback Title', 'excerpt' => 'Fallback excerpt.']);
+    $saved->seo->update(['title' => 'Saved SEO Title', 'description' => 'Saved SEO description.', 'robots' => 'noindex, nofollow']);
+    $fallback = NewsletterIssue::factory()->create(['title' => 'Fallback Title', 'excerpt' => 'Fallback excerpt.']);
+
+    // Act
+    $savedResponse = get(route('newsletter.issue', $saved));
+    $fallbackResponse = get(route('newsletter.issue', $fallback));
+
+    // Assert
+    $savedResponse->assertOk()
+        ->assertSeeHtml('<title>Saved SEO Title | Mouse28</title>')
+        ->assertSeeHtml('<meta name="description" content="Saved SEO description.">')
+        ->assertSeeHtml('<meta name="robots" content="noindex, nofollow">');
+    $fallbackResponse->assertOk()
+        ->assertSeeHtml('<title>Fallback Title | Mouse28</title>')
+        ->assertSeeHtml('<meta name="description" content="Fallback excerpt.">')
+        ->assertSeeHtml('<meta name="robots" content="index,follow">');
+});
+
 test('issues that are not live return not found', function (NewsletterIssue $issue): void {
     get(route('newsletter.issue', $issue))->assertNotFound();
 })->with([

@@ -25,8 +25,11 @@ use JeffreyDavidson\CreatorKit\Models\Concerns\HasPublishingStatus;
 use JeffreyDavidson\CreatorKit\Models\Concerns\LocksSlugAfterPublication;
 use JeffreyDavidson\CreatorKit\Models\Concerns\SendsAsNewsletter;
 use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
+use RalphJSmit\Laravel\SEO\Models\SEO;
+use RalphJSmit\Laravel\SEO\Support\HasSEO;
 
 /**
+ * @property-read SEO $seo
  * @property PublishStatus $status
  * @property Carbon|null $published_at
  * @property Carbon|null $sent_at
@@ -55,7 +58,7 @@ use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
 class NewsletterIssue extends Model implements NewsletterIssueContract, Publishable, ReportsPublishingIssues
 {
     /** @use HasFactory<NewsletterIssueFactory> */
-    use HasDraftScope, HasFactory, HasPublishingStatus, LocksSlugAfterPublication, LogsEditorialActivity, ScopesNewestFirst, SendsAsNewsletter, SoftDeletes;
+    use HasDraftScope, HasFactory, HasPublishingStatus, HasSEO, LocksSlugAfterPublication, LogsEditorialActivity, ScopesNewestFirst, SendsAsNewsletter, SoftDeletes;
 
     /**
      * The details that must be present before publishing.
