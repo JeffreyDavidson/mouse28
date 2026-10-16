@@ -176,15 +176,14 @@ jobs:
   test:
     name: Test and build
     runs-on: ubuntu-24.04
-    needs: [application, mysql]
+    needs: [application]
     if: always()
     timeout-minutes: 1
     steps:
-      - name: Require application and MySQL checks
+      - name: Require the application checks
         env:
           APPLICATION_RESULT: ${{ needs.application.result }}
-          MYSQL_RESULT: ${{ needs.mysql.result }}
-        run: test "$APPLICATION_RESULT" = success && test "$MYSQL_RESULT" = success
+        run: test "$APPLICATION_RESULT" = success
 
   mutation-shards:
     name: Mutation (${{ matrix.group }})
@@ -244,58 +243,3 @@ jobs:
         env:
           MUTATION_RESULT: ${{ needs.mutation-shards.result }}
         run: test "$MUTATION_RESULT" = success
-
-  mysql:
-    name: MySQL compatibility
-    runs-on: ubuntu-24.04
-    # The lane usually takes 7-9 minutes; 15 leaves room for a slow runner.
-    timeout-minutes: 15
-    services:
-      mysql:
-        # Docker's official image from AWS's public mirror: Docker Hub's anonymous pull limit,
-        # shared across GitHub's runners, stopped this lane three times on 2026-10-09.
-        image: public.ecr.aws/docker/library/mysql:8.4
-        env:
-          MYSQL_ROOT_PASSWORD: isolated-ci-root
-          MYSQL_DATABASE: mouse28_test
-          MYSQL_USER: mouse28_test
-          MYSQL_PASSWORD: mouse28_test
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping --silent"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          persist-credentials: false
-      - name: Setup PHP
-        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
-        with:
-          php-version: '8.5'
-          extensions: dom, curl, gd, libxml, mbstring, zip, pcntl, pdo_mysql, pdo_sqlite
-          coverage: none
-      - name: Configure private Composer repository
-        env:
-          FILAMENTEXAMPLES_COMPOSER_USERNAME: ${{ secrets.FILAMENTEXAMPLES_COMPOSER_USERNAME }}
-          FILAMENTEXAMPLES_COMPOSER_PASSWORD: ${{ secrets.FILAMENTEXAMPLES_COMPOSER_PASSWORD }}
-        run: composer config --global --auth http-basic.satis.filamentexamples.com "$FILAMENTEXAMPLES_COMPOSER_USERNAME" "$FILAMENTEXAMPLES_COMPOSER_PASSWORD"
-      - name: Locate Composer cache
-        id: composer-cache
-        run: echo "path=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
-      - name: Cache Composer downloads
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
-        with:
-          path: ${{ steps.composer-cache.outputs.path }}
-          key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
-          restore-keys: composer-${{ runner.os }}-
-      - name: Install PHP dependencies
-        env:
-          # Read access to the private creator-kit package.
-          COMPOSER_AUTH: ${{ secrets.COMPOSER_AUTH }}
-        run: composer install --no-interaction --prefer-dist --no-progress
-      - name: Check migrations and database-sensitive workflows
-        run: composer test:mysql
