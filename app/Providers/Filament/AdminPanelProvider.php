@@ -61,10 +61,10 @@ class AdminPanelProvider extends PanelProvider
     {
         Gate::before(fn (User $user): bool => $user->is_admin);
 
-        // creator-kit's post form builds the Related Episodes select; tag it so the panel's
-        // select-accessibility script repairs its listbox roles, as AuthorsSelect does.
+        // creator-kit's post form builds the Category and Related Episodes selects; tag them so
+        // the panel's select-accessibility script repairs their listbox roles, as AuthorsSelect does.
         Select::configureUsing(function (Select $select): void {
-            if ($select->getName() === 'episodes') {
+            if (in_array($select->getName(), ['category_id', 'episodes'], true)) {
                 $select->extraAlpineAttributes(['data-mouse28-accessible-select' => true]);
             }
         });

@@ -2,7 +2,7 @@
 paths:
   - 'app/Models/**'
   - 'app/Enums/**'
-  - 'app/Filament/Resources/Episodes/**'
+  - 'app/Providers/Filament/**'
   - 'resources/views/pages/episodes/**'
   - 'config/podcast.php'
 ---

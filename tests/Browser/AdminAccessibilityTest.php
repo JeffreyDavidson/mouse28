@@ -3,6 +3,7 @@
 use App\Enums\ContactType;
 use App\Filament\Pages\PodcastSettings;
 use App\Filament\Resources\Guides\GuideResource;
+use App\Models\Category;
 use App\Models\ContactInquiry;
 use App\Models\Episode;
 use App\Models\Guide;
@@ -248,6 +249,37 @@ test('table pagination selects have an accessible name', function (): void {
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
 })->group('browser-smoke');
+
+test('the category combobox exposes an accessible listbox', function (): void {
+    // Arrange
+    actingAsAdmin();
+    Category::factory()->create(['name' => 'Park Tips']);
+
+    // Act
+    $page = visit(PostResource::getUrl('create'));
+    $page->click('button[role="combobox"][id="form.category_id"]');
+
+    // Assert
+    $page->assertScript(<<<'JS'
+            (() => {
+                const combobox = document.querySelector('button[role="combobox"][id="form.category_id"]');
+                const listbox = document.getElementById(combobox?.getAttribute('aria-controls') ?? '');
+                const dropdown = listbox?.closest('.fi-dropdown-panel');
+
+                return Boolean(combobox && listbox && dropdown)
+                    && combobox.closest('[data-mouse28-accessible-select]') !== null
+                    && combobox.getAttribute('aria-expanded') === 'true'
+                    && listbox.getAttribute('role') === 'listbox'
+                    && dropdown.getAttribute('role') !== 'listbox'
+                    && listbox.querySelectorAll(':scope > li[role="option"]').length > 0;
+            })()
+            JS, true);
+
+    $page->wait(0.2);
+
+    $page->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors();
+});
 
 test('related episodes combobox exposes an accessible searchable listbox', function (): void {
     // Arrange

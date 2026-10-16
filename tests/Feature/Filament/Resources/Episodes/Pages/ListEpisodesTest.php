@@ -3,7 +3,6 @@
 use App\Models\Episode;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use JeffreyDavidson\CreatorKit\Contracts\PublishingSuggestions;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 use JeffreyDavidson\CreatorKit\Filament\Resources\Episodes\EpisodeResource;
 use JeffreyDavidson\CreatorKit\Filament\Resources\Episodes\Pages\ListEpisodes;
@@ -93,8 +92,6 @@ test('an episode that can be published reads Ready with what it could still impr
     // Assert
     $response->assertOk()
         ->assertSee('Ready')
-        ->assertSee('Could improve: '.implode(', ', app(PublishingSuggestions::class)->suggestions($episode)));
-    expect($episode->publishingIssues())->toBeEmpty()
-        ->and(app(PublishingSuggestions::class)->suggestions($episode))
-        ->toContain('Add a cover image');
+        ->assertSee('Could improve: Add a cover image, Add an SEO title, Add an SEO description');
+    expect($episode->publishingIssues())->toBeEmpty();
 });

@@ -4,7 +4,6 @@ use App\Models\Category;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use JeffreyDavidson\CreatorKit\Contracts\PublishingSuggestions;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 use JeffreyDavidson\CreatorKit\Filament\Resources\Posts\Pages\ListPosts;
 use JeffreyDavidson\CreatorKit\Filament\Resources\Posts\PostResource;
@@ -22,7 +21,7 @@ test('authenticated user can render the resource listing', function (): void {
 
     get(PostResource::getUrl())
         ->assertOk()
-        ->assertSee('Posts');
+        ->assertSee('New post');
 });
 
 test('content table shows readiness and the persisted publish status', function (): void {
@@ -231,8 +230,6 @@ test('a post that can be published reads Ready with what it could still improve'
     // Assert
     $response->assertOk()
         ->assertSee('Ready')
-        ->assertSee('Could improve: '.implode(', ', app(PublishingSuggestions::class)->suggestions($post)));
-    expect($post->publishingIssues())->toBeEmpty()
-        ->and(app(PublishingSuggestions::class)->suggestions($post))
-        ->toContain('Add a cover image');
+        ->assertSee('Could improve: Add a cover image, Add an SEO title, Add an SEO description');
+    expect($post->publishingIssues())->toBeEmpty();
 });
