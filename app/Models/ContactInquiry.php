@@ -41,8 +41,9 @@ class ContactInquiry extends Model implements ContactInquiryContract
     use HasFactory, IsContactInquiry;
 
     /**
-     * Build a reply draft link, percent-encoding values so spaces stay spaces and
-     * address characters such as `?` or `&` cannot add mailto header fields.
+     * Build a reply draft link for the admin notification email, percent-encoding values so
+     * spaces stay spaces and address characters such as `?` or `&` cannot add mailto header
+     * fields. creator-kit's Reply button builds the same link on the admin screens.
      */
     public function replyMailtoUrl(): string
     {

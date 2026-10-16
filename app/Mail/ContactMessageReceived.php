@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Mail;
 
-use App\Filament\Resources\ContactInquiries\ContactInquiryResource;
 use App\Models\ContactInquiry;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
@@ -12,6 +11,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Mailables\Headers;
 use Illuminate\Support\Facades\Config;
+use JeffreyDavidson\CreatorKit\Filament\Resources\ContactInquiries\ContactInquiryResource;
 use JeffreyDavidson\CreatorKit\Support\Time\DisplayTimezone;
 
 /**
@@ -37,7 +37,7 @@ class ContactMessageReceived extends Mailable
             with: [
                 // Stored in UTC; the administrators read times in the site's display timezone.
                 'receivedAt' => DisplayTimezone::convert($this->inquiry->created_at),
-                'adminUrl' => ContactInquiryResource::getUrl('view', ['record' => $this->inquiry]),
+                'adminUrl' => ContactInquiryResource::getUrl('edit', ['record' => $this->inquiry]),
             ],
         );
     }
