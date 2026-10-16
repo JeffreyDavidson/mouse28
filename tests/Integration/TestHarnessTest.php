@@ -5,12 +5,9 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 
 test('the test harness selects only its isolated database', function (): void {
-    $mysql = getenv('MOUSE28_TEST_MYSQL') === '1';
-    $connection = $mysql ? 'mysql' : 'sqlite';
-
-    expect(config('database.default'))->toBe($mysql ? 'mysql' : 'sqlite')
-        ->and(config('database.connections.'.$connection.'.database'))
-        ->toBe($mysql ? 'mouse28_test' : ':memory:')
+    expect(config('database.default'))->toBe('sqlite')
+        ->and(config('database.connections.sqlite.database'))
+        ->toBe(':memory:')
         ->and(config('telescope.enabled'))
         ->toBeFalse();
 });
