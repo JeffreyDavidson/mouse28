@@ -1,18 +1,14 @@
 <?php
 
 use App\Enums\GuideCategory;
-use App\Filament\Resources\Episodes\Pages\EditEpisode;
-use App\Filament\Resources\Episodes\Pages\ListEpisodes;
 use App\Filament\Resources\Guides\GuideResource;
 use App\Filament\Resources\Guides\Pages\CreateGuide;
 use App\Filament\Resources\Guides\Pages\EditGuide;
 use App\Filament\Resources\Guides\Pages\ListGuides;
-use App\Filament\Resources\Posts\Pages\EditPost;
-use App\Filament\Resources\Posts\Pages\ListPosts;
 use App\Models\Episode;
 use App\Models\Guide;
-use App\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Episodes\Pages\EditEpisode;
 
 use function Pest\Laravel\assertAuthenticatedAs;
 use function Pest\Laravel\get;
@@ -84,24 +80,20 @@ test('assertListShowsReadinessAndStatus finds both on the resource listing', fun
     assertListShowsReadinessAndStatus(GuideResource::getUrl(), Guide::class);
 });
 
-test('assertListTabsFilterDraftsAndScheduled checks both tabs on every content listing', function (): void {
+test('assertListTabsFilterDraftsAndScheduled checks both tabs on the guide listing', function (): void {
     // Arrange
     actingAsAdmin();
 
     // Act and assert
-    assertListTabsFilterDraftsAndScheduled(ListPosts::class, Post::class);
     assertListTabsFilterDraftsAndScheduled(ListGuides::class, Guide::class);
-    assertListTabsFilterDraftsAndScheduled(ListEpisodes::class, Episode::class);
 });
 
-test('assertListHeaderCountsOnlyPublished ignores scheduled records on every content listing', function (): void {
+test('assertListHeaderCountsOnlyPublished ignores scheduled records on the guide listing', function (): void {
     // Arrange
     actingAsAdmin();
 
     // Act and assert
-    assertListHeaderCountsOnlyPublished(ListPosts::class, Post::class);
     assertListHeaderCountsOnlyPublished(ListGuides::class, Guide::class);
-    assertListHeaderCountsOnlyPublished(ListEpisodes::class, Episode::class);
 });
 
 test('assertEditKeepsSlug saves the form without changing a published slug', function (): void {
@@ -126,20 +118,14 @@ test('assertEditRejectsInvalidDraftSlug reports the slug pattern error', functio
     assertEditRejectsInvalidDraftSlug(EditGuide::class, $guide);
 });
 
-test('assertEditOffersDraftPreview checks the signed preview link for every content type', function (): void {
+test('assertEditOffersDraftPreview checks the signed preview link of a guide', function (): void {
     // Arrange
     actingAsAdmin();
 
     // Act and assert
-    assertEditOffersDraftPreview(EditPost::class, Post::factory()
-        ->draft()
-        ->create(), 'preview.post');
     assertEditOffersDraftPreview(EditGuide::class, Guide::factory()
         ->draft()
         ->create(), 'preview.guide');
-    assertEditOffersDraftPreview(EditEpisode::class, Episode::factory()
-        ->draft()
-        ->create(), 'preview.episode');
 });
 
 test('assertEditPublishes publishes a ready draft', function (): void {

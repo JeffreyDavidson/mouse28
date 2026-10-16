@@ -1,7 +1,5 @@
 <?php
 
-use App\Filament\Resources\Episodes\EpisodeResource;
-use App\Filament\Resources\Episodes\Pages\EditEpisode;
 use App\Models\Episode;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -10,6 +8,8 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Episodes\EpisodeResource;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Episodes\Pages\EditEpisode;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -158,7 +158,7 @@ test('editing cannot take another episode number', function (): void {
         ->episode_number)->toBe(43);
 });
 
-test('edit page offers a draft preview', function (): void {
+test('a draft views on site through its signed preview', function (): void {
     Date::setTestNow('2026-09-27 12:00:00');
     $admin = User::factory()
         ->admin()
@@ -170,9 +170,9 @@ test('edit page offers a draft preview', function (): void {
     actingAs($admin);
 
     livewire(EditEpisode::class, ['record' => $episode->getRouteKey()])
-        ->assertActionVisible('preview')
-        ->assertActionHasUrl('preview', URL::temporarySignedRoute('preview.episode', Date::now()->addHours(24), ['episode' => $episode]))
-        ->assertActionShouldOpenUrlInNewTab('preview');
+        ->assertActionVisible('view_on_site')
+        ->assertActionHasUrl('view_on_site', URL::temporarySignedRoute('preview.episode', Date::now()->addHours(24), ['episode' => $episode]))
+        ->assertActionShouldOpenUrlInNewTab('view_on_site');
 });
 
 test('drafts with their required details can be published while advisory details are missing', function (): void {

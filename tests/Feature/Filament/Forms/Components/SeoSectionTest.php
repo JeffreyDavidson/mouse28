@@ -1,11 +1,11 @@
 <?php
 
-use App\Filament\Resources\Episodes\Pages\CreateEpisode;
 use App\Filament\Resources\Guides\Pages\CreateGuide;
-use App\Filament\Resources\Posts\Pages\CreatePost;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SeoSection;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Episodes\Pages\CreateEpisode;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Posts\Pages\CreatePost;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Livewire\livewire;

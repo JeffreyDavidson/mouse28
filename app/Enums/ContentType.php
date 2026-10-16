@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
-use App\Filament\Resources\Episodes\EpisodeResource;
 use App\Filament\Resources\Guides\GuideResource;
-use App\Filament\Resources\Posts\PostResource;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 use Filament\Support\Icons\Heroicon;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Episodes\EpisodeResource;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Posts\PostResource;
 
 enum ContentType: string implements HasColor, HasIcon, HasLabel
 {

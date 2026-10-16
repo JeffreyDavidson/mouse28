@@ -2,9 +2,7 @@
 
 use App\Enums\ContactType;
 use App\Filament\Pages\PodcastSettings;
-use App\Filament\Resources\Episodes\EpisodeResource;
 use App\Filament\Resources\Guides\GuideResource;
-use App\Filament\Resources\Posts\PostResource;
 use App\Models\ContactInquiry;
 use App\Models\Episode;
 use App\Models\Guide;
@@ -14,7 +12,9 @@ use App\Models\Subscriber;
 use App\Models\User;
 use Filament\Pages\Dashboard;
 use JeffreyDavidson\CreatorKit\Filament\Resources\ContactInquiries\ContactInquiryResource;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Episodes\EpisodeResource;
 use JeffreyDavidson\CreatorKit\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Posts\PostResource;
 use JeffreyDavidson\CreatorKit\Filament\Resources\Subscribers\SubscriberResource;
 
 use function Pest\Laravel\actingAs;
@@ -317,8 +317,6 @@ test('mobile resource status tabs scroll without overlapping labels', function (
     actingAsAdmin();
 
     $pages = [
-        PostResource::getUrl(),
-        EpisodeResource::getUrl(),
         GuideResource::getUrl(),
     ];
 
@@ -434,10 +432,8 @@ test('mobile Filament controls meet the minimum touch target across admin pages'
     ]);
 
     $pages = [
-        [PostResource::getUrl(), '.fi-tabs-item'],
         [PostResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
         [PostResource::getUrl(), '.fi-ta-header-toolbar .fi-icon-btn'],
-        [EpisodeResource::getUrl(), '.fi-tabs-item'],
         [EpisodeResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
         [GuideResource::getUrl(), '.fi-tabs-item'],
         [GuideResource::getUrl(), '.fi-ta-header-cell-sort-btn'],

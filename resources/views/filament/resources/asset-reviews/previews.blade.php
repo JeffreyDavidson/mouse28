@@ -15,7 +15,7 @@
                 <p class="mt-3">
                     <a
                         class="text-primary-600 underline"
-                        href="{{ \App\Filament\Resources\Posts\PostResource::getUrl('edit', ['record' => $review->sourcePost]) }}"
+                        href="{{ \JeffreyDavidson\CreatorKit\Filament\Resources\Posts\PostResource::getUrl('edit', ['record' => $review->sourcePost]) }}"
                     >Source article: {{ $review->sourcePost->title }}</a>
                 </p>
             @endif

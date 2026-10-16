@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Services\ContactEmails;
+use App\Services\ContentPublishingSuggestions;
 use App\Services\ContentUrls;
 use App\Services\NewsletterEmails;
 use App\Support\Monitoring\Health\RuntimeHealthMonitor;
@@ -36,6 +37,7 @@ use Illuminate\Support\ServiceProvider;
 use JeffreyDavidson\CreatorKit\Contracts\ContactMails;
 use JeffreyDavidson\CreatorKit\Contracts\ContentUrls as ContentUrlsContract;
 use JeffreyDavidson\CreatorKit\Contracts\NewsletterMails;
+use JeffreyDavidson\CreatorKit\Contracts\PublishingSuggestions;
 use JeffreyDavidson\CreatorKit\Support\Time\DisplayTimezone;
 use Laravel\Nightwatch\Facades\Nightwatch;
 use Sentry\ClientBuilder;
@@ -48,6 +50,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ContactMails::class, ContactEmails::class);
         $this->app->bind(ContentUrlsContract::class, ContentUrls::class);
         $this->app->bind(NewsletterMails::class, NewsletterEmails::class);
+        $this->app->bind(PublishingSuggestions::class, ContentPublishingSuggestions::class);
 
         $this->app->afterResolving(ClientBuilder::class, function (ClientBuilder $clientBuilder): void {
             $options = $clientBuilder->getOptions();
