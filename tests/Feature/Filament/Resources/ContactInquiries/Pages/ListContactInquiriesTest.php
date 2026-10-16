@@ -1,12 +1,12 @@
 <?php
 
 use App\Enums\ContactType;
-use App\Filament\Resources\ContactInquiries\ContactInquiryResource;
-use App\Filament\Resources\ContactInquiries\Pages\ListContactInquiries;
 use App\Models\ContactInquiry;
 use Filament\Actions\Testing\TestAction;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use JeffreyDavidson\CreatorKit\Enums\ContactInquiryStatus;
+use JeffreyDavidson\CreatorKit\Filament\Resources\ContactInquiries\ContactInquiryResource;
+use JeffreyDavidson\CreatorKit\Filament\Resources\ContactInquiries\Pages\ListContactInquiries;
 
 use function Pest\Laravel\get;
 use function Pest\Livewire\livewire;
@@ -38,17 +38,19 @@ test('the listing decrypts the sender and shows readable type and status labels'
         ->assertSee('In progress');
 });
 
-test('the listing header counts total and new inquiries', function (): void {
+test('the sidebar shows how many inquiries are still new', function (): void {
+    // Arrange
     ContactInquiry::factory()->create(['status' => ContactInquiryStatus::New]);
     ContactInquiry::factory()->create(['status' => ContactInquiryStatus::Resolved]);
     actingAsAdmin();
 
-    $content = (string) get(ContactInquiryResource::getUrl())
-        ->assertOk()
-        ->getContent();
+    // Act
+    $response = get(ContactInquiryResource::getUrl());
 
-    expect($content)->toMatch('/>2<\/span>\s*<span[^>]*>Total<\/span>/')
-        ->toMatch('/>1<\/span>\s*<span[^>]*>New<\/span>/');
+    // Assert
+    $response->assertOk()
+        ->assertSeeHtml('fi-sidebar-item-badge');
+    expect(ContactInquiryResource::getNavigationBadge())->toBe('1');
 });
 
 test('renders contact inquiry previews with a two-line clamp', function (): void {

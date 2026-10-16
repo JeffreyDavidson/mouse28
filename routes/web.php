@@ -81,3 +81,8 @@ Route::get('/rss/blog', BlogRssController::class)
 Route::get('/rss/podcast', PodcastFeedRedirectController::class)
     ->withoutMiddleware('web')
     ->name('rss.podcast');
+
+// Contact notification emails sent before the inquiry page moved to creator-kit link to its old address.
+Route::redirect('/admin/contact-inquiries/{record}', '/admin/contact-inquiries/{record}/edit')
+    ->whereNumber('record')
+    ->name('legacyContactInquiry');

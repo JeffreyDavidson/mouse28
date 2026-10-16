@@ -304,3 +304,13 @@ test('the subscriber and newsletter issue screens come from creator-kit, not fro
     'App\Filament\Resources\NewsletterIssues\Schemas\NewsletterIssueForm',
     'App\Filament\Resources\NewsletterIssues\Tables\NewsletterIssuesTable',
 ]);
+
+test('the contact inquiry screens come from creator-kit, not from app copies', function (string $class): void {
+    expect(class_exists($class))->toBeFalse();
+})->with([
+    'App\Filament\Resources\ContactInquiries\ContactInquiryResource',
+    'App\Filament\Resources\ContactInquiries\Pages\ListContactInquiries',
+    'App\Filament\Resources\ContactInquiries\Pages\ViewContactInquiry',
+    'App\Filament\Resources\ContactInquiries\Tables\ContactInquiriesTable',
+    'App\Filament\Actions\ReplyToInquiryAction',
+]);
