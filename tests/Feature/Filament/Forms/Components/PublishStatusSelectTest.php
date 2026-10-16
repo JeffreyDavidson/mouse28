@@ -1,11 +1,7 @@
 <?php
 
-use App\Filament\Resources\Episodes\Pages\CreateEpisode;
-use App\Filament\Resources\Episodes\Pages\EditEpisode;
 use App\Filament\Resources\Guides\Pages\CreateGuide;
 use App\Filament\Resources\Guides\Pages\EditGuide;
-use App\Filament\Resources\Posts\Pages\CreatePost;
-use App\Filament\Resources\Posts\Pages\EditPost;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\NewsletterIssue;
@@ -19,8 +15,12 @@ use Filament\Forms\Components\Select;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Episodes\Pages\CreateEpisode;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Episodes\Pages\EditEpisode;
 use JeffreyDavidson\CreatorKit\Filament\Resources\NewsletterIssues\Pages\CreateNewsletterIssue;
 use JeffreyDavidson\CreatorKit\Filament\Resources\NewsletterIssues\Pages\EditNewsletterIssue;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Posts\Pages\CreatePost;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Posts\Pages\EditPost;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Livewire\livewire;

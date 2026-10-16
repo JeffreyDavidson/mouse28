@@ -326,3 +326,20 @@ test('the content building blocks and robots.txt come from creator-kit, not from
     'App\Http\Controllers\RobotsController',
     'App\ViewModels\RobotsTxtViewModel',
 ]);
+
+test('the post and episode screens come from creator-kit, not from app copies', function (string $class): void {
+    expect(class_exists($class))->toBeFalse();
+})->with([
+    'App\Filament\Resources\Posts\PostResource',
+    'App\Filament\Resources\Posts\Pages\CreatePost',
+    'App\Filament\Resources\Posts\Pages\EditPost',
+    'App\Filament\Resources\Posts\Pages\ListPosts',
+    'App\Filament\Resources\Posts\Schemas\PostForm',
+    'App\Filament\Resources\Posts\Tables\PostsTable',
+    'App\Filament\Resources\Episodes\EpisodeResource',
+    'App\Filament\Resources\Episodes\Pages\CreateEpisode',
+    'App\Filament\Resources\Episodes\Pages\EditEpisode',
+    'App\Filament\Resources\Episodes\Pages\ListEpisodes',
+    'App\Filament\Resources\Episodes\Schemas\EpisodeForm',
+    'App\Filament\Resources\Episodes\Tables\EpisodesTable',
+]);

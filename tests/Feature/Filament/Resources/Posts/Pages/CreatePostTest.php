@@ -1,7 +1,5 @@
 <?php
 
-use App\Filament\Resources\Posts\Pages\CreatePost;
-use App\Filament\Resources\Posts\PostResource;
 use App\Models\Category;
 use App\Models\Episode;
 use App\Models\Post;
@@ -11,6 +9,8 @@ use Filament\Forms\Components\Select;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Posts\Pages\CreatePost;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Posts\PostResource;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -76,7 +76,6 @@ test('create form explains editorial requirements', function (): void {
 
     get(PostResource::getUrl('create'))
         ->assertOk()
-        ->assertSee('use the Publish action')
         ->assertSee('Track the official source this content relies on')
         ->assertSee('Landscape image (1.91:1)');
 });

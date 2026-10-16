@@ -2,9 +2,8 @@
 
 use App\Enums\ContactType;
 use App\Filament\Pages\PodcastSettings;
-use App\Filament\Resources\Episodes\EpisodeResource;
 use App\Filament\Resources\Guides\GuideResource;
-use App\Filament\Resources\Posts\PostResource;
+use App\Models\Category;
 use App\Models\ContactInquiry;
 use App\Models\Episode;
 use App\Models\Guide;
@@ -14,7 +13,9 @@ use App\Models\Subscriber;
 use App\Models\User;
 use Filament\Pages\Dashboard;
 use JeffreyDavidson\CreatorKit\Filament\Resources\ContactInquiries\ContactInquiryResource;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Episodes\EpisodeResource;
 use JeffreyDavidson\CreatorKit\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Posts\PostResource;
 use JeffreyDavidson\CreatorKit\Filament\Resources\Subscribers\SubscriberResource;
 
 use function Pest\Laravel\actingAs;
@@ -249,6 +250,37 @@ test('table pagination selects have an accessible name', function (): void {
         ->assertNoJavaScriptErrors();
 })->group('browser-smoke');
 
+test('the category combobox exposes an accessible listbox', function (): void {
+    // Arrange
+    actingAsAdmin();
+    Category::factory()->create(['name' => 'Park Tips']);
+
+    // Act
+    $page = visit(PostResource::getUrl('create'));
+    $page->click('button[role="combobox"][id="form.category_id"]');
+
+    // Assert
+    $page->assertScript(<<<'JS'
+            (() => {
+                const combobox = document.querySelector('button[role="combobox"][id="form.category_id"]');
+                const listbox = document.getElementById(combobox?.getAttribute('aria-controls') ?? '');
+                const dropdown = listbox?.closest('.fi-dropdown-panel');
+
+                return Boolean(combobox && listbox && dropdown)
+                    && combobox.closest('[data-mouse28-accessible-select]') !== null
+                    && combobox.getAttribute('aria-expanded') === 'true'
+                    && listbox.getAttribute('role') === 'listbox'
+                    && dropdown.getAttribute('role') !== 'listbox'
+                    && listbox.querySelectorAll(':scope > li[role="option"]').length > 0;
+            })()
+            JS, true);
+
+    $page->wait(0.2);
+
+    $page->assertNoAccessibilityIssues()
+        ->assertNoJavaScriptErrors();
+});
+
 test('related episodes combobox exposes an accessible searchable listbox', function (): void {
     // Arrange
     actingAsAdmin();
@@ -317,8 +349,6 @@ test('mobile resource status tabs scroll without overlapping labels', function (
     actingAsAdmin();
 
     $pages = [
-        PostResource::getUrl(),
-        EpisodeResource::getUrl(),
         GuideResource::getUrl(),
     ];
 
@@ -434,10 +464,8 @@ test('mobile Filament controls meet the minimum touch target across admin pages'
     ]);
 
     $pages = [
-        [PostResource::getUrl(), '.fi-tabs-item'],
         [PostResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
         [PostResource::getUrl(), '.fi-ta-header-toolbar .fi-icon-btn'],
-        [EpisodeResource::getUrl(), '.fi-tabs-item'],
         [EpisodeResource::getUrl(), '.fi-ta-header-cell-sort-btn'],
         [GuideResource::getUrl(), '.fi-tabs-item'],
         [GuideResource::getUrl(), '.fi-ta-header-cell-sort-btn'],

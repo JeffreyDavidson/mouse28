@@ -5,7 +5,7 @@ Before planning or editing, find the row whose globs match the file's path and r
 | Applies to | Rule file |
 | --- | --- |
 | ** | .ai/rules/general.md |
-| app/Models/**, app/Enums/**, app/Filament/Resources/Episodes/**, resources/views/pages/episodes/**, config/podcast.php | .ai/rules/models.md |
+| app/Models/**, app/Enums/**, app/Providers/Filament/**, resources/views/pages/episodes/**, config/podcast.php | .ai/rules/models.md |
 | app/Http/Controllers/** | .ai/rules/controllers.md |
 | app/Console/Commands/**, app/Services/ContentArchive/**, resources/content-artwork/**, config/creator-kit.php, resources/views/components/post-artwork.blade.php, resources/views/pages/episodes/show.blade.php | .ai/rules/commands.md |
 | resources/views/** | .ai/rules/views.md |
