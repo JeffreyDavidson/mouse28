@@ -2,12 +2,9 @@
 
 use App\Enums\ContactType;
 use App\Filament\Pages\PodcastSettings;
-use App\Filament\Resources\ContactInquiries\ContactInquiryResource;
 use App\Filament\Resources\Episodes\EpisodeResource;
 use App\Filament\Resources\Guides\GuideResource;
-use App\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
 use App\Filament\Resources\Posts\PostResource;
-use App\Filament\Resources\Subscribers\SubscriberResource;
 use App\Models\ContactInquiry;
 use App\Models\Episode;
 use App\Models\Guide;
@@ -16,6 +13,9 @@ use App\Models\Post;
 use App\Models\Subscriber;
 use App\Models\User;
 use Filament\Pages\Dashboard;
+use JeffreyDavidson\CreatorKit\Filament\Resources\ContactInquiries\ContactInquiryResource;
+use JeffreyDavidson\CreatorKit\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Subscribers\SubscriberResource;
 
 use function Pest\Laravel\actingAs;
 
@@ -30,8 +30,8 @@ test('newsletter subscriber statuses remain readable on desktop and mobile', fun
         ->unsubscribed()
         ->create(['email' => 'left@example.com']);
 
-    // Act
-    $page = visit(SubscriberResource::getUrl());
+    // Act: the list opens on Active readers, so clear the status filter to see every status.
+    $page = visit(SubscriberResource::getUrl('index', ['filters' => ['status' => ['value' => '']]]));
     $page->resize(1440, 1000);
 
     // Assert
@@ -46,7 +46,7 @@ test('newsletter subscriber statuses remain readable on desktop and mobile', fun
     $page->resize(390, 844);
 
     // Assert
-    $page->assertSee('Newsletter Subscribers')
+    $page->assertSee('Subscribers')
         ->assertScript($this->horizontalOverflowScript(), 0)
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
@@ -572,7 +572,7 @@ test('authenticated admin pages expose no unnamed artwork or decorative glyphs',
         NewsletterIssueResource::getUrl('create'),
         NewsletterIssueResource::getUrl('edit', ['record' => $issue]),
         ContactInquiryResource::getUrl(),
-        ContactInquiryResource::getUrl('view', ['record' => $contactInquiry]),
+        ContactInquiryResource::getUrl('edit', ['record' => $contactInquiry]),
     ];
 
     foreach ($urls as $url) {

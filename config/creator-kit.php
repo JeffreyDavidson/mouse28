@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\ContactInquiry;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\NewsletterDelivery;
@@ -54,5 +55,20 @@ return [
             'fragment' => 'newsletter',
             'error_bag' => 'newsletter',
         ],
+    ],
+
+    'contact' => [
+        'model' => ContactInquiry::class,
+
+        /*
+         * New inquiries are emailed to the admin addresses (MAIL_ADMIN_ADDRESS, comma separated),
+         * the same list mail.admin_address holds.
+         */
+        'notify' => array_values(array_filter(array_map(trim(...), explode(',', (string) env('MAIL_ADMIN_ADDRESS', 'hello@example.com'))))),
+
+        /*
+         * Inquiries are kept until an admin deletes them, so model:prune removes none.
+         */
+        'retention_days' => null,
     ],
 ];

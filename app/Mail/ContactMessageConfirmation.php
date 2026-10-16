@@ -12,7 +12,7 @@ use Illuminate\Mail\Mailables\Headers;
 use Illuminate\Support\Facades\Config;
 
 /**
- * Confirms a contact inquiry to its sender. Sent by SendContactInquiryEmails, which
+ * Confirms a contact inquiry to its sender. Sent by creator-kit's SendContactInquiryEmails, which
  * records the send so retries never deliver it twice. The recipient address is
  * visitor-supplied, so the subject and body are fixed and never echo the inquiry
  * (it is not exposed to the view); otherwise anyone could use the form to send their

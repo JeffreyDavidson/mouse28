@@ -381,7 +381,7 @@ Newsletter sign-up confirmations and issue deliveries are queued on the **defaul
 
 ## Contact mail queue
 
-Contact emails (`SendContactInquiryEmails`) run on the **default** queue of the
+Contact emails (creator-kit's `SendContactInquiryEmails`) run on the **default** queue of the
 database connection, served by the "Default queue worker" described above. Keep
 database `retry_after` greater than 60 seconds (the default is 90) and restart
 workers after each deployment. Queued contact payloads are encrypted and carry only
@@ -391,6 +391,22 @@ Do not backfill historical contacts. New jobs automatically retry only within
 23 hours of submission. Inspect failed jobs and provider receipts before a manual
 retry; Resend retains idempotency keys for 24 hours, not indefinitely. No production
 worker or deployment is created by the application changes themselves.
+
+### Contact job moved to creator-kit
+
+Since creator-kit took over sending (adoption phase 7), new contact jobs are the
+package's `JeffreyDavidson\CreatorKit\Jobs\SendContactInquiryEmails`. Jobs queued or
+failed before that release name `App\Jobs\SendContactInquiryEmails`, which stays as a
+small forwarder (still encrypted) that dispatches the package job. The payloads are
+encrypted but their `displayName` is not, so this counts the old jobs left:
+
+```sql
+SELECT (SELECT COUNT(*) FROM jobs WHERE payload LIKE '%"displayName":"App%SendContactInquiryEmails"%')
+     + (SELECT COUNT(*) FROM failed_jobs WHERE payload LIKE '%"displayName":"App%SendContactInquiryEmails"%');
+```
+
+Once it returns 0 on production, a follow-up PR removes the forwarder. No worker or
+Forge change is needed.
 
 ### Rollout of contact inquiries (`refactor/contact-inquiries`)
 

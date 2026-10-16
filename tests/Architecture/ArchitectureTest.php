@@ -283,3 +283,34 @@ test('the newsletter workflow comes from creator-kit, not from app copies', func
     'App\Http\Middleware\EnsureValidNewsletterConfirmationLink',
     'App\Support\Newsletter\UnsubscribeUrlGenerator',
 ]);
+
+test('the contact workflow comes from creator-kit, not from app copies', function (string $class): void {
+    expect(class_exists($class) || enum_exists($class))->toBeFalse();
+})->with([
+    'App\Actions\SendContactMessage',
+    'App\Enums\ContactInquiryStatus',
+]);
+
+test('the subscriber and newsletter issue screens come from creator-kit, not from app copies', function (string $class): void {
+    expect(class_exists($class))->toBeFalse();
+})->with([
+    'App\Filament\Resources\Subscribers\SubscriberResource',
+    'App\Filament\Resources\Subscribers\Pages\ListSubscribers',
+    'App\Filament\Resources\Subscribers\Tables\SubscribersTable',
+    'App\Filament\Resources\NewsletterIssues\NewsletterIssueResource',
+    'App\Filament\Resources\NewsletterIssues\Pages\CreateNewsletterIssue',
+    'App\Filament\Resources\NewsletterIssues\Pages\EditNewsletterIssue',
+    'App\Filament\Resources\NewsletterIssues\Pages\ListNewsletterIssues',
+    'App\Filament\Resources\NewsletterIssues\Schemas\NewsletterIssueForm',
+    'App\Filament\Resources\NewsletterIssues\Tables\NewsletterIssuesTable',
+]);
+
+test('the contact inquiry screens come from creator-kit, not from app copies', function (string $class): void {
+    expect(class_exists($class))->toBeFalse();
+})->with([
+    'App\Filament\Resources\ContactInquiries\ContactInquiryResource',
+    'App\Filament\Resources\ContactInquiries\Pages\ListContactInquiries',
+    'App\Filament\Resources\ContactInquiries\Pages\ViewContactInquiry',
+    'App\Filament\Resources\ContactInquiries\Tables\ContactInquiriesTable',
+    'App\Filament\Actions\ReplyToInquiryAction',
+]);

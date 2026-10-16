@@ -2,12 +2,9 @@
 
 use App\Enums\NavigationGroup;
 use App\Filament\Pages\PodcastSettings;
-use App\Filament\Resources\ContactInquiries\ContactInquiryResource;
 use App\Filament\Resources\Episodes\EpisodeResource;
 use App\Filament\Resources\Guides\GuideResource;
-use App\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
 use App\Filament\Resources\Posts\PostResource;
-use App\Filament\Resources\Subscribers\SubscriberResource;
 use App\Filament\Widgets\ContentCalendar;
 use App\Filament\Widgets\InspirationWidget;
 use App\Filament\Widgets\QuickDraft;
@@ -28,7 +25,10 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Vite;
 use JeffreyDavidson\CreatorKit\Filament\Resources\Categories\CategoryResource;
+use JeffreyDavidson\CreatorKit\Filament\Resources\ContactInquiries\ContactInquiryResource;
+use JeffreyDavidson\CreatorKit\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
 use JeffreyDavidson\CreatorKit\Filament\Resources\SocialProfiles\SocialProfileResource;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Subscribers\SubscriberResource;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;

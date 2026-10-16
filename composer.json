@@ -129,8 +129,7 @@
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Console/Commands/VerifyDeploymentConfiguration.php --filter='(safe production configuration|blank or non-string driver|safe staging configuration|unsafe production configuration|administrator recipients|observability validation)'"
         ],
         "test:mutate:delivery": [
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Actions/SendContactMessage.php --filter='action (stores|rolls back|refuses)'",
-            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Jobs/SendContactInquiryEmails.php --filter='(contact emails|retry sends|concurrent contact|cancelled contact|delivery middleware|contact jobs|queue attributes|queued contact jobs|incomplete delivery|old queued|provider idempotency)'",
+            "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Jobs/SendContactInquiryEmails.php --filter='(contact jobs queued before creator-kit|forwarding job stays encrypted)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Jobs/SendContactMessageEmails.php --filter='legacy contact-mail jobs'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Http/Requests/SearchRequest.php --filter='search (query is limited|groups matching|returns its view model)'",
             "php -d memory_limit=2G vendor/bin/pest --mutate --parallel --covered-only --min=100 --exclude-testsuite=Browser --path=app/Http/Requests/StoreContactRequest.php --filter='(valid contact submission|contact submission rejects|honeypot)'",

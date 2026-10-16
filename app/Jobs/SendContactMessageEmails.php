@@ -6,11 +6,12 @@ namespace App\Jobs;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use JeffreyDavidson\CreatorKit\Jobs\SendContactInquiryEmails;
 
 /**
  * Compatibility class for contact-mail jobs queued or failed before contact
  * messages became contact inquiries. The data migration keeps each message's ID,
- * so the job forwards it to SendContactInquiryEmails on the default queue.
+ * so the job forwards it to creator-kit's SendContactInquiryEmails on the default queue.
  *
  * @deprecated Remove once the contact-mail queue and failed_jobs hold no instances (docs/operations.md).
  */

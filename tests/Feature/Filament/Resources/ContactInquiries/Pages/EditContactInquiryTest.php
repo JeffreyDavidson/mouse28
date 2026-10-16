@@ -1,10 +1,6 @@
 <?php
 
-use App\Enums\ContactInquiryStatus;
 use App\Enums\ContactType;
-use App\Filament\Resources\ContactInquiries\ContactInquiryResource;
-use App\Filament\Resources\ContactInquiries\Pages\ViewContactInquiry;
-use App\Jobs\SendContactInquiryEmails;
 use App\Models\ContactInquiry;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -12,6 +8,10 @@ use Illuminate\Mail\Events\MessageSent;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Event;
+use JeffreyDavidson\CreatorKit\Enums\ContactInquiryStatus;
+use JeffreyDavidson\CreatorKit\Filament\Resources\ContactInquiries\ContactInquiryResource;
+use JeffreyDavidson\CreatorKit\Filament\Resources\ContactInquiries\Pages\EditContactInquiry;
+use JeffreyDavidson\CreatorKit\Jobs\SendContactInquiryEmails;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -24,7 +24,7 @@ test('authenticated user can render the resource page', function (): void {
 
     actingAsAdmin();
 
-    get(ContactInquiryResource::getUrl('view', ['record' => $inquiry]))
+    get(ContactInquiryResource::getUrl('edit', ['record' => $inquiry]))
         ->assertOk()
         ->assertSee('A park question.')
         ->assertSee('Podcast Guest');
@@ -34,7 +34,7 @@ test('opening a new inquiry marks it in progress', function (): void {
     $inquiry = ContactInquiry::factory()->create(['status' => ContactInquiryStatus::New]);
     actingAsAdmin();
 
-    livewire(ViewContactInquiry::class, ['record' => $inquiry->getRouteKey()])
+    livewire(EditContactInquiry::class, ['record' => $inquiry->getRouteKey()])
         ->assertOk();
 
     expect($inquiry->refresh()
@@ -45,7 +45,7 @@ test('opening a resolved inquiry keeps its status', function (): void {
     $inquiry = ContactInquiry::factory()->create(['status' => ContactInquiryStatus::Resolved]);
     actingAsAdmin();
 
-    livewire(ViewContactInquiry::class, ['record' => $inquiry->getRouteKey()])
+    livewire(EditContactInquiry::class, ['record' => $inquiry->getRouteKey()])
         ->assertOk();
 
     expect($inquiry->refresh()
@@ -56,7 +56,7 @@ test('mark resolved header action resolves the inquiry', function (): void {
     $inquiry = ContactInquiry::factory()->create(['status' => ContactInquiryStatus::InProgress]);
     actingAsAdmin();
 
-    livewire(ViewContactInquiry::class, ['record' => $inquiry->getRouteKey()])
+    livewire(EditContactInquiry::class, ['record' => $inquiry->getRouteKey()])
         ->callAction('markResolved')
         ->assertActionHidden('markResolved');
 
@@ -65,6 +65,7 @@ test('mark resolved header action resolves the inquiry', function (): void {
 });
 
 test('delivery stamps are shown read-only with their sent times in Eastern time', function (): void {
+    // Arrange
     $inquiry = ContactInquiry::factory()->create([
         'email_attempted_at' => Date::parse('2026-10-02 09:15:00'),
         'notification_sent_at' => Date::parse('2026-10-02 09:15:01'),
@@ -72,10 +73,16 @@ test('delivery stamps are shown read-only with their sent times in Eastern time'
     ]);
     actingAsAdmin();
 
-    livewire(ViewContactInquiry::class, ['record' => $inquiry->getRouteKey()])
-        ->assertSee('Administrator notification sent')
-        ->assertSee('Oct 2, 2026 5:15 AM')
-        ->assertSee('Not sent');
+    // Act
+    $response = get(ContactInquiryResource::getUrl('edit', ['record' => $inquiry]));
+    $page = livewire(EditContactInquiry::class, ['record' => $inquiry->getRouteKey()]);
+
+    // Assert: the panel request converts the UTC stamp to the display timezone.
+    $response->assertOk()
+        ->assertSee(['Owner notification sent', 'Sender confirmation sent', 'Not sent'])
+        ->assertSeeHtml('notification_sent_at&quot;:&quot;2026-10-02 05:15:01&quot;');
+    $page->assertFormFieldDisabled('notification_sent_at')
+        ->assertFormFieldDisabled('confirmation_sent_at');
 });
 
 test('administrators queue retries without sending during the request', function (): void {
@@ -87,7 +94,7 @@ test('administrators queue retries without sending during the request', function
     ]);
     actingAsAdmin();
 
-    livewire(ViewContactInquiry::class, ['record' => $inquiry->getRouteKey()])
+    livewire(EditContactInquiry::class, ['record' => $inquiry->getRouteKey()])
         ->assertActionVisible('retryEmails')
         ->callAction('retryEmails')
         ->assertNotified('Email delivery queued');
@@ -106,7 +113,7 @@ test('the retry action appears only after an incomplete delivery attempt', funct
     ]);
     actingAsAdmin();
 
-    $page = livewire(ViewContactInquiry::class, ['record' => $inquiry->getRouteKey()]);
+    $page = livewire(EditContactInquiry::class, ['record' => $inquiry->getRouteKey()]);
 
     $visible
         ? $page->assertActionVisible('retryEmails')
@@ -121,8 +128,8 @@ test('older contact inquiries do not invite retries with unknown delivery status
     $inquiry = ContactInquiry::factory()->create();
     actingAsAdmin();
 
-    livewire(ViewContactInquiry::class, ['record' => $inquiry->getRouteKey()])
-        ->assertSee('Not tracked')
+    livewire(EditContactInquiry::class, ['record' => $inquiry->getRouteKey()])
+        ->assertSee('Queued')
         ->assertActionHidden('retryEmails');
 });
 
@@ -130,7 +137,7 @@ test('non administrators cannot access contact email recovery', function (): voi
     $inquiry = ContactInquiry::factory()->create();
     actingAs(User::factory()->create());
 
-    livewire(ViewContactInquiry::class, ['record' => $inquiry->getRouteKey()])
+    livewire(EditContactInquiry::class, ['record' => $inquiry->getRouteKey()])
         ->assertForbidden();
 });
 
@@ -142,7 +149,7 @@ test('tracked inquiries outside the retry window cannot queue admin retries', fu
     ]);
     actingAsAdmin();
 
-    livewire(ViewContactInquiry::class, ['record' => $inquiry->getRouteKey()])
+    livewire(EditContactInquiry::class, ['record' => $inquiry->getRouteKey()])
         ->assertActionDisabled('retryEmails')
         ->callAction('retryEmails');
 
@@ -153,6 +160,6 @@ test('reply action opens an encoded mail draft', function (): void {
     $inquiry = ContactInquiry::factory()->create(['email' => 'dale@example.com', 'type' => ContactType::General]);
     actingAsAdmin();
 
-    livewire(ViewContactInquiry::class, ['record' => $inquiry->getRouteKey()])
+    livewire(EditContactInquiry::class, ['record' => $inquiry->getRouteKey()])
         ->assertActionHasUrl('reply', 'mailto:dale@example.com?subject=Re%3A%20General%20Question');
 });

@@ -1,10 +1,11 @@
 <?php
 
-use App\Jobs\SendContactInquiryEmails;
+use App\Jobs\SendContactInquiryEmails as LegacySendContactInquiryEmails;
 use App\Mail\ContactMessageConfirmation;
 use App\Mail\ContactMessageReceived;
 use App\Models\ContactInquiry;
 use Illuminate\Contracts\Mail\Mailer;
+use Illuminate\Contracts\Queue\ShouldBeEncrypted;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Mail\Events\MessageSent;
@@ -14,20 +15,20 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Testing\AssertableJsonString;
-
-covers(SendContactInquiryEmails::class);
+use JeffreyDavidson\CreatorKit\Contracts\ContactMails;
+use JeffreyDavidson\CreatorKit\Jobs\SendContactInquiryEmails;
 
 pest()->use(RefreshDatabase::class);
 
 beforeEach(function (): void {
-    config()->set('mail.admin_address', 'admin@example.com');
+    config()->set('creator-kit.contact.notify', ['admin@example.com']);
     config()->set('mail.default', 'array');
     Event::fake([MessageSent::class]);
 });
 
 function sendContactInquiryEmails(ContactInquiry $inquiry): void
 {
-    new SendContactInquiryEmails($inquiry->id)->handle(app(Mailer::class));
+    new SendContactInquiryEmails($inquiry->id)->handle(app(Mailer::class), app(ContactMails::class));
 }
 
 test('contact emails record their successful sends and are not resent', function (): void {
@@ -104,7 +105,7 @@ test('concurrent contact email sends are released while the inquiry is locked', 
 
     try {
         $job->middleware()[0]->handle($job, function (SendContactInquiryEmails $job): void {
-            $job->handle(app(Mailer::class));
+            $job->handle(app(Mailer::class), app(ContactMails::class));
         });
 
         $job->assertReleased(60);
@@ -144,7 +145,9 @@ test('cancelled contact emails are not recorded as sent and remain retryable', f
 });
 
 test('contact emails support multiple configured administrator addresses', function (): void {
-    config()->set('mail.admin_address', 'first@example.com, second@example.com, ');
+    // Both lists come from MAIL_ADMIN_ADDRESS: the notification goes to one, the confirmation replies to the other.
+    config()->set('creator-kit.contact.notify', ['first@example.com', 'second@example.com', '']);
+    config()->set('mail.admin_address', 'first@example.com, second@example.com');
     $inquiry = ContactInquiry::factory()->create();
 
     sendContactInquiryEmails($inquiry);
@@ -159,7 +162,7 @@ test('contact emails support multiple configured administrator addresses', funct
 });
 
 test('contact emails ignore an inquiry that no longer exists', function (): void {
-    new SendContactInquiryEmails(999)->handle(app(Mailer::class));
+    new SendContactInquiryEmails(999)->handle(app(Mailer::class), app(ContactMails::class));
 
     Event::assertNotDispatched(MessageSent::class);
 });
@@ -171,7 +174,7 @@ test('delivery middleware holds and releases the shared lock without resending s
     $middleware = $job->middleware()[0];
     $send = function (SendContactInquiryEmails $job): void {
         expect(Cache::lock("contact-emails:{$job->contactInquiryId}", 120)->get())->toBeFalse();
-        $job->handle(app(Mailer::class));
+        $job->handle(app(Mailer::class), app(ContactMails::class));
     };
 
     $middleware->handle($job, $send);
@@ -198,7 +201,7 @@ test('delivery middleware releases the lock after an incomplete delivery', funct
     $job = new SendContactInquiryEmails($inquiry->id);
 
     expect(fn () => $job->middleware()[0]->handle($job, function (SendContactInquiryEmails $job): void {
-        $job->handle(app(Mailer::class));
+        $job->handle(app(Mailer::class), app(ContactMails::class));
     }))->toThrow(RuntimeException::class, 'Contact email delivery is incomplete.')
         ->and(Cache::lock("contact-emails:{$inquiry->id}", 120)->get(fn (): bool => true))
         ->toBeTrue();
@@ -249,7 +252,7 @@ test('old queued inquiries require manual review rather than automatic resending
     $inquiry = ContactInquiry::factory()->create(['created_at' => now()->subDay()]);
     $job = new SendContactInquiryEmails($inquiry->id)->withFakeQueueInteractions();
 
-    $job->handle(app(Mailer::class));
+    $job->handle(app(Mailer::class), app(ContactMails::class));
 
     $job->assertFailedWith(new RuntimeException('Contact delivery requires manual review after 23 hours.'));
     expect($inquiry->refresh()
@@ -268,4 +271,25 @@ test('provider idempotency keys are stable and separate each recipient purpose',
         ->text)
         ->and($notification)
         ->not->toBe($confirmation);
+});
+
+test('contact jobs queued before creator-kit took over are forwarded to the package job', function (): void {
+    // Arrange
+    Bus::fake([SendContactInquiryEmails::class]);
+    // The command as the previous release serialized it.
+    $legacyJob = unserialize('O:33:"App\\Jobs\\SendContactInquiryEmails":1:{s:16:"contactInquiryId";i:42;}');
+
+    if (! $legacyJob instanceof LegacySendContactInquiryEmails) {
+        throw new UnexpectedValueException('The legacy contact job did not unserialize.');
+    }
+
+    // Act
+    $legacyJob->handle();
+
+    // Assert
+    Bus::assertDispatched(SendContactInquiryEmails::class, fn (SendContactInquiryEmails $job): bool => $job->contactInquiryId === 42);
+});
+
+test('the forwarding job stays encrypted on the queue', function (): void {
+    expect(class_implements(LegacySendContactInquiryEmails::class))->toHaveKey(ShouldBeEncrypted::class);
 });

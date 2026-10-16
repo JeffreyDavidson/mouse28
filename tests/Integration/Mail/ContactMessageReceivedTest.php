@@ -1,13 +1,13 @@
 <?php
 
 use App\Enums\ContactType;
-use App\Filament\Resources\ContactInquiries\ContactInquiryResource;
 use App\Mail\ContactMessageReceived;
 use App\Models\ContactInquiry;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\URL;
+use JeffreyDavidson\CreatorKit\Filament\Resources\ContactInquiries\ContactInquiryResource;
 
 test('received contact email uses accessible current branding without external fonts', function (): void {
     $inquiry = ContactInquiry::factory()->make();
@@ -78,7 +78,7 @@ test('received contact email shows when it arrived in Eastern time and links to 
 
     expect($html)->toContain('Oct 6, 2026', '9:30 PM')
         ->not->toContain('Oct 7, 2026', '1:30 AM')
-        ->toContain('href="'.ContactInquiryResource::getUrl('view', ['record' => $inquiry]).'"');
+        ->toContain('href="'.ContactInquiryResource::getUrl('edit', ['record' => $inquiry]).'"');
 });
 
 test('received contact email html matches its snapshot', function (): void {

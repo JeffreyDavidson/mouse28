@@ -1,20 +1,18 @@
 <?php
 
-use App\Actions\SendContactMessage;
 use App\Data\ContactMessageData;
-use App\Enums\ContactInquiryStatus;
 use App\Enums\ContactType;
-use App\Jobs\SendContactInquiryEmails;
 use App\Models\ContactInquiry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use JeffreyDavidson\CreatorKit\Actions\SendContactMessage;
+use JeffreyDavidson\CreatorKit\Enums\ContactInquiryStatus;
+use JeffreyDavidson\CreatorKit\Jobs\SendContactInquiryEmails;
 
 use function Pest\Laravel\assertDatabaseCount;
 
 pest()->use(RefreshDatabase::class);
-
-covers(SendContactMessage::class);
 
 function contactMessageData(): ContactMessageData
 {
@@ -27,7 +25,7 @@ function contactMessageData(): ContactMessageData
 }
 
 test('action stores a contact inquiry and queues one email job without contact details', function (): void {
-    app(SendContactMessage::class)->handle(contactMessageData());
+    app(SendContactMessage::class)->handle(contactMessageData()->toAttributes());
 
     $inquiry = ContactInquiry::query()->sole();
     $payload = DB::table('jobs')
@@ -62,12 +60,12 @@ test('action rolls back the inquiry when its email job cannot be queued and allo
         }
     });
 
-    expect(fn () => app(SendContactMessage::class)->handle(contactMessageData()))
+    expect(fn () => app(SendContactMessage::class)->handle(contactMessageData()->toAttributes()))
         ->toThrow(RuntimeException::class, 'Synthetic queue failure.');
     assertDatabaseCount('contact_inquiries', 0);
     assertDatabaseCount('jobs', 0);
 
-    app(SendContactMessage::class)->handle(contactMessageData());
+    app(SendContactMessage::class)->handle(contactMessageData()->toAttributes());
 
     assertDatabaseCount('contact_inquiries', 1);
     assertDatabaseCount('jobs', 1);
@@ -79,7 +77,7 @@ test('action refuses a queue database separate from the application before savin
         'database.connections.separate' => ['driver' => 'sqlite', 'database' => ':memory:', 'prefix' => ''],
     ]);
 
-    expect(fn () => app(SendContactMessage::class)->handle(contactMessageData()))
+    expect(fn () => app(SendContactMessage::class)->handle(contactMessageData()->toAttributes()))
         ->toThrow(LogicException::class, 'Contact notifications must share the application database.');
 
     assertDatabaseCount('contact_inquiries', 0);
