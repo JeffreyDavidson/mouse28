@@ -90,11 +90,6 @@ check succeeds. This measures the selected covered code, not all application beh
 Tests force an in-memory SQLite database, non-delivering integrations, and disabled
 monitoring even when the shell exports conflicting environment variables. The test
 bootstrap refuses cached or non-isolated database configuration before migrations.
-`composer test:mysql` is a separate compatibility lane for a **disposable** loopback
-MySQL database named `mouse28_test`, with the test-only user/password `mouse28_test`.
-CI provisions it in a MySQL 8.4 service container. Locally, provision an isolated
-instance first; `MOUSE28_TEST_MYSQL_PORT` selects its port. Never grant this test
-account access to any real database or expose it outside loopback.
 
 Individual commands:
 

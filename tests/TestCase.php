@@ -26,20 +26,6 @@ abstract class TestCase extends BaseTestCase
             throw new UnexpectedValueException('Tests require uncached testing configuration and an isolated database.');
         }
 
-        // Opt-in compatibility runs use only a disposable loopback database and test-only credentials.
-        if (getenv('MOUSE28_TEST_MYSQL') === '1') {
-            config()->set([
-                'database.default' => 'mysql',
-                'database.connections.mysql.url' => null,
-                'database.connections.mysql.host' => '127.0.0.1',
-                'database.connections.mysql.port' => getenv('MOUSE28_TEST_MYSQL_PORT') ?: '3306',
-                'database.connections.mysql.database' => 'mouse28_test',
-                'database.connections.mysql.username' => 'mouse28_test',
-                'database.connections.mysql.password' => 'mouse28_test',
-                'database.connections.mysql.unix_socket' => '',
-            ]);
-        }
-
         return $app;
     }
 
