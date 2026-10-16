@@ -30,8 +30,8 @@ test('newsletter subscriber statuses remain readable on desktop and mobile', fun
         ->unsubscribed()
         ->create(['email' => 'left@example.com']);
 
-    // Act
-    $page = visit(SubscriberResource::getUrl());
+    // Act: the list opens on Active readers, so clear the status filter to see every status.
+    $page = visit(SubscriberResource::getUrl('index', ['filters' => ['status' => ['value' => '']]]));
     $page->resize(1440, 1000);
 
     // Assert
@@ -46,7 +46,7 @@ test('newsletter subscriber statuses remain readable on desktop and mobile', fun
     $page->resize(390, 844);
 
     // Assert
-    $page->assertSee('Newsletter Subscribers')
+    $page->assertSee('Subscribers')
         ->assertScript($this->horizontalOverflowScript(), 0)
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();
