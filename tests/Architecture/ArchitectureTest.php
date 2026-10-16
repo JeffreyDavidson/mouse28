@@ -314,3 +314,32 @@ test('the contact inquiry screens come from creator-kit, not from app copies', f
     'App\Filament\Resources\ContactInquiries\Tables\ContactInquiriesTable',
     'App\Filament\Actions\ReplyToInquiryAction',
 ]);
+
+test('the content building blocks and robots.txt come from creator-kit, not from app copies', function (string $class): void {
+    expect(class_exists($class) || trait_exists($class) || enum_exists($class))->toBeFalse();
+})->with([
+    'App\Models\Concerns\HasSourceReview',
+    'App\Models\Concerns\HasTagsUntilForceDeleted',
+    'App\Enums\SourceReviewStatus',
+    'App\Filament\Tables\Actions\SoftDeleteBulkActions',
+    'App\Filament\Tables\Filters\ReviewDueFilter',
+    'App\Http\Controllers\RobotsController',
+    'App\ViewModels\RobotsTxtViewModel',
+]);
+
+test('the post and episode screens come from creator-kit, not from app copies', function (string $class): void {
+    expect(class_exists($class))->toBeFalse();
+})->with([
+    'App\Filament\Resources\Posts\PostResource',
+    'App\Filament\Resources\Posts\Pages\CreatePost',
+    'App\Filament\Resources\Posts\Pages\EditPost',
+    'App\Filament\Resources\Posts\Pages\ListPosts',
+    'App\Filament\Resources\Posts\Schemas\PostForm',
+    'App\Filament\Resources\Posts\Tables\PostsTable',
+    'App\Filament\Resources\Episodes\EpisodeResource',
+    'App\Filament\Resources\Episodes\Pages\CreateEpisode',
+    'App\Filament\Resources\Episodes\Pages\EditEpisode',
+    'App\Filament\Resources\Episodes\Pages\ListEpisodes',
+    'App\Filament\Resources\Episodes\Schemas\EpisodeForm',
+    'App\Filament\Resources\Episodes\Tables\EpisodesTable',
+]);

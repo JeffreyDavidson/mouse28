@@ -1,10 +1,6 @@
 <?php
 
-use App\Http\Controllers\RobotsController;
-
 use function Pest\Laravel\get;
-
-covers(RobotsController::class);
 
 test('robots.txt allows crawlers in production, keeps them out of the admin and signed previews, and points them to the sitemap', function (): void {
     config()->set('app.deployment_environment', 'production');

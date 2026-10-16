@@ -1,12 +1,12 @@
 <?php
 
 use App\Enums\ContentType;
-use App\Filament\Resources\Posts\PostResource;
 use App\Filament\Widgets\RecentActivity;
 use App\Models\Episode;
 use App\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Posts\PostResource;
 
 use function Pest\Livewire\livewire;
 

@@ -1,10 +1,10 @@
 <?php
 
-use App\Filament\Resources\Episodes\EpisodeResource;
-use App\Filament\Resources\Episodes\Pages\CreateEpisode;
 use App\Models\Episode;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Episodes\EpisodeResource;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Episodes\Pages\CreateEpisode;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -118,7 +118,7 @@ test('episode storage boundaries are accepted', function (): void {
         'title' => 'Boundary episode',
         'slug' => 'boundary-episode',
         'episode_number' => 2147483647,
-        'season_number' => 4294967295,
+        'season_number' => 2147483647,
         'duration_seconds' => 2147483647,
         'transistor_url' => $transistorUrl,
         'youtube_url' => $url,
@@ -130,7 +130,7 @@ test('episode storage boundaries are accepted', function (): void {
     $episode = Episode::query()->sole();
     expect($episode->episode_number)->toBe(2147483647)
         ->and($episode->season_number)
-        ->toBe(4294967295)
+        ->toBe(2147483647)
         ->and($episode->duration_seconds)
         ->toBe(2147483647)
         ->and($episode->transistor_url)
@@ -156,8 +156,8 @@ test('create form explains editorial requirements', function (): void {
 
     get(EpisodeResource::getUrl('create'))
         ->assertOk()
-        ->assertSee('Transistor Episode URL')
-        ->assertSee('share.transistor.fm/s/')
+        ->assertSee('Transistor episode URL')
+        ->assertSee('The public page shows the Transistor player for this episode.')
         ->assertDontSee('Hosted MP3')
         ->assertDontSee('External Audio URL')
         ->assertSee('Landscape image (1.91:1)');

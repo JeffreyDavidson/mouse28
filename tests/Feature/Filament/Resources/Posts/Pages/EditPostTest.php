@@ -1,7 +1,5 @@
 <?php
 
-use App\Filament\Resources\Posts\Pages\EditPost;
-use App\Filament\Resources\Posts\PostResource;
 use App\Models\Category;
 use App\Models\Episode;
 use App\Models\Post;
@@ -14,6 +12,8 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Posts\Pages\EditPost;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Posts\PostResource;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -124,7 +124,7 @@ test('draft slugs reject characters that cannot form public routes', function ()
         ->assertHasFormErrors(['slug' => 'regex']);
 });
 
-test('edit page offers a draft preview', function (): void {
+test('a draft views on site through its signed preview', function (): void {
     Date::setTestNow('2026-09-27 12:00:00');
     $admin = User::factory()
         ->admin()
@@ -136,9 +136,9 @@ test('edit page offers a draft preview', function (): void {
     actingAs($admin);
 
     livewire(EditPost::class, ['record' => $post->getRouteKey()])
-        ->assertActionVisible('preview')
-        ->assertActionHasUrl('preview', URL::temporarySignedRoute('preview.post', Date::now()->addHours(24), ['post' => $post]))
-        ->assertActionShouldOpenUrlInNewTab('preview');
+        ->assertActionVisible('view_on_site')
+        ->assertActionHasUrl('view_on_site', URL::temporarySignedRoute('preview.post', Date::now()->addHours(24), ['post' => $post]))
+        ->assertActionShouldOpenUrlInNewTab('view_on_site');
 });
 
 test('drafts with their required details can be published while advisory details are missing', function (): void {

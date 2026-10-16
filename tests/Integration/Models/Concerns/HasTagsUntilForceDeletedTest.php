@@ -1,13 +1,11 @@
 <?php
 
-use App\Models\Concerns\HasTagsUntilForceDeleted;
 use App\Models\Episode;
 use App\Models\Guide;
 use App\Models\Post;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
-
-covers(HasTagsUntilForceDeleted::class);
+use JeffreyDavidson\CreatorKit\Models\Concerns\HasTagsUntilForceDeleted;
 
 pest()->use(RefreshDatabase::class);
 

@@ -1,10 +1,10 @@
 <?php
 
 use App\Enums\ContentType;
-use App\Filament\Resources\Episodes\EpisodeResource;
 use App\Filament\Resources\Guides\GuideResource;
-use App\Filament\Resources\Posts\PostResource;
 use Filament\Support\Icons\Heroicon;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Episodes\EpisodeResource;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Posts\PostResource;
 
 test('content types keep their stored values', function (): void {
     expect(array_column(ContentType::cases(), 'value'))->toBe(['post', 'episode', 'guide']);

@@ -1,16 +1,14 @@
 <?php
 
-use App\Filament\Tables\Filters\ReviewDueFilter;
 use App\Models\Guide;
 use App\Models\Post;
 use Database\Factories\GuideFactory;
 use Database\Factories\PostFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
+use JeffreyDavidson\CreatorKit\Filament\Tables\Filters\ReviewDueFilter;
 
 pest()->use(RefreshDatabase::class);
-
-covers(ReviewDueFilter::class);
 
 dataset('reviewable models', [
     'posts' => [fn () => Post::factory()],

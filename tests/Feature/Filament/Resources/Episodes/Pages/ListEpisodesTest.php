@@ -1,11 +1,11 @@
 <?php
 
-use App\Filament\Resources\Episodes\EpisodeResource;
-use App\Filament\Resources\Episodes\Pages\ListEpisodes;
 use App\Models\Episode;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Episodes\EpisodeResource;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Episodes\Pages\ListEpisodes;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -37,50 +37,61 @@ test('content table shows readiness and the persisted publish status', function 
         ->assertSee('In Review');
 });
 
-test('draft and scheduled tabs filter episodes', function (): void {
+test('the status filter narrows episodes to one status', function (): void {
+    // Arrange
     $draft = Episode::factory()
         ->draft()
         ->create();
     $inReview = Episode::factory()->create(['status' => PublishStatus::InReview]);
-    $scheduled = Episode::factory()
-        ->scheduled()
-        ->create();
-    actingAs(User::factory()
-        ->admin()
-        ->create());
-
-    livewire(ListEpisodes::class)
-        ->set('activeTab', 'drafts')
-        ->assertCanSeeTableRecords([$draft, $inReview])
-        ->assertCanNotSeeTableRecords([$scheduled])
-        ->set('activeTab', 'scheduled')
-        ->assertCanSeeTableRecords([$scheduled])
-        ->assertCanNotSeeTableRecords([$draft]);
-});
-
-test('header does not count scheduled episodes as published', function (): void {
-    // Arrange
-    Episode::factory()->create();
-    Episode::factory()
-        ->scheduled()
-        ->create();
-    Episode::factory()
-        ->draft()
-        ->create();
-    Episode::factory()->create(['status' => PublishStatus::InReview]);
     actingAs(User::factory()
         ->admin()
         ->create());
 
     // Act
-    $page = livewire(ListEpisodes::class);
-    $component = $page->instance();
-    $header = $component->getHeader();
+    $page = livewire(ListEpisodes::class)->filterTable('status', PublishStatus::InReview->value);
 
     // Assert
-    expect($header?->getData())
-        ->toMatchArray([
-            'published' => 1,
-            'drafts' => 2,
-        ]);
+    $page->assertCanSeeTableRecords([$inReview])
+        ->assertCanNotSeeTableRecords([$draft]);
+});
+
+test('the publication filter keeps scheduled episodes out of live ones', function (): void {
+    // Arrange
+    $live = Episode::factory()->create();
+    $scheduled = Episode::factory()
+        ->scheduled()
+        ->create();
+    $draft = Episode::factory()
+        ->draft()
+        ->create();
+    actingAs(User::factory()
+        ->admin()
+        ->create());
+
+    // Act
+    $livePage = livewire(ListEpisodes::class)->filterTable('publication', 'published');
+    $scheduledPage = livewire(ListEpisodes::class)->filterTable('publication', 'scheduled');
+
+    // Assert
+    $livePage->assertCanSeeTableRecords([$live])
+        ->assertCanNotSeeTableRecords([$scheduled, $draft]);
+    $scheduledPage->assertCanSeeTableRecords([$scheduled])
+        ->assertCanNotSeeTableRecords([$live, $draft]);
+});
+
+test('an episode that can be published reads Ready with what it could still improve', function (): void {
+    // Arrange
+    $episode = Episode::factory()->create(['featured_image_path' => null, 'transistor_url' => 'https://share.transistor.fm/s/428d650c']);
+    actingAs(User::factory()
+        ->admin()
+        ->create());
+
+    // Act
+    $response = get(EpisodeResource::getUrl());
+
+    // Assert
+    $response->assertOk()
+        ->assertSee('Ready')
+        ->assertSee('Could improve: Add a cover image, Add an SEO title, Add an SEO description');
+    expect($episode->publishingIssues())->toBeEmpty();
 });

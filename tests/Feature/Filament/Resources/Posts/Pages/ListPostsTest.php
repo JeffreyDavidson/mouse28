@@ -1,12 +1,12 @@
 <?php
 
-use App\Filament\Resources\Posts\Pages\ListPosts;
-use App\Filament\Resources\Posts\PostResource;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Posts\Pages\ListPosts;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Posts\PostResource;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -21,7 +21,7 @@ test('authenticated user can render the resource listing', function (): void {
 
     get(PostResource::getUrl())
         ->assertOk()
-        ->assertSee('Blog Posts');
+        ->assertSee('New post');
 });
 
 test('content table shows readiness and the persisted publish status', function (): void {
@@ -38,52 +38,46 @@ test('content table shows readiness and the persisted publish status', function 
         ->assertSee('In Review');
 });
 
-test('draft and scheduled tabs filter posts', function (): void {
+test('the status filter narrows posts to one status', function (): void {
+    // Arrange
     $draft = Post::factory()
         ->draft()
         ->create();
     $inReview = Post::factory()->create(['status' => PublishStatus::InReview]);
-    $scheduled = Post::factory()
-        ->scheduled()
-        ->create();
-    actingAs(User::factory()
-        ->admin()
-        ->create());
-
-    livewire(ListPosts::class)
-        ->set('activeTab', 'drafts')
-        ->assertCanSeeTableRecords([$draft, $inReview])
-        ->assertCanNotSeeTableRecords([$scheduled])
-        ->set('activeTab', 'scheduled')
-        ->assertCanSeeTableRecords([$scheduled])
-        ->assertCanNotSeeTableRecords([$draft]);
-});
-
-test('header does not count scheduled posts as published', function (): void {
-    // Arrange
-    Post::factory()->create();
-    Post::factory()
-        ->scheduled()
-        ->create();
-    Post::factory()
-        ->draft()
-        ->create();
-    Post::factory()->create(['status' => PublishStatus::InReview]);
     actingAs(User::factory()
         ->admin()
         ->create());
 
     // Act
-    $page = livewire(ListPosts::class);
-    $component = $page->instance();
-    $header = $component->getHeader();
+    $page = livewire(ListPosts::class)->filterTable('status', PublishStatus::InReview->value);
 
     // Assert
-    expect($header?->getData())
-        ->toMatchArray([
-            'published' => 1,
-            'drafts' => 2,
-        ]);
+    $page->assertCanSeeTableRecords([$inReview])
+        ->assertCanNotSeeTableRecords([$draft]);
+});
+
+test('the publication filter keeps scheduled posts out of live ones', function (): void {
+    // Arrange
+    $live = Post::factory()->create();
+    $scheduled = Post::factory()
+        ->scheduled()
+        ->create();
+    $draft = Post::factory()
+        ->draft()
+        ->create();
+    actingAs(User::factory()
+        ->admin()
+        ->create());
+
+    // Act
+    $livePage = livewire(ListPosts::class)->filterTable('publication', 'published');
+    $scheduledPage = livewire(ListPosts::class)->filterTable('publication', 'scheduled');
+
+    // Assert
+    $livePage->assertCanSeeTableRecords([$live])
+        ->assertCanNotSeeTableRecords([$scheduled, $draft]);
+    $scheduledPage->assertCanSeeTableRecords([$scheduled])
+        ->assertCanNotSeeTableRecords([$live, $draft]);
 });
 
 test('the review due filter and source review column show sources that need review', function (): void {
@@ -221,4 +215,21 @@ test('the posts table names a post without authors', function (): void {
 
     livewire(ListPosts::class)
         ->assertSee('No authors');
+});
+
+test('a post that can be published reads Ready with what it could still improve', function (): void {
+    // Arrange
+    $post = Post::factory()->create(['featured_image_path' => null]);
+    actingAs(User::factory()
+        ->admin()
+        ->create());
+
+    // Act
+    $response = get(PostResource::getUrl());
+
+    // Assert
+    $response->assertOk()
+        ->assertSee('Ready')
+        ->assertSee('Could improve: Add a cover image, Add an SEO title, Add an SEO description');
+    expect($post->publishingIssues())->toBeEmpty();
 });

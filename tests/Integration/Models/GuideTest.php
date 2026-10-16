@@ -1,11 +1,11 @@
 <?php
 
 use App\Enums\GuideCategory;
-use App\Enums\SourceReviewStatus;
 use App\Models\Guide;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Date;
+use JeffreyDavidson\CreatorKit\Enums\SourceReviewStatus;
 use Spatie\Activitylog\Models\Activity;
 
 use function Pest\Laravel\actingAs;

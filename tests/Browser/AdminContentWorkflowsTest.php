@@ -1,10 +1,10 @@
 <?php
 
-use App\Filament\Resources\Episodes\EpisodeResource;
-use App\Filament\Resources\Posts\PostResource;
 use App\Models\Episode;
 use App\Models\Post;
 use Filament\Pages\Dashboard;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Episodes\EpisodeResource;
+use JeffreyDavidson\CreatorKit\Filament\Resources\Posts\PostResource;
 
 beforeEach(fn () => actingAsAdmin());
 
@@ -113,8 +113,8 @@ test('Episode creation shows duplicate number validation while preserving entere
         ->fill('input[id="form.slug"]', 'browser-duplicate-episode')
         ->fill('input[id="form.episode_number"]', '280')
         ->click('button[wire\\:target="create"]')
-        ->assertScript(browserWaitForScript("document.body.innerText.includes('The episode number has already been taken.')"), true)
-        ->assertSee('The episode number has already been taken.')
+        ->assertScript(browserWaitForScript("document.body.innerText.includes('The episode # has already been taken.')"), true)
+        ->assertSee('The episode # has already been taken.')
         ->assertValue('input[id="form.title"]', 'Browser Duplicate Episode')
         ->assertNoJavaScriptErrors();
 })->group('browser-smoke');

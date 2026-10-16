@@ -2,7 +2,7 @@
 paths:
   - 'app/Models/**'
   - 'app/Enums/**'
-  - 'app/Filament/Resources/Episodes/**'
+  - 'app/Providers/Filament/**'
   - 'resources/views/pages/episodes/**'
   - 'config/podcast.php'
 ---
@@ -58,3 +58,9 @@ Editorial models log through `LogsEditorialActivity`, which logs the whole `$fil
 
 ## Take the contact workflow from creator-kit
 `ContactInquiry` stays a Mouse28 model but implements creator-kit's `ContactInquiry` contract with `IsContactInquiry` (encrypted contact fields, status, email-retry window). Saving an inquiry and sending its emails come from the package (`SendContactMessage`, `SendContactInquiryEmails`, `RetryContactInquiryEmails`), configured under `creator-kit.contact`. Mouse28's emails reach the package through `App\Services\ContactEmails`; keep their `mouse28-contact-` idempotency keys. `App\Jobs\SendContactInquiryEmails` only forwards jobs queued before the move. The Contact Inquiries admin screens also come from the package (`CreatorKitPlugin::contactInquiries()`); keep `ContactInquiry::replyMailtoUrl()`, which the admin notification email uses, and the `legacyContactInquiry` redirect for emails linking to the old page address. Do not recreate app copies (an architecture test fails if one comes back); a behaviour change is a request to the creator-kit repository.
+
+## Take the content building blocks from creator-kit
+Source review (`HasSourceReview` with `ReviewsSources`, `SourceReviewStatus`, `SourceReviewSection`, `SourceReviewColumns`, `ReviewDueFilter`, `ReviewNotesSection`), trashed-record binding and bulk actions (`ResolvesTrashedRecords`, `SoftDeleteBulkActions`), the Transistor field and share-link parsing (`TransistorUrlInput`, `TransistorShareUrl`), `HasTagsUntilForceDeleted` and robots.txt (`RobotsTxtController`) come from the package. Posts, guides and episodes keep their own models and screens; each model keeps its review hooks (posts track once they cite a source, guides always). Do not recreate app copies (an architecture test fails if one comes back); a behaviour change is a request to the creator-kit repository.
+
+## Take the Posts and Episodes screens from creator-kit
+The Posts and Episodes admin screens come from the package (`CreatorKitPlugin::posts()` and `episodes()` in `AdminPanelProvider`); Mouse28's differences live in their `PostScreenOptions` and `EpisodeScreenOptions` there, not in app copies (an architecture test fails if one comes back). Their readiness column counts what blocks publishing; the other `EditorialReadiness` items show as "Could improve" through `App\Services\ContentPublishingSuggestions`. Guides keep Mouse28's own screens, tabs and Preview action.

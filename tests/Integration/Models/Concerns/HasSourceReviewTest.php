@@ -1,14 +1,11 @@
 <?php
 
-use App\Enums\SourceReviewStatus;
-use App\Models\Concerns\HasSourceReview;
 use App\Models\Guide;
 use App\Models\Post;
 use Database\Factories\GuideFactory;
 use Database\Factories\PostFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-
-covers(HasSourceReview::class);
+use JeffreyDavidson\CreatorKit\Enums\SourceReviewStatus;
 
 pest()->use(RefreshDatabase::class);
 
