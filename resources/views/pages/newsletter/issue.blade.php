@@ -1,11 +1,11 @@
 @inject('markdown', 'JeffreyDavidson\CreatorKit\Support\Markdown\MarkdownRenderer')
 <x-layouts.app
-    :title="$issue->title.' | Mouse28'"
-    :description="Str::limit($issue->excerpt ?: strip_tags($markdown->safe($issue->content)), 160)"
+    :title="($issue->seo?->title ?: $issue->title).' | Mouse28'"
+    :description="$issue->seo?->description ?: Str::limit($issue->excerpt ?: strip_tags($markdown->safe($issue->content)), 160)"
     og-type="article"
     og-image="/images/hero-family.jpg"
     :canonical="route('newsletter.issue', $issue)"
-    :robots="($isPreview ?? false) ? 'noindex,nofollow' : 'index,follow'"
+    :robots="($isPreview ?? false) ? 'noindex,nofollow' : ($issue->seo?->robots ?: 'index,follow')"
     :dispatch-layout="true"
 >
     @push('head')

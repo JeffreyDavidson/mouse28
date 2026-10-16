@@ -1,7 +1,5 @@
 <?php
 
-use App\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
-use App\Filament\Resources\NewsletterIssues\Pages\EditNewsletterIssue;
 use App\Mail\NewsletterIssueMail;
 use App\Models\NewsletterDelivery;
 use App\Models\NewsletterIssue;
@@ -12,6 +10,8 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
+use JeffreyDavidson\CreatorKit\Filament\Resources\NewsletterIssues\NewsletterIssueResource;
+use JeffreyDavidson\CreatorKit\Filament\Resources\NewsletterIssues\Pages\EditNewsletterIssue;
 use JeffreyDavidson\CreatorKit\Jobs\DeliverNewsletterIssue;
 
 use function Pest\Laravel\actingAs;
@@ -145,16 +145,31 @@ test('publishing actions disappear when admin access is revoked', function (bool
     'unpublish' => [false, 'unpublish'],
 ]);
 
-test('the edit page offers a preview link that opens in a new tab', function (): void {
+test('a draft issue views on site through a signed preview that opens in a new tab', function (): void {
+    // Arrange
     Date::setTestNow('2026-09-27 12:00:00');
     $issue = NewsletterIssue::factory()
         ->draft()
         ->create();
 
-    livewire(EditNewsletterIssue::class, ['record' => $issue->getRouteKey()])
-        ->assertActionVisible('preview')
-        ->assertActionHasUrl('preview', URL::temporarySignedRoute('preview.newsletter-issue', Date::now()->addHours(24), ['newsletterIssue' => $issue]))
-        ->assertActionShouldOpenUrlInNewTab('preview');
+    // Act
+    $page = livewire(EditNewsletterIssue::class, ['record' => $issue->getRouteKey()]);
+
+    // Assert
+    $page->assertActionVisible('view_on_site')
+        ->assertActionHasUrl('view_on_site', URL::temporarySignedRoute('preview.newsletter-issue', Date::now()->addHours(24), ['newsletterIssue' => $issue]))
+        ->assertActionShouldOpenUrlInNewTab('view_on_site');
+});
+
+test('a live issue views on site through its public page', function (): void {
+    // Arrange
+    $issue = NewsletterIssue::factory()->create();
+
+    // Act
+    $page = livewire(EditNewsletterIssue::class, ['record' => $issue->getRouteKey()]);
+
+    // Assert
+    $page->assertActionHasUrl('view_on_site', route('newsletter.issue', $issue));
 });
 
 test('sending is offered only for live issues that have not been sent', function (NewsletterIssue $issue, bool $visible): void {
@@ -200,7 +215,7 @@ test('sending explains when nobody is subscribed and keeps the issue unsent', fu
 
     livewire(EditNewsletterIssue::class, ['record' => $issue->getRouteKey()])
         ->callAction('sendToSubscribers')
-        ->assertNotified('There are no active subscribers to send to');
+        ->assertNotified('No active subscribers to send to');
 
     expect($issue->refresh()
         ->wasSent())->toBeFalse();
@@ -286,7 +301,7 @@ test('a draft slug cannot be changed to one used by a fixed newsletter page', fu
     livewire(EditNewsletterIssue::class, ['record' => $issue->getRouteKey()])
         ->fillForm(['slug' => $slug])
         ->call('save')
-        ->assertHasFormErrors(['slug' => 'not_in']);
+        ->assertHasFormErrors(['slug' => 'This slug is already used by another newsletter page. Choose a different slug.']);
 
     expect($issue->refresh()
         ->slug)->toBe('original-issue');
