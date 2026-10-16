@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Resources\Guides;
 
 use App\Enums\ContentType;
@@ -15,11 +17,12 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use JeffreyDavidson\CreatorKit\Filament\Concerns\ResolvesTrashedRecords;
 
 class GuideResource extends Resource
 {
+    use ResolvesTrashedRecords;
+
     #[\Override]
     protected static ?string $model = Guide::class;
 
@@ -41,12 +44,6 @@ class GuideResource extends Resource
     public static function getGloballySearchableAttributes(): array
     {
         return ['title', 'slug', 'category', 'authors.name'];
-    }
-
-    public static function getRecordRouteBindingEloquentQuery(): Builder
-    {
-        return parent::getRecordRouteBindingEloquentQuery()
-            ->withoutGlobalScopes([SoftDeletingScope::class]);
     }
 
     public static function form(Schema $schema): Schema

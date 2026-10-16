@@ -16,10 +16,10 @@ use App\Http\Controllers\PreviewEpisodeController;
 use App\Http\Controllers\PreviewGuideController;
 use App\Http\Controllers\PreviewNewsletterIssueController;
 use App\Http\Controllers\PreviewPostController;
-use App\Http\Controllers\RobotsController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Route;
+use JeffreyDavidson\CreatorKit\Http\Controllers\RobotsTxtController;
 use JeffreyDavidson\CreatorKit\Routing\NewsletterRoutes;
 
 Route::get('/', HomeController::class)->name('home');
@@ -71,7 +71,7 @@ Route::get('/sitemap.xml', SitemapController::class)
     ->withoutMiddleware('web')
     ->name('sitemap');
 // Served like a static file (no session cookies, publicly cacheable) so crawlers and caches keep it.
-Route::get('/robots.txt', RobotsController::class)
+Route::get('/robots.txt', RobotsTxtController::class)
     ->withoutMiddleware('web')
     ->name('robots');
 // Feed readers and podcast apps poll /rss/blog and /rss/podcast: no session, so a hit writes no session row or cookie.

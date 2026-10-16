@@ -8,11 +8,9 @@ use App\Enums\GuideCategory;
 use App\Filament\Forms\Components\AuthorsSelect;
 use App\Filament\Forms\Components\ContentTagsInput;
 use App\Filament\Forms\Components\OptimizedImageUpload;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
-use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -23,6 +21,7 @@ use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishStatusSelect;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SeoSection;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SlugInput;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SlugSourceInput;
+use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SourceReviewSection;
 
 class GuideForm
 {
@@ -64,18 +63,11 @@ class GuideForm
                     ]),
                 Grid::make(2)
                     ->schema([
-                        Section::make('Review & Sources')
+                        SourceReviewSection::make()
+                            ->heading('Review & Sources')
                             ->icon(Heroicon::OutlinedClipboardDocumentCheck)
-                            ->description('Keep source and review information current.')
-                            ->schema([
-                                TextInput::make('source_url')
-                                    ->url()
-                                    ->maxLength(255)
-                                    ->helperText('Link to the official policy or primary source.'),
-                                DatePicker::make('last_reviewed_at')
-                                    ->label('Last Reviewed')
-                                    ->helperText('Guides are flagged after '.Config::integer('content.guide_review_interval_days').' days.'),
-                            ]),
+                            ->requiredTogether(false)
+                            ->reviewIntervalDays(fn (): int => Config::integer('content.guide_review_interval_days')),
                         Section::make('Publishing')
                             ->icon(Heroicon::OutlinedRocketLaunch)
                             ->description('Save the guide, then use the Publish action when its content is ready.')

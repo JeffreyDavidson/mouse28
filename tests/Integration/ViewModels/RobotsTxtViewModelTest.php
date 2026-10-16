@@ -1,9 +1,7 @@
 <?php
 
-use App\ViewModels\RobotsTxtViewModel;
 use JeffreyDavidson\CreatorKit\Support\Feeds\RobotsTxtRenderer;
-
-covers(RobotsTxtViewModel::class);
+use JeffreyDavidson\CreatorKit\ViewModels\RobotsTxtViewModel;
 
 test('production allows crawlers, keeps them out of the admin and signed previews, and points them to the sitemap', function (): void {
     config()->set('app.deployment_environment', 'production');

@@ -5,8 +5,6 @@ namespace App\Models;
 use App\Enums\GuideCategory;
 use App\Models\Concerns\HasAuthors;
 use App\Models\Concerns\HasFeaturedImage;
-use App\Models\Concerns\HasSourceReview;
-use App\Models\Concerns\HasTagsUntilForceDeleted;
 use App\Models\Concerns\LogsEditorialActivity;
 use App\Models\Concerns\ManagesStoredMedia;
 use App\Models\Concerns\ScopesNewestFirst;
@@ -26,10 +24,13 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use JeffreyDavidson\CreatorKit\Contracts\Publishable;
 use JeffreyDavidson\CreatorKit\Contracts\ReportsPublishingIssues;
+use JeffreyDavidson\CreatorKit\Contracts\ReviewsSources;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 use JeffreyDavidson\CreatorKit\Models\Attributes\PublishingStatus;
 use JeffreyDavidson\CreatorKit\Models\Concerns\HasDraftScope;
 use JeffreyDavidson\CreatorKit\Models\Concerns\HasPublishingStatus;
+use JeffreyDavidson\CreatorKit\Models\Concerns\HasSourceReview;
+use JeffreyDavidson\CreatorKit\Models\Concerns\HasTagsUntilForceDeleted;
 use JeffreyDavidson\CreatorKit\Models\Concerns\LocksSlugAfterPublication;
 use JeffreyDavidson\CreatorKit\Models\Concerns\ScopesMissingSeo;
 use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
@@ -76,7 +77,7 @@ use RalphJSmit\Laravel\SEO\Support\HasSEO;
 #[ObservedBy(GuideObserver::class)]
 #[PublishingStatus]
 #[Sluggable(from: 'title', maxLength: 255)]
-class Guide extends Model implements Publishable, ReportsPublishingIssues
+class Guide extends Model implements Publishable, ReportsPublishingIssues, ReviewsSources
 {
     /** @use HasFactory<GuideFactory> */
     use HasAuthors, HasDraftScope, HasFactory, HasFeaturedImage, HasPublishingStatus, HasSEO, HasSourceReview, HasTagsUntilForceDeleted, LocksSlugAfterPublication, LogsEditorialActivity, ManagesStoredMedia, ScopesMissingSeo, ScopesNewestFirst, SoftDeletes;
@@ -130,7 +131,6 @@ class Guide extends Model implements Publishable, ReportsPublishingIssues
         return [
             'category' => GuideCategory::class,
             'status' => PublishStatus::class,
-            'last_reviewed_at' => 'date',
             'published_at' => 'datetime',
             'slug_locked_at' => 'datetime',
         ];
