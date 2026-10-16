@@ -18,6 +18,7 @@ use JeffreyDavidson\CreatorKit\Filament\Forms\Components\PublishStatusSelect;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SeoSection;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SlugInput;
 use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SlugSourceInput;
+use JeffreyDavidson\CreatorKit\Filament\Forms\Components\TransistorUrlInput;
 
 class EpisodeForm
 {
@@ -84,13 +85,8 @@ class EpisodeForm
                         Section::make('Media')
                             ->icon(Heroicon::OutlinedPhoto)
                             ->schema([
-                                TextInput::make('transistor_url')
-                                    ->label('Transistor Episode URL')
-                                    ->url()
-                                    ->maxLength(255)
-                                    ->rules(['regex:/\Ahttps:\/\/share\.transistor\.fm\/s\/[a-zA-Z0-9]+\/?\z/'])
-                                    ->prefixIcon(Heroicon::OutlinedLink)
-                                    ->helperText('Paste the episode share URL, such as https://share.transistor.fm/s/428d650c. Mouse28 builds the embedded player from it.'),
+                                TransistorUrlInput::make('transistor_url')
+                                    ->prefixIcon(Heroicon::OutlinedLink),
                                 OptimizedImageUpload::make('featured_image_path')
                                     ->directory('episodes'),
                                 TextInput::make('duration_seconds')

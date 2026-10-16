@@ -3,10 +3,7 @@
 namespace App\Filament\Resources\Guides\Tables;
 
 use App\Enums\GuideCategory;
-use App\Enums\SourceReviewStatus;
-use App\Filament\Tables\Actions\SoftDeleteBulkActions;
 use App\Filament\Tables\Filters\MissingArtworkFilter;
-use App\Filament\Tables\Filters\ReviewDueFilter;
 use App\Models\Guide;
 use App\Support\EditorialReadiness;
 use Filament\Actions\EditAction;
@@ -15,7 +12,10 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use JeffreyDavidson\CreatorKit\Filament\Tables\Actions\SoftDeleteBulkActions;
+use JeffreyDavidson\CreatorKit\Filament\Tables\Columns\SourceReviewColumns;
 use JeffreyDavidson\CreatorKit\Filament\Tables\Filters\MissingSeoFilter;
+use JeffreyDavidson\CreatorKit\Filament\Tables\Filters\ReviewDueFilter;
 
 class GuidesTable
 {
@@ -30,14 +30,7 @@ class GuidesTable
                     ->limit(50),
                 TextColumn::make('category')
                     ->badge(),
-                TextColumn::make('last_reviewed_at')
-                    ->date()
-                    ->sortable()
-                    ->placeholder('Not reviewed'),
-                TextColumn::make('source_review_status')
-                    ->label('Review')
-                    ->state(fn (Guide $record): SourceReviewStatus => $record->sourceReviewStatus())
-                    ->badge(),
+                ...SourceReviewColumns::make(),
                 TextColumn::make('readiness')
                     ->label('Readiness')
                     ->badge()

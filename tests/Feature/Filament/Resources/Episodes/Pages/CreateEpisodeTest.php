@@ -156,8 +156,8 @@ test('create form explains editorial requirements', function (): void {
 
     get(EpisodeResource::getUrl('create'))
         ->assertOk()
-        ->assertSee('Transistor Episode URL')
-        ->assertSee('share.transistor.fm/s/')
+        ->assertSee('Transistor episode URL')
+        ->assertSee('The public page shows the Transistor player for this episode.')
         ->assertDontSee('Hosted MP3')
         ->assertDontSee('External Audio URL')
         ->assertSee('Landscape image (1.91:1)');

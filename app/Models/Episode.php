@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Models\Concerns\HasFeaturedImage;
-use App\Models\Concerns\HasTagsUntilForceDeleted;
 use App\Models\Concerns\LogsEditorialActivity;
 use App\Models\Concerns\ManagesStoredMedia;
 use App\Models\Concerns\ScopesNewestFirst;
@@ -26,8 +25,10 @@ use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 use JeffreyDavidson\CreatorKit\Models\Attributes\PublishingStatus;
 use JeffreyDavidson\CreatorKit\Models\Concerns\HasDraftScope;
 use JeffreyDavidson\CreatorKit\Models\Concerns\HasPublishingStatus;
+use JeffreyDavidson\CreatorKit\Models\Concerns\HasTagsUntilForceDeleted;
 use JeffreyDavidson\CreatorKit\Models\Concerns\LocksSlugAfterPublication;
 use JeffreyDavidson\CreatorKit\Models\Concerns\ScopesMissingSeo;
+use JeffreyDavidson\CreatorKit\Support\Podcasts\TransistorShareUrl;
 use NunoMaduro\LaravelSluggable\Attributes\Sluggable;
 use RalphJSmit\Laravel\SEO\Models\SEO;
 use RalphJSmit\Laravel\SEO\Support\HasSEO;
@@ -133,14 +134,7 @@ class Episode extends Model implements Publishable, ReportsPublishingIssues
     /** The embeddable Transistor player for a share link (https://share.transistor.fm/s/{id}); null otherwise. */
     public function transistorEmbedUrl(): ?string
     {
-        $url = $this->getAttribute('transistor_url');
-        $matches = [];
-
-        if (! is_string($url) || preg_match('/\Ahttps:\/\/share\.transistor\.fm\/s\/([a-zA-Z0-9]+)\/?\z/', $url, $matches) !== 1) {
-            return null;
-        }
-
-        return "https://share.transistor.fm/e/{$matches[1]}";
+        return TransistorShareUrl::embedUrl($this->getAttribute('transistor_url'));
     }
 
     protected function casts(): array

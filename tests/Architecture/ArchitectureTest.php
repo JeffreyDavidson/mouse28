@@ -314,3 +314,15 @@ test('the contact inquiry screens come from creator-kit, not from app copies', f
     'App\Filament\Resources\ContactInquiries\Tables\ContactInquiriesTable',
     'App\Filament\Actions\ReplyToInquiryAction',
 ]);
+
+test('the content building blocks and robots.txt come from creator-kit, not from app copies', function (string $class): void {
+    expect(class_exists($class) || trait_exists($class) || enum_exists($class))->toBeFalse();
+})->with([
+    'App\Models\Concerns\HasSourceReview',
+    'App\Models\Concerns\HasTagsUntilForceDeleted',
+    'App\Enums\SourceReviewStatus',
+    'App\Filament\Tables\Actions\SoftDeleteBulkActions',
+    'App\Filament\Tables\Filters\ReviewDueFilter',
+    'App\Http\Controllers\RobotsController',
+    'App\ViewModels\RobotsTxtViewModel',
+]);

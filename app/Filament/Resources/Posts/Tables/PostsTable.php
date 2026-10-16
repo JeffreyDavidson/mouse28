@@ -2,10 +2,7 @@
 
 namespace App\Filament\Resources\Posts\Tables;
 
-use App\Enums\SourceReviewStatus;
-use App\Filament\Tables\Actions\SoftDeleteBulkActions;
 use App\Filament\Tables\Filters\MissingArtworkFilter;
-use App\Filament\Tables\Filters\ReviewDueFilter;
 use App\Models\Post;
 use App\Support\EditorialReadiness;
 use Filament\Actions\EditAction;
@@ -14,7 +11,10 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use JeffreyDavidson\CreatorKit\Filament\Tables\Actions\SoftDeleteBulkActions;
+use JeffreyDavidson\CreatorKit\Filament\Tables\Columns\SourceReviewColumns;
 use JeffreyDavidson\CreatorKit\Filament\Tables\Filters\MissingSeoFilter;
+use JeffreyDavidson\CreatorKit\Filament\Tables\Filters\ReviewDueFilter;
 
 class PostsTable
 {
@@ -36,17 +36,7 @@ class PostsTable
                     ->label('Category')
                     ->badge()
                     ->sortable(),
-                TextColumn::make('last_reviewed_at')
-                    ->label('Reviewed')
-                    ->date()
-                    ->sortable()
-                    ->placeholder('Not tracked')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('source_review_status')
-                    ->label('Review')
-                    ->state(fn (Post $record): SourceReviewStatus => $record->sourceReviewStatus())
-                    ->badge()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                ...SourceReviewColumns::make(),
                 TextColumn::make('readiness')
                     ->label('Readiness')
                     ->badge()

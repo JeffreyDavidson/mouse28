@@ -77,7 +77,7 @@ test('create form explains editorial requirements', function (): void {
     get(PostResource::getUrl('create'))
         ->assertOk()
         ->assertSee('use the Publish action')
-        ->assertSee('Optional for evergreen posts')
+        ->assertSee('Track the official source this content relies on')
         ->assertSee('Landscape image (1.91:1)');
 });
 
