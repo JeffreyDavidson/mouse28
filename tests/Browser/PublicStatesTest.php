@@ -36,7 +36,7 @@ test('empty and no-result states remain actionable on mobile', function (): void
         ->assertSee('View all guides');
     $episodes->assertSee("We're warming up the mics");
     $search->assertSee('No results for “quiet”')
-        ->assertSee('Browse blog')
+        ->assertSee('Browse the blog')
         ->assertSee('Browse guides')
         ->assertSee('Browse podcast');
 });

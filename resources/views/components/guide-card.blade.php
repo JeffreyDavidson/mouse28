@@ -5,7 +5,7 @@
 
 @if ($variant === 'related')
     <article class="group min-w-0">
-        <a href="{{ route('guides.show', $guide) }}" class="block overflow-hidden rounded-xl">
+        <a href="{{ route('guides.show', $guide) }}" class="rounded-panel block overflow-hidden">
             <x-guide-artwork
                 :guide="$guide"
                 class="aspect-[16/10] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
@@ -21,7 +21,7 @@
         <a
             href="{{ route('guides.show', $guide) }}"
             aria-label="Read {{ $guide->title }}"
-            class="block overflow-hidden rounded-xl"
+            class="rounded-panel block overflow-hidden"
         >
             <x-guide-artwork
                 :guide="$guide"

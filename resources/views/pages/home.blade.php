@@ -1,4 +1,5 @@
 @use('App\Presenters\EpisodePresenter')
+@use('App\Support\PlainText')
 <x-layouts.app
     title="Mouse28 | Disney Parks Through Different Eyes"
     description="Accessibility tips, sensory-friendly park planning, family experiences, and the Mouse28 podcast from Jeffrey and Cassie Davidson."
@@ -45,7 +46,7 @@
                             <a
                                 href="{{ route('blog.index') }}"
                                 class="dispatch-button bg-gold text-navy hover:bg-gold-light inline-flex min-h-12 items-center justify-center px-6 py-3 text-base font-semibold sm:text-sm"
-                            >Read the Blog</a>
+                            >Read the blog</a>
                             <a
                                 href="{{ route('episodes.index') }}"
                                 class="text-purple decoration-gold/70 hover:text-navy inline-flex min-h-12 items-center text-base font-semibold underline underline-offset-8 transition-colors sm:text-sm"
@@ -151,7 +152,7 @@
                                         {{ $post->category_label }}
                                     </p>
                                     <h3 class="font-heading text-navy group-hover:text-purple mt-1 line-clamp-3 text-lg [font-weight:560] tracking-[-0.012em] text-balance wrap-anywhere">
-                                        {{ $post->title }}
+                                        {{ PlainText::keepDashWithPrecedingWord($post->title) }}
                                     </h3>
                                     <p class="text-navy/65 mt-auto pt-2 text-sm tabular-nums sm:text-xs">
                                         <x-display-date :date="$post->published_at" format="M j, Y" />
@@ -159,7 +160,7 @@
                                 </div>
                             </a>
                         @empty
-                            <div class="border-gold/35 bg-cream/70 col-span-full rounded-xl border p-6 text-center sm:p-8">
+                            <div class="border-gold/35 bg-cream/70 rounded-panel col-span-full border p-6 text-center sm:p-8">
                                 <p class="font-heading text-navy text-2xl [font-weight:620] tracking-[-0.02em]">
                                     More stories are on the way.
                                 </p>
@@ -257,7 +258,7 @@
                                             @endforeach
                                         </div>
                                     @else
-                                        <div class="border-gold/35 bg-cream/70 flex min-h-52 flex-col items-center justify-center rounded-xl border p-6 text-center sm:p-8">
+                                        <div class="border-gold/35 bg-cream/70 rounded-panel flex min-h-52 flex-col items-center justify-center border p-6 text-center sm:p-8">
                                             <p class="text-navy/70 max-w-lg text-base/7">
                                                 Our first planning stories and reviewed guides are being prepared.
                                             </p>
@@ -306,7 +307,7 @@
                         <div>
                             <p class="text-gold text-sm font-semibold sm:text-xs">Latest episode</p>
                             <h3 class="font-heading text-cream mt-2 text-2xl [font-weight:580] tracking-[-0.015em] text-balance">
-                                {{ $leadEpisode->title }}
+                                {{ PlainText::keepDashWithPrecedingWord($leadEpisode->title) }}
                             </h3>
                             @if ($leadEpisode->description)
                                 <p class="text-cream/70 mt-3 line-clamp-3 text-base/7 text-pretty sm:text-[0.9375rem]/6">
@@ -318,7 +319,7 @@
                                 <div class="mt-4" x-data="episodePlayer">
                                     {{-- Inert until Listen now is pressed, so Transistor loads only on request. --}}
                                     <template x-if="loaded">
-                                        <div class="relative mb-3 overflow-hidden rounded-xl bg-white">
+                                        <div class="rounded-panel relative mb-3 overflow-hidden bg-white">
                                             <iframe
                                                 x-ref="player"
                                                 src="{{ $leadEmbedUrl }}"
@@ -385,7 +386,7 @@
                                                 @if ($episode->duration_seconds) {{ '· '.EpisodePresenter::from($episode)->duration() }}@endif
                                             </p>
                                             <h3 class="font-heading text-cream group-hover:text-gold mt-1 line-clamp-2 text-lg [font-weight:560] tracking-[-0.012em]">
-                                                {{ $episode->title }}
+                                                {{ PlainText::keepDashWithPrecedingWord($episode->title) }}
                                             </h3>
                                         </div></a>
                                 @endforeach
@@ -445,7 +446,7 @@
                         <a
                             href="{{ route('about') }}"
                             class="dispatch-button bg-navy text-cream hover:bg-navy-light inline-flex min-h-12 items-center px-6 py-3 text-base font-semibold sm:text-sm"
-                            >Our Full Story</a
+                            >Our full story</a
                         ><a
                             href="{{ route('contact.create') }}"
                             class="text-purple decoration-gold/70 hover:text-navy inline-flex min-h-12 items-center text-base font-semibold underline underline-offset-8 sm:text-sm"

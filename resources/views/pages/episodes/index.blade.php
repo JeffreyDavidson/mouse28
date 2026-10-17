@@ -1,4 +1,5 @@
 @use('App\Presenters\EpisodePresenter')
+@use('App\Support\PlainText')
 
 <x-layouts.app
     :title="($podcast->name ?: 'Mouse28').' Podcast'"
@@ -28,7 +29,7 @@
                         width="1200"
                         height="1200"
                         fetchpriority="high"
-                        class="aspect-square w-full rounded-xl object-cover"
+                        class="rounded-panel aspect-square w-full object-cover"
                     />
                 </div>
 
@@ -44,10 +45,10 @@
                     @if ($latestEpisode)
                         <div class="border-gold/35 mt-6 border-y py-5 sm:mt-8 sm:py-6">
                             <h2 class="font-heading text-2xl [font-weight:620] tracking-[-0.015em] text-balance sm:text-3xl">
-                                {{ $latestEpisode->title }}
+                                {{ PlainText::keepDashWithPrecedingWord($latestEpisode->title) }}
                             </h2>
                             <div class="text-cream/65 mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm">
-                                <x-display-date :date="$latestEpisode->published_at" />
+                                <x-display-date :date="$latestEpisode->published_at" format="M j, Y" />
                                 @if ($latestEpisode->duration_seconds)
                                     <span>{{ EpisodePresenter::from($latestEpisode)->duration() }}</span>
                                 @endif
@@ -57,7 +58,7 @@
                             </div>
                             <a
                                 href="{{ route('episodes.show', $latestEpisode) }}"
-                                class="bg-gold text-navy hover:bg-gold-light mt-5 inline-flex min-h-12 items-center rounded-full px-6 py-3 font-semibold transition-colors"
+                                class="bg-gold text-navy hover:bg-gold-light rounded-control mt-5 inline-flex min-h-12 items-center px-6 py-3 font-semibold transition-colors"
                             >{{ $latestEpisode->transistorEmbedUrl() ? 'Listen now' : 'Episode details' }}</a>
                         </div>
                     @else
@@ -66,7 +67,17 @@
                                 We're warming up the mics
                             </h2>
                             <p class="text-cream/70 mt-3 max-w-xl text-base/7">
-                                Our first episode is in the works. Subscribe so you're there from the start.
+                                Our first episode is in the works.
+                                @if (count($podcastLinks) > 1)
+                                    Subscribe so you're there from the start.
+                                @else
+                                    {{-- With only the RSS feed to offer, the newsletter is the easier way to hear when it is out. --}}
+                                    <a
+                                        href="#newsletter"
+                                        class="text-gold hover:text-cream underline decoration-current/35 underline-offset-4 transition-colors"
+                                    >Subscribe</a>
+                                    so you're there from the start.
+                                @endif
                             </p>
                         </div>
                     @endif
@@ -78,9 +89,9 @@
             </div>
         </section>
 
-        <section class="dispatch-page-field bg-cream py-12 sm:py-16 lg:py-20">
-            <div class="mx-auto max-w-[86rem] px-4 sm:px-6">
-                @if ($episodes->count())
+        @if ($episodes->count())
+            <section class="dispatch-page-field bg-cream py-12 sm:py-16 lg:py-20">
+                <div class="mx-auto max-w-[86rem] px-4 sm:px-6">
                     <div class="mb-10 max-w-2xl">
                         <h2 class="font-heading text-navy text-4xl [font-weight:640] tracking-[-0.02em] text-balance sm:text-5xl">
                             Episode archive
@@ -126,14 +137,14 @@
                                                         @endif
                                                     </div>
                                                     <h4 class="font-heading text-navy group-hover:text-purple mt-2 text-2xl [font-weight:600] tracking-[-0.015em] text-balance transition-colors">
-                                                        {{ $episode->title }}
+                                                        {{ PlainText::keepDashWithPrecedingWord($episode->title) }}
                                                     </h4>
                                                     <p class="text-navy/70 mt-3 max-w-3xl text-base/7 text-pretty">
-                                                        {{ Str::limit($episode->description, 185) }}
+                                                        {{ Str::limit($episode->description, 185, '…', preserveWords: true) }}
                                                     </p>
                                                 </div>
                                                 <span class="text-purple decoration-gold/70 inline-flex min-h-12 shrink-0 items-center font-semibold underline underline-offset-8">
-                                                    {{ $episode->transistorEmbedUrl() ? 'Listen now' : 'Episode details' }}
+                                                    Episode details
                                                 </span>
                                             </a>
                                         </article>
@@ -146,9 +157,8 @@
                     @if ($episodes->hasPages())
                         <div class="episodes-pagination mt-14 flex justify-center">{{ $episodes->links() }}</div>
                     @endif
-
-                @endif
-            </div>
-        </section>
+                </div>
+            </section>
+        @endif
     </div>
 </x-layouts.app>

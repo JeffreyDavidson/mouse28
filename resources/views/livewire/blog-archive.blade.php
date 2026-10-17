@@ -82,8 +82,8 @@
                                     name="q"
                                     wire:model.live.debounce.300ms="search"
                                     data-preserve-blog-filter-position
-                                    placeholder="Search posts..."
-                                    class="border-navy/15 bg-cream text-navy placeholder:text-navy/60 focus:border-purple focus:ring-purple min-h-12 w-full appearance-none rounded-xl border py-3 pr-12 pl-11 text-base transition-opacity outline-none focus:ring-2 data-loading:opacity-60 motion-reduce:transition-none"
+                                    placeholder="Search stories…"
+                                    class="border-navy/15 bg-cream text-navy placeholder:text-navy/60 focus:border-purple focus:ring-purple rounded-control min-h-12 w-full appearance-none border py-3 pr-12 pl-11 text-base transition-opacity outline-none focus:ring-2 data-loading:opacity-60 motion-reduce:transition-none"
                                 />
                                 @if ($search)
                                     <a
@@ -139,7 +139,7 @@
                                     name="sort"
                                     wire:model.live="sort"
                                     data-preserve-blog-filter-position
-                                    class="border-navy/15 bg-cream text-navy focus:border-purple focus:ring-purple min-h-12 w-full min-w-44 appearance-none rounded-xl border py-3 pr-12 pl-4 text-base transition-opacity outline-none focus:ring-2 data-loading:opacity-60 motion-reduce:transition-none"
+                                    class="border-navy/15 bg-cream text-navy focus:border-purple focus:ring-purple rounded-control min-h-12 w-full min-w-44 appearance-none border py-3 pr-12 pl-4 text-base transition-opacity outline-none focus:ring-2 data-loading:opacity-60 motion-reduce:transition-none"
                                 >
                                     @foreach (BlogSort::cases() as $sortOption)
                                         <option value="{{ $sortOption->value }}">{{ $sortOption->label() }}</option>
@@ -152,7 +152,7 @@
                             <noscript>
                                 <button
                                     type="submit"
-                                    class="bg-navy text-cream mt-3 inline-flex min-h-12 items-center rounded-xl px-4 py-3 text-sm font-semibold"
+                                    class="bg-navy text-cream rounded-control mt-3 inline-flex min-h-12 items-center px-4 py-3 text-sm font-semibold"
                                 >
                                     Apply order
                                 </button>
@@ -205,7 +205,7 @@
                         </div>
                     @endif
                 @else
-                    <div class="bg-navy text-cream mx-auto max-w-3xl rounded-xl px-7 py-12 text-center sm:px-12">
+                    <div class="bg-navy text-cream rounded-panel mx-auto max-w-3xl px-7 py-12 text-center sm:px-12">
                         <h2 class="font-heading text-3xl [font-weight:640] tracking-[-0.02em] text-balance">
                             @if ($search)
                                 No posts match "{{ $search }}"

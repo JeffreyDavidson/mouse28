@@ -28,11 +28,11 @@
                     maxlength="100"
                     placeholder="Try “sensory breaks” or “DAS”"
                     @error('q') aria-invalid="true" aria-describedby="site-search-error" autofocus @enderror
-                    class="text-navy placeholder:text-navy/65 focus:border-gold focus:ring-gold min-h-12 min-w-0 flex-1 rounded-full border border-white/15 bg-white px-5 py-3 text-base shadow-lg focus:ring-2 focus:outline-none"
+                    class="text-navy placeholder:text-navy/65 focus:border-gold focus:ring-gold rounded-control min-h-12 min-w-0 flex-1 border border-white/15 bg-white px-5 py-3 text-base shadow-lg focus:ring-2 focus:outline-none"
                 />
                 <button
                     type="submit"
-                    class="bg-gold text-navy hover:bg-gold-light min-h-12 rounded-full px-7 py-3 font-semibold shadow-lg transition-colors"
+                    class="bg-gold text-navy hover:bg-gold-light rounded-control min-h-12 px-7 py-3 font-semibold shadow-lg transition-colors"
                 >
                     Search
                 </button>
@@ -60,7 +60,7 @@
                     >
                         <a
                             href="{{ route('blog.index') }}"
-                            class="dispatch-interactive-card group from-navy to-navy-light relative flex min-h-64 flex-col justify-end overflow-hidden rounded-2xl bg-linear-to-br p-7 text-white {{ config('mouse28.guides_enabled') ? 'md:row-span-2' : '' }}"
+                            class="dispatch-interactive-card group from-navy to-navy-light relative flex min-h-64 flex-col justify-end overflow-hidden rounded-panel bg-linear-to-br p-7 text-white {{ config('mouse28.guides_enabled') ? 'md:row-span-2' : '' }}"
                         >
                             <span class="text-gold text-sm font-semibold">Start somewhere inspiring</span>
                             <h3 class="font-heading mt-2 max-w-md text-3xl font-bold">
@@ -71,7 +71,7 @@
                         @if (config('mouse28.guides_enabled'))
                             <a
                                 href="{{ route('guides.index') }}"
-                                class="dispatch-interactive-card group border-navy/8 bg-cream hover:border-purple/25 flex min-h-30 items-center justify-between gap-5 rounded-2xl border p-6"
+                                class="dispatch-interactive-card group border-navy/8 bg-cream hover:border-purple/25 rounded-panel flex min-h-30 items-center justify-between gap-5 border p-6"
                             >
                                 <span>
                                     <strong class="font-heading text-navy block text-xl">Browse practical guides</strong>
@@ -82,7 +82,7 @@
                         @endif
                         <a
                             href="{{ route('episodes.index') }}"
-                            class="dispatch-interactive-card group border-navy/8 bg-cream hover:border-purple/25 flex min-h-30 items-center justify-between gap-5 rounded-2xl border p-6"
+                            class="dispatch-interactive-card group border-navy/8 bg-cream hover:border-purple/25 rounded-panel flex min-h-30 items-center justify-between gap-5 border p-6"
                         >
                             <span>
                                 <strong class="font-heading text-navy block text-xl">Listen to the podcast</strong>
@@ -101,17 +101,17 @@
                     <div class="mt-7 flex flex-wrap justify-center gap-3">
                         <a
                             href="{{ route('blog.index') }}"
-                            class="bg-navy hover:bg-purple inline-flex min-h-12 items-center rounded-full px-5 py-3 font-semibold text-white"
-                        >Browse blog</a>
+                            class="bg-navy hover:bg-purple rounded-control inline-flex min-h-12 items-center px-5 py-3 font-semibold text-white"
+                        >Browse the blog</a>
                         @if (config('mouse28.guides_enabled'))
                             <a
                                 href="{{ route('guides.index') }}"
-                                class="border-navy/10 text-navy hover:border-purple/30 inline-flex min-h-12 items-center rounded-full border bg-white px-5 py-3 font-semibold"
+                                class="border-navy/10 text-navy hover:border-purple/30 rounded-control inline-flex min-h-12 items-center border bg-white px-5 py-3 font-semibold"
                             >Browse guides</a>
                         @endif
                         <a
                             href="{{ route('episodes.index') }}"
-                            class="border-navy/10 text-navy hover:border-purple/30 inline-flex min-h-12 items-center rounded-full border bg-white px-5 py-3 font-semibold"
+                            class="border-navy/10 text-navy hover:border-purple/30 rounded-control inline-flex min-h-12 items-center border bg-white px-5 py-3 font-semibold"
                         >Browse podcast</a>
                     </div>
                 </div>

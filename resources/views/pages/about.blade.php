@@ -25,12 +25,12 @@
         FORM [seed: park-photo-essay]: A photographic magazine feature ending in two distinct personal profiles.
     -->
     <div data-about-editorial>
-        <header aria-labelledby="about-heading" class="bg-navy text-cream px-4 py-10 sm:px-6 sm:py-14 lg:py-16">
-            <div class="mx-auto grid max-w-[86rem] items-center gap-8 sm:gap-10 lg:grid-cols-[5fr_7fr] lg:gap-16">
+        <header aria-labelledby="about-heading" class="bg-navy text-cream py-10 sm:py-14 lg:py-16">
+            <div class="mx-auto grid max-w-[86rem] items-center gap-8 px-4 sm:gap-10 sm:px-6 lg:grid-cols-[5fr_7fr] lg:gap-16">
                 <div class="max-w-xl">
                     <h1
                         id="about-heading"
-                        class="font-heading text-cream max-w-[18ch] text-[2.75rem]/[1.08] [font-weight:680] tracking-[-0.03em] text-balance sm:text-5xl xl:text-6xl"
+                        class="font-heading text-cream max-w-[18ch] text-[2.75rem]/[1.08] [font-weight:680] tracking-[-0.03em] text-balance sm:text-5xl/[1.08] xl:text-6xl/[1.08]"
                     >
                         Disney looks different through our family's eyes.
                     </h1>
@@ -40,7 +40,7 @@
                 </div>
 
                 <figure>
-                    <div class="overflow-hidden rounded-xl">
+                    <div class="rounded-panel overflow-hidden">
                         <x-hero-picture
                             sizes="(min-width: 1424px) 765px, (min-width: 1024px) calc(58.3333vw - 65.3333px), (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
                             src="/images/hero-family.jpg"
@@ -59,7 +59,7 @@
 
         <div class="dispatch-page-field bg-cream">
             <section class="mx-auto grid max-w-6xl gap-8 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[5fr_7fr] lg:gap-20 lg:py-28">
-                <h2 class="font-heading text-navy text-4xl [font-weight:640] tracking-[-0.025em] text-balance sm:text-5xl">
+                <h2 class="font-heading text-navy text-4xl/[1.08] [font-weight:640] tracking-[-0.025em] text-balance sm:text-5xl/[1.08]">
                     We stopped measuring a Disney day by how much we did.
                 </h2>
                 <div class="text-navy/75 max-w-[70ch] space-y-5 text-[1.0625rem]/8 text-pretty">
@@ -77,7 +77,7 @@
             </section>
 
             <section class="mx-auto max-w-[86rem] px-4 pb-16 sm:px-6 sm:pb-20 lg:pb-28">
-                <div class="grid grid-cols-1 overflow-hidden rounded-xl bg-white lg:grid-cols-[5fr_7fr]">
+                <div class="rounded-panel grid grid-cols-1 overflow-hidden bg-white lg:grid-cols-[5fr_7fr]">
                     <img
                         src="/images/meet-jeffrey-and-cassie.webp"
                         alt="Jeffrey and Cassie Davidson at Disney's Hollywood Studios"
@@ -88,7 +88,7 @@
                         class="h-full max-h-[48rem] w-full object-cover object-[center_35%]"
                     />
                     <div class="flex flex-col justify-center px-6 py-12 sm:px-10 sm:py-16 lg:px-16 lg:py-20">
-                        <h2 class="font-heading text-navy text-4xl [font-weight:640] tracking-[-0.025em] text-balance sm:text-5xl">
+                        <h2 class="font-heading text-navy text-4xl/[1.08] [font-weight:640] tracking-[-0.025em] text-balance sm:text-5xl/[1.08]">
                             Familiarity gave us room to follow Viola's lead.
                         </h2>
                         <div class="text-navy/75 mt-7 max-w-[66ch] space-y-5 text-[1.0625rem]/8 text-pretty">
@@ -123,7 +123,7 @@
             </section>
 
             <section class="mx-auto grid max-w-6xl gap-8 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-[5fr_7fr] lg:gap-20 lg:py-28">
-                <h2 class="font-heading text-navy text-4xl [font-weight:640] tracking-[-0.025em] text-balance sm:text-5xl">
+                <h2 class="font-heading text-navy text-4xl/[1.08] [font-weight:640] tracking-[-0.025em] text-balance sm:text-5xl/[1.08]">
                     Mouse28 is what we wish we had found sooner.
                 </h2>
                 <div class="text-navy/75 max-w-[70ch] space-y-5 text-[1.0625rem]/8 text-pretty">
@@ -155,7 +155,7 @@
                     <div class="max-w-4xl">
                         <h2
                             id="voices-heading"
-                            class="font-heading text-navy text-4xl [font-weight:640] tracking-[-0.025em] text-balance sm:text-5xl lg:text-6xl"
+                            class="font-heading text-navy text-4xl/[1.08] [font-weight:640] tracking-[-0.025em] text-balance sm:text-5xl/[1.08] lg:text-6xl/[1.08]"
                         >
                             Two people. Two perspectives. One family.
                         </h2>
@@ -216,7 +216,7 @@
                     </div>
                     <a
                         href="{{ route('blog.index') }}"
-                        class="bg-gold text-navy hover:bg-gold-light inline-flex min-h-12 w-fit items-center rounded-full px-6 py-3 font-semibold transition-colors"
+                        class="bg-gold text-navy hover:bg-gold-light rounded-control inline-flex min-h-12 w-fit items-center px-6 py-3 font-semibold transition-colors"
                     >Explore Mouse28</a>
                 </div>
             </section>

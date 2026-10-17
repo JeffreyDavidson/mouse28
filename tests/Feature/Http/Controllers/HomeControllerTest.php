@@ -100,7 +100,7 @@ test('the podcast section points listeners to their podcast app under the episod
             'Spotify',
             'YouTube',
             'RSS Feed',
-            'Our Full Story',
+            'Our full story',
         ])
         ->assertSeeHtml('class="grid grid-cols-2 gap-2 mt-3"')
         ->assertSeeHtml('href="https://podcasts.apple.com/show/mouse28"');

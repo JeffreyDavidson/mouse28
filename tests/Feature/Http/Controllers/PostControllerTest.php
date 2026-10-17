@@ -600,3 +600,46 @@ test('blog share links point to the public post address', function (): void {
         ->assertSeeHtml('aria-label="Share on Facebook (opens in a new tab)"')
         ->assertSeeInOrder(['Post on X', 'Share on Facebook']);
 });
+
+test('blog cards keep a spaced dash in a post title with the word before it', function (): void {
+    // Arrange
+    Post::factory()->create(['title' => 'Older ride — why we went back', 'published_at' => now()->subDays(2)]);
+    Post::factory()->create(['title' => 'Newer featured story']);
+
+    // Act
+    $response = get(route('blog.index'));
+
+    // Assert
+    $response->assertOk()
+        ->assertSeeHtml("Older ride\u{00A0}— why we went back");
+});
+
+test('a post page keeps a spaced dash in its title with the word before it', function (): void {
+    // Arrange
+    $post = Post::factory()->create(['title' => 'Newer ride — the calm one']);
+
+    // Act
+    $response = get(route('blog.show', $post));
+
+    // Assert
+    $response->assertOk()
+        ->assertSeeHtml("Newer ride\u{00A0}— the calm one");
+});
+
+test('blog cards cut a long excerpt at a word boundary with an ellipsis', function (): void {
+    // Arrange
+    Post::factory()->create([
+        'title' => 'Older long story',
+        'excerpt' => str_repeat('quiet park ', 20).'ending',
+        'published_at' => now()->subDays(2),
+    ]);
+    Post::factory()->create(['title' => 'Newer featured story']);
+
+    // Act
+    $response = get(route('blog.index'));
+
+    // Assert
+    $response->assertOk()
+        ->assertSee(rtrim(str_repeat('quiet park ', 16)).'…')
+        ->assertDontSee(str_repeat('quiet park ', 16).'qui');
+});

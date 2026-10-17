@@ -21,11 +21,11 @@
                 name="q"
                 maxlength="100"
                 placeholder="Search posts and episodes"
-                class="text-navy placeholder:text-navy/60 focus:border-purple focus:ring-purple min-h-12 min-w-0 flex-1 rounded-full border border-white/15 bg-white px-5 py-3 text-base shadow-lg focus:ring-2 focus:outline-none"
+                class="text-navy placeholder:text-navy/60 focus:border-purple focus:ring-purple rounded-control min-h-12 min-w-0 flex-1 border border-white/15 bg-white px-5 py-3 text-base shadow-lg focus:ring-2 focus:outline-none"
             />
             <button
                 type="submit"
-                class="bg-gold text-navy hover:bg-gold-light min-h-12 rounded-full px-7 py-3 font-semibold shadow-lg transition-colors"
+                class="bg-gold text-navy hover:bg-gold-light rounded-control min-h-12 px-7 py-3 font-semibold shadow-lg transition-colors"
             >
                 Search
             </button>
@@ -34,22 +34,22 @@
         <div class="mt-6 flex flex-wrap gap-3">
             <a
                 href="{{ route('home') }}"
-                class="dispatch-error-secondary inline-flex min-h-12 items-center rounded-full px-6 py-3 font-semibold transition-colors"
+                class="dispatch-error-secondary rounded-control inline-flex min-h-12 items-center px-6 py-3 font-semibold transition-colors"
             >Go home</a>
             <a
                 href="{{ route('blog.index') }}"
-                class="dispatch-error-secondary inline-flex min-h-12 items-center rounded-full px-6 py-3 font-semibold transition-colors"
-            >Browse blog</a>
+                class="dispatch-error-secondary rounded-control inline-flex min-h-12 items-center px-6 py-3 font-semibold transition-colors"
+            >Browse the blog</a>
             @if (config('mouse28.guides_enabled'))
                 <a
                     href="{{ route('guides.index') }}"
-                    class="dispatch-error-secondary inline-flex min-h-12 items-center rounded-full px-6 py-3 font-semibold transition-colors"
+                    class="dispatch-error-secondary rounded-control inline-flex min-h-12 items-center px-6 py-3 font-semibold transition-colors"
                 >Explore guides</a>
             @endif
             <a
                 href="{{ route('episodes.index') }}"
-                class="dispatch-error-secondary inline-flex min-h-12 items-center rounded-full px-6 py-3 font-semibold transition-colors"
-            >Listen to podcast</a>
+                class="dispatch-error-secondary rounded-control inline-flex min-h-12 items-center px-6 py-3 font-semibold transition-colors"
+            >Listen to the podcast</a>
         </div>
     </x-error-state>
 </x-layouts.error>

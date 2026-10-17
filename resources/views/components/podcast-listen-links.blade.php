@@ -11,7 +11,7 @@
             target="_blank"
             rel="noopener noreferrer"
             @class([
-                'border-cream/35 text-cream hover:border-gold hover:text-gold inline-flex min-h-12 items-center justify-center rounded-full border py-2.5 text-sm font-semibold transition-colors',
+                'border-cream/35 text-cream hover:border-gold hover:text-gold inline-flex min-h-12 items-center justify-center rounded-control border py-2.5 text-sm font-semibold transition-colors',
                 'px-5' => ! $columns,
                 'px-3 whitespace-nowrap' => $columns,
             ])

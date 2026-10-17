@@ -162,7 +162,7 @@
         {{-- Decorative gold gradient top border --}}
         <div class="from-gold-dark via-gold-light to-gold-dark absolute inset-x-0 top-0 h-1 bg-linear-to-r"></div>
 
-        <div class="mx-auto max-w-6xl px-4 pt-10 pb-7 sm:px-6">
+        <div class="{{ $dispatchLayout ? 'max-w-[86rem]' : 'max-w-6xl' }} mx-auto px-4 pt-10 pb-7 sm:px-6">
             <div class="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
                 <div class="max-w-xs">
                     <a
@@ -188,7 +188,7 @@
                     @session('newsletter_success')
                         <div
                             role="status"
-                            class="border-gold/30 bg-gold/10 text-gold mb-3 rounded-xl border px-5 py-2.5 text-center text-base font-medium sm:text-sm"
+                            class="border-gold/30 bg-gold/10 text-gold rounded-panel mb-3 border px-5 py-2.5 text-center text-base font-medium sm:text-sm"
                         >
                             {{ $value }}
                         </div>
@@ -205,7 +205,7 @@
                                 :value="$errors->newsletter->isNotEmpty() ? old('email') : ''"
                                 :error="$errors->newsletter->first('email')"
                                 error-id="footer-newsletter-email-error"
-                                input-class="focus:border-gold/50 min-h-12 min-w-0 flex-1 rounded-full border border-white/10 bg-white/10 px-4 py-2.5 text-base text-white transition-colors placeholder:text-white/60 sm:text-sm"
+                                input-class="focus:border-gold/50 min-h-12 min-w-0 flex-1 rounded-control border border-white/10 bg-white/10 px-4 py-2.5 text-base text-white transition-colors placeholder:text-white/60 sm:text-sm"
                                 error-class="text-sm text-red-300"
                                 placeholder="your@email.com"
                                 autocomplete="email"
@@ -213,12 +213,12 @@
                             />
                             <button
                                 type="submit"
-                                class="bg-gold text-navy hover:bg-gold-light hover:shadow-gold/25 min-h-12 rounded-full px-6 py-2.5 text-base font-semibold whitespace-nowrap transition-[background-color,box-shadow] hover:shadow-lg sm:text-sm"
+                                class="bg-gold text-navy hover:bg-gold-light hover:shadow-gold/25 rounded-control min-h-12 px-6 py-2.5 text-base font-semibold whitespace-nowrap transition-[background-color,box-shadow] hover:shadow-lg sm:text-sm"
                             >
                                 Subscribe
                             </button>
                         </div>
-                        <p class="text-xs text-white/60">
+                        <p class="text-sm text-white/60">
                             We email you a link to confirm. Your address is only used for Mouse28 updates.
                         </p>
                     </form>

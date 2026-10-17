@@ -111,7 +111,7 @@ test('search query selects only the fields the results show', function (): void 
         ->not->toHaveKeys(['content', 'status'])
         ->and($results['episodes']->sole()
             ->getAttributes())
-        ->toHaveKeys(['slug', 'episode_number', 'title', 'description'])
+        ->toHaveKeys(['slug', 'episode_number', 'season_number', 'title', 'description'])
         ->not->toHaveKeys(['show_notes', 'transcript', 'status']);
 });
 

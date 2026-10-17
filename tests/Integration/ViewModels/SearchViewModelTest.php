@@ -27,6 +27,7 @@ test('search results map each group to the cards the page shows', function (): v
     $episode = Episode::factory()->create([
         'title' => 'Sensory planning episode',
         'episode_number' => 42,
+        'season_number' => 2,
         'description' => 'Episode description',
     ]);
 
@@ -47,11 +48,26 @@ test('search results map each group to the cards the page shows', function (): v
         ]],
         'episodes' => [[
             'url' => route('episodes.show', $episode),
-            'eyebrow' => 'Episode 42',
+            'eyebrow' => 'Season 2, episode 42',
             'title' => 'Sensory planning episode',
             'description' => 'Episode description',
         ]],
     ]);
+});
+
+test('search results label an episode without a season by its number alone', function (): void {
+    // Arrange
+    Episode::factory()->create([
+        'title' => 'Sensory planning episode',
+        'episode_number' => 7,
+        'season_number' => null,
+    ]);
+
+    // Act
+    $results = app(SearchViewModel::class)->data('Sensory planning')['results'];
+
+    // Assert
+    expect($results['episodes']->items()[0]['eyebrow'])->toBe('Episode 7');
 });
 
 test('search results count every match across the groups', function (): void {

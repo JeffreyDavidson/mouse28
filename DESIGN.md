@@ -66,10 +66,10 @@ rounded:
   control: '8px'
   soft: '0.35rem'
   field: '0.6rem'
-  compact: '0.625rem'
   inset: '12px'
   panel: '16px'
-  editorial: '0.875rem'
+  public-control: '0.625rem'
+  public-panel: '0.75rem'
   pill: '9999px'
 spacing:
   compact: '8px'
@@ -158,7 +158,7 @@ Avoid decorative glows, glass effects, animated sparkles, and lifting every dash
 
 ## Shapes
 
-Keep the established rounded language: compact rounded controls, slightly softer inset surfaces, and 16px panel corners. Use one consistent icon family, Filament's Heroicons. Do not use emoji as interface icons. Decorative icons remain hidden from assistive technology; icon-only actions retain accessible names.
+Keep the established rounded language. The public site uses two corner radii, set as tokens in `resources/css/app.css`: `--radius-control` (0.625rem) for buttons, inputs and selects, and `--radius-panel` (0.75rem) for cards, panels, framed images and multi-line fields. Use the `rounded-control` and `rounded-panel` utilities rather than fixed Tailwind radii; pills stay only for topic filter chips, and circles for icon buttons, avatars and pagination. Images nested inside a padded frame may use a smaller inner radius so the corners stay concentric. The admin keeps Filament's compact 8px controls, slightly softer 12px inset surfaces, and 16px panel corners. Use one consistent icon family, Filament's Heroicons. Do not use emoji as interface icons. Decorative icons remain hidden from assistive technology; icon-only actions retain accessible names.
 
 ## Components
 

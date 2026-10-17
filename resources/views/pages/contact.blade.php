@@ -30,7 +30,7 @@
                     </p>
                     <a
                         href="{{ route('blog.index') }}"
-                        class="bg-gold hover:bg-gold-light focus-visible:outline-purple mt-10 inline-flex min-h-12 items-center rounded-full px-6 py-3 font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
+                        class="bg-gold hover:bg-gold-light focus-visible:outline-purple rounded-control mt-10 inline-flex min-h-12 items-center px-6 py-3 font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
                     >Read the latest stories</a>
                 </div>
             </section>
@@ -49,19 +49,148 @@
                 </div>
             </header>
 
-            <section class="mx-auto grid max-w-6xl gap-12 px-4 py-14 sm:px-6 sm:py-18 lg:grid-cols-[4fr_8fr] lg:items-start lg:gap-20 lg:py-24">
-                <div class="lg:sticky lg:top-28">
+            {{-- On phones the form follows the short introduction; the topic prompts and other ways to reach us come after it. --}}
+            <section class="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 sm:py-18 lg:grid-cols-[4fr_8fr] lg:grid-rows-[auto_1fr] lg:items-start lg:gap-x-20 lg:gap-y-8 lg:py-24">
+                <div class="lg:col-start-1 lg:row-start-1">
                     <h2 class="font-heading max-w-[13ch] text-3xl/[1.15] [font-weight:620] tracking-[-0.02em] text-balance sm:text-4xl">
                         What would you like to share?
                     </h2>
                     <p class="text-navy/65 mt-5 max-w-[36ch] text-base/7 text-pretty">
                         A little context helps us understand your note and respond thoughtfully.
                     </p>
+                </div>
 
-                    <ul
-                        class="border-navy/15 divide-navy/15 mt-8 divide-y border-y"
-                        aria-label="Suggested contact topics"
-                    >
+                @if ($contactFormAvailable)
+                    <div class="dispatch-letter-form rounded-panel bg-white p-5 shadow-[0_1.75rem_4rem_rgb(26_16_64/0.12)] sm:p-8 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:p-10">
+                        <form action="{{ route('contact.store') }}" method="POST" class="flex flex-col gap-6">
+                            @csrf
+
+                            @if ($errors->contact->has('contact_rate_limit'))
+                                <div
+                                    role="alert"
+                                    class="rounded-panel border border-red-800/20 bg-red-50 px-4 py-3 text-sm text-red-900"
+                                >
+                                    {{ $errors->contact->first('contact_rate_limit') }}
+                                </div>
+                            @endif
+
+                            <x-honeypot name="website" class="absolute top-[-9999px] left-[-9999px]" />
+
+                            <div class="grid gap-5 sm:grid-cols-2">
+                                <div>
+                                    <x-form.input
+                                        id="name"
+                                        name="name"
+                                        label="Name"
+                                        label-class="mb-2 block text-sm font-semibold"
+                                        :value="$contactHasFeedback ? old('name') : ''"
+                                        :error="$errors->contact->first('name')"
+                                        error-id="name-error"
+                                        type="text"
+                                        placeholder="Your name"
+                                        autocomplete="name"
+                                        required
+                                        input-class="border-navy/20 bg-cream-dark/45 text-navy placeholder:text-navy/65 focus:border-purple focus:ring-purple min-h-12 w-full rounded-control border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
+                                    />
+                                </div>
+
+                                <div>
+                                    <x-form.input
+                                        id="email"
+                                        name="email"
+                                        label="Email"
+                                        label-class="mb-2 block text-sm font-semibold"
+                                        :value="$contactHasFeedback ? old('email') : ''"
+                                        :error="$errors->contact->first('email')"
+                                        error-id="email-error"
+                                        type="email"
+                                        placeholder="you@example.com"
+                                        autocomplete="email"
+                                        inputmode="email"
+                                        required
+                                        input-class="border-navy/20 bg-cream-dark/45 text-navy placeholder:text-navy/65 focus:border-purple focus:ring-purple min-h-12 w-full rounded-control border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="type" class="mb-2 block text-sm font-semibold">Topic</label>
+                                <select
+                                    id="type"
+                                    name="type"
+                                    required
+                                    @error('type', 'contact') aria-invalid="true" aria-describedby="type-error" @enderror
+                                    @if ($firstContactError === 'type') autofocus @endif
+                                    class="border-navy/20 bg-cream-dark/45 text-navy focus:border-purple focus:ring-purple rounded-control min-h-12 w-full border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
+                                >
+                                    <option value="">Choose a topic...</option>
+                                    @foreach (\App\Enums\ContactType::cases() as $type)
+                                        <option
+                                            value="{{ $type->value }}"
+                                            @selected($contactHasFeedback && old('type') === $type->value)
+                                        >
+                                            {{ $type->contactFormLabel() }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <x-form.error id="type-error" :message="$errors->contact->first('type')" />
+                            </div>
+
+                            <div>
+                                <label for="message" class="mb-2 block text-sm font-semibold">Message</label>
+                                <textarea
+                                    id="message"
+                                    name="message"
+                                    required
+                                    rows="7"
+                                    placeholder="What's on your mind?"
+                                    @error('message', 'contact') aria-invalid="true" aria-describedby="message-error" @enderror
+                                    @if ($firstContactError === 'message') autofocus @endif
+                                    class="border-navy/20 bg-cream-dark/45 text-navy placeholder:text-navy/65 focus:border-purple focus:ring-purple rounded-panel min-h-44 w-full resize-y border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
+                                >{{ $contactHasFeedback ? old('message') : '' }}</textarea>
+                                <x-form.error id="message-error" :message="$errors->contact->first('message')" />
+                            </div>
+
+                            <div>
+                                @if (config('services.turnstile.site_key'))
+                                    <x-turnstile :action="config('services.turnstile.contact_action')" theme="light" />
+                                @else
+                                    <p role="alert" class="text-sm text-red-800">
+                                        Contact verification is temporarily unavailable. Please try again later.
+                                    </p>
+                                @endif
+                                <x-form.error
+                                    id="turnstile-error"
+                                    :message="$errors->contact->first('cf-turnstile-response')"
+                                />
+                            </div>
+
+                            <button
+                                type="submit"
+                                class="bg-gold hover:bg-gold-light focus-visible:outline-purple rounded-control min-h-12 w-full px-6 py-3 text-base font-semibold transition-[background-color,transform] focus-visible:outline-2 focus-visible:outline-offset-4 active:translate-y-px sm:w-fit sm:min-w-44"
+                            >
+                                Send message
+                            </button>
+                        </form>
+                    </div>
+                @else
+                    <div class="dispatch-letter-form rounded-panel bg-white p-6 shadow-[0_1.75rem_4rem_rgb(26_16_64/0.12)] sm:p-10 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:p-12">
+                        <h2 class="font-heading max-w-[15ch] text-3xl/[1.15] [font-weight:640] tracking-[-0.02em] text-balance">
+                            Email us directly.
+                        </h2>
+                        <p class="text-navy/70 mt-6 max-w-[54ch] text-base/7 text-pretty">
+                            The secure form is unavailable right now, but your message can still reach Jeffrey and
+                            Cassie.
+                        </p>
+                        <a
+                            href="mailto:{{ $contactEmail }}"
+                            class="bg-gold hover:bg-gold-light focus-visible:outline-purple rounded-control mt-8 inline-flex min-h-12 max-w-full items-center px-5 py-3 font-semibold wrap-anywhere transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 sm:px-6"
+                        >{{ $contactEmail }}</a>
+                    </div>
+                @endif
+
+                <div class="lg:col-start-1 lg:row-start-2">
+                    <ul class="border-navy/15 divide-navy/15 divide-y border-y" aria-label="Suggested contact topics">
                         <li class="py-4">Park accessibility experiences</li>
                         <li class="py-4">Disney trip planning questions</li>
                         <li class="py-4">Podcast guest ideas</li>
@@ -94,135 +223,6 @@
                         </p>
                     @endif
                 </div>
-
-                @if ($contactFormAvailable)
-                    <div class="dispatch-letter-form rounded-xl bg-white p-5 shadow-[0_1.75rem_4rem_rgb(26_16_64/0.12)] sm:p-8 lg:p-10">
-                        <form action="{{ route('contact.store') }}" method="POST" class="flex flex-col gap-6">
-                            @csrf
-
-                            @if ($errors->contact->has('contact_rate_limit'))
-                                <div
-                                    role="alert"
-                                    class="rounded-xl border border-red-800/20 bg-red-50 px-4 py-3 text-sm text-red-900"
-                                >
-                                    {{ $errors->contact->first('contact_rate_limit') }}
-                                </div>
-                            @endif
-
-                            <x-honeypot name="website" class="absolute top-[-9999px] left-[-9999px]" />
-
-                            <div class="grid gap-5 sm:grid-cols-2">
-                                <div>
-                                    <x-form.input
-                                        id="name"
-                                        name="name"
-                                        label="Name"
-                                        label-class="mb-2 block text-sm font-semibold"
-                                        :value="$contactHasFeedback ? old('name') : ''"
-                                        :error="$errors->contact->first('name')"
-                                        error-id="name-error"
-                                        type="text"
-                                        placeholder="Your name"
-                                        autocomplete="name"
-                                        required
-                                        input-class="border-navy/20 bg-cream-dark/45 text-navy placeholder:text-navy/65 focus:border-purple focus:ring-purple min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
-                                    />
-                                </div>
-
-                                <div>
-                                    <x-form.input
-                                        id="email"
-                                        name="email"
-                                        label="Email"
-                                        label-class="mb-2 block text-sm font-semibold"
-                                        :value="$contactHasFeedback ? old('email') : ''"
-                                        :error="$errors->contact->first('email')"
-                                        error-id="email-error"
-                                        type="email"
-                                        placeholder="you@example.com"
-                                        autocomplete="email"
-                                        inputmode="email"
-                                        required
-                                        input-class="border-navy/20 bg-cream-dark/45 text-navy placeholder:text-navy/65 focus:border-purple focus:ring-purple min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label for="type" class="mb-2 block text-sm font-semibold">Topic</label>
-                                <select
-                                    id="type"
-                                    name="type"
-                                    required
-                                    @error('type', 'contact') aria-invalid="true" aria-describedby="type-error" @enderror
-                                    @if ($firstContactError === 'type') autofocus @endif
-                                    class="border-navy/20 bg-cream-dark/45 text-navy focus:border-purple focus:ring-purple min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
-                                >
-                                    <option value="">Choose a topic...</option>
-                                    @foreach (\App\Enums\ContactType::cases() as $type)
-                                        <option
-                                            value="{{ $type->value }}"
-                                            @selected($contactHasFeedback && old('type') === $type->value)
-                                        >
-                                            {{ $type->contactFormLabel() }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <x-form.error id="type-error" :message="$errors->contact->first('type')" />
-                            </div>
-
-                            <div>
-                                <label for="message" class="mb-2 block text-sm font-semibold">Message</label>
-                                <textarea
-                                    id="message"
-                                    name="message"
-                                    required
-                                    rows="7"
-                                    placeholder="What's on your mind?"
-                                    @error('message', 'contact') aria-invalid="true" aria-describedby="message-error" @enderror
-                                    @if ($firstContactError === 'message') autofocus @endif
-                                    class="border-navy/20 bg-cream-dark/45 text-navy placeholder:text-navy/65 focus:border-purple focus:ring-purple min-h-44 w-full resize-y rounded-xl border px-4 py-3 text-base transition-colors focus:ring-2 focus:outline-none"
-                                >{{ $contactHasFeedback ? old('message') : '' }}</textarea>
-                                <x-form.error id="message-error" :message="$errors->contact->first('message')" />
-                            </div>
-
-                            <div>
-                                @if (config('services.turnstile.site_key'))
-                                    <x-turnstile :action="config('services.turnstile.contact_action')" theme="light" />
-                                @else
-                                    <p role="alert" class="text-sm text-red-800">
-                                        Contact verification is temporarily unavailable. Please try again later.
-                                    </p>
-                                @endif
-                                <x-form.error
-                                    id="turnstile-error"
-                                    :message="$errors->contact->first('cf-turnstile-response')"
-                                />
-                            </div>
-
-                            <button
-                                type="submit"
-                                class="bg-gold hover:bg-gold-light focus-visible:outline-purple min-h-12 w-full rounded-xl px-6 py-3 text-base font-semibold transition-[background-color,transform] focus-visible:outline-2 focus-visible:outline-offset-4 active:translate-y-px sm:w-fit sm:min-w-44"
-                            >
-                                Send message
-                            </button>
-                        </form>
-                    </div>
-                @else
-                    <div class="dispatch-letter-form rounded-xl bg-white p-6 shadow-[0_1.75rem_4rem_rgb(26_16_64/0.12)] sm:p-10 lg:p-12">
-                        <h2 class="font-heading max-w-[15ch] text-4xl/[1.1] [font-weight:640] tracking-[-0.025em] text-balance sm:text-5xl">
-                            Email us directly.
-                        </h2>
-                        <p class="text-navy/70 mt-6 max-w-[54ch] text-base/7 text-pretty">
-                            The secure form is unavailable right now, but your message can still reach Jeffrey and
-                            Cassie.
-                        </p>
-                        <a
-                            href="mailto:{{ $contactEmail }}"
-                            class="bg-gold hover:bg-gold-light focus-visible:outline-purple mt-8 inline-flex min-h-12 max-w-full items-center rounded-xl px-5 py-3 font-semibold break-all transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 sm:px-6"
-                        >{{ $contactEmail }}</a>
-                    </div>
-                @endif
             </section>
         @endif
     </div>

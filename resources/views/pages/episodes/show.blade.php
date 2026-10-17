@@ -1,3 +1,4 @@
+@use('App\Support\PlainText')
 <x-layouts.app
     :title="($episode->seo?->title ?: $episode->title).' | Mouse28'"
     :description="$episode->seo?->description ?: Str::limit($episode->description, 160)"
@@ -36,7 +37,7 @@
                     width="1200"
                     height="1200"
                     fetchpriority="high"
-                    class="aspect-square w-full rounded-xl object-cover"
+                    class="rounded-panel aspect-square w-full object-cover"
                 />
             </div>
 
@@ -44,18 +45,21 @@
                 <x-back-link href="{{ route('episodes.index') }}" label="All Episodes" />
 
                 <div class="text-cream/65 mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm" data-episode-meta>
-                    <span class="text-gold font-semibold">Episode {{ $episode->episode_number }}</span>
-                    @if ($episode->season_number)
-                        <span>Season {{ $episode->season_number }}</span>
-                    @endif
+                    <span class="text-gold font-semibold">
+                        @if ($episode->season_number)
+                            Season {{ $episode->season_number }}, episode {{ $episode->episode_number }}
+                        @else
+                            Episode {{ $episode->episode_number }}
+                        @endif
+                    </span>
                     @if ($episode->duration_seconds)
                         <span>{{ $duration }}</span>
                     @endif
-                    <x-display-date :date="$episode->published_at" fallback="Not scheduled" />
+                    <x-display-date :date="$episode->published_at" format="M j, Y" fallback="Not scheduled" />
                 </div>
 
                 <h1 class="font-heading mt-4 max-w-4xl text-4xl/tight [font-weight:680] tracking-[-0.03em] text-balance sm:text-5xl/tight lg:text-6xl/tight">
-                    {{ $episode->title }}
+                    {{ PlainText::keepDashWithPrecedingWord($episode->title) }}
                 </h1>
 
                 @if ($episode->description)
@@ -83,7 +87,7 @@
                     </div>
 
                     @if ($embedUrl)
-                        <div class="mt-3 overflow-hidden rounded-xl bg-white">
+                        <div class="rounded-panel mt-3 overflow-hidden bg-white">
                             <iframe
                                 src="{{ $embedUrl }}"
                                 title="Listen to {{ $episode->title }}"
@@ -97,9 +101,7 @@
 
                     <div @class(['mt-5', 'border-cream/15 border-t pt-5' => $embedUrl])>
                         @if ($embedUrl)
-                            <p class="text-cream/55 text-xs font-semibold tracking-[0.14em] uppercase">
-                                Listen elsewhere
-                            </p>
+                            <p class="text-cream/70 text-sm font-semibold">Listen elsewhere</p>
                         @endif
                         <nav
                             aria-label="Podcast listening options"
@@ -121,11 +123,7 @@
 
     <section class="dispatch-page-field bg-cream py-12 sm:py-16 lg:py-20">
         <div data-episode-layout="{{ $isSparseEpisode ? 'sparse' : 'rich' }}" class="mx-auto max-w-4xl px-4 sm:px-6">
-            <dl class="border-gold/35 grid gap-x-8 border-y py-6 sm:grid-cols-3">
-                <div class="flex min-h-12 items-center justify-between gap-4 sm:block">
-                    <dt class="text-navy/60 text-sm">Episode</dt>
-                    <dd class="text-navy font-semibold">{{ $episode->episode_number }}</dd>
-                </div>
+            <dl class="border-gold/35 grid gap-x-8 border-y py-6 sm:grid-cols-2">
                 @if ($episode->duration_seconds)
                     <div class="flex min-h-12 items-center justify-between gap-4 sm:block">
                         <dt class="text-navy/60 text-sm">Duration</dt>
@@ -179,9 +177,9 @@
                             @click="toggle"
                             :aria-expanded="expandedState"
                             aria-controls="episode-transcript"
-                            class="border-navy/15 text-purple hover:border-purple mt-5 min-h-12 w-full rounded-xl border px-5 py-3 text-center font-semibold transition-colors"
+                            class="border-navy/15 text-purple hover:border-purple rounded-control mt-5 min-h-12 w-full border px-5 py-3 text-center font-semibold transition-colors"
                         >
-                            <span x-text="buttonLabel">Read Full Transcript</span>
+                            <span x-text="buttonLabel">Read full transcript</span>
                         </button>
                     </div>
                 @else
@@ -202,7 +200,7 @@
                         x-on:click="copy"
                         class="text-purple inline-flex min-h-12 items-center underline underline-offset-8"
                     >
-                        <span x-show="isFeedbackHidden">Copy Link</span>
+                        <span x-show="isFeedbackHidden">Copy link</span>
                         <span
                             x-cloak
                             x-show="isFeedbackVisible"
@@ -230,7 +228,7 @@
                                 <a
                                     href="{{ route('blog.show', $post) }}"
                                     aria-label="Read {{ $post->title }}"
-                                    class="block overflow-hidden rounded-xl"
+                                    class="rounded-panel block overflow-hidden"
                                 >
                                     <x-post-artwork
                                         :post="$post"

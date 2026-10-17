@@ -172,7 +172,7 @@ test('episode transcript expands accessibly', function (): void {
     ]);
 
     visit(route('episodes.show', $episode))
-        ->click('Read Full Transcript')
+        ->click('Read full transcript')
         ->assertScript('document.querySelector("[aria-controls=episode-transcript]").ariaExpanded', 'true')
         ->assertNoAccessibilityIssues()
         ->assertNoJavaScriptErrors();

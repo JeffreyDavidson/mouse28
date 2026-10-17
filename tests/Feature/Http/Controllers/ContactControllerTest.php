@@ -458,3 +458,12 @@ test('the contact page lists enabled contact profiles using their label', functi
         ->assertSeeHtml('href="https://facebook.com/mouse28"')
         ->assertDontSee('disabled.example.com');
 });
+
+test('contact page places the form before the topic prompts', function (): void {
+    // Act
+    $response = get(route('contact.create'));
+
+    // Assert
+    $response->assertOk()
+        ->assertSeeInOrder(['What would you like to share?', 'Send message', 'Park accessibility experiences']);
+});

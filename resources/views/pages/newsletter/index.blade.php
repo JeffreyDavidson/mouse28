@@ -21,9 +21,9 @@
         FIRST VIEWPORT: A plain masthead with the promise and both ways to subscribe.
         FORM [seed: letter-archive]: One calm column of dated entries under a navy masthead.
     -->
-    <header class="bg-navy text-cream px-4 py-12 sm:px-6 sm:py-16 lg:py-20">
-        <div class="mx-auto max-w-[86rem]">
-            <p class="text-gold text-sm font-semibold tracking-wider uppercase">Newsletter</p>
+    <header class="bg-navy text-cream py-12 sm:py-16 lg:py-20">
+        <div class="mx-auto max-w-[86rem] px-4 sm:px-6">
+            <p class="text-gold font-semibold">Newsletter</p>
             <h1 class="font-heading mt-3 max-w-3xl text-4xl/tight [font-weight:680] tracking-[-0.03em] text-balance sm:text-5xl/tight lg:text-6xl/tight">
                 Letters from the Mouse28 family
             </h1>
@@ -75,7 +75,7 @@
                     >Read issue <span aria-hidden="true" class="ml-1">→</span></a>
                 </article>
             @empty
-                <div class="border-gold/40 mt-8 rounded-xl border border-dashed p-10 text-center">
+                <div class="border-gold/40 rounded-panel mt-8 border border-dashed p-10 text-center">
                     <h3 class="font-heading text-xl [font-weight:620]">No issues yet</h3>
                     <p class="text-navy/70 mt-2">New newsletter issues will appear here once they are published.</p>
                 </div>

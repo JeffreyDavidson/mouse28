@@ -1,3 +1,5 @@
+@use('App\Support\PlainText')
+
 @props([
     'post',
     'variant' => 'archive',
@@ -8,7 +10,7 @@
         <a
             href="{{ route('blog.show', $post) }}"
             aria-label="Read {{ $post->title }}"
-            class="block overflow-hidden rounded-xl"
+            class="rounded-panel block overflow-hidden"
         >
             <x-post-artwork
                 :post="$post"
@@ -18,7 +20,7 @@
         </a>
         <p class="text-purple mt-4 text-sm font-semibold">{{ $post->category_label }}</p>
         <h3 class="font-heading text-navy group-hover:text-purple mt-1 text-2xl [font-weight:600] tracking-[-0.015em] transition-colors">
-            <a href="{{ route('blog.show', $post) }}">{{ $post->title }}</a>
+            <a href="{{ route('blog.show', $post) }}">{{ PlainText::keepDashWithPrecedingWord($post->title) }}</a>
         </h3>
         <p class="text-navy/60 mt-2 text-sm">{{ $post->reading_time }} min read</p>
     </article>
@@ -27,7 +29,7 @@
         <a
             href="{{ route('blog.show', $post) }}"
             aria-label="Read {{ $post->title }}"
-            class="block overflow-hidden rounded-xl"
+            class="rounded-panel block overflow-hidden"
         >
             <x-post-artwork
                 :post="$post"
@@ -42,11 +44,11 @@
                 <span class="text-navy/60">{{ $post->reading_time }} min read</span>
             </div>
             <h3 class="font-heading text-navy group-hover:text-purple mt-2 text-2xl [font-weight:600] tracking-[-0.015em] text-balance transition-colors sm:text-3xl">
-                <a href="{{ route('blog.show', $post) }}">{{ $post->title }}</a>
+                <a href="{{ route('blog.show', $post) }}">{{ PlainText::keepDashWithPrecedingWord($post->title) }}</a>
             </h3>
             @if ($post->excerpt)
                 <p class="text-navy/70 mt-3 max-w-[58ch] text-base/7 text-pretty">
-                    {{ Str::limit($post->excerpt, 180) }}
+                    {{ Str::limit($post->excerpt, 180, '…', preserveWords: true) }}
                 </p>
             @endif
             <p class="text-navy/60 mt-4 text-sm">By {{ $post->author_name }}</p>
