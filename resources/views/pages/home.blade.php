@@ -70,9 +70,12 @@
             </div>
         </section>
 
-        <section class="dispatch-blog-cluster relative z-10 px-4 pb-5 sm:px-6" data-dispatch-reveal="story-folio">
+        <section
+            class="dispatch-blog-cluster relative z-10 px-4 pb-5 sm:px-6 2xl:pb-12"
+            data-dispatch-reveal="story-folio"
+        >
             <div class="mx-auto grid max-w-[86rem] items-start 2xl:grid-cols-[8fr_12fr]">
-                <div class="relative z-20 mx-auto mt-2 w-full max-w-lg 2xl:mx-0 2xl:mt-0 2xl:w-[82%] 2xl:max-w-none 2xl:translate-x-20 2xl:-translate-y-8 2xl:-rotate-2">
+                <div class="relative z-20 mx-auto mt-2 w-full max-w-lg 2xl:mx-0 2xl:mt-0 2xl:w-[82%] 2xl:max-w-none 2xl:translate-x-20 2xl:-rotate-2">
                     <span class="sr-only">Latest from the Blog</span>
                     @if ($featuredPost)
                         <a
