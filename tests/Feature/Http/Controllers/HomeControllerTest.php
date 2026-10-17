@@ -233,7 +233,7 @@ test('homepage hero picture keeps its WebP fallback and layout sizes', function 
 
     $xpath = new XPath(HTMLDocument::createFromString($this->responseContent($response), LIBXML_NOERROR));
     $picture = '//*[contains(@class, "hero-split-photo")]/*[local-name()="picture"]';
-    $sizes = '(min-width: 768px) 60vw, (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)';
+    $sizes = '(min-width: 1280px) 60vw, (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)';
     $alt = "Jeffrey and Cassie Davidson on Kilimanjaro Safaris at Disney's Animal Kingdom";
 
     expect($xpath->query("{$picture}/*[local-name()=\"source\"][@sizes=\"{$sizes}\"]"))->toHaveCount(2)
@@ -326,6 +326,45 @@ test('homepage turns an empty guide shelf into useful planning stories', functio
         ->assertSeeHtml('data-post-artwork-fallback')
         ->assertDontSee('Browse all guides')
         ->assertDontSee($draftPlanningPost->title);
+});
+
+test('the featured story offers its excerpt, date and a read link under the full title', function (): void {
+    // Arrange
+    Post::factory()->create([
+        'title' => 'Five quiet places to reset at Animal Kingdom',
+        'excerpt' => 'Shaded paths and low-noise benches we use when the day gets loud.',
+        'published_at' => '2026-10-16 12:00:00',
+    ]);
+
+    // Act
+    $response = get(route('home'));
+
+    // Assert
+    $response->assertOk()
+        ->assertSeeHtml('aria-label="Read Five quiet places to reset at Animal Kingdom"')
+        ->assertSeeInOrder([
+            'Featured story',
+            'Five quiet places to reset at Animal Kingdom',
+            'Shaded paths and low-noise benches we use when the day gets loud.',
+            'Oct 16, 2026',
+            'Read the story',
+        ]);
+});
+
+test('the featured story leaves out the excerpt line when the post has none', function (): void {
+    // Arrange
+    Post::factory()->create([
+        'title' => 'Five quiet places to reset at Animal Kingdom',
+        'excerpt' => null,
+    ]);
+
+    // Act
+    $response = get(route('home'));
+
+    // Assert
+    $response->assertOk()
+        ->assertSee('Read the story')
+        ->assertDontSeeHtml('md:line-clamp-3');
 });
 
 test('homepage defers the below-fold featured post image', function (): void {

@@ -30,7 +30,7 @@ class HomeViewModel
     public function data(): array
     {
         $posts = Post::published()
-            ->select(['id', 'slug', 'title', 'category_id', 'featured_image_path', 'published_at'])
+            ->select(['id', 'slug', 'title', 'excerpt', 'category_id', 'featured_image_path', 'published_at'])
             ->with('category:id,name,slug')
             ->newestFirst()
             ->take(4)

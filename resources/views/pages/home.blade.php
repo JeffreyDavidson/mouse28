@@ -13,7 +13,7 @@
             as="image"
             type="image/avif"
             imagesrcset="/images/hero-family-640.avif 640w, /images/hero-family-768.avif 768w, /images/hero-family-1024.avif 1024w, /images/hero-family-1600.avif 1600w"
-            imagesizes="(min-width: 768px) 60vw, (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
+            imagesizes="(min-width: 1280px) 60vw, (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
             fetchpriority="high"
         />
     @endpush
@@ -24,39 +24,41 @@
                 <div class="dispatch-route-line absolute top-10 left-[4%] h-24 w-52 rotate-6"></div>
                 <div class="dispatch-route-line absolute right-[3%] bottom-4 h-28 w-64 -rotate-8"></div>
             </div>
-            <div class="relative mx-auto grid max-w-[86rem] gap-4 md:grid-cols-[8fr_12fr] md:items-stretch">
+            <div class="relative mx-auto grid max-w-[86rem] gap-4 xl:grid-cols-[8fr_12fr] xl:items-stretch">
                 <div
-                    class="dispatch-paper dispatch-paper-map relative z-10 flex flex-col justify-center overflow-hidden p-7 sm:p-10 md:-rotate-1 md:p-9 lg:px-20 lg:py-12"
+                    class="dispatch-paper dispatch-paper-map relative z-10 flex flex-col justify-center overflow-hidden p-7 sm:p-10 md:-rotate-1 md:p-9 lg:grid lg:grid-cols-2 lg:items-center lg:gap-x-12 lg:px-12 lg:py-12 xl:flex 2xl:px-20"
                     data-dispatch-motion="hero-paper"
                 >
                     <h1 class="font-heading text-navy max-w-[13ch] text-4xl [font-weight:680] tracking-[-0.025em] text-balance sm:text-5xl lg:text-6xl xl:text-[3.5rem]">
                         Disney Parks Through Different Eyes
                     </h1>
-                    <div class="text-gold my-5 flex items-center gap-3" aria-hidden="true">
-                        <span class="h-px w-16 bg-current"></span><span class="font-heading text-2xl">✦</span
-                        ><span class="h-px w-16 bg-current"></span>
-                    </div>
-                    <p class="text-navy/75 max-w-[42ch] text-base/7 text-pretty sm:text-[0.9375rem]/6">
-                        Accessibility tips, sensory-friendly park planning, and honest family experiences from Jeffrey
-                        and Cassie Davidson.
-                    </p>
-                    <div class="mt-6 flex flex-wrap items-center gap-4">
-                        <a
-                            href="{{ route('blog.index') }}"
-                            class="dispatch-button bg-gold text-navy hover:bg-gold-light inline-flex min-h-12 items-center justify-center px-6 py-3 text-base font-semibold sm:text-sm"
-                        >Read the Blog</a>
-                        <a
-                            href="{{ route('episodes.index') }}"
-                            class="text-purple decoration-gold/70 hover:text-navy inline-flex min-h-12 items-center text-base font-semibold underline underline-offset-8 transition-colors sm:text-sm"
-                        >Listen to the podcast</a>
+                    <div>
+                        <div class="text-gold my-5 flex items-center gap-3" aria-hidden="true">
+                            <span class="h-px w-16 bg-current"></span><span class="font-heading text-2xl">✦</span
+                            ><span class="h-px w-16 bg-current"></span>
+                        </div>
+                        <p class="text-navy/75 max-w-[42ch] text-base/7 text-pretty sm:text-[0.9375rem]/6">
+                            Accessibility tips, sensory-friendly park planning, and honest family experiences from
+                            Jeffrey and Cassie Davidson.
+                        </p>
+                        <div class="mt-6 flex flex-wrap items-center gap-4">
+                            <a
+                                href="{{ route('blog.index') }}"
+                                class="dispatch-button bg-gold text-navy hover:bg-gold-light inline-flex min-h-12 items-center justify-center px-6 py-3 text-base font-semibold sm:text-sm"
+                            >Read the Blog</a>
+                            <a
+                                href="{{ route('episodes.index') }}"
+                                class="text-purple decoration-gold/70 hover:text-navy inline-flex min-h-12 items-center text-base font-semibold underline underline-offset-8 transition-colors sm:text-sm"
+                            >Listen to the podcast</a>
+                        </div>
                     </div>
                 </div>
                 <div
-                    class="hero-split-photo dispatch-photo-frame min-h-80 sm:min-h-96 md:min-h-0 md:rotate-1"
+                    class="hero-split-photo dispatch-photo-frame min-h-80 sm:min-h-96 md:aspect-video md:min-h-0 md:rotate-1 xl:aspect-auto"
                     data-dispatch-motion="hero-photo"
                 >
                     <x-hero-picture
-                        sizes="(min-width: 768px) 60vw, (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
+                        sizes="(min-width: 1280px) 60vw, (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
                         src="/images/hero-family.webp"
                         alt="Jeffrey and Cassie Davidson on Kilimanjaro Safaris at Disney's Animal Kingdom"
                         width="1600"
@@ -75,36 +77,45 @@
             data-dispatch-reveal="story-folio"
         >
             <div class="mx-auto grid max-w-[86rem] items-start 2xl:grid-cols-[8fr_12fr]">
-                <div class="relative z-20 mx-auto mt-2 w-full max-w-lg 2xl:mx-0 2xl:mt-0 2xl:w-[82%] 2xl:max-w-none 2xl:translate-x-20 2xl:-rotate-2">
+                <div class="relative z-20 mx-auto mt-2 w-full max-w-lg md:max-w-none 2xl:mx-0 2xl:mt-0 2xl:w-[82%] 2xl:max-w-none 2xl:translate-x-20 2xl:-rotate-2">
                     <span class="sr-only">Latest from the Blog</span>
                     @if ($featuredPost)
                         <a
                             href="{{ route('blog.show', $featuredPost) }}"
                             aria-label="Read {{ $featuredPost->title }}"
-                            class="dispatch-feature-book group block"
+                            class="dispatch-feature-book group block md:grid md:grid-cols-[minmax(0,11fr)_minmax(0,9fr)] md:items-center md:gap-4 xl:grid-cols-2 2xl:block"
                         >
-                            <div class="dispatch-book-title">
+                            <div class="dispatch-book-title md:order-2 md:text-left lg:px-8 2xl:order-none 2xl:px-[1.1rem] 2xl:text-center">
                                 <p class="text-purple text-base font-semibold sm:text-sm">Featured story</p>
-                                <p class="font-heading text-navy mt-2 text-2xl [font-weight:620] tracking-[-0.02em] text-balance wrap-anywhere lg:text-3xl">
+                                <p class="font-heading text-navy mt-2 text-2xl [font-weight:620] tracking-[-0.02em] text-balance wrap-anywhere md:line-clamp-4 lg:text-3xl xl:text-4xl 2xl:line-clamp-none 2xl:text-3xl">
                                     {{ $featuredPost->title }}
                                 </p>
+                                @if ($featuredPost->excerpt)
+                                    <p class="text-navy/75 mt-4 hidden max-w-[46ch] text-base/7 text-pretty md:line-clamp-3 lg:line-clamp-4 2xl:hidden">
+                                        {{ $featuredPost->excerpt }}
+                                    </p>
+                                @endif
+                                <p class="text-navy/65 mt-4 hidden text-sm tabular-nums md:block 2xl:hidden">
+                                    <x-display-date :date="$featuredPost->published_at" format="M j, Y" />
+                                </p>
+                                <span class="text-purple decoration-gold/70 group-hover:text-navy mt-2 hidden min-h-12 items-center text-base font-semibold underline underline-offset-8 transition-colors md:inline-flex 2xl:hidden">Read the story</span>
                             </div>
                             <div class="overflow-hidden rounded-lg">
                                 <x-post-artwork
                                     :post="$featuredPost"
-                                    class="aspect-[5/4] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100 md:aspect-square"
+                                    class="aspect-[5/4] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100 md:aspect-[4/3] xl:aspect-[3/2] 2xl:aspect-square"
                                 />
                             </div>
                         </a>
                     @else
-                        <div class="dispatch-feature-book">
-                            <div class="dispatch-book-title">
+                        <div class="dispatch-feature-book md:grid md:grid-cols-[minmax(0,11fr)_minmax(0,9fr)] md:items-center md:gap-4 xl:grid-cols-2 2xl:block">
+                            <div class="dispatch-book-title md:order-2 md:text-left lg:px-8 2xl:order-none 2xl:px-[1.1rem] 2xl:text-center">
                                 <p class="text-purple text-base font-semibold sm:text-sm">From the blog</p>
                                 <p class="font-heading text-navy mt-2 text-3xl [font-weight:620] tracking-[-0.02em] text-balance">
                                     Our first dispatch is being prepared.
                                 </p>
                             </div>
-                            <div class="from-purple/15 to-gold/25 text-navy flex aspect-[5/4] flex-col items-center justify-center rounded-lg bg-linear-to-br p-8 text-center md:aspect-square">
+                            <div class="from-purple/15 to-gold/25 text-navy flex aspect-[5/4] flex-col items-center justify-center rounded-lg bg-linear-to-br p-8 text-center md:aspect-[4/3] xl:aspect-[3/2] 2xl:aspect-square">
                                 <span class="font-heading text-4xl [font-weight:680] tracking-[-0.03em]">Mouse28</span>
                                 <a
                                     href="{{ route('blog.index') }}"
