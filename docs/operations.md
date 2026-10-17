@@ -6,7 +6,7 @@ Mouse28 is hosted on Laravel Forge. Use a separate staging site for deployment v
 
 1. Confirm the target commit or tag and review its migrations and storage changes.
 2. Confirm the staging or production environment uses persistent database and public-media paths.
-3. Create and independently verify a database backup and an uploaded-media backup.
+3. Create and independently verify an uploaded-media backup. The production deploy script takes and integrity-checks a database backup by itself when the release has pending migrations (in `shared/pre-deploy-backups/`, newest three kept), and stops before migrating if that fails. Take and verify one by hand as well for any risky data change.
 4. Load the target environment and run `php artisan app:verify-deployment`.
 5. Stop when the preflight command reports any failure.
 
@@ -223,8 +223,10 @@ server.
 ### Installed production deploy script (site 3064716)
 
 Production's script predates the pipeline. The pins, the checkout block and the
-marker block were added to it, and the asset build was moved ahead of the
-migration; every other line is the original.
+marker block were added to it, the asset build was moved ahead of the
+migration, and the pre-migration backup block was added (2026-10-17); every
+other line is the original. After changing it here, paste the new script into
+Forge (production site → Deployments).
 
 ```bash
 set -e
@@ -266,6 +268,25 @@ npm run build
 $FORGE_PHP artisan optimize
 $FORGE_PHP artisan app:verify-production --no-interaction
 $FORGE_PHP artisan storage:link --force
+
+# Releases with pending migrations need a fresh, integrity-checked database backup first.
+# Any failure here stops the deploy before the schema changes; the previous release keeps serving.
+if ! $FORGE_PHP artisan migrate:status --pending --no-ansi | grep -q "No pending migrations"; then
+    MOUSE28_DATABASE=$($FORGE_PHP -r 'echo (require "bootstrap/cache/config.php")["database"]["connections"]["sqlite"]["database"];')
+    test -f "$MOUSE28_DATABASE"
+    MOUSE28_BACKUP_DIR="$(dirname "$MOUSE28_DATABASE")/pre-deploy-backups"
+    mkdir -p "$MOUSE28_BACKUP_DIR"
+    chmod 700 "$MOUSE28_BACKUP_DIR"
+    MOUSE28_BACKUP="$MOUSE28_BACKUP_DIR/$(date -u +%Y%m%dT%H%M%SZ)-${FORGE_VAR_REVISION:0:12}.sqlite"
+    sqlite3 "$MOUSE28_DATABASE" ".backup '$MOUSE28_BACKUP'"
+    MOUSE28_BACKUP_INTEGRITY=$(sqlite3 "$MOUSE28_BACKUP" "PRAGMA integrity_check;")
+    test "$MOUSE28_BACKUP_INTEGRITY" = ok
+    chmod 600 "$MOUSE28_BACKUP"
+    echo "Pre-migration backup verified: $MOUSE28_BACKUP"
+    # Keep the three newest pre-deploy backups.
+    ls -1t "$MOUSE28_BACKUP_DIR"/*.sqlite | tail -n +4 | xargs -r rm -f
+fi
+
 # Migrate last: once the schema has changed, nothing may stop the release from activating.
 $FORGE_PHP artisan migrate --force
 
