@@ -47,7 +47,7 @@
                         @if ($pendingLabel)
                             x-bind:disabled="confirming"
                         @endif
-                        class="bg-gold hover:bg-gold-light focus-visible:outline-purple inline-flex min-h-12 items-center rounded-full px-6 py-3 font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 disabled:cursor-wait disabled:opacity-70"
+                        class="bg-gold hover:bg-gold-light focus-visible:outline-purple rounded-control inline-flex min-h-12 items-center px-6 py-3 font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-4 disabled:cursor-wait disabled:opacity-70"
                     >
                         {{ $buttonLabel }}
                     </button>

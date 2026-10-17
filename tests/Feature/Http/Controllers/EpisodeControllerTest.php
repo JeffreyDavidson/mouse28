@@ -228,15 +228,18 @@ test('podcast pages describe episodes without audio as details instead of playab
         ->assertDontSee('Transcript coming soon');
 });
 
-test('podcast index identifies episodes with a Transistor player as playable', function (): void {
+test('podcast index offers a playable newest episode to listen to and labels archive rows as episode details', function (): void {
+    // Arrange
     Episode::factory()->create([
         'transistor_url' => 'https://share.transistor.fm/s/428d650c',
     ]);
 
-    get(route('episodes.index'))
-        ->assertOk()
-        ->assertSee('Listen now')
-        ->assertDontSee('Episode details');
+    // Act
+    $response = get(route('episodes.index'));
+
+    // Assert
+    $response->assertOk()
+        ->assertSeeInOrder(['Listen now', 'Episode archive', 'Episode details']);
 });
 
 test('only currently published content is publicly visible', function (): void {
@@ -429,13 +432,13 @@ test('episode pages show an evening publish date on its Eastern day', function (
 
     get(route('episodes.index'))
         ->assertOk()
-        ->assertSee('October 5, 2026')
-        ->assertDontSee('October 6, 2026');
+        ->assertSee('Oct 5, 2026')
+        ->assertDontSee('Oct 6, 2026');
 
     get(route('episodes.show', $episode))
         ->assertOk()
-        ->assertSee('October 5, 2026')
-        ->assertDontSee('October 6, 2026');
+        ->assertSee('Oct 5, 2026')
+        ->assertDontSee('Oct 6, 2026');
 });
 
 test('the last episode archive page renders', function (): void {
@@ -502,4 +505,45 @@ test('episode share links point to the public episode address', function (): voi
         ->assertSeeHtml("https://twitter.com/intent/tweet?url={$publicUrl}&text=Sample+share+title+%7C+Mouse28+Podcast\"")
         ->assertSeeHtml("https://www.facebook.com/sharer/sharer.php?u={$publicUrl}\"")
         ->assertSeeInOrder(['Post on X', 'Share on Facebook']);
+});
+
+test('episode pages name the season and episode once', function (): void {
+    // Arrange
+    $episode = Episode::factory()->create([
+        'episode_number' => 28,
+        'season_number' => 2,
+    ]);
+
+    // Act
+    $response = get(route('episodes.show', $episode));
+
+    // Assert
+    $response->assertOk()
+        ->assertSeeText('Season 2, episode 28')
+        ->assertDontSeeHtml('>Episode</dt>');
+});
+
+test('an empty podcast page leaves out the episode archive and points subscribers to the newsletter when only the feed exists', function (): void {
+    // Act
+    $response = get(route('episodes.index'));
+
+    // Assert
+    $response->assertOk()
+        ->assertDontSee('Episode archive')
+        ->assertSeeHtml('href="#newsletter"');
+});
+
+test('episode titles keep a spaced dash with the word before it', function (): void {
+    // Arrange
+    $episode = Episode::factory()->create(['title' => 'Calm park day — what helps']);
+
+    // Act
+    $indexResponse = get(route('episodes.index'));
+    $showResponse = get(route('episodes.show', $episode));
+
+    // Assert
+    $indexResponse->assertOk()
+        ->assertSeeHtml("Calm park day\u{00A0}— what helps");
+    $showResponse->assertOk()
+        ->assertSeeHtml("Calm park day\u{00A0}— what helps");
 });

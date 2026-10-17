@@ -72,7 +72,7 @@ final class SearchQuery
             ),
             SearchContentType::Episodes => $this->paginate(
                 Episode::published()
-                    ->select(['slug', 'episode_number', 'title', 'description'])
+                    ->select(['slug', 'episode_number', 'season_number', 'title', 'description'])
                     ->tap(fn (Builder $episodesQuery) => TextSearch::constrain($episodesQuery, ['title', 'description', 'show_notes', 'transcript'], $query))
                     ->newestFirst(),
                 'episodesPage',

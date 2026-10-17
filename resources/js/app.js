@@ -154,7 +154,7 @@ function registerAlpineComponents(Alpine) {
         },
 
         get buttonLabel() {
-            return this.expanded ? 'Collapse Transcript' : 'Read Full Transcript';
+            return this.expanded ? 'Collapse transcript' : 'Read full transcript';
         },
     }));
 }

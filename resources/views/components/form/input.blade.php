@@ -7,7 +7,7 @@
     'error' => null,
     'errorId' => null,
     'errorClass' => null,
-    'inputClass' => 'min-h-12 w-full rounded-xl border px-4 py-3 text-base transition-colors focus:ring-purple focus:ring-2 focus:outline-none',
+    'inputClass' => 'min-h-12 w-full rounded-control border px-4 py-3 text-base transition-colors focus:ring-purple focus:ring-2 focus:outline-none',
     'labelClass' => 'sr-only',
 ])
 

@@ -1,3 +1,4 @@
+@use('App\Support\PlainText')
 @inject('markdown', 'JeffreyDavidson\CreatorKit\Support\Markdown\MarkdownRenderer')
 <x-layouts.app
     :title="($post->seo?->title ?: $post->title).' | Mouse28'"
@@ -48,7 +49,7 @@
                 </div>
 
                 <h1 class="font-heading mt-4 max-w-4xl text-4xl/tight [font-weight:680] tracking-[-0.03em] text-balance sm:text-5xl/tight lg:text-6xl/tight">
-                    {{ $post->title }}
+                    {{ PlainText::keepDashWithPrecedingWord($post->title) }}
                 </h1>
 
                 @if ($post->excerpt)
@@ -60,10 +61,7 @@
                         <span class="border-gold/30 text-gold font-heading inline-flex size-12 items-center justify-center rounded-full border text-sm font-semibold">
                             {{ $post->author_initials }}
                         </span>
-                        <span>
-                            <span class="block text-sm font-semibold" data-byline>{{ $post->author_name }}</span>
-                            <span class="text-cream/55 block text-xs">Mouse28</span>
-                        </span>
+                        <span class="text-sm font-semibold" data-byline>{{ $post->author_name }}</span>
                     </div>
                     <div class="flex items-center gap-2" data-print-hidden>
                         <x-share-links :url="route('blog.show', $post)" :text="$post->title" variant="icon" />
@@ -89,7 +87,7 @@
                 </div>
             </div>
 
-            <div class="editorial-detail-artwork overflow-hidden rounded-xl">
+            <div class="editorial-detail-artwork rounded-panel overflow-hidden">
                 <x-post-artwork
                     :post="$post"
                     :priority="true"
@@ -146,7 +144,7 @@
             </section>
 
             @foreach ($post->episodes as $episode)
-                <aside class="bg-navy text-cream mt-12 rounded-xl px-6 py-7 sm:px-8" data-print-hidden>
+                <aside class="bg-navy text-cream rounded-panel mt-12 px-6 py-7 sm:px-8" data-print-hidden>
                     <h2 class="font-heading text-2xl [font-weight:620]">{{ $episode->title }}</h2>
                     <p class="text-cream/65 mt-2 text-sm/6">Hear the conversation behind this story.</p>
                     <a

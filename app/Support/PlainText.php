@@ -18,4 +18,13 @@ class PlainText
 
         return Str::squish(html_entity_decode(strip_tags($html), ENT_QUOTES | ENT_HTML5));
     }
+
+    /**
+     * Join a spaced dash to the word before it with a non-breaking space, so a
+     * wrapping title never starts a line with the dash. For display only.
+     */
+    public static function keepDashWithPrecedingWord(string $text): string
+    {
+        return preg_replace('/\s+([—–])(?=\s)/u', "\u{00A0}$1", $text) ?? $text;
+    }
 }

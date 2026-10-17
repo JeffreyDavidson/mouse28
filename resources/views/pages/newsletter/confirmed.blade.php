@@ -20,13 +20,13 @@
                 <div class="mt-10 flex flex-wrap gap-3">
                     <a
                         href="{{ route('blog.index') }}"
-                        class="bg-gold hover:bg-gold-light focus-visible:outline-purple inline-flex min-h-12 items-center rounded-full px-6 py-3 font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
+                        class="bg-gold hover:bg-gold-light focus-visible:outline-purple rounded-control inline-flex min-h-12 items-center px-6 py-3 font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
                     >
                         Read the blog
                     </a>
                     <a
                         href="{{ route('home') }}"
-                        class="border-navy/20 hover:border-navy/40 focus-visible:outline-purple inline-flex min-h-12 items-center rounded-full border px-6 py-3 font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
+                        class="border-navy/20 hover:border-navy/40 focus-visible:outline-purple rounded-control inline-flex min-h-12 items-center border px-6 py-3 font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
                     >
                         Back to home
                     </a>

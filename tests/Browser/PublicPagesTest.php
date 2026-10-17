@@ -303,7 +303,7 @@ test('keyboard users can skip directly to the main content', function (): void {
         ->keys(':focus', 'Enter')
         ->assertScript('document.activeElement.id', 'main-content')
         ->keys(':focus', $this->tabKey())
-        ->assertScript('document.activeElement.textContent.trim()', 'Read the Blog')
+        ->assertScript('document.activeElement.textContent.trim()', 'Read the blog')
         ->assertNoJavaScriptErrors();
 })->group('browser-smoke', 'browser-compatibility');
 
@@ -348,7 +348,7 @@ test('search and transcript controls work from the keyboard', function (): void 
     visit(route('episodes.show', $episode))
         ->keys('[aria-controls="episode-transcript"]', 'Space')
         ->assertScript('document.querySelector("[aria-controls=episode-transcript]").ariaExpanded', 'true')
-        ->assertSee('Collapse Transcript')
+        ->assertSee('Collapse transcript')
         ->assertNoJavaScriptErrors();
 
 });
@@ -412,9 +412,9 @@ test('mobile search and transcript controls remain usable', function (): void {
         ->on()
         ->mobile()
         ->resize(320, 812)
-        ->click('Read Full Transcript')
+        ->click('Read full transcript')
         ->assertScript('document.querySelector("[aria-controls=episode-transcript]").ariaExpanded', 'true')
-        ->assertSee('Collapse Transcript')
+        ->assertSee('Collapse transcript')
         ->assertNoJavaScriptErrors();
 })->group('browser-smoke', 'browser-compatibility');
 

@@ -600,3 +600,22 @@ test('blog share links point to the public post address', function (): void {
         ->assertSeeHtml('aria-label="Share on Facebook (opens in a new tab)"')
         ->assertSeeInOrder(['Post on X', 'Share on Facebook']);
 });
+
+test('post titles keep a spaced dash with the word before it', function (): void {
+    // Arrange
+    Post::factory()->create([
+        'title' => 'Older ride — why we went back',
+        'published_at' => now()->subDays(2),
+    ]);
+    $post = Post::factory()->create(['title' => 'Newer ride — the calm one']);
+
+    // Act
+    $indexResponse = get(route('blog.index'));
+    $showResponse = get(route('blog.show', $post));
+
+    // Assert
+    $indexResponse->assertOk()
+        ->assertSeeHtml("Older ride\u{00A0}— why we went back");
+    $showResponse->assertOk()
+        ->assertSeeHtml("Newer ride\u{00A0}— the calm one");
+});

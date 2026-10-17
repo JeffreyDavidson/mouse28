@@ -34,7 +34,7 @@
                             width="960"
                             height="640"
                             @if ($loop->first) fetchpriority="high" @endif
-                            class="aspect-[16/10] w-full rounded-xl object-cover"
+                            class="rounded-panel aspect-[16/10] w-full object-cover"
                         />
                     @endforeach
                 </div>

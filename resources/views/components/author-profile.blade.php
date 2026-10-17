@@ -8,7 +8,7 @@
         height="2048"
         loading="lazy"
         decoding="async"
-        class="aspect-[5/4] w-full rounded-xl object-cover object-center shadow-[0_1.5rem_3.5rem_rgb(26_16_64/0.14)]"
+        class="rounded-panel aspect-[5/4] w-full object-cover object-center shadow-[0_1.5rem_3.5rem_rgb(26_16_64/0.14)]"
     />
     <h3 class="font-heading text-navy mt-8 text-4xl [font-weight:620] tracking-[-0.02em]">{{ $name }}</h3>
     <p class="text-purple mt-2 font-semibold">{{ $role }}</p>

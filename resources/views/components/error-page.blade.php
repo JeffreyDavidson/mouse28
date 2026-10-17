@@ -13,11 +13,11 @@
         <div class="flex flex-wrap gap-3">
             <a
                 href="{{ $recovery['url'] }}"
-                class="bg-gold text-navy hover:bg-gold-light inline-flex min-h-12 items-center rounded-full px-6 py-3 font-semibold transition-colors"
+                class="bg-gold text-navy hover:bg-gold-light rounded-control inline-flex min-h-12 items-center px-6 py-3 font-semibold transition-colors"
             >{{ $recovery['label'] }}</a>
             <a
                 href="{{ route('home') }}"
-                class="dispatch-error-secondary inline-flex min-h-12 items-center rounded-full px-6 py-3 font-semibold transition-colors"
+                class="dispatch-error-secondary rounded-control inline-flex min-h-12 items-center px-6 py-3 font-semibold transition-colors"
             >Go home</a>
         </div>
     </x-error-state>

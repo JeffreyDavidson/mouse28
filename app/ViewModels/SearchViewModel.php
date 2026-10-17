@@ -58,7 +58,12 @@ class SearchViewModel
         [$url, $eyebrow, $title, $description] = match (true) {
             $model instanceof Post => [route('blog.show', $model), $model->category_label, $model->title, $model->excerpt],
             $model instanceof Guide => [route('guides.show', $model), $model->category_label, $model->title, $model->excerpt],
-            $model instanceof Episode => [route('episodes.show', $model), "Episode {$model->episode_number}", $model->title, $model->description],
+            $model instanceof Episode => [
+                route('episodes.show', $model),
+                $model->season_number ? "Season {$model->season_number}, episode {$model->episode_number}" : "Episode {$model->episode_number}",
+                $model->title,
+                $model->description,
+            ],
             default => throw new UnexpectedValueException('Unsupported search result model.'),
         };
 
