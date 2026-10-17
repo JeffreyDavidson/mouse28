@@ -24,9 +24,6 @@ use Illuminate\Support\Facades\Gate;
 class PodcastSettings extends Page
 {
     #[\Override]
-    protected string $view = 'filament.pages.podcast-settings';
-
-    #[\Override]
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedCog6Tooth;
 
     #[\Override]
@@ -38,9 +35,8 @@ class PodcastSettings extends Page
     #[\Override]
     protected static ?string $title = 'Podcast Settings';
 
-    /** The Blade view draws its own page header, so Filament's default heading stays blank. */
     #[\Override]
-    protected ?string $heading = '';
+    protected ?string $subheading = 'Configure your podcast info and distribution links';
 
     /** @var array<string, mixed>|null */
     public ?array $data = [];
@@ -110,16 +106,19 @@ class PodcastSettings extends Page
                             ->url()
                             ->maxLength(255)
                             ->label('Apple Podcasts')
+                            ->placeholder('https://podcasts.apple.com/…')
                             ->prefixIcon(Heroicon::OutlinedLink),
                         TextInput::make('spotify_url')
                             ->url()
                             ->maxLength(255)
                             ->label('Spotify')
+                            ->placeholder('https://open.spotify.com/show/…')
                             ->prefixIcon(Heroicon::OutlinedLink),
                         TextInput::make('youtube_url')
                             ->url()
                             ->maxLength(255)
                             ->label('YouTube')
+                            ->placeholder('https://www.youtube.com/@…')
                             ->prefixIcon(Heroicon::OutlinedLink),
                     ]),
 
@@ -129,8 +128,7 @@ class PodcastSettings extends Page
                         ->icon(Heroicon::OutlinedCheck)
                         ->action(fn (PrimaryPodcast $primaryPodcast) => $this->save($primaryPodcast)),
                 ])
-                    ->key('actions')
-                    ->alignEnd(),
+                    ->key('actions'),
             ])
             ->statePath('data');
     }

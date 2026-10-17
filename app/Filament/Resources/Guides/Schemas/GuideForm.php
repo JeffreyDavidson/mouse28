@@ -35,8 +35,6 @@ class GuideForm
                     ->description('Basic guide information')
                     ->columns(4)
                     ->schema([
-                        ContentTagsInput::make('tags')
-                            ->columnSpanFull(),
                         SlugSourceInput::make('title')
                             ->required()
                             ->maxLength(255)
@@ -49,6 +47,8 @@ class GuideForm
                             ->required()
                             ->columnSpan(2),
                         AuthorsSelect::make('authors')
+                            ->columnSpan(2),
+                        ContentTagsInput::make('tags')
                             ->columnSpan(2),
                     ]),
                 Section::make('Content')
@@ -65,6 +65,8 @@ class GuideForm
                     ->schema([
                         SourceReviewSection::make()
                             ->heading('Review & Sources')
+                            ->description('Required to publish. Link the official source this guide relies on and record when you last checked it, so the guide is flagged for review as it ages.')
+                            ->collapsed(false)
                             ->icon(Heroicon::OutlinedClipboardDocumentCheck)
                             ->requiredTogether(false)
                             ->reviewIntervalDays(fn (): int => Config::integer('content.guide_review_interval_days')),

@@ -248,12 +248,12 @@ function assertListTabsFilterDraftsAndScheduled(string $listPage, string $model)
 }
 
 /**
- * Asserts the listing header counts only live records as published and both drafts and records in review as drafts.
+ * Asserts the listing's tab counts treat only live records as published and both drafts and records in review as drafts.
  *
  * @param  class-string<ListRecords>  $listPage
  * @param  class-string<Post|Guide|Episode>  $model
  */
-function assertListHeaderCountsOnlyPublished(string $listPage, string $model): void
+function assertListTabCountsOnlyPublished(string $listPage, string $model): void
 {
     $model::factory()->create();
     $model::factory()
@@ -264,15 +264,13 @@ function assertListHeaderCountsOnlyPublished(string $listPage, string $model): v
         ->create();
     $model::factory()->create(['status' => PublishStatus::InReview]);
 
-    $page = livewire($listPage);
-    $component = $page->instance();
+    $tabs = livewire($listPage)
+        ->instance()
+        ->getTabs();
 
-    expect($component->getHeader()
-        ?->getData())
-        ->toMatchArray([
-            'published' => 1,
-            'drafts' => 2,
-        ]);
+    expect($tabs['published']->getBadge())->toBe('1')
+        ->and($tabs['drafts']->getBadge())
+        ->toBe('2');
 }
 
 /**

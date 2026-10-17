@@ -3,7 +3,7 @@
         heading="At a glance"
         description="A quick view of your published content and audience."
     >
-        <dl class="grid grid-cols-2 gap-x-6 gap-y-5 @5xl:grid-cols-5">
+        <dl class="grid grid-cols-2 gap-x-6 gap-y-5 @xl:grid-cols-3 @4xl:grid-cols-5">
             @foreach ($this->getStats() as $stat)
                 <div class="border-mouse-navy/15 min-w-0 border-b pb-5">
                     <dt class="text-mouse-navy/75 flex items-center gap-2 truncate text-base font-medium @lg:text-sm">

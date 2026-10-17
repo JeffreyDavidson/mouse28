@@ -87,6 +87,36 @@ test('draft slugs reject characters that cannot form public routes', function ()
         ->assertHasFormErrors(['slug' => 'regex']);
 });
 
+test('the edit page shows the Filament heading, breadcrumbs and publishing actions', function (): void {
+    // Arrange
+    actingAsAdmin();
+    $guide = Guide::factory()
+        ->draft()
+        ->create(['title' => 'Sample guide title']);
+
+    // Act
+    $response = get(GuideResource::getUrl('edit', ['record' => $guide]));
+
+    // Assert
+    $response->assertOk()
+        ->assertSeeHtml('fi-header-heading')
+        ->assertSeeHtml('fi-breadcrumbs')
+        ->assertSeeInOrder(['Guides', 'Edit Sample guide title', 'Publish', 'Preview', 'Delete']);
+});
+
+test('the edit page offers Unpublish for a published guide', function (): void {
+    // Arrange
+    actingAsAdmin();
+    $guide = Guide::factory()->create();
+
+    // Act
+    $response = get(GuideResource::getUrl('edit', ['record' => $guide]));
+
+    // Assert
+    $response->assertOk()
+        ->assertSee('Unpublish');
+});
+
 test('edit page offers a draft preview', function (): void {
     Date::setTestNow('2026-09-27 12:00:00');
     $admin = User::factory()

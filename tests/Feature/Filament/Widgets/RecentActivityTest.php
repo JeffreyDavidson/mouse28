@@ -12,6 +12,18 @@ use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
 
+test('recent activity describes each item in sentence case', function (): void {
+    // Arrange
+    Post::factory()->create(['status' => PublishStatus::InReview]);
+
+    // Act
+    $component = livewire(RecentActivity::class);
+
+    // Assert
+    $component->assertSee('In review post')
+        ->assertDontSee('In Review post');
+});
+
 test('recent activity combines content types in newest-first order and limits the result', function (): void {
     $oldestPost = Post::factory()->create([
         'title' => 'Oldest example',

@@ -78,6 +78,31 @@ test('stats overview reports published content review needs drafts and active su
     ]);
 });
 
+test('stats overview colours its gold metrics with the readable gold ink', function (): void {
+    // Act
+    $textClasses = collect(livewire(StatsOverview::class)->instance()
+        ->getStats())
+        ->pluck('textClass', 'label')
+        ->only(['Episodes', 'Drafts'])
+        ->all();
+
+    // Assert
+    expect($textClasses)->toBe([
+        'Episodes' => 'text-mouse-gold-ink',
+        'Drafts' => 'text-mouse-gold-ink',
+    ]);
+});
+
+test('stats overview steps from two to three to five columns as its panel widens', function (): void {
+    // Act
+    $component = livewire(StatsOverview::class);
+
+    // Assert
+    $component->assertSeeHtml('grid-cols-2')
+        ->assertSeeHtml('@xl:grid-cols-3')
+        ->assertSeeHtml('@4xl:grid-cols-5');
+});
+
 test('stats overview takes the content stats icon and colour from the content type', function (): void {
     $stats = collect(livewire(StatsOverview::class)->instance()
         ->getStats())->keyBy('label');
