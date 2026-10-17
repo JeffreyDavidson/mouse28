@@ -133,7 +133,7 @@ test('the content menu lists posts first, then episodes, guides, categories, new
 
     // Assert
     $response->assertOk()
-        ->assertSeeInOrder(['fi-sidebar-nav', 'Posts', 'Episodes', 'Guides', 'Categories', 'Newsletter Issues', 'Asset Reviews', 'Contact Inquiries'], false);
+        ->assertSeeHtmlInOrder(['fi-sidebar-nav', 'Posts', 'Episodes', 'Guides', 'Categories', 'Newsletter Issues', 'Asset Reviews', 'Contact Inquiries']);
 });
 
 test('non admin user cannot access the admin panel', function (): void {
