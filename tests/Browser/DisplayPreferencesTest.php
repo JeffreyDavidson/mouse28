@@ -75,15 +75,22 @@ test('reduced motion preference removes nonessential authored motion', function 
         ->assertNoJavaScriptErrors();
 });
 
-test('reduced motion keeps story artwork still when a card is hovered', function (string $routeName, string $cardSelector): void {
+test('reduced motion keeps story artwork still when a card is hovered', function (string $page, string $cardSelector): void {
     // Arrange
-    Post::factory()
+    $posts = Post::factory()
         ->count(3)
         ->create();
+    $episode = Episode::factory()->create();
+    $episode->posts()
+        ->attach($posts->modelKeys());
+    $url = match ($page) {
+        'episode' => route('episodes.show', $episode),
+        default => route($page),
+    };
     $artworkSelector = "{$cardSelector} [data-post-artwork-fallback]";
 
     // Act
-    $page = visit(route($routeName), ['reducedMotion' => 'reduce']);
+    $page = visit($url, ['reducedMotion' => 'reduce']);
     $page->hover($cardSelector);
 
     // Assert
@@ -95,6 +102,7 @@ test('reduced motion keeps story artwork still when a card is hovered', function
     'homepage latest story' => ['home', '.dispatch-story-card:first-child'],
     'blog featured story' => ['blog.index', '.editorial-feature > a'],
     'blog story card' => ['blog.index', '.editorial-story:first-child > a'],
+    'episode related story' => ['episode', 'article.group:first-child > a'],
 ]);
 
 test('forced colors preserve focus indicators and page structure', function (): void {
