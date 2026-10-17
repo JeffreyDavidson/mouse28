@@ -413,7 +413,7 @@
         float: left;
         margin-top: 0.05em;
         margin-right: 0.1em;
-        color: var(--color-gold);
+        color: var(--color-gold-ink);
         font-family: var(--font-heading);
         font-size: 4em;
         font-weight: 700;
@@ -752,6 +752,12 @@
         translate: 0 0.1rem;
     }
 
+    /* The book sits on navy, so its ring is gold rather than the global navy outline. */
+    .dispatch-feature-book:focus-visible {
+        outline: 3px solid var(--color-gold-light);
+        outline-offset: 4px;
+    }
+
     .dispatch-feature-book img {
         border-radius: 0.5rem;
         outline: 1px solid rgb(26 16 64 / 12%);
@@ -792,6 +798,14 @@
     .dispatch-guide-card:active {
         box-shadow: 0 7px 16px rgb(26 16 64 / 14%);
         transform: translateY(1px) scale(0.99);
+    }
+
+    /* Restore the global focus ring that the cards' hairline outline would otherwise replace. */
+    .dispatch-story-card:focus-visible,
+    .dispatch-guide-card:focus-visible {
+        outline: 3px solid var(--color-navy);
+        outline-offset: 3px;
+        box-shadow: 0 0 0 5px var(--color-gold-light);
     }
 
     .dispatch-guide-spread {

@@ -58,6 +58,49 @@ test('the footer newsletter field shows a focus indicator that stands out from t
         ->assertScript($this->focusIndicatorContrastScript('#footer-newsletter-email').' >= 3', true);
 });
 
+test('homepage story and guide cards show a focus indicator that stands out from their background', function (string $selector): void {
+    // Arrange
+    Post::factory()
+        ->count(2)
+        ->create();
+    Guide::factory()->create();
+
+    // Act
+    $page = visit(route('home'));
+
+    // Assert
+    $page->assertScript($this->focusIndicatorContrastScript($selector).' >= 3', true);
+})->with([
+    'featured story' => ['.dispatch-feature-book'],
+    'latest story' => ['.dispatch-story-card'],
+    'guide' => ['.dispatch-guide-card'],
+]);
+
+test('public search and form fields show a focus indicator that stands out from their background', function (string $page, string $selector): void {
+    // Arrange
+    Post::factory()->create();
+    config()->set('services.turnstile.site_key', '1x00000000000000000000AA');
+    config()->set('services.turnstile.secret_key', '1x0000000000000000000000000000000AA');
+    $url = match ($page) {
+        'missing' => url('/this-page-does-not-exist'),
+        default => route($page),
+    };
+
+    // Act
+    $browserPage = visit($url);
+
+    // Assert
+    $browserPage->assertScript($this->focusIndicatorContrastScript($selector).' >= 3', true);
+})->with([
+    'contact name' => ['contact.create', '#name'],
+    'contact topic' => ['contact.create', '#type'],
+    'contact message' => ['contact.create', '#message'],
+    'blog search' => ['blog.index', '#blog-search'],
+    'blog order' => ['blog.index', '#blog-sort'],
+    'site search' => ['search', '#site-search'],
+    'not found search' => ['missing', '#not-found-search'],
+]);
+
 test('polished discovery and guide artwork remain usable on mobile', function (): void {
     $guide = Guide::factory()->create([
         'category' => 'accessibility',

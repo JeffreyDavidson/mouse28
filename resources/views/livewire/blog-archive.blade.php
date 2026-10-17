@@ -23,7 +23,7 @@
                             :post="$featuredPost"
                             :priority="true"
                             sizes="(min-width: 1376px) 775px, (min-width: 1024px) 56vw, (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
-                            class="h-full min-h-72 w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025] lg:min-h-[31rem]"
+                            class="h-full min-h-72 w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transition-none motion-reduce:group-hover:scale-100 lg:min-h-[31rem]"
                         />
                     </a>
                     <div class="bg-cream text-navy flex flex-col justify-center p-7 sm:p-10 lg:p-12">
@@ -83,7 +83,7 @@
                                     wire:model.live.debounce.300ms="search"
                                     data-preserve-blog-filter-position
                                     placeholder="Search posts..."
-                                    class="border-navy/15 bg-cream text-navy placeholder:text-navy/60 focus:border-purple focus:ring-purple/20 min-h-12 w-full appearance-none rounded-xl border py-3 pr-12 pl-11 text-base transition-opacity outline-none focus:ring-2 data-loading:opacity-60 motion-reduce:transition-none"
+                                    class="border-navy/15 bg-cream text-navy placeholder:text-navy/60 focus:border-purple focus:ring-purple min-h-12 w-full appearance-none rounded-xl border py-3 pr-12 pl-11 text-base transition-opacity outline-none focus:ring-2 data-loading:opacity-60 motion-reduce:transition-none"
                                 />
                                 @if ($search)
                                     <a
@@ -139,7 +139,7 @@
                                     name="sort"
                                     wire:model.live="sort"
                                     data-preserve-blog-filter-position
-                                    class="border-navy/15 bg-cream text-navy focus:border-purple focus:ring-purple/20 min-h-12 w-full min-w-44 appearance-none rounded-xl border py-3 pr-12 pl-4 text-base transition-opacity outline-none focus:ring-2 data-loading:opacity-60 motion-reduce:transition-none"
+                                    class="border-navy/15 bg-cream text-navy focus:border-purple focus:ring-purple min-h-12 w-full min-w-44 appearance-none rounded-xl border py-3 pr-12 pl-4 text-base transition-opacity outline-none focus:ring-2 data-loading:opacity-60 motion-reduce:transition-none"
                                 >
                                     @foreach (BlogSort::cases() as $sortOption)
                                         <option value="{{ $sortOption->value }}">{{ $sortOption->label() }}</option>

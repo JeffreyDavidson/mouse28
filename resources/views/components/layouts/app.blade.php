@@ -224,7 +224,7 @@
                     </form>
                     <a
                         href="{{ route('newsletter.index') }}"
-                        class="hover:text-gold mt-2 inline-flex min-h-12 items-center text-base text-white/70 underline underline-offset-4 transition-colors sm:min-h-6 sm:text-sm"
+                        class="hover:text-gold mt-2 inline-flex min-h-12 items-center text-base text-white/70 underline underline-offset-4 transition-colors sm:text-sm lg:min-h-6"
                     >Read past issues</a>
                 </div>
 
@@ -252,7 +252,7 @@
                                         href="{{ $profile->url }}"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
+                                        class="hover:text-gold inline-flex min-h-12 items-center transition-colors lg:min-h-6"
                                         >{{ $profile->platform->getLabel() }}<x-new-tab-notice
                                     /></a>
                                 @endforeach
@@ -272,7 +272,7 @@
                                     href="{{ $link['url'] }}"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
+                                    class="hover:text-gold inline-flex min-h-12 items-center transition-colors lg:min-h-6"
                                     >{{ $link['label'] }}<x-new-tab-notice
                                 /></a>
                             @endforeach
@@ -290,7 +290,7 @@
                         href="https://infinitydigital.dev"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="hover:text-gold inline-flex min-h-12 items-center underline underline-offset-4 transition-colors sm:min-h-6"
+                        class="hover:text-gold inline-flex min-h-12 items-center underline underline-offset-4 transition-colors lg:min-h-6"
                         >Infinity Digital<x-new-tab-notice
                     /></a>
                 </p>
