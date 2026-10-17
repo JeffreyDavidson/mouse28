@@ -92,7 +92,7 @@
                             <div class="overflow-hidden rounded-lg">
                                 <x-post-artwork
                                     :post="$featuredPost"
-                                    class="aspect-[5/4] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02] md:aspect-square"
+                                    class="aspect-[5/4] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02] motion-reduce:transition-none motion-reduce:group-hover:scale-100 md:aspect-square"
                                 />
                             </div>
                         </a>
@@ -133,7 +133,7 @@
                                 <x-post-artwork
                                     :post="$post"
                                     :compact="true"
-                                    class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]"
+                                    class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                                 />
                                 <div class="flex flex-1 flex-col p-3">
                                     <p class="text-purple text-sm font-semibold sm:text-xs">
@@ -199,7 +199,7 @@
                                     class="dispatch-guide-card group overflow-hidden"
                                     ><x-guide-artwork
                                         :guide="$guide"
-                                        class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]" />
+                                        class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035] motion-reduce:transition-none motion-reduce:group-hover:scale-100" />
                                     <div class="p-5">
                                         <p class="text-purple text-sm font-semibold sm:text-xs">Guide</p>
                                         <h3 class="font-heading text-navy group-hover:text-purple mt-1 text-2xl [font-weight:580] tracking-[-0.015em] text-balance">
@@ -232,7 +232,7 @@
                                                 >
                                                     <x-post-artwork
                                                         :post="$post"
-                                                        class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035]"
+                                                        class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.035] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                                                     />
                                                     <div class="p-5">
                                                         <p class="text-purple text-xs font-semibold">

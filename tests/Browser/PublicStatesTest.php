@@ -189,6 +189,55 @@ test('branded recovery pages remain accessible and actionable', function (): voi
         ->assertDontSee('Private maintenance details');
 });
 
+test('recovery pages show their site links on phones', function (): void {
+    // Arrange
+    config()->set('app.debug', false);
+
+    // Act
+    $page = visit('/missing-recovery-page');
+    $page->on()
+        ->mobile()
+        ->resize(375, 812);
+
+    // Assert
+    $page->assertVisible('nav[aria-label="Recovery navigation"] a[href="'.route('blog.index').'"]')
+        ->assertVisible('nav[aria-label="Recovery navigation"] a[href="'.route('episodes.index').'"]')
+        ->assertScript($this->horizontalOverflowScript(), 0)
+        ->assertScript($this->undersizedControlsScript(), '');
+});
+
+test('recovery page headings do not leave their last word alone on a phone', function (): void {
+    // Arrange
+    config()->set('app.debug', false);
+    Route::get('/testing/browser-server-error', function (): never {
+        throw new RuntimeException('Sensitive database connection details');
+    });
+
+    // Act
+    $page = visit('/testing/browser-server-error');
+    $page->on()
+        ->mobile()
+        ->resize(375, 812);
+
+    // Assert
+    $page->assertSee('The magic hit a snag')
+        ->assertScript(<<<'JS'
+            (() => {
+                const text = document.querySelector('h1').firstChild;
+                const words = [...text.textContent.matchAll(/\S+/g)];
+                const wordTop = (match) => {
+                    const range = document.createRange();
+                    range.setStart(text, match.index);
+                    range.setEnd(text, match.index + match[0].length);
+
+                    return Math.round(range.getBoundingClientRect().top);
+                };
+
+                return wordTop(words.at(-1)) === wordTop(words.at(-2));
+            })()
+            JS, true);
+});
+
 test('opening a confirmation link in a browser confirms in one click', function (): void {
     $reader = Subscriber::factory()
         ->pending()

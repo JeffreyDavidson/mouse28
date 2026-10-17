@@ -37,13 +37,13 @@
         @case (SiteNavigationPlacement::FooterConnect)
             <a
                 href="{{ $link['href'] }}"
-                class="hover:text-gold inline-flex min-h-12 items-center transition-colors sm:min-h-6"
+                class="hover:text-gold inline-flex min-h-12 items-center transition-colors lg:min-h-6"
             >{{ $link['label'] }}</a>
             @break
         @case (SiteNavigationPlacement::Recovery)
             <a
                 href="{{ $link['href'] }}"
-                class="hover:text-gold inline-flex min-h-12 items-center text-sm font-medium text-white/75 transition-colors"
+                class="hover:text-gold inline-flex min-h-12 min-w-12 items-center justify-center px-2 text-sm font-medium text-white/75 transition-colors"
             >{{ $link['label'] }}</a>
             @break
     @endswitch

@@ -42,7 +42,7 @@
     <header class="dispatch-cloth border-gold/25 border-b">
         <nav
             aria-label="Recovery navigation"
-            class="mx-auto flex min-h-20 max-w-[86rem] items-center justify-between gap-6 px-4 sm:px-6"
+            class="mx-auto flex min-h-20 max-w-[86rem] flex-wrap items-center justify-between gap-x-6 px-4 sm:px-6"
         >
             <a
                 href="{{ route('home') }}"
@@ -51,7 +51,7 @@
             >
                 <x-brand-wordmark />
             </a>
-            <div class="hidden items-center gap-6 sm:flex">
+            <div class="-mx-2 flex items-center gap-2">
                 <x-site-navigation placement="recovery" />
             </div>
         </nav>

@@ -21,7 +21,7 @@
                 name="q"
                 maxlength="100"
                 placeholder="Search posts and episodes"
-                class="text-navy placeholder:text-navy/60 focus:border-gold focus:ring-gold/40 min-h-12 min-w-0 flex-1 rounded-full border border-white/15 bg-white px-5 py-3 text-base shadow-lg focus:ring-2 focus:outline-none"
+                class="text-navy placeholder:text-navy/60 focus:border-purple focus:ring-purple min-h-12 min-w-0 flex-1 rounded-full border border-white/15 bg-white px-5 py-3 text-base shadow-lg focus:ring-2 focus:outline-none"
             />
             <button
                 type="submit"
