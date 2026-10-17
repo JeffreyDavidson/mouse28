@@ -69,19 +69,20 @@ test('on wide screens the featured story lines up with the latest stories and cl
     // Act
     $page = visit(route('home'))->resize(1600, 1000);
 
-    // Assert: the card's top is level with the Latest Stories panel (within its 2-degree tilt)
-    // and its bottom stays above the section that follows.
-    $page->assertScript(<<<'JS'
-            (() => {
-                const feature = document.querySelector('.dispatch-feature-book')?.getBoundingClientRect();
-                const latest = document.querySelector('.dispatch-latest-sheet')?.getBoundingClientRect();
-                const next = document.querySelector('.dispatch-blog-cluster')?.nextElementSibling?.getBoundingClientRect();
+    // Assert: once the section's reveal settles, the card's top is level with the Latest Stories
+    // panel (within its 2-degree tilt) and its bottom stays above the section that follows.
+    $page->assertScript(browserWaitForScript(<<<'JS'
+        (() => {
+            const cluster = document.querySelector('.dispatch-blog-cluster');
+            const feature = document.querySelector('.dispatch-feature-book')?.getBoundingClientRect();
+            const latest = document.querySelector('.dispatch-latest-sheet')?.getBoundingClientRect();
+            const next = cluster?.nextElementSibling?.getBoundingClientRect();
 
-                return Boolean(feature && latest && next)
-                    && Math.abs(feature.top - latest.top) <= 24
-                    && feature.bottom <= next.top;
-            })()
-            JS, true);
+            return Boolean(feature && latest && next)
+                && Math.abs(feature.top - latest.top) <= 24
+                && feature.bottom <= next.top;
+        })()
+        JS), true);
 });
 
 test('long public content and portrait artwork stay contained', function (): void {
