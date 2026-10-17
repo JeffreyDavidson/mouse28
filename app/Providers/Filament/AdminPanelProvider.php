@@ -112,12 +112,12 @@ class AdminPanelProvider extends PanelProvider
             ->navigationGroups(NavigationGroup::class)
             ->plugin(
                 CreatorKitPlugin::make()
-                    ->categories(Category::class, NavigationGroup::Content, 2)
+                    ->categories(Category::class, NavigationGroup::Content, 4)
                     ->socialProfiles(SocialProfile::class, SocialPlatform::class, NavigationGroup::Settings, 2)
                     ->subscribers(NavigationGroup::Communication, 2)
-                    ->newsletterIssues(NavigationGroup::Content, 3)
+                    ->newsletterIssues(NavigationGroup::Content, 5)
                     ->contactInquiries(ContactType::class, NavigationGroup::Communication, 1)
-                    ->posts(Post::class, NavigationGroup::Content, 2, PostScreenOptions::make()
+                    ->posts(Post::class, NavigationGroup::Content, 1, PostScreenOptions::make()
                         ->category(Category::class, required: true)
                         ->relatedEpisodes()
                         ->contentRequired(false)
@@ -130,7 +130,7 @@ class AdminPanelProvider extends PanelProvider
                             TextColumn::make('authors.name')
                                 ->label('Authors')
                                 ->badge()
-                                ->color('info')
+                                ->color('primary')
                                 ->placeholder('No authors'),
                         ])
                         ->extraFilters(fn (): array => [
@@ -143,7 +143,7 @@ class AdminPanelProvider extends PanelProvider
                         ->reviewIntervalDays(fn (): int => Config::integer('content.post_review_interval_days'))
                         ->navigationIcon(ContentType::Post->getIcon())
                         ->globallySearchableAttributes(['title', 'slug', 'category.name', 'authors.name']))
-                    ->episodes(Episode::class, NavigationGroup::Content, 1, EpisodeScreenOptions::make()
+                    ->episodes(Episode::class, NavigationGroup::Content, 2, EpisodeScreenOptions::make()
                         ->richText()
                         ->episodeNumberRequired()
                         ->descriptionRequired(false)

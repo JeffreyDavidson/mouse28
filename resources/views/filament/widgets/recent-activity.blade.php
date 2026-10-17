@@ -19,7 +19,7 @@
                                     {{ $item['label'] }}
                                 </p>
                                 <p class="text-mouse-navy/75 mt-1 text-sm">
-                                    {{ $item['status']->getLabel() }} {{ \Illuminate\Support\Str::lower($item['type']->getLabel()) }}
+                                    {{ \Illuminate\Support\Str::ucfirst(\Illuminate\Support\Str::lower("{$item['status']->getLabel()} {$item['type']->getLabel()}")) }}
                                 </p>
                             </div>
                             <time

@@ -87,7 +87,7 @@ test('release safeguards keep feature integration, pre-merge staging, and produc
     const operations = readFileSync(new URL('../docs/operations.md', import.meta.url), 'utf8');
     const deploymentClient = readFileSync(new URL('./forge-deployment.mjs', import.meta.url), 'utf8');
 
-    assert.match(ci, /on:\n  pull_request:\n  push:\n    branches:\n      - main\n      - 'release\/\*\*'\n/);
+    assert.match(ci, /on:\n  pull_request:\n  push:\n    branches:\n      - develop\n      - main\n      - 'release\/\*\*'\n/);
     assert.match(staging, /branches: \[main, 'release\/\*\*'\]/);
     assert.match(staging, /startsWith\(github\.event\.workflow_run\.head_branch, 'release\/'\)/);
     assert.match(staging, /SOURCE_BRANCH: \$\{\{ github\.event\.workflow_run\.head_branch \}\}/);

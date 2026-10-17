@@ -3,6 +3,7 @@
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\User;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
 use JeffreyDavidson\CreatorKit\Filament\Resources\Posts\Pages\ListPosts;
@@ -13,6 +14,18 @@ use function Pest\Laravel\get;
 use function Pest\Livewire\livewire;
 
 pest()->use(RefreshDatabase::class);
+
+test('the posts table shows authors in the brand purple badge', function (): void {
+    // Arrange
+    actingAsAdmin();
+
+    // Act
+    $component = livewire(ListPosts::class);
+
+    // Assert
+    $component->assertTableColumnExists('authors.name', fn (TextColumn $column): bool => $column->isBadge()
+        && $column->getColor('Sample author') === 'primary');
+});
 
 test('authenticated user can render the resource listing', function (): void {
     actingAs(User::factory()

@@ -4,8 +4,6 @@ namespace App\Filament\Resources\Guides\Tables;
 
 use App\Enums\GuideCategory;
 use App\Filament\Tables\Filters\MissingArtworkFilter;
-use App\Models\Guide;
-use App\Support\EditorialReadiness;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -13,6 +11,7 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use JeffreyDavidson\CreatorKit\Filament\Tables\Actions\SoftDeleteBulkActions;
+use JeffreyDavidson\CreatorKit\Filament\Tables\Columns\ReadinessColumn;
 use JeffreyDavidson\CreatorKit\Filament\Tables\Columns\SourceReviewColumns;
 use JeffreyDavidson\CreatorKit\Filament\Tables\Filters\MissingSeoFilter;
 use JeffreyDavidson\CreatorKit\Filament\Tables\Filters\ReviewDueFilter;
@@ -31,16 +30,13 @@ class GuidesTable
                 TextColumn::make('category')
                     ->badge(),
                 ...SourceReviewColumns::make(),
-                TextColumn::make('readiness')
-                    ->label('Readiness')
-                    ->badge()
-                    ->getStateUsing(fn (Guide $record): string => EditorialReadiness::label($record))
-                    ->color(fn (Guide $record): string => EditorialReadiness::color($record))
-                    ->tooltip(fn (Guide $record): string => EditorialReadiness::summary($record)),
+                ReadinessColumn::make(),
                 TextColumn::make('status')
                     ->badge(),
                 TextColumn::make('published_at')
-                    ->date()
+                    ->label('Published')
+                    ->dateTime('M j, Y')
+                    ->placeholder('Not published')
                     ->sortable(),
             ])
             ->filters([

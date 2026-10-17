@@ -88,12 +88,12 @@ test('assertListTabsFilterDraftsAndScheduled checks both tabs on the guide listi
     assertListTabsFilterDraftsAndScheduled(ListGuides::class, Guide::class);
 });
 
-test('assertListHeaderCountsOnlyPublished ignores scheduled records on the guide listing', function (): void {
+test('assertListTabCountsOnlyPublished ignores scheduled records on the guide listing', function (): void {
     // Arrange
     actingAsAdmin();
 
     // Act and assert
-    assertListHeaderCountsOnlyPublished(ListGuides::class, Guide::class);
+    assertListTabCountsOnlyPublished(ListGuides::class, Guide::class);
 });
 
 test('assertEditKeepsSlug saves the form without changing a published slug', function (): void {

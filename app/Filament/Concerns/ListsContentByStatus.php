@@ -11,11 +11,10 @@ use App\Models\Post;
 use Closure;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
-use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * The status tabs and header counts shared by the post, guide and episode lists.
+ * The status tabs shared by the content lists; the Drafts and Published tabs show their counts.
  * Each tab narrows the table to the ids its model scopes find, so a scope's joins
  * and columns never mix with the table's own query. The page sets its header
  * description through Filament's `$subheading`.
@@ -34,29 +33,18 @@ trait ListsContentByStatus
             'attention' => $this->scopedTab('Needs attention', fn (): Builder => $this->contentQuery()
                 ->needsAttention()),
             'drafts' => $this->scopedTab('Drafts', fn (): Builder => $this->contentQuery()
-                ->drafts()),
+                ->drafts())
+                ->badge(fn (): int => $this->contentQuery()
+                    ->drafts()
+                    ->count()),
             'scheduled' => $this->scopedTab('Scheduled', fn (): Builder => $this->contentQuery()
                 ->scheduled()),
             'published' => $this->scopedTab('Published', fn (): Builder => $this->contentQuery()
-                ->published()),
+                ->published())
+                ->badge(fn (): int => $this->contentQuery()
+                    ->published()
+                    ->count()),
             'review-due' => $this->reviewDueTab(),
-        ]);
-    }
-
-    public function getHeader(): ?View
-    {
-        $type = $this->contentType();
-
-        return view('filament.resources.content.header', [
-            'type' => $type,
-            'subtitle' => $this->getSubheading(),
-            'published' => $this->contentQuery()
-                ->published()
-                ->count(),
-            'drafts' => $this->contentQuery()
-                ->drafts()
-                ->count(),
-            'createUrl' => $type->resource()::getUrl('create'),
         ]);
     }
 

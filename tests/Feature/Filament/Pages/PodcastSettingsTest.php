@@ -87,8 +87,35 @@ test('authenticated user can render podcast settings', function (): void {
     get(PodcastSettings::getUrl())
         ->assertOk()
         ->assertSee('Podcast Settings')
-        ->assertDontSeeHtml('fi-header-heading')
+        ->assertSeeHtml('fi-header-heading')
         ->assertSee('Distribution Links');
+});
+
+test('podcast settings describes only what the page configures', function (): void {
+    // Arrange
+    actingAsAdmin();
+
+    // Act
+    $response = get(PodcastSettings::getUrl());
+
+    // Assert
+    $response->assertOk()
+        ->assertSee('Configure your podcast info and distribution links')
+        ->assertDontSee('social media');
+});
+
+test('podcast link fields show example addresses', function (): void {
+    // Arrange
+    actingAsAdmin();
+
+    // Act
+    $response = get(PodcastSettings::getUrl());
+
+    // Assert
+    $response->assertOk()
+        ->assertSeeHtml('https://podcasts.apple.com/…')
+        ->assertSeeHtml('https://open.spotify.com/show/…')
+        ->assertSeeHtml('https://www.youtube.com/@…');
 });
 
 test('podcast cover uploads enforce the five megabyte limit', function (int $size, bool $valid): void {

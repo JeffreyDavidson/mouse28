@@ -3,36 +3,38 @@
         <div role="alert" class="bg-danger-50 text-danger-700 rounded-lg p-4">{{ $message }}</div>
     @enderror
     <section aria-label="Saved review set" class="space-y-6">
-        <div class="rounded-xl bg-white p-6 ring-1 ring-gray-950/5">
+        <div class="border-mouse-navy/12 rounded-2xl border bg-white p-5">
             <div class="flex flex-wrap items-center justify-between gap-3">
-                <h2 class="text-xl font-semibold">{{ $review->title }} · {{ $review->version }}</h2>
+                <h2 class="font-mouse-heading text-mouse-navy text-xl font-semibold text-balance">
+                    {{ $review->title }} · {{ $review->version }}
+                </h2>
                 <x-filament::badge :color="$review->status->getColor()">{{ $review->status->getLabel() }}</x-filament::badge>
             </div>
-            <p class="mt-3 text-sm text-gray-600">
+            <p class="text-mouse-navy/75 mt-3 text-sm">
                 Open each saved image to read it at full size before recording your decision.
             </p>
             @if ($review->sourcePost)
                 <p class="mt-3">
                     <a
-                        class="text-primary-600 underline"
+                        class="text-mouse-purple underline"
                         href="{{ \JeffreyDavidson\CreatorKit\Filament\Resources\Posts\PostResource::getUrl('edit', ['record' => $review->sourcePost]) }}"
                     >Source article: {{ $review->sourcePost->title }}</a>
                 </p>
             @endif
             @if ($review->reviewed_at)
-                <p class="mt-3 text-sm text-gray-600">
+                <p class="text-mouse-navy/75 mt-3 text-sm">
                     Reviewed by {{ $review->reviewer?->name ?? 'Deleted administrator' }} · {{ $review->reviewed_at->timezone(config('app.display_timezone'))->format('M j, Y g:i A T') }}
                 </p>
             @endif
             @if ($review->review_notes)
-                <p class="mt-3 whitespace-pre-wrap">{{ $review->review_notes }}</p>
+                <p class="text-mouse-navy mt-3 whitespace-pre-wrap">{{ $review->review_notes }}</p>
             @endif
         </div>
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
             @foreach ($review->files as $index => $file)
-                <figure class="rounded-xl bg-white p-4 ring-1 ring-gray-950/5">
+                <figure class="border-mouse-navy/12 rounded-2xl border bg-white p-4">
                     <a
-                        class="focus-visible:outline-primary-600 block rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4"
+                        class="focus-visible:outline-mouse-purple block rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4"
                         href="{{ route('filament.admin.assetReviews.file', ['assetReview' => $review, 'file' => $index]) }}"
                         target="_blank"
                         rel="noopener"
@@ -44,10 +46,10 @@
                             loading="lazy"
                         />
                     </a>
-                    <figcaption class="mt-3 flex flex-wrap items-center justify-between gap-3 text-sm">
+                    <figcaption class="text-mouse-navy mt-3 flex flex-wrap items-center justify-between gap-3 text-sm">
                         <span>Image {{ $index + 1 }} of {{ count($review->files) }}</span>
                         <a
-                            class="text-primary-600 underline"
+                            class="text-mouse-purple underline"
                             href="{{ route('filament.admin.assetReviews.file', ['assetReview' => $review, 'file' => $index, 'download' => true]) }}"
                         >Download image</a>
                     </figcaption>
