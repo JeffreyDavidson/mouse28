@@ -276,8 +276,8 @@
                         class="text-gold hover:text-gold-light hidden min-h-12 items-center text-sm font-semibold underline underline-offset-8 sm:inline-flex"
                     >All episodes</a>
                 </div>
-                <div class="mt-4 grid gap-5 wrap-anywhere md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)_minmax(0,8fr)] md:items-center">
-                    <div class="dispatch-podcast-frame mx-auto w-full max-w-72 p-3 md:mx-0">
+                <div class="mt-4 grid gap-5 wrap-anywhere lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)_minmax(0,8fr)] lg:items-start">
+                    <div class="dispatch-podcast-frame mx-auto w-full max-w-72 p-3 lg:mx-0">
                         <img
                             src="/images/podcast/mouse28-cover.webp"
                             srcset="/images/podcast/mouse28-cover-640.webp 640w, /images/podcast/mouse28-cover.webp 1200w"
@@ -302,10 +302,46 @@
                                     {{ $leadEpisode->description }}
                                 </p>
                             @endif
-                            <a
-                                href="{{ route('episodes.show', $leadEpisode) }}"
-                                class="text-gold mt-4 inline-flex min-h-12 items-center text-base font-semibold underline underline-offset-8 sm:text-sm"
-                            >Episode details</a>
+                            @php($leadEmbedUrl = $leadEpisode->transistorEmbedUrl())
+                            @if ($leadEmbedUrl)
+                                <div class="mt-4" x-data="episodePlayer">
+                                    {{-- Inert until Listen now is pressed, so Transistor loads only on request. --}}
+                                    <template x-if="loaded">
+                                        <div class="relative mb-3 overflow-hidden rounded-xl bg-white">
+                                            <iframe
+                                                x-ref="player"
+                                                src="{{ $leadEmbedUrl }}"
+                                                title="Listen to {{ $leadEpisode->title }}"
+                                                width="100%"
+                                                height="180"
+                                                scrolling="no"
+                                                class="relative z-10 block w-full border-0"
+                                            ></iframe>
+                                            <span class="text-navy/60 absolute inset-0 flex items-center justify-center text-sm">Loading player…</span>
+                                        </div>
+                                    </template>
+                                    <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+                                        <a
+                                            href="{{ route('episodes.show', $leadEpisode) }}"
+                                            x-show="notLoaded"
+                                            :role="buttonRole"
+                                            @click.prevent="load"
+                                            @keydown.space.prevent="load"
+                                            class="dispatch-button bg-gold text-navy hover:bg-gold-light inline-flex min-h-12 items-center gap-2 px-5 py-3 text-base font-semibold sm:text-sm"
+                                            ><svg aria-hidden="true" class="size-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg
+                                            >Listen now</a>
+                                        <a
+                                            href="{{ route('episodes.show', $leadEpisode) }}"
+                                            class="text-gold inline-flex min-h-12 items-center text-base font-semibold underline underline-offset-8 sm:text-sm"
+                                        >Episode details</a>
+                                    </div>
+                                </div>
+                            @else
+                                <a
+                                    href="{{ route('episodes.show', $leadEpisode) }}"
+                                    class="text-gold mt-4 inline-flex min-h-12 items-center text-base font-semibold underline underline-offset-8 sm:text-sm"
+                                >Episode details</a>
+                            @endif
                         </div>
                     @else
                         <div>
@@ -318,34 +354,51 @@
                             </p>
                         </div>
                     @endif
-                    <div class="divide-cream/15 border-cream/15 divide-y border-y">
-                        @forelse ($latestEpisodes->skip(1)->take(3) as $episode)
-                            <a
-                                href="{{ route('episodes.show', $episode) }}"
-                                class="group flex min-h-20 items-center gap-4 py-3"
-                                ><span
-                                    class="dispatch-play-button border-gold/60 text-gold group-hover:bg-gold group-hover:text-navy flex size-10 shrink-0 items-center justify-center rounded-full border"
-                                    ><svg aria-hidden="true" class="ml-0.5 size-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg
-                                ></span>
-                                <div class="min-w-0">
-                                    <p class="text-gold text-sm tabular-nums sm:text-xs">
-                                        Episode {{ $episode->episode_number }}
-                                        @if ($episode->duration_seconds) ·{{ EpisodePresenter::from($episode)->duration() }}@endif
-                                    </p>
-                                    <h3 class="font-heading text-cream group-hover:text-gold mt-1 line-clamp-2 text-lg [font-weight:560] tracking-[-0.012em]">
-                                        {{ $episode->title }}
-                                    </h3>
-                                </div></a>
-                        @empty
-                            <p class="text-cream/70 py-6 text-base/7 sm:text-[0.9375rem]/6">
-                                New conversations and practical park stories are on the way.
-                            </p>
-                        @endforelse
+                    @php($otherEpisodes = $latestEpisodes->skip(1))
+                    {{-- Point listeners to their podcast app once there is an episode to hear. --}}
+                    @php($showListenLinks = $podcastLinks !== [] && $latestEpisodes->isNotEmpty())
+                    <div>
+                        @if ($otherEpisodes->isNotEmpty())
+                            <div class="divide-cream/15 border-cream/15 divide-y border-y">
+                                @foreach ($otherEpisodes as $episode)
+                                    <a
+                                        href="{{ route('episodes.show', $episode) }}"
+                                        class="group flex min-h-20 items-center gap-4 py-3"
+                                        ><span
+                                            class="dispatch-play-button border-gold/60 text-gold group-hover:bg-gold group-hover:text-navy flex size-10 shrink-0 items-center justify-center rounded-full border"
+                                            ><svg aria-hidden="true" class="ml-0.5 size-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg
+                                        ></span>
+                                        <div class="min-w-0">
+                                            <p class="text-gold text-sm tabular-nums sm:text-xs">
+                                                Episode {{ $episode->episode_number }}
+                                                @if ($episode->duration_seconds) {{ '· '.EpisodePresenter::from($episode)->duration() }}@endif
+                                            </p>
+                                            <h3 class="font-heading text-cream group-hover:text-gold mt-1 line-clamp-2 text-lg [font-weight:560] tracking-[-0.012em]">
+                                                {{ $episode->title }}
+                                            </h3>
+                                        </div></a>
+                                @endforeach
+                            </div>
+                        @elseif (! $showListenLinks)
+                            <div class="border-cream/15 border-y">
+                                <p class="text-cream/70 py-6 text-base/7 sm:text-[0.9375rem]/6">
+                                    New conversations and practical park stories are on the way.
+                                </p>
+                            </div>
+                        @endif
+                        @if ($showListenLinks)
+                            <div @class(['mt-5' => $otherEpisodes->isNotEmpty()])>
+                                <p class="text-cream/70 text-base/7 sm:text-[0.9375rem]/6">
+                                    Listen wherever you get podcasts
+                                </p>
+                                <x-podcast-listen-links :links="$podcastLinks" :columns="true" class="mt-3" />
+                            </div>
+                        @endif
                     </div>
                 </div>
                 <a
                     href="{{ route('episodes.index') }}"
-                    class="text-gold mt-5 inline-flex min-h-12 items-center text-base font-semibold underline underline-offset-8 sm:hidden"
+                    class="text-gold mt-8 inline-flex min-h-12 items-center text-base font-semibold underline underline-offset-8 sm:hidden"
                 >All episodes</a>
             </div>
         </section>
