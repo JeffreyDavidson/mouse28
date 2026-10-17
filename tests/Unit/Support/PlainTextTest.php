@@ -17,8 +17,13 @@ test('plain text from markdown keeps the words without markdown syntax or html',
 ]);
 
 test('keeping a dash with the preceding word joins only spaced dashes with a non-breaking space', function (string $title, string $expected): void {
-    $text = PlainText::keepDashWithPrecedingWord($title);
+    // Arrange
+    $original = $title;
 
+    // Act
+    $text = PlainText::keepDashWithPrecedingWord($original);
+
+    // Assert
     expect($text)->toBe($expected);
 })->with([
     'em dash' => ['Planning a Calm Park Day — What Actually Helps', "Planning a Calm Park Day\u{00A0}— What Actually Helps"],

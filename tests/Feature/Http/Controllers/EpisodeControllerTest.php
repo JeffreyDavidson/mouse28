@@ -533,17 +533,26 @@ test('an empty podcast page leaves out the episode archive and points subscriber
         ->assertSeeHtml('href="#newsletter"');
 });
 
-test('episode titles keep a spaced dash with the word before it', function (): void {
+test('the podcast index keeps a spaced dash in an episode title with the word before it', function (): void {
+    // Arrange
+    Episode::factory()->create(['title' => 'Calm park day — what helps']);
+
+    // Act
+    $response = get(route('episodes.index'));
+
+    // Assert
+    $response->assertOk()
+        ->assertSeeHtml("Calm park day\u{00A0}— what helps");
+});
+
+test('an episode page keeps a spaced dash in its title with the word before it', function (): void {
     // Arrange
     $episode = Episode::factory()->create(['title' => 'Calm park day — what helps']);
 
     // Act
-    $indexResponse = get(route('episodes.index'));
-    $showResponse = get(route('episodes.show', $episode));
+    $response = get(route('episodes.show', $episode));
 
     // Assert
-    $indexResponse->assertOk()
-        ->assertSeeHtml("Calm park day\u{00A0}— what helps");
-    $showResponse->assertOk()
+    $response->assertOk()
         ->assertSeeHtml("Calm park day\u{00A0}— what helps");
 });
