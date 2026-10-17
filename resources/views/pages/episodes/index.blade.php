@@ -72,17 +72,7 @@
                     @endif
 
                     @if ($podcastLinks)
-                        <nav aria-label="Listen to the Mouse28 podcast" class="mt-6 flex flex-wrap gap-3">
-                            @foreach ($podcastLinks as $link)
-                                <a
-                                    href="{{ $link['url'] }}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    class="border-cream/20 text-cream hover:border-gold hover:text-gold inline-flex min-h-12 items-center rounded-full border px-5 py-2.5 text-sm font-semibold transition-colors"
-                                    >{{ $link['label'] }}<x-new-tab-notice
-                                /></a>
-                            @endforeach
-                        </nav>
+                        <x-podcast-listen-links :links="$podcastLinks" class="mt-6" />
                     @endif
                 </div>
             </div>

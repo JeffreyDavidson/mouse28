@@ -578,3 +578,19 @@ test('the blog reading progress bar sits below the sticky header so readers can 
         JS, 3000), true)
         ->assertNoJavaScriptErrors();
 });
+
+test('the homepage loads the latest episode player only when a visitor asks to listen', function (): void {
+    // Arrange
+    Episode::factory()->create(['transistor_url' => 'https://share.transistor.fm/s/428d650c']);
+
+    // Act
+    $page = visit(route('home'));
+    $before = $page->script('document.querySelectorAll(\'iframe[src*="share.transistor.fm"]\').length');
+    $page->click('Listen here');
+
+    // Assert
+    expect($before)->toBe(0);
+    $page->assertScript(browserWaitForScript('document.querySelector(\'iframe[src="https://share.transistor.fm/e/428d650c"]\') !== null'), true)
+        ->assertDontSee('Listen here')
+        ->assertSee('Episode details');
+});

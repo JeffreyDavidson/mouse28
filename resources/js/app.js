@@ -116,6 +116,20 @@ function registerAlpineComponents(Alpine) {
         },
     }));
 
+    // The homepage's latest episode loads Transistor's player only when a visitor asks for it,
+    // so the page makes no request to Transistor until then.
+    Alpine.data('episodePlayer', () => ({
+        loaded: false,
+
+        load() {
+            this.loaded = true;
+        },
+
+        get notLoaded() {
+            return !this.loaded;
+        },
+    }));
+
     Alpine.data('transcriptToggle', () => ({
         expanded: false,
 

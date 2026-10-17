@@ -3,7 +3,10 @@
 use App\Models\Category;
 use App\Models\Episode;
 use App\Models\Guide;
+use App\Models\Podcast;
 use App\Models\Post;
+use App\Support\PodcastLinks;
+use App\Support\PrimaryPodcast;
 use App\ViewModels\HomeViewModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -34,7 +37,7 @@ test('homepage content queries select only fields rendered by their cards', func
         ->not->toHaveKeys(['content', 'meta_description'])
         ->and($data['latestEpisodes']->sole()
             ->getAttributes())
-        ->toHaveKeys(['id', 'slug', 'title', 'description', 'episode_number', 'duration_seconds'])
+        ->toHaveKeys(['id', 'slug', 'title', 'description', 'episode_number', 'duration_seconds', 'transistor_url'])
         ->not->toHaveKeys(['show_notes', 'transcript', 'meta_description']);
 });
 
@@ -145,4 +148,32 @@ test('homepage planning posts follow the configured planning categories', functi
     $data = app(HomeViewModel::class)->data();
 
     expect($data['planningPosts']->modelKeys())->toBe([$planningPost->id]);
+});
+
+test('homepage podcast links are the show links the podcast archive uses', function (): void {
+    // Arrange
+    Podcast::query()->create([
+        'name' => 'Mouse28',
+        'apple_url' => 'https://podcasts.apple.com/show/mouse28',
+        'spotify_url' => 'https://open.spotify.com/show/mouse28',
+    ]);
+
+    // Act
+    $data = app(HomeViewModel::class)->data();
+
+    // Assert
+    expect($data['podcastLinks'])->toBe(PodcastLinks::for(app(PrimaryPodcast::class)->current()))
+        ->and(array_column($data['podcastLinks'], 'label'))
+        ->toBe(['Apple Podcasts', 'Spotify', 'RSS Feed']);
+});
+
+test('homepage offers no listen links when the show has only its RSS feed', function (): void {
+    // Arrange
+    Podcast::query()->create(['name' => 'Mouse28']);
+
+    // Act
+    $data = app(HomeViewModel::class)->data();
+
+    // Assert
+    expect($data['podcastLinks'])->toBeEmpty();
 });
