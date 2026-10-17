@@ -47,6 +47,13 @@ is the first counter-numbered release.
    push CI, `Deploy staging` deploys the tested full SHA. The staging workflow
    rejects a stale candidate if its source branch has advanced. Review public
    pages, affected behavior, and the authenticated admin boundary on staging.
+   Once the release PR is open (step 4), run the **Staging Verifier** agent on
+   the candidate (release skill, step 6). It reads push CI and the
+   `Deploy staging` run for the exact SHA, including that run's own smoke step
+   between its marker checks, maps each PR in the release to a check that
+   covers it, and ends with "Ready to ship: yes/no". Put its report in the
+   release PR description. A "no" blocks the release until a new candidate
+   passes.
 4. Open a release PR from the release branch into `main` with a Conventional
    Commit title (`chore(release): release YYYY.MM.N`). After review and
    approval, merge it with a regular merge commit to preserve ancestry. Do not
@@ -181,6 +188,9 @@ After success, freshly verify the PR head SHA, merge state and checks before mer
    tag, `vYYYY.MM.N`, on the full deployed SHA. Verify no existing tag uses that
    version, push the tag without force, and record the Forge deployment and
    workflow run. Never move or reuse a tag.
+8. Once the tag is on the remote, create a GitHub Release for it with the
+   release notes (the release's meta-repo cycle notes):
+   `gh release create <tag> --verify-tag --title "<tag> — <short name>" --notes-file <notes>`.
 
 The staging attempt is required; do not infer it from the current run after a
 retry. Use the values captured from the staging execution you reviewed:
@@ -212,16 +222,39 @@ branch history before updating `develop`.
 
 ## Hotfixes and rollback
 
-If `main` matches the deployed revision, a focused fix follows the normal
-feature-to-`develop`, release, staging and approval path. If `main` contains
-unreleased work, start `hotfix/<description>` from the verified production
-tag/SHA, not the moving tip of `main`. Agree an exceptional staging/promotion
-procedure first: the normal pipeline accepts release and main candidates.
-Review and test that isolated fix, obtain explicit production approval, then
-promptly integrate it into `develop` and `main` through the agreed release path.
+An urgent production fix that cannot wait for the next release uses a hotfix:
+branch `hotfix/<description>` from `main`, open a PR into `main`, and squash
+merge it after review and CI (as `AGENTS.md` says). The `main` merge commit then
+follows the normal path: push CI, `Deploy staging` of that exact revision,
+approved `Promote production`, and a patch tag. Leave `develop` alone; the fix
+reaches it through the next release's fast-forward sync. If `main` holds a
+release that has merged but not been promoted yet, promote that release first.
 
 Rollback is an explicit operational decision, not automatic branch rewriting.
 Verify the previous release remains compatible with the current database and
 stored media before reactivation. Restore data only through a separately
 approved recovery procedure. Record failed releases and recovery; do not move
 tags to conceal them.
+
+## Release profile
+
+Read by the `release` agent skill and the Staging Verifier. Keep it in step with the process above.
+
+```yaml
+version_scheme: calendar
+tag_format: vYYYY.MM.N          # N starts at 0 each month
+integration_branch: develop
+release_base: develop
+release_branch: release/YYYY.MM.N
+release_pr_merge: merge          # regular merge commit; never squash or rebase
+release_commit: false            # the release branch is exactly the tip of develop
+staging: workflow "Deploy staging" (workflow_run after push CI on main and release/**)
+staging_smoke: the "Run application smoke checks" step inside the Deploy staging run, between its two marker checks of the candidate SHA
+staging_verify: https://staging.mouse28.com/deployment.json (revision), https://staging.mouse28.com/up (200); behind Cloudflare Access, so read inside the Deploy staging run
+verifier: staging-verifier       # its "Ready to ship" report goes in the release PR description; "no" blocks the release
+promote: workflow promote-production.yml, inputs revision (40-char SHA) + staging_run_id + staging_run_attempt, protected `production` environment; never promote while another cold-moon site is deploying
+verify: https://mouse28.com/deployment.json (revision), https://mouse28.com/up (200)
+github_release: required         # a GitHub Release with the notes for every tag
+sync_integration: fast-forward
+backup_gate: the production deploy script takes and integrity-checks a database backup (sqlite3 .backup + PRAGMA integrity_check) automatically when the release has pending migrations and stops before migrating if either fails; the media backup stays a manual, independently verified step (see operations.md)
+```

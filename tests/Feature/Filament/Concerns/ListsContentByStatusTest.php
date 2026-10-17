@@ -22,7 +22,7 @@ dataset('content list pages', [
     'guides' => [ListGuides::class, fn (): GuideFactory => Guide::factory()],
 ]);
 
-test('the guide list page builds its tabs and header from the shared concern', function (string $listPage): void {
+test('the guide list page builds its tabs from the shared concern', function (string $listPage): void {
     expect(class_uses_recursive($listPage))->toContain(ListsContentByStatus::class);
 })->with([
     'guides' => ListGuides::class,
@@ -47,10 +47,14 @@ test('the published tab leaves out scheduled content', function (string $listPag
         ->assertCanNotSeeTableRecords([$scheduled]);
 })->with('content list pages');
 
-test('the header shows the content type title, description and create link', function (ContentType $type, string $subtitle, string $createLabel): void {
-    get($type->resource()::getUrl())
-        ->assertOk()
-        ->assertSeeInOrder([$type->pluralLabel(), $subtitle, 'Published', 'Drafts', $type->resource()::getUrl('create'), $createLabel]);
+test('the Filament header shows the content type title, description and create link', function (ContentType $type, string $subtitle, string $createLabel): void {
+    // Act
+    $response = get($type->resource()::getUrl());
+
+    // Assert
+    $response->assertOk()
+        ->assertSeeHtml('fi-header-heading')
+        ->assertSeeInOrder([$type->pluralLabel(), $subtitle, $type->resource()::getUrl('create'), $createLabel, 'Drafts', 'Published']);
 })->with([
-    'guides' => [ContentType::Guide, 'Manage your accessibility guides', 'New Guide'],
+    'guides' => [ContentType::Guide, 'Manage your accessibility guides', 'New guide'],
 ]);

@@ -9,6 +9,7 @@ use Filament\Forms\Components\Select;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use JeffreyDavidson\CreatorKit\Enums\PublishStatus;
+use JeffreyDavidson\CreatorKit\Filament\Forms\Components\SourceReviewSection;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\get;
@@ -62,6 +63,79 @@ test('authenticated user can render the create form', function (): void {
         ->assertOk()
         ->assertSee('Create Guide')
         ->assertSee('Add a new accessibility guide');
+});
+
+test('the create page shows the Filament heading and breadcrumbs', function (): void {
+    // Arrange
+    actingAsAdmin();
+
+    // Act
+    $response = get(GuideResource::getUrl('create'));
+
+    // Assert
+    $response->assertOk()
+        ->assertSeeHtml('fi-header-heading')
+        ->assertSeeHtml('fi-breadcrumbs')
+        ->assertSeeInOrder(['Guides', 'Create Guide', 'Add a new accessibility guide']);
+});
+
+test('the guide form opens its source review section and says publishing needs it', function (): void {
+    // Arrange
+    actingAsAdmin();
+
+    // Act
+    $response = get(GuideResource::getUrl('create'));
+
+    // Assert
+    $response->assertOk()
+        ->assertSee('Required to publish. Link the official source this guide relies on')
+        ->assertDontSee('Optional. Track the official source');
+
+    // Act
+    $section = livewire(CreateGuide::class)
+        ->instance()
+        ->form
+        ->getComponent(fn (mixed $component): bool => $component instanceof SourceReviewSection);
+
+    // Assert
+    expect($section instanceof SourceReviewSection && ! $section->isCollapsed())->toBeTrue();
+});
+
+test('the guide form places tags after the title, category and authors', function (): void {
+    // Arrange
+    actingAsAdmin();
+
+    // Act
+    $response = get(GuideResource::getUrl('create'));
+
+    // Assert
+    $response->assertOk()
+        ->assertSeeInOrder(['Title', 'Category', 'Authors', 'Tags']);
+});
+
+test('a new guide credits each author exactly once by default', function (): void {
+    // Arrange
+    actingAsAdmin();
+    $authorIds = User::authorIds();
+
+    // Act
+    $component = livewire(CreateGuide::class);
+
+    // Assert
+    expect($component->get('data.authors'))->toEqual($authorIds);
+
+    // Act
+    $component->fillForm(['title' => 'Sample guide', 'slug' => 'sample-guide', 'category' => GuideCategory::cases()[0], 'content' => 'Draft text'])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    // Assert
+    expect(Guide::query()
+        ->sole()
+        ->authors->modelKeys())->toBe($authorIds)
+        ->and(DB::table('guide_user')
+            ->count())
+        ->toBe(count($authorIds));
 });
 
 test('create form explains editorial requirements', function (): void {

@@ -49,6 +49,59 @@ test('the footer link columns stay side by side on wide screens', function (): v
     }
 });
 
+test('footer links keep forty-eight pixel tap targets on tablets', function (int $width): void {
+    // Arrange
+    $footerLinkHeightsScript = <<<'JS'
+        (() => [...document.querySelectorAll('footer a[href]')]
+            .filter((link) => link.getBoundingClientRect().height > 0)
+            .every((link) => link.getBoundingClientRect().height >= 48))()
+        JS;
+
+    // Act
+    $page = visit(route('home'));
+    $page->resize($width, 900);
+
+    // Assert
+    $page->assertScript($footerLinkHeightsScript, true);
+})->with([640, 768, 1023]);
+
+test('the article drop cap stands out from the page', function (): void {
+    // Arrange
+    $post = Post::factory()->create(['content' => "Arriving early gave us a quiet hour.\n\nA second paragraph."]);
+
+    // Act
+    $page = visit(route('blog.show', $post));
+
+    // Assert
+    $page->assertScript(<<<'JS'
+        (() => {
+            const channel = (value) => {
+                const normalized = value / 255;
+
+                return normalized <= 0.03928 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+            };
+            const rgba = (color) => color.match(/\d+(\.\d+)?/g).map(Number);
+            const luminance = ([red, green, blue]) => (0.2126 * channel(red)) + (0.7152 * channel(green)) + (0.0722 * channel(blue));
+            const paragraph = document.querySelector('.blog-article-content > p');
+            let background = [255, 255, 255];
+
+            for (let ancestor = paragraph; ancestor; ancestor = ancestor.parentElement) {
+                const color = rgba(getComputedStyle(ancestor).backgroundColor);
+
+                if (color.length === 3 || color[3] === 1) {
+                    background = color;
+                    break;
+                }
+            }
+
+            const dropCap = luminance(rgba(getComputedStyle(paragraph, '::first-letter').color));
+            const page = luminance(background);
+
+            return (Math.max(dropCap, page) + 0.05) / (Math.min(dropCap, page) + 0.05) >= 3;
+        })()
+        JS, true);
+});
+
 test('the newsletter archive and issue pages fit small screens without accessibility issues', function (): void {
     $issue = NewsletterIssue::factory()->create(['content' => "## A heading\n\nSome *formatted* text with a [link](https://example.test)."]);
 

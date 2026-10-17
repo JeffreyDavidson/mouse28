@@ -537,6 +537,39 @@ test('dashboard remains readable with long content on desktop and mobile', funct
     }
 })->group('browser-smoke');
 
+test('primary buttons use the brand purple with white text and darken on hover', function (): void {
+    // Arrange
+    actingAsAdmin();
+    $button = 'document.querySelector(".fi-header .fi-btn.fi-color-primary")';
+
+    // Act
+    $page = visit(PostResource::getUrl());
+
+    // Assert
+    $page->assertScript("getComputedStyle({$button}).backgroundColor", 'rgb(91, 62, 158)')
+        ->assertScript("getComputedStyle({$button}).color", 'rgb(255, 255, 255)');
+
+    // Act
+    $page->hover('.fi-header .fi-btn.fi-color-primary');
+
+    // Assert
+    $page->assertScript(browserWaitForScript("getComputedStyle({$button}).backgroundColor === 'rgb(58, 35, 112)'"), true)
+        ->assertNoJavaScriptErrors();
+})->group('browser-smoke');
+
+test('dashboard shows all five metrics in one row at 1440 pixels', function (): void {
+    // Arrange
+    actingAsAdmin();
+
+    // Act
+    $page = visit(Dashboard::getUrl(panel: 'admin'));
+    $page->resize(1440, 1000);
+
+    // Assert
+    $page->assertScript(browserWaitForScript('new Set([...document.querySelectorAll("dl > div")].map((metric) => Math.round(metric.getBoundingClientRect().top))).size === 1 && document.querySelectorAll("dl > div").length === 5'), true)
+        ->assertNoJavaScriptErrors();
+})->group('browser-smoke');
+
 test('admin login exposes no unnamed artwork or decorative glyphs', function (): void {
     visit(route('filament.admin.auth.login'))
         ->assertVisible('input[type="email"]')

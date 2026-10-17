@@ -85,6 +85,100 @@ test('on wide screens the featured story lines up with the latest stories and cl
         JS), true);
 });
 
+test('below 1280 the hero photo sits under the introduction in a wide frame', function (): void {
+    // Arrange
+    $page = visit(route('home'));
+
+    foreach ([768, 1024] as $width) {
+        // Act
+        $page->resize($width, 900);
+
+        // Assert: offset sizes ignore the frame's slight tilt, so the ratio is the frame's own.
+        $page->assertScript(<<<'JS'
+            (() => {
+                const paper = document.querySelector('[data-dispatch-motion="hero-paper"]');
+                const photo = document.querySelector('.hero-split-photo');
+                const ratio = photo.offsetWidth / photo.offsetHeight;
+
+                return photo.offsetTop >= paper.offsetTop + paper.offsetHeight
+                    && ratio > 1.7
+                    && ratio < 1.8;
+            })()
+            JS, true);
+    }
+});
+
+test('from 1280 the hero photo sits beside the introduction', function (): void {
+    // Arrange
+    $page = visit(route('home'));
+
+    // Act
+    $page->resize(1280, 900);
+
+    // Assert
+    $page->assertScript(<<<'JS'
+        (() => {
+            const paper = document.querySelector('[data-dispatch-motion="hero-paper"]');
+            const photo = document.querySelector('.hero-split-photo');
+
+            return photo.offsetLeft >= paper.offsetLeft + paper.offsetWidth
+                && photo.offsetTop === paper.offsetTop;
+        })()
+        JS, true);
+});
+
+test('on tablets and laptops the featured story sits beside its image and clamps a long title to four lines', function (): void {
+    // Arrange
+    Post::factory()->create([
+        'title' => 'What changed when we stopped trying to do everything: a slower, sensory-friendly week at Walt Disney World with our family and friends',
+    ]);
+    $page = visit(route('home'));
+
+    foreach ([768, 1024, 1440] as $width) {
+        // Act
+        $page->resize($width, 900);
+
+        // Assert
+        $page->assertScript(<<<'JS'
+            (() => {
+                const book = document.querySelector('.dispatch-feature-book');
+                const image = book.querySelector('[data-post-artwork-fallback], img').getBoundingClientRect();
+                const title = book.querySelector('.dispatch-book-title p.font-heading');
+                const text = title.getBoundingClientRect();
+                const lines = Math.round(title.clientHeight / parseFloat(getComputedStyle(title).lineHeight));
+
+                return image.right <= text.left
+                    && lines === 4
+                    && title.scrollHeight > title.clientHeight;
+            })()
+            JS, true);
+    }
+});
+
+test('on the widest screens the featured story keeps its book layout without the summary', function (): void {
+    // Arrange
+    Post::factory()->create([
+        'excerpt' => 'Shaded paths and low-noise benches we use when the day gets loud.',
+    ]);
+
+    // Act
+    $page = visit(route('home'))->resize(1600, 1000);
+
+    // Assert
+    $page->assertScript(<<<'JS'
+        (() => {
+            const book = document.querySelector('.dispatch-feature-book');
+            const title = book.querySelector('.dispatch-book-title');
+            const frame = book.querySelector('.dispatch-book-title + div');
+
+            // Offsets ignore the book's tilt, so the title is measured as sitting above the image.
+            return title.offsetTop + title.offsetHeight <= frame.offsetTop
+                && book.innerText.includes('Read the story') === false
+                && book.innerText.includes('Shaded paths') === false;
+        })()
+        JS, true);
+});
+
 test('long public content and portrait artwork stay contained', function (): void {
     $longTitle = str_repeat('AccessibilityResilience', 10);
     $longToken = str_repeat('sensoryfriendlyplanning', 18);

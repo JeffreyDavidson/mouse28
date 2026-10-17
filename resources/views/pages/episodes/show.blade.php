@@ -235,7 +235,7 @@
                                     <x-post-artwork
                                         :post="$post"
                                         :compact="true"
-                                        class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025]"
+                                        class="aspect-[4/3] w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.025] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                                     />
                                 </a>
                                 <h3 class="font-heading text-navy group-hover:text-purple mt-4 text-xl [font-weight:600] transition-colors">
