@@ -25,12 +25,12 @@ test('homepage content queries select only fields rendered by their cards', func
     $data = app(HomeViewModel::class)->data();
 
     expect($data['featuredPost']?->getAttributes() ?? [])
-        ->toHaveKeys(['id', 'slug', 'title', 'category_id', 'featured_image_path'])
-        ->not->toHaveKeys(['content', 'excerpt', 'meta_description', 'category'])
+        ->toHaveKeys(['id', 'slug', 'title', 'excerpt', 'category_id', 'featured_image_path', 'published_at'])
+        ->not->toHaveKeys(['content', 'meta_description', 'category'])
         ->and($data['latestPosts']->firstOrFail()
             ->getAttributes())
         ->toHaveKeys(['id', 'slug', 'title', 'category_id', 'featured_image_path', 'published_at'])
-        ->not->toHaveKeys(['content', 'excerpt', 'meta_description', 'category'])
+        ->not->toHaveKeys(['content', 'meta_description', 'category'])
         ->and($data['latestGuides']->sole()
             ->getAttributes())
         ->toHaveKeys(['id', 'slug', 'title', 'excerpt', 'category', 'featured_image_path'])

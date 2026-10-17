@@ -1467,10 +1467,6 @@
         padding-bottom: 4.5rem;
     }
 
-    .dispatch-hero > div:last-child {
-        min-height: 36rem;
-    }
-
     .dispatch-blog-cluster {
         margin-top: -7.5rem;
     }
@@ -1513,7 +1509,6 @@
     }
 
     .dispatch-latest-sheet {
-        min-height: 28rem;
         background-image:
             radial-gradient(circle at 84% 16%, rgb(212 168 67 / 12%) 0 1px, transparent 1.5px),
             linear-gradient(105deg, transparent 0 72%, rgb(91 62 158 / 4%) 72% 73%, transparent 73% 100%);
@@ -1602,10 +1597,6 @@
         --dispatch-resting-rotation: 1deg;
     }
 
-    .dispatch-latest-sheet {
-        min-height: 33rem;
-    }
-
     .dispatch-guide-spread {
         min-height: 36rem;
     }
@@ -1614,6 +1605,13 @@
 @media (min-width: 768px) {
     .dispatch-blog-cluster {
         margin-top: -4rem;
+    }
+}
+
+/* Side by side, the photo stretches to the paper's height; this keeps it from becoming a narrow strip. */
+@media (min-width: 1280px) {
+    .dispatch-hero > div:last-child {
+        min-height: 36rem;
     }
 }
 
@@ -1628,16 +1626,8 @@
         padding-bottom: 2rem;
     }
 
-    .dispatch-hero > div:last-child {
-        min-height: 0;
-    }
-
     .dispatch-blog-cluster {
         margin-top: 0;
-    }
-
-    .dispatch-latest-sheet {
-        min-height: 0;
     }
 }
 
