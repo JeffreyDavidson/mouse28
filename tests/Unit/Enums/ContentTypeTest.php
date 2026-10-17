@@ -24,6 +24,6 @@ test('content types expose their label, colour, icon, text class and resource', 
         ->toBe($resource);
 })->with([
     'post' => [ContentType::Post, 'Post', 'Blog Posts', 'primary', Heroicon::OutlinedDocumentText, 'text-mouse-purple', PostResource::class],
-    'episode' => [ContentType::Episode, 'Episode', 'Episodes', 'warning', Heroicon::OutlinedMicrophone, 'text-mouse-gold-dark', EpisodeResource::class],
+    'episode' => [ContentType::Episode, 'Episode', 'Episodes', 'warning', Heroicon::OutlinedMicrophone, 'text-mouse-gold-ink', EpisodeResource::class],
     'guide' => [ContentType::Guide, 'Guide', 'Guides', 'info', Heroicon::OutlinedBookOpen, 'text-mouse-teal', GuideResource::class],
 ]);

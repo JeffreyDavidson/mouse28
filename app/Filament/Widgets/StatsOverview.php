@@ -62,7 +62,7 @@ class StatsOverview extends Widget
                 'value' => $drafts,
                 'icon' => Heroicon::OutlinedPencilSquare,
                 'description' => 'All content',
-                'textClass' => 'text-mouse-gold-dark',
+                'textClass' => 'text-mouse-gold-ink',
             ],
             [
                 'label' => 'Subscribers',

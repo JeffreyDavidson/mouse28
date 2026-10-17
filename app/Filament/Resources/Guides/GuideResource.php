@@ -33,7 +33,7 @@ class GuideResource extends Resource
     protected static string|\UnitEnum|null $navigationGroup = NavigationGroup::Content;
 
     #[\Override]
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 3;
 
     #[\Override]
     public static function getNavigationIcon(): BackedEnum|Htmlable|string|null

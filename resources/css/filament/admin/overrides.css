@@ -15,6 +15,18 @@
     outline-offset: 3px;
 }
 
+/*
+ * Filament picks the lightest primary shade that keeps its own text readable, which lands on a
+ * pale lilac with dark text. Primary buttons use the brand purple with white text instead
+ * (about 8:1), keeping Filament's hover, focus ring and disabled opacity.
+ */
+.fi-body .fi-btn.fi-color-primary:not(.fi-outlined) {
+    --bg: var(--color-mouse-purple);
+    --text: white;
+    --hover-bg: var(--color-mouse-purple-dark);
+    --hover-text: white;
+}
+
 .fi-body .fi-btn:not(:disabled):active {
     transform: translateY(1px);
 }

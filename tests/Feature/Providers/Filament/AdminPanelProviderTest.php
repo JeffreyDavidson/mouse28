@@ -2,6 +2,7 @@
 
 use App\Enums\NavigationGroup;
 use App\Filament\Pages\PodcastSettings;
+use App\Filament\Resources\AssetReviews\AssetReviewResource;
 use App\Filament\Resources\Guides\GuideResource;
 use App\Filament\Widgets\ContentCalendar;
 use App\Filament\Widgets\InspirationWidget;
@@ -97,11 +98,12 @@ test('admin panel uses the site favicon', function (): void {
 
 test('admin navigation keeps each item in its group and sort position', function (): void {
     $positions = [
+        'Posts' => [PostResource::getNavigationGroup(), PostResource::getNavigationSort()],
         'Episodes' => [EpisodeResource::getNavigationGroup(), EpisodeResource::getNavigationSort()],
         'Guides' => [GuideResource::getNavigationGroup(), GuideResource::getNavigationSort()],
-        'Posts' => [PostResource::getNavigationGroup(), PostResource::getNavigationSort()],
         'Categories' => [CategoryResource::getNavigationGroup(), CategoryResource::getNavigationSort()],
         'Newsletter issues' => [NewsletterIssueResource::getNavigationGroup(), NewsletterIssueResource::getNavigationSort()],
+        'Asset reviews' => [AssetReviewResource::getNavigationGroup(), AssetReviewResource::getNavigationSort()],
         'Contact inquiries' => [ContactInquiryResource::getNavigationGroup(), ContactInquiryResource::getNavigationSort()],
         'Subscribers' => [SubscriberResource::getNavigationGroup(), SubscriberResource::getNavigationSort()],
         'Social profiles' => [SocialProfileResource::getNavigationGroup(), SocialProfileResource::getNavigationSort()],
@@ -109,16 +111,29 @@ test('admin navigation keeps each item in its group and sort position', function
     ];
 
     expect($positions)->toBe([
-        'Episodes' => [NavigationGroup::Content, 1],
-        'Guides' => [NavigationGroup::Content, 1],
-        'Posts' => [NavigationGroup::Content, 2],
-        'Categories' => [NavigationGroup::Content, 2],
-        'Newsletter issues' => [NavigationGroup::Content, 3],
+        'Posts' => [NavigationGroup::Content, 1],
+        'Episodes' => [NavigationGroup::Content, 2],
+        'Guides' => [NavigationGroup::Content, 3],
+        'Categories' => [NavigationGroup::Content, 4],
+        'Newsletter issues' => [NavigationGroup::Content, 5],
+        'Asset reviews' => [NavigationGroup::Content, 6],
         'Contact inquiries' => [NavigationGroup::Communication, 1],
         'Subscribers' => [NavigationGroup::Communication, 2],
         'Social profiles' => [NavigationGroup::Settings, 2],
         'Podcast settings' => [NavigationGroup::Settings, null],
     ]);
+});
+
+test('the content menu lists posts first, then episodes, guides, categories, newsletter issues and asset reviews', function (): void {
+    // Arrange
+    actingAsAdmin();
+
+    // Act
+    $response = get(Dashboard::getUrl(panel: 'admin'));
+
+    // Assert
+    $response->assertOk()
+        ->assertSeeHtmlInOrder(['fi-sidebar-nav', 'Posts', 'Episodes', 'Guides', 'Categories', 'Newsletter Issues', 'Asset Reviews', 'Contact Inquiries']);
 });
 
 test('non admin user cannot access the admin panel', function (): void {

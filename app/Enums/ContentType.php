@@ -61,7 +61,7 @@ enum ContentType: string implements HasColor, HasIcon, HasLabel
     {
         return match ($this) {
             self::Post => 'text-mouse-purple',
-            self::Episode => 'text-mouse-gold-dark',
+            self::Episode => 'text-mouse-gold-ink',
             self::Guide => 'text-mouse-teal',
         };
     }

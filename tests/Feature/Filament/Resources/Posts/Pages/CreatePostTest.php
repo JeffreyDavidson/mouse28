@@ -210,6 +210,34 @@ test('post creation requires at least one author', function (): void {
     expect(Post::query()->count())->toBe(0);
 });
 
+test('a new post credits each author exactly once by default', function (): void {
+    // Arrange
+    actingAsAdmin();
+    $authorIds = User::authorIds();
+    $categoryId = Category::factory()
+        ->create()
+        ->id;
+
+    // Act
+    $component = livewire(CreatePost::class);
+
+    // Assert
+    expect($component->get('data.authors'))->toEqual($authorIds);
+
+    // Act
+    $component->fillForm(['title' => 'Sample draft', 'slug' => 'sample-draft', 'category_id' => $categoryId])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    // Assert
+    expect(Post::query()
+        ->sole()
+        ->authors->modelKeys())->toBe($authorIds)
+        ->and(DB::table('post_user')
+            ->count())
+        ->toBe(count($authorIds));
+});
+
 test('a new post credits the selected authors in the order they were chosen', function (): void {
     [$jeffreyId, $cassieId] = User::authorIds();
     actingAs(User::factory()

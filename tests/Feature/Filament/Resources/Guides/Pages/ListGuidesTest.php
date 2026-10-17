@@ -22,7 +22,7 @@ test('authenticated user can render the resource listing', function (): void {
         ->assertOk()
         ->assertSee('Guides')
         ->assertSee('Manage your accessibility guides')
-        ->assertSee('New Guide');
+        ->assertSee('New guide');
 });
 
 test('content table shows readiness and the persisted publish status', function (): void {
@@ -37,6 +37,25 @@ test('content table shows readiness and the persisted publish status', function 
         ->assertOk()
         ->assertSee('Readiness')
         ->assertSee('In Review');
+});
+
+test('the guides table words readiness and the publish date like the posts table', function (): void {
+    // Arrange
+    actingAsAdmin();
+    Guide::factory()
+        ->draft()
+        ->create(['excerpt' => null, 'source_url' => null]);
+
+    // Act
+    $response = get(GuideResource::getUrl());
+
+    // Assert
+    $response->assertOk()
+        ->assertSee('2 to fix')
+        ->assertSee('Missing: Add an excerpt, Add an official source')
+        ->assertSee('Published')
+        ->assertSee('Not published')
+        ->assertDontSee('Published at');
 });
 
 test('draft and scheduled tabs filter guides', function (): void {
@@ -60,7 +79,7 @@ test('draft and scheduled tabs filter guides', function (): void {
         ->assertCanNotSeeTableRecords([$draft]);
 });
 
-test('header does not count scheduled guides as published', function (): void {
+test('the tab counts do not count scheduled guides as published', function (): void {
     Guide::factory()->create();
     Guide::factory()
         ->scheduled()
@@ -73,15 +92,13 @@ test('header does not count scheduled guides as published', function (): void {
         ->admin()
         ->create());
 
-    $page = livewire(ListGuides::class);
-    $component = $page->instance();
+    $tabs = livewire(ListGuides::class)
+        ->instance()
+        ->getTabs();
 
-    expect($component->getHeader()
-        ?->getData())
-        ->toMatchArray([
-            'published' => 1,
-            'drafts' => 2,
-        ]);
+    expect($tabs['published']->getBadge())->toBe('1')
+        ->and($tabs['drafts']->getBadge())
+        ->toBe('2');
 });
 
 test('the review due filter and source review column show guides that need review', function (): void {
