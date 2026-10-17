@@ -256,5 +256,5 @@ promote: workflow promote-production.yml, inputs revision (40-char SHA) + stagin
 verify: https://mouse28.com/deployment.json (revision), https://mouse28.com/up (200)
 github_release: required         # a GitHub Release with the notes for every tag
 sync_integration: fast-forward
-backup_gate: manual, independently verified database and media backup before production changes (see operations.md); an automatic pre-migration backup in the deploy script is planned
+backup_gate: the production deploy script takes and integrity-checks a database backup (sqlite3 .backup + PRAGMA integrity_check) automatically when the release has pending migrations and stops before migrating if either fails; the media backup stays a manual, independently verified step (see operations.md)
 ```
