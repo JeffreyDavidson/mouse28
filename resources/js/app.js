@@ -116,6 +116,24 @@ function registerAlpineComponents(Alpine) {
         },
     }));
 
+    // The homepage's latest episode loads Transistor's player only when a visitor asks for it,
+    // so the page makes no request to Transistor until then. The link acts as a button once
+    // scripts run (without them it opens the episode page), and focus moves into the player
+    // because the link hides itself.
+    Alpine.data('episodePlayer', () => ({
+        loaded: false,
+        buttonRole: 'button',
+
+        load() {
+            this.loaded = true;
+            this.$nextTick(() => this.$refs.player?.focus());
+        },
+
+        get notLoaded() {
+            return !this.loaded;
+        },
+    }));
+
     Alpine.data('transcriptToggle', () => ({
         expanded: false,
 

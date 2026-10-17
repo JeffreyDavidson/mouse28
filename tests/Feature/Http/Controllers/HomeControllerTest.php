@@ -22,7 +22,8 @@ test('homepage returns its view model data', function (): void {
         ->assertViewHas('latestPosts')
         ->assertViewHas('latestEpisodes')
         ->assertViewHas('latestGuides')
-        ->assertViewHas('planningPosts');
+        ->assertViewHas('planningPosts')
+        ->assertViewHas('podcastLinks');
 });
 
 test('homepage stays within its query budget as content grows', function (): void {
@@ -73,6 +74,118 @@ test('homepage renders configured podcast distribution links', function (): void
     $response->assertSeeHtml(config()->string('podcast.rss_url'))
         ->assertDontSee('Apple Podcasts · Soon')
         ->assertDontSee('Spotify · Soon');
+});
+
+test('the podcast section points listeners to their podcast app under the episode list', function (): void {
+    // Arrange
+    Podcast::query()->create([
+        'name' => 'Mouse28',
+        'apple_url' => 'https://podcasts.apple.com/show/mouse28',
+        'spotify_url' => 'https://open.spotify.com/show/mouse28',
+        'youtube_url' => 'https://youtube.com/@mouse28',
+    ]);
+    Episode::factory()
+        ->count(2)
+        ->create();
+
+    // Act
+    $response = get(route('home'));
+
+    // Assert
+    $response->assertOk()
+        ->assertSeeInOrder([
+            'From the Podcast',
+            'Listen wherever you get podcasts',
+            'Apple Podcasts',
+            'Spotify',
+            'YouTube',
+            'RSS Feed',
+            'Our Full Story',
+        ])
+        ->assertSeeHtml('class="grid grid-cols-2 gap-2 mt-3"')
+        ->assertSeeHtml('href="https://podcasts.apple.com/show/mouse28"');
+});
+
+test('the podcast section offers no listen links until there is an episode and an app to hear it in', function (bool $withAppLink, int $episodes): void {
+    // Arrange
+    Podcast::query()->create([
+        'name' => 'Mouse28',
+        'apple_url' => $withAppLink ? 'https://podcasts.apple.com/show/mouse28' : null,
+    ]);
+    Episode::factory()
+        ->count($episodes)
+        ->create();
+
+    // Act
+    $response = get(route('home'));
+
+    // Assert
+    $response->assertOk()
+        ->assertDontSee('Listen wherever you get podcasts')
+        ->assertSee('New conversations and practical park stories are on the way.');
+})->with([
+    'only the RSS feed' => [false, 1],
+    'no episodes yet' => [true, 0],
+]);
+
+test('the listen links take the place of the coming-soon line when only the latest episode exists', function (): void {
+    // Arrange
+    Podcast::query()->create(['name' => 'Mouse28', 'spotify_url' => 'https://open.spotify.com/show/mouse28']);
+    Episode::factory()->create();
+
+    // Act
+    $response = get(route('home'));
+
+    // Assert
+    $response->assertOk()
+        ->assertSee('Listen wherever you get podcasts')
+        ->assertDontSee('New conversations and practical park stories are on the way.');
+});
+
+test('the podcast episode list separates the episode number and duration with a spaced dot', function (): void {
+    // Arrange
+    Episode::factory()->create(['episode_number' => 1, 'published_at' => now()->subDay()]);
+    Episode::factory()->create(['episode_number' => 2, 'duration_seconds' => 1800, 'published_at' => now()->subDays(2)]);
+
+    // Act
+    $response = get(route('home'));
+
+    // Assert
+    $response->assertOk()
+        ->assertSee('Episode 2')
+        ->assertSee('· 30:00')
+        ->assertDontSee('·30:00');
+});
+
+test('the latest episode offers a Transistor player that stays unloaded until requested', function (): void {
+    // Arrange
+    $episode = Episode::factory()->create(['transistor_url' => 'https://share.transistor.fm/s/428d650c']);
+
+    // Act
+    $response = get(route('home'));
+
+    // Assert
+    $content = (string) $response->assertOk()
+        ->assertSee('Listen now')
+        ->getContent();
+    expect($content)->toMatch('#<template x-if="loaded">\\s*<div[^>]*>\\s*<iframe\\s[^>]*src="https://share\\.transistor\\.fm/e/428d650c"#')
+        ->and(substr_count($content, 'share.transistor.fm/e/428d650c'))
+        ->toBe(1)
+        ->and($content)
+        ->toContain('href="'.route('episodes.show', $episode).'"');
+});
+
+test('the latest episode offers no player without a Transistor link', function (): void {
+    // Arrange
+    Episode::factory()->create(['transistor_url' => null]);
+
+    // Act
+    $response = get(route('home'));
+
+    // Assert
+    $response->assertOk()
+        ->assertDontSee('Listen now')
+        ->assertSee('Episode details');
 });
 
 test('homepage renders responsive hero artwork without a second newsletter form', function (): void {

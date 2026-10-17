@@ -54,10 +54,35 @@ test('homepage story columns stay separated at responsive breakpoints', function
 
     $page = visit(route('home'));
 
-    foreach ([[320, 812], [768, 900], [1024, 900], [1280, 900], [1440, 1000]] as [$width, $height]) {
+    foreach ([[320, 812], [768, 900], [1024, 900], [1280, 900], [1440, 1000], [1600, 1000]] as [$width, $height]) {
         $page->resize($width, $height)
             ->assertScript(homepageStoryColumnsDoNotOverlapScript(), true);
     }
+});
+
+test('on wide screens the featured story lines up with the latest stories and clears the next section', function (): void {
+    // Arrange
+    Post::factory()
+        ->count(4)
+        ->create();
+
+    // Act
+    $page = visit(route('home'))->resize(1600, 1000);
+
+    // Assert: once the section's reveal settles, the card's top is level with the Latest Stories
+    // panel (within its 2-degree tilt) and its bottom stays above the section that follows.
+    $page->assertScript(browserWaitForScript(<<<'JS'
+        (() => {
+            const cluster = document.querySelector('.dispatch-blog-cluster');
+            const feature = document.querySelector('.dispatch-feature-book')?.getBoundingClientRect();
+            const latest = document.querySelector('.dispatch-latest-sheet')?.getBoundingClientRect();
+            const next = cluster?.nextElementSibling?.getBoundingClientRect();
+
+            return Boolean(feature && latest && next)
+                && Math.abs(feature.top - latest.top) <= 24
+                && feature.bottom <= next.top;
+        })()
+        JS), true);
 });
 
 test('long public content and portrait artwork stay contained', function (): void {
