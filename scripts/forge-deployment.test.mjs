@@ -960,3 +960,24 @@ test('promotion requires a positive reviewed attempt input', () => {
         assertPromotionDenied({ inputAttempt });
     }
 });
+
+test('the production deploy script backs up and integrity-checks the database before migrating, only when migrations are pending', () => {
+    const operations = readFileSync(new URL('../docs/operations.md', import.meta.url), 'utf8');
+    const production = operations.match(/### Installed production deploy script[\s\S]*?```bash\n([\s\S]*?)\n```/)?.[1];
+    const staging = operations.match(/### Installed staging deploy script[\s\S]*?```bash\n([\s\S]*?)\n```/)?.[1];
+
+    assert.ok(production, 'production script is missing');
+    assert.ok(staging, 'staging script is missing');
+
+    const gate = production.indexOf('artisan migrate:status --pending');
+    const backup = production.indexOf('sqlite3 "$MOUSE28_DATABASE" ".backup');
+    const integrity = production.indexOf('PRAGMA integrity_check');
+    const migrate = production.indexOf('artisan migrate --force');
+
+    assert.ok(gate >= 0, 'production must check for pending migrations');
+    assert.ok(backup > gate, 'production must back up the database after finding pending migrations');
+    assert.ok(integrity > backup, 'production must integrity-check the backup');
+    assert.ok(migrate > integrity, 'production must back up before migrating');
+    assert.match(production, /test "\$MOUSE28_BACKUP_INTEGRITY" = ok/);
+    assert.ok(!staging.includes('PRAGMA integrity_check'), 'staging must not take production backups');
+});
