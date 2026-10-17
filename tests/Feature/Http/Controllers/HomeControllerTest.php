@@ -166,9 +166,9 @@ test('the latest episode offers a Transistor player that stays unloaded until re
 
     // Assert
     $content = (string) $response->assertOk()
-        ->assertSee('Listen here')
+        ->assertSee('Listen now')
         ->getContent();
-    expect($content)->toMatch('#<template x-if="loaded">\\s*<div[^>]*>\\s*<iframe\\s+src="https://share\\.transistor\\.fm/e/428d650c"#')
+    expect($content)->toMatch('#<template x-if="loaded">\\s*<div[^>]*>\\s*<iframe\\s[^>]*src="https://share\\.transistor\\.fm/e/428d650c"#')
         ->and(substr_count($content, 'share.transistor.fm/e/428d650c'))
         ->toBe(1)
         ->and($content)
@@ -184,7 +184,7 @@ test('the latest episode offers no player without a Transistor link', function (
 
     // Assert
     $response->assertOk()
-        ->assertDontSee('Listen here')
+        ->assertDontSee('Listen now')
         ->assertSee('Episode details');
 });
 

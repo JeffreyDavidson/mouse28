@@ -276,8 +276,8 @@
                         class="text-gold hover:text-gold-light hidden min-h-12 items-center text-sm font-semibold underline underline-offset-8 sm:inline-flex"
                     >All episodes</a>
                 </div>
-                <div class="mt-4 grid gap-5 wrap-anywhere md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)_minmax(0,8fr)] md:items-center">
-                    <div class="dispatch-podcast-frame mx-auto w-full max-w-72 p-3 md:mx-0">
+                <div class="mt-4 grid gap-5 wrap-anywhere lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)_minmax(0,8fr)] lg:items-start">
+                    <div class="dispatch-podcast-frame mx-auto w-full max-w-72 p-3 lg:mx-0">
                         <img
                             src="/images/podcast/mouse28-cover.webp"
                             srcset="/images/podcast/mouse28-cover-640.webp 640w, /images/podcast/mouse28-cover.webp 1200w"
@@ -305,27 +305,31 @@
                             @php($leadEmbedUrl = $leadEpisode->transistorEmbedUrl())
                             @if ($leadEmbedUrl)
                                 <div class="mt-4" x-data="episodePlayer">
-                                    {{-- Inert until Listen here is pressed, so Transistor loads only on request. --}}
+                                    {{-- Inert until Listen now is pressed, so Transistor loads only on request. --}}
                                     <template x-if="loaded">
-                                        <div class="mb-3 overflow-hidden rounded-xl bg-white">
+                                        <div class="relative mb-3 overflow-hidden rounded-xl bg-white">
                                             <iframe
+                                                x-ref="player"
                                                 src="{{ $leadEmbedUrl }}"
                                                 title="Listen to {{ $leadEpisode->title }}"
                                                 width="100%"
                                                 height="180"
                                                 scrolling="no"
-                                                class="block w-full border-0"
+                                                class="relative z-10 block w-full border-0"
                                             ></iframe>
+                                            <span class="text-navy/60 absolute inset-0 flex items-center justify-center text-sm">Loading player…</span>
                                         </div>
                                     </template>
                                     <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
                                         <a
                                             href="{{ route('episodes.show', $leadEpisode) }}"
                                             x-show="notLoaded"
+                                            :role="buttonRole"
                                             @click.prevent="load"
+                                            @keydown.space.prevent="load"
                                             class="dispatch-button bg-gold text-navy hover:bg-gold-light inline-flex min-h-12 items-center gap-2 px-5 py-3 text-base font-semibold sm:text-sm"
                                             ><svg aria-hidden="true" class="size-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg
-                                            >Listen here</a>
+                                            >Listen now</a>
                                         <a
                                             href="{{ route('episodes.show', $leadEpisode) }}"
                                             class="text-gold inline-flex min-h-12 items-center text-base font-semibold underline underline-offset-8 sm:text-sm"
