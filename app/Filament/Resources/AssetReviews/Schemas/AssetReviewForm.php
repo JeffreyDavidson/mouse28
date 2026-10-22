@@ -48,21 +48,37 @@ class AssetReviewForm
                         ->maxFiles(Config::integer('asset-reviews.max_files'))
                         ->multiple()
                         ->reorderable()
+                        ->appendFiles()
                         ->disk('local')
                         ->directory('asset-reviews')
                         ->visibility('private')
                         ->getUploadedFileNameForStorageUsing(fn (TemporaryUploadedFile $file): string => Str::ulid().'.'.$file->guessExtension())
                         ->previewable(false)
                         ->preventFilePathTampering()
-                        // Never expose the local disk's bearer-style temporary URLs.
-                        ->getUploadedFileUsing(fn (string $file): array => [
-                            'name' => basename($file),
-                            'size' => Storage::disk('local')
-                                ->size($file),
-                            'type' => Storage::disk('local')
-                                ->mimeType($file),
-                            'url' => null,
-                        ]),
+                        ->getUploadedFileUsing(function (string $file, ?AssetReview $record): ?array {
+                            if (! $record instanceof AssetReview) {
+                                return null;
+                            }
+
+                            $index = array_search($file, $record->files, true);
+
+                            if (! is_int($index) || $record->filePath($index) !== $file) {
+                                return null;
+                            }
+
+                            return [
+                                'name' => basename($file),
+                                'size' => Storage::disk('local')
+                                    ->size($file),
+                                'type' => Storage::disk('local')
+                                    ->mimeType($file),
+                                // Use the authenticated saved-file route, never a disk temporary URL.
+                                'url' => route('filament.admin.assetReviews.file', [
+                                    'assetReview' => $record,
+                                    'file' => $index,
+                                ]),
+                            ];
+                        }),
                 ])
                 ->columnSpanFull(),
         ]);
